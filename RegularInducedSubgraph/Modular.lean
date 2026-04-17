@@ -3047,6 +3047,91 @@ lemma hasBoundedControlBlockModularCascadeWitnessOfCard_of_hasBoundedControlBloc
   · simpa using hlen
   · exact ⟨hsmall, hext⟩
 
+lemma hasControlBlockModularBucketingWitnessOfCard_of_modEq_extendedUnionDegree_and_dropDegree_and_externalBlockDegrees
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k : ℕ} {u s : Finset V}
+    (hku : k ≤ u.card) (hu : u ⊆ s) {q : ℕ} (hq : u.card ≤ q)
+    {blocks : List (Finset V × ℕ)} (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hdeg :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩ [MOD q])
+    (hdrop :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ (s \ u)).card ≡ (G.neighborFinset w ∩ (s \ u)).card [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G u q blocks) :
+    HasControlBlockModularBucketingWitnessOfCard G k := by
+  classical
+  refine ⟨u, s, hku, hu, q, hq, blocks, hnonempty, hsep, ?_, ?_, ?_⟩
+  intro v w
+  have hAmbient :
+      u ∪ ((s \ u) ∪ controlBlockUnion blocks) = s ∪ controlBlockUnion blocks := by
+    ext x
+    constructor
+    · intro hx
+      rcases Finset.mem_union.mp hx with hxU | hxRest
+      · exact Finset.mem_union.mpr (Or.inl (hu hxU))
+      · rcases Finset.mem_union.mp hxRest with hxDrop | hxBlocks
+        · exact Finset.mem_union.mpr (Or.inl (Finset.mem_sdiff.mp hxDrop).1)
+        · exact Finset.mem_union.mpr (Or.inr hxBlocks)
+    · intro hx
+      rcases Finset.mem_union.mp hx with hxS | hxBlocks
+      · by_cases hxu : x ∈ u
+        · exact Finset.mem_union.mpr (Or.inl hxu)
+        · exact Finset.mem_union.mpr (Or.inr (Finset.mem_union.mpr (Or.inl (Finset.mem_sdiff.mpr ⟨hxS, hxu⟩))))
+      · exact Finset.mem_union.mpr (Or.inr (Finset.mem_union.mpr (Or.inr hxBlocks)))
+  have hcastv :
+      (inducedOn G (u ∪ ((s \ u) ∪ controlBlockUnion blocks))).degree
+          ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+        (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+          ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ := by
+    simpa using
+      (inducedOn_degree_congr (G := G)
+        (s := u ∪ ((s \ u) ∪ controlBlockUnion blocks))
+        (t := s ∪ controlBlockUnion blocks)
+        (h := hAmbient)
+        (hs := Finset.mem_union.mpr (Or.inl v.2))
+        (ht := Finset.mem_union.mpr (Or.inl (hu v.2))))
+  have hcastw :
+      (inducedOn G (u ∪ ((s \ u) ∪ controlBlockUnion blocks))).degree
+          ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+        (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+          ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩ := by
+    simpa using
+      (inducedOn_degree_congr (G := G)
+        (s := u ∪ ((s \ u) ∪ controlBlockUnion blocks))
+        (t := s ∪ controlBlockUnion blocks)
+        (h := hAmbient)
+        (hs := Finset.mem_union.mpr (Or.inl w.2))
+        (ht := Finset.mem_union.mpr (Or.inl (hu w.2))))
+  have hcastv' :
+      (inducedOn G (u ∪ (s \ u ∪ controlBlockUnion blocks))).degree
+          ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+        (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+          ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ := by
+    simpa [Finset.union_assoc] using hcastv
+  have hcastw' :
+      (inducedOn G (u ∪ (s \ u ∪ controlBlockUnion blocks))).degree
+          ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+        (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+          ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩ := by
+    simpa [Finset.union_assoc] using hcastw
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  simpa [hcastv', hcastw'] using hdeg v w
+  · intro v w
+    cases
+      Subsingleton.elim (‹DecidableRel G.Adj›)
+        (fun a b => Classical.propDecidable (G.Adj a b))
+    exact hdrop v w
+  · cases
+      Subsingleton.elim (‹DecidableRel G.Adj›)
+        (fun a b => Classical.propDecidable (G.Adj a b))
+    exact hext
+
 lemma hasControlBlockModularBucketingWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hctrl : HasNonemptyControlBlockModularWitnessOfCard G k) :
     HasControlBlockModularBucketingWitnessOfCard G k := by
