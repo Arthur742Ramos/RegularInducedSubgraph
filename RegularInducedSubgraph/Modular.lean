@@ -455,6 +455,54 @@ lemma modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalDegree
     (v := ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩)] using hsmall
 
 /--
+If the ambient degrees on `s ∪ u` are constant modulo `q` on `s`, and the external degrees into the
+disjoint block `t` are constant modulo `q` on `s`, then the ambient degrees on `s ∪ t ∪ u` are
+constant modulo `q` on `s`.
+-/
+lemma modEq_extendedUnionDegree_of_modEq_unionDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s t u : Finset V}
+    (hst : Disjoint s t) (htu : Disjoint t u) {q : ℕ}
+    (hdeg :
+      ∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ u)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (s ∪ u)).degree ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q])
+    (hext :
+      ∀ v w : ↑(s : Set V),
+        (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset w ∩ t).card [MOD q]) :
+    ∀ v w : ↑(s : Set V),
+      (inducedOn G (s ∪ (t ∪ u))).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+        (inducedOn G (s ∪ (t ∪ u))).degree ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+  have hdisj : Disjoint (s ∪ u) t := by
+    rw [Finset.disjoint_union_left]
+    exact ⟨hst, htu.symm⟩
+  intro v w
+  have hsmall :
+      (G.neighborFinset v ∩ (s ∪ u)).card ≡
+        (G.neighborFinset w ∩ (s ∪ u)).card [MOD q] := by
+    simpa [degree_inducedOn_eq_card_neighborFinset_inter_modular (G := G) (s := s ∪ u)
+      (v := ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩),
+      degree_inducedOn_eq_card_neighborFinset_inter_modular (G := G) (s := s ∪ u)
+      (v := ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩)] using hdeg v w
+  have hsplitv :
+      (G.neighborFinset v ∩ (s ∪ (t ∪ u))).card =
+        (G.neighborFinset v ∩ (s ∪ u)).card + (G.neighborFinset v ∩ t).card := by
+    simpa [Finset.union_assoc, Finset.union_left_comm, Finset.union_comm] using
+      (card_neighborFinset_inter_union (G := G) (s := s ∪ u) (t := t) hdisj v)
+  have hsplitw :
+      (G.neighborFinset w ∩ (s ∪ (t ∪ u))).card =
+        (G.neighborFinset w ∩ (s ∪ u)).card + (G.neighborFinset w ∩ t).card := by
+    simpa [Finset.union_assoc, Finset.union_left_comm, Finset.union_comm] using
+      (card_neighborFinset_inter_union (G := G) (s := s ∪ u) (t := t) hdisj w)
+  have hbig :
+      (G.neighborFinset v ∩ (s ∪ (t ∪ u))).card ≡
+        (G.neighborFinset w ∩ (s ∪ (t ∪ u))).card [MOD q] := by
+    simpa [hsplitv, hsplitw] using Nat.ModEq.add hsmall (hext v w)
+  simpa [degree_inducedOn_eq_card_neighborFinset_inter_modular (G := G) (s := s ∪ (t ∪ u))
+    (v := ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩),
+    degree_inducedOn_eq_card_neighborFinset_inter_modular (G := G) (s := s ∪ (t ∪ u))
+    (v := ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩)] using hbig
+
+/--
 `HasConstantModExternalBlockDegrees G s q blocks` records that each control block carries a
 prescribed constant residue for the external degree data on `s`.
 -/
@@ -693,6 +741,111 @@ lemma modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalBlockDegrees
             (hext := hextHead)
       exact modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalBlockDegrees
         (G := G) (s := s) (tail := tail) (q := q) hsepTail hdisjTail hdegTail hextTail
+
+/--
+If the ambient degrees on `s ∪ tail` are constant modulo `q` on `s`, and each separated control
+block contributes a separately constant external residue on `s`, then the ambient degrees on
+`s ∪ controlBlockUnion blocks ∪ tail` are constant modulo `q` on `s`.
+-/
+lemma modEq_extendedUnionDegree_of_modEq_unionDegree_and_externalBlockDegrees
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s tail : Finset V} {q : ℕ} :
+    ∀ {blocks : List (Finset V × ℕ)},
+      ControlBlocksSeparated s blocks →
+      Disjoint (controlBlockUnion blocks) tail →
+      (∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ tail)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (s ∪ tail)).degree ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q]) →
+      HasConstantModExternalBlockDegrees G s q blocks →
+      ∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ (controlBlockUnion blocks ∪ tail))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (s ∪ (controlBlockUnion blocks ∪ tail))).degree
+            ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q]
+  | [], _hsep, _hdisj, hdeg, _hext => by
+      intro v w
+      have hcastv :
+          (inducedOn G (s ∪ (controlBlockUnion ([] : List (Finset V × ℕ)) ∪ tail))).degree
+              ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+            (inducedOn G (s ∪ tail)).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+        simpa [controlBlockUnion, Finset.empty_union] using
+          (inducedOn_degree_congr (G := G)
+            (s := s ∪ (controlBlockUnion ([] : List (Finset V × ℕ)) ∪ tail))
+            (t := s ∪ tail)
+            (h := by simp [controlBlockUnion, Finset.empty_union])
+            (hs := Finset.mem_union.mpr (Or.inl v.2))
+            (ht := Finset.mem_union.mpr (Or.inl v.2)))
+      have hcastw :
+          (inducedOn G (s ∪ (controlBlockUnion ([] : List (Finset V × ℕ)) ∪ tail))).degree
+              ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+            (inducedOn G (s ∪ tail)).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ := by
+        simpa [controlBlockUnion, Finset.empty_union] using
+          (inducedOn_degree_congr (G := G)
+            (s := s ∪ (controlBlockUnion ([] : List (Finset V × ℕ)) ∪ tail))
+            (t := s ∪ tail)
+            (h := by simp [controlBlockUnion, Finset.empty_union])
+            (hs := Finset.mem_union.mpr (Or.inl w.2))
+            (ht := Finset.mem_union.mpr (Or.inl w.2)))
+      simpa [hcastv, hcastw] using hdeg v w
+  | (b :: bs), hsep, hdisj, hdeg, hext => by
+      rcases b with ⟨t, r⟩
+      rcases hsep with ⟨hst, htu, hsepTail⟩
+      rcases hext with ⟨hextHeadConst, hextTail⟩
+      have hdisjHead : Disjoint t tail := by
+        refine Finset.disjoint_left.mpr ?_
+        intro x hxT hxTail
+        exact (Finset.disjoint_left.mp hdisj) (by simp [controlBlockUnion, hxT]) hxTail
+      have hdisjTail : Disjoint (controlBlockUnion bs) tail := by
+        refine Finset.disjoint_left.mpr ?_
+        intro x hxBs hxTail
+        exact (Finset.disjoint_left.mp hdisj) (by simp [controlBlockUnion, hxBs]) hxTail
+      have hdegTail :
+          ∀ v w : ↑(s : Set V),
+            (inducedOn G (s ∪ (controlBlockUnion bs ∪ tail))).degree
+                ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+              (inducedOn G (s ∪ (controlBlockUnion bs ∪ tail))).degree
+                ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+        exact
+          modEq_extendedUnionDegree_of_modEq_unionDegree_and_externalBlockDegrees
+            (G := G) (s := s) (tail := tail) (q := q) hsepTail hdisjTail hdeg hextTail
+      have hextHead :
+          ∀ v w : ↑(s : Set V),
+            (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset w ∩ t).card [MOD q] := by
+        intro v w
+        exact (hextHeadConst v).trans (hextHeadConst w).symm
+      have htuTail : Disjoint t (controlBlockUnion bs ∪ tail) := by
+        rw [Finset.disjoint_union_right]
+        exact ⟨htu, hdisjHead⟩
+      intro v w
+      have hcastv :
+          (inducedOn G (s ∪ (t ∪ (controlBlockUnion bs ∪ tail)))).degree
+              ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+            (inducedOn G (s ∪ (controlBlockUnion ((t, r) :: bs) ∪ tail))).degree
+              ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+        simpa [controlBlockUnion, Finset.union_assoc, Finset.union_left_comm, Finset.union_comm] using
+          (inducedOn_degree_congr (G := G)
+            (s := s ∪ (t ∪ (controlBlockUnion bs ∪ tail)))
+            (t := s ∪ (controlBlockUnion ((t, r) :: bs) ∪ tail))
+            (h := by
+              simp [controlBlockUnion, Finset.union_assoc, Finset.union_left_comm, Finset.union_comm])
+            (hs := Finset.mem_union.mpr (Or.inl v.2))
+            (ht := Finset.mem_union.mpr (Or.inl v.2)))
+      have hcastw :
+          (inducedOn G (s ∪ (t ∪ (controlBlockUnion bs ∪ tail)))).degree
+              ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+            (inducedOn G (s ∪ (controlBlockUnion ((t, r) :: bs) ∪ tail))).degree
+              ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ := by
+        simpa [controlBlockUnion, Finset.union_assoc, Finset.union_left_comm, Finset.union_comm] using
+          (inducedOn_degree_congr (G := G)
+            (s := s ∪ (t ∪ (controlBlockUnion bs ∪ tail)))
+            (t := s ∪ (controlBlockUnion ((t, r) :: bs) ∪ tail))
+            (h := by
+              simp [controlBlockUnion, Finset.union_assoc, Finset.union_left_comm, Finset.union_comm])
+            (hs := Finset.mem_union.mpr (Or.inl w.2))
+            (ht := Finset.mem_union.mpr (Or.inl w.2)))
+      simpa [hcastv, hcastw] using
+        (modEq_extendedUnionDegree_of_modEq_unionDegree_and_externalDegree
+          (G := G) (s := s) (t := t) (u := controlBlockUnion bs ∪ tail)
+          hst htuTail hdegTail hextHead v w)
 
 lemma hasModularWitnessOfCard_of_card_le_modulus_of_modEq_unionDegree_and_externalBlockDegrees
     (G : SimpleGraph V) [DecidableRel G.Adj]
