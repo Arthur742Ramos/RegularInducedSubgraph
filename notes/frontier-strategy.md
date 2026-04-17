@@ -43,6 +43,14 @@ If this can be organized so that, on the surviving bucket `S`,
 
 then the control-set lemma gives an exactly regular induced graph on `S`.
 
+This exact multiblock packaging is now fully formalized, but it also collapses in the unbounded
+story: `HasExactControlBlockWitnessOfCard`, `HasControlBlockBucketingWitnessOfCard`, and
+`HasControlBlockCascadeWitnessOfCard` are all equivalent to the simpler one-control exact target
+`HasSingleControlExactWitnessOfCard`. The remaining single-control refinements also collapse:
+`HasSingleControlBucketingWitnessOfCard` and `HasSingleControlCascadeWitnessOfCard` are equivalent
+to that same one-control exact target. So the real issue is no longer which exact package to use,
+but how to force any of these equivalent exact witnesses in every large graph.
+
 The key open combinatorial task is therefore:
 
 > Force a large bucket on which the ambient degree collapses without paying the full
@@ -68,6 +76,10 @@ This collapse is now formalized in `RegularInducedSubgraph.Modular`:
 
 - `inducesRegularOfDegree_of_card_le_modulus_of_inducesModEqDegree`
   shows that congruence modulo any `q ≥ |S|` already forces exact regularity on `S`;
+- `inducesRegularOfDegree_of_degreeInterval_of_inducesModEqDegree` and the derived
+  `hasRegularInducedSubgraphOfCard_of_degreeInterval_of_modEq_unionDegree_and_externalDegree` /
+  `...externalBlockDegrees` bridges show that one can also collapse modular data to exact
+  regularity once the internal degrees are trapped in any interval of width `< q`;
 - `inducesModEqDegree_of_modEq_unionDegree_and_externalDegree`
   transports modular equality from ambient degrees in `G[S ∪ T]` and external degrees into `T`
   down to modular equality inside `G[S]`;
@@ -75,6 +87,14 @@ This collapse is now formalized in `RegularInducedSubgraph.Modular`:
   packages the finite equivalence between modular witnesses and exact regular induced subgraphs;
 - `exists_large_mod_pair_of_mul_le_card` and `exists_large_subset_with_constant_mod_pair`
   give the finite pigeonhole step for paired residue data, with only `q^2` buckets;
+- `exists_large_subset_with_modEq_hostDegree_of_unionDegree_and_externalDegree_card_bound`
+  turns those paired residue buckets into a large subset whose host degrees inside `G[S]` are all
+  congruent modulo `q` after tracking the residue of the ambient degree on `G[S ∪ T]` together with
+  the residue of the degree into `T`;
+- `exists_large_subset_with_modEq_hostDegree_of_blockUnionDegree_and_externalBlockDegrees_card_bound`
+  extends that same idea to any separated control-block family, paying only one extra factor of `q`
+  on top of the `q ^ blocks.length` external-block bucketing cost to recover a large subset whose
+  host degrees inside `G[S]` are all congruent modulo `q`;
 - `eventualNatPowerModularDomination_iff_targetStatement`
   upgrades this to an asymptotic reduction along geometric scales.
 
@@ -98,28 +118,41 @@ This target is now formalized in `RegularInducedSubgraph.Modular` as
 `EventualNatPowerSingleControlModularDomination` and
 `EventualNatPowerBoundedSingleControlModularDomination`.
 
-The remaining obstruction is also formalized now: the residue-bucketing step naturally produces a
+The dropped-part obstruction is also formalized now: the residue-bucketing step naturally produces a
 large subset `U ⊆ S` only after throwing away `S \ U`, so one still has to control the dropped-part
-residue together with the control-set residue. This is packaged as the stronger witness
+residue together with the control-set residue. This is packaged as
 `HasSingleControlModularBucketingWitnessOfCard` and the asymptotic targets
 `EventualNatPowerSingleControlModularBucketingDomination` /
-`EventualNatPowerBoundedSingleControlModularBucketingDomination`.
+`EventualNatPowerBoundedSingleControlModularBucketingDomination`. In the unbounded story this
+single-control modular-bucketing layer now collapses back to `HasSingleControlModularWitnessOfCard`
+itself, while the bounded version remains a useful budget-tracking refinement.
 
 The same obstruction is now packaged at the multiblock level as well:
 `HasControlBlockModularBucketingWitnessOfCard` and
-`EventualNatPowerControlBlockModularBucketingDomination`, together with bounded versions. This
-separates the genuinely combinatorial question from the bookkeeping question: the new remaining step
-is to force one of these modular bucketing witnesses in every large graph, not to prove new collapse
-lemmas once such a witness is present.
+`EventualNatPowerControlBlockModularBucketingDomination`, together with bounded versions.
 
-That recursive version is now explicit too: `HasControlBlockModularCascadeWitnessOfCard` and
-`EventualNatPowerControlBlockModularCascadeDomination` package the same dropped-part obstruction
-across an entire cascade while keeping one modulus fixed. So the current frontier statement can now
-be formulated cleanly either as a modular bucketing forcing theorem or as a modular cascade forcing
-theorem, and the unbounded Lean targets now show these two formulations are equivalent.
+That multiblock modular packaging has now collapsed one step further in the unbounded story:
+`HasSingleControlModularWitnessOfCard`,
+`HasSingleControlModularBucketingWitnessOfCard`,
+`HasNonemptyControlBlockModularWitnessOfCard`,
+`HasControlBlockModularBucketingWitnessOfCard`, and
+`HasControlBlockModularCascadeWitnessOfCard` are all equivalent, as are their eventual nat-power
+targets. So the cleanest current frontier statement is the plain one-control formulation
+`EventualNatPowerSingleControlModularDomination`, with the single-control dropped-part, multiblock
+control-block, bucketing, and cascade versions available as equivalent repackagings. The older
+`HasControlBlockWitnessOfCard` still collapses all the way back to the plain modular witness via the
+empty control-block family, so it is no longer the right frontier object.
 
-The new pigeonhole lemmas show that freezing the first two quantities only costs `q^2` buckets,
-not the full `2^|T|` neighborhood profile complexity.
+The remaining step is therefore purely combinatorial: force one of these equivalent genuine modular
+objects in every sufficiently large graph, rather than prove new collapse lemmas once such a witness
+is present. The new block-level host-degree bucketing theorem means that arbitrary separated control
+families can now be handled with only one extra ambient-residue factor, so the next real gap is to
+turn that fixed-host forcing into self-consistent dropped-part / witness data.
+
+The new pigeonhole lemmas, now packaged into
+`exists_large_subset_with_modEq_hostDegree_of_unionDegree_and_externalDegree_card_bound`, show that
+freezing the first two quantities only costs `q^2` buckets, not the full `2^|T|` neighborhood
+profile complexity.
 
 ## 4. Concrete next target
 

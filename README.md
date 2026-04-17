@@ -49,42 +49,61 @@ The goal here is **not** to import literature about this exact problem. Instead,
   - `HasModularWitnessOfCard G k`: a size-`k` induced subgraph whose degrees are congruent modulo
     some modulus at least its cardinality,
   - a strengthened finite collapse lemma: if the degrees in `G[s]` are all congruent modulo `q`
-    and every induced degree is `< q`, then `G[s]` is already regular (hence in particular when
-    `|s| ≤ q`),
+    and lie in any interval of width `< q`, then `G[s]` is already regular; in particular this
+    applies when every induced degree is `< q`, hence also when `|s| ≤ q`,
   - a modular control-set transport lemma: congruence of the ambient degrees in `G[s ∪ t]` and of
     the external degrees into a disjoint control set `t` forces congruence of the internal degrees
     in `G[s]`,
+  - interval-controlled exactness bridges: combining that modular transport with an interval bound on
+    the internal degrees of `G[s]` now yields direct exact-regularity corollaries for one-control
+    and multiblock modular data,
   - a two-block modular refinement: the same transport works from `G[s ∪ t₁ ∪ t₂]` when the
     degrees into each disjoint control block `t₁`, `t₂` are separately constant modulo `q`,
   - a recursive modular block-family transport package: the same idea now iterates over any
     separated list of control blocks with prescribed external residues modulo `q`,
   - `HasControlBlockWitnessOfCard G k`: a packaged finite witness built from a large set `s`, a
     modulus `q ≥ |s|`, and a separated list of control blocks whose ambient and external residue
-    data force regularity on `G[s]`,
+    data force regularity on `G[s]`; because the block list may be empty, this is now formally
+    equivalent to the ordinary modular witness route and is not a genuine frontier target,
   - `HasExactControlBlockWitnessOfCard G k` and
     `HasBoundedExactControlBlockWitnessOfCard G k r`: stricter exact control-block witnesses with a
     nonempty control union, optionally using at most `r` control blocks, so the vacuous empty-block
-    case is ruled out while still forcing a regular induced subgraph,
+    case is ruled out while still forcing a regular induced subgraph; in the unbounded story this
+    multiblock exact package is now equivalent to the one-control exact, multiblock bucketing, and
+    multiblock cascade formulations,
   - `HasSingleControlExactWitnessOfCard G k`: the one-control version from the frontier notes, where
     a single nonempty control set `t` freezes both the ambient degree on `G[s ∪ t]` and the degree
-    into `t`,
+    into `t`; this is now also equivalent to the unbounded multiblock exact
+    control-block/bucketing/cascade witnesses,
   - `HasBoundedSingleControlExactWitnessOfCard G k r`: the same one-control witness with an explicit
     budget `|t| ≤ r` on the control set size,
   - `HasSingleControlBucketingWitnessOfCard G k` and
     `HasBoundedSingleControlBucketingWitnessOfCard G k r`: a large bucket `u ⊆ s` inside a host set
     with one disjoint nonempty control set `t`, where the ambient degree on
     `G[u ∪ ((s \ u) ∪ t)]`, the degree into the dropped part `s \ u`, and the degree into `t` are
-    all frozen on `u`; these finite witnesses collapse to the exact one-control route,
+    all frozen on `u`; these witnesses now collapse back to the plain one-control exact route, and
+    in the unbounded story the corresponding nat-power targets are equivalent to
+    `EventualNatPowerSingleControlExactDomination`,
   - `HasSingleControlCascadeWitnessOfCard G k` and
     `HasBoundedSingleControlCascadeWitnessOfCard G k r`: a fixed-control multistage cascade of
-    nested buckets whose dropped layers become exact control blocks, collapsing to the existing
-    exact control-block witness route,
+    nested buckets whose dropped layers become exact control blocks; the unbounded single-control
+    cascade layer now also collapses back to the plain one-control exact target, while the bounded
+    version still feeds through the exact control-block witness route,
   - `HasLowDegreeModularWitnessOfCard G k`: a sharper witness notion where the modulus only has to
     exceed the maximum induced degree, together with an equivalence to exact regular witnesses,
   - the exact graph-level equivalence
     `HasModularWitnessOfCard G k ↔ HasRegularInducedSubgraphOfCard G k`,
   - finite pigeonhole lemmas that extract large fibers for residue data in `Fin q` and paired
     residue data in `Fin q × Fin q`,
+  - a finite modular host-degree bucketing lemma: for disjoint `s, t`, if `q^2 k ≤ |s|`, then
+    bucketing vertices of `s` by the pair consisting of their degree modulo `q` in `G[s ∪ t]` and
+    their degree modulo `q` into `t` yields a subset `u ⊆ s` with `|u| ≥ k` whose degrees inside
+    `G[s]` are all congruent modulo `q`,
+  - a separated-block modular refinement: if `blocks` is a separated control-block family, then one
+    additional ambient-residue bucketing step on top of the `q ^ blocks.length` external-block
+    bucketing cost yields a subset `u ⊆ s` of size at least `k` whenever
+    `q ^ blocks.length * (q * k) ≤ |s|`, with all degrees inside `G[s]` congruent modulo `q` on
+    `u`,
   - a finite exact degree-bucketing lemma: if the ambient degree on `G[s ∪ t]` is constant on `s`,
     then a pigeonhole over the `|t| + 1` possible degrees into `t` extracts a large subset on which
     the induced degree inside `G[s]` is constant,
@@ -106,49 +125,68 @@ The goal here is **not** to import literature about this exact problem. Instead,
     `EventualNatPowerBoundedExactControlBlockDomination b r`: genuine exact-control asymptotic
     targets whose eventual validity implies `TargetStatement`,
   - `EventualNatPowerSingleControlExactDomination b`: the one-control asymptotic target directly
-    matching the frontier-strategy note, also implying `TargetStatement`,
+    matching the frontier-strategy note; it is now equivalent both to the single-control
+    bucketing/cascade refinements and to the unbounded exact control-block, multiblock bucketing,
+    and multiblock cascade targets, and still implies `TargetStatement`,
   - `HasSingleControlModularWitnessOfCard G k` and
     `EventualNatPowerSingleControlModularDomination b`: the nonempty one-control modular target from
-    the strategy note, sitting between the single-control exact target and the ordinary modular
-    witness route and still implying `TargetStatement`,
+    the strategy note; in the unbounded story this is now equivalent both to the single-control
+    modular-bucketing refinement and to the genuine multiblock modular control-block, modular
+    bucketing, and modular cascade formulations, so it is the simplest canonical modular frontier
+    object and still implies `TargetStatement`,
   - `HasBoundedSingleControlModularWitnessOfCard G k r` and
     `EventualNatPowerBoundedSingleControlModularDomination b u`: the budgeted small-control modular
     version, which now also receives direct bridges from the bounded single-control bucketing route,
   - `HasSingleControlModularBucketingWitnessOfCard G k` and
     `EventualNatPowerSingleControlModularBucketingDomination b`: the dropped-part modular bucketing
-    refinement of the small-control modular target, together with the bounded version
+    refinement of the small-control modular target; unboundedly it now collapses back to the plain
+    one-control modular witness, together with the bounded version
     `HasBoundedSingleControlModularBucketingWitnessOfCard G k r` /
     `EventualNatPowerBoundedSingleControlModularBucketingDomination b u`,
   - `EventualNatPowerBoundedSingleControlExactDomination b u`: the budgeted one-control asymptotic
     target, which records an explicit control-size allowance `u k` at scale `k` and still implies
     `TargetStatement`,
   - `EventualNatPowerSingleControlBucketingDomination b` and
-    `EventualNatPowerBoundedSingleControlBucketingDomination b u`: asymptotic bucketing targets
-    whose eventual validity feeds through the exact one-control bridge and therefore implies
-    `TargetStatement`,
+    `EventualNatPowerBoundedSingleControlBucketingDomination b u`: asymptotic bucketing targets;
+    the unbounded one is equivalent to `EventualNatPowerSingleControlExactDomination`, while the
+    bounded one is equivalent to `EventualNatPowerBoundedSingleControlExactDomination`, so both
+    still imply `TargetStatement`,
   - `HasControlBlockBucketingWitnessOfCard G k` and
     `HasBoundedControlBlockBucketingWitnessOfCard G k r`: multiblock bucketing witnesses that freeze
     one dropped-part degree together with a separated nonempty control-block family and collapse
     directly to exact control-block witnesses; in the unbounded case this is now equivalent to the
     exact and multiblock-cascade formulations, while the bounded version pays one extra control-block
     slot for the dropped part,
+  - `HasNonemptyControlBlockModularWitnessOfCard G k` and
+    `HasBoundedNonemptyControlBlockModularWitnessOfCard G k r`: the genuine modular multiblock
+    control-block target, requiring a nonempty separated control-block family so the old vacuous
+    empty-block case is ruled out; in the unbounded story this is now equivalent to the one-control
+    modular, modular bucketing, and modular cascade formulations, and in the bounded story it is
+    equivalent to bounded modular multiblock bucketing,
   - `HasControlBlockModularBucketingWitnessOfCard G k` and
-    `HasBoundedControlBlockModularBucketingWitnessOfCard G k r`: the modular multiblock bucketing
-    refinement, which keeps the dropped part as modular residue data, collapses to the modular
-    control-block witness route, is equivalent to the modular multiblock cascade formulation in the
-    unbounded case, and in the bounded version avoids paying the extra dropped-part slot,
+    `HasBoundedControlBlockModularBucketingWitnessOfCard G k r`: the one-shot modular multiblock
+    bucketing refinement, which keeps the dropped part as modular residue data and is equivalent in
+    the unbounded case to the genuine nonempty modular control-block witness and to the modular
+    multiblock cascade formulation; in the bounded version it avoids paying the extra dropped-part
+    slot,
   - `EventualNatPowerControlBlockBucketingDomination b` and
     `EventualNatPowerBoundedControlBlockBucketingDomination b r`: multiblock bucketing targets whose
     eventual validity feeds through the exact control-block route and therefore implies
     `TargetStatement`,
+  - `EventualNatPowerNonemptyControlBlockModularDomination b` and
+    `EventualNatPowerBoundedNonemptyControlBlockModularDomination b r`: the asymptotic genuine
+    modular control-block targets; in the unbounded story they are now equivalent to the
+    single-control modular, modular bucketing, and modular cascade targets, while in the bounded
+    story they are equivalent to the bounded modular multiblock bucketing targets below; in
+    particular their eventual validity implies `TargetStatement`,
   - `EventualNatPowerControlBlockModularBucketingDomination b` and
     `EventualNatPowerBoundedControlBlockModularBucketingDomination b r`: modular multiblock
-    bucketing targets sitting between the exact multiblock bucketing/cascade route and
-    `EventualNatPowerControlBlockDomination b`,
+    bucketing targets equivalent to the genuine nonempty modular control-block targets, presented in
+    one-shot dropped-part form,
   - `EventualNatPowerSingleControlCascadeDomination b` and
-    `EventualNatPowerBoundedSingleControlCascadeDomination b r`: asymptotic cascade targets whose
-    eventual validity feeds through the exact control-block route and therefore implies
-    `TargetStatement`,
+    `EventualNatPowerBoundedSingleControlCascadeDomination b r`: asymptotic cascade targets; the
+    unbounded one is equivalent to `EventualNatPowerSingleControlExactDomination`, while the bounded
+    one still feeds through the exact control-block route and therefore implies `TargetStatement`,
   - `HasControlBlockCascadeWitnessOfCard G k` and
     `HasBoundedControlBlockCascadeWitnessOfCard G k r`: fixed-block cascade witnesses that keep a
     separated nonempty control-block family in the background while repeatedly freezing dropped-part
@@ -165,10 +203,12 @@ The goal here is **not** to import literature about this exact problem. Instead,
     re-packaging of the same modular frontier,
   - `EventualNatPowerControlBlockModularCascadeDomination b` and
     `EventualNatPowerBoundedControlBlockModularCascadeDomination b r`: asymptotic modular multiblock
-    cascade targets sitting between the exact cascade route and the modular multiblock bucketing
-    route,
-  - `EventualNatPowerControlBlockDomination b`: a stronger many-block target on graphs with `b^k`
-    vertices, together with a theorem that it implies `TargetStatement`,
+    cascade targets; in the unbounded story these are equivalent to the genuine nonempty modular
+    control-block and modular bucketing targets,
+  - `EventualNatPowerControlBlockDomination b`: the older many-block modular target on graphs with
+    `b^k` vertices; it still implies `TargetStatement`, but it allows empty control-block families
+    and is now formally equivalent to the ordinary modular asymptotic route, so it is no longer the
+    canonical frontier object,
   - `EventualNatPowerLowDegreeModularDomination b`: a sharper modular asymptotic target whose
     eventual validity also implies `TargetStatement`.
 
@@ -198,7 +238,11 @@ The goal here is **not** to import literature about this exact problem. Instead,
    Since the control-set lemma recovers exact regularity from equality of these two scalar
    quantities, one can hope for a multiscale pigeonhole argument that only follows low-complexity
    degree data instead of full neighborhood profiles. The new `Fin q × Fin q` bucketing lemmas in
-   `Modular` formalize the basic residue-class extraction step for this program.
+   `Modular`, culminating in
+   `exists_large_subset_with_modEq_hostDegree_of_unionDegree_and_externalDegree_card_bound`, and its
+   separated-block extension
+   `exists_large_subset_with_modEq_hostDegree_of_blockUnionDegree_and_externalBlockDegrees_card_bound`,
+   formalize the basic residue-class extraction step for this program.
 
 5. **Density-increment split**  
    Either a large piece is already close to regular, or there is a structural imbalance that lets us pass to a denser or sparser induced piece while keeping a quantitative lower bound on size. Iterating the increment should eventually terminate in a regular configuration.

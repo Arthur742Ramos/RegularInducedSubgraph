@@ -27,6 +27,17 @@ def InducesDegreeLtModulus (G : SimpleGraph V) (s : Finset V) (q : ℕ) : Prop :
   exact ∀ v : ↑(s : Set V), (inducedOn G s).degree v < q
 
 /--
+All induced degrees on `s` lie in the half-open interval `[d, d + q)`.
+
+This is a more flexible exact-collapse hypothesis than `InducesDegreeLtModulus`: congruent degrees
+modulo `q` already force exact equality as soon as they all lie in any interval of width `< q`.
+-/
+def InducesDegreeInterval (G : SimpleGraph V) (s : Finset V) (d q : ℕ) : Prop := by
+  classical
+  exact ∀ v : ↑(s : Set V),
+    d ≤ (inducedOn G s).degree v ∧ (inducedOn G s).degree v < d + q
+
+/--
 A modular witness of size at least `k`: an induced subgraph on at least `k` vertices whose degrees
 are all congruent modulo some modulus at least its cardinality.
 -/
@@ -171,27 +182,54 @@ lemma inducesModEqDegree_of_modEq_unionDegree_and_externalDegree
       (fun a b => Classical.propDecidable (G.Adj a b))
   exact Nat.ModEq.add_right_cancel (hext v w) hsum
 
-lemma inducesRegularOfDegree_of_degree_lt_modulus_of_inducesModEqDegree
-    (G : SimpleGraph V) {s : Finset V} {q : ℕ}
-    (hbound : InducesDegreeLtModulus G s q)
+lemma inducesRegularOfDegree_of_degreeInterval_of_inducesModEqDegree
+    (G : SimpleGraph V) {s : Finset V} {d q : ℕ}
+    (hinterval : InducesDegreeInterval G s d q)
     (hmod : InducesModEqDegree G s q) :
-    ∃ d : ℕ, InducesRegularOfDegree G s d := by
+    ∃ d' : ℕ, InducesRegularOfDegree G s d' := by
   classical
-  dsimp [InducesDegreeLtModulus] at hbound
+  dsimp [InducesDegreeInterval] at hinterval
   rw [InducesModEqDegree] at hmod
   by_cases hs : s.Nonempty
   · obtain ⟨v0, hv0⟩ := hs
     refine ⟨(inducedOn G s).degree ⟨v0, hv0⟩, ?_⟩
     rw [InducesRegularOfDegree]
     intro v
-    have hv_lt : (inducedOn G s).degree v < q := hbound v
-    have hv0_lt : (inducedOn G s).degree ⟨v0, hv0⟩ < q := hbound ⟨v0, hv0⟩
-    have hdeg := hmod v ⟨v0, hv0⟩
-    rw [Nat.ModEq, Nat.mod_eq_of_lt hv_lt, Nat.mod_eq_of_lt hv0_lt] at hdeg
-    exact hdeg
+    rcases hinterval v with ⟨hdv, hv_lt⟩
+    rcases hinterval ⟨v0, hv0⟩ with ⟨hd0, hv0_lt⟩
+    have hshift :
+        (inducedOn G s).degree v - d ≡
+          (inducedOn G s).degree ⟨v0, hv0⟩ - d [MOD q] := by
+      exact Nat.ModEq.sub_right hdv hd0 (hmod v ⟨v0, hv0⟩)
+    have hv_sub_lt : (inducedOn G s).degree v - d < q := by
+      omega
+    have hv0_sub_lt : (inducedOn G s).degree ⟨v0, hv0⟩ - d < q := by
+      omega
+    rw [Nat.ModEq, Nat.mod_eq_of_lt hv_sub_lt, Nat.mod_eq_of_lt hv0_sub_lt] at hshift
+    omega
   · have hs' : s = ∅ := Finset.not_nonempty_iff_eq_empty.mp hs
     subst hs'
     exact ⟨0, inducesRegularOfDegree_empty G⟩
+
+lemma inducesRegularOfDegree_of_degree_lt_modulus_of_inducesModEqDegree
+    (G : SimpleGraph V) {s : Finset V} {q : ℕ}
+    (hbound : InducesDegreeLtModulus G s q)
+    (hmod : InducesModEqDegree G s q) :
+    ∃ d : ℕ, InducesRegularOfDegree G s d := by
+  refine inducesRegularOfDegree_of_degreeInterval_of_inducesModEqDegree
+    (G := G) (d := 0) ?_ hmod
+  dsimp [InducesDegreeInterval, InducesDegreeLtModulus]
+  intro v
+  exact ⟨Nat.zero_le _, by simpa [Nat.zero_add] using hbound v⟩
+
+lemma hasRegularInducedSubgraphOfCard_of_degreeInterval_of_inducesModEqDegree
+    (G : SimpleGraph V) {k : ℕ} {s : Finset V} {d q : ℕ} (hks : k ≤ s.card)
+    (hinterval : InducesDegreeInterval G s d q)
+    (hmod : InducesModEqDegree G s q) :
+    HasRegularInducedSubgraphOfCard G k := by
+  rcases inducesRegularOfDegree_of_degreeInterval_of_inducesModEqDegree G hinterval hmod with
+    ⟨d', hd'⟩
+  exact ⟨s, hks, d', hd'⟩
 
 lemma inducesRegularOfDegree_of_maxDegree_lt_modulus_of_inducesModEqDegree
     (G : SimpleGraph V) {s : Finset V} {q : ℕ}
@@ -279,6 +317,21 @@ lemma hasRegularInducedSubgraphOfCard_of_card_le_modulus_of_modEq_unionDegree_an
   exact hasRegularInducedSubgraphOfCard_of_hasModularWitnessOfCard G
     (hasModularWitnessOfCard_of_card_le_modulus_of_modEq_unionDegree_and_externalDegree
       G hks hst hq hdeg hext)
+
+lemma hasRegularInducedSubgraphOfCard_of_degreeInterval_of_modEq_unionDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj]
+    {k : ℕ} {s t : Finset V} (hks : k ≤ s.card) (hst : Disjoint s t) {d q : ℕ}
+    (hinterval : InducesDegreeInterval G s d q)
+    (hdeg :
+      ∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ t)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (s ∪ t)).degree ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q])
+    (hext :
+      ∀ v w : ↑(s : Set V),
+        (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset w ∩ t).card [MOD q]) :
+    HasRegularInducedSubgraphOfCard G k := by
+  exact hasRegularInducedSubgraphOfCard_of_degreeInterval_of_inducesModEqDegree G hks hinterval
+    (inducesModEqDegree_of_modEq_unionDegree_and_externalDegree G hst hdeg hext)
 
 /--
 Two-block modular transport: if the ambient degrees on `s ∪ t₁ ∪ t₂` are constant modulo `q` on
@@ -429,6 +482,53 @@ lemma hasConstantModExternalBlockDegrees_of_hasConstantExternalBlockDegrees
       refine ⟨?_, ih htail⟩
       intro v
       simpa [hhead v] using (Nat.ModEq.refl b.2 : b.2 ≡ b.2 [MOD q])
+
+lemma constant_externalDegree_controlBlockUnion_of_hasConstantExternalBlockDegrees
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s : Finset V} :
+    ∀ {blocks : List (Finset V × ℕ)},
+      ControlBlocksSeparated s blocks →
+      HasConstantExternalBlockDegrees G s blocks →
+      ∀ v : ↑(s : Set V),
+        (G.neighborFinset v ∩ controlBlockUnion blocks).card = controlBlockDegreeSum blocks
+  | [], _hsep, _hext, v => by
+      simp [controlBlockUnion, controlBlockDegreeSum]
+  | (b :: bs), hsep, hext, v => by
+      rcases b with ⟨t, e⟩
+      rcases hsep with ⟨_hst, htu, hsepTail⟩
+      rcases hext with ⟨hextHead, hextTail⟩
+      have hsplit :
+          (G.neighborFinset v ∩ controlBlockUnion ((t, e) :: bs)).card =
+            (G.neighborFinset v ∩ t).card + (G.neighborFinset v ∩ controlBlockUnion bs).card := by
+        simpa [controlBlockUnion] using
+          (card_neighborFinset_inter_union (G := G) (s := t) (t := controlBlockUnion bs) htu v)
+      rw [hsplit, hextHead v]
+      simpa [controlBlockDegreeSum] using
+        constant_externalDegree_controlBlockUnion_of_hasConstantExternalBlockDegrees
+          (G := G) hsepTail hextTail v
+
+lemma modEq_externalDegree_controlBlockUnion_of_hasConstantModExternalBlockDegrees
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s : Finset V} {q : ℕ} :
+    ∀ {blocks : List (Finset V × ℕ)},
+      ControlBlocksSeparated s blocks →
+      HasConstantModExternalBlockDegrees G s q blocks →
+      ∀ v : ↑(s : Set V),
+        (G.neighborFinset v ∩ controlBlockUnion blocks).card ≡ controlBlockDegreeSum blocks [MOD q]
+  | [], _hsep, _hext, v => by
+      simpa [controlBlockUnion, controlBlockDegreeSum] using
+        (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD q])
+  | (b :: bs), hsep, hext, v => by
+      rcases b with ⟨t, e⟩
+      rcases hsep with ⟨_hst, htu, hsepTail⟩
+      rcases hext with ⟨hextHead, hextTail⟩
+      have hsplit :
+          (G.neighborFinset v ∩ controlBlockUnion ((t, e) :: bs)).card =
+            (G.neighborFinset v ∩ t).card + (G.neighborFinset v ∩ controlBlockUnion bs).card := by
+        simpa [controlBlockUnion] using
+          (card_neighborFinset_inter_union (G := G) (s := t) (t := controlBlockUnion bs) htu v)
+      rw [hsplit, controlBlockDegreeSum]
+      exact Nat.ModEq.add (hextHead v)
+        (modEq_externalDegree_controlBlockUnion_of_hasConstantModExternalBlockDegrees
+          (G := G) (q := q) hsepTail hextTail v)
 
 /--
 Multiscale modular transport: if the ambient degree on `s` is constant modulo `q` inside the graph
@@ -624,6 +724,22 @@ lemma hasRegularInducedSubgraphOfCard_of_card_le_modulus_of_modEq_unionDegree_an
   exact hasRegularInducedSubgraphOfCard_of_hasModularWitnessOfCard G
     (hasModularWitnessOfCard_of_card_le_modulus_of_modEq_unionDegree_and_externalBlockDegrees
       G hks hq hsep hdeg hext)
+
+lemma hasRegularInducedSubgraphOfCard_of_degreeInterval_of_modEq_unionDegree_and_externalBlockDegrees
+    (G : SimpleGraph V) [DecidableRel G.Adj]
+    {k : ℕ} {s : Finset V} (hks : k ≤ s.card) {d q : ℕ}
+    (hinterval : InducesDegreeInterval G s d q)
+    {blocks : List (Finset V × ℕ)} (hsep : ControlBlocksSeparated s blocks)
+    (hdeg :
+      ∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G s q blocks) :
+    HasRegularInducedSubgraphOfCard G k := by
+  exact hasRegularInducedSubgraphOfCard_of_degreeInterval_of_inducesModEqDegree G hks hinterval
+    (inducesModEqDegree_of_modEq_unionDegree_and_externalBlockDegrees G hsep hdeg hext)
 
 /--
 A nonempty control-block union, ruling out the vacuous empty-block case.
@@ -1042,6 +1158,40 @@ def HasControlBlockWitnessOfCard (G : SimpleGraph V) (k : ℕ) : Prop := by
             ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q]) ∧
       HasConstantModExternalBlockDegrees G s q blocks
 
+/--
+A genuine modular control-block witness of size at least `k`: as above, but requiring a genuinely
+present separated control-block family.
+-/
+def HasNonemptyControlBlockModularWitnessOfCard (G : SimpleGraph V) (k : ℕ) : Prop := by
+  classical
+  exact ∃ s : Finset V, k ≤ s.card ∧ ∃ q : ℕ, s.card ≤ q ∧
+    ∃ blocks : List (Finset V × ℕ),
+      NonemptyControlBlockUnion blocks ∧
+      ControlBlocksSeparated s blocks ∧
+      (∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G s q blocks
+
+/--
+A bounded genuine modular control-block witness using at most `r` control blocks.
+-/
+def HasBoundedNonemptyControlBlockModularWitnessOfCard (G : SimpleGraph V) (k r : ℕ) : Prop := by
+  classical
+  exact ∃ s : Finset V, k ≤ s.card ∧ ∃ q : ℕ, s.card ≤ q ∧
+    ∃ blocks : List (Finset V × ℕ),
+      blocks.length ≤ r ∧
+      NonemptyControlBlockUnion blocks ∧
+      ControlBlocksSeparated s blocks ∧
+      (∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G s q blocks
+
 lemma hasModularWitnessOfCard_of_hasControlBlockWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hctrl : HasControlBlockWitnessOfCard G k) :
     HasModularWitnessOfCard G k := by
@@ -1049,6 +1199,47 @@ lemma hasModularWitnessOfCard_of_hasControlBlockWitnessOfCard
   rcases hctrl with ⟨s, hks, q, hq, blocks, hsep, hdeg, hext⟩
   exact hasModularWitnessOfCard_of_card_le_modulus_of_modEq_unionDegree_and_externalBlockDegrees
     G hks hq hsep hdeg hext
+
+lemma hasControlBlockWitnessOfCard_of_hasModularWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hmod : HasModularWitnessOfCard G k) :
+    HasControlBlockWitnessOfCard G k := by
+  classical
+  rcases hmod with ⟨s, hks, q, hq, hsmod⟩
+  rw [InducesModEqDegree] at hsmod
+  refine ⟨s, hks, q, hq, [], ?_, ?_, ?_⟩
+  · simp [ControlBlocksSeparated]
+  · intro v w
+    have hcastv :
+        (inducedOn G (s ∪ controlBlockUnion ([] : List (Finset V × ℕ)))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G s).degree v := by
+      simpa [controlBlockUnion, Finset.empty_union] using
+          (inducedOn_degree_congr (G := G)
+          (s := s ∪ controlBlockUnion ([] : List (Finset V × ℕ)))
+          (t := s)
+          (h := by simp [controlBlockUnion])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := v.2))
+    have hcastw :
+        (inducedOn G (s ∪ controlBlockUnion ([] : List (Finset V × ℕ)))).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G s).degree w := by
+      simpa [controlBlockUnion, Finset.empty_union] using
+          (inducedOn_degree_congr (G := G)
+          (s := s ∪ controlBlockUnion ([] : List (Finset V × ℕ)))
+          (t := s)
+          (h := by simp [controlBlockUnion])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := w.2))
+    simpa [hcastv, hcastw] using hsmod v w
+  · simp [HasConstantModExternalBlockDegrees]
+
+theorem hasControlBlockWitnessOfCard_iff_hasModularWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasControlBlockWitnessOfCard G k ↔ HasModularWitnessOfCard G k := by
+  constructor
+  · exact hasModularWitnessOfCard_of_hasControlBlockWitnessOfCard G
+  · exact hasControlBlockWitnessOfCard_of_hasModularWitnessOfCard G
 
 lemma hasRegularInducedSubgraphOfCard_of_hasControlBlockWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hctrl : HasControlBlockWitnessOfCard G k) :
@@ -1074,6 +1265,75 @@ lemma hasControlBlockWitnessOfCard_of_hasExactControlBlockWitnessOfCard
   intro v w
   simpa [hdeg v, hdeg w] using (Nat.ModEq.refl D)
 
+lemma hasNonemptyControlBlockModularWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ}
+    (hctrl : HasBoundedNonemptyControlBlockModularWitnessOfCard G k r) :
+    HasNonemptyControlBlockModularWitnessOfCard G k := by
+  classical
+  rcases hctrl with ⟨s, hks, q, hq, blocks, _hlen, hnonempty, hsep, hdeg, hext⟩
+  exact ⟨s, hks, q, hq, blocks, hnonempty, hsep, hdeg, hext⟩
+
+lemma hasControlBlockWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hctrl : HasNonemptyControlBlockModularWitnessOfCard G k) :
+    HasControlBlockWitnessOfCard G k := by
+  classical
+  rcases hctrl with ⟨s, hks, q, hq, blocks, _hnonempty, hsep, hdeg, hext⟩
+  exact ⟨s, hks, q, hq, blocks, hsep, hdeg, hext⟩
+
+lemma hasControlBlockWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ}
+    (hctrl : HasBoundedNonemptyControlBlockModularWitnessOfCard G k r) :
+    HasControlBlockWitnessOfCard G k := by
+  exact hasControlBlockWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard G
+    (hasNonemptyControlBlockModularWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard
+      G hctrl)
+
+lemma hasModularWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hctrl : HasNonemptyControlBlockModularWitnessOfCard G k) :
+    HasModularWitnessOfCard G k := by
+  exact hasModularWitnessOfCard_of_hasControlBlockWitnessOfCard G
+    (hasControlBlockWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard G hctrl)
+
+lemma hasModularWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ}
+    (hctrl : HasBoundedNonemptyControlBlockModularWitnessOfCard G k r) :
+    HasModularWitnessOfCard G k := by
+  exact hasModularWitnessOfCard_of_hasControlBlockWitnessOfCard G
+    (hasControlBlockWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard G hctrl)
+
+lemma hasRegularInducedSubgraphOfCard_of_hasNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hctrl : HasNonemptyControlBlockModularWitnessOfCard G k) :
+    HasRegularInducedSubgraphOfCard G k := by
+  exact hasRegularInducedSubgraphOfCard_of_hasControlBlockWitnessOfCard G
+    (hasControlBlockWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard G hctrl)
+
+lemma hasRegularInducedSubgraphOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ}
+    (hctrl : HasBoundedNonemptyControlBlockModularWitnessOfCard G k r) :
+    HasRegularInducedSubgraphOfCard G k := by
+  exact hasRegularInducedSubgraphOfCard_of_hasControlBlockWitnessOfCard G
+    (hasControlBlockWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard G hctrl)
+
+lemma hasNonemptyControlBlockModularWitnessOfCard_of_hasExactControlBlockWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hexact : HasExactControlBlockWitnessOfCard G k) :
+    HasNonemptyControlBlockModularWitnessOfCard G k := by
+  classical
+  rcases hexact with ⟨s, hks, blocks, hnonempty, hsep, D, hdeg, hext⟩
+  refine ⟨s, hks, s.card, le_rfl, blocks, hnonempty, hsep, ?_,
+    hasConstantModExternalBlockDegrees_of_hasConstantExternalBlockDegrees G s s.card hext⟩
+  intro v w
+  simpa [hdeg v, hdeg w] using (Nat.ModEq.refl D : D ≡ D [MOD s.card])
+
+lemma hasBoundedNonemptyControlBlockModularWitnessOfCard_of_hasBoundedExactControlBlockWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ} (hexact : HasBoundedExactControlBlockWitnessOfCard G k r) :
+    HasBoundedNonemptyControlBlockModularWitnessOfCard G k r := by
+  classical
+  rcases hexact with ⟨s, hks, blocks, hlen, hnonempty, hsep, D, hdeg, hext⟩
+  refine ⟨s, hks, s.card, le_rfl, blocks, hlen, hnonempty, hsep, ?_,
+    hasConstantModExternalBlockDegrees_of_hasConstantExternalBlockDegrees G s s.card hext⟩
+  intro v w
+  simpa [hdeg v, hdeg w] using (Nat.ModEq.refl D : D ≡ D [MOD s.card])
+
 lemma hasRegularInducedSubgraphOfCard_of_hasExactControlBlockWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hexact : HasExactControlBlockWitnessOfCard G k) :
     HasRegularInducedSubgraphOfCard G k := by
@@ -1081,6 +1341,52 @@ lemma hasRegularInducedSubgraphOfCard_of_hasExactControlBlockWitnessOfCard
   rcases hexact with ⟨s, hks, blocks, _hnonempty, hsep, D, hdeg, hext⟩
   exact hasRegularInducedSubgraphOfCard_of_constant_unionDegree_and_externalBlockDegrees
     G hks hsep hdeg hext
+
+lemma hasSingleControlExactWitnessOfCard_of_hasExactControlBlockWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hexact : HasExactControlBlockWitnessOfCard G k) :
+    HasSingleControlExactWitnessOfCard G k := by
+  classical
+  rcases hexact with ⟨s, hks, blocks, hnonempty, hsep, D, hdeg, hext⟩
+  refine ⟨s, controlBlockUnion blocks, hks, hnonempty,
+    disjoint_controlBlockUnion_of_controlBlocksSeparated hsep, D, controlBlockDegreeSum blocks, ?_, ?_⟩
+  · intro v
+    simpa using hdeg v
+  · intro v
+    exact constant_externalDegree_controlBlockUnion_of_hasConstantExternalBlockDegrees G hsep hext v
+
+lemma hasExactControlBlockWitnessOfCard_of_hasSingleControlExactWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hsingle : HasSingleControlExactWitnessOfCard G k) :
+    HasExactControlBlockWitnessOfCard G k := by
+  classical
+  rcases hsingle with ⟨s, t, hks, ht, hst, D, e, hdeg, hext⟩
+  refine ⟨s, hks, [(t, e)], ?_, ?_, D, ?_, ?_⟩
+  · unfold NonemptyControlBlockUnion
+    simpa using ht
+  · refine ⟨hst, ?_, trivial⟩
+    simp [controlBlockUnion]
+  · intro v
+    have hcast :
+        (inducedOn G (s ∪ controlBlockUnion [(t, e)])).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ t)).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+      simpa [controlBlockUnion, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ controlBlockUnion [(t, e)])
+          (t := s ∪ t)
+          (h := by simp [controlBlockUnion, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl v.2)))
+    exact hcast.trans (hdeg v)
+  · refine ⟨?_, trivial⟩
+    intro v
+    simpa using hext v
+
+theorem hasSingleControlExactWitnessOfCard_iff_hasExactControlBlockWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlExactWitnessOfCard G k ↔ HasExactControlBlockWitnessOfCard G k := by
+  constructor
+  · exact hasExactControlBlockWitnessOfCard_of_hasSingleControlExactWitnessOfCard G
+  · exact hasSingleControlExactWitnessOfCard_of_hasExactControlBlockWitnessOfCard G
 
 lemma hasRegularInducedSubgraphOfCard_of_hasSingleControlExactWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hsingle : HasSingleControlExactWitnessOfCard G k) :
@@ -1148,6 +1454,81 @@ lemma hasRegularInducedSubgraphOfCard_of_hasBoundedSingleControlModularWitnessOf
     HasRegularInducedSubgraphOfCard G k := by
   exact hasRegularInducedSubgraphOfCard_of_hasSingleControlModularWitnessOfCard G
     (hasSingleControlModularWitnessOfCard_of_hasBoundedSingleControlModularWitnessOfCard G hsingle)
+
+lemma hasSingleControlModularWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hctrl : HasNonemptyControlBlockModularWitnessOfCard G k) :
+    HasSingleControlModularWitnessOfCard G k := by
+  classical
+  rcases hctrl with ⟨s, hks, q, hq, blocks, hnonempty, hsep, hdeg, hext⟩
+  refine ⟨s, controlBlockUnion blocks, hks, hnonempty,
+    disjoint_controlBlockUnion_of_controlBlocksSeparated hsep, q, hq, ?_, ?_⟩
+  · intro v w
+    simpa using hdeg v w
+  · intro v w
+    exact (modEq_externalDegree_controlBlockUnion_of_hasConstantModExternalBlockDegrees
+      (G := G) (q := q) hsep hext v).trans
+      ((modEq_externalDegree_controlBlockUnion_of_hasConstantModExternalBlockDegrees
+        (G := G) (q := q) hsep hext w).symm)
+
+lemma hasNonemptyControlBlockModularWitnessOfCard_of_hasSingleControlModularWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hsingle : HasSingleControlModularWitnessOfCard G k) :
+    HasNonemptyControlBlockModularWitnessOfCard G k := by
+  classical
+  rcases hsingle with ⟨s, t, hks, ht, hst, q, hq, hdeg, hext⟩
+  by_cases hs : s.Nonempty
+  · rcases hs with ⟨v0, hv0⟩
+    refine ⟨s, hks, q, hq, [(t, (G.neighborFinset v0 ∩ t).card)], ?_, ?_, ?_, ?_⟩
+    · unfold NonemptyControlBlockUnion
+      simpa using ht
+    · refine ⟨hst, ?_, trivial⟩
+      simp [controlBlockUnion]
+    · intro v w
+      have hcastv :
+          (inducedOn G (s ∪ controlBlockUnion [(t, (G.neighborFinset v0 ∩ t).card)])).degree
+              ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+            (inducedOn G (s ∪ t)).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+        simpa [controlBlockUnion, Finset.union_assoc] using
+          (inducedOn_degree_congr (G := G)
+            (s := s ∪ controlBlockUnion [(t, (G.neighborFinset v0 ∩ t).card)])
+            (t := s ∪ t)
+            (h := by simp [controlBlockUnion, Finset.union_assoc])
+            (hs := Finset.mem_union.mpr (Or.inl v.2))
+            (ht := Finset.mem_union.mpr (Or.inl v.2)))
+      have hcastw :
+          (inducedOn G (s ∪ controlBlockUnion [(t, (G.neighborFinset v0 ∩ t).card)])).degree
+              ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+            (inducedOn G (s ∪ t)).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ := by
+        simpa [controlBlockUnion, Finset.union_assoc] using
+          (inducedOn_degree_congr (G := G)
+            (s := s ∪ controlBlockUnion [(t, (G.neighborFinset v0 ∩ t).card)])
+            (t := s ∪ t)
+            (h := by simp [controlBlockUnion, Finset.union_assoc])
+            (hs := Finset.mem_union.mpr (Or.inl w.2))
+            (ht := Finset.mem_union.mpr (Or.inl w.2)))
+      simpa [hcastv, hcastw] using hdeg v w
+    · refine ⟨?_, trivial⟩
+      intro v
+      simpa using hext v ⟨v0, hv0⟩
+  · have hs' : s = ∅ := Finset.not_nonempty_iff_eq_empty.mp hs
+    subst hs'
+    refine ⟨∅, hks, q, hq, [(t, 0)], ?_, ?_, ?_, ?_⟩
+    · unfold NonemptyControlBlockUnion
+      simpa using ht
+    · simp [ControlBlocksSeparated, controlBlockUnion]
+    · intro v w
+      exfalso
+      simpa using v.2
+    · refine ⟨?_, trivial⟩
+      intro v
+      exfalso
+      simpa using v.2
+
+theorem hasSingleControlModularWitnessOfCard_iff_hasNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlModularWitnessOfCard G k ↔ HasNonemptyControlBlockModularWitnessOfCard G k := by
+  constructor
+  · exact hasNonemptyControlBlockModularWitnessOfCard_of_hasSingleControlModularWitnessOfCard G
+  · exact hasSingleControlModularWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard G
 
 lemma hasSingleControlModularBucketingWitnessOfCard_of_hasBoundedSingleControlModularBucketingWitnessOfCard
     (G : SimpleGraph V) {k r : ℕ}
@@ -1234,6 +1615,93 @@ lemma hasBoundedSingleControlModularWitnessOfCard_of_hasBoundedSingleControlModu
     exact modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalDegree
       (G := G) (s := u) (t := s \ u) (u := t) huDrop hdropT hdeg hdrop
   exact ⟨u, t, hku, ht, htr, huT, q, hq, hsmall, hctrl⟩
+
+lemma hasSingleControlModularBucketingWitnessOfCard_of_hasSingleControlModularWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hsingle : HasSingleControlModularWitnessOfCard G k) :
+    HasSingleControlModularBucketingWitnessOfCard G k := by
+  classical
+  rcases hsingle with ⟨s, t, hks, ht, hst, q, hq, hdeg, hctrl⟩
+  refine ⟨s, s, t, hks, by intro x hx; exact hx, ht, hst, q, hq, ?_, ?_, hctrl⟩
+  · intro v w
+    have hcastv :
+        (inducedOn G (s ∪ ((s \ s) ∪ t))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ t)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ t))
+          (t := s ∪ t)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl v.2)))
+    have hcastw :
+        (inducedOn G (s ∪ ((s \ s) ∪ t))).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G (s ∪ t)).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ t))
+          (t := s ∪ t)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := Finset.mem_union.mpr (Or.inl w.2)))
+    simpa [hcastv, hcastw] using hdeg v w
+  · intro v w
+    simpa [Finset.sdiff_self] using (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD q])
+
+lemma hasBoundedSingleControlModularBucketingWitnessOfCard_of_hasBoundedSingleControlModularWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ}
+    (hsingle : HasBoundedSingleControlModularWitnessOfCard G k r) :
+    HasBoundedSingleControlModularBucketingWitnessOfCard G k r := by
+  classical
+  rcases hsingle with ⟨s, t, hks, ht, htr, hst, q, hq, hdeg, hctrl⟩
+  refine ⟨s, s, t, hks, by intro x hx; exact hx, ht, htr, hst, q, hq, ?_, ?_, hctrl⟩
+  · intro v w
+    have hcastv :
+        (inducedOn G (s ∪ ((s \ s) ∪ t))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ t)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ t))
+          (t := s ∪ t)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl v.2)))
+    have hcastw :
+        (inducedOn G (s ∪ ((s \ s) ∪ t))).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G (s ∪ t)).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ t))
+          (t := s ∪ t)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := Finset.mem_union.mpr (Or.inl w.2)))
+    simpa [hcastv, hcastw] using hdeg v w
+  · intro v w
+    simpa [Finset.sdiff_self] using (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD q])
+
+theorem hasSingleControlModularWitnessOfCard_iff_hasSingleControlModularBucketingWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlModularWitnessOfCard G k ↔
+      HasSingleControlModularBucketingWitnessOfCard G k := by
+  constructor
+  · exact hasSingleControlModularBucketingWitnessOfCard_of_hasSingleControlModularWitnessOfCard G
+  · exact hasSingleControlModularWitnessOfCard_of_hasSingleControlModularBucketingWitnessOfCard G
+
+theorem hasBoundedSingleControlModularWitnessOfCard_iff_hasBoundedSingleControlModularBucketingWitnessOfCard
+    (G : SimpleGraph V) (k r : ℕ) :
+    HasBoundedSingleControlModularWitnessOfCard G k r ↔
+      HasBoundedSingleControlModularBucketingWitnessOfCard G k r := by
+  constructor
+  · exact hasBoundedSingleControlModularBucketingWitnessOfCard_of_hasBoundedSingleControlModularWitnessOfCard G
+  · exact hasBoundedSingleControlModularWitnessOfCard_of_hasBoundedSingleControlModularBucketingWitnessOfCard G
 
 lemma hasModularWitnessOfCard_of_hasSingleControlModularBucketingWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hbuck : HasSingleControlModularBucketingWitnessOfCard G k) :
@@ -1334,6 +1802,68 @@ lemma hasBoundedSingleControlExactWitnessOfCard_of_hasBoundedSingleControlBucket
     exact constant_unionDegree_of_constant_extendedUnionDegree_and_externalDegree
       (G := G) (s := u) (t := s \ u) (u := t) huDrop hdropT hdeg hdrop
   exact ⟨u, t, hku, ht, htr, huT, D - eDrop, eCtrl, hsmall, hctrl⟩
+
+lemma hasSingleControlBucketingWitnessOfCard_of_hasSingleControlExactWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hsingle : HasSingleControlExactWitnessOfCard G k) :
+    HasSingleControlBucketingWitnessOfCard G k := by
+  classical
+  rcases hsingle with ⟨s, t, hks, ht, hst, D, eCtrl, hdeg, hctrl⟩
+  refine ⟨s, s, t, hks, by intro x hx; exact hx, ht, hst, D, 0, eCtrl, ?_, ?_, hctrl⟩
+  · intro v
+    have hcast :
+        (inducedOn G (s ∪ ((s \ s) ∪ t))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ t)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ t))
+          (t := s ∪ t)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl v.2)))
+    exact hcast.trans (hdeg v)
+  · intro v
+    simp
+
+lemma hasBoundedSingleControlBucketingWitnessOfCard_of_hasBoundedSingleControlExactWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ}
+    (hsingle : HasBoundedSingleControlExactWitnessOfCard G k r) :
+    HasBoundedSingleControlBucketingWitnessOfCard G k r := by
+  classical
+  rcases hsingle with ⟨s, t, hks, ht, htr, hst, D, eCtrl, hdeg, hctrl⟩
+  refine ⟨s, s, t, hks, by intro x hx; exact hx, ht, htr, hst, D, 0, eCtrl, ?_, ?_, hctrl⟩
+  · intro v
+    have hcast :
+        (inducedOn G (s ∪ ((s \ s) ∪ t))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ t)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ t))
+          (t := s ∪ t)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl v.2)))
+    exact hcast.trans (hdeg v)
+  · intro v
+    simp
+
+theorem hasSingleControlExactWitnessOfCard_iff_hasSingleControlBucketingWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlExactWitnessOfCard G k ↔ HasSingleControlBucketingWitnessOfCard G k := by
+  constructor
+  · exact hasSingleControlBucketingWitnessOfCard_of_hasSingleControlExactWitnessOfCard G
+  · exact hasSingleControlExactWitnessOfCard_of_hasSingleControlBucketingWitnessOfCard G
+
+theorem hasBoundedSingleControlExactWitnessOfCard_iff_hasBoundedSingleControlBucketingWitnessOfCard
+    (G : SimpleGraph V) (k r : ℕ) :
+    HasBoundedSingleControlExactWitnessOfCard G k r ↔
+      HasBoundedSingleControlBucketingWitnessOfCard G k r := by
+  constructor
+  · exact hasBoundedSingleControlBucketingWitnessOfCard_of_hasBoundedSingleControlExactWitnessOfCard G
+  · exact hasBoundedSingleControlExactWitnessOfCard_of_hasBoundedSingleControlBucketingWitnessOfCard G
 
 lemma hasSingleControlModularWitnessOfCard_of_hasSingleControlBucketingWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hbuck : HasSingleControlBucketingWitnessOfCard G k) :
@@ -1531,11 +2061,11 @@ lemma hasBoundedControlBlockModularBucketingWitnessOfCard_of_hasBoundedControlBl
   · intro v w
     simpa [hdrop v, hdrop w] using (Nat.ModEq.refl eDrop : eDrop ≡ eDrop [MOD u.card])
 
-lemma hasControlBlockWitnessOfCard_of_hasControlBlockModularBucketingWitnessOfCard
+lemma hasNonemptyControlBlockModularWitnessOfCard_of_hasControlBlockModularBucketingWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hbuck : HasControlBlockModularBucketingWitnessOfCard G k) :
-    HasControlBlockWitnessOfCard G k := by
+    HasNonemptyControlBlockModularWitnessOfCard G k := by
   classical
-  rcases hbuck with ⟨u, s, hku, hus, q, hq, blocks, _hnonempty, hsep, hdeg, hdrop, hext⟩
+  rcases hbuck with ⟨u, s, hku, hus, q, hq, blocks, hnonempty, hsep, hdeg, hdrop, hext⟩
   have huDrop : Disjoint u (s \ u) := by
     refine Finset.disjoint_left.mpr ?_
     intro x hxU hxDrop
@@ -1555,7 +2085,41 @@ lemma hasControlBlockWitnessOfCard_of_hasControlBlockModularBucketingWitnessOfCa
             ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
     exact modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalDegree
       (G := G) (s := u) (t := s \ u) (u := controlBlockUnion blocks) huDrop hdropBlocks hdeg hdrop
-  exact ⟨u, hku, q, hq, blocks, hsepU, hsmall, hext⟩
+  exact ⟨u, hku, q, hq, blocks, hnonempty, hsepU, hsmall, hext⟩
+
+lemma hasBoundedNonemptyControlBlockModularWitnessOfCard_of_hasBoundedControlBlockModularBucketingWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ}
+    (hbuck : HasBoundedControlBlockModularBucketingWitnessOfCard G k r) :
+    HasBoundedNonemptyControlBlockModularWitnessOfCard G k r := by
+  classical
+  rcases hbuck with ⟨u, s, hku, hus, q, hq, blocks, hlen, hnonempty, hsep, hdeg, hdrop, hext⟩
+  have huDrop : Disjoint u (s \ u) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxDrop
+    exact (Finset.mem_sdiff.mp hxDrop).2 hxU
+  have hdropBlocks : Disjoint (s \ u) (controlBlockUnion blocks) := by
+    have hsBlocks : Disjoint s (controlBlockUnion blocks) :=
+      disjoint_controlBlockUnion_of_controlBlocksSeparated hsep
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxDrop hxBlock
+    exact (Finset.disjoint_left.mp hsBlocks) (Finset.mem_sdiff.mp hxDrop).1 hxBlock
+  have hsepU : ControlBlocksSeparated u blocks := controlBlocksSeparated_mono hus hsep
+  have hsmall :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G (u ∪ controlBlockUnion blocks)).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (u ∪ controlBlockUnion blocks)).degree
+            ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+    exact modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalDegree
+      (G := G) (s := u) (t := s \ u) (u := controlBlockUnion blocks) huDrop hdropBlocks hdeg hdrop
+  exact ⟨u, hku, q, hq, blocks, hlen, hnonempty, hsepU, hsmall, hext⟩
+
+lemma hasControlBlockWitnessOfCard_of_hasControlBlockModularBucketingWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hbuck : HasControlBlockModularBucketingWitnessOfCard G k) :
+    HasControlBlockWitnessOfCard G k := by
+  exact hasControlBlockWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard G
+    (hasNonemptyControlBlockModularWitnessOfCard_of_hasControlBlockModularBucketingWitnessOfCard
+      G hbuck)
 
 lemma hasControlBlockWitnessOfCard_of_hasBoundedControlBlockModularBucketingWitnessOfCard
     (G : SimpleGraph V) {k r : ℕ}
@@ -1844,6 +2408,36 @@ lemma hasSingleControlCascadeWitnessOfCard_of_hasBoundedSingleControlCascadeWitn
   classical
   rcases hcascade with ⟨s, t, chain, hku, _hlen, ht, hst, hfrom⟩
   exact ⟨s, t, chain, hku, ht, hst, hfrom⟩
+
+lemma hasSingleControlCascadeWitnessOfCard_of_hasSingleControlExactWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hsingle : HasSingleControlExactWitnessOfCard G k) :
+    HasSingleControlCascadeWitnessOfCard G k := by
+  classical
+  rcases hsingle with ⟨s, t, hks, ht, hst, D, e, hdeg, hext⟩
+  refine ⟨s, t, [], ?_, ht, hst, ?_⟩
+  · simpa [cascadeTerminal] using hks
+  · exact ⟨D, e, hdeg, hext⟩
+
+theorem hasSingleControlExactWitnessOfCard_iff_hasSingleControlCascadeWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlExactWitnessOfCard G k ↔ HasSingleControlCascadeWitnessOfCard G k := by
+  constructor
+  · exact hasSingleControlCascadeWitnessOfCard_of_hasSingleControlExactWitnessOfCard G
+  · intro hcascade
+    exact hasSingleControlExactWitnessOfCard_of_hasExactControlBlockWitnessOfCard G
+      (hasExactControlBlockWitnessOfCard_of_hasSingleControlCascadeWitnessOfCard G hcascade)
+
+theorem hasSingleControlBucketingWitnessOfCard_iff_hasSingleControlCascadeWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlBucketingWitnessOfCard G k ↔ HasSingleControlCascadeWitnessOfCard G k := by
+  constructor
+  · intro hbuck
+    exact hasSingleControlCascadeWitnessOfCard_of_hasSingleControlExactWitnessOfCard G
+      (hasSingleControlExactWitnessOfCard_of_hasSingleControlBucketingWitnessOfCard G hbuck)
+  · intro hcascade
+    exact hasSingleControlBucketingWitnessOfCard_of_hasSingleControlExactWitnessOfCard G
+      (hasSingleControlExactWitnessOfCard_of_hasExactControlBlockWitnessOfCard G
+        (hasExactControlBlockWitnessOfCard_of_hasSingleControlCascadeWitnessOfCard G hcascade))
 
 lemma hasRegularInducedSubgraphOfCard_of_hasSingleControlCascadeWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hcascade : HasSingleControlCascadeWitnessOfCard G k) :
@@ -2300,6 +2894,93 @@ lemma hasBoundedControlBlockModularCascadeWitnessOfCard_of_hasBoundedControlBloc
   · simpa using hlen
   · exact ⟨hsmall, hext⟩
 
+lemma hasControlBlockModularBucketingWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k : ℕ} (hctrl : HasNonemptyControlBlockModularWitnessOfCard G k) :
+    HasControlBlockModularBucketingWitnessOfCard G k := by
+  classical
+  rcases hctrl with ⟨s, hks, q, hq, blocks, hnonempty, hsep, hdeg, hext⟩
+  refine ⟨s, s, hks, by intro x hx; exact hx, q, hq, blocks, hnonempty, hsep, ?_, ?_, hext⟩
+  · intro v w
+    have hcastv :
+        (inducedOn G (s ∪ ((s \ s) ∪ controlBlockUnion blocks))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ controlBlockUnion blocks))
+          (t := s ∪ controlBlockUnion blocks)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl v.2)))
+    have hcastw :
+        (inducedOn G (s ∪ ((s \ s) ∪ controlBlockUnion blocks))).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ controlBlockUnion blocks))
+          (t := s ∪ controlBlockUnion blocks)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := Finset.mem_union.mpr (Or.inl w.2)))
+    simpa [hcastv, hcastw] using hdeg v w
+  · intro v w
+    simpa [Finset.sdiff_self] using (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD q])
+
+lemma hasBoundedControlBlockModularBucketingWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ}
+    (hctrl : HasBoundedNonemptyControlBlockModularWitnessOfCard G k r) :
+    HasBoundedControlBlockModularBucketingWitnessOfCard G k r := by
+  classical
+  rcases hctrl with ⟨s, hks, q, hq, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
+  refine ⟨s, s, hks, by intro x hx; exact hx, q, hq, blocks, hlen, hnonempty, hsep, ?_, ?_, hext⟩
+  · intro v w
+    have hcastv :
+        (inducedOn G (s ∪ ((s \ s) ∪ controlBlockUnion blocks))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ controlBlockUnion blocks))
+          (t := s ∪ controlBlockUnion blocks)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl v.2)))
+    have hcastw :
+        (inducedOn G (s ∪ ((s \ s) ∪ controlBlockUnion blocks))).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ := by
+      simpa [Finset.sdiff_self, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ ((s \ s) ∪ controlBlockUnion blocks))
+          (t := s ∪ controlBlockUnion blocks)
+          (h := by simp [Finset.sdiff_self, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := Finset.mem_union.mpr (Or.inl w.2)))
+    simpa [hcastv, hcastw] using hdeg v w
+  · intro v w
+    simpa [Finset.sdiff_self] using (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD q])
+
+theorem hasNonemptyControlBlockModularWitnessOfCard_iff_hasControlBlockModularBucketingWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasNonemptyControlBlockModularWitnessOfCard G k ↔
+      HasControlBlockModularBucketingWitnessOfCard G k := by
+  constructor
+  · exact hasControlBlockModularBucketingWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard G
+  · exact hasNonemptyControlBlockModularWitnessOfCard_of_hasControlBlockModularBucketingWitnessOfCard G
+
+theorem hasBoundedNonemptyControlBlockModularWitnessOfCard_iff_hasBoundedControlBlockModularBucketingWitnessOfCard
+    (G : SimpleGraph V) (k r : ℕ) :
+    HasBoundedNonemptyControlBlockModularWitnessOfCard G k r ↔
+      HasBoundedControlBlockModularBucketingWitnessOfCard G k r := by
+  constructor
+  · exact hasBoundedControlBlockModularBucketingWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard G
+  · exact hasBoundedNonemptyControlBlockModularWitnessOfCard_of_hasBoundedControlBlockModularBucketingWitnessOfCard G
+
 theorem hasControlBlockModularBucketingWitnessOfCard_iff_hasControlBlockModularCascadeWitnessOfCard
     (G : SimpleGraph V) (k : ℕ) :
     HasControlBlockModularBucketingWitnessOfCard G k ↔
@@ -2315,6 +2996,34 @@ theorem hasBoundedControlBlockModularBucketingWitnessOfCard_iff_hasBoundedContro
   constructor
   · exact hasBoundedControlBlockModularCascadeWitnessOfCard_of_hasBoundedControlBlockModularBucketingWitnessOfCard G
   · exact hasBoundedControlBlockModularBucketingWitnessOfCard_of_hasBoundedControlBlockModularCascadeWitnessOfCard G
+
+theorem hasNonemptyControlBlockModularWitnessOfCard_iff_hasControlBlockModularCascadeWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasNonemptyControlBlockModularWitnessOfCard G k ↔
+      HasControlBlockModularCascadeWitnessOfCard G k := by
+  rw [hasNonemptyControlBlockModularWitnessOfCard_iff_hasControlBlockModularBucketingWitnessOfCard,
+    hasControlBlockModularBucketingWitnessOfCard_iff_hasControlBlockModularCascadeWitnessOfCard]
+
+theorem hasBoundedNonemptyControlBlockModularWitnessOfCard_iff_hasBoundedControlBlockModularCascadeWitnessOfCard
+    (G : SimpleGraph V) (k r : ℕ) :
+    HasBoundedNonemptyControlBlockModularWitnessOfCard G k r ↔
+      HasBoundedControlBlockModularCascadeWitnessOfCard G k r := by
+  rw [hasBoundedNonemptyControlBlockModularWitnessOfCard_iff_hasBoundedControlBlockModularBucketingWitnessOfCard,
+    hasBoundedControlBlockModularBucketingWitnessOfCard_iff_hasBoundedControlBlockModularCascadeWitnessOfCard]
+
+theorem hasSingleControlModularWitnessOfCard_iff_hasControlBlockModularBucketingWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlModularWitnessOfCard G k ↔
+      HasControlBlockModularBucketingWitnessOfCard G k := by
+  rw [hasSingleControlModularWitnessOfCard_iff_hasNonemptyControlBlockModularWitnessOfCard,
+    hasNonemptyControlBlockModularWitnessOfCard_iff_hasControlBlockModularBucketingWitnessOfCard]
+
+theorem hasSingleControlModularWitnessOfCard_iff_hasControlBlockModularCascadeWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlModularWitnessOfCard G k ↔
+      HasControlBlockModularCascadeWitnessOfCard G k := by
+  rw [hasSingleControlModularWitnessOfCard_iff_hasNonemptyControlBlockModularWitnessOfCard,
+    hasNonemptyControlBlockModularWitnessOfCard_iff_hasControlBlockModularCascadeWitnessOfCard]
 
 lemma hasControlBlockWitnessOfCard_of_hasControlBlockModularCascadeWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hcascade : HasControlBlockModularCascadeWitnessOfCard G k) :
@@ -2437,6 +3146,18 @@ theorem hasControlBlockBucketingWitnessOfCard_iff_hasControlBlockCascadeWitnessO
   constructor
   · exact hasControlBlockCascadeWitnessOfCard_of_hasControlBlockBucketingWitnessOfCard G
   · exact hasControlBlockBucketingWitnessOfCard_of_hasControlBlockCascadeWitnessOfCard G
+
+theorem hasSingleControlExactWitnessOfCard_iff_hasControlBlockBucketingWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlExactWitnessOfCard G k ↔ HasControlBlockBucketingWitnessOfCard G k := by
+  rw [hasSingleControlExactWitnessOfCard_iff_hasExactControlBlockWitnessOfCard,
+    hasExactControlBlockWitnessOfCard_iff_hasControlBlockBucketingWitnessOfCard]
+
+theorem hasSingleControlExactWitnessOfCard_iff_hasControlBlockCascadeWitnessOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasSingleControlExactWitnessOfCard G k ↔ HasControlBlockCascadeWitnessOfCard G k := by
+  rw [hasSingleControlExactWitnessOfCard_iff_hasExactControlBlockWitnessOfCard,
+    hasExactControlBlockWitnessOfCard_iff_hasControlBlockCascadeWitnessOfCard]
 
 lemma hasBoundedControlBlockCascadeWitnessOfCard_of_hasBoundedControlBlockBucketingWitnessOfCard
     (G : SimpleGraph V) {k r : ℕ}
@@ -2955,6 +3676,147 @@ lemma exists_large_subset_with_modEq_hostDegree_of_modEq_blockUnionDegree_and_ca
     simpa [hcastv, hcastw] using hconstRaw v w
   exact ⟨u, hu, hku, hconst⟩
 
+lemma exists_large_subset_with_modEq_hostDegree_of_blockUnionDegree_and_externalBlockDegrees_card_bound
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s : Finset V}
+    {blocks : List (Finset V × ℕ)} {q k : ℕ}
+    (hq : 0 < q) (hsize : q ^ blocks.length * (q * k) ≤ s.card)
+    (hsep : ControlBlocksSeparated s blocks) :
+    ∃ u : Finset V, ∃ hu : u ⊆ s, k ≤ u.card ∧
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q] := by
+  classical
+  rcases exists_large_subset_with_constant_modExternalBlockDegrees
+      (G := G) (s := s) (q := q) (blocks := blocks) (k := q * k) hq hsize hsep with
+    ⟨u₁, hu₁, hqu₁, blocks', hsame, hsepU₁, hextU₁⟩
+  let f : V → Fin q := fun x =>
+    if hx : x ∈ s then
+      ⟨(inducedOn G (s ∪ controlBlockUnion blocks')).degree
+          ⟨x, Finset.mem_union.mpr (Or.inl hx)⟩ % q, Nat.mod_lt _ hq⟩
+    else
+      ⟨0, hq⟩
+  obtain ⟨a, ha⟩ := exists_large_mod_class_of_mul_le_card (s := u₁) (q := q) (n := k) hq f hqu₁
+  let u : Finset V := u₁.filter fun x => f x = a
+  have huu₁ : u ⊆ u₁ := Finset.filter_subset _ _
+  have hu : u ⊆ s := fun x hx => hu₁ (huu₁ hx)
+  have hku : k ≤ u.card := by
+    simpa [u] using ha
+  have hUnionEq : controlBlockUnion blocks' = controlBlockUnion blocks :=
+    controlBlockUnion_eq_of_sameControlBlockSupports hsame
+  have hsepU : ControlBlocksSeparated u blocks' := controlBlocksSeparated_mono huu₁ hsepU₁
+  have hUnionDisj : Disjoint s (controlBlockUnion blocks') := by
+    rw [hUnionEq]
+    exact disjoint_controlBlockUnion_of_controlBlocksSeparated hsep
+  have hUnionDisjDrop : Disjoint (controlBlockUnion blocks') (s \ u) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxBlocks hxDrop
+    exact (Finset.disjoint_left.mp hUnionDisj.symm) hxBlocks (Finset.mem_sdiff.mp hxDrop).1
+  have hrestrict :
+      ∀ {bs : List (Finset V × ℕ)},
+        HasConstantModExternalBlockDegrees G u₁ q bs →
+          HasConstantModExternalBlockDegrees G u q bs := by
+    intro bs hbs
+    induction bs with
+    | nil =>
+        trivial
+    | cons b bs ih =>
+        rcases hbs with ⟨hb, htail⟩
+        refine ⟨?_, ih htail⟩
+        intro v
+        exact hb ⟨v.1, huu₁ v.2⟩
+  have hextU : HasConstantModExternalBlockDegrees G u q blocks' := hrestrict hextU₁
+  have hconstRaw :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+    exact
+      modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalBlockDegrees
+        (G := G) (s := u) (tail := s \ u) (q := q) hsepU hUnionDisjDrop
+        (by
+          intro v w
+          have hvEq : f v.1 = a := by
+            have hvMem : v.1 ∈ u₁.filter fun x => f x = a := v.2
+            exact (Finset.mem_filter.mp hvMem).2
+          have hwEq : f w.1 = a := by
+            have hwMem : w.1 ∈ u₁.filter fun x => f x = a := w.2
+            exact (Finset.mem_filter.mp hwMem).2
+          have hvClass :
+              (inducedOn G (s ∪ controlBlockUnion blocks')).degree
+                  ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ ≡ a.1 [MOD q] := by
+            simpa [Nat.ModEq, f, hu v.2, Nat.mod_eq_of_lt a.2] using congrArg Fin.val hvEq
+          have hwClass :
+              (inducedOn G (s ∪ controlBlockUnion blocks')).degree
+                  ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩ ≡ a.1 [MOD q] := by
+            simpa [Nat.ModEq, f, hu w.2, Nat.mod_eq_of_lt a.2] using congrArg Fin.val hwEq
+          have hAmbient :
+              u ∪ (controlBlockUnion blocks' ∪ (s \ u)) = s ∪ controlBlockUnion blocks' := by
+            ext x
+            constructor
+            · intro hx
+              rcases Finset.mem_union.mp hx with hxU | hxRest
+              · exact Finset.mem_union.mpr (Or.inl (hu hxU))
+              · rcases Finset.mem_union.mp hxRest with hxBlocks | hxDrop
+                · exact Finset.mem_union.mpr (Or.inr hxBlocks)
+                · exact Finset.mem_union.mpr (Or.inl (Finset.mem_sdiff.mp hxDrop).1)
+            · intro hx
+              rcases Finset.mem_union.mp hx with hxS | hxBlocks
+              · by_cases hxu : x ∈ u
+                · exact Finset.mem_union.mpr (Or.inl hxu)
+                · exact
+                    Finset.mem_union.mpr
+                      (Or.inr (Finset.mem_union.mpr (Or.inr (Finset.mem_sdiff.mpr ⟨hxS, hxu⟩))))
+              · exact Finset.mem_union.mpr (Or.inr (Finset.mem_union.mpr (Or.inl hxBlocks)))
+          have hcastv :
+              (inducedOn G (u ∪ (controlBlockUnion blocks' ∪ (s \ u)))).degree
+                  ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+                (inducedOn G (s ∪ controlBlockUnion blocks')).degree
+                  ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ := by
+            simpa using
+              (inducedOn_degree_congr (G := G)
+                (s := u ∪ (controlBlockUnion blocks' ∪ (s \ u)))
+                (t := s ∪ controlBlockUnion blocks')
+                (h := hAmbient)
+                (hs := Finset.mem_union.mpr (Or.inl v.2))
+                (ht := Finset.mem_union.mpr (Or.inl (hu v.2))))
+          have hcastw :
+              (inducedOn G (u ∪ (controlBlockUnion blocks' ∪ (s \ u)))).degree
+                  ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+                (inducedOn G (s ∪ controlBlockUnion blocks')).degree
+                  ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩ := by
+            simpa using
+              (inducedOn_degree_congr (G := G)
+                (s := u ∪ (controlBlockUnion blocks' ∪ (s \ u)))
+                (t := s ∪ controlBlockUnion blocks')
+                (h := hAmbient)
+                (hs := Finset.mem_union.mpr (Or.inl w.2))
+                (ht := Finset.mem_union.mpr (Or.inl (hu w.2))))
+          simpa [hcastv, hcastw] using hvClass.trans hwClass.symm)
+        hextU
+  have hconst :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡ (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q] := by
+    intro v w
+    have hcastv :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G s).degree ⟨v.1, hu v.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := hu v.2))
+    have hcastw :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := hu w.2))
+    simpa [hcastv, hcastw] using hconstRaw v w
+  exact ⟨u, hu, hku, hconst⟩
+
 lemma exists_large_mod_pair_of_mul_le_card
     {α : Type*} [DecidableEq α] (s : Finset α) {q n : ℕ} (hq : 0 < q)
     (f g : α → Fin q) (hn : q * q * n ≤ s.card) :
@@ -2980,12 +3842,32 @@ lemma exists_large_subset_with_constant_mod_pair
   intro x hx
   exact Finset.mem_filter.mp hx |>.2
 
+lemma exists_large_subset_with_modEq_hostDegree_of_unionDegree_and_externalDegree_card_bound
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s t : Finset V} {q k : ℕ}
+    (hq : 0 < q) (hsize : q * q * k ≤ s.card) (hst : Disjoint s t) :
+    ∃ u : Finset V, ∃ hu : u ⊆ s, k ≤ u.card ∧
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q] := by
+  have hsep : ControlBlocksSeparated s [(t, 0)] := by
+    simp [ControlBlocksSeparated, controlBlockUnion, hst]
+  simpa [controlBlockUnion, pow_one, Nat.mul_assoc] using
+    (exists_large_subset_with_modEq_hostDegree_of_blockUnionDegree_and_externalBlockDegrees_card_bound
+      (G := G) (s := s) (blocks := [(t, 0)]) (q := q) (k := k) hq
+      (by simpa [pow_one, Nat.mul_assoc] using hsize) hsep)
+
 theorem hasModularWitnessOfCard_iff_hasRegularInducedSubgraphOfCard
     (G : SimpleGraph V) (k : ℕ) :
     HasModularWitnessOfCard G k ↔ HasRegularInducedSubgraphOfCard G k := by
   constructor
   · exact hasRegularInducedSubgraphOfCard_of_hasModularWitnessOfCard G
   · exact hasModularWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
+
+theorem hasControlBlockWitnessOfCard_iff_hasRegularInducedSubgraphOfCard
+    (G : SimpleGraph V) (k : ℕ) :
+    HasControlBlockWitnessOfCard G k ↔ HasRegularInducedSubgraphOfCard G k := by
+  rw [hasControlBlockWitnessOfCard_iff_hasModularWitnessOfCard,
+    hasModularWitnessOfCard_iff_hasRegularInducedSubgraphOfCard]
 
 theorem hasLowDegreeModularWitnessOfCard_iff_hasRegularInducedSubgraphOfCard
     (G : SimpleGraph V) (k : ℕ) :
@@ -3187,6 +4069,23 @@ def EventualNatPowerControlBlockDomination (b : ℕ) : Prop :=
   ∀ M : ℕ, ∃ K : ℕ, ∀ ⦃k : ℕ⦄, K ≤ k →
     ∀ G : SimpleGraph (Fin (b ^ k)), HasControlBlockWitnessOfCard G (M * k)
 
+/--
+Power-sequence genuine control-block target: on graphs with `b^k` vertices, every linear-size demand
+eventually admits a modular control-block witness with a genuinely present separated control-block
+family.
+-/
+def EventualNatPowerNonemptyControlBlockModularDomination (b : ℕ) : Prop :=
+  ∀ M : ℕ, ∃ K : ℕ, ∀ ⦃k : ℕ⦄, K ≤ k →
+    ∀ G : SimpleGraph (Fin (b ^ k)), HasNonemptyControlBlockModularWitnessOfCard G (M * k)
+
+/--
+Bounded genuine control-block target with an explicit control-block budget `r k`.
+-/
+def EventualNatPowerBoundedNonemptyControlBlockModularDomination (b : ℕ) (r : ℕ → ℕ) : Prop :=
+  ∀ M : ℕ, ∃ K : ℕ, ∀ ⦃k : ℕ⦄, K ≤ k →
+    ∀ G : SimpleGraph (Fin (b ^ k)),
+      HasBoundedNonemptyControlBlockModularWitnessOfCard G (M * k) (r k)
+
 theorem eventualNatPowerBoundedExactControlBlockDomination_implies_eventualNatPowerExactControlBlockDomination
     {b r : ℕ}
     (hctrl : EventualNatPowerBoundedExactControlBlockDomination b r) :
@@ -3196,6 +4095,32 @@ theorem eventualNatPowerBoundedExactControlBlockDomination_implies_eventualNatPo
   refine ⟨K, ?_⟩
   intro k hk G
   exact hasExactControlBlockWitnessOfCard_of_hasBoundedExactControlBlockWitnessOfCard G (hK hk G)
+
+theorem eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerExactControlBlockDomination
+    {b : ℕ} (hsingle : EventualNatPowerSingleControlExactDomination b) :
+    EventualNatPowerExactControlBlockDomination b := by
+  intro M
+  rcases hsingle M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasExactControlBlockWitnessOfCard_of_hasSingleControlExactWitnessOfCard G (hK hk G)
+
+theorem eventualNatPowerExactControlBlockDomination_implies_eventualNatPowerSingleControlExactDomination
+    {b : ℕ} (hexact : EventualNatPowerExactControlBlockDomination b) :
+    EventualNatPowerSingleControlExactDomination b := by
+  intro M
+  rcases hexact M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasSingleControlExactWitnessOfCard_of_hasExactControlBlockWitnessOfCard G (hK hk G)
+
+theorem eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerExactControlBlockDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlExactDomination b ↔
+      EventualNatPowerExactControlBlockDomination b := by
+  constructor
+  · exact eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerExactControlBlockDomination
+  · exact eventualNatPowerExactControlBlockDomination_implies_eventualNatPowerSingleControlExactDomination
 
 theorem eventualNatPowerExactControlBlockDomination_implies_eventualNatPowerControlBlockDomination
     {b : ℕ}
@@ -3504,6 +4429,20 @@ theorem eventualNatPowerControlBlockCascadeDomination_iff_eventualNatPowerExactC
   · exact eventualNatPowerControlBlockCascadeDomination_implies_eventualNatPowerExactControlBlockDomination
   · exact eventualNatPowerExactControlBlockDomination_implies_eventualNatPowerControlBlockCascadeDomination
 
+theorem eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerControlBlockBucketingDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlExactDomination b ↔
+      EventualNatPowerControlBlockBucketingDomination b := by
+  rw [eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerExactControlBlockDomination,
+    eventualNatPowerControlBlockBucketingDomination_iff_eventualNatPowerExactControlBlockDomination]
+
+theorem eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerControlBlockCascadeDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlExactDomination b ↔
+      EventualNatPowerControlBlockCascadeDomination b := by
+  rw [eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerExactControlBlockDomination,
+    eventualNatPowerControlBlockCascadeDomination_iff_eventualNatPowerExactControlBlockDomination]
+
 theorem eventualNatPowerSingleControlCascadeDomination_implies_eventualNatPowerControlBlockCascadeDomination
     {b : ℕ} (hcascade : EventualNatPowerSingleControlCascadeDomination b) :
     EventualNatPowerControlBlockCascadeDomination b := by
@@ -3602,6 +4541,127 @@ theorem eventualNatPowerBoundedControlBlockBucketingDomination_implies_eventualN
   exact hasBoundedControlBlockModularBucketingWitnessOfCard_of_hasBoundedControlBlockBucketingWitnessOfCard
     G (hK hk G)
 
+theorem eventualNatPowerBoundedNonemptyControlBlockModularDomination_implies_eventualNatPowerNonemptyControlBlockModularDomination
+    {b : ℕ} {r : ℕ → ℕ}
+    (hctrl : EventualNatPowerBoundedNonemptyControlBlockModularDomination b r) :
+    EventualNatPowerNonemptyControlBlockModularDomination b := by
+  intro M
+  rcases hctrl M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasNonemptyControlBlockModularWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard
+    G (hK hk G)
+
+theorem eventualNatPowerExactControlBlockDomination_implies_eventualNatPowerNonemptyControlBlockModularDomination
+    {b : ℕ} (hexact : EventualNatPowerExactControlBlockDomination b) :
+    EventualNatPowerNonemptyControlBlockModularDomination b := by
+  intro M
+  rcases hexact M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasNonemptyControlBlockModularWitnessOfCard_of_hasExactControlBlockWitnessOfCard G (hK hk G)
+
+theorem eventualNatPowerBoundedExactControlBlockDomination_implies_eventualNatPowerBoundedNonemptyControlBlockModularDomination
+    {b : ℕ} {r : ℕ}
+    (hexact : EventualNatPowerBoundedExactControlBlockDomination b r) :
+    EventualNatPowerBoundedNonemptyControlBlockModularDomination b (fun _ => r) := by
+  intro M
+  rcases hexact M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasBoundedNonemptyControlBlockModularWitnessOfCard_of_hasBoundedExactControlBlockWitnessOfCard
+    G (hK hk G)
+
+theorem eventualNatPowerControlBlockModularBucketingDomination_implies_eventualNatPowerNonemptyControlBlockModularDomination
+    {b : ℕ} (hbuck : EventualNatPowerControlBlockModularBucketingDomination b) :
+    EventualNatPowerNonemptyControlBlockModularDomination b := by
+  intro M
+  rcases hbuck M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasNonemptyControlBlockModularWitnessOfCard_of_hasControlBlockModularBucketingWitnessOfCard G
+    (hK hk G)
+
+theorem eventualNatPowerBoundedControlBlockModularBucketingDomination_implies_eventualNatPowerBoundedNonemptyControlBlockModularDomination
+    {b : ℕ} {r : ℕ → ℕ}
+    (hbuck : EventualNatPowerBoundedControlBlockModularBucketingDomination b r) :
+    EventualNatPowerBoundedNonemptyControlBlockModularDomination b r := by
+  intro M
+  rcases hbuck M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasBoundedNonemptyControlBlockModularWitnessOfCard_of_hasBoundedControlBlockModularBucketingWitnessOfCard
+    G (hK hk G)
+
+theorem eventualNatPowerNonemptyControlBlockModularDomination_implies_eventualNatPowerControlBlockModularBucketingDomination
+    {b : ℕ} (hctrl : EventualNatPowerNonemptyControlBlockModularDomination b) :
+    EventualNatPowerControlBlockModularBucketingDomination b := by
+  intro M
+  rcases hctrl M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasControlBlockModularBucketingWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard G
+    (hK hk G)
+
+theorem eventualNatPowerBoundedNonemptyControlBlockModularDomination_implies_eventualNatPowerBoundedControlBlockModularBucketingDomination
+    {b : ℕ} {r : ℕ → ℕ}
+    (hctrl : EventualNatPowerBoundedNonemptyControlBlockModularDomination b r) :
+    EventualNatPowerBoundedControlBlockModularBucketingDomination b r := by
+  intro M
+  rcases hctrl M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasBoundedControlBlockModularBucketingWitnessOfCard_of_hasBoundedNonemptyControlBlockModularWitnessOfCard
+    G (hK hk G)
+
+theorem eventualNatPowerNonemptyControlBlockModularDomination_iff_eventualNatPowerControlBlockModularBucketingDomination
+    {b : ℕ} :
+    EventualNatPowerNonemptyControlBlockModularDomination b ↔
+      EventualNatPowerControlBlockModularBucketingDomination b := by
+  constructor
+  · exact eventualNatPowerNonemptyControlBlockModularDomination_implies_eventualNatPowerControlBlockModularBucketingDomination
+  · exact eventualNatPowerControlBlockModularBucketingDomination_implies_eventualNatPowerNonemptyControlBlockModularDomination
+
+theorem eventualNatPowerNonemptyControlBlockModularDomination_iff_eventualNatPowerControlBlockModularCascadeDomination
+    {b : ℕ} :
+    EventualNatPowerNonemptyControlBlockModularDomination b ↔
+      EventualNatPowerControlBlockModularCascadeDomination b := by
+  rw [eventualNatPowerNonemptyControlBlockModularDomination_iff_eventualNatPowerControlBlockModularBucketingDomination,
+    eventualNatPowerControlBlockModularBucketingDomination_iff_eventualNatPowerControlBlockModularCascadeDomination]
+
+theorem eventualNatPowerBoundedNonemptyControlBlockModularDomination_iff_eventualNatPowerBoundedControlBlockModularBucketingDomination
+    {b : ℕ} {r : ℕ → ℕ} :
+    EventualNatPowerBoundedNonemptyControlBlockModularDomination b r ↔
+      EventualNatPowerBoundedControlBlockModularBucketingDomination b r := by
+  constructor
+  · exact eventualNatPowerBoundedNonemptyControlBlockModularDomination_implies_eventualNatPowerBoundedControlBlockModularBucketingDomination
+  · exact eventualNatPowerBoundedControlBlockModularBucketingDomination_implies_eventualNatPowerBoundedNonemptyControlBlockModularDomination
+
+theorem eventualNatPowerNonemptyControlBlockModularDomination_implies_eventualNatPowerControlBlockDomination
+    {b : ℕ} (hctrl : EventualNatPowerNonemptyControlBlockModularDomination b) :
+    EventualNatPowerControlBlockDomination b := by
+  intro M
+  rcases hctrl M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasControlBlockWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard G (hK hk G)
+
+theorem eventualNatPowerModularDomination_implies_eventualNatPowerControlBlockDomination
+    {b : ℕ} (hmod : EventualNatPowerModularDomination b) :
+    EventualNatPowerControlBlockDomination b := by
+  intro M
+  rcases hmod M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasControlBlockWitnessOfCard_of_hasModularWitnessOfCard G (hK hk G)
+
+theorem eventualNatPowerControlBlockDomination_iff_eventualNatPowerModularDomination
+    {b : ℕ} :
+    EventualNatPowerControlBlockDomination b ↔ EventualNatPowerModularDomination b := by
+  constructor
+  · exact eventualNatPowerControlBlockDomination_implies_eventualNatPowerModularDomination
+  · exact eventualNatPowerModularDomination_implies_eventualNatPowerControlBlockDomination
+
 theorem eventualNatPowerControlBlockModularBucketingDomination_implies_eventualNatPowerControlBlockDomination
     {b : ℕ} (hbuck : EventualNatPowerControlBlockModularBucketingDomination b) :
     EventualNatPowerControlBlockDomination b := by
@@ -3624,6 +4684,20 @@ theorem eventualNatPowerBoundedControlBlockModularBucketingDomination_implies_ta
   exact eventualNatPowerControlBlockModularBucketingDomination_implies_targetStatement hb
     (eventualNatPowerBoundedControlBlockModularBucketingDomination_implies_eventualNatPowerControlBlockModularBucketingDomination
       hbuck)
+
+theorem eventualNatPowerNonemptyControlBlockModularDomination_implies_targetStatement
+    {b : ℕ} (hb : 1 < b) (hctrl : EventualNatPowerNonemptyControlBlockModularDomination b) :
+    TargetStatement := by
+  exact eventualNatPowerControlBlockDomination_implies_targetStatement hb
+    (eventualNatPowerNonemptyControlBlockModularDomination_implies_eventualNatPowerControlBlockDomination
+      hctrl)
+
+theorem eventualNatPowerBoundedNonemptyControlBlockModularDomination_implies_targetStatement
+    {b : ℕ} {r : ℕ → ℕ} (hb : 1 < b)
+    (hctrl : EventualNatPowerBoundedNonemptyControlBlockModularDomination b r) : TargetStatement := by
+  exact eventualNatPowerNonemptyControlBlockModularDomination_implies_targetStatement hb
+    (eventualNatPowerBoundedNonemptyControlBlockModularDomination_implies_eventualNatPowerNonemptyControlBlockModularDomination
+      hctrl)
 
 theorem eventualNatPowerControlBlockModularCascadeDomination_implies_targetStatement
     {b : ℕ} (hb : 1 < b) (hcascade : EventualNatPowerControlBlockModularCascadeDomination b) :
@@ -3648,6 +4722,17 @@ theorem eventualNatPowerBoundedSingleControlExactDomination_implies_eventualNatP
   refine ⟨K, ?_⟩
   intro k hk G
   exact hasSingleControlExactWitnessOfCard_of_hasBoundedSingleControlExactWitnessOfCard G
+    (hK hk G)
+
+theorem eventualNatPowerBoundedSingleControlExactDomination_implies_eventualNatPowerBoundedSingleControlBucketingDomination
+    {b : ℕ} {u : ℕ → ℕ}
+    (hsingle : EventualNatPowerBoundedSingleControlExactDomination b u) :
+    EventualNatPowerBoundedSingleControlBucketingDomination b u := by
+  intro M
+  rcases hsingle M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasBoundedSingleControlBucketingWitnessOfCard_of_hasBoundedSingleControlExactWitnessOfCard G
     (hK hk G)
 
 theorem eventualNatPowerBoundedSingleControlExactDomination_implies_eventualNatPowerBoundedSingleControlModularDomination
@@ -3681,6 +4766,57 @@ theorem eventualNatPowerBoundedSingleControlModularDomination_implies_eventualNa
   exact hasSingleControlModularWitnessOfCard_of_hasBoundedSingleControlModularWitnessOfCard G
     (hK hk G)
 
+theorem eventualNatPowerBoundedSingleControlModularDomination_implies_eventualNatPowerBoundedSingleControlModularBucketingDomination
+    {b : ℕ} {u : ℕ → ℕ}
+    (hsingle : EventualNatPowerBoundedSingleControlModularDomination b u) :
+    EventualNatPowerBoundedSingleControlModularBucketingDomination b u := by
+  intro M
+  rcases hsingle M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasBoundedSingleControlModularBucketingWitnessOfCard_of_hasBoundedSingleControlModularWitnessOfCard G
+    (hK hk G)
+
+theorem eventualNatPowerSingleControlModularDomination_implies_eventualNatPowerNonemptyControlBlockModularDomination
+    {b : ℕ} (hsingle : EventualNatPowerSingleControlModularDomination b) :
+    EventualNatPowerNonemptyControlBlockModularDomination b := by
+  intro M
+  rcases hsingle M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasNonemptyControlBlockModularWitnessOfCard_of_hasSingleControlModularWitnessOfCard G (hK hk G)
+
+theorem eventualNatPowerNonemptyControlBlockModularDomination_implies_eventualNatPowerSingleControlModularDomination
+    {b : ℕ} (hctrl : EventualNatPowerNonemptyControlBlockModularDomination b) :
+    EventualNatPowerSingleControlModularDomination b := by
+  intro M
+  rcases hctrl M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasSingleControlModularWitnessOfCard_of_hasNonemptyControlBlockModularWitnessOfCard G (hK hk G)
+
+theorem eventualNatPowerSingleControlModularDomination_iff_eventualNatPowerNonemptyControlBlockModularDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlModularDomination b ↔
+      EventualNatPowerNonemptyControlBlockModularDomination b := by
+  constructor
+  · exact eventualNatPowerSingleControlModularDomination_implies_eventualNatPowerNonemptyControlBlockModularDomination
+  · exact eventualNatPowerNonemptyControlBlockModularDomination_implies_eventualNatPowerSingleControlModularDomination
+
+theorem eventualNatPowerSingleControlModularDomination_iff_eventualNatPowerControlBlockModularBucketingDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlModularDomination b ↔
+      EventualNatPowerControlBlockModularBucketingDomination b := by
+  rw [eventualNatPowerSingleControlModularDomination_iff_eventualNatPowerNonemptyControlBlockModularDomination,
+    eventualNatPowerNonemptyControlBlockModularDomination_iff_eventualNatPowerControlBlockModularBucketingDomination]
+
+theorem eventualNatPowerSingleControlModularDomination_iff_eventualNatPowerControlBlockModularCascadeDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlModularDomination b ↔
+      EventualNatPowerControlBlockModularCascadeDomination b := by
+  rw [eventualNatPowerSingleControlModularDomination_iff_eventualNatPowerNonemptyControlBlockModularDomination,
+    eventualNatPowerNonemptyControlBlockModularDomination_iff_eventualNatPowerControlBlockModularCascadeDomination]
+
 theorem eventualNatPowerBoundedSingleControlModularBucketingDomination_implies_eventualNatPowerSingleControlModularBucketingDomination
     {b : ℕ} {u : ℕ → ℕ}
     (hbuck : EventualNatPowerBoundedSingleControlModularBucketingDomination b u) :
@@ -3691,6 +4827,44 @@ theorem eventualNatPowerBoundedSingleControlModularBucketingDomination_implies_e
   intro k hk G
   exact hasSingleControlModularBucketingWitnessOfCard_of_hasBoundedSingleControlModularBucketingWitnessOfCard
     G (hK hk G)
+
+theorem eventualNatPowerSingleControlModularDomination_implies_eventualNatPowerSingleControlModularBucketingDomination
+    {b : ℕ} (hsingle : EventualNatPowerSingleControlModularDomination b) :
+    EventualNatPowerSingleControlModularBucketingDomination b := by
+  intro M
+  rcases hsingle M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasSingleControlModularBucketingWitnessOfCard_of_hasSingleControlModularWitnessOfCard G
+    (hK hk G)
+
+theorem eventualNatPowerBoundedSingleControlModularDomination_iff_eventualNatPowerBoundedSingleControlModularBucketingDomination
+    {b : ℕ} {u : ℕ → ℕ} :
+    EventualNatPowerBoundedSingleControlModularDomination b u ↔
+      EventualNatPowerBoundedSingleControlModularBucketingDomination b u := by
+  constructor
+  · exact eventualNatPowerBoundedSingleControlModularDomination_implies_eventualNatPowerBoundedSingleControlModularBucketingDomination
+  · intro hbuck
+    intro M
+    rcases hbuck M with ⟨K, hK⟩
+    refine ⟨K, ?_⟩
+    intro k hk G
+    exact hasBoundedSingleControlModularWitnessOfCard_of_hasBoundedSingleControlModularBucketingWitnessOfCard G
+      (hK hk G)
+
+theorem eventualNatPowerSingleControlModularDomination_iff_eventualNatPowerSingleControlModularBucketingDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlModularDomination b ↔
+      EventualNatPowerSingleControlModularBucketingDomination b := by
+  constructor
+  · exact eventualNatPowerSingleControlModularDomination_implies_eventualNatPowerSingleControlModularBucketingDomination
+  · intro hbuck
+    intro M
+    rcases hbuck M with ⟨K, hK⟩
+    refine ⟨K, ?_⟩
+    intro k hk G
+    exact hasSingleControlModularWitnessOfCard_of_hasSingleControlModularBucketingWitnessOfCard G
+      (hK hk G)
 
 theorem eventualNatPowerSingleControlModularBucketingDomination_implies_eventualNatPowerSingleControlModularDomination
     {b : ℕ} (hbuck : EventualNatPowerSingleControlModularBucketingDomination b) :
@@ -3730,6 +4904,15 @@ theorem eventualNatPowerSingleControlBucketingDomination_implies_eventualNatPowe
   intro k hk G
   exact hasSingleControlExactWitnessOfCard_of_hasSingleControlBucketingWitnessOfCard G (hK hk G)
 
+theorem eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerSingleControlBucketingDomination
+    {b : ℕ} (hsingle : EventualNatPowerSingleControlExactDomination b) :
+    EventualNatPowerSingleControlBucketingDomination b := by
+  intro M
+  rcases hsingle M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasSingleControlBucketingWitnessOfCard_of_hasSingleControlExactWitnessOfCard G (hK hk G)
+
 theorem eventualNatPowerBoundedSingleControlBucketingDomination_implies_eventualNatPowerBoundedSingleControlExactDomination
     {b : ℕ} {u : ℕ → ℕ}
     (hbuck : EventualNatPowerBoundedSingleControlBucketingDomination b u) :
@@ -3740,6 +4923,60 @@ theorem eventualNatPowerBoundedSingleControlBucketingDomination_implies_eventual
   intro k hk G
   exact hasBoundedSingleControlExactWitnessOfCard_of_hasBoundedSingleControlBucketingWitnessOfCard G
     (hK hk G)
+
+theorem eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerSingleControlBucketingDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlExactDomination b ↔
+      EventualNatPowerSingleControlBucketingDomination b := by
+  constructor
+  · exact eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerSingleControlBucketingDomination
+  · exact eventualNatPowerSingleControlBucketingDomination_implies_eventualNatPowerSingleControlExactDomination
+
+theorem eventualNatPowerBoundedSingleControlExactDomination_iff_eventualNatPowerBoundedSingleControlBucketingDomination
+    {b : ℕ} {u : ℕ → ℕ} :
+    EventualNatPowerBoundedSingleControlExactDomination b u ↔
+      EventualNatPowerBoundedSingleControlBucketingDomination b u := by
+  constructor
+  · exact eventualNatPowerBoundedSingleControlExactDomination_implies_eventualNatPowerBoundedSingleControlBucketingDomination
+  · exact eventualNatPowerBoundedSingleControlBucketingDomination_implies_eventualNatPowerBoundedSingleControlExactDomination
+
+theorem eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerSingleControlCascadeDomination
+    {b : ℕ} (hsingle : EventualNatPowerSingleControlExactDomination b) :
+    EventualNatPowerSingleControlCascadeDomination b := by
+  intro M
+  rcases hsingle M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasSingleControlCascadeWitnessOfCard_of_hasSingleControlExactWitnessOfCard G (hK hk G)
+
+theorem eventualNatPowerSingleControlCascadeDomination_implies_eventualNatPowerSingleControlExactDomination
+    {b : ℕ} (hcascade : EventualNatPowerSingleControlCascadeDomination b) :
+    EventualNatPowerSingleControlExactDomination b := by
+  exact eventualNatPowerExactControlBlockDomination_implies_eventualNatPowerSingleControlExactDomination
+    (eventualNatPowerSingleControlCascadeDomination_implies_eventualNatPowerExactControlBlockDomination
+      hcascade)
+
+theorem eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerSingleControlCascadeDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlExactDomination b ↔
+      EventualNatPowerSingleControlCascadeDomination b := by
+  constructor
+  · exact eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerSingleControlCascadeDomination
+  · exact eventualNatPowerSingleControlCascadeDomination_implies_eventualNatPowerSingleControlExactDomination
+
+theorem eventualNatPowerSingleControlBucketingDomination_iff_eventualNatPowerSingleControlCascadeDomination
+    {b : ℕ} :
+    EventualNatPowerSingleControlBucketingDomination b ↔
+      EventualNatPowerSingleControlCascadeDomination b := by
+  constructor
+  · intro hbuck
+    exact eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerSingleControlCascadeDomination
+      (eventualNatPowerSingleControlBucketingDomination_implies_eventualNatPowerSingleControlExactDomination
+        hbuck)
+  · intro hcascade
+    exact eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerSingleControlBucketingDomination
+      (eventualNatPowerSingleControlCascadeDomination_implies_eventualNatPowerSingleControlExactDomination
+        hcascade)
 
 theorem eventualNatPowerBoundedSingleControlBucketingDomination_implies_eventualNatPowerBoundedSingleControlModularDomination
     {b : ℕ} {u : ℕ → ℕ}
@@ -3888,6 +5125,16 @@ theorem eventualNatPowerModularDomination_iff_eventualNatPowerDomination {b : �
     intro k hk G
     exact (hasModularWitnessOfCard_iff_hasRegularInducedSubgraphOfCard G (M * k)).mpr
       ((le_F_iff.mp (hK hk)) G)
+
+theorem eventualNatPowerControlBlockDomination_iff_eventualNatPowerDomination {b : ℕ} :
+    EventualNatPowerControlBlockDomination b ↔ EventualNatPowerDomination b := by
+  rw [eventualNatPowerControlBlockDomination_iff_eventualNatPowerModularDomination,
+    eventualNatPowerModularDomination_iff_eventualNatPowerDomination]
+
+theorem eventualNatPowerControlBlockDomination_iff_targetStatement {b : ℕ} (hb : 1 < b) :
+    EventualNatPowerControlBlockDomination b ↔ TargetStatement := by
+  rw [eventualNatPowerControlBlockDomination_iff_eventualNatPowerDomination]
+  exact eventualNatPowerDomination_iff_targetStatement hb
 
 theorem eventualNatPowerModularDomination_iff_targetStatement {b : ℕ} (hb : 1 < b) :
     EventualNatPowerModularDomination b ↔ TargetStatement := by
