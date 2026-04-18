@@ -71,10 +71,11 @@ The goal here is **not** to import literature about this exact problem. Instead,
     case is ruled out while still forcing a regular induced subgraph; in the unbounded story this
     multiblock exact package is now equivalent to the one-control exact, multiblock bucketing, and
     multiblock cascade formulations,
-  - `HasSingleControlExactWitnessOfCard G k`: the one-control version from the frontier notes, where
-    a single nonempty control set `t` freezes both the ambient degree on `G[s ∪ t]` and the degree
-    into `t`; this is now also equivalent to the unbounded multiblock exact
-    control-block/bucketing/cascade witnesses,
+- `HasSingleControlExactWitnessOfCard G k`: the one-control version from the frontier notes, where
+  a single nonempty control set `t` freezes both the ambient degree on `G[s ∪ t]` and the degree
+  into `t`; direct constructors now package raw ambient/external degree data into this witness and
+  its bounded variant, and this is now also equivalent to the unbounded multiblock exact
+  control-block/bucketing/cascade witnesses,
   - `HasBoundedSingleControlExactWitnessOfCard G k r`: the same one-control witness with an explicit
     budget `|t| ≤ r` on the control set size,
   - `HasSingleControlBucketingWitnessOfCard G k` and
@@ -102,8 +103,27 @@ The goal here is **not** to import literature about this exact problem. Instead,
   - a separated-block modular refinement: if `blocks` is a separated control-block family, then one
     additional ambient-residue bucketing step on top of the `q ^ blocks.length` external-block
     bucketing cost yields a subset `u ⊆ s` of size at least `k` whenever
-    `q ^ blocks.length * (q * k) ≤ |s|`, with all degrees inside `G[s]` congruent modulo `q` on
-    `u`,
+    `q ^ blocks.length * (q * k) ≤ |s|`, while preserving one ambient residue class together with the
+    frozen modular external block data and forcing all degrees inside `G[s]` to be congruent
+    modulo `q` on `u`,
+  - the strengthened single-control and separated-block forcing lemmas now admit exact-cardinality
+    variants: after extracting a large bucket with the preserved host/control data, one can trim to a
+    subset of cardinality exactly `k` without losing the frozen external-degree or external-block
+    data, the ambient residue class, or the induced host-degree conclusions,
+  - these trimmed-bucket statements now also feed a recursive bridge: if `inducedOn G s` already
+    contains a regular induced subgraph on `k` vertices, then the inherited exact or modular
+    external block data on the smaller subset can be packaged back into ambient exact or modular
+    control-block witnesses for `G`,
+  - the interval-collapse route now has direct exact targets as well: if the host degrees on `G[s]`
+    stay inside a width-`q` interval, the ambient degrees on `G[s ∪ controlBlockUnion blocks]`
+    (or `G[s ∪ t]`) are congruent modulo `q`, and the control data is exact rather than merely
+    modular, then the same collapse packages straight into exact multiblock or one-control witnesses;
+    in particular the canonical `q ≥ |s|` special case now lands directly in those exact witness
+    notions,
+  - at the dropped-part witness layer, the same interval hypothesis now collapses raw modular
+    bucketing data all the way to exact witnesses as soon as the surviving control data is exact:
+    modular congruence for the ambient extended union plus the dropped part suffices to recover an
+    exact witness on the survivor,
   - a finite exact degree-bucketing lemma: if the ambient degree on `G[s ∪ t]` is constant on `s`,
     then a pigeonhole over the `|t| + 1` possible degrees into `t` extracts a large subset on which
     the induced degree inside `G[s]` is constant,
@@ -112,12 +132,12 @@ The goal here is **not** to import literature about this exact problem. Instead,
     extracts a large subset on which the induced degree inside `G[s]` is constant,
   - an arbitrary separated-block refinement: for a separated control-block list `blocks`, if the
     ambient degree on `G[s ∪ controlBlockUnion blocks]` is constant on `s`, then bucketing by the
-    full tuple of external degrees with cost `∏ (|tᵢ| + 1)` extracts a large subset on which the
-    induced degree inside `G[s]` is constant,
+    full tuple of external degrees with cost `∏ (|tᵢ| + 1)` extracts a large subset while retaining
+    the chosen exact external block data and forcing the induced degree inside `G[s]` to be constant,
   - the modular residue-bucketing analogue: if the ambient degrees on
     `G[s ∪ controlBlockUnion blocks]` are constant modulo `q` on `s`, then `q ^ blocks.length`
-    residue buckets freeze all control-block residues and extract a large subset on which the host
-    degree inside `G[s]` is constant modulo `q`,
+    residue buckets freeze all control-block residues, retain that modular block data explicitly, and
+    extract a large subset on which the host degree inside `G[s]` is constant modulo `q`,
   - the power-sequence modular reformulation: for any fixed base `b > 1`, the conjecture is
     equivalent to eventual existence of linearly large modular witnesses inside graphs on `b^k`
     vertices,
@@ -134,15 +154,23 @@ The goal here is **not** to import literature about this exact problem. Instead,
     modular-bucketing refinement and to the genuine multiblock modular control-block, modular
     bucketing, and modular cascade formulations, so it is the simplest canonical modular frontier
     object and still implies `TargetStatement`,
-  - `HasBoundedSingleControlModularWitnessOfCard G k r` and
-    `EventualNatPowerBoundedSingleControlModularDomination b u`: the budgeted small-control modular
-    version, which now also receives direct bridges from the bounded single-control bucketing route,
+- `HasBoundedSingleControlModularWitnessOfCard G k r` and
+  `EventualNatPowerBoundedSingleControlModularDomination b u`: the budgeted small-control modular
+  version, which now also receives direct bridges from the bounded single-control bucketing route;
+  moreover, once the control budget is strictly smaller than the demanded bucket size, the modular
+  witness collapses back to the bounded exact one because the control residues already determine the
+  exact external degrees, and under an eventual `u k < (M + 1)k` hypothesis this makes the bounded
+  modular target equivalent to the bounded exact one,
   - `HasSingleControlModularBucketingWitnessOfCard G k` and
     `EventualNatPowerSingleControlModularBucketingDomination b`: the dropped-part modular bucketing
     refinement of the small-control modular target; unboundedly it now collapses back to the plain
-    one-control modular witness, together with the bounded version
+    one-control modular witness, and the fixed-host forcing side now includes direct dropped-part
+    bridge lemmas that package preserved host-degree data back into these one-control modular
+    bucketing witnesses, together with the bounded version
     `HasBoundedSingleControlModularBucketingWitnessOfCard G k r` /
-    `EventualNatPowerBoundedSingleControlModularBucketingDomination b u`,
+    `EventualNatPowerBoundedSingleControlModularBucketingDomination b u`; under the same eventual
+    small-budget hypothesis, the bounded modular-bucketing target is likewise equivalent to both the
+    bounded exact target and the bounded exact-bucketing target,
   - `EventualNatPowerBoundedSingleControlExactDomination b u`: the budgeted one-control asymptotic
     target, which records an explicit control-size allowance `u k` at scale `k` and still implies
     `TargetStatement`,
