@@ -268,6 +268,9 @@ If you want a quick way into the artifact, the following declarations are the be
   Main singleton-control exact collapse theorem.
 - `RegularInducedSubgraph.eventualNatPowerBoundedSingleControlModularDomination_one_iff_targetStatement_of_one_lt`  
   Main bounded singleton-budget modular collapse theorem.
+- `RegularInducedSubgraph.targetStatement_of_dyadicParityBaseCase_of_polynomialCostDyadicLift`  
+  Formal dyadic-lift reduction: a Gallai-style parity base case together with a polynomial-cost
+  fixed-modulus lift already implies `TargetStatement`.
 
 ## Candidate approaches to try
 
@@ -348,3 +351,9 @@ files.
    prove a polynomial-cost lift from modulus `2^j` to `2^(j+1)` in a composable fixed-modulus
    modular bucketing/cascade package. A successful lift would yield
    `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`, hence `TargetStatement`.
+   The conditional reduction is now formalized by
+   `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_dyadicParityBaseCase_of_polynomialCostDyadicLift`
+   and
+   `RegularInducedSubgraph.targetStatement_of_dyadicParityBaseCase_of_polynomialCostDyadicLift`;
+   what remains open is the actual parity base case in this package and the dyadic lift theorem
+   itself.
