@@ -1813,6 +1813,31 @@ lemma hasFixedModulusControlBlockModularCascadeWitnessOfCard_mono
   exact ⟨s, blocks, chain, le_trans hkℓ hℓ, hq, hnonempty, hsep, hcascade⟩
 
 /--
+Gallai's theorem in the empty-control fixed-modulus cascade package suggested by the dyadic note.
+Unlike `DyadicParityBaseCase`, this package keeps the modulus fixed but does not require a nonempty
+control family or the terminal cap `|u| ≤ q`.
+-/
+def EmptyControlDyadicParityBaseCase : Prop :=
+  ∀ n : ℕ, ∀ G : SimpleGraph (Fin n),
+    HasFixedModulusCascadeWitnessOfCard G (n / 2) 2
+
+/--
+Polynomial-cost dyadic lift hypothesis in the empty-control fixed-modulus cascade package.
+-/
+def HasPolynomialCostEmptyControlDyadicLift (C : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (G : SimpleGraph (Fin n)),
+    HasFixedModulusCascadeWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusCascadeWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+Gallai's theorem already proves the empty-control parity base case.
+-/
+theorem emptyControlDyadicParityBaseCase :
+    EmptyControlDyadicParityBaseCase := by
+  intro n G
+  simpa using hasFixedModulusCascadeWitnessOfCard_two G
+
+/--
 Fixed-modulus parity base case suggested by the dyadic note: every graph on `n` vertices already
 contains a modulus-`2` modular cascade witness on at least `n / 2` vertices.
 -/

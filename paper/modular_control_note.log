@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.11)  19 APR 2026 19:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.11)  19 APR 2026 23:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -410,25 +410,25 @@ Package hyperref Info: Link coloring ON on input line 36.
 Underfull \vbox (badness 1540) has occurred while \output is active []
 
  [8]
-[9] [10] [11] [12]
-Underfull \hbox (badness 6396) in paragraph at lines 803--806
+[9] [10] [11] [12] [13]
+Underfull \hbox (badness 6396) in paragraph at lines 858--861
 []\OT1/cmr/m/n/10.95 The re-sults of this pa-per were ex-tracted from a com-pan
 -ion
  []
 
-[13] [14] (modular_control_note.aux)
+[14] [15] (modular_control_note.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `modular_control_note.out' has not changed.
-(rerunfilecheck)             Checksum: 2E47A3F752E3BE426F74898C0683686A;1277.
+(rerunfilecheck)             Checksum: 6F945A7A77B94D2FB2842FCA9EB7AB6C;1489.
  ) 
 Here is how much of TeX's memory you used:
- 10974 strings out of 467871
- 167864 string characters out of 5416924
- 587272 words of memory out of 5000000
- 39476 multiletter control sequences out of 15000+600000
+ 10986 strings out of 467871
+ 167983 string characters out of 5416924
+ 587355 words of memory out of 5000000
+ 39481 multiletter control sequences out of 15000+600000
  636803 words of font info for 75 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
  75i,12n,79p,611b,681s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -456,9 +456,9 @@ iKTeX/fonts/type1/public/amsfonts/cm/cmtt9.pfb><C:/Users/arfreita/AppData/Local
 /Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Users/arfre
 ita/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pf
 b>
-Output written on modular_control_note.pdf (14 pages, 339141 bytes).
+Output written on modular_control_note.pdf (15 pages, 350250 bytes).
 PDF statistics:
- 334 PDF objects out of 1000 (max. 8388607)
- 95 named destinations out of 1000 (max. 500000)
- 65 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 351 PDF objects out of 1000 (max. 8388607)
+ 102 named destinations out of 1000 (max. 500000)
+ 73 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -271,6 +271,15 @@ If you want a quick way into the artifact, the following declarations are the be
 - `RegularInducedSubgraph.hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_two_of_pos`  
   First unconditional base theorem in the composable fixed-modulus host package: every nonempty
   `n`-vertex graph already has a modulus-`2` one-control host witness on `⌊(n - 1) / 4⌋` vertices.
+- `RegularInducedSubgraph.hasFixedModulusWitnessOfCard_two`  
+  Gallai's parity base case in empty-control fixed-modulus form: every finite graph has an induced
+  subgraph on at least `⌊n / 2⌋` vertices whose induced degrees are all congruent modulo `2`
+  (equivalently, all even), with the stronger half-size partition statement exposed as
+  `RegularInducedSubgraph.exists_large_even_induced_subgraph`.
+- `RegularInducedSubgraph.hasFixedModulusCascadeWitnessOfCard_two`  
+  The same Gallai theorem repackaged in the empty-control fixed-modulus cascade language
+  `HasFixedModulusCascadeWitnessOfCard`, together with the asymptotic bookkeeping proposition
+  `RegularInducedSubgraph.emptyControlDyadicParityBaseCase`.
 - `RegularInducedSubgraph.targetStatement_of_dyadicParityBaseCase_of_polynomialCostDyadicLift`  
   Formal terminal-bounded dyadic-lift reduction: a Gallai-style parity base case together with a
   polynomial-cost lift in the stronger terminal-capped package already implies `TargetStatement`.
@@ -353,15 +362,18 @@ files.
    induced subgraph with controlled vertex loss.
 6. Try the dyadic modulus-lifting program in [notes/dyadic-lift-program.md](notes/dyadic-lift-program.md):
    prove a polynomial-cost lift from modulus `2^j` to `2^(j+1)` in a composable fixed-modulus
-   modular bucketing/cascade package. The current repo now contains the host-level package
-   `HasFixedModulusControlBlockModularHostWitnessOfCard` and its bounded variant, plus the
-   unconditional modulus-`2` base theorem
-   `RegularInducedSubgraph.hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_two_of_pos`,
-   which already gives a one-control host witness on about `n / 4` vertices. A successful lift would yield
-   `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`, hence `TargetStatement`.
+   modular bucketing/cascade package. The current repo now contains both the empty-control packages
+   `HasFixedModulusWitnessOfCard` and `HasFixedModulusCascadeWitnessOfCard`, with Gallai's
+   modulus-`2` base theorems `RegularInducedSubgraph.hasFixedModulusWitnessOfCard_two` and
+   `RegularInducedSubgraph.hasFixedModulusCascadeWitnessOfCard_two`, and the host-level package
+   `HasFixedModulusControlBlockModularHostWitnessOfCard` with the weaker one-control base theorem
+   `RegularInducedSubgraph.hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_two_of_pos`
+   on about `n / 4` vertices. A successful lift would yield `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`,
+   hence `TargetStatement`.
    The conditional reduction is now formalized by
    `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_dyadicParityBaseCase_of_polynomialCostDyadicLift`
    and
    `RegularInducedSubgraph.targetStatement_of_dyadicParityBaseCase_of_polynomialCostDyadicLift`;
-   what remains open is the actual dyadic lift theorem in the composable package, and ideally a
-   stronger Gallai-style `n / 2` modulus-`2` base inside that package.
+   what remains open is the actual dyadic lift theorem together with the right bridge from the
+   empty-control Gallai package into the composable host/cascade world (or an equivalent
+   empty-control dropped-part reformulation of that world).

@@ -1,8 +1,19 @@
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.LapMatrix
+import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.Matrix.Dual
+import Mathlib.LinearAlgebra.Matrix.Rank
 import RegularInducedSubgraph.Threshold
 
 namespace RegularInducedSubgraph
 
 section FiniteGraph
+
+open Matrix
+open Finset
+open scoped BigOperators
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
@@ -38,6 +49,14 @@ def InducesDegreeInterval (G : SimpleGraph V) (s : Finset V) (d q : ℕ) : Prop 
     d ≤ (inducedOn G s).degree v ∧ (inducedOn G s).degree v < d + q
 
 /--
+A fixed-modulus witness of size at least `k`: an induced subgraph on at least `k` vertices whose
+degrees are all congruent modulo the specific modulus `q`.
+-/
+def HasFixedModulusWitnessOfCard (G : SimpleGraph V) (k q : ℕ) : Prop := by
+  classical
+  exact ∃ s : Finset V, k ≤ s.card ∧ InducesModEqDegree G s q
+
+/--
 A modular witness of size at least `k`: an induced subgraph on at least `k` vertices whose degrees
 are all congruent modulo some modulus at least its cardinality.
 -/
@@ -53,6 +72,13 @@ def HasLowDegreeModularWitnessOfCard (G : SimpleGraph V) (k : ℕ) : Prop := by
   classical
   exact ∃ s : Finset V, k ≤ s.card ∧ ∃ q : ℕ,
     InducesDegreeLtModulus G s q ∧ InducesModEqDegree G s q
+
+lemma hasFixedModulusWitnessOfCard_mono
+    (G : SimpleGraph V) {k ℓ q : ℕ} (hkℓ : k ≤ ℓ)
+    (hwitness : HasFixedModulusWitnessOfCard G ℓ q) :
+    HasFixedModulusWitnessOfCard G k q := by
+  rcases hwitness with ⟨s, hℓ, hs⟩
+  exact ⟨s, le_trans hkℓ hℓ, hs⟩
 
 private lemma degree_inducedOn_eq_card_neighborFinset_inter_modular
     (G : SimpleGraph V) [DecidableRel G.Adj] (s : Finset V) (v : ↑(s : Set V)) :
@@ -110,6 +136,316 @@ lemma inducedOn_degree_congr
   subst h
   cases Subsingleton.elim hs ht
   rfl
+
+private def degreeParityVec (G : SimpleGraph V) [DecidableRel G.Adj] : V → ZMod 2 :=
+  fun v => (G.degree v : ZMod 2)
+
+private lemma zmod2_eq_zero_or_one (a : ZMod 2) : a = 0 ∨ a = 1 := by
+  have ha : a.val < 2 := a.val_lt
+  have ha' : a.val = 0 ∨ a.val = 1 := by omega
+  rcases ha' with h0 | h1
+  · exact Or.inl (a.val_eq_zero.mp h0)
+  · exact Or.inr ((ZMod.val_eq_one (by decide) a).mp h1)
+
+private lemma zmod2_ne_zero_iff_eq_one (a : ZMod 2) : a ≠ 0 ↔ a = 1 := by
+  constructor
+  · intro ha
+    rcases zmod2_eq_zero_or_one a with h0 | h1
+    · exact False.elim (ha h0)
+    · exact h1
+  · rintro rfl h
+    exact zero_ne_one h.symm
+
+private lemma zmod2_mul_self_eq (a : ZMod 2) : a * a = a := by
+  rcases zmod2_eq_zero_or_one a with rfl | rfl <;> simp
+
+private lemma sum_zmod2_eq_card_filter_eq_one
+    (s : Finset V) (x : V → ZMod 2) :
+    ∑ u ∈ s, x u = ↑((s.filter fun u => x u = 1).card) := by
+  classical
+  rw [← Finset.sum_filter_ne_zero (s := s) (f := fun u => x u)]
+  have hfilter : s.filter (fun u => x u ≠ 0) = s.filter (fun u => x u = 1) := by
+    ext u
+    simp [zmod2_ne_zero_iff_eq_one]
+  rw [hfilter]
+  calc
+    Finset.sum (s.filter fun u => x u = 1) x
+        = Finset.sum (s.filter fun u => x u = 1) (fun _ => (1 : ZMod 2)) := by
+            refine Finset.sum_congr rfl ?_
+            intro u hu
+            simp only [Finset.mem_filter] at hu
+            simp [hu.2]
+    _ = ↑((s.filter fun u => x u = 1).card) := by
+          simp
+
+private lemma sum_darts_eq_dotProduct_adj
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x : V → ZMod 2) :
+    (∑ d : G.Dart, x d.fst * x d.snd) = x ⬝ᵥ (G.adjMatrix (ZMod 2) *ᵥ x) := by
+  classical
+  calc
+    ∑ d : G.Dart, x d.fst * x d.snd
+        = ∑ v : V,
+            ((Finset.univ.filter fun d : G.Dart => d.fst = v).sum fun d => x d.fst * x d.snd) := by
+            symm
+            simpa using (Finset.sum_fiberwise_of_maps_to
+              (s := (Finset.univ : Finset G.Dart)) (t := (Finset.univ : Finset V))
+              (g := fun d : G.Dart => d.fst) (by intro d hd; simp) (fun d => x d.fst * x d.snd))
+    _ = ∑ v : V, x v * ∑ u ∈ G.neighborFinset v, x u := by
+          apply Finset.sum_congr rfl
+          intro v hv
+          rw [G.dart_fst_fiber v]
+          rw [Finset.sum_image]
+          · simpa [SimpleGraph.neighborSet, SimpleGraph.neighborFinset, Finset.mul_sum] using
+              (Finset.sum_toFinset_eq_subtype (fun u : V => G.Adj v u) (fun u => x v * x u)).symm
+          · intro a _ b _ hab
+            exact G.dartOfNeighborSet_injective v hab
+    _ = x ⬝ᵥ (G.adjMatrix (ZMod 2) *ᵥ x) := by
+          simp [dotProduct, G.adjMatrix_mulVec_apply, Finset.mul_sum]
+
+private lemma sum_darts_eq_zero
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x : V → ZMod 2) :
+    (∑ d : G.Dart, x d.fst * x d.snd) = 0 := by
+  classical
+  simpa using
+    (Finset.sum_involution
+      (s := (Finset.univ : Finset G.Dart))
+      (f := fun d : G.Dart => x d.fst * x d.snd)
+      (g := fun d _ => d.symm)
+      (by
+        intro d hd
+        simp [SimpleGraph.Dart.symm, mul_comm]
+        rw [← two_mul]
+        have h2 : (2 : ZMod 2) = 0 := by decide
+        rw [h2, zero_mul])
+      (by
+        intro d hd hne
+        exact d.symm_ne)
+      (by
+        intro d hd
+        simp)
+      (by
+        intro d hd
+        simp))
+
+private lemma dotProduct_adj_eq_zero
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x : V → ZMod 2) :
+    x ⬝ᵥ (G.adjMatrix (ZMod 2) *ᵥ x) = 0 := by
+  rw [← sum_darts_eq_dotProduct_adj (G := G) x, sum_darts_eq_zero (G := G) x]
+
+private lemma dotProduct_lap_eq_degreeParity
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x : V → ZMod 2) :
+    x ⬝ᵥ (G.lapMatrix (ZMod 2) *ᵥ x) = degreeParityVec G ⬝ᵥ x := by
+  rw [SimpleGraph.lapMatrix, sub_mulVec, dotProduct_sub, G.dotProduct_mulVec_degMatrix,
+    dotProduct_adj_eq_zero (G := G) x, sub_zero, dotProduct]
+  apply Finset.sum_congr rfl
+  intro v hv
+  rcases zmod2_eq_zero_or_one (x v) with h0 | h1
+  · rw [h0]
+    simp [degreeParityVec]
+  · rw [h1]
+    simp [degreeParityVec]
+
+private lemma degreeParity_annihilates_ker
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V → ZMod 2}
+    (hx : G.lapMatrix (ZMod 2) *ᵥ x = 0) :
+    degreeParityVec G ⬝ᵥ x = 0 := by
+  rw [← dotProduct_lap_eq_degreeParity (G := G) x, hx, dotProduct_zero]
+
+private lemma symm_dotProduct_col
+    (M : Matrix V V (ZMod 2)) (hM : M.IsSymm) (x : V → ZMod 2) (i : V) :
+    x ⬝ᵥ M.col i = (M *ᵥ x) i := by
+  simp [Matrix.mulVec, dotProduct, Matrix.col, hM.apply, mul_comm]
+
+private lemma exists_lap_solution
+    (G : SimpleGraph V) [DecidableRel G.Adj] :
+    ∃ x : V → ZMod 2, G.lapMatrix (ZMod 2) *ᵥ x = degreeParityVec G := by
+  let L : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2) := Matrix.toLin' (G.lapMatrix (ZMod 2))
+  have hann : dotProductEquiv (ZMod 2) V (degreeParityVec G) ∈ L.ker.dualAnnihilator := by
+    rw [Submodule.mem_dualAnnihilator]
+    intro z hz
+    exact degreeParity_annihilates_ker (G := G) (by simpa [L, LinearMap.mem_ker] using hz)
+  have hrangeEq : L.dualMap.range = L.ker.dualAnnihilator :=
+    LinearMap.range_dualMap_eq_dualAnnihilator_ker L
+  have hrange : dotProductEquiv (ZMod 2) V (degreeParityVec G) ∈ L.dualMap.range := by
+    rw [hrangeEq]
+    exact hann
+  rcases LinearMap.mem_range.mp hrange with ⟨ψ, hψ⟩
+  let x : V → ZMod 2 := (dotProductEquiv (ZMod 2) V).symm ψ
+  have hxpsi : dotProductEquiv (ZMod 2) V x = ψ := by simp [x]
+  refine ⟨x, ?_⟩
+  ext i
+  have hsingle := LinearMap.congr_fun hψ (Pi.single i 1)
+  calc
+    (G.lapMatrix (ZMod 2) *ᵥ x) i = x ⬝ᵥ (G.lapMatrix (ZMod 2)).col i := by
+      exact (symm_dotProduct_col (M := G.lapMatrix (ZMod 2)) (G.isSymm_lapMatrix (ZMod 2)) x i).symm
+    _ = ψ (L (Pi.single i 1)) := by
+      rw [← hxpsi]
+      simp [L]
+    _ = degreeParityVec G i := by
+      simpa [dotProductEquiv, degreeParityVec] using hsingle
+
+private lemma even_induced_degree_zero_side
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V → ZMod 2}
+    (hx : G.lapMatrix (ZMod 2) *ᵥ x = degreeParityVec G)
+    (s0 s1 : Finset V)
+    (hs0 : s0 = Finset.univ.filter fun v => x v = 0)
+    (hs1 : s1 = Finset.univ.filter fun v => x v = 1) :
+    ∀ v : ↑(s0 : Set V), Even ((inducedOn G s0).degree v) := by
+  intro v
+  have hvx : x v = 0 := by simpa [hs0] using v.2
+  have hdisj : Disjoint s0 s1 := by
+    rw [hs0, hs1]
+    refine Finset.disjoint_left.mpr ?_
+    intro w hw0 hw1
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hw0 hw1
+    have : False := by simpa [hw0] using hw1
+    exact this.elim
+  have hunion : s0 ∪ s1 = Finset.univ := by
+    rw [hs0, hs1]
+    ext w
+    constructor
+    · intro _
+      simp
+    · intro _
+      simp [zmod2_eq_zero_or_one (x w)]
+  have hxv : ∑ u ∈ G.neighborFinset v, x u = degreeParityVec G v := by
+    have hxv' := congrFun hx v
+    rw [SimpleGraph.lapMatrix_mulVec_apply] at hxv'
+    simpa [degreeParityVec, hvx] using hxv'
+  have hcard1 : (((G.neighborFinset v ∩ s1).card : ℕ) : ZMod 2) = degreeParityVec G v := by
+    have hs1filter :
+        G.neighborFinset v ∩ s1 = (G.neighborFinset v).filter fun u => x u = 1 := by
+      ext u
+      simp [hs1, and_left_comm, and_assoc]
+    calc
+      (((G.neighborFinset v ∩ s1).card : ℕ) : ZMod 2)
+          = ↑(((G.neighborFinset v).filter fun u => x u = 1).card) := by
+              simpa [hs1filter]
+      _ = ∑ u ∈ G.neighborFinset v, x u := by
+            symm
+            exact sum_zmod2_eq_card_filter_eq_one (s := G.neighborFinset v) (x := x)
+      _ = degreeParityVec G v := hxv
+  have hdeg :
+      G.degree v = (inducedOn G s0).degree v + (G.neighborFinset v ∩ s1).card := by
+    calc
+      G.degree v = (G.neighborFinset v ∩ Finset.univ).card := by simp
+      _ = (G.neighborFinset v ∩ (s0 ∪ s1)).card := by simpa [hunion]
+      _ = (G.neighborFinset v ∩ s0).card + (G.neighborFinset v ∩ s1).card := by
+            exact card_neighborFinset_inter_union (G := G) hdisj v
+      _ = (inducedOn G s0).degree v + (G.neighborFinset v ∩ s1).card := by
+            rw [← degree_inducedOn_eq_card_neighborFinset_inter_modular (G := G) (s := s0)
+              (v := v)]
+  have hcast : (((inducedOn G s0).degree v : ℕ) : ZMod 2) = 0 := by
+    have hcast' := congrArg (fun n : ℕ => (n : ZMod 2)) hdeg
+    have hcancel :
+        degreeParityVec G v =
+          (((inducedOn G s0).degree v : ℕ) : ZMod 2) + degreeParityVec G v := by
+      simpa [degreeParityVec, Nat.cast_add, hcard1, add_comm, add_left_comm, add_assoc] using hcast'
+    have hcancel' :
+        (((inducedOn G s0).degree v : ℕ) : ZMod 2) + degreeParityVec G v =
+          0 + degreeParityVec G v := by
+      simpa using hcancel.symm
+    exact add_right_cancel hcancel'
+  rwa [ZMod.natCast_eq_zero_iff_even] at hcast
+
+private lemma even_induced_degree_one_side
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V → ZMod 2}
+    (hx : G.lapMatrix (ZMod 2) *ᵥ x = degreeParityVec G)
+    (s1 : Finset V)
+    (hs1 : s1 = Finset.univ.filter fun v => x v = 1) :
+    ∀ v : ↑(s1 : Set V), Even ((inducedOn G s1).degree v) := by
+  intro v
+  have hvx : x v = 1 := by simpa [hs1] using v.2
+  have hxv : ∑ u ∈ G.neighborFinset v, x u = 0 := by
+    have hxv' := congrFun hx v
+    rw [SimpleGraph.lapMatrix_mulVec_apply] at hxv'
+    have hxv'' : (degreeParityVec G v : ZMod 2) = degreeParityVec G v +
+        ∑ u ∈ G.neighborFinset v, x u := by
+      simpa [degreeParityVec, hvx, sub_eq_iff_eq_add] using hxv'
+    have hcancel :
+        degreeParityVec G v + ∑ u ∈ G.neighborFinset v, x u = degreeParityVec G v + 0 := by
+      simpa using hxv''.symm
+    exact add_left_cancel hcancel
+  have hcast : (((inducedOn G s1).degree v : ℕ) : ZMod 2) = 0 := by
+    have hs1filter :
+        G.neighborFinset v ∩ s1 = (G.neighborFinset v).filter fun u => x u = 1 := by
+      ext u
+      simp [hs1, and_left_comm, and_assoc]
+    rw [degree_inducedOn_eq_card_neighborFinset_inter_modular (G := G) (s := s1) (v := v)]
+    calc
+      (((G.neighborFinset v ∩ s1).card : ℕ) : ZMod 2)
+          = ↑(((G.neighborFinset v).filter fun u => x u = 1).card) := by
+              simpa [hs1filter]
+      _ = ∑ u ∈ G.neighborFinset v, x u := by
+            symm
+            exact sum_zmod2_eq_card_filter_eq_one (s := G.neighborFinset v) (x := x)
+      _ = 0 := hxv
+  rwa [ZMod.natCast_eq_zero_iff_even] at hcast
+
+/--
+Gallai's parity theorem: every finite graph contains an induced subgraph on at least half of its
+vertices whose degrees are all even.
+-/
+lemma exists_large_even_induced_subgraph (G : SimpleGraph V) :
+    ∃ s : Finset V, Fintype.card V ≤ 2 * s.card ∧
+      (by
+        classical
+        exact ∀ v : ↑(s : Set V), Even ((inducedOn G s).degree v)) := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  obtain ⟨x, hx⟩ := exists_lap_solution (G := G)
+  let s0 : Finset V := Finset.univ.filter fun v => x v = 0
+  let s1 : Finset V := Finset.univ.filter fun v => x v = 1
+  have hdeg0 :
+      ∀ v : ↑(s0 : Set V), Even ((inducedOn G s0).degree v) :=
+    even_induced_degree_zero_side (G := G) hx s0 s1 rfl rfl
+  have hdeg1 :
+      ∀ v : ↑(s1 : Set V), Even ((inducedOn G s1).degree v) :=
+    even_induced_degree_one_side (G := G) hx s1 rfl
+  have hdisj : Disjoint s0 s1 := by
+    refine Finset.disjoint_left.mpr ?_
+    intro v hv0 hv1
+    simp only [s0, s1, Finset.mem_filter, Finset.mem_univ, true_and] at hv0 hv1
+    have : False := by simpa [hv0] using hv1
+    exact this.elim
+  have hcard : s0.card + s1.card = Fintype.card V := by
+    have hunion : s0 ∪ s1 = Finset.univ := by
+      ext v
+      constructor
+      · intro _
+        simp
+      · intro _
+        simp [s0, s1, zmod2_eq_zero_or_one (x v)]
+    calc
+      s0.card + s1.card = (s0 ∪ s1).card := by
+        symm
+        exact Finset.card_union_of_disjoint hdisj
+      _ = Fintype.card V := by simpa [hunion]
+  by_cases hle : s0.card ≤ s1.card
+  · refine ⟨s1, ?_, hdeg1⟩
+    omega
+  · have hle' : s1.card ≤ s0.card := le_of_not_ge hle
+    refine ⟨s0, ?_, hdeg0⟩
+    omega
+
+/--
+The parity base case in fixed-modulus form: every finite graph has an induced subgraph on at least
+`|V| / 2` vertices whose degrees are all congruent modulo `2`.
+-/
+lemma hasFixedModulusWitnessOfCard_two (G : SimpleGraph V) :
+    HasFixedModulusWitnessOfCard G (Fintype.card V / 2) 2 := by
+  rcases exists_large_even_induced_subgraph (G := G) with ⟨s, hsize, heven⟩
+  refine ⟨s, ?_, ?_⟩
+  · omega
+  · intro v w
+    rcases heven v with ⟨a, ha⟩
+    rcases heven w with ⟨b, hb⟩
+    rw [ha, hb]
+    have h0a : a + a ≡ 0 [MOD 2] := by
+      simpa [two_mul] using (Nat.modEq_zero_iff_dvd.mpr (dvd_mul_right 2 a))
+    have h0b : b + b ≡ 0 [MOD 2] := by
+      simpa [two_mul] using (Nat.modEq_zero_iff_dvd.mpr (dvd_mul_right 2 b))
+    exact h0a.trans h0b.symm
 
 def SameControlBlockSupports : List (Finset V × ℕ) → List (Finset V × ℕ) → Prop
   | [], [] => True
@@ -1234,6 +1570,59 @@ host by the next bucket in `chain`.
 def cascadeTerminal (s : Finset V) : List (Finset V) → Finset V
   | [] => s
   | u :: chain => cascadeTerminal u chain
+
+/--
+`HasFixedModulusCascadeFrom G q s chain` records a multistage refinement from a host `s` down a
+chain of smaller buckets without any auxiliary control family. At each proper step the ambient
+degree in `G[s]` and the degree into the dropped part `s \ u` are frozen modulo `q`; at the
+terminal bucket, the ambient degree in `G[s]` is constant modulo `q`.
+-/
+def HasFixedModulusCascadeFrom (G : SimpleGraph V) (q : ℕ) :
+    Finset V → List (Finset V) → Prop := by
+  classical
+  exact fun s chain =>
+    match chain with
+    | [] =>
+        ∀ v w : ↑(s : Set V), (inducedOn G s).degree v ≡ (inducedOn G s).degree w [MOD q]
+    | u :: chain =>
+        ∃ hu : u ⊆ s, ∃ eDrop : ℕ,
+          (∀ v w : ↑(u : Set V),
+            (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+              (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) ∧
+          (∀ v : ↑(u : Set V), (G.neighborFinset v ∩ (s \ u)).card ≡ eDrop [MOD q]) ∧
+          HasFixedModulusCascadeFrom G q u chain
+
+/--
+A fixed-modulus cascade witness of size at least `k`: a host `s`, a fixed modulus `q`, and a chain
+of bucket refinements whose terminal bucket has size at least `k`.
+-/
+def HasFixedModulusCascadeWitnessOfCard (G : SimpleGraph V) (k q : ℕ) : Prop := by
+  classical
+  exact ∃ s : Finset V, ∃ chain : List (Finset V),
+    k ≤ (cascadeTerminal s chain).card ∧
+    HasFixedModulusCascadeFrom G q s chain
+
+lemma hasFixedModulusCascadeWitnessOfCard_mono
+    (G : SimpleGraph V) {k ℓ q : ℕ} (hkℓ : k ≤ ℓ)
+    (hcascade : HasFixedModulusCascadeWitnessOfCard G ℓ q) :
+    HasFixedModulusCascadeWitnessOfCard G k q := by
+  rcases hcascade with ⟨s, chain, hℓ, hfrom⟩
+  exact ⟨s, chain, le_trans hkℓ hℓ, hfrom⟩
+
+lemma hasFixedModulusCascadeWitnessOfCard_of_hasFixedModulusWitnessOfCard
+    (G : SimpleGraph V) {k q : ℕ} (hfixed : HasFixedModulusWitnessOfCard G k q) :
+    HasFixedModulusCascadeWitnessOfCard G k q := by
+  rcases hfixed with ⟨s, hks, hmod⟩
+  exact ⟨s, [], by simpa [cascadeTerminal] using hks, hmod⟩
+
+/--
+Gallai's parity theorem, repackaged in the empty-control fixed-modulus cascade language suggested by
+the dyadic-lift note.
+-/
+lemma hasFixedModulusCascadeWitnessOfCard_two (G : SimpleGraph V) :
+    HasFixedModulusCascadeWitnessOfCard G (Fintype.card V / 2) 2 := by
+  exact hasFixedModulusCascadeWitnessOfCard_of_hasFixedModulusWitnessOfCard G
+    (hasFixedModulusWitnessOfCard_two G)
 
 /--
 `HasSingleControlCascadeFrom G t s chain` records a multistage refinement from a host `s` down a

@@ -711,7 +711,8 @@ paper is therefore the removal of these false frontiers.
 
 \section{Concrete open problems}
 
-The reformulation above leaves one canonical equivalent problem and one stronger exact route.
+The reformulation above leaves one canonical equivalent problem, one stronger exact route, and one
+conditional dyadic-lifting criterion.
 
 \begin{problem}[canonical modular frontier]\label{prob:canonical-frontier}
 Fix an integer base $b>1$. Is it true that for every $M \in \N$, every sufficiently large graph on
@@ -746,6 +747,52 @@ obstacle is no longer definitional. The canonical open step is
 Problem~\ref{prob:canonical-frontier}; Problem~\ref{prob:small-control} asks whether one can do
 better by forcing a more rigid witness.
 
+\subsection*{A dyadic modulus-lifting route}
+
+The canonical frontier also suggests a quantitative modulus-by-modulus program. Let
+$\mathcal{W}_{2^j}$ be any family of witness notions indexed by powers of two, where a witness in
+$\mathcal{W}_{2^j}$ comes with a terminal vertex set on which all induced degrees are congruent
+modulo $2^j$.
+
+\begin{proposition}[dyadic lifting criterion]\label{prop:dyadic-criterion}
+Assume that the family $(\mathcal{W}_{2^j})_{j \ge 1}$ has the following properties.
+\begin{enumerate}
+  \item Every graph on $n$ vertices has a witness in $\mathcal{W}_2$ of order at least $n/2$.
+  \item There is an absolute constant $C$ such that for every $j \ge 1$ and every $m \in \N$,
+    every graph with a witness in $\mathcal{W}_{2^j}$ of order at least $(2^j)^C m$ also has a
+    witness in $\mathcal{W}_{2^{j+1}}$ of order at least $m$.
+  \item Every witness in $\mathcal{W}_{2^j}$ of order at least $2^j$ yields a regular induced
+    subgraph on $2^j$ vertices.
+\end{enumerate}
+Then $F(n)/\log n \to \infty$.
+\end{proposition}
+
+\begin{proof}
+For a power of two $q$, let $W_q(n)$ denote the largest integer $m$ such that every graph on $n$
+vertices has a witness in $\mathcal{W}_q$ of order at least $m$. By (1), $W_2(n) \ge n/2$.
+Iterating (2) from $2$ to $2^r$ gives
+\[
+  W_{2^r}(n) \ge \frac{n}{2 \prod_{j=1}^{r-1} (2^j)^C}
+  = \frac{n}{2^{1 + C r(r-1)/2}}.
+\]
+Choose $r$ maximal with
+\[
+  1 + r + \frac{C r(r-1)}{2} \le \log_2 n.
+\]
+Then $2^r \le W_{2^r}(n)$. By (3), every graph on $n$ vertices therefore contains a regular
+induced subgraph on $2^r$ vertices. Since $r = \Omega(\sqrt{\log n})$, we obtain
+\[
+  F(n) \ge 2^r = \exp(\Omega(\sqrt{\log n})),
+\]
+and in particular $F(n)/\log n \to \infty$.
+\end{proof}
+
+Gallai's classical parity theorem gives the base case at modulus $2$ for the empty-control package
+of induced subgraphs with all degrees even \cite{Gallai}. The remaining difficulty is therefore not
+the first modulus, but finding a composable fixed-modulus witness notion for which the lift in
+Proposition~\ref{prop:dyadic-criterion}(2) can actually be proved and for which the collapse in
+(3) is available at the terminal scale.
+
 \medskip
 
 To summarize: the conjecture is equivalent to linear growth along any geometric subsequence, to the
@@ -755,7 +802,9 @@ Theorem~\ref{thm:summary-package}. Problem~
 \ref{prob:canonical-frontier} records the normalized equivalent frontier, while
 Problem~\ref{prob:small-control} records a stronger exact route. The finite lemmas that support
 this viewpoint replace full neighborhood data by ambient and external degree data, and replace
-exponentially many profile classes by polynomially many residue classes. That is the structural
+exponentially many profile classes by polynomially many residue classes. Proposition~
+\ref{prop:dyadic-criterion} records a separate conditional route: a polynomial-cost dyadic lift in
+any composable fixed-modulus package would also force the conjecture. That is the structural
 contribution of the present paper.
 
 \begin{thebibliography}{99}
@@ -784,6 +833,12 @@ Y.~Caro,
 S.~Fajtlowicz, T.~McColgan, T.~Reid, and W.~Staton,
 \newblock Ramsey numbers for induced regular subgraphs,
 \newblock {\em Ars Combinatoria} \textbf{39} (1995), 149--154.
+
+\bibitem{Gallai}
+T.~Gallai,
+\newblock {\"U}ber extreme Punkt- und Kantenmengen,
+\newblock {\em Annales Universitatis Scientiarum Budapestinensis de Rolando E{\"o}tv{\"o}s Nominatae.
+Sectio Mathematica} \textbf{2} (1959), 133--138.
 
 \bibitem{KrivelevichSudakovWormald}
 M.~Krivelevich, B.~Sudakov, and N.~Wormald,
