@@ -27,6 +27,43 @@ Why this matters:
 So any refinement scheme that only needs control-set degrees is exponentially cheaper than one
 that stores full adjacency patterns.
 
+## 1.5. Singleton-control collapse on geometric scales
+
+There is now also a clean converse on power scales:
+
+> If `b > 1` and `F(b^k)` eventually dominates every linear function of `k`, then the much
+> stronger-looking one-control exact target already follows with a **single control vertex**.
+
+Reason:
+
+1. On a graph with `b^k` vertices, peel off one vertex `t`.
+2. Among the remaining `b^k - 1` vertices, one adjacency bucket to `t` has size at least
+   `(b^k - 1) / 2`.
+3. For `b > 1`, that large bucket contains `b^(k-1)` vertices; the endpoint case `b = 2` is still
+   valid because `ceil((2^k - 1) / 2) = 2^(k-1)`.
+4. Any regular induced subgraph inside those `b^(k-1)` vertices lifts back to an exact one-control
+   witness using the fixed vertex `t`, because the external degree into `t` is already frozen.
+
+This is now formalized in `RegularInducedSubgraph.Modular` as the implication
+
+- `EventualNatPowerDomination b -> EventualNatPowerBoundedSingleControlExactDomination b (fun _ => 1)`
+  for every `b > 1`,
+
+and hence, again for `b > 1`,
+
+- `EventualNatPowerSingleControlExactDomination b`,
+- `EventualNatPowerBoundedSingleControlExactDomination b (fun _ => 1)`,
+- and the original `EventualNatPowerDomination b`
+
+are all equivalent. In particular, this already holds at base `2`, so the exact one-control route
+is no longer a strictly stronger asymptotic target on any geometric scale covered by the threshold
+reduction.
+
+Because the bounded exact, bounded bucketing, bounded modular, and bounded modular-bucketing
+single-control targets are already equivalent once the control budget is eventually smaller than the
+demanded size, the singleton-budget versions of all four of those one-control targets now collapse
+to the original power-sequence statement as well (again for every `b > 1`).
+
 ## 2. Multiscale control-block program
 
 The most plausible direct route now looks like this:

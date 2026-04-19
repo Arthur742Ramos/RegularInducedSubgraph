@@ -69,6 +69,26 @@ lemma F_monotone : Monotone F := by
   rw [le_F_iff]
   exact admissibleBounds_mono hnm (F_mem_admissibleBounds n)
 
+lemma hasRegularInducedSubgraphOfCard_of_le_F_fintypeCard
+    {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) {k : ℕ}
+    (hk : k ≤ F (Fintype.card V)) :
+    HasRegularInducedSubgraphOfCard G k := by
+  classical
+  let H : SimpleGraph (Fin (Fintype.card V)) :=
+    G.comap (Fintype.equivFin V).symm.toEmbedding
+  exact
+    hasRegularInducedSubgraphOfCard_of_embedding
+      (SimpleGraph.Embedding.comap (Fintype.equivFin V).symm.toEmbedding G)
+      ((le_F_iff.mp hk) H)
+
+lemma hasRegularInducedSubgraphOfCard_of_card_eq_and_le_F
+    {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) {n k : ℕ}
+    (hcard : Fintype.card V = n) (hk : k ≤ F n) :
+    HasRegularInducedSubgraphOfCard G k := by
+  have hk' : k ≤ F (Fintype.card V) := by
+    simpa [hcard] using hk
+  exact hasRegularInducedSubgraphOfCard_of_le_F_fintypeCard G hk'
+
 /-- The least graph order that forces a regular induced subgraph on at least `k` vertices. -/
 noncomputable def forcingThreshold (k : ℕ) : ℕ :=
   sInf { n : ℕ | k ≤ F n }

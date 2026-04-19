@@ -44,7 +44,11 @@ The goal here is **not** to import literature about this exact problem. Instead,
     eventual domination of every linear function along `F (b^k)`,
   - a fully discrete version of that reduction: for fixed `b > 1`, it is equivalent to requiring
     that for every `M : ℕ`, eventually `M * k ≤ F (b^k)`.
-- `RegularInducedSubgraph.Modular` adds:
+- `RegularInducedSubgraph.Modular` now re-exports a three-file modular development:
+  - `RegularInducedSubgraph.Modular.Finite`,
+  - `RegularInducedSubgraph.Modular.Cascade`,
+  - `RegularInducedSubgraph.Modular.Asymptotic`.
+- The modular family adds:
   - `InducesModEqDegree G s q`: all degrees in the induced graph `G[s]` are congruent modulo `q`,
   - `HasModularWitnessOfCard G k`: a size-`k` induced subgraph whose degrees are congruent modulo
     some modulus at least its cardinality,
@@ -147,20 +151,23 @@ The goal here is **not** to import literature about this exact problem. Instead,
   - `EventualNatPowerSingleControlExactDomination b`: the one-control asymptotic target directly
     matching the frontier-strategy note; it is now equivalent both to the single-control
     bucketing/cascade refinements and to the unbounded exact control-block, multiblock bucketing,
-    and multiblock cascade targets, and still implies `TargetStatement`,
+    and multiblock cascade targets, and still implies `TargetStatement`; moreover, for every
+    integer base `b > 1`, it is now also equivalent to the original discrete power-sequence target
+    `EventualNatPowerDomination b`,
   - `HasSingleControlModularWitnessOfCard G k` and
     `EventualNatPowerSingleControlModularDomination b`: the nonempty one-control modular target from
     the strategy note; in the unbounded story this is now equivalent both to the single-control
     modular-bucketing refinement and to the genuine multiblock modular control-block, modular
     bucketing, and modular cascade formulations, so it is the simplest canonical modular frontier
     object and still implies `TargetStatement`,
-- `HasBoundedSingleControlModularWitnessOfCard G k r` and
+  - `HasBoundedSingleControlModularWitnessOfCard G k r` and
   `EventualNatPowerBoundedSingleControlModularDomination b u`: the budgeted small-control modular
   version, which now also receives direct bridges from the bounded single-control bucketing route;
   moreover, once the control budget is strictly smaller than the demanded bucket size, the modular
   witness collapses back to the bounded exact one because the control residues already determine the
   exact external degrees, and under an eventual `u k < (M + 1)k` hypothesis this makes the bounded
-  modular target equivalent to the bounded exact one,
+  modular target equivalent to the bounded exact one; in particular, for every base `b > 1`, the
+  singleton-budget specialization `u k = 1` is already equivalent to `TargetStatement`,
   - `HasSingleControlModularBucketingWitnessOfCard G k` and
     `EventualNatPowerSingleControlModularBucketingDomination b`: the dropped-part modular bucketing
     refinement of the small-control modular target; unboundedly it now collapses back to the plain
@@ -173,12 +180,14 @@ The goal here is **not** to import literature about this exact problem. Instead,
     bounded exact target and the bounded exact-bucketing target,
   - `EventualNatPowerBoundedSingleControlExactDomination b u`: the budgeted one-control asymptotic
     target, which records an explicit control-size allowance `u k` at scale `k` and still implies
-    `TargetStatement`,
+    `TargetStatement`; in particular, for every base `b > 1`, the singleton-budget specialization
+    `u k = 1` is already equivalent to `EventualNatPowerDomination b`,
   - `EventualNatPowerSingleControlBucketingDomination b` and
-    `EventualNatPowerBoundedSingleControlBucketingDomination b u`: asymptotic bucketing targets;
-    the unbounded one is equivalent to `EventualNatPowerSingleControlExactDomination`, while the
-    bounded one is equivalent to `EventualNatPowerBoundedSingleControlExactDomination`, so both
-    still imply `TargetStatement`,
+  `EventualNatPowerBoundedSingleControlBucketingDomination b u`: asymptotic bucketing targets;
+  the unbounded one is equivalent to `EventualNatPowerSingleControlExactDomination`, while the
+  bounded one is equivalent to `EventualNatPowerBoundedSingleControlExactDomination`, so both
+  still imply `TargetStatement`; again, for every base `b > 1`, the bounded singleton-budget case
+  `u k = 1` is already equivalent to `TargetStatement`,
   - `HasControlBlockBucketingWitnessOfCard G k` and
     `HasBoundedControlBlockBucketingWitnessOfCard G k r`: multiblock bucketing witnesses that freeze
     one dropped-part degree together with a separated nonempty control-block family and collapse
@@ -240,6 +249,26 @@ The goal here is **not** to import literature about this exact problem. Instead,
   - `EventualNatPowerLowDegreeModularDomination b`: a sharper modular asymptotic target whose
     eventual validity also implies `TargetStatement`.
 
+## Repository map
+
+If you want a quick way into the artifact, the following declarations are the best entry points:
+
+- `RegularInducedSubgraph.Problem.targetStatement_iff_eventualLogDomination`  
+  Base equivalence between the main asymptotic statement and an eventual logarithmic lower bound.
+- `RegularInducedSubgraph.Threshold.eventualNatPowerDomination_iff_targetStatement`  
+  Geometric-scale reduction: the conjecture is equivalent to eventual domination along `F (b^k)`.
+- `RegularInducedSubgraph.Ramsey.exists_pos_eventual_log_lower_bound`  
+  Formal Ramsey-side baseline showing that `F n` is eventually bounded below by a positive multiple
+  of `log n`.
+- `RegularInducedSubgraph.inducesRegularOfDegree_of_constant_unionDegree_and_externalDegree`  
+  The core control-set transport lemma from `Basic`.
+- `RegularInducedSubgraph.hasModularWitnessOfCard_iff_hasRegularInducedSubgraphOfCard`  
+  Finite bridge between modular witnesses and ordinary exact regular induced subgraphs.
+- `RegularInducedSubgraph.eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerDomination_of_one_lt`  
+  Main singleton-control exact collapse theorem.
+- `RegularInducedSubgraph.eventualNatPowerBoundedSingleControlModularDomination_one_iff_targetStatement_of_one_lt`  
+  Main bounded singleton-budget modular collapse theorem.
+
 ## Candidate approaches to try
 
 1. **Control-set bucketing + refinement**  
@@ -281,6 +310,23 @@ The goal here is **not** to import literature about this exact problem. Instead,
 lake exe cache get
 lake build
 ```
+
+On the reviewed snapshot, this build succeeds but emits linter warnings, most visibly:
+
+- unused section-variable / unused typeclass warnings in `RegularInducedSubgraph.Basic`,
+- unused `simp` argument warnings in `RegularInducedSubgraph.Modular.Finite`.
+
+These warnings are expected and do not prevent a successful build. On the current
+snapshot they are concentrated in `RegularInducedSubgraph.Basic` (unused
+section-variable / unused typeclass warnings) and
+`RegularInducedSubgraph.Modular.Finite` (unused `simp` arguments).
+
+The current toolchain is pinned in `lean-toolchain` as `leanprover/lean4:v4.30.0-rc1`. In the
+review environment used for the accompanying paper draft, `elan` did not yet expose a tagged
+`v4.30.0` stable release: `elan toolchain install leanprover/lean4:v4.30.0` currently reports
+`error: no such release: 'v4.30.0'`. A backport attempt to `v4.29.1` failed in upstream
+dependencies (`Batteries`, `mathlib`, `ProofWidgets`) before reaching this repository's own source
+files.
 
 ## Suggested next formal steps
 
