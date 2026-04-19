@@ -133,6 +133,23 @@ lemma controlBlockUnion_eq_of_sameControlBlockSupports :
           rcases hsame with ⟨hb, htail⟩
           simp [controlBlockUnion, hb, ih htail]
 
+lemma length_eq_of_sameControlBlockSupports :
+    ∀ {blocks blocks' : List (Finset V × ℕ)},
+      SameControlBlockSupports blocks blocks' →
+        blocks.length = blocks'.length := by
+  intro blocks blocks' hsame
+  induction blocks generalizing blocks' with
+  | nil =>
+      cases blocks' with
+      | nil => rfl
+      | cons b bs => cases hsame
+  | cons b bs ih =>
+      cases blocks' with
+      | nil => cases hsame
+      | cons b' bs' =>
+          rcases hsame with ⟨_hb, htail⟩
+          simp [ih htail]
+
 lemma controlBlocksSeparated_mono {s t : Finset V} (hts : t ⊆ s) :
     ∀ {blocks : List (Finset V × ℕ)},
       ControlBlocksSeparated s blocks → ControlBlocksSeparated t blocks := by
@@ -1597,6 +1614,37 @@ lemma hasExactControlBlockWitnessOfCard_of_inducesRegularOfDegree_and_externalBl
           (G := G) hsep hext v]
   exact ⟨s, hks, blocks, hnonempty, hsep, d + controlBlockDegreeSum blocks, hdeg, hext⟩
 
+lemma hasBoundedExactControlBlockWitnessOfCard_of_inducesRegularOfDegree_and_externalBlockDegrees
+    (G : SimpleGraph V) [DecidableRel G.Adj]
+    {k r d : ℕ} {s : Finset V} (hks : k ≤ s.card)
+    {blocks : List (Finset V × ℕ)} (hlen : blocks.length ≤ r)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hreg : InducesRegularOfDegree G s d)
+    (hext : HasConstantExternalBlockDegrees G s blocks) :
+    HasBoundedExactControlBlockWitnessOfCard G k r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rw [InducesRegularOfDegree] at hreg
+  have hsBlocks : Disjoint s (controlBlockUnion blocks) :=
+    disjoint_controlBlockUnion_of_controlBlocksSeparated hsep
+  have hdeg :
+      ∀ v : ↑(s : Set V),
+        (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ = d + controlBlockDegreeSum blocks := by
+    intro v
+    rw [degree_union_eq_degree_add_external (G := G) (hst := hsBlocks) (v := v)]
+    calc
+      (inducedOn G s).degree v + (G.neighborFinset v ∩ controlBlockUnion blocks).card
+          = d + (G.neighborFinset v ∩ controlBlockUnion blocks).card := by
+            rw [hreg v]
+      _ = d + controlBlockDegreeSum blocks := by
+        rw [constant_externalDegree_controlBlockUnion_of_hasConstantExternalBlockDegrees
+          (G := G) hsep hext v]
+  exact ⟨s, hks, blocks, hlen, hnonempty, hsep, d + controlBlockDegreeSum blocks, hdeg, hext⟩
+
 lemma
     hasNonemptyControlBlockModularWitnessOfCard_of_card_le_modulus_of_inducesRegularOfDegree_and_modExternalBlockDegrees
     (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -1765,6 +1813,33 @@ lemma hasExactControlBlockWitnessOfCard_of_hasRegularInducedSubgraphOfCard_induc
   exact
     hasExactControlBlockWitnessOfCard_of_inducesRegularOfDegree_and_externalBlockDegrees
       (G := G) hku hnonempty (controlBlocksSeparated_mono hus hsep) hud
+      (hasConstantExternalBlockDegrees_mono (G := G) hus hext)
+
+lemma hasBoundedExactControlBlockWitnessOfCard_of_hasRegularInducedSubgraphOfCard_inducedOn_and_externalBlockDegrees
+    (G : SimpleGraph V) [DecidableRel G.Adj]
+    {k r : ℕ} {s : Finset V}
+    (hreg : HasRegularInducedSubgraphOfCard (inducedOn G s) k)
+    {blocks : List (Finset V × ℕ)} (hlen : blocks.length ≤ r)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hext : HasConstantExternalBlockDegrees G s blocks) :
+    HasBoundedExactControlBlockWitnessOfCard G k r := by
+  classical
+  rcases hreg with ⟨t, hkt, d, htd⟩
+  let e : inducedOn G s ↪g G :=
+    SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set V))) G
+  let u : Finset V := t.map (Function.Embedding.subtype (· ∈ (s : Set V)))
+  have hus : u ⊆ s := by
+    intro x hx
+    rcases Finset.mem_map.mp hx with ⟨v, hv, rfl⟩
+    exact v.2
+  have hku : k ≤ u.card := by
+    simpa [u] using hkt
+  have hud : InducesRegularOfDegree G u d := by
+    simpa [u, e] using (inducesRegularOfDegree_of_embedding e htd)
+  exact
+    hasBoundedExactControlBlockWitnessOfCard_of_inducesRegularOfDegree_and_externalBlockDegrees
+      (G := G) hku hlen hnonempty (controlBlocksSeparated_mono hus hsep) hud
       (hasConstantExternalBlockDegrees_mono (G := G) hus hext)
 
 lemma
@@ -2007,6 +2082,35 @@ lemma hasExactControlBlockWitnessOfCard_of_hasSingleControlExactWitnessOfCard
   classical
   rcases hsingle with ⟨s, t, hks, ht, hst, D, e, hdeg, hext⟩
   refine ⟨s, hks, [(t, e)], ?_, ?_, D, ?_, ?_⟩
+  · unfold NonemptyControlBlockUnion
+    simpa using ht
+  · refine ⟨hst, ?_, trivial⟩
+    simp [controlBlockUnion]
+  · intro v
+    have hcast :
+        (inducedOn G (s ∪ controlBlockUnion [(t, e)])).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ t)).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+      simpa [controlBlockUnion, Finset.union_assoc] using
+        (inducedOn_degree_congr (G := G)
+          (s := s ∪ controlBlockUnion [(t, e)])
+          (t := s ∪ t)
+          (h := by simp [controlBlockUnion, Finset.union_assoc])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl v.2)))
+    exact hcast.trans (hdeg v)
+  · refine ⟨?_, trivial⟩
+    intro v
+    simpa using hext v
+
+lemma hasBoundedExactControlBlockWitnessOfCard_of_hasSingleControlExactWitnessOfCard
+    (G : SimpleGraph V) {k r : ℕ} (hr : 0 < r)
+    (hsingle : HasSingleControlExactWitnessOfCard G k) :
+    HasBoundedExactControlBlockWitnessOfCard G k r := by
+  classical
+  rcases hsingle with ⟨s, t, hks, ht, hst, D, e, hdeg, hext⟩
+  refine ⟨s, hks, [(t, e)], ?_, ?_, ?_, D, ?_, ?_⟩
+  · simpa using hr
   · unfold NonemptyControlBlockUnion
     simpa using ht
   · refine ⟨hst, ?_, trivial⟩

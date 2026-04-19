@@ -344,3 +344,7 @@ files.
    with the modular residue-pair bucketing lemmas available as the base pigeonhole step.
 5. Isolate a reusable lemma turning a large near-regular induced subgraph into an exactly regular
    induced subgraph with controlled vertex loss.
+6. Try the dyadic modulus-lifting program in [notes/dyadic-lift-program.md](notes/dyadic-lift-program.md):
+   prove a polynomial-cost lift from modulus `2^j` to `2^(j+1)` in a composable fixed-modulus
+   modular bucketing/cascade package. A successful lift would yield
+   `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`, hence `TargetStatement`.

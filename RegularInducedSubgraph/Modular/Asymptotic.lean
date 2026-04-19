@@ -229,6 +229,17 @@ theorem eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerExa
   intro k hk G
   exact hasExactControlBlockWitnessOfCard_of_hasSingleControlExactWitnessOfCard G (hK hk G)
 
+theorem eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerBoundedExactControlBlockDomination
+    {b r : ℕ} (hr : 0 < r)
+    (hsingle : EventualNatPowerSingleControlExactDomination b) :
+    EventualNatPowerBoundedExactControlBlockDomination b r := by
+  intro M
+  rcases hsingle M with ⟨K, hK⟩
+  refine ⟨K, ?_⟩
+  intro k hk G
+  exact hasBoundedExactControlBlockWitnessOfCard_of_hasSingleControlExactWitnessOfCard G hr
+    (hK hk G)
+
 theorem eventualNatPowerExactControlBlockDomination_implies_eventualNatPowerSingleControlExactDomination
     {b : ℕ} (hexact : EventualNatPowerExactControlBlockDomination b) :
     EventualNatPowerSingleControlExactDomination b := by
@@ -1009,6 +1020,29 @@ theorem eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerDominat
       (eventualNatPowerDomination_implies_eventualNatPowerBoundedSingleControlExactDomination_one_of_one_lt
         hb hpow)
 
+theorem eventualNatPowerDomination_implies_eventualNatPowerBoundedExactControlBlockDomination_of_one_lt
+    {b r : ℕ} (hb : 1 < b) (hr : 0 < r) (hpow : EventualNatPowerDomination b) :
+    EventualNatPowerBoundedExactControlBlockDomination b r := by
+  exact
+    eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerBoundedExactControlBlockDomination
+      hr
+      ((eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerDomination_of_one_lt hb).2
+        hpow)
+
+theorem eventualNatPowerBoundedExactControlBlockDomination_iff_eventualNatPowerDomination_of_one_lt
+    {b r : ℕ} (hb : 1 < b) (hr : 0 < r) :
+    EventualNatPowerBoundedExactControlBlockDomination b r ↔
+      EventualNatPowerDomination b := by
+  constructor
+  · intro hctrl
+    exact eventualNatPowerSingleControlExactDomination_implies_eventualNatPowerDomination
+      (eventualNatPowerExactControlBlockDomination_implies_eventualNatPowerSingleControlExactDomination
+        (eventualNatPowerBoundedExactControlBlockDomination_implies_eventualNatPowerExactControlBlockDomination
+          hctrl))
+  · exact
+      eventualNatPowerDomination_implies_eventualNatPowerBoundedExactControlBlockDomination_of_one_lt
+        hb hr
+
 theorem eventualNatPowerSingleControlExactDomination_iff_eventualNatPowerDomination_of_two_lt
     {b : ℕ} (hb : 2 < b) :
     EventualNatPowerSingleControlExactDomination b ↔ EventualNatPowerDomination b := by
@@ -1036,6 +1070,13 @@ theorem eventualNatPowerBoundedSingleControlExactDomination_iff_targetStatement_
     EventualNatPowerBoundedSingleControlExactDomination b u ↔ TargetStatement := by
   rw [eventualNatPowerBoundedSingleControlExactDomination_iff_eventualNatPowerDomination_of_eventually_pos
       hb hpos,
+    eventualNatPowerDomination_iff_targetStatement hb]
+
+theorem eventualNatPowerBoundedExactControlBlockDomination_iff_targetStatement_of_one_lt
+    {b r : ℕ} (hb : 1 < b) (hr : 0 < r) :
+    EventualNatPowerBoundedExactControlBlockDomination b r ↔ TargetStatement := by
+  rw [eventualNatPowerBoundedExactControlBlockDomination_iff_eventualNatPowerDomination_of_one_lt
+      hb hr,
     eventualNatPowerDomination_iff_targetStatement hb]
 
 theorem eventualNatPowerSingleControlExactDomination_iff_targetStatement_of_one_lt

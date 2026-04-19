@@ -1,0 +1,808 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}[theorem]{Problem}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\title[Modular-control reformulation]{A modular-control reformulation of the regular induced subgraph conjecture}
+\author{Arthur Freitas Ramos}
+\address{Microsoft, USA}
+\email{arfreita@microsoft.com}
+
+\author{David Barros Hulak}
+\address{Independent researcher}
+\email{dbhulak@gmail.com}
+
+\author{Ruy B.~J.~G. de Queiroz}
+\address{Centro de Inform\'atica, Universidade Federal de Pernambuco, Brazil}
+\email{ruy@cin.ufpe.br}
+
+\subjclass[2020]{Primary 05C35; Secondary 05C07, 05C69}
+\keywords{regular induced subgraph; modular degree; structural reformulation;
+control set; asymptotic frontier}
+
+\begin{document}
+
+\begin{abstract}
+Let $F(n)$ be the largest integer such that every graph on $n$ vertices contains a regular induced
+subgraph on at least $F(n)$ vertices. We record a structural reformulation of the conjecture that
+$F(n)$ grows superlogarithmically. For every integer base $b>1$, the conjecture is equivalent to
+linear growth along the subsequence $b^k$, to the corresponding modular target, to a sharper
+low-degree modular target in which the modulus need only exceed the maximum induced degree, and to
+an exact one-control formulation with a singleton control vertex. On the modular side, we isolate
+the one-control modular witness as the canonical asymptotic object and show that the natural
+multiblock, bucketing, and cascade variants carry no extra asymptotic information: they are all
+equivalent to the same target. Two transport lemmas and a paired-residue bucketing lemma with
+quadratic cost in the modulus support this reduction on the finite side. The point is not a new
+lower bound, but a proof that several apparently stronger modular-control packages collapse to the
+same frontier.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+All graphs in this paper are finite and simple. For $n \in \N$, let $F(n)$ be the largest integer
+such that every graph on $n$ vertices contains a regular induced subgraph on at least $F(n)$
+vertices. The conjecture usually attributed to Erd\H{o}s, Fajtlowicz, and Staton asks whether
+\[
+  \frac{F(n)}{\log n} \longrightarrow \infty .
+\]
+The basic Ramsey argument gives only the logarithmic lower bound $F(n) \ge c \log n$ for some
+absolute $c>0$; compare \cite{FajtlowiczMcColganReidStaton,AlonKrivelevichSudakov}. Further
+progress in adjacent settings includes polynomial lower bounds for random graphs
+\cite{KrivelevichSudakovWormald}, algorithmic and structural results for $k$-regular induced
+subgraphs \cite{CardosoKaminskiLozin}, and modular-degree theorems in sparse graphs such as
+the result of Berman, Radcliffe, Scott, Wang, and Wargo that every tree contains a large induced
+subgraph with all degrees $\equiv 1 \pmod k$ \cite{BermanRadcliffeScottWangWargo}. Modular degree
+conditions also appear in Scott's and Caro's work on induced subgraphs with prescribed residues
+\cite{Scott,Caro}. These results show that congruence constraints arise naturally in induced
+subgraph problems, but they do not identify the minimal witness package relevant to the regular
+induced subgraph conjecture. We do not improve any of these bounds.
+
+Instead, the aim of this paper is structural. We isolate a modular-control reformulation of the
+conjecture in which the remaining open step becomes quite explicit. The contribution is not a new
+modular-degree theorem, but a normalization result for the conjecture: once one allows
+ambient-degree and external-degree congruences, there is no asymptotic gain in keeping several
+control blocks, a dropped part, or a cascade of refinements. Those packages all collapse to a
+single one-control modular witness target (Theorem~\ref{thm:canonical-frontier}). Concretely, the
+paper proves three reductions:
+
+\begin{itemize}
+  \item the conjecture is equivalent to its restriction to any geometric subsequence $b^k$, and to
+    both the usual modular target and the sharper low-degree modular target;
+  \item on the exact side, the same power-scale target is equivalent to the existence of linearly
+    large one-control exact witnesses, even with a singleton control set;
+  \item on the modular side, the one-control, multiblock, bucketing, and cascade witness packages
+    are all asymptotically equivalent.
+\end{itemize}
+
+The key message is therefore not merely that modular language is available, but that the conjecture
+can be reduced to low-complexity degree data without sacrificing asymptotic strength. The finite
+lemmas behind this reduction are simple:
+
+\begin{itemize}
+  \item if all vertices of a set $S$ have the same degree in $G[S \cup T]$ and the same degree into
+    a disjoint control set $T$, then $G[S]$ is regular;
+  \item the modular analogue holds with congruences modulo $q$;
+  \item when one buckets by the pair consisting of the ambient degree modulo $q$ and the degree into
+    $T$ modulo $q$, only $q^2$ residue classes appear.
+\end{itemize}
+
+These lemmas suggest a control-set route that is exponentially cheaper than tracking full
+adjacency patterns. More importantly, they show that any successful modular-control argument can,
+after the fact, be normalized to one control set and one modulus. This is the sense in which the
+reformulation is intended to be canonical rather than cosmetic.
+
+\medskip
+
+The paper is organized as follows. Section~\ref{sec:powerscales} records the geometric-scale and
+modular reformulations of the conjecture. Section~\ref{sec:transport} states the finite exact and
+modular transport lemmas together with the paired-residue bucketing principle. In
+Section~\ref{sec:frontier} we define the one-control exact and modular witnesses, explain why the
+exact one-control target is already equivalent to the usual geometric formulation, and isolate the
+one-control modular target as the canonical modular frontier together with its multiblock,
+bucketing, and cascade reformulations; Theorem~\ref{thm:summary-package} then packages the paper as
+a single equivalence theorem. The final section records a concrete open problem suggested by this
+reorganization.
+
+\subsection*{Notation}
+All graphs are finite and simple. For a graph $G$ and a vertex set $S$, we write $G[S]$ for the
+induced subgraph on $S$. For disjoint sets $S,T$ and $v \in S$ we write $\deg_{G[S]}(v)$ for the
+degree of $v$ in $G[S]$, $\deg_{G[S\cup T]}(v)$ for its degree in $G[S \cup T]$, and
+$\deg_T(v) = |N_G(v)\cap T|$ for its number of neighbors in $T$. Congruences $a \equiv b\pmod q$
+are taken in $\Z$ in the usual sense; we say a quantity is constant modulo $q$ on a set $U$ if
+its values on $U$ are pairwise congruent modulo $q$.
+
+
+
+\section{Power scales and modular witnesses}\label{sec:powerscales}
+
+\begin{definition}
+Fix an integer base $b>1$.
+\begin{enumerate}
+  \item We say that the \emph{power-sequence target} holds at base $b$ if, for every $M \in \N$,
+    there exists $K$ such that for every $k \ge K$, every graph on $b^k$ vertices contains a
+    regular induced subgraph on at least $Mk$ vertices.
+  \item A \emph{modular witness} in a graph $G$ is an induced subgraph $G[S]$ such that all degrees
+    in $G[S]$ are congruent modulo some integer $q \ge |S|$.
+  \item A \emph{low-degree modular witness} in a graph $G$ is an induced subgraph $G[S]$ such that
+    all degrees in $G[S]$ are congruent modulo some integer $q$ and every degree in $G[S]$ is
+    strictly smaller than $q$.
+  \item We say that the \emph{power-sequence modular target} holds at base $b$ if, for every
+    $M \in \N$, there exists $K$ such that for every $k \ge K$, every graph on $b^k$ vertices
+    contains a modular witness of order at least $Mk$.
+  \item We say that the \emph{power-sequence low-degree modular target} holds at base $b$ if, for
+    every $M \in \N$, there exists $K$ such that for every $k \ge K$, every graph on $b^k$
+    vertices contains a low-degree modular witness of order at least $Mk$.
+\end{enumerate}
+\end{definition}
+
+The first reformulation is the standard but extremely useful observation that the asymptotic
+statement may be tested on any fixed geometric subsequence.
+
+\begin{theorem}\label{thm:power-sequence}
+For every integer $b>1$, the following are equivalent.
+\begin{enumerate}
+  \item $F(n)/\log n \to \infty$.
+  \item The power-sequence target holds at base $b$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Assume first that $F(n)/\log n \to \infty$. Fix $M \in \N$. Then
+\[
+  \frac{F(b^k)}{\log(b^k)} = \frac{F(b^k)}{k \log b} \longrightarrow \infty ,
+\]
+so for all sufficiently large $k$ we have $F(b^k) \ge Mk$. This is exactly the power-sequence
+target.
+
+Conversely, assume the power-sequence target at base $b$. Let $C>0$. It is enough to show that
+$F(n) \ge C \log n$ for all sufficiently large $n$. Choose an integer $M > 2C \log b$. Let $K$ be
+such that every graph on $b^k$ vertices contains a regular induced subgraph of order at least $Mk$
+for all $k \ge K$. Now let $n \ge b^K$, and choose $k$ with $b^k \le n < b^{k+1}$.
+
+By monotonicity of $F$,
+\[
+  F(n) \ge F(b^k) \ge Mk.
+\]
+Since $\log n < (k+1)\log b$, we obtain
+\[
+  C \log n < C(k+1)\log b \le \frac{M}{2}(k+1).
+\]
+For all sufficiently large $k$ one has $k+1 \le 2k$, and then
+\[
+  C \log n < Mk \le F(n).
+\]
+Therefore $F(n)$ eventually dominates every constant multiple of $\log n$, which is equivalent to
+the conjecture.
+\end{proof}
+
+The modular route starts from the observation that congruence plus a sufficiently large modulus is
+already exact regularity.
+
+\begin{proposition}\label{prop:modular-collapse}
+Let $G$ be a graph and let $S$ be a vertex set. If all degrees in $G[S]$ are congruent modulo an
+integer $q \ge |S|$, then $G[S]$ is regular.
+
+More generally, if all degrees in $G[S]$ lie in an interval of width strictly smaller than $q$ and
+are pairwise congruent modulo $q$, then $G[S]$ is regular.
+\end{proposition}
+
+\begin{proof}
+Every degree in $G[S]$ lies in $\{0,1,\dots,|S|-1\}$. If $q \ge |S|$, then two numbers in that set
+that are congruent modulo $q$ must coincide. The interval version is the same observation: two
+integers in an interval of width $<q$ that are congruent modulo $q$ are equal.
+\end{proof}
+
+This already converts the geometric regular-subgraph target into a modular one.
+
+\begin{theorem}\label{thm:modular-reduction}
+For every integer $b>1$, the following are equivalent.
+\begin{enumerate}
+  \item $F(n)/\log n \to \infty$.
+  \item The power-sequence modular target holds at base $b$.
+  \item The power-sequence low-degree modular target holds at base $b$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:power-sequence}, it is enough to compare both statements with the
+power-sequence target. Every regular induced subgraph is trivially a modular witness: take any
+modulus $q \ge |S|$. It is also a low-degree modular witness: if all degrees in $G[S]$ equal $d$,
+take $q=d+1$.
+
+Conversely, Proposition~\ref{prop:modular-collapse} turns every modular witness into an exact
+regular induced subgraph of the same order. A low-degree modular witness is also exact by the
+interval version of that proposition, since all induced degrees lie in the interval $[0,q)$ of
+width $q$.
+\end{proof}
+
+\begin{remark}
+The modular reformulation is not stronger than the original problem. Its value is organizational:
+congruence conditions interact better with control sets and bucketing than exact equality does. The
+low-degree version sharpens this further: the modulus need only dominate the induced degree range,
+not the full cardinality of the surviving set.
+\end{remark}
+
+\section{Transport lemmas and cheap bucketing}\label{sec:transport}
+
+The most basic control-set lemma is the following.
+
+\begin{proposition}[exact control-set transport]\label{prop:exact-transport}
+Let $S$ and $T$ be disjoint vertex sets in a graph $G$. Suppose that all vertices of $S$ have the
+same degree in $G[S \cup T]$ and also the same degree into $T$. Then $G[S]$ is regular.
+\end{proposition}
+
+\begin{proof}
+For every $v \in S$,
+\[
+  \deg_{G[S]}(v)=\deg_{G[S \cup T]}(v)-\deg_T(v).
+\]
+If the two terms on the right are independent of $v$, then so is the left-hand side.
+\end{proof}
+
+The modular analogue is equally simple.
+
+\begin{proposition}[modular control-set transport]\label{prop:modular-transport}
+Let $S$ and $T$ be disjoint vertex sets in a graph $G$, and let $q \ge 1$. If the degrees of all
+vertices of $S$ in $G[S \cup T]$ are pairwise congruent modulo $q$, and the degrees of all
+vertices of $S$ into $T$ are pairwise congruent modulo $q$, then the degrees in $G[S]$ are pairwise
+congruent modulo $q$.
+\end{proposition}
+
+\begin{proof}
+For $v,w \in S$ one has
+\begin{align*}
+  \deg_{G[S \cup T]}(v)-\deg_{G[S]}(v) &= \deg_T(v), \\
+  \deg_{G[S \cup T]}(w)-\deg_{G[S]}(w) &= \deg_T(w).
+\end{align*}
+Subtracting the two identities and using the congruence hypotheses gives
+$\deg_{G[S]}(v) \equiv \deg_{G[S]}(w) \pmod q$.
+\end{proof}
+
+The same bookkeeping works with several control blocks.
+
+\begin{proposition}[multiblock modular transport]\label{prop:multiblock-transport}
+Let $S,T_1,\dots,T_r$ be pairwise disjoint vertex sets in a graph $G$, and let $q \ge 1$. If the
+degrees of all vertices of $S$ in $G[S \cup T_1 \cup \cdots \cup T_r]$ are pairwise congruent
+modulo $q$, and for each $i=1,\dots,r$ the degrees of all vertices of $S$ into $T_i$ are pairwise
+congruent modulo $q$, then the degrees in $G[S]$ are pairwise congruent modulo $q$.
+\end{proposition}
+
+\begin{proof}
+For every $v \in S$,
+\[
+  \deg_{G[S]}(v)
+  =
+  \deg_{G[S \cup T_1 \cup \cdots \cup T_r]}(v)-\sum_{i=1}^r \deg_{T_i}(v).
+\]
+Each term on the right is constant modulo $q$ on $S$ by hypothesis, so the left-hand side is also
+constant modulo $q$ on $S$.
+\end{proof}
+
+The key combinatorial gain is that one need only freeze two scalar quantities modulo $q$, rather
+than the full adjacency pattern into the control set.
+
+\begin{proposition}[paired-residue bucketing]\label{prop:q2-bucketing}
+Let $S$ and $T$ be disjoint vertex sets in a graph $G$, let $q \ge 1$, and let $k \in \N$. If
+$q^2 k \le |S|$, then there exists a subset $U \subseteq S$ with $|U| \ge k$ such that all degrees
+in $G[S]$ on $U$ are congruent modulo $q$.
+
+More precisely, one may choose $U$ so that both the ambient degree in $G[S \cup T]$ modulo $q$ and
+the degree into $T$ modulo $q$ are constant on $U$.
+\end{proposition}
+
+\begin{proof}
+Consider the map
+\[
+  \phi \colon S \to (\mathbb{Z}/q\mathbb{Z})^2,
+  \qquad
+  \phi(v)=\bigl(\deg_{G[S \cup T]}(v)\bmod q,\ \deg_T(v)\bmod q\bigr).
+\]
+Its codomain has exactly $q^2$ elements. Since $q^2 k \le |S|$, the pigeonhole principle yields a
+fiber $U \subseteq S$ with $|U| \ge k$ on which $\phi$ is constant. Thus all vertices of $U$ have
+the same degree in $G[S \cup T]$ modulo $q$ and the same degree into $T$ modulo $q$.
+
+For $u,w \in U$ we have
+\begin{align*}
+  \deg_{G[S]}(u) &= \deg_{G[S \cup T]}(u)-\deg_T(u), \\
+  \deg_{G[S]}(w) &= \deg_{G[S \cup T]}(w)-\deg_T(w),
+\end{align*}
+because $S$ and $T$ are disjoint. The two terms on the right are pairwise congruent modulo $q$, so
+$\deg_{G[S]}(u)\equiv \deg_{G[S]}(w)\pmod q$. Hence the degrees in $G[S]$ on $U$ are all congruent
+modulo $q$.
+\end{proof}
+
+The same pigeonhole argument extends to several control blocks.
+
+\begin{proposition}[multiblock residue bucketing]\label{prop:multiblock-bucketing}
+Let $S,T_1,\dots,T_r$ be pairwise disjoint vertex sets in a graph $G$, let $q \ge 1$, and let
+$k \in \N$. If $q^{r+1}k \le |S|$, then there exists a subset $U \subseteq S$ with $|U| \ge k$
+such that all vertices of $U$ have the same degree in $G[S \cup T_1 \cup \cdots \cup T_r]$
+modulo $q$, and for each $i=1,\dots,r$ the same degree into $T_i$ modulo $q$.
+\end{proposition}
+
+\begin{proof}
+Consider the map
+\begin{align*}
+  \phi \colon S &\to (\Z/q\Z)^{r+1}, \\
+  \phi(v)&=\bigl(
+    \deg_{G[S \cup T_1 \cup \cdots \cup T_r]}(v)\bmod q,\,
+    \deg_{T_1}(v)\bmod q,\,
+    \dots,\,
+    \deg_{T_r}(v)\bmod q
+  \bigr).
+\end{align*}
+Its codomain has exactly $q^{r+1}$ elements. Since $q^{r+1}k \le |S|$, the pigeonhole principle
+yields a fiber $U \subseteq S$ with $|U| \ge k$ on which $\phi$ is constant. This is exactly the
+stated residue constancy.
+\end{proof}
+
+Thus passing from one control block to $r$ control blocks costs only polynomially many residue
+classes, namely $q^{r+1}$, and no additional difficulty in the transport step. The later frontier
+theorem will show that, asymptotically, this extra bookkeeping does not create a new target.
+
+\section{The canonical frontier}\label{sec:frontier}
+
+We now define the two witness notions that matter most for the asymptotic story.
+
+\begin{definition}
+Let $G$ be a graph and $k \in \N$.
+\begin{enumerate}
+  \item A \emph{one-control exact witness of order $k$} consists of disjoint sets $S,T$ with
+    $T \neq \varnothing$ and $|S| \ge k$ such that all vertices of $S$ have the same degree in
+    $G[S \cup T]$ and the same degree into $T$.
+  \item A \emph{one-control modular witness of order $k$} consists of disjoint sets $S,T$ with
+    $T \neq \varnothing$, an integer $q \ge |S|$, and $|S| \ge k$ such that all vertices of $S$
+    have the same degree in $G[S \cup T]$ modulo $q$ and the same degree into $T$ modulo $q$.
+\end{enumerate}
+\end{definition}
+
+The exact one-control target looks stronger than the power-sequence target, but on geometric scales
+it is already equivalent to it.
+
+\begin{theorem}[single-control exact collapse]\label{thm:exact-collapse}
+Fix an integer $b>1$. The following are equivalent.
+\begin{enumerate}
+  \item The power-sequence target holds at base $b$.
+  \item For every $M \in \N$, every sufficiently large graph on $b^k$ vertices contains a
+    one-control exact witness of order $Mk$.
+\end{enumerate}
+
+In fact, the control set may be chosen to have size $1$.
+\end{theorem}
+
+\begin{proof}
+$(2)\Rightarrow(1)$ follows immediately from Proposition~\ref{prop:exact-transport}: every
+one-control exact witness contains a regular induced subgraph on the surviving set $S$.
+
+For $(1)\Rightarrow(2)$, assume the power-sequence target at base $b$. Fix $M \in \N$, and choose
+$K$ such that every graph on $b^k$ vertices contains a regular induced subgraph on at least
+$2Mk$ vertices for all $k \ge K$. Let $G$ be a graph on $b^k$ vertices with $k \ge K+1$, and
+choose a vertex $t \in V(G)$.
+
+Partition $V(G)\setminus\{t\}$ into the neighbors of $t$ and the non-neighbors of $t$. One of these
+two sets has size at least $\lceil (b^k-1)/2 \rceil$. Since $b>1$ is an integer, this quantity is at
+least $b^{k-1}$. Let $W$ be such a set, and choose a subset $W' \subseteq W$ of cardinality exactly
+$b^{k-1}$.
+
+By the power-sequence target applied to the induced subgraph $G[W']$, there exists $S \subseteq W'$
+with $|S| \ge 2M(k-1)$ such that $G[S]$ is regular. Every vertex of $S$ has the same degree into the
+single vertex $t$, namely either $0$ or $1$, because all vertices of $W$ lie in the same adjacency
+class to $t$. Therefore $S$ together with the control set $\{t\}$ is a one-control exact witness of
+order $2M(k-1)$ in $G$.
+
+For $k \ge 2$ one has $2M(k-1)\ge Mk$, so this is in particular a one-control exact witness of order
+$Mk$. This proves the required asymptotic statement.
+\end{proof}
+
+The modular route admits a larger family of witness notions. We will use the following four
+variants.
+
+\begin{definition}
+Let $G$ be a graph and $k \in \N$.
+\begin{enumerate}
+  \item A \emph{one-control modular bucketing witness of order $k$} consists of pairwise disjoint
+    sets $U,D,T$ with $T \neq \varnothing$, an integer $q \ge |U|$, and $|U| \ge k$ such that all
+    vertices of $U$ have the same degree in $G[U \cup D \cup T]$ modulo $q$, the same degree into
+    $D$ modulo $q$, and the same degree into $T$ modulo $q$.
+  \item A \emph{nonempty modular control-block witness of order $k$} consists of a set $U$, a
+    nonempty family of pairwise disjoint control blocks $T_1,\dots,T_r$ disjoint from $U$, an
+    integer $q \ge |U|$, and $|U| \ge k$ such that all vertices of $U$ have the same degree in
+    $G[U \cup T_1 \cup \cdots \cup T_r]$ modulo $q$, and for each $i$ they have the same degree into
+    $T_i$ modulo $q$.
+  \item A \emph{modular control-block bucketing witness of order $k$} consists of a set $U$, a
+    dropped part $D$, and a nonempty family of pairwise disjoint control blocks
+    $T_1,\dots,T_r$, all disjoint from one another, together with an integer $q \ge |U|$ and
+    $|U| \ge k$, such that all vertices of $U$ have the same degree in
+    $G[U \cup D \cup T_1 \cup \cdots \cup T_r]$ modulo $q$, the same degree into $D$ modulo $q$, and
+    for each $i$ the same degree into $T_i$ modulo $q$.
+  \item A \emph{modular control-block cascade witness of order $k$} consists of nested sets
+    \[
+      S_0 \supseteq S_1 \supseteq \cdots \supseteq S_m,
+    \]
+    a nonempty family of pairwise disjoint control blocks $T_1,\dots,T_r$ disjoint from $S_0$, and
+    an integer $q \ge |S_m|$, such that $|S_m| \ge k$ and:
+    \begin{enumerate}
+      \item for each $i=1,\dots,m$, all vertices of $S_i$ have the same degree in
+        $G[S_{i-1} \cup T_1 \cup \cdots \cup T_r]$ modulo $q$ and the same degree into the dropped
+        layer $S_{i-1}\setminus S_i$ modulo $q$;
+      \item all vertices of $S_m$ have the same degree in
+        $G[S_m \cup T_1 \cup \cdots \cup T_r]$ modulo $q$, and for each $j$ they have the same
+        degree into $T_j$ modulo $q$.
+    \end{enumerate}
+\end{enumerate}
+
+For each of these witness notions, the corresponding \emph{target at base $b$} means that for every
+$M \in \N$, every sufficiently large graph on $b^k$ vertices contains such a witness of order $Mk$.
+\end{definition}
+
+These variants differ only in whether one explicitly remembers the discarded vertices in a single
+step or serializes them across a chain of refinements, and in whether the control data are stored in
+one block or several. The next theorem shows that, asymptotically, they define the same frontier.
+
+\begin{theorem}[canonical modular frontier]\label{thm:canonical-frontier}
+Fix an integer $b>1$. The following are equivalent.
+\begin{enumerate}
+  \item The one-control modular target holds at base $b$: for every $M \in \N$, every sufficiently
+    large graph on $b^k$ vertices contains a one-control modular witness of order $Mk$.
+  \item The analogous one-control modular bucketing target holds.
+  \item The analogous nonempty modular control-block target holds.
+  \item The analogous modular control-block bucketing target holds.
+  \item The analogous modular control-block cascade target holds.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+We prove the cycle
+\begin{align*}
+  &(1) \Rightarrow (2) \Rightarrow (1), \qquad
+    (1) \Rightarrow (3) \Rightarrow (1), \\
+  &(3) \Rightarrow (4) \Rightarrow (3), \qquad
+    (4) \Rightarrow (5) \Rightarrow (4).
+\end{align*}
+Together these implications yield the equivalence of all five statements.
+
+\smallskip
+
+\noindent
+$(1)\Rightarrow(2)$: every one-control modular witness is a special case of a one-control modular
+bucketing witness, namely with empty dropped part $D=\varnothing$.
+
+\smallskip
+
+\noindent
+$(2)\Rightarrow(1)$: let $U,D,T$ be a one-control modular bucketing witness. Since
+\[
+  \deg_{G[U \cup T]}(u)=\deg_{G[U \cup D \cup T]}(u)-\deg_D(u)
+\]
+for every $u \in U$, the ambient degrees in $G[U \cup T]$ are constant modulo $q$ on $U$ whenever
+the ambient degrees in $G[U \cup D \cup T]$ and the degrees into $D$ are constant modulo $q$ on
+$U$. The degrees into $T$ are already constant modulo $q$ on $U$, so $U,T,q$ form a one-control
+modular witness.
+
+\smallskip
+
+\noindent
+$(1)\Rightarrow(3)$: a one-control modular witness is a nonempty modular control-block witness with
+exactly one control block.
+
+\smallskip
+
+\noindent
+$(3)\Rightarrow(1)$: let $U,T_1,\dots,T_r$ be a nonempty modular control-block witness, and write
+$T=T_1 \cup \cdots \cup T_r$. Because the blocks are pairwise disjoint,
+\[
+  \deg_T(u)=\deg_{T_1}(u)+\cdots+\deg_{T_r}(u)
+\]
+for every $u \in U$. Since each summand is constant modulo $q$ on $U$, the total degree into $T$ is
+also constant modulo $q$ on $U$. The ambient degree in $G[U \cup T]$ is already constant modulo
+$q$, so $U,T,q$ form a one-control modular witness.
+
+\smallskip
+
+\noindent
+$(3)\Rightarrow(4)$: every nonempty modular control-block witness is a modular control-block
+bucketing witness with empty dropped part.
+
+\smallskip
+
+\noindent
+$(4)\Rightarrow(3)$: let $U,D,T_1,\dots,T_r$ be a modular control-block bucketing witness. For every
+$u \in U$,
+\[
+  \deg_{G[U \cup T_1 \cup \cdots \cup T_r]}(u)
+  =
+  \deg_{G[U \cup D \cup T_1 \cup \cdots \cup T_r]}(u)-\deg_D(u).
+\]
+Thus the ambient degree on $U \cup T_1 \cup \cdots \cup T_r$ is constant modulo $q$ on $U$ whenever
+the larger ambient degree and the degree into $D$ are constant modulo $q$ on $U$. The block-degree
+hypotheses are unchanged, so $U,T_1,\dots,T_r,q$ form a nonempty modular control-block witness.
+
+\smallskip
+
+\noindent
+$(4)\Rightarrow(5)$: let $U,D,T_1,\dots,T_r$ be a modular control-block bucketing witness. Define a
+one-step chain by
+\[
+  S_0 := U \cup D, \qquad S_1 := U.
+\]
+The hypotheses already say that all vertices of $S_1$ have the same degree in
+$G[S_0 \cup T_1 \cup \cdots \cup T_r]$ modulo $q$ and the same degree into the dropped layer
+$S_0 \setminus S_1 = D$ modulo $q$. To verify the terminal condition, note that for every $u \in U$,
+\[
+  \deg_{G[U \cup T_1 \cup \cdots \cup T_r]}(u)
+  =
+  \deg_{G[U \cup D \cup T_1 \cup \cdots \cup T_r]}(u)-\deg_D(u).
+\]
+Hence the terminal ambient degree is constant modulo $q$ on $U$, and the block-degree hypotheses are
+unchanged. Thus $S_0 \supseteq S_1$ together with $T_1,\dots,T_r$ and $q$ is a modular
+control-block cascade witness.
+
+\smallskip
+
+\noindent
+$(5)\Rightarrow(4)$: let
+\[
+  S_0 \supseteq S_1 \supseteq \cdots \supseteq S_m = U
+\]
+be a modular control-block cascade witness with control blocks $T_1,\dots,T_r$ and modulus $q$.
+Set
+\[
+  D := S_0 \setminus U.
+\]
+If $m=0$, then $D=\varnothing$, and the terminal condition already gives a modular control-block
+bucketing witness with empty dropped part.
+
+Assume now that $m\ge 1$. Since $U \subseteq S_1$, the first cascade step implies that all vertices
+of $U$ have the same degree in $G[S_0 \cup T_1 \cup \cdots \cup T_r]$ modulo $q$. The terminal
+condition implies that all vertices of $U$ have the same degree in
+$G[U \cup T_1 \cup \cdots \cup T_r]$ modulo $q$. Therefore, for every $u \in U$,
+\[
+  \deg_D(u)
+  =
+  \deg_{G[S_0 \cup T_1 \cup \cdots \cup T_r]}(u)
+  -
+  \deg_{G[U \cup T_1 \cup \cdots \cup T_r]}(u)
+\]
+is constant modulo $q$ on $U$. The terminal block-degree hypotheses are unchanged, and
+$G[U \cup D \cup T_1 \cup \cdots \cup T_r]=G[S_0 \cup T_1 \cup \cdots \cup T_r]$. Thus
+$U,D,T_1,\dots,T_r,q$ form a modular control-block bucketing witness.
+\end{proof}
+
+The previous two sections combine to show that the modular frontier still implies the original
+conjecture.
+
+\begin{corollary}\label{cor:frontier-implies-target}
+Fix an integer base $b>1$. If every sufficiently large graph on $b^k$ vertices contains a
+one-control modular witness of order $Mk$ for every $M$, then $F(n)/\log n \to \infty$.
+\end{corollary}
+
+\begin{proof}
+By Proposition~\ref{prop:modular-transport}, every one-control modular witness yields a modular
+witness on the surviving set, and Proposition~\ref{prop:modular-collapse} turns that modular
+witness into a regular induced subgraph of the same order. Theorem~\ref{thm:modular-reduction}
+finishes the argument.
+\end{proof}
+
+There are also bounded forms worth recording. The first shows that, asymptotically, any eventually
+positive control budget is as good as a singleton budget on the modular side.
+
+\begin{corollary}[eventual positive budget]\label{cor:positive-budget}
+Fix an integer base $b>1$, and let $u \colon \N \to \N$ satisfy $u(k) \ge 1$ for all sufficiently
+large $k$. Then the following are equivalent:
+\begin{enumerate}
+  \item For every $M \in \N$, every sufficiently large graph on $b^k$ vertices contains a
+    one-control modular witness of order $Mk$ with a control set of size at most $u(k)$.
+  \item $F(n)/\log n \to \infty$.
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}
+If (1) holds, then Corollary~\ref{cor:frontier-implies-target} applies a fortiori.
+
+Conversely, assume $F(n)/\log n \to \infty$. Choose $K_0$ such that $u(k) \ge 1$ for all
+$k \ge K_0$. By Theorem~\ref{thm:exact-collapse}, for every $M \in \N$ there exists $K_1$ such that
+every graph on $b^k$ vertices with $k \ge K_1$ contains a one-control exact witness
+$(S,\{t\})$ of order $Mk$. For $k \ge \max\{K_0,K_1\}$, the singleton control set respects the
+budget $u(k)$. Choosing any modulus $q \ge |S|$ turns $(S,\{t\})$ into a one-control modular
+witness of the same order.
+\end{proof}
+
+\begin{corollary}[singleton budget]\label{cor:singleton-budget}
+Fix an integer base $b>1$. The following are equivalent:
+\begin{enumerate}
+  \item For every $M \in \N$, every sufficiently large graph on $b^k$ vertices contains a
+    one-control modular witness of order $Mk$ with a control set of size exactly $1$.
+  \item $F(n)/\log n \to \infty$.
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}
+This is the special case of Corollary~\ref{cor:positive-budget} with $u(k)=1$.
+\end{proof}
+
+\begin{corollary}[sublinear budgets collapse modular to exact]\label{cor:sublinear-budget}
+Fix an integer base $b>1$, and let $u \colon \N \to \N$ satisfy $u(k)=o(k)$ and $u(k) \ge 1$ for all
+sufficiently large $k$. Then the following are equivalent:
+\begin{enumerate}
+  \item For every $M \in \N$, every sufficiently large graph on $b^k$ vertices contains a
+    one-control modular witness of order $Mk$ with a control set of size at most $u(k)$.
+  \item For every $M \in \N$, every sufficiently large graph on $b^k$ vertices contains a
+    one-control exact witness of order $Mk$ with a control set of size at most $u(k)$.
+  \item $F(n)/\log n \to \infty$.
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}
+Corollary~\ref{cor:positive-budget} gives the equivalence of (1) and (3). Also, (3) implies (2) by
+Theorem~\ref{thm:exact-collapse}, because the singleton control set is eventually allowed by the
+assumption $u(k) \ge 1$.
+
+It remains to prove (1)$\Rightarrow$(2). Fix $M \in \N$. Because $u(k)=o(k)$, there exists $K_0$
+such that $u(k) < Mk$ for all $k \ge K_0$. By (1), there exists $K_1$ such that every graph on
+$b^k$ vertices with $k \ge K_1$ contains a one-control modular witness $(S,T,q)$ of order $Mk$
+with $|T| \le u(k)$. For $k \ge \max\{K_0,K_1\}$, we therefore have
+\[
+  |T| \le u(k) < Mk \le |S| \le q.
+\]
+Since all degrees into $T$ are congruent modulo $q$ and lie in the interval $\{0,1,\dots,|T|\}$ of
+width $<q$, they are all equal; write this common value as $e$. By
+Proposition~\ref{prop:modular-transport}, the degrees in $G[S]$ are pairwise congruent modulo $q$,
+and Proposition~\ref{prop:modular-collapse} then shows that $G[S]$ is regular because $q \ge |S|$.
+Let $d$ be the common degree in $G[S]$. Then every vertex of $S$ has degree $d+e$ in $G[S \cup T]$,
+so $(S,T)$ is a one-control exact witness of order $Mk$ with control set size at most $u(k)$.
+
+Finally, (2)$\Rightarrow$(1) is immediate by choosing any modulus $q \ge |S|$.
+\end{proof}
+
+\begin{theorem}[summary reformulation package]\label{thm:summary-package}
+Fix an integer base $b>1$. The following are equivalent.
+\begin{enumerate}
+  \item $F(n)/\log n \to \infty$.
+  \item The power-sequence target holds at base $b$.
+  \item The power-sequence modular target holds at base $b$.
+  \item The power-sequence low-degree modular target holds at base $b$.
+  \item For every $M \in \N$, every sufficiently large graph on $b^k$ vertices contains a
+    one-control exact witness of order $Mk$.
+  \item The one-control modular target holds at base $b$.
+  \item The analogous one-control modular bucketing target holds.
+  \item The analogous nonempty modular control-block target holds.
+  \item The analogous modular control-block bucketing target holds.
+  \item The analogous modular control-block cascade target holds.
+  \item For every $M \in \N$, every sufficiently large graph on $b^k$ vertices contains a
+    one-control modular witness of order $Mk$ with a control set of size exactly $1$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The equivalence of (1), (2), (3), and (4) is Theorems~\ref{thm:power-sequence}
+and~\ref{thm:modular-reduction}. The equivalence of (2) and (5) is
+Theorem~\ref{thm:exact-collapse}. Statements (6)--(10) are equivalent by
+Theorem~\ref{thm:canonical-frontier}, and (6) implies (1) by
+Corollary~\ref{cor:frontier-implies-target}. Finally, (1) and (11) are equivalent by
+Corollary~\ref{cor:singleton-budget}, while (5) trivially implies (6) by choosing any modulus
+$q \ge |S|$. Together these implications identify all eleven statements.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:summary-package} is the sense in which the paper is intended as a genuine
+reduction rather than a vocabulary change. It shows that several witness frameworks that might
+naturally be pursued as separate programs --- larger control families, explicit dropped parts, or
+cascades of refinements --- do not define distinct asymptotic problems. Any proof in one of those
+settings can be normalized to the one-control modular target without asymptotic loss. Accordingly,
+the more elaborate witness packages can matter only if they retain additional quantitative
+information beyond the bare existence statements considered here. The mathematical content of the
+paper is therefore the removal of these false frontiers.
+\end{remark}
+
+\section{Concrete open problems}
+
+The reformulation above leaves one canonical equivalent problem and one stronger exact route.
+
+\begin{problem}[canonical modular frontier]\label{prob:canonical-frontier}
+Fix an integer base $b>1$. Is it true that for every $M \in \N$, every sufficiently large graph on
+$b^k$ vertices contains a one-control modular witness of order $Mk$?
+\end{problem}
+
+By Theorem~\ref{thm:summary-package}, Problem~\ref{prob:canonical-frontier} is equivalent to the
+regular induced subgraph conjecture. It is the normalized frontier isolated by the paper: any
+existence proof that proceeds through multiblock, bucketing, or cascade witnesses can be converted
+back to this one-control target without asymptotic loss.
+
+A stronger route would be to force exact control data with sublinear control size.
+
+\begin{problem}[sublinear exact control]\label{prob:small-control}
+Is there a function $u(m)=o(m)$ such that every sufficiently large graph contains disjoint sets
+$S,T$ with
+\[
+  |S| \ge m, \qquad |T| \le u(m),
+\]
+all vertices of $S$ having the same degree in $G[S \cup T]$, and all vertices of $S$ having the
+same degree into $T$?
+\end{problem}
+
+By Proposition~\ref{prop:exact-transport}, a positive answer to
+Problem~\ref{prob:small-control} would immediately imply the regular induced subgraph conjecture.
+This stronger problem is not claimed equivalent to the conjecture; it is included because it
+isolates one natural exact-control route beyond the canonical modular frontier. The modular route
+suggests an intermediate target: replace exact equalities by congruences modulo a modulus $q$
+comparable to $|S|$, or even more sharply by congruences modulo a modulus larger than the induced
+degree range, and then appeal to Proposition~\ref{prop:modular-collapse}. In either form, the
+obstacle is no longer definitional. The canonical open step is
+Problem~\ref{prob:canonical-frontier}; Problem~\ref{prob:small-control} asks whether one can do
+better by forcing a more rigid witness.
+
+\medskip
+
+To summarize: the conjecture is equivalent to linear growth along any geometric subsequence, to the
+corresponding modular target, to the sharper low-degree modular target, to the exact one-control
+target with a singleton control vertex, and to each of the modular-control packages listed in
+Theorem~\ref{thm:summary-package}. Problem~
+\ref{prob:canonical-frontier} records the normalized equivalent frontier, while
+Problem~\ref{prob:small-control} records a stronger exact route. The finite lemmas that support
+this viewpoint replace full neighborhood data by ambient and external degree data, and replace
+exponentially many profile classes by polynomially many residue classes. That is the structural
+contribution of the present paper.
+
+\begin{thebibliography}{99}
+
+\bibitem{AlonKrivelevichSudakov}
+N.~Alon, M.~Krivelevich, and B.~Sudakov,
+\newblock Large nearly regular induced subgraphs,
+\newblock {\em SIAM Journal on Discrete Mathematics} \textbf{22} (2008), no.~4, 1325--1337.
+
+\bibitem{BermanRadcliffeScottWangWargo}
+D.~M.~Berman, A.~J.~Radcliffe, A.~D.~Scott, H.~Wang, and L.~Wargo,
+\newblock All trees contain a large induced subgraph having all degrees $1 \pmod k$,
+\newblock {\em Discrete Mathematics} \textbf{175} (1997), 35--40.
+
+\bibitem{CardosoKaminskiLozin}
+D.~M.~Cardoso, M.~Kami\'nski, and V.~V.~Lozin,
+\newblock Maximum $k$-regular induced subgraphs,
+\newblock {\em Journal of Combinatorial Optimization} \textbf{14} (2007), 455--463.
+
+\bibitem{Caro}
+Y.~Caro,
+\newblock On induced subgraphs with odd degrees,
+\newblock {\em Discrete Mathematics} \textbf{132} (1994), 23--28.
+
+\bibitem{FajtlowiczMcColganReidStaton}
+S.~Fajtlowicz, T.~McColgan, T.~Reid, and W.~Staton,
+\newblock Ramsey numbers for induced regular subgraphs,
+\newblock {\em Ars Combinatoria} \textbf{39} (1995), 149--154.
+
+\bibitem{KrivelevichSudakovWormald}
+M.~Krivelevich, B.~Sudakov, and N.~Wormald,
+\newblock Regular induced subgraphs of a random graph,
+\newblock {\em Random Structures \& Algorithms} \textbf{38} (2011), no.~3, 235--250.
+
+\bibitem{Scott}
+A.~D.~Scott,
+\newblock Large induced subgraphs with all degrees odd,
+\newblock {\em Combinatorics, Probability and Computing} \textbf{1} (1992), 335--349.
+
+\end{thebibliography}
+
+\section*{Acknowledgments}
+
+{\sloppy
+The results of this paper were extracted from a companion Lean formalization, available at
+\url{https://github.com/Arthur742Ramos/RegularInducedSubgraph}, which is intended as verification
+support rather than as part of the mathematical contribution. The authors thank the Lean community
+for the \texttt{mathlib} infrastructure underlying that formalization.\par}
+
+\end{document}

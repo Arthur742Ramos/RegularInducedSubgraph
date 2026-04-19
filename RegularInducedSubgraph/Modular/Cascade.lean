@@ -1494,6 +1494,53 @@ lemma exists_large_subset_with_constant_externalBlockDegrees
         intro v
         exact hctrl v.1 (huu₁ v.2)
 
+lemma exists_large_subset_with_constant_externalBlockDegrees_of_mul_pred_lt_card
+    (G : SimpleGraph V) [DecidableRel G.Adj] :
+    ∀ (s : Finset V) {blocks : List (Finset V × ℕ)} {k : ℕ},
+      controlBlockBucketCost blocks * (k - 1) < s.card →
+      ControlBlocksSeparated s blocks →
+      ∃ u : Finset V, ∃ hu : u ⊆ s, k ≤ u.card ∧
+        ∃ blocks' : List (Finset V × ℕ),
+          SameControlBlockSupports blocks' blocks ∧
+          ControlBlocksSeparated u blocks' ∧
+          HasConstantExternalBlockDegrees G u blocks'
+  | s, [], k, hsize, _hsep => by
+      refine ⟨s, by intro x hx; exact hx, ?_, [], ?_, ?_, ?_⟩
+      · cases k with
+        | zero => exact Nat.zero_le _
+        | succ k =>
+            simpa [controlBlockBucketCost] using Nat.succ_le_of_lt hsize
+      · trivial
+      · trivial
+      · trivial
+  | s, (b :: bs), k, hsize, hsep => by
+      rcases b with ⟨t, _e₀⟩
+      rcases hsep with ⟨hst, htu, hsepTail⟩
+      have hsizeHead :
+          (t.card + 1) * ((controlBlockBucketCost bs * (k - 1) + 1) - 1) < s.card := by
+        simpa [controlBlockBucketCost, Nat.mul_assoc] using hsize
+      rcases exists_large_subset_with_constant_externalDegree_of_mul_pred_lt_card
+          (G := G) (s := s) (t := t) (k := controlBlockBucketCost bs * (k - 1) + 1) hsizeHead with
+        ⟨u₁, hu₁, hku₁, e, hctrl⟩
+      have hsizeTail : controlBlockBucketCost bs * (k - 1) < u₁.card := by
+        exact lt_of_lt_of_le (Nat.lt_succ_self _) hku₁
+      have hsepTailU₁ : ControlBlocksSeparated u₁ bs :=
+        controlBlocksSeparated_mono hu₁ hsepTail
+      rcases exists_large_subset_with_constant_externalBlockDegrees_of_mul_pred_lt_card
+          (G := G) (s := u₁) (blocks := bs) (k := k) hsizeTail hsepTailU₁ with
+        ⟨u, huu₁, hku, blocks', hsameTail, hsepU, hextTail⟩
+      refine ⟨u, fun x hx => hu₁ (huu₁ hx), hku, (t, e) :: blocks', ?_, ?_, ?_⟩
+      · exact ⟨rfl, hsameTail⟩
+      · refine ⟨?_, ?_, hsepU⟩
+        · refine Finset.disjoint_left.mpr ?_
+          intro x hxU hxT
+          exact (Finset.disjoint_left.mp hst) (hu₁ (huu₁ hxU)) hxT
+        · rw [controlBlockUnion_eq_of_sameControlBlockSupports hsameTail]
+          exact htu
+      · refine ⟨?_, hextTail⟩
+        intro v
+        exact hctrl v.1 (huu₁ v.2)
+
 lemma exists_large_subset_with_constant_twoExternalDegrees
     (G : SimpleGraph V) [DecidableRel G.Adj] (s t₁ t₂ : Finset V) {k : ℕ}
     (hsize : (t₁.card + 1) * (t₂.card + 1) * k ≤ s.card) :
@@ -2536,6 +2583,166 @@ lemma hasExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_a
   exact
     hasExactControlBlockWitnessOfCard_of_hasRegularInducedSubgraphOfCard_inducedOn_and_externalBlockDegrees
       (G := G) (hrec u hu hcardu) hnonempty' hsepU hextU
+
+lemma hasControlBlockCascadeWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
+    (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k : ℕ}
+    (hsize : controlBlockBucketCost blocks * n ≤ s.card)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hrec :
+      ∀ u : Finset V, u ⊆ s → u.card = n →
+        HasRegularInducedSubgraphOfCard (inducedOn G u) k) :
+    HasControlBlockCascadeWitnessOfCard G k := by
+  exact hasControlBlockCascadeWitnessOfCard_of_hasExactControlBlockWitnessOfCard G
+    (hasExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
+      (G := G) hsize hnonempty hsep hrec)
+
+lemma hasControlBlockBucketingWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
+    (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k : ℕ}
+    (hsize : controlBlockBucketCost blocks * n ≤ s.card)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hrec :
+      ∀ u : Finset V, u ⊆ s → u.card = n →
+        HasRegularInducedSubgraphOfCard (inducedOn G u) k) :
+    HasControlBlockBucketingWitnessOfCard G k := by
+  exact hasControlBlockBucketingWitnessOfCard_of_hasExactControlBlockWitnessOfCard G
+    (hasExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
+      (G := G) hsize hnonempty hsep hrec)
+
+lemma hasRegularInducedSubgraphOfCard_of_large_constant_externalBlockDegrees_and_recursive
+    (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k : ℕ}
+    (hsize : controlBlockBucketCost blocks * n ≤ s.card)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hrec :
+      ∀ u : Finset V, u ⊆ s → u.card = n →
+        HasRegularInducedSubgraphOfCard (inducedOn G u) k) :
+    HasRegularInducedSubgraphOfCard G k := by
+  exact hasRegularInducedSubgraphOfCard_of_hasExactControlBlockWitnessOfCard G
+    (hasExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
+      (G := G) hsize hnonempty hsep hrec)
+
+lemma hasBoundedExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
+    (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k r : ℕ}
+    (hsize : controlBlockBucketCost blocks * n ≤ s.card)
+    (hlen : blocks.length ≤ r)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hrec :
+      ∀ u : Finset V, u ⊆ s → u.card = n →
+        HasRegularInducedSubgraphOfCard (inducedOn G u) k) :
+    HasBoundedExactControlBlockWitnessOfCard G k r := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases exists_large_subset_with_constant_externalBlockDegrees
+      (G := G) (s := s) (blocks := blocks) (k := n) hsize hsep with
+    ⟨u₁, hu₁, hnu₁, blocks', hsame, hsepU₁, hextU₁⟩
+  rcases exists_subset_card_eq_of_le_card hnu₁ with ⟨u, huu₁, hcardu⟩
+  have hu : u ⊆ s := fun x hx => hu₁ (huu₁ hx)
+  have hsepU : ControlBlocksSeparated u blocks' := controlBlocksSeparated_mono huu₁ hsepU₁
+  have hextU : HasConstantExternalBlockDegrees G u blocks' :=
+    hasConstantExternalBlockDegrees_mono (G := G) huu₁ hextU₁
+  have hnonempty' : NonemptyControlBlockUnion blocks' := by
+    unfold NonemptyControlBlockUnion at hnonempty ⊢
+    rw [controlBlockUnion_eq_of_sameControlBlockSupports hsame]
+    exact hnonempty
+  have hlen' : blocks'.length ≤ r := by
+    rw [length_eq_of_sameControlBlockSupports hsame]
+    exact hlen
+  exact
+    hasBoundedExactControlBlockWitnessOfCard_of_hasRegularInducedSubgraphOfCard_inducedOn_and_externalBlockDegrees
+      (G := G) (hrec u hu hcardu) hlen' hnonempty' hsepU hextU
+
+lemma hasBoundedExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive_strict
+    (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k r : ℕ}
+    (hsize : controlBlockBucketCost blocks * (n - 1) < s.card)
+    (hlen : blocks.length ≤ r)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hrec :
+      ∀ u : Finset V, u ⊆ s → u.card = n →
+        HasRegularInducedSubgraphOfCard (inducedOn G u) k) :
+    HasBoundedExactControlBlockWitnessOfCard G k r := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases exists_large_subset_with_constant_externalBlockDegrees_of_mul_pred_lt_card
+      (G := G) (s := s) (blocks := blocks) (k := n) hsize hsep with
+    ⟨u₁, hu₁, hnu₁, blocks', hsame, hsepU₁, hextU₁⟩
+  rcases exists_subset_card_eq_of_le_card hnu₁ with ⟨u, huu₁, hcardu⟩
+  have hu : u ⊆ s := fun x hx => hu₁ (huu₁ hx)
+  have hsepU : ControlBlocksSeparated u blocks' := controlBlocksSeparated_mono huu₁ hsepU₁
+  have hextU : HasConstantExternalBlockDegrees G u blocks' :=
+    hasConstantExternalBlockDegrees_mono (G := G) huu₁ hextU₁
+  have hnonempty' : NonemptyControlBlockUnion blocks' := by
+    unfold NonemptyControlBlockUnion at hnonempty ⊢
+    rw [controlBlockUnion_eq_of_sameControlBlockSupports hsame]
+    exact hnonempty
+  have hlen' : blocks'.length ≤ r := by
+    rw [length_eq_of_sameControlBlockSupports hsame]
+    exact hlen
+  exact
+    hasBoundedExactControlBlockWitnessOfCard_of_hasRegularInducedSubgraphOfCard_inducedOn_and_externalBlockDegrees
+      (G := G) (hrec u hu hcardu) hlen' hnonempty' hsepU hextU
+
+lemma hasBoundedControlBlockCascadeWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
+    (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k r : ℕ}
+    (hsize : controlBlockBucketCost blocks * n ≤ s.card)
+    (hlen : blocks.length ≤ r)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hrec :
+      ∀ u : Finset V, u ⊆ s → u.card = n →
+        HasRegularInducedSubgraphOfCard (inducedOn G u) k) :
+    HasBoundedControlBlockCascadeWitnessOfCard G k r := by
+  exact hasBoundedControlBlockCascadeWitnessOfCard_of_hasBoundedExactControlBlockWitnessOfCard G
+    (hasBoundedExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
+      (G := G) hsize hlen hnonempty hsep hrec)
+
+lemma hasBoundedControlBlockCascadeWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive_strict
+    (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k r : ℕ}
+    (hsize : controlBlockBucketCost blocks * (n - 1) < s.card)
+    (hlen : blocks.length ≤ r)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hrec :
+      ∀ u : Finset V, u ⊆ s → u.card = n →
+        HasRegularInducedSubgraphOfCard (inducedOn G u) k) :
+    HasBoundedControlBlockCascadeWitnessOfCard G k r := by
+  exact hasBoundedControlBlockCascadeWitnessOfCard_of_hasBoundedExactControlBlockWitnessOfCard G
+    (hasBoundedExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive_strict
+      (G := G) hsize hlen hnonempty hsep hrec)
+
+lemma hasBoundedControlBlockBucketingWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive_succ
+    (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k r : ℕ}
+    (hsize : controlBlockBucketCost blocks * n ≤ s.card)
+    (hlen : blocks.length ≤ r)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hrec :
+      ∀ u : Finset V, u ⊆ s → u.card = n →
+        HasRegularInducedSubgraphOfCard (inducedOn G u) k) :
+    HasBoundedControlBlockBucketingWitnessOfCard G k (r + 1) := by
+  exact hasBoundedControlBlockBucketingWitnessOfCard_of_hasBoundedExactControlBlockWitnessOfCard_succ
+    G
+    (hasBoundedExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
+      (G := G) hsize hlen hnonempty hsep hrec)
+
+lemma
+    hasBoundedControlBlockBucketingWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive_strict_succ
+    (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k r : ℕ}
+    (hsize : controlBlockBucketCost blocks * (n - 1) < s.card)
+    (hlen : blocks.length ≤ r)
+    (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks)
+    (hrec :
+      ∀ u : Finset V, u ⊆ s → u.card = n →
+        HasRegularInducedSubgraphOfCard (inducedOn G u) k) :
+    HasBoundedControlBlockBucketingWitnessOfCard G k (r + 1) := by
+  exact hasBoundedControlBlockBucketingWitnessOfCard_of_hasBoundedExactControlBlockWitnessOfCard_succ
+    G
+    (hasBoundedExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive_strict
+      (G := G) hsize hlen hnonempty hsep hrec)
 
 lemma hasBoundedSingleControlExactWitnessOfCard_of_large_constant_externalDegree_and_recursive
     (G : SimpleGraph V) {s t : Finset V} {n k r : ℕ}
