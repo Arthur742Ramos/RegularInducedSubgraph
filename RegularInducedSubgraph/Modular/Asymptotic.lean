@@ -1772,9 +1772,12 @@ theorem eventualNatPowerModularDomination_four_iff_targetStatement :
 section DyadicLift
 
 /--
-A fixed-modulus modular cascade witness of size at least `k`: this is the same data as
-`HasControlBlockModularCascadeWitnessOfCard`, but with the modulus exposed as an argument so a
+A terminal-bounded fixed-modulus modular cascade witness of size at least `k`: this is the same data
+as `HasControlBlockModularCascadeWitnessOfCard`, but with the modulus exposed as an argument so a
 dyadic lift hypothesis can refer to it directly.
+
+This is stronger than the composable fixed-modulus host package introduced in `Modular.Finite`,
+because it still requires the terminal bucket size to be at most the modulus.
 -/
 def HasFixedModulusControlBlockModularCascadeWitnessOfCard
     {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) (k q : ℕ) : Prop := by

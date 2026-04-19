@@ -1392,6 +1392,67 @@ def HasBoundedControlBlockModularCascadeWitnessOfCard (G : SimpleGraph V) (k r :
     HasControlBlockModularCascadeFrom G q blocks s chain
 
 /--
+A composable fixed-modulus control-block modular host witness of size at least `k`: a bucket `u`
+inside a larger host `s`, together with a fixed modulus `q` and a nonempty separated control-block
+family, such that the degrees in `G[s]` are constant modulo `q` on `u` and each control block
+contributes a separately constant residue modulo `q` on `u`.
+
+Unlike `HasControlBlockModularBucketingWitnessOfCard`, this package does not try to record the
+dropped-part residue from `s` down to `u`; it is the smaller fixed-modulus object suggested by the
+dyadic-lift note for composable restriction arguments.
+-/
+def HasFixedModulusControlBlockModularHostWitnessOfCard
+    (G : SimpleGraph V) (k q : ℕ) : Prop := by
+  classical
+  exact ∃ u s : Finset V, k ≤ u.card ∧ ∃ hu : u ⊆ s,
+    ∃ blocks : List (Finset V × ℕ),
+      NonemptyControlBlockUnion blocks ∧
+      ControlBlocksSeparated s blocks ∧
+      (∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G u q blocks
+
+/--
+A bounded composable fixed-modulus control-block modular host witness using at most `r` control
+blocks.
+-/
+def HasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ u s : Finset V, k ≤ u.card ∧ ∃ hu : u ⊆ s,
+    ∃ blocks : List (Finset V × ℕ),
+      blocks.length ≤ r ∧
+      NonemptyControlBlockUnion blocks ∧
+      ControlBlocksSeparated s blocks ∧
+      (∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G u q blocks
+
+lemma
+    hasFixedModulusControlBlockModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+    (G : SimpleGraph V) {k q r : ℕ}
+    (hbounded : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q r) :
+    HasFixedModulusControlBlockModularHostWitnessOfCard G k q := by
+  rcases hbounded with ⟨u, s, hku, hu, blocks, _hlen, hnonempty, hsep, hdeg, hext⟩
+  exact ⟨u, s, hku, hu, blocks, hnonempty, hsep, hdeg, hext⟩
+
+lemma hasFixedModulusControlBlockModularHostWitnessOfCard_mono
+    (G : SimpleGraph V) {k ℓ q : ℕ} (hkℓ : k ≤ ℓ)
+    (hhost : HasFixedModulusControlBlockModularHostWitnessOfCard G ℓ q) :
+    HasFixedModulusControlBlockModularHostWitnessOfCard G k q := by
+  rcases hhost with ⟨u, s, hℓ, hu, blocks, hnonempty, hsep, hdeg, hext⟩
+  exact ⟨u, s, le_trans hkℓ hℓ, hu, blocks, hnonempty, hsep, hdeg, hext⟩
+
+lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_mono
+    (G : SimpleGraph V) {k ℓ q r : ℕ} (hkℓ : k ≤ ℓ)
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G ℓ q r) :
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q r := by
+  rcases hhost with ⟨u, s, hℓ, hu, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
+  exact ⟨u, s, le_trans hkℓ hℓ, hu, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
+
+/--
 A control-block witness of size at least `k`: a large vertex set `s`, a modulus `q ≥ |s|`, and a
 separated list of control blocks whose ambient and external degree data force modular equality on
 `G[s]`.

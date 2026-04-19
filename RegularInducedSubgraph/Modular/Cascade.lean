@@ -2557,6 +2557,52 @@ lemma
       (G := G) (q := k) (k := k) (r := k - 1) hk ?_ hsize
   exact Nat.sub_lt hk (by decide : 0 < 1)
 
+/--
+The one-control exact-cardinality theorem already yields a composable fixed-modulus modular host
+witness with one control block.
+-/
+lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_large_card
+    (G : SimpleGraph V) {q k : ℕ}
+    (hq : 1 < q) (hsize : q * q * k + (q - 1) ≤ Fintype.card V) :
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q 1 := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq0 : 0 < q := lt_trans (by decide : 0 < 1) hq
+  have hqPred : q - 1 < q := Nat.sub_lt hq0 (by decide : 0 < 1)
+  rcases
+      exists_control_and_subset_with_constant_modDegree_and_exact_controlDegree_and_modEq_deletedHostDegree_card_eq
+        (G := G) (q := q) (k := k) (r := q - 1) hq0 hqPred hsize with
+    ⟨u, t, hu, hcardu, htcard, _a, e, _hglobal, hext, hhost⟩
+  refine ⟨u, Finset.univ \ t, ?_, hu, [(t, e)], ?_⟩
+  · simpa [hcardu]
+  · refine ⟨by simp, ?_⟩
+    refine ⟨?_, ?_⟩
+    · have htpos : 0 < t.card := by
+        rw [htcard]
+        exact Nat.sub_pos_of_lt hq
+      unfold NonemptyControlBlockUnion
+      simpa [controlBlockUnion] using htpos
+    · refine ⟨?_, ?_⟩
+      · refine ⟨?_, ?_, trivial⟩
+        · simpa using (Finset.sdiff_disjoint : Disjoint ((Finset.univ : Finset V) \ t) t)
+        · simp [controlBlockUnion]
+      · refine ⟨hhost, ?_⟩
+        refine ⟨?_, trivial⟩
+        intro v
+        simpa [hext v] using (Nat.ModEq.refl e : e ≡ e [MOD q])
+
+lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_two_of_pos
+    {n : ℕ} (hn : 0 < n) (G : SimpleGraph (Fin n)) :
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G ((n - 1) / 4) 2 1 := by
+  classical
+  refine
+    hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_large_card
+      (G := G) (q := 2) (k := (n - 1) / 4) (by decide : 1 < 2) ?_
+  have hfour : 4 * ((n - 1) / 4) ≤ n - 1 := Nat.mul_div_le (n - 1) 4
+  have hpred : n - 1 + 1 = n := Nat.sub_add_cancel (Nat.succ_le_of_lt hn)
+  simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm, hpred] using
+    Nat.add_le_add_right hfour 1
+
 lemma hasExactControlBlockWitnessOfCard_of_large_constant_externalBlockDegrees_and_recursive
     (G : SimpleGraph V) {s : Finset V} {blocks : List (Finset V × ℕ)} {n k : ℕ}
     (hsize : controlBlockBucketCost blocks * n ≤ s.card)
