@@ -280,9 +280,14 @@ If you want a quick way into the artifact, the following declarations are the be
   The same Gallai theorem repackaged in the empty-control fixed-modulus cascade language
   `HasFixedModulusCascadeWitnessOfCard`, together with the asymptotic bookkeeping proposition
   `RegularInducedSubgraph.emptyControlDyadicParityBaseCase`.
-- `RegularInducedSubgraph.targetStatement_of_dyadicParityBaseCase_of_polynomialCostDyadicLift`  
-  Formal terminal-bounded dyadic-lift reduction: a Gallai-style parity base case together with a
-  polynomial-cost lift in the stronger terminal-capped package already implies `TargetStatement`.
+- `RegularInducedSubgraph.not_dyadicParityBaseCase`  
+  Formal obstruction showing that the naive terminal-capped parity base case is actually false:
+  the terminal bucket in `HasFixedModulusControlBlockModularCascadeWitnessOfCard G k q` always has
+  size at most `q`, so the modulus-`2` version cannot force `n / 2` vertices.
+- `RegularInducedSubgraph.targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge`  
+  Corrected dyadic reduction: the true empty-control parity base case, together with a
+  polynomial-cost empty-control dyadic lift and a polynomial-cost bridge into the terminal-capped
+  control-block modular cascade package, already implies `TargetStatement`.
 
 ## Candidate approaches to try
 
@@ -370,10 +375,12 @@ files.
    `RegularInducedSubgraph.hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_two_of_pos`
    on about `n / 4` vertices. A successful lift would yield `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`,
    hence `TargetStatement`.
-   The conditional reduction is now formalized by
-   `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_dyadicParityBaseCase_of_polynomialCostDyadicLift`
+   The corrected conditional reduction is now formalized by
+   `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge`
    and
-   `RegularInducedSubgraph.targetStatement_of_dyadicParityBaseCase_of_polynomialCostDyadicLift`;
-   what remains open is the actual dyadic lift theorem together with the right bridge from the
-   empty-control Gallai package into the composable host/cascade world (or an equivalent
+   `RegularInducedSubgraph.targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge`.
+   The old terminal-capped base case is now ruled out formally by
+   `RegularInducedSubgraph.not_dyadicParityBaseCase`; what remains open is the actual empty-control
+   dyadic lift theorem together with a polynomial-cost bridge from the empty-control fixed-modulus
+   cascade package into the terminal-capped control-block modular cascade world (or an equivalent
    empty-control dropped-part reformulation of that world).

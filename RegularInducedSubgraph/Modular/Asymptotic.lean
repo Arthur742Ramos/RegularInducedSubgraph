@@ -1830,6 +1830,16 @@ def HasPolynomialCostEmptyControlDyadicLift (C : ℕ) : Prop :=
       HasFixedModulusCascadeWitnessOfCard G m (2 ^ (j + 1))
 
 /--
+Polynomial-cost bridge from the empty-control fixed-modulus cascade package to the terminal-capped
+control-block modular cascade package. The modulus stays fixed; only the witness order pays a
+polynomial loss.
+-/
+def HasPolynomialCostEmptyControlTerminalBridge (D : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (G : SimpleGraph (Fin n)),
+    HasFixedModulusCascadeWitnessOfCard G ((2 ^ j) ^ D * m) (2 ^ j) →
+      HasFixedModulusControlBlockModularCascadeWitnessOfCard G m (2 ^ j)
+
+/--
 Gallai's theorem already proves the empty-control parity base case.
 -/
 theorem emptyControlDyadicParityBaseCase :
@@ -1854,6 +1864,22 @@ def HasPolynomialCostDyadicLift (C : ℕ) : Prop :=
     HasFixedModulusControlBlockModularCascadeWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
       HasFixedModulusControlBlockModularCascadeWitnessOfCard G m (2 ^ (j + 1))
 
+lemma card_le_modulus_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard
+    {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) {k q : ℕ}
+    (hfixed : HasFixedModulusControlBlockModularCascadeWitnessOfCard G k q) :
+    k ≤ q := by
+  rcases hfixed with ⟨s, blocks, chain, hk, hq, _hnonempty, _hsep, _hcascade⟩
+  exact le_trans hk hq
+
+theorem not_dyadicParityBaseCase : ¬ DyadicParityBaseCase := by
+  intro hbase
+  let G : SimpleGraph (Fin 6) := ⊥
+  have hbound :
+      6 / 2 ≤ 2 := by
+    simpa using
+      card_le_modulus_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard G (hbase 6 G)
+  norm_num at hbound
+
 /--
 How many vertices are needed to force a modulus `2^r` witness of order `m`, assuming the parity base
 case and a polynomial-cost dyadic lift of exponent `C`.
@@ -1862,6 +1888,31 @@ def dyadicLiftVertexCost (C : ℕ) : ℕ → ℕ
   | 0 => 1
   | 1 => 2
   | r + 2 => (2 ^ (r + 1)) ^ C * dyadicLiftVertexCost C (r + 1)
+
+lemma hasFixedModulusCascadeWitnessOfCard_of_emptyControlDyadicLift
+    {C n r m : ℕ} (hr : 0 < r) (hbase : EmptyControlDyadicParityBaseCase)
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hsize : dyadicLiftVertexCost C r * m ≤ n) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusCascadeWitnessOfCard G m (2 ^ r) := by
+  induction r generalizing m with
+  | zero =>
+      cases hr
+  | succ r ih =>
+      cases r with
+      | zero =>
+          have htwo : 2 * m ≤ n := by
+            simpa [dyadicLiftVertexCost] using hsize
+          have hm : m ≤ n / 2 := by
+            exact (Nat.le_div_iff_mul_le (by decide : 0 < 2)).2 (by simpa [Nat.mul_comm] using htwo)
+          exact hasFixedModulusCascadeWitnessOfCard_mono G hm (hbase n G)
+      | succ r =>
+          let m' : ℕ := (2 ^ (r + 1)) ^ C * m
+          have hprev : dyadicLiftVertexCost C (r + 1) * m' ≤ n := by
+            dsimp [m']
+            simpa [dyadicLiftVertexCost, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hsize
+          have hfixedPrev : HasFixedModulusCascadeWitnessOfCard G m' (2 ^ (r + 1)) := by
+            exact ih (Nat.succ_pos _) hprev
+          simpa [m'] using hlift G hfixedPrev
 
 lemma hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_dyadicLift
     {C n r m : ℕ} (hr : 0 < r) (hbase : DyadicParityBaseCase)
@@ -2113,6 +2164,154 @@ theorem targetStatement_of_dyadicParityBaseCase_of_polynomialCostDyadicLift
       EventualNatPowerDomination 2 := by
     exact eventualNatPowerDomination_two_of_dyadicParityBaseCase_of_polynomialCostDyadicLift
       hbase hlift
+  exact
+    (eventualNatPowerDomination_iff_targetStatement (b := 2) (by decide : 1 < 2)).mp hpow
+
+/--
+Corrected dyadic reduction: Gallai's true empty-control parity base case, together with a
+polynomial-cost empty-control dyadic lift and a polynomial-cost bridge from the empty-control
+package to the terminal-capped control-block modular cascade package, already forces the `2^r`
+thresholds to be subexponential.
+-/
+theorem forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostEmptyControlTerminalBridge D) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+  apply forcingThreshold_le_of_le_F
+  rw [le_F_iff]
+  intro G
+  have hsize :
+      dyadicLiftVertexCost C r * ((2 ^ r) ^ D * 2 ^ r) ≤
+        2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+    calc
+      dyadicLiftVertexCost C r * ((2 ^ r) ^ D * 2 ^ r) ≤
+          2 ^ (1 + C * r ^ 2) * ((2 ^ r) ^ D * 2 ^ r) := by
+            exact Nat.mul_le_mul_right _ (dyadicLiftVertexCost_le_two_pow_quadratic hr)
+      _ = 2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+            rw [← Nat.pow_mul, ← Nat.pow_add, ← Nat.pow_add]
+            congr 1
+            ring
+  have hempty :
+      HasFixedModulusCascadeWitnessOfCard G ((2 ^ r) ^ D * 2 ^ r) (2 ^ r) := by
+    exact
+      hasFixedModulusCascadeWitnessOfCard_of_emptyControlDyadicLift hr
+        emptyControlDyadicParityBaseCase hlift hsize G
+  have hfixed :
+      HasFixedModulusControlBlockModularCascadeWitnessOfCard G (2 ^ r) (2 ^ r) := by
+    simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hbridge G hempty
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard G
+      hfixed
+
+theorem eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostEmptyControlTerminalBridge D) :
+    EventualNatPowerDomination 2 := by
+  intro M
+  by_cases hM : M = 0
+  · refine ⟨0, ?_⟩
+    intro k hk
+    rw [le_F_iff]
+    intro G
+    refine ⟨∅, ?_, 0, inducesRegularOfDegree_empty G⟩
+    simp [hM]
+  · let E : ℕ := C + D + 2
+    have hE : 0 < E := by
+      dsimp [E]
+      omega
+    rcases exists_eventually_mul_sq_le_two_pow (A := 2 * M * E) with ⟨R, hR⟩
+    let S : ℕ := max 1 R
+    have hS :
+        ∀ ⦃r : ℕ⦄, S ≤ r → 2 * M * E * (r + 1) ^ 2 ≤ 2 ^ r := by
+      intro r hr
+      exact hR (le_trans (le_max_right _ _) hr)
+    refine ⟨max E (E * S ^ 2), ?_⟩
+    intro k hk
+    rw [le_F_iff]
+    intro G
+    let r : ℕ := Nat.sqrt (k / E)
+    have hkE : E ≤ k := le_trans (le_max_left _ _) hk
+    have hdivOne : 1 ≤ k / E := by
+      exact (Nat.le_div_iff_mul_le hE).2 (by simpa using hkE)
+    have hrS : S ≤ r := by
+      apply Nat.le_sqrt.2
+      have hmul : E * S ^ 2 ≤ k := by
+        exact le_trans (le_max_right _ _) hk
+      have hdiv : S ^ 2 ≤ k / E := by
+        exact (Nat.le_div_iff_mul_le hE).2
+          (by simpa [Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using hmul)
+      simpa [r, Nat.pow_two] using hdiv
+    have hrPos : 0 < r := lt_of_lt_of_le (lt_of_lt_of_le (by decide : 0 < 1) (le_max_left _ _)) hrS
+    have hquadratic : 1 + C * r ^ 2 + (D + 1) * r ≤ k := by
+      let n : ℕ := k / E
+      have hn1 : 1 ≤ n := by
+        simpa [n] using hdivOne
+      have hbound : 1 + C * r ^ 2 + (D + 1) * r ≤ 1 + C * n + (D + 1) * n := by
+        dsimp [n]
+        gcongr
+        · simpa [r] using Nat.sqrt_le' (k / E)
+        · exact le_trans (by simpa [r] using Nat.sqrt_le_self (k / E)) le_rfl
+      have hstep : 1 + C * n + (D + 1) * n ≤ E * n := by
+        have h1cn : 1 + C * n ≤ n + C * n := Nat.add_le_add_right hn1 _
+        calc
+          1 + C * n + (D + 1) * n ≤ n + C * n + (D + 1) * n := Nat.add_le_add_right h1cn _
+          _ = E * n := by
+                dsimp [E]
+                ring
+      have hkn : E * n ≤ k := by
+        dsimp [n]
+        exact Nat.mul_div_le k E
+      exact le_trans hbound (le_trans hstep hkn)
+    have hsize : M * k ≤ 2 ^ r := by
+      have hkSmall : k ≤ 2 * E * (r + 1) ^ 2 := by
+        let n : ℕ := k / E
+        let t : ℕ := (r + 1) ^ 2
+        have hnLt : n < t := by
+          simpa [n, t, r] using Nat.lt_succ_sqrt' (k / E)
+        have hmodLt : k % E < E := Nat.mod_lt _ hE
+        have hEq : k = E * n + k % E := by
+          simpa [n] using (Nat.div_add_mod k E).symm
+        have hkAux : k < E * t + E := by
+          rw [hEq]
+          exact add_lt_add (Nat.mul_lt_mul_of_pos_left hnLt hE) hmodLt
+        have htOne : 1 ≤ t := Nat.succ_le_of_lt (Nat.pow_pos (Nat.succ_pos r))
+        have hEle : E ≤ E * t := by
+          simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using Nat.mul_le_mul_left E htOne
+        have hsum : E * t + E ≤ 2 * E * t := by
+          calc
+            E * t + E ≤ E * t + E * t := by
+              exact Nat.add_le_add_left hEle _
+            _ = 2 * E * t := by
+              ring
+        exact le_trans (Nat.le_of_lt hkAux) hsum
+      have hkBound : M * k ≤ 2 * M * E * (r + 1) ^ 2 := by
+        calc
+          M * k ≤ M * (2 * E * (r + 1) ^ 2) := Nat.mul_le_mul_left _ hkSmall
+          _ = 2 * M * E * (r + 1) ^ 2 := by
+                ring
+      exact le_trans hkBound (hS hrS)
+    have hthreshold : forcingThreshold (2 ^ r) ≤ 2 ^ k := by
+      have hpow :
+          forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+        exact
+          forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge
+            (C := C) (D := D) hrPos hlift hbridge
+      exact le_trans hpow (Nat.pow_le_pow_right (by decide : 0 < 2) hquadratic)
+    have hkF : 2 ^ r ≤ F (2 ^ k) := by
+      exact le_F_of_forcingThreshold_le hthreshold
+    rw [le_F_iff] at hkF
+    rcases hkF G with ⟨s, hs, d, hsreg⟩
+    exact ⟨s, le_trans hsize hs, d, hsreg⟩
+
+theorem targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostEmptyControlTerminalBridge D) :
+    TargetStatement := by
+  have hpow :
+      EventualNatPowerDomination 2 := by
+    exact
+      eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge
+        hlift hbridge
   exact
     (eventualNatPowerDomination_iff_targetStatement (b := 2) (by decide : 1 < 2)).mp hpow
 
