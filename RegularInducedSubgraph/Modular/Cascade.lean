@@ -325,6 +325,191 @@ lemma hasControlBlockModularCascadeFrom_of_hasControlBlockCascadeFrom
       · intro v
         simpa [hdrop v] using (Nat.ModEq.refl eDrop : eDrop ≡ eDrop [MOD q])
 
+lemma hasControlBlockModularCascadeFrom_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+    (G : SimpleGraph V) {q : ℕ} {blocks : List (Finset V × ℕ)} {s : Finset V}
+    [DecidableRel G.Adj]
+    {chain : List (Finset V)} (hsep : ControlBlocksSeparated s blocks)
+    (hcascade : HasFixedModulusCascadeFrom G q s chain)
+    (hext : HasConstantModExternalBlockDegrees G s q blocks) :
+    HasControlBlockModularCascadeFrom G q blocks s chain := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  induction chain generalizing s with
+  | nil =>
+      have hdeg0 :
+          ∀ v w : ↑(s : Set V),
+            (inducedOn G (s ∪ (∅ : Finset V))).degree
+                ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+              (inducedOn G (s ∪ (∅ : Finset V))).degree
+                ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+        intro v w
+        have hcastv :
+            (inducedOn G (s ∪ (∅ : Finset V))).degree
+                ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+              (inducedOn G s).degree v := by
+          simpa [Finset.empty_union] using
+            (inducedOn_degree_congr (G := G)
+              (s := s ∪ (∅ : Finset V)) (t := s)
+              (h := by simp [Finset.empty_union])
+              (hs := Finset.mem_union.mpr (Or.inl v.2))
+              (ht := v.2))
+        have hcastw :
+            (inducedOn G (s ∪ (∅ : Finset V))).degree
+                ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+              (inducedOn G s).degree w := by
+          simpa [Finset.empty_union] using
+            (inducedOn_degree_congr (G := G)
+              (s := s ∪ (∅ : Finset V)) (t := s)
+              (h := by simp [Finset.empty_union])
+              (hs := Finset.mem_union.mpr (Or.inl w.2))
+              (ht := w.2))
+        simpa [hcastv, hcastw] using hcascade v w
+      refine ⟨?_, hext⟩
+      intro v w
+      have hraw :=
+        modEq_extendedUnionDegree_of_modEq_unionDegree_and_externalBlockDegrees
+          (G := G) (s := s) (tail := (∅ : Finset V)) (q := q) hsep (by simp) hdeg0 hext v w
+      have hcastv :
+          (inducedOn G (s ∪ (controlBlockUnion blocks ∪ (∅ : Finset V)))).degree
+              ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+            (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+              ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ := by
+        simpa [Finset.union_assoc, Finset.empty_union] using
+          (inducedOn_degree_congr (G := G)
+            (s := s ∪ (controlBlockUnion blocks ∪ (∅ : Finset V)))
+            (t := s ∪ controlBlockUnion blocks)
+            (h := by simp [Finset.union_assoc, Finset.empty_union])
+            (hs := Finset.mem_union.mpr (Or.inl v.2))
+            (ht := Finset.mem_union.mpr (Or.inl v.2)))
+      have hcastw :
+          (inducedOn G (s ∪ (controlBlockUnion blocks ∪ (∅ : Finset V)))).degree
+              ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+            (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+              ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ := by
+        simpa [Finset.union_assoc, Finset.empty_union] using
+          (inducedOn_degree_congr (G := G)
+            (s := s ∪ (controlBlockUnion blocks ∪ (∅ : Finset V)))
+            (t := s ∪ controlBlockUnion blocks)
+            (h := by simp [Finset.union_assoc, Finset.empty_union])
+            (hs := Finset.mem_union.mpr (Or.inl w.2))
+            (ht := Finset.mem_union.mpr (Or.inl w.2)))
+      simpa [hcastv, hcastw] using hraw
+  | cons u chain ih =>
+      rcases hcascade with ⟨hu, eDrop, hdeg, hdrop, hrest⟩
+      have hsepU : ControlBlocksSeparated u blocks := controlBlocksSeparated_mono hu hsep
+      have hextU : HasConstantModExternalBlockDegrees G u q blocks :=
+        hasConstantModExternalBlockDegrees_mono (G := G) hu hext
+      have hdisjTail : Disjoint (controlBlockUnion blocks) (s \ u) := by
+        refine Finset.disjoint_left.mpr ?_
+        intro x hxBlocks hxTail
+        exact (Finset.disjoint_left.mp (disjoint_controlBlockUnion_of_controlBlocksSeparated hsep))
+          (Finset.mem_sdiff.mp hxTail).1 hxBlocks
+      have hdeg0 :
+          ∀ v w : ↑(u : Set V),
+            (inducedOn G (u ∪ (s \ u))).degree
+                ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+              (inducedOn G (u ∪ (s \ u))).degree
+                ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+        intro v w
+        have hcastv :
+            (inducedOn G (u ∪ (s \ u))).degree
+                ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+              (inducedOn G s).degree ⟨v.1, hu v.2⟩ := by
+          simpa [Finset.union_sdiff_of_subset hu] using
+            (inducedOn_degree_congr (G := G)
+              (s := u ∪ (s \ u)) (t := s)
+              (h := by simp [Finset.union_sdiff_of_subset hu])
+              (hs := Finset.mem_union.mpr (Or.inl v.2))
+              (ht := hu v.2))
+        have hcastw :
+            (inducedOn G (u ∪ (s \ u))).degree
+                ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+              (inducedOn G s).degree ⟨w.1, hu w.2⟩ := by
+          simpa [Finset.union_sdiff_of_subset hu] using
+            (inducedOn_degree_congr (G := G)
+              (s := u ∪ (s \ u)) (t := s)
+              (h := by simp [Finset.union_sdiff_of_subset hu])
+              (hs := Finset.mem_union.mpr (Or.inl w.2))
+              (ht := hu w.2))
+        simpa [hcastv, hcastw] using hdeg v w
+      refine ⟨hu, eDrop, ?_, hdrop, ih hsepU hrest hextU⟩
+      intro v w
+      have hraw :=
+        modEq_extendedUnionDegree_of_modEq_unionDegree_and_externalBlockDegrees
+          (G := G) (s := u) (tail := s \ u) (q := q) hsepU hdisjTail hdeg0 hextU v w
+      have hunion :
+          u ∪ (controlBlockUnion blocks ∪ (s \ u)) = s ∪ controlBlockUnion blocks := by
+        ext x
+        constructor
+        · intro hx
+          rcases Finset.mem_union.mp hx with hxU | hxRest
+          · exact Finset.mem_union.mpr (Or.inl (hu hxU))
+          · rcases Finset.mem_union.mp hxRest with hxBlocks | hxTail
+            · exact Finset.mem_union.mpr (Or.inr hxBlocks)
+            · exact Finset.mem_union.mpr (Or.inl (Finset.mem_sdiff.mp hxTail).1)
+        · intro hx
+          rcases Finset.mem_union.mp hx with hxS | hxBlocks
+          · by_cases hxU : x ∈ u
+            · exact Finset.mem_union.mpr (Or.inl hxU)
+            · exact
+                Finset.mem_union.mpr
+                  (Or.inr (Finset.mem_union.mpr (Or.inr (Finset.mem_sdiff.mpr ⟨hxS, hxU⟩))))
+          · exact Finset.mem_union.mpr (Or.inr (Finset.mem_union.mpr (Or.inl hxBlocks)))
+      have hcastv :
+          (inducedOn G (u ∪ (controlBlockUnion blocks ∪ (s \ u)))).degree
+              ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+            (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+              ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ := by
+        simpa [hunion] using
+          (inducedOn_degree_congr (G := G)
+            (s := u ∪ (controlBlockUnion blocks ∪ (s \ u)))
+            (t := s ∪ controlBlockUnion blocks)
+            (h := hunion)
+            (hs := Finset.mem_union.mpr (Or.inl v.2))
+            (ht := Finset.mem_union.mpr (Or.inl (hu v.2))))
+      have hcastw :
+          (inducedOn G (u ∪ (controlBlockUnion blocks ∪ (s \ u)))).degree
+              ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+            (inducedOn G (s ∪ controlBlockUnion blocks)).degree
+              ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩ := by
+        simpa [hunion] using
+          (inducedOn_degree_congr (G := G)
+            (s := u ∪ (controlBlockUnion blocks ∪ (s \ u)))
+            (t := s ∪ controlBlockUnion blocks)
+            (h := hunion)
+            (hs := Finset.mem_union.mpr (Or.inl w.2))
+            (ht := Finset.mem_union.mpr (Or.inl (hu w.2))))
+      simpa [hcastv, hcastw] using hraw
+
+lemma hasControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+    (G : SimpleGraph V) {k q : ℕ} {s : Finset V} {blocks : List (Finset V × ℕ)}
+    [DecidableRel G.Adj]
+    {chain : List (Finset V)} (hku : k ≤ (cascadeTerminal s chain).card)
+    (hq : (cascadeTerminal s chain).card ≤ q) (hnonempty : NonemptyControlBlockUnion blocks)
+    (hsep : ControlBlocksSeparated s blocks) (hcascade : HasFixedModulusCascadeFrom G q s chain)
+    (hext : HasConstantModExternalBlockDegrees G s q blocks) :
+    HasControlBlockModularCascadeWitnessOfCard G k := by
+  exact
+    ⟨s, q, blocks, chain, hku, hq, hnonempty, hsep,
+      hasControlBlockModularCascadeFrom_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+        G hsep hcascade hext⟩
+
+lemma hasBoundedControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+    (G : SimpleGraph V) {k q r : ℕ} {s : Finset V} {blocks : List (Finset V × ℕ)}
+    [DecidableRel G.Adj]
+    {chain : List (Finset V)} (hku : k ≤ (cascadeTerminal s chain).card)
+    (hq : (cascadeTerminal s chain).card ≤ q) (hlen : chain.length + blocks.length ≤ r)
+    (hnonempty : NonemptyControlBlockUnion blocks) (hsep : ControlBlocksSeparated s blocks)
+    (hcascade : HasFixedModulusCascadeFrom G q s chain)
+    (hext : HasConstantModExternalBlockDegrees G s q blocks) :
+    HasBoundedControlBlockModularCascadeWitnessOfCard G k r := by
+  exact
+    ⟨s, q, blocks, chain, hku, hq, hlen, hnonempty, hsep,
+      hasControlBlockModularCascadeFrom_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+        G hsep hcascade hext⟩
+
 /--
 Auxiliary packaging for turning a fixed-modulus multiblock cascade into the modular control-block
 data used by `HasControlBlockModularBucketingWitnessOfCard`.

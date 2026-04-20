@@ -1827,6 +1827,199 @@ lemma
   rcases hbounded with ⟨u, s, hku, hu, blocks, _hlen, hnonempty, hsep, hdeg, hext⟩
   exact ⟨u, s, hku, hu, blocks, hnonempty, hsep, hdeg, hext⟩
 
+private noncomputable def finsetSubtypeMapEquiv_host {W : Type*} [DecidableEq W]
+    {s : Finset V} (f : V ↪ W) : ↑(s : Set V) ≃ ↑((s.map f) : Set W) :=
+  Equiv.ofBijective
+    (fun v => ⟨f v, by simpa using Finset.mem_map.mpr ⟨v, by simpa using v.2, rfl⟩⟩)
+    (by
+      constructor
+      · intro v w hvw
+        apply Subtype.ext
+        exact f.injective (Subtype.ext_iff.mp hvw)
+      · intro w
+        rcases Finset.mem_map.mp (by simpa using w.2) with ⟨v, hv, hfw⟩
+        refine ⟨⟨v, by simpa using hv⟩, ?_⟩
+        apply Subtype.ext
+        exact hfw)
+
+private noncomputable def inducedOnIsoMap_host {W : Type*} [Fintype W] [DecidableEq W]
+    {G : SimpleGraph V} {G' : SimpleGraph W} (e : G ↪g G') (s : Finset V) :
+    inducedOn G s ≃g inducedOn G' (s.map e.toEmbedding) where
+  toEquiv := finsetSubtypeMapEquiv_host e.toEmbedding
+  map_rel_iff' := by
+    intro a b
+    simpa [finsetSubtypeMapEquiv_host, inducedOn] using (e.map_adj_iff (v := a) (w := b))
+
+private def mapControlBlocks {W : Type*} [DecidableEq W] (e : V ↪ W) :
+    List (Finset V × ℕ) → List (Finset W × ℕ)
+  | [] => []
+  | (t, r) :: blocks => (t.map e, r) :: mapControlBlocks e blocks
+
+private lemma controlBlockUnion_mapControlBlocks {W : Type*} [DecidableEq W] (e : V ↪ W) :
+    ∀ blocks : List (Finset V × ℕ),
+      controlBlockUnion (mapControlBlocks e blocks) = (controlBlockUnion blocks).map e
+  | [] => by simp [mapControlBlocks, controlBlockUnion]
+  | (t, r) :: blocks => by
+      simp [mapControlBlocks, controlBlockUnion, controlBlockUnion_mapControlBlocks,
+        Finset.map_union]
+
+private lemma length_mapControlBlocks {W : Type*} [DecidableEq W] (e : V ↪ W) :
+    ∀ blocks : List (Finset V × ℕ), (mapControlBlocks e blocks).length = blocks.length
+  | [] => by simp [mapControlBlocks]
+  | (_t, _r) :: blocks => by simp [mapControlBlocks, length_mapControlBlocks]
+
+private lemma nonemptyControlBlockUnion_mapControlBlocks {W : Type*} [DecidableEq W] (e : V ↪ W)
+    {blocks : List (Finset V × ℕ)} (hnonempty : NonemptyControlBlockUnion blocks) :
+    NonemptyControlBlockUnion (mapControlBlocks e blocks) := by
+  unfold NonemptyControlBlockUnion at hnonempty ⊢
+  rw [controlBlockUnion_mapControlBlocks, Finset.card_map]
+  exact hnonempty
+
+private lemma disjoint_map_of_disjoint {W : Type*} [DecidableEq W] (e : V ↪ W) {s t : Finset V}
+    (hdisj : Disjoint s t) : Disjoint (s.map e) (t.map e) := by
+  refine Finset.disjoint_left.mpr ?_
+  intro x hxS hxT
+  rcases Finset.mem_map.mp hxS with ⟨y, hy, hxy⟩
+  rcases Finset.mem_map.mp hxT with ⟨z, hz, hxz⟩
+  exact (Finset.disjoint_left.mp hdisj) hy (e.injective (hxy.trans hxz.symm) ▸ hz)
+
+private lemma controlBlocksSeparated_mapControlBlocks {W : Type*} [DecidableEq W]
+    (e : V ↪ W) {s : Finset V} :
+    ∀ {blocks : List (Finset V × ℕ)},
+      ControlBlocksSeparated s blocks →
+        ControlBlocksSeparated (s.map e) (mapControlBlocks e blocks)
+  | [], _ => by simp [ControlBlocksSeparated, mapControlBlocks]
+  | (t, r) :: blocks, hsep => by
+      rcases hsep with ⟨hst, htail, hrest⟩
+      refine ⟨disjoint_map_of_disjoint e hst, ?_, controlBlocksSeparated_mapControlBlocks e hrest⟩
+      rw [controlBlockUnion_mapControlBlocks]
+      exact disjoint_map_of_disjoint e htail
+
+private lemma card_neighborFinset_inter_map_eq {W : Type*} [Fintype W] [DecidableEq W]
+    {G : SimpleGraph V} {G' : SimpleGraph W} [DecidableRel G.Adj] [DecidableRel G'.Adj]
+    (e : G ↪g G') (v : V) (t : Finset V) :
+    (G'.neighborFinset (e v) ∩ t.map e.toEmbedding).card = (G.neighborFinset v ∩ t).card := by
+  classical
+  have hmap :
+      (G'.neighborFinset (e v) ∩ t.map e.toEmbedding) =
+        (G.neighborFinset v ∩ t).map e.toEmbedding := by
+    ext x
+    constructor
+    · intro hx
+      rcases Finset.mem_inter.mp hx with ⟨hxAdj, hxT⟩
+      rcases Finset.mem_map.mp hxT with ⟨y, hy, rfl⟩
+      refine Finset.mem_map.mpr ⟨y, ?_, rfl⟩
+      have hyAdj : G.Adj v y := by
+        exact (e.map_adj_iff (v := v) (w := y)).mp (by simpa using hxAdj)
+      exact Finset.mem_inter.mpr ⟨by simpa using hyAdj, hy⟩
+    · intro hx
+      rcases Finset.mem_map.mp hx with ⟨y, hy, rfl⟩
+      rcases Finset.mem_inter.mp hy with ⟨hyAdj, hyT⟩
+      have hyAdj' : G'.Adj (e v) (e y) := by
+        exact (e.map_adj_iff (v := v) (w := y)).mpr (by simpa using hyAdj)
+      exact Finset.mem_inter.mpr ⟨by simpa using hyAdj', Finset.mem_map.mpr ⟨y, hyT, rfl⟩⟩
+  rw [hmap, Finset.card_map]
+
+private lemma hasConstantModExternalBlockDegrees_mapControlBlocks
+    {W : Type*} [Fintype W] [DecidableEq W]
+    {G : SimpleGraph V} {G' : SimpleGraph W} [DecidableRel G.Adj] [DecidableRel G'.Adj]
+    (e : G ↪g G') {s : Finset V} {q : ℕ} :
+    ∀ {blocks : List (Finset V × ℕ)},
+      HasConstantModExternalBlockDegrees G s q blocks →
+        HasConstantModExternalBlockDegrees G' (s.map e.toEmbedding) q
+          (mapControlBlocks e.toEmbedding blocks)
+  | [], hext => by
+      simpa [HasConstantModExternalBlockDegrees, mapControlBlocks] using hext
+  | (t, r) :: blocks, hext => by
+      rcases hext with ⟨hhead, htail⟩
+      refine ⟨?_, hasConstantModExternalBlockDegrees_mapControlBlocks e htail⟩
+      intro v
+      rcases Finset.mem_map.mp v.2 with ⟨x, hx, hxEq⟩
+      have hcard :
+          (G'.neighborFinset v ∩ t.map e.toEmbedding).card = (G.neighborFinset x ∩ t).card := by
+        change (G'.neighborFinset v.1 ∩ t.map e.toEmbedding).card = (G.neighborFinset x ∩ t).card
+        have hvx : v.1 = e x := by simpa using hxEq.symm
+        rw [hvx]
+        exact card_neighborFinset_inter_map_eq e x t
+      simpa [hcard] using hhead ⟨x, hx⟩
+
+lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_embedding
+    {W : Type*} [Fintype W] [DecidableEq W] {G : SimpleGraph V} {G' : SimpleGraph W}
+    [DecidableRel G.Adj] [DecidableRel G'.Adj] (e : G ↪g G') {k q r : ℕ}
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q r) :
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G' k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  cases
+    Subsingleton.elim (‹DecidableRel G'.Adj›)
+      (fun a b => Classical.propDecidable (G'.Adj a b))
+  rcases hhost with ⟨u, s, hku, hu, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
+  let u' : Finset W := u.map e.toEmbedding
+  let s' : Finset W := s.map e.toEmbedding
+  let blocks' := mapControlBlocks e.toEmbedding blocks
+  have hu' : u' ⊆ s' := by
+    intro x hx
+    rcases Finset.mem_map.mp hx with ⟨v, hv, rfl⟩
+    exact Finset.mem_map.mpr ⟨v, hu hv, rfl⟩
+  have hdeg' :
+      ∀ v w : ↑(u' : Set W),
+        (inducedOn G' s').degree ⟨v.1, hu' v.2⟩ ≡
+          (inducedOn G' s').degree ⟨w.1, hu' w.2⟩ [MOD q] := by
+    let hIso := inducedOnIsoMap_host e s
+    intro v w
+    rcases Finset.mem_map.mp v.2 with ⟨v0, hv0, hvEq⟩
+    rcases Finset.mem_map.mp w.2 with ⟨w0, hw0, hwEq⟩
+    have hIso_v :
+        hIso ⟨v0, hu hv0⟩ = ⟨v.1, hu' v.2⟩ := by
+      apply Subtype.ext
+      exact hvEq
+    have hIso_w :
+        hIso ⟨w0, hu hw0⟩ = ⟨w.1, hu' w.2⟩ := by
+      apply Subtype.ext
+      exact hwEq
+    have hcastv :
+        (inducedOn G' s').degree ⟨v.1, hu' v.2⟩ =
+          (inducedOn G s).degree ⟨v0, hu hv0⟩ := by
+      have hcastv' := SimpleGraph.Iso.degree_eq hIso ⟨v0, hu hv0⟩
+      rw [hIso_v] at hcastv'
+      exact hcastv'
+    have hcastw :
+        (inducedOn G' s').degree ⟨w.1, hu' w.2⟩ =
+          (inducedOn G s).degree ⟨w0, hu hw0⟩ := by
+      have hcastw' := SimpleGraph.Iso.degree_eq hIso ⟨w0, hu hw0⟩
+      rw [hIso_w] at hcastw'
+      exact hcastw'
+    rw [hcastv, hcastw]
+    exact hdeg ⟨v0, hv0⟩ ⟨w0, hw0⟩
+  have hlen' : blocks'.length ≤ r := by
+    simpa [blocks', length_mapControlBlocks] using hlen
+  refine ⟨u', s', ?_, hu', blocks', ?_⟩
+  · simpa [u'] using hku
+  · refine ⟨hlen', ?_⟩
+    refine ⟨nonemptyControlBlockUnion_mapControlBlocks e.toEmbedding hnonempty, ?_⟩
+    refine ⟨?_, ?_⟩
+    · simpa [s', blocks'] using controlBlocksSeparated_mapControlBlocks e.toEmbedding hsep
+    · refine ⟨?_, ?_⟩
+      · intro v w
+        exact hdeg' v w
+      simpa [u', blocks'] using
+        (hasConstantModExternalBlockDegrees_mapControlBlocks (G := G) (G' := G') e hext)
+
+lemma hasFixedModulusControlBlockModularHostWitnessOfCard_of_embedding
+    {W : Type*} [Fintype W] [DecidableEq W] {G : SimpleGraph V} {G' : SimpleGraph W}
+    [DecidableRel G.Adj] [DecidableRel G'.Adj] (e : G ↪g G') {k q : ℕ}
+    (hhost : HasFixedModulusControlBlockModularHostWitnessOfCard G k q) :
+    HasFixedModulusControlBlockModularHostWitnessOfCard G' k q := by
+  rcases hhost with ⟨u, s, hku, hu, blocks, hnonempty, hsep, hdeg, hext⟩
+  exact
+    hasFixedModulusControlBlockModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+      G'
+      (hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_embedding
+        e
+        ⟨u, s, hku, hu, blocks, le_rfl, hnonempty, hsep, hdeg, hext⟩)
+
 lemma hasFixedModulusControlBlockModularHostWitnessOfCard_mono
     (G : SimpleGraph V) {k ℓ q : ℕ} (hkℓ : k ≤ ℓ)
     (hhost : HasFixedModulusControlBlockModularHostWitnessOfCard G ℓ q) :

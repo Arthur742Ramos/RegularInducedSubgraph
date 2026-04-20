@@ -1812,6 +1812,19 @@ lemma hasFixedModulusControlBlockModularCascadeWitnessOfCard_mono
   rcases hfixed with ⟨s, blocks, chain, hℓ, hq, hnonempty, hsep, hcascade⟩
   exact ⟨s, blocks, chain, le_trans hkℓ hℓ, hq, hnonempty, hsep, hcascade⟩
 
+lemma hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+    {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+    {k q : ℕ} {s : Finset V} {blocks : List (Finset V × ℕ)} {chain : List (Finset V)}
+    (hku : k ≤ (cascadeTerminal s chain).card) (hq : (cascadeTerminal s chain).card ≤ q)
+    (hnonempty : NonemptyControlBlockUnion blocks) (hsep : ControlBlocksSeparated s blocks)
+    (hcascade : HasFixedModulusCascadeFrom G q s chain)
+    (hext : HasConstantModExternalBlockDegrees G s q blocks) :
+    HasFixedModulusControlBlockModularCascadeWitnessOfCard G k q := by
+  exact
+    ⟨s, blocks, chain, hku, hq, hnonempty, hsep,
+      hasControlBlockModularCascadeFrom_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+        G hsep hcascade hext⟩
+
 /--
 Gallai's theorem in the empty-control fixed-modulus cascade package suggested by the dyadic note.
 Unlike `DyadicParityBaseCase`, this package keeps the modulus fixed but does not require a nonempty
