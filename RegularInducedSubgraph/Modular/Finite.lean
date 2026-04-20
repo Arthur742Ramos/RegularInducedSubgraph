@@ -1616,6 +1616,30 @@ lemma hasFixedModulusCascadeWitnessOfCard_of_hasFixedModulusWitnessOfCard
   exact ⟨s, [], by simpa [cascadeTerminal] using hks, hmod⟩
 
 /--
+The terminal bucket of a fixed-modulus cascade is itself a fixed-modulus witness with the same
+modulus.
+-/
+lemma inducesModEqDegree_cascadeTerminal_of_hasFixedModulusCascadeFrom
+    (G : SimpleGraph V) {q : ℕ} {s : Finset V} {chain : List (Finset V)}
+    (hcascade : HasFixedModulusCascadeFrom G q s chain) :
+    InducesModEqDegree G (cascadeTerminal s chain) q := by
+  classical
+  induction chain generalizing s with
+  | nil =>
+      simpa [InducesModEqDegree, HasFixedModulusCascadeFrom, cascadeTerminal] using hcascade
+  | cons u chain ih =>
+      rcases hcascade with ⟨hu, eDrop, hdeg, hdrop, hrest⟩
+      simpa [cascadeTerminal] using ih hrest
+
+lemma hasFixedModulusWitnessOfCard_of_hasFixedModulusCascadeWitnessOfCard
+    (G : SimpleGraph V) {k q : ℕ} (hcascade : HasFixedModulusCascadeWitnessOfCard G k q) :
+    HasFixedModulusWitnessOfCard G k q := by
+  rcases hcascade with ⟨s, chain, hk, hfrom⟩
+  exact
+    ⟨cascadeTerminal s chain, hk,
+      inducesModEqDegree_cascadeTerminal_of_hasFixedModulusCascadeFrom G hfrom⟩
+
+/--
 Gallai's parity theorem, repackaged in the empty-control fixed-modulus cascade language suggested by
 the dyadic-lift note.
 -/
