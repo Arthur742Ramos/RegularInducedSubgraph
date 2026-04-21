@@ -288,6 +288,10 @@ If you want a quick way into the artifact, the following declarations are the be
   Corrected dyadic reduction: the true empty-control parity base case, together with a
   polynomial-cost empty-control dyadic lift and a polynomial-cost bridge into the terminal-capped
   control-block modular cascade package, already implies `TargetStatement`.
+- `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`  
+  Finite host-iteration reduction: if terminal-size bounded fixed-modulus control-block modular host
+  witnesses already regularize on `q = 2^j` vertices, then the older one-control host bottleneck,
+  and hence the fixed-witness terminal regularization step, follows one exponent later.
 
 ## Candidate approaches to try
 
@@ -373,14 +377,20 @@ files.
    `RegularInducedSubgraph.hasFixedModulusCascadeWitnessOfCard_two`, and the host-level package
    `HasFixedModulusControlBlockModularHostWitnessOfCard` with the weaker one-control base theorem
    `RegularInducedSubgraph.hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_two_of_pos`
-   on about `n / 4` vertices. A successful lift would yield `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`,
-   hence `TargetStatement`.
+   on about `n / 4` vertices. The new host-step / host-iteration lemmas reduce the old one-control
+   host bottleneck to the terminal-size bounded-host hypothesis
+   `HasBoundedFixedModulusControlBlockModularHostTerminalRegularization`, formalized by
+   `RegularInducedSubgraph.hasPolynomialCostFixedOneControlHostTerminalRegularization_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`
+   and
+   `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`.
+   A successful lift together with that terminal bounded-host collapse would yield
+   `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`, hence `TargetStatement`.
    The corrected conditional reduction is now formalized by
    `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge`
    and
    `RegularInducedSubgraph.targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge`.
    The old terminal-capped base case is now ruled out formally by
    `RegularInducedSubgraph.not_dyadicParityBaseCase`; what remains open is the actual empty-control
-   dyadic lift theorem together with a polynomial-cost bridge from the empty-control fixed-modulus
-   cascade package into the terminal-capped control-block modular cascade world (or an equivalent
-   empty-control dropped-part reformulation of that world).
+   dyadic lift theorem together with either that terminal bounded-host collapse or a polynomial-cost
+   bridge from the empty-control fixed-modulus cascade package into the terminal-capped control-block
+   modular cascade world (or an equivalent empty-control dropped-part reformulation of that world).

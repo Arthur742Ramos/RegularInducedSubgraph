@@ -1889,6 +1889,16 @@ def HasPolynomialCostFixedOneControlHostTerminalRegularization (D : ℕ) : Prop 
       HasRegularInducedSubgraphOfCard G (2 ^ j)
 
 /--
+Terminal-size bounded host regularization: once a bounded fixed-modulus control-block modular host
+witness already lives on `q = 2^j` vertices, it collapses directly to a regular induced subgraph on
+`q` vertices.
+-/
+def HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+      HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
 The previously stated full bridge immediately implies the weaker self-target version.
 -/
 theorem hasPolynomialCostEmptyControlTerminalSelfBridge_of_hasPolynomialCostEmptyControlTerminalBridge
@@ -1957,6 +1967,62 @@ theorem
       hhost G
         (hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusWitnessOfCard
           (G := G) hq hm hfixed')
+
+/--
+The finite host-iteration lemmas show that the one-control host regularization problem is already
+reduced to terminal-size host witnesses, at the cost of growing the control-block budget from `1`
+to `D + 1`.
+-/
+theorem
+    hasPolynomialCostFixedOneControlHostTerminalRegularization_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+    {D : ℕ}
+    (hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1)) :
+    HasPolynomialCostFixedOneControlHostTerminalRegularization D := by
+  intro n j G hhost
+  by_cases hj : j = 0
+  · subst hj
+    have hhost' :
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G 1 1 (D + 1) := by
+      refine
+        hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_le
+          (G := G) (r := 1) (r' := D + 1) ?_ ?_
+      · omega
+      · simpa using hhost
+    simpa using (hterm (j := 0) G hhost')
+  · rcases Nat.exists_eq_succ_of_ne_zero hj with ⟨r, rfl⟩
+    let q : ℕ := 2 ^ (r + 1)
+    have hq : 1 < q := by
+      have hpow1 : 1 ≤ 2 ^ r := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+      calc
+        1 < 2 := by decide
+        _ ≤ 2 ^ r * 2 := by
+          simpa [Nat.mul_comm] using Nat.mul_le_mul_right 2 hpow1
+        _ = q := by
+          simp [q, pow_succ, Nat.mul_comm]
+    have hqpos : 0 < q := lt_trans (by decide : 0 < 1) hq
+    have hhost' :
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q ^ D * q) q 1 := by
+      simpa [q, pow_succ, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hhost
+    have hterminal :
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G q q (D + 1) := by
+      simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+        (hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_iterate
+          (G := G) (q := q) (k := q) (r := 1) (D := D) hq hqpos hhost')
+    simpa [q] using hterm G hterminal
+
+/--
+Combining terminal bounded-host regularization with the one-control reduction recovers the usual
+fixed-witness terminal regularization theorem one exponent later.
+-/
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+    {D : ℕ}
+    (hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 1) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasPolynomialCostFixedOneControlHostTerminalRegularization
+      (hasPolynomialCostFixedOneControlHostTerminalRegularization_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+        hterm)
 
 /--
 Gallai's theorem already proves the empty-control parity base case.
@@ -2765,6 +2831,39 @@ theorem targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCos
         hlift hbridge
   exact
     (eventualNatPowerDomination_iff_targetStatement (b := 2) (by decide : 1 < 2)).mp hpow
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1)) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 2) * r) := by
+  simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+    (forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      (C := C) (D := D + 1) hr hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+        hterm))
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1)) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+        hterm)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+        hterm)
 
 end DyadicLift
 

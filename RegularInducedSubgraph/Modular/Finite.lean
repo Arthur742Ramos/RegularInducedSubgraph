@@ -2058,6 +2058,13 @@ lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_mono
   rcases hhost with ⟨u, s, hℓ, hu, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
   exact ⟨u, s, le_trans hkℓ hℓ, hu, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
 
+lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_le
+    (G : SimpleGraph V) {k q r r' : ℕ} (hrr' : r ≤ r')
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q r) :
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q r' := by
+  rcases hhost with ⟨u, s, hk, hu, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
+  exact ⟨u, s, hk, hu, blocks, le_trans hlen hrr', hnonempty, hsep, hdeg, hext⟩
+
 /--
 A control-block witness of size at least `k`: a large vertex set `s`, a modulus `q ≥ |s|`, and a
 separated list of control blocks whose ambient and external degree data force modular equality on
