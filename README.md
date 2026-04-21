@@ -296,6 +296,10 @@ If you want a quick way into the artifact, the following declarations are the be
   Stronger shortcut: a budget-`1` terminal bounded-host collapse already forces `TargetStatement`
   directly, via the cubic forcing-threshold bound
   `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one`.
+- `RegularInducedSubgraph.hasPolynomialCostFixedOneControlHostTerminalRegularization_iff_hasPolynomialCostFixedSingleControlHostTerminalRegularization`  
+  The remaining one-control host bottleneck can now be stated with one explicit control set, rather
+  than a bounded control-block host witness of budget `1`; the zero-cost case is exposed by
+  `RegularInducedSubgraph.targetStatement_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero`.
 
 ## Candidate approaches to try
 
@@ -387,6 +391,9 @@ files.
    `RegularInducedSubgraph.hasPolynomialCostFixedOneControlHostTerminalRegularization_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`
    and
    `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`.
+   The same bottleneck is now equivalently packaged as
+   `HasPolynomialCostFixedSingleControlHostTerminalRegularization`, which makes the open finite
+   problem visibly about one host set, one bucket, and one explicit control set.
    A successful lift together with that terminal bounded-host collapse would yield
    `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`, hence `TargetStatement`.
    Even better, if the terminal bounded-host collapse can be proved already with budget `1`, then

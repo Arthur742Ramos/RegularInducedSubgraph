@@ -1805,6 +1805,21 @@ def HasBoundedControlBlockModularCascadeWitnessOfCard (G : SimpleGraph V) (k r :
     HasControlBlockModularCascadeFrom G q blocks s chain
 
 /--
+A fixed-modulus single-control modular host witness of size at least `k`: a bucket `u` inside a
+host set `s`, together with one nonempty disjoint control set `t`, such that the host degrees in
+`G[s]` are constant modulo `q` on `u` and the external degrees into `t` share a common residue
+modulo `q` on `u`.
+-/
+def HasFixedModulusSingleControlModularHostWitnessOfCard
+    (G : SimpleGraph V) (k q : ℕ) : Prop := by
+  classical
+  exact ∃ u s t : Finset V, k ≤ u.card ∧ ∃ hu : u ⊆ s, 0 < t.card ∧ Disjoint s t ∧
+    (∀ v w : ↑(u : Set V),
+      (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+        (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) ∧
+    ∃ e : ℕ, ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card ≡ e [MOD q]
+
+/--
 A composable fixed-modulus control-block modular host witness of size at least `k`: a bucket `u`
 inside a larger host `s`, together with a fixed modulus `q` and a nonempty separated control-block
 family, such that the degrees in `G[s]` are constant modulo `q` on `u` and each control block
@@ -2064,6 +2079,57 @@ lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_le
     HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q r' := by
   rcases hhost with ⟨u, s, hk, hu, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
   exact ⟨u, s, hk, hu, blocks, le_trans hlen hrr', hnonempty, hsep, hdeg, hext⟩
+
+lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusSingleControlModularHostWitnessOfCard
+    (G : SimpleGraph V) {k q : ℕ}
+    (hhost : HasFixedModulusSingleControlModularHostWitnessOfCard G k q) :
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q 1 := by
+  classical
+  rcases hhost with ⟨u, s, t, hku, hu, ht, hst, hdeg, e, hext⟩
+  refine ⟨u, s, hku, hu, [(t, e)], by simp, ?_, ?_, hdeg, ?_⟩
+  · unfold NonemptyControlBlockUnion
+    simpa [controlBlockUnion] using ht
+  · refine ⟨hst, ?_, trivial⟩
+    simp [controlBlockUnion]
+  · simpa [HasConstantModExternalBlockDegrees] using And.intro hext True.intro
+
+lemma hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_one
+    (G : SimpleGraph V) {k q : ℕ}
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q 1) :
+    HasFixedModulusSingleControlModularHostWitnessOfCard G k q := by
+  classical
+  rcases hhost with ⟨u, s, hku, hu, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
+  cases blocks with
+  | nil =>
+      exfalso
+      unfold NonemptyControlBlockUnion at hnonempty
+      simp [controlBlockUnion] at hnonempty
+  | cons b bs =>
+      cases bs with
+      | nil =>
+          rcases b with ⟨t, e⟩
+          refine ⟨u, s, t, hku, hu, ?_, ?_, hdeg, e, ?_⟩
+          · unfold NonemptyControlBlockUnion at hnonempty
+            simpa [controlBlockUnion] using hnonempty
+          · rcases hsep with ⟨hst, _htail, _⟩
+            exact hst
+          · rcases hext with ⟨hextHead, _⟩
+            exact hextHead
+      | cons b' bs' =>
+          have hlen' : bs'.length + 2 ≤ 1 := by simpa using hlen
+          omega
+
+theorem hasFixedModulusSingleControlModularHostWitnessOfCard_iff_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_one
+    (G : SimpleGraph V) {k q : ℕ} :
+    HasFixedModulusSingleControlModularHostWitnessOfCard G k q ↔
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q 1 := by
+  constructor
+  · exact
+      hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusSingleControlModularHostWitnessOfCard
+        G
+  · exact
+      hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_one
+        G
 
 /--
 A control-block witness of size at least `k`: a large vertex set `s`, a modulus `q ≥ |s|`, and a

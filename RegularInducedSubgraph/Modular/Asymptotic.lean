@@ -1889,6 +1889,15 @@ def HasPolynomialCostFixedOneControlHostTerminalRegularization (D : ℕ) : Prop 
       HasRegularInducedSubgraphOfCard G (2 ^ j)
 
 /--
+The same bottleneck, repackaged using one explicit control set instead of a length-`1` control-block
+list.
+-/
+def HasPolynomialCostFixedSingleControlHostTerminalRegularization (D : ℕ) : Prop :=
+  ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
+    HasFixedModulusSingleControlModularHostWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
 Terminal-size bounded host regularization: once a bounded fixed-modulus control-block modular host
 witness already lives on `q = 2^j` vertices, it collapses directly to a regular induced subgraph on
 `q` vertices.
@@ -1897,6 +1906,23 @@ def HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (r : ℕ
   ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
     HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
       HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+theorem
+    hasPolynomialCostFixedOneControlHostTerminalRegularization_iff_hasPolynomialCostFixedSingleControlHostTerminalRegularization
+    {D : ℕ} :
+    HasPolynomialCostFixedOneControlHostTerminalRegularization D ↔
+      HasPolynomialCostFixedSingleControlHostTerminalRegularization D := by
+  constructor
+  · intro h n j G hsingle
+    exact
+      h G
+        (hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusSingleControlModularHostWitnessOfCard
+          G hsingle)
+  · intro h n j G hhost
+    exact
+      h G
+        (hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_one
+          G hhost)
 
 /--
 The previously stated full bridge immediately implies the weaker self-target version.
@@ -2981,6 +3007,21 @@ theorem
     (eventualNatPowerDomination_iff_targetStatement (b := 2) (by decide : 1 < 2)).mp
       (eventualNatPowerDomination_two_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
         hterm)
+
+theorem targetStatement_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+    (hhost : HasPolynomialCostFixedSingleControlHostTerminalRegularization 0) :
+    TargetStatement := by
+  have hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization 1 := by
+    intro n j G hctrl
+    have hctrl' :
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G ((2 ^ j) ^ 0 * 2 ^ j) (2 ^ j) 1 := by
+      simpa using hctrl
+    simpa using
+      hhost G
+        (hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_one
+          G hctrl')
+  exact targetStatement_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
+    hterm
 
 end DyadicLift
 
