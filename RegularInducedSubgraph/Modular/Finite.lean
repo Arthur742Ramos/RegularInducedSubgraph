@@ -1858,6 +1858,13 @@ def HasBoundedFixedModulusControlBlockModularHostWitnessOfCard
           (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) ∧
       HasConstantModExternalBlockDegrees G u q blocks
 
+lemma hasFixedModulusSingleControlModularHostWitnessOfCard_mono
+    (G : SimpleGraph V) {k ℓ q : ℕ} (hkℓ : k ≤ ℓ)
+    (hhost : HasFixedModulusSingleControlModularHostWitnessOfCard G ℓ q) :
+    HasFixedModulusSingleControlModularHostWitnessOfCard G k q := by
+  rcases hhost with ⟨u, s, t, hℓ, hu, ht, hst, hdeg, e, hext⟩
+  exact ⟨u, s, t, le_trans hkℓ hℓ, hu, ht, hst, hdeg, e, hext⟩
+
 lemma
     hasFixedModulusControlBlockModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
     (G : SimpleGraph V) {k q r : ℕ}

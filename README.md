@@ -393,7 +393,9 @@ files.
    `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`.
    The same bottleneck is now equivalently packaged as
    `HasPolynomialCostFixedSingleControlHostTerminalRegularization`, which makes the open finite
-   problem visibly about one host set, one bucket, and one explicit control set.
+   problem visibly about one host set, one bucket, and one explicit control set; the monotonicity
+   theorem `RegularInducedSubgraph.hasPolynomialCostFixedSingleControlHostTerminalRegularization_of_zero`
+   reduces all larger exponents to the literal terminal case `D = 0`.
    A successful lift together with that terminal bounded-host collapse would yield
    `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`, hence `TargetStatement`.
    Even better, if the terminal bounded-host collapse can be proved already with budget `1`, then

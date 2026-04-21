@@ -1924,6 +1924,26 @@ theorem
         (hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_one
           G hhost)
 
+theorem hasPolynomialCostFixedSingleControlHostTerminalRegularization_of_zero
+    {D : ℕ} (hzero : HasPolynomialCostFixedSingleControlHostTerminalRegularization 0) :
+    HasPolynomialCostFixedSingleControlHostTerminalRegularization D := by
+  intro n j G hhost
+  have hsmall :
+      HasFixedModulusSingleControlModularHostWitnessOfCard G (2 ^ j) (2 ^ j) := by
+    refine
+      hasFixedModulusSingleControlModularHostWitnessOfCard_mono
+        (G := G) ?_ hhost
+    have hqpos : 0 < 2 ^ j := Nat.pow_pos (by decide : 0 < 2)
+    have hpow1 : 1 ≤ (2 ^ j) ^ D := Nat.succ_le_of_lt (Nat.pow_pos hqpos)
+    calc
+      2 ^ j = 1 * 2 ^ j := by simp
+      _ ≤ (2 ^ j) ^ D * 2 ^ j := by
+        exact Nat.mul_le_mul_right (2 ^ j) hpow1
+  have hsmall' :
+      HasFixedModulusSingleControlModularHostWitnessOfCard G ((2 ^ j) ^ 0 * 2 ^ j) (2 ^ j) := by
+    simpa using hsmall
+  simpa using hzero G hsmall'
+
 /--
 The previously stated full bridge immediately implies the weaker self-target version.
 -/
