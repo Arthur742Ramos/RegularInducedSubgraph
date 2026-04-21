@@ -2865,6 +2865,123 @@ theorem
       (hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
         hterm)
 
+theorem
+    forcingThreshold_pow_two_le_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
+    {r : ℕ} (hr : 0 < r)
+    (hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization 1) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (4 * r) := by
+  let q : ℕ := 2 ^ r
+  have hq : 1 < q := by
+    have hpow1 : 1 ≤ 2 ^ (r - 1) := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+    calc
+      1 < 2 := by decide
+      _ ≤ 2 ^ (r - 1) * 2 := by
+        simpa [Nat.mul_comm] using Nat.mul_le_mul_right 2 hpow1
+      _ = q := by
+        rcases Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hr) with ⟨m, hm⟩
+        subst hm
+        simp [q, pow_succ, Nat.mul_comm]
+  have hsize :
+      q * q * q + (q - 1) ≤ 2 ^ (4 * r) := by
+    have hq0 : 0 < q := lt_trans (by decide : 0 < 1) hq
+    have hqcube : q * q * q = 2 ^ (3 * r) := by
+      dsimp [q]
+      rw [← Nat.pow_add, ← Nat.pow_add]
+      congr 1
+      ring
+    have hqle : q ≤ 2 ^ (3 * r) := by
+      dsimp [q]
+      exact Nat.pow_le_pow_right (by decide : 0 < 2) (by omega)
+    have hlt :
+        q * q * q + (q - 1) < 2 ^ (3 * r + 1) := by
+      calc
+        q * q * q + (q - 1) < q * q * q + q := by
+          exact Nat.add_lt_add_left (Nat.sub_lt hq0 (by decide : 0 < 1)) _
+        _ ≤ 2 ^ (3 * r) + 2 ^ (3 * r) := by
+          rw [hqcube]
+          exact Nat.add_le_add le_rfl hqle
+        _ = 2 ^ (3 * r + 1) := by
+          rw [← two_mul]
+          simpa [Nat.mul_comm] using (Nat.pow_succ 2 (3 * r)).symm
+    exact
+      le_trans (Nat.le_of_lt hlt)
+        (Nat.pow_le_pow_right (by decide : 0 < 2) (by omega))
+  apply forcingThreshold_le_of_le_F
+  rw [le_F_iff]
+  intro G
+  exact
+    hterm (j := r) G
+      (hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_large_card
+        (G := G) hq
+        (by simpa [q, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hsize))
+
+theorem
+    eventualNatPowerDomination_two_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
+    (hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization 1) :
+    EventualNatPowerDomination 2 := by
+  intro M
+  rcases exists_eventually_mul_sq_le_two_pow (A := 4 * M) with ⟨R, hR⟩
+  let S : ℕ := max 1 R
+  refine ⟨4 * S, ?_⟩
+  intro k hk
+  rw [le_F_iff]
+  intro G
+  let r : ℕ := k / 4
+  have hrS : S ≤ r := by
+    exact
+      (Nat.le_div_iff_mul_le (by decide : 0 < 4)).2
+        (by simpa [S, Nat.mul_comm] using hk)
+  have hrPos : 0 < r := lt_of_lt_of_le (lt_of_lt_of_le (by decide : 0 < 1) (le_max_left 1 R)) hrS
+  have hthreshold : forcingThreshold (2 ^ r) ≤ 2 ^ k := by
+    calc
+      forcingThreshold (2 ^ r) ≤ 2 ^ (4 * r) := by
+        exact
+          forcingThreshold_pow_two_le_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
+            hrPos hterm
+      _ ≤ 2 ^ k := by
+        exact Nat.pow_le_pow_right (by decide : 0 < 2) (by
+          dsimp [r]
+          exact Nat.mul_div_le k 4)
+  have hkF : 2 ^ r ≤ F (2 ^ k) := le_F_of_forcingThreshold_le hthreshold
+  have hsize : M * k ≤ 2 ^ r := by
+    have hkSmall : k ≤ 4 * (r + 1) := by
+      have hEq : k = 4 * r + k % 4 := by
+        dsimp [r]
+        simpa [Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using (Nat.div_add_mod k 4).symm
+      have hkAux : k < 4 * r + 4 := by
+        rw [hEq]
+        simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+          Nat.add_lt_add_left (Nat.mod_lt k (by decide : 0 < 4)) (4 * r)
+      simpa [Nat.mul_add, Nat.mul_one, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+        Nat.le_of_lt hkAux
+    have hkBound : M * k ≤ 4 * M * (r + 1) := by
+      calc
+        M * k ≤ M * (4 * (r + 1)) := Nat.mul_le_mul_left _ hkSmall
+        _ = 4 * M * (r + 1) := by ring
+    have hsq :
+        4 * M * (r + 1) ≤ 4 * M * (r + 1) ^ 2 := by
+      have hone : 1 ≤ r + 1 := Nat.succ_le_succ (Nat.zero_le r)
+      have hsquare : r + 1 ≤ (r + 1) ^ 2 := by
+        calc
+          r + 1 = (r + 1) * 1 := by rw [Nat.mul_one]
+          _ ≤ (r + 1) * (r + 1) := Nat.mul_le_mul_left _ hone
+          _ = (r + 1) ^ 2 := by rw [pow_two]
+      simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using
+        Nat.mul_le_mul_left (4 * M) hsquare
+    have hpow : 4 * M * (r + 1) ^ 2 ≤ 2 ^ r := by
+      exact hR (le_trans (le_max_right 1 R) hrS)
+    exact le_trans hkBound (le_trans hsq hpow)
+  exact (le_F_iff.mp (le_trans hsize hkF)) G
+
+theorem
+    targetStatement_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
+    (hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization 1) :
+    TargetStatement := by
+  exact
+    (eventualNatPowerDomination_iff_targetStatement (b := 2) (by decide : 1 < 2)).mp
+      (eventualNatPowerDomination_two_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
+        hterm)
+
 end DyadicLift
 
 end Threshold

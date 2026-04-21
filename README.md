@@ -292,6 +292,10 @@ If you want a quick way into the artifact, the following declarations are the be
   Finite host-iteration reduction: if terminal-size bounded fixed-modulus control-block modular host
   witnesses already regularize on `q = 2^j` vertices, then the older one-control host bottleneck,
   and hence the fixed-witness terminal regularization step, follows one exponent later.
+- `RegularInducedSubgraph.targetStatement_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one`  
+  Stronger shortcut: a budget-`1` terminal bounded-host collapse already forces `TargetStatement`
+  directly, via the cubic forcing-threshold bound
+  `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one`.
 
 ## Candidate approaches to try
 
@@ -385,6 +389,11 @@ files.
    `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`.
    A successful lift together with that terminal bounded-host collapse would yield
    `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`, hence `TargetStatement`.
+   Even better, if the terminal bounded-host collapse can be proved already with budget `1`, then
+   the direct cubic bound
+   `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one`
+   yields `RegularInducedSubgraph.targetStatement_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one`
+   without any dyadic lift.
    The corrected conditional reduction is now formalized by
    `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge`
    and
