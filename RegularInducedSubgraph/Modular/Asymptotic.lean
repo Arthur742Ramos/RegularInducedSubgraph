@@ -1898,6 +1898,15 @@ def HasPolynomialCostFixedSingleControlHostTerminalRegularization (D : ℕ) : Pr
       HasRegularInducedSubgraphOfCard G (2 ^ j)
 
 /--
+Literal terminal-case obstruction in the single-control host language: the surviving bucket already
+has exact cardinality `q = 2^j`.
+-/
+def HasExactCardFixedSingleControlHostTerminalRegularization : Prop :=
+  ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G (2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
 Terminal-size bounded host regularization: once a bounded fixed-modulus control-block modular host
 witness already lives on `q = 2^j` vertices, it collapses directly to a regular induced subgraph on
 `q` vertices.
@@ -3042,6 +3051,38 @@ theorem targetStatement_of_polynomialCostFixedSingleControlHostTerminalRegulariz
           G hctrl')
   exact targetStatement_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
     hterm
+
+theorem
+    hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization :
+    HasPolynomialCostFixedSingleControlHostTerminalRegularization 0 ↔
+      HasExactCardFixedSingleControlHostTerminalRegularization := by
+  constructor
+  · intro h n j G hhost
+    have hhost' :
+        HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G ((2 ^ j) ^ 0 * 2 ^ j) (2 ^ j) := by
+      simpa using hhost
+    exact
+      h G
+        (hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlModularHostWitnessOfCard
+          G hhost')
+  · intro h n j G hhost
+    have hhost' :
+        HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G ((2 ^ j) ^ 0 * 2 ^ j) (2 ^ j) := by
+      exact
+        hasExactCardFixedModulusSingleControlModularHostWitnessOfCard_of_hasFixedModulusSingleControlModularHostWitnessOfCard
+          G hhost
+    have hhost'' :
+        HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G (2 ^ j) (2 ^ j) := by
+      simpa using hhost'
+    simpa using h G hhost''
+
+theorem targetStatement_of_hasExactCardFixedSingleControlHostTerminalRegularization
+    (hhost : HasExactCardFixedSingleControlHostTerminalRegularization) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+      ((hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization).2
+        hhost)
 
 end DyadicLift
 

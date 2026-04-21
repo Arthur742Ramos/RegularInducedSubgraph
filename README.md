@@ -300,6 +300,10 @@ If you want a quick way into the artifact, the following declarations are the be
   The remaining one-control host bottleneck can now be stated with one explicit control set, rather
   than a bounded control-block host witness of budget `1`; the zero-cost case is exposed by
   `RegularInducedSubgraph.targetStatement_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero`.
+- `RegularInducedSubgraph.hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization`  
+  The zero-cost single-control host bottleneck reduces further to the exact-cardinality case
+  `|u| = q`, exposed by
+  `RegularInducedSubgraph.targetStatement_of_hasExactCardFixedSingleControlHostTerminalRegularization`.
 
 ## Candidate approaches to try
 
@@ -395,7 +399,9 @@ files.
    `HasPolynomialCostFixedSingleControlHostTerminalRegularization`, which makes the open finite
    problem visibly about one host set, one bucket, and one explicit control set; the monotonicity
    theorem `RegularInducedSubgraph.hasPolynomialCostFixedSingleControlHostTerminalRegularization_of_zero`
-   reduces all larger exponents to the literal terminal case `D = 0`.
+   reduces all larger exponents to the literal terminal case `D = 0`, and
+   `RegularInducedSubgraph.hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization`
+   reduces that terminal case further to exact-cardinality buckets `|u| = 2^j`.
    A successful lift together with that terminal bounded-host collapse would yield
    `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`, hence `TargetStatement`.
    Even better, if the terminal bounded-host collapse can be proved already with budget `1`, then

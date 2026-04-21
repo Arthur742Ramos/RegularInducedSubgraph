@@ -1820,6 +1820,18 @@ def HasFixedModulusSingleControlModularHostWitnessOfCard
     ∃ e : ℕ, ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card ≡ e [MOD q]
 
 /--
+Exact-cardinality version of the fixed-modulus single-control modular host witness package.
+-/
+def HasExactCardFixedModulusSingleControlModularHostWitnessOfCard
+    (G : SimpleGraph V) (k q : ℕ) : Prop := by
+  classical
+  exact ∃ u s t : Finset V, u.card = k ∧ ∃ hu : u ⊆ s, 0 < t.card ∧ Disjoint s t ∧
+    (∀ v w : ↑(u : Set V),
+      (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+        (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) ∧
+    ∃ e : ℕ, ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card ≡ e [MOD q]
+
+/--
 A composable fixed-modulus control-block modular host witness of size at least `k`: a bucket `u`
 inside a larger host `s`, together with a fixed modulus `q` and a nonempty separated control-block
 family, such that the degrees in `G[s]` are constant modulo `q` on `u` and each control block
@@ -1864,6 +1876,28 @@ lemma hasFixedModulusSingleControlModularHostWitnessOfCard_mono
     HasFixedModulusSingleControlModularHostWitnessOfCard G k q := by
   rcases hhost with ⟨u, s, t, hℓ, hu, ht, hst, hdeg, e, hext⟩
   exact ⟨u, s, t, le_trans hkℓ hℓ, hu, ht, hst, hdeg, e, hext⟩
+
+lemma hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlModularHostWitnessOfCard
+    (G : SimpleGraph V) {k q : ℕ}
+    (hhost : HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G k q) :
+    HasFixedModulusSingleControlModularHostWitnessOfCard G k q := by
+  rcases hhost with ⟨u, s, t, hku, hu, ht, hst, hdeg, e, hext⟩
+  exact ⟨u, s, t, by simpa [hku], hu, ht, hst, hdeg, e, hext⟩
+
+lemma hasExactCardFixedModulusSingleControlModularHostWitnessOfCard_of_hasFixedModulusSingleControlModularHostWitnessOfCard
+    (G : SimpleGraph V) {k q : ℕ}
+    (hhost : HasFixedModulusSingleControlModularHostWitnessOfCard G k q) :
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G k q := by
+  classical
+  rcases hhost with ⟨u, s, t, hku, hu, ht, hst, hdeg, e, hext⟩
+  rcases exists_subset_card_eq_of_le_card hku with ⟨w, hwu, hwk⟩
+  refine ⟨w, s, t, hwk, ?_, ht, hst, ?_, e, ?_⟩
+  · intro x hx
+    exact hu (hwu hx)
+  · intro v w'
+    exact hdeg ⟨v.1, hwu v.2⟩ ⟨w'.1, hwu w'.2⟩
+  · intro v
+    exact hext ⟨v.1, hwu v.2⟩
 
 lemma
     hasFixedModulusControlBlockModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
