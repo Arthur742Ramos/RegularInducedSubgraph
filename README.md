@@ -304,6 +304,11 @@ If you want a quick way into the artifact, the following declarations are the be
   The zero-cost single-control host bottleneck reduces further to the exact-cardinality case
   `|u| = q`, exposed by
   `RegularInducedSubgraph.targetStatement_of_hasExactCardFixedSingleControlHostTerminalRegularization`.
+- `RegularInducedSubgraph.hasSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree`  
+  Sharp finite bridge for the host bottleneck: once the missing dropped-part residue on `s \ u` is
+  also frozen modulo `q`, and the control set is smaller than the modulus, the exact-card
+  single-control host package collapses to an exact single-control witness and hence to a regular
+  induced subgraph.
 
 ## Candidate approaches to try
 
@@ -390,18 +395,22 @@ files.
    `HasFixedModulusControlBlockModularHostWitnessOfCard` with the weaker one-control base theorem
    `RegularInducedSubgraph.hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_two_of_pos`
    on about `n / 4` vertices. The new host-step / host-iteration lemmas reduce the old one-control
-   host bottleneck to the terminal-size bounded-host hypothesis
-   `HasBoundedFixedModulusControlBlockModularHostTerminalRegularization`, formalized by
-   `RegularInducedSubgraph.hasPolynomialCostFixedOneControlHostTerminalRegularization_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`
-   and
-   `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`.
-   The same bottleneck is now equivalently packaged as
-   `HasPolynomialCostFixedSingleControlHostTerminalRegularization`, which makes the open finite
-   problem visibly about one host set, one bucket, and one explicit control set; the monotonicity
-   theorem `RegularInducedSubgraph.hasPolynomialCostFixedSingleControlHostTerminalRegularization_of_zero`
-   reduces all larger exponents to the literal terminal case `D = 0`, and
-   `RegularInducedSubgraph.hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization`
-   reduces that terminal case further to exact-cardinality buckets `|u| = 2^j`.
+    host bottleneck to the terminal-size bounded-host hypothesis
+    `HasBoundedFixedModulusControlBlockModularHostTerminalRegularization`, formalized by
+    `RegularInducedSubgraph.hasPolynomialCostFixedOneControlHostTerminalRegularization_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`
+    and
+    `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`.
+    The same bottleneck is now equivalently packaged as
+    `HasPolynomialCostFixedSingleControlHostTerminalRegularization`, which makes the open finite
+    problem visibly about one host set, one bucket, and one explicit control set; the monotonicity
+    theorem `RegularInducedSubgraph.hasPolynomialCostFixedSingleControlHostTerminalRegularization_of_zero`
+    reduces all larger exponents to the literal terminal case `D = 0`, and
+    `RegularInducedSubgraph.hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization`
+    reduces that terminal case further to exact-cardinality buckets `|u| = 2^j`. The new finite
+    host-to-exact lemmas show that the only extra datum still missing from this terminal host
+    package is the dropped-part residue on `s \ u`: if that residue is also constant modulo `2^j`
+    (and, in the purely modular control form, if the control set is smaller than the modulus), the
+    exact-card host package already collapses to a regular induced subgraph.
    A successful lift together with that terminal bounded-host collapse would yield
    `forcingThreshold (2^r) ≤ 2 ^ (O(r^2))`, hence `TargetStatement`.
    Even better, if the terminal bounded-host collapse can be proved already with budget `1`, then

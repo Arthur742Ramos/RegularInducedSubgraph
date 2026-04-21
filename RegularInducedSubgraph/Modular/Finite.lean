@@ -3594,6 +3594,226 @@ lemma
     intro v
     exact False.elim (by simpa using v.2)
 
+lemma hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k : ℕ} {u s t : Finset V}
+    (hku : k ≤ u.card) (hu : u ⊆ s) (ht : 0 < t.card) (hst : Disjoint s t)
+    {q e : ℕ} (hq : u.card ≤ q)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hdrop :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ (s \ u)).card ≡
+          (G.neighborFinset w ∩ (s \ u)).card [MOD q])
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasSingleControlExactWitnessOfCard G k := by
+  have huDrop : Disjoint u (s \ u) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxDrop
+    exact (Finset.mem_sdiff.mp hxDrop).2 hxU
+  have hdropT : Disjoint (s \ u) t := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxDrop hxT
+    exact (Finset.disjoint_left.mp hst) (Finset.mem_sdiff.mp hxDrop).1 hxT
+  have huT : Disjoint u t := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxT
+    exact (Finset.disjoint_left.mp hst) (hu hxU) hxT
+  have hhost' :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+    intro v w
+    have hcastv :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G s).degree ⟨v.1, hu v.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := hu v.2))
+    have hcastw :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := hu w.2))
+    simpa [hcastv, hcastw] using hhost v w
+  have huMod : InducesModEqDegree G u q := by
+    exact inducesModEqDegree_of_modEq_unionDegree_and_externalDegree
+      (G := G) (s := u) (t := s \ u) huDrop hhost' hdrop
+  rcases inducesRegularOfDegree_of_card_le_modulus_of_inducesModEqDegree G hq huMod with ⟨d, hd⟩
+  rw [InducesRegularOfDegree] at hd
+  refine
+    hasSingleControlExactWitnessOfCard_of_constant_unionDegree_and_externalDegree
+      (G := G) (hks := hku) (ht := ht) (hst := huT) (D := d + e) (e := e) ?_ hext
+  intro v
+  have hvd : (inducedOn G u).degree v = d := by
+    convert hd v
+  calc
+    (inducedOn G (u ∪ t)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+        (inducedOn G u).degree v + (G.neighborFinset v ∩ t).card := by
+          exact degree_union_eq_degree_add_external (G := G) (s := u) (t := t) huT v
+    _ = d + e := by rw [hvd, hext v]
+
+lemma hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k r : ℕ} {u s t : Finset V}
+    (hku : k ≤ u.card) (hu : u ⊆ s) (ht : 0 < t.card) (htr : t.card ≤ r) (hst : Disjoint s t)
+    {q e : ℕ} (hq : u.card ≤ q)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hdrop :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ (s \ u)).card ≡
+          (G.neighborFinset w ∩ (s \ u)).card [MOD q])
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasBoundedSingleControlExactWitnessOfCard G k r := by
+  have huDrop : Disjoint u (s \ u) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxDrop
+    exact (Finset.mem_sdiff.mp hxDrop).2 hxU
+  have hdropT : Disjoint (s \ u) t := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxDrop hxT
+    exact (Finset.disjoint_left.mp hst) (Finset.mem_sdiff.mp hxDrop).1 hxT
+  have huT : Disjoint u t := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxT
+    exact (Finset.disjoint_left.mp hst) (hu hxU) hxT
+  have hhost' :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+    intro v w
+    have hcastv :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G s).degree ⟨v.1, hu v.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := hu v.2))
+    have hcastw :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := hu w.2))
+    simpa [hcastv, hcastw] using hhost v w
+  have huMod : InducesModEqDegree G u q := by
+    exact inducesModEqDegree_of_modEq_unionDegree_and_externalDegree
+      (G := G) (s := u) (t := s \ u) huDrop hhost' hdrop
+  rcases inducesRegularOfDegree_of_card_le_modulus_of_inducesModEqDegree G hq huMod with ⟨d, hd⟩
+  rw [InducesRegularOfDegree] at hd
+  refine
+    hasBoundedSingleControlExactWitnessOfCard_of_constant_unionDegree_and_externalDegree
+      (G := G) (hks := hku) (ht := ht) (htr := htr) (hst := huT) (D := d + e) (e := e) ?_ hext
+  intro v
+  have hvd : (inducedOn G u).degree v = d := by
+    convert hd v
+  calc
+    (inducedOn G (u ∪ t)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+        (inducedOn G u).degree v + (G.neighborFinset v ∩ t).card := by
+          exact degree_union_eq_degree_add_external (G := G) (s := u) (t := t) huT v
+    _ = d + e := by rw [hvd, hext v]
+
+lemma hasSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k : ℕ} {u s t : Finset V}
+    (hku : k ≤ u.card) (hu : u ⊆ s) (ht : 0 < t.card) (hst : Disjoint s t)
+    {q : ℕ} (hq : u.card ≤ q) (htq : t.card < q)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hdrop :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ (s \ u)).card ≡
+          (G.neighborFinset w ∩ (s \ u)).card [MOD q])
+    (hctrl :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset w ∩ t).card [MOD q]) :
+    HasSingleControlExactWitnessOfCard G k := by
+  classical
+  by_cases huNonempty : u.Nonempty
+  · obtain ⟨v0, hv0⟩ := huNonempty
+    set e : ℕ := (G.neighborFinset v0 ∩ t).card with he
+    have he_lt : e < q := by
+      rw [he]
+      exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
+    have hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e := by
+      intro v
+      have hv_lt : (G.neighborFinset v ∩ t).card < q := by
+        exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
+      have hmod : (G.neighborFinset v ∩ t).card ≡ e [MOD q] := by
+        rw [he]
+        exact hctrl v ⟨v0, hv0⟩
+      rw [Nat.ModEq, Nat.mod_eq_of_lt hv_lt, Nat.mod_eq_of_lt he_lt] at hmod
+      exact hmod
+    exact
+      hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+        (G := G) hku hu ht hst hq hhost hdrop hext
+  · have hu' : u = ∅ := Finset.not_nonempty_iff_eq_empty.mp huNonempty
+    subst hu'
+    refine
+      hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+        (G := G) (e := 0) hku hu ht hst hq hhost hdrop ?_
+    intro v
+    exact False.elim (by simpa using v.2)
+
+lemma hasBoundedSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k r : ℕ} {u s t : Finset V}
+    (hku : k ≤ u.card) (hu : u ⊆ s) (ht : 0 < t.card) (htr : t.card ≤ r) (hst : Disjoint s t)
+    {q : ℕ} (hq : u.card ≤ q) (htq : t.card < q)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hdrop :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ (s \ u)).card ≡
+          (G.neighborFinset w ∩ (s \ u)).card [MOD q])
+    (hctrl :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset w ∩ t).card [MOD q]) :
+    HasBoundedSingleControlExactWitnessOfCard G k r := by
+  classical
+  by_cases huNonempty : u.Nonempty
+  · obtain ⟨v0, hv0⟩ := huNonempty
+    set e : ℕ := (G.neighborFinset v0 ∩ t).card with he
+    have he_lt : e < q := by
+      rw [he]
+      exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
+    have hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e := by
+      intro v
+      have hv_lt : (G.neighborFinset v ∩ t).card < q := by
+        exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
+      have hmod : (G.neighborFinset v ∩ t).card ≡ e [MOD q] := by
+        rw [he]
+        exact hctrl v ⟨v0, hv0⟩
+      rw [Nat.ModEq, Nat.mod_eq_of_lt hv_lt, Nat.mod_eq_of_lt he_lt] at hmod
+      exact hmod
+    exact
+      hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+        (G := G) hku hu ht htr hst hq hhost hdrop hext
+  · have hu' : u = ∅ := Finset.not_nonempty_iff_eq_empty.mp huNonempty
+    subst hu'
+    refine
+      hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+        (G := G) (e := 0) hku hu ht htr hst hq hhost hdrop ?_
+    intro v
+    exact False.elim (by simpa using v.2)
+
 theorem hasSingleControlModularWitnessOfCard_iff_hasSingleControlModularBucketingWitnessOfCard
     (G : SimpleGraph V) (k : ℕ) :
     HasSingleControlModularWitnessOfCard G k ↔
