@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.11)  19 APR 2026 23:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.11)  20 APR 2026 14:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -411,7 +411,7 @@ Underfull \vbox (badness 1540) has occurred while \output is active []
 
  [8]
 [9] [10] [11] [12] [13]
-Underfull \hbox (badness 6396) in paragraph at lines 858--861
+Underfull \hbox (badness 6396) in paragraph at lines 865--869
 []\OT1/cmr/m/n/10.95 The re-sults of this pa-per were ex-tracted from a com-pan
 -ion
  []
@@ -427,7 +427,7 @@ Package rerunfilecheck Info: File `modular_control_note.out' has not changed.
 Here is how much of TeX's memory you used:
  10986 strings out of 467871
  167983 string characters out of 5416924
- 587355 words of memory out of 5000000
+ 587329 words of memory out of 5000000
  39481 multiletter control sequences out of 15000+600000
  636803 words of font info for 75 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
@@ -456,7 +456,7 @@ iKTeX/fonts/type1/public/amsfonts/cm/cmtt9.pfb><C:/Users/arfreita/AppData/Local
 /Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Users/arfre
 ita/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pf
 b>
-Output written on modular_control_note.pdf (15 pages, 350250 bytes).
+Output written on modular_control_note.pdf (15 pages, 350611 bytes).
 PDF statistics:
  351 PDF objects out of 1000 (max. 8388607)
  102 named destinations out of 1000 (max. 500000)

@@ -1880,6 +1880,15 @@ def HasPolynomialCostFixedWitnessTerminalRegularization (D : ℕ) : Prop :=
       HasRegularInducedSubgraphOfCard G (2 ^ j)
 
 /--
+Further reduction of the terminal regularization problem: after deleting one nonempty control block,
+it is enough to regularize a fixed-modulus host witness on the surviving bucket.
+-/
+def HasPolynomialCostFixedOneControlHostTerminalRegularization (D : ℕ) : Prop :=
+  ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) 1 →
+      HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
 The previously stated full bridge immediately implies the weaker self-target version.
 -/
 theorem hasPolynomialCostEmptyControlTerminalSelfBridge_of_hasPolynomialCostEmptyControlTerminalBridge
@@ -1908,6 +1917,46 @@ theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCost
   exact
     hasRegularInducedSubgraphOfCard_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard G
       (hbridge G hfixed)
+
+/--
+A fixed-modulus witness of size `q * ((q^D) * q)` can first be converted to a one-control host
+witness of size `(q^D) * q`, so a host-regularization theorem with exponent `D` yields the plain
+fixed-witness regularization theorem with exponent `D + 1`.
+-/
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasPolynomialCostFixedOneControlHostTerminalRegularization
+    {D : ℕ} (hhost : HasPolynomialCostFixedOneControlHostTerminalRegularization D) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 1) := by
+  intro n j G hfixed
+  by_cases hj : j = 0
+  · subst hj
+    rcases hfixed with ⟨s, hs, _hmod⟩
+    have hs' : 1 ≤ s.card := by simpa using hs
+    have hspos : 0 < s.card := Nat.succ_le_iff.mp hs'
+    have hn : 0 < n := by
+      exact lt_of_lt_of_le hspos (by simpa using (Finset.card_le_univ s))
+    letI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
+    simpa using hasRegularInducedSubgraphOfCard_one G
+  · rcases Nat.exists_eq_succ_of_ne_zero hj with ⟨r, rfl⟩
+    let q : ℕ := 2 ^ (r + 1)
+    let m : ℕ := q ^ D * q
+    have hq : 1 < q := by
+      have hpow1 : 1 ≤ 2 ^ r := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+      calc
+        1 < 2 := by decide
+        _ ≤ 2 ^ r * 2 := by
+          simpa [Nat.mul_comm] using Nat.mul_le_mul_right 2 hpow1
+        _ = q := by
+          simp [q, pow_succ, Nat.mul_comm]
+    have hm : 0 < m := by
+      exact Nat.mul_pos (Nat.pow_pos (lt_trans (by decide : 0 < 1) hq))
+        (lt_trans (by decide : 0 < 1) hq)
+    have hfixed' : HasFixedModulusWitnessOfCard G (q * m) q := by
+      simpa [q, m, pow_succ, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hfixed
+    exact
+      hhost G
+        (hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusWitnessOfCard
+          (G := G) hq hm hfixed')
 
 /--
 Gallai's theorem already proves the empty-control parity base case.

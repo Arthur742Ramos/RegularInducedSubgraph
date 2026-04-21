@@ -17,15 +17,15 @@
 \newcommand{\Z}{\mathbb{Z}}
 
 \title[Modular-control reformulation]{A modular-control reformulation of the regular induced subgraph conjecture}
-\author{Arthur Freitas Ramos}
+\author[A.~F.~Ramos]{Arthur Freitas Ramos}
 \address{Microsoft, USA}
 \email{arfreita@microsoft.com}
 
-\author{David Barros Hulak}
+\author[D.~B.~Hulak]{David Barros Hulak}
 \address{Independent researcher}
 \email{dbhulak@gmail.com}
 
-\author{Ruy B.~J.~G. de Queiroz}
+\author[R.~de Queiroz]{Ruy B.~J.~G. de Queiroz}
 \address{Centro de Inform\'atica, Universidade Federal de Pernambuco, Brazil}
 \email{ruy@cin.ufpe.br}
 
@@ -225,9 +225,8 @@ modulus $q \ge |S|$. It is also a low-degree modular witness: if all degrees in 
 take $q=d+1$.
 
 Conversely, Proposition~\ref{prop:modular-collapse} turns every modular witness into an exact
-regular induced subgraph of the same order. A low-degree modular witness is also exact by the
-interval version of that proposition, since all induced degrees lie in the interval $[0,q)$ of
-width $q$.
+regular induced subgraph of the same order. A low-degree modular witness is also exact, since all
+induced degrees lie in $\{0,1,\dots,q-1\}$ and are pairwise congruent modulo $q$.
 \end{proof}
 
 \begin{remark}
@@ -737,15 +736,17 @@ same degree into $T$?
 \end{problem}
 
 By Proposition~\ref{prop:exact-transport}, a positive answer to
-Problem~\ref{prob:small-control} would immediately imply the regular induced subgraph conjecture.
-This stronger problem is not claimed equivalent to the conjecture; it is included because it
-isolates one natural exact-control route beyond the canonical modular frontier. The modular route
-suggests an intermediate target: replace exact equalities by congruences modulo a modulus $q$
-comparable to $|S|$, or even more sharply by congruences modulo a modulus larger than the induced
-degree range, and then appeal to Proposition~\ref{prop:modular-collapse}. In either form, the
-obstacle is no longer definitional. The canonical open step is
-Problem~\ref{prob:canonical-frontier}; Problem~\ref{prob:small-control} asks whether one can do
-better by forcing a more rigid witness.
+Problem~\ref{prob:small-control} would imply that $F(n)\to\infty$: for each fixed $m$, every
+sufficiently large graph would then contain a regular induced subgraph on at least $m$ vertices.
+That qualitative conclusion alone does not recover the conjectured superlogarithmic lower bound,
+because the threshold beyond which the witness appears may depend arbitrarily on $m$. Thus this
+stronger problem is not claimed equivalent to the conjecture; it is included because it isolates one
+natural exact-control route beyond the canonical modular frontier. The modular route suggests an
+intermediate target: replace exact equalities by congruences modulo a modulus $q$ comparable to
+$|S|$, or even more sharply by congruences modulo a modulus larger than the induced degree range,
+and then appeal to Proposition~\ref{prop:modular-collapse}. In either form, the obstacle is no
+longer definitional. The canonical open step is Problem~\ref{prob:canonical-frontier};
+Problem~\ref{prob:small-control} asks whether one can do better by forcing a more rigid witness.
 
 \subsection*{A dyadic modulus-lifting route}
 
@@ -764,7 +765,7 @@ Assume that the family $(\mathcal{W}_{2^j})_{j \ge 1}$ has the following propert
   \item Every witness in $\mathcal{W}_{2^j}$ of order at least $2^j$ yields a regular induced
     subgraph on $2^j$ vertices.
 \end{enumerate}
-Then $F(n)/\log n \to \infty$.
+Then $F(n) \ge \exp(\Omega(\sqrt{\log n}))$; in particular $F(n)/\log n \to \infty$.
 \end{proposition}
 
 \begin{proof}
@@ -772,15 +773,19 @@ For a power of two $q$, let $W_q(n)$ denote the largest integer $m$ such that ev
 vertices has a witness in $\mathcal{W}_q$ of order at least $m$. By (1), $W_2(n) \ge n/2$.
 Iterating (2) from $2$ to $2^r$ gives
 \[
-  W_{2^r}(n) \ge \frac{n}{2 \prod_{j=1}^{r-1} (2^j)^C}
-  = \frac{n}{2^{1 + C r(r-1)/2}}.
+  W_{2^r}(n) \ge \left\lfloor \frac{n}{2 \prod_{j=1}^{r-1} (2^j)^C} \right\rfloor
+  = \left\lfloor \frac{n}{2^{1 + C r(r-1)/2}} \right\rfloor.
 \]
 Choose $r$ maximal with
 \[
   1 + r + \frac{C r(r-1)}{2} \le \log_2 n.
 \]
-Then $2^r \le W_{2^r}(n)$. By (3), every graph on $n$ vertices therefore contains a regular
-induced subgraph on $2^r$ vertices. Since $r = \Omega(\sqrt{\log n})$, we obtain
+Then
+\[
+  \frac{n}{2^{1 + C r(r-1)/2}} \ge 2^r,
+\]
+so in particular $2^r \le W_{2^r}(n)$. By (3), every graph on $n$ vertices therefore contains a
+regular induced subgraph on $2^r$ vertices. Since $r = \Omega(\sqrt{\log n})$, we obtain
 \[
   F(n) \ge 2^r = \exp(\Omega(\sqrt{\log n})),
 \]
@@ -804,7 +809,9 @@ Problem~\ref{prob:small-control} records a stronger exact route. The finite lemm
 this viewpoint replace full neighborhood data by ambient and external degree data, and replace
 exponentially many profile classes by polynomially many residue classes. Proposition~
 \ref{prop:dyadic-criterion} records a separate conditional route: a polynomial-cost dyadic lift in
-any composable fixed-modulus package would also force the conjecture. That is the structural
+any composable fixed-modulus package would force the quantitative bound
+$F(n) \ge \exp(\Omega(\sqrt{\log n}))$, which comfortably dominates the conjectured
+superlogarithmic growth. That is the structural
 contribution of the present paper.
 
 \begin{thebibliography}{99}
@@ -856,8 +863,9 @@ A.~D.~Scott,
 
 {\sloppy
 The results of this paper were extracted from a companion Lean formalization, available at
-\url{https://github.com/Arthur742Ramos/RegularInducedSubgraph}, which is intended as verification
-support rather than as part of the mathematical contribution. The authors thank the Lean community
-for the \texttt{mathlib} infrastructure underlying that formalization.\par}
+\url{https://github.com/Arthur742Ramos/RegularInducedSubgraph}, which is intended as
+verification support rather than as part of the mathematical contribution. The authors
+thank the Lean community for the \texttt{mathlib} infrastructure underlying that
+formalization.\par}
 
 \end{document}
