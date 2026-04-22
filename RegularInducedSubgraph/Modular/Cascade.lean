@@ -2930,13 +2930,30 @@ lemma hasFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusWitn
       (hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusWitnessOfCard
         (G := G) hq hm hfixed)
 
-lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_step
-    (G : SimpleGraph V) {q k r : ℕ}
+lemma
+    exists_control_and_subset_with_constant_modBlockUnionDegree_and_exact_controlDegree_and_modEq_hostDegree_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q k r : ℕ}
     (hq : 1 < q) (hk : 0 < k)
     (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * k) q r) :
-    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q (r + 1) := by
+    ∃ w s' t : Finset V, ∃ hw : w ⊆ s', ∃ blocks : List (Finset V × ℕ), ∃ e : ℕ,
+      k ≤ w.card ∧
+      t.card = q - 1 ∧
+      blocks.length ≤ r ∧
+      ControlBlocksSeparated s' ((t, e) :: blocks) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G (s' ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s' ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q]) ∧
+      (∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G s').degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s').degree ⟨w'.1, hw w'.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks) := by
   classical
-  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
   rcases hhost with ⟨u, s, hqk, hu, blocks, hlen, hnonempty, hsep, hdeg, hext⟩
   have hq0 : 0 < q := lt_trans (by decide : 0 < 1) hq
   have hqPred : q - 1 < q := Nat.sub_lt hq0 (by decide : 0 < 1)
@@ -3001,15 +3018,6 @@ lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_step
   have hsepS' : ControlBlocksSeparated s' blocks := controlBlocksSeparated_mono hs'S hsep
   have hsepNew : ControlBlocksSeparated s' ((t, e) :: blocks) := by
     exact ⟨hs't, htBlocks, hsepS'⟩
-  have htpos : 0 < t.card := by
-    rw [htcard]
-    exact Nat.sub_pos_of_lt hq
-  have hnonemptyNew : NonemptyControlBlockUnion ((t, e) :: blocks) := by
-    unfold NonemptyControlBlockUnion
-    rw [controlBlockUnion]
-    exact lt_of_lt_of_le htpos (Finset.card_le_card (by
-      intro x hx
-      exact Finset.mem_union.mpr (Or.inl hx)))
   have hdegExtended :
       ∀ v w' : ↑(w : Set V),
         (inducedOn G (w ∪ (t ∪ (s' \ w)))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
@@ -3083,6 +3091,147 @@ lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_step
     refine ⟨?_, hasConstantModExternalBlockDegrees_mono (G := G) hwU hext⟩
     intro v
     simpa [hctrl v.1 v.2] using (Nat.ModEq.refl e : e ≡ e [MOD q])
+  have hsepW : ControlBlocksSeparated w ((t, e) :: blocks) := controlBlocksSeparated_mono hwS' hsepNew
+  have hblocksDrop : Disjoint (controlBlockUnion ((t, e) :: blocks)) (s' \ w) := by
+    have hs'Blocks : Disjoint s' (controlBlockUnion ((t, e) :: blocks)) :=
+      disjoint_controlBlockUnion_of_controlBlocksSeparated hsepNew
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxBlock hxDrop
+    exact (Finset.disjoint_left.mp hs'Blocks) (Finset.mem_sdiff.mp hxDrop).1 hxBlock
+  have hdegHostAsUnion :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (w ∪ (s' \ w))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (w ∪ (s' \ w))).degree ⟨w'.1, Finset.mem_union.mpr (Or.inl w'.2)⟩ [MOD q] := by
+    exact hdegNewRaw
+  have hdegAmbient :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (w ∪ (controlBlockUnion ((t, e) :: blocks) ∪ (s' \ w)))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (w ∪ (controlBlockUnion ((t, e) :: blocks) ∪ (s' \ w)))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl w'.2)⟩ [MOD q] := by
+    exact
+      modEq_extendedUnionDegree_of_modEq_unionDegree_and_externalBlockDegrees
+        (G := G) (s := w) (tail := s' \ w) (q := q) hsepW hblocksDrop hdegHostAsUnion hextNew
+  have hdegAmbient' :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s' ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hwS' v.2))⟩ ≡
+          (inducedOn G (s' ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl (hwS' w'.2))⟩ [MOD q] := by
+    intro v w'
+    have hAmbientEq :
+        w ∪ (controlBlockUnion ((t, e) :: blocks) ∪ (s' \ w)) =
+          s' ∪ controlBlockUnion ((t, e) :: blocks) := by
+      calc
+        w ∪ (controlBlockUnion ((t, e) :: blocks) ∪ (s' \ w)) =
+            (w ∪ (s' \ w)) ∪ controlBlockUnion ((t, e) :: blocks) := by
+              ext x
+              by_cases hxw : x ∈ w
+              · simp [hxw, hwS' hxw, or_assoc, or_left_comm, or_comm]
+              · simp [hxw, or_assoc, or_left_comm, or_comm]
+        _ = s' ∪ controlBlockUnion ((t, e) :: blocks) := by
+              rw [Finset.union_comm w, Finset.sdiff_union_of_subset hwS']
+    have hcastv :
+        (inducedOn G (w ∪ (controlBlockUnion ((t, e) :: blocks) ∪ (s' \ w)))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s' ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hwS' v.2))⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := w ∪ (controlBlockUnion ((t, e) :: blocks) ∪ (s' \ w)))
+          (t := s' ∪ controlBlockUnion ((t, e) :: blocks))
+          (h := hAmbientEq)
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl (hwS' v.2))))
+    have hcastw :
+        (inducedOn G (w ∪ (controlBlockUnion ((t, e) :: blocks) ∪ (s' \ w)))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl w'.2)⟩ =
+          (inducedOn G (s' ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl (hwS' w'.2))⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := w ∪ (controlBlockUnion ((t, e) :: blocks) ∪ (s' \ w)))
+          (t := s' ∪ controlBlockUnion ((t, e) :: blocks))
+          (h := hAmbientEq)
+          (hs := Finset.mem_union.mpr (Or.inl w'.2))
+          (ht := Finset.mem_union.mpr (Or.inl (hwS' w'.2))))
+    simpa [hcastv, hcastw] using hdegAmbient v w'
+  exact
+    ⟨w, s', t, hwS', blocks, e, hwk, htcard, hlen, hsepNew, hdegAmbient',
+      (by
+        intro v
+        exact hctrl v.1 v.2), hdegNew, hextNew⟩
+
+lemma
+    hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q k r : ℕ}
+    (hq : 1 < q) (hk : 0 < k)
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * k) q r) :
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  unfold HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+  rcases
+      exists_control_and_subset_with_constant_modBlockUnionDegree_and_exact_controlDegree_and_modEq_hostDegree_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) (q := q) (k := k) hq hk hhost with
+    ⟨w, s, t, hw, blocks, e, hwk, htcard, hlen, hsep, hdegAmbient, hctrl, hdegHost, hext⟩
+  refine ⟨w, s, t, hw, blocks, e, hwk, htcard, hlen, hsep, ?_, ?_, ?_, ?_⟩
+  · exact hdegAmbient
+  · exact hctrl
+  · exact hdegHost
+  · exact hext
+
+lemma
+    hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_self_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q r : ℕ}
+    (hq : 1 < q)
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * q) q r) :
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard G q q (q - 1) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  have hq0 : 0 < q := lt_trans (by decide : 0 < 1) hq
+  exact
+    hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_of_hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+      (G := G) hq
+      (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) (q := q) (k := q) hq hq0 hhost)
+
+lemma hasExactCardFixedModulusSingleControlModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_self
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q r : ℕ}
+    (hq : 1 < q)
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * q) q r) :
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G q q := by
+  exact
+    hasExactCardFixedModulusSingleControlModularHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+      G
+      (hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_self_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        G hq hhost)
+
+lemma hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_step
+    (G : SimpleGraph V) {q k r : ℕ}
+    (hq : 1 < q) (hk : 0 < k)
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * k) q r) :
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G k q (r + 1) := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases
+      exists_control_and_subset_with_constant_modBlockUnionDegree_and_exact_controlDegree_and_modEq_hostDegree_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) hq hk hhost with
+    ⟨w, s', t, hwS', blocks, e, hwk, htcard, hlen, hsepNew, _hdegAmbient, _hextExact, hdegNew,
+      hextNew⟩
+  have htpos : 0 < t.card := by
+    rw [htcard]
+    exact Nat.sub_pos_of_lt hq
+  have hnonemptyNew : NonemptyControlBlockUnion ((t, e) :: blocks) := by
+    unfold NonemptyControlBlockUnion
+    rw [controlBlockUnion]
+    exact lt_of_lt_of_le htpos (Finset.card_le_card (by
+      intro x hx
+      exact Finset.mem_union.mpr (Or.inl hx)))
   refine ⟨w, s', hwk, hwS', (t, e) :: blocks, ?_, hnonemptyNew, hsepNew, hdegNew, hextNew⟩
   simpa [Nat.succ_eq_add_one] using Nat.succ_le_succ hlen
 

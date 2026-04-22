@@ -1812,6 +1812,32 @@ lemma hasFixedModulusControlBlockModularCascadeWitnessOfCard_mono
   rcases hfixed with ⟨s, blocks, chain, hℓ, hq, hnonempty, hsep, hcascade⟩
   exact ⟨s, blocks, chain, le_trans hkℓ hℓ, hq, hnonempty, hsep, hcascade⟩
 
+lemma exists_terminal_externalBlockData_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard
+    {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+    {k q : ℕ} (hfixed : HasFixedModulusControlBlockModularCascadeWitnessOfCard G k q) :
+    ∃ u : Finset V, ∃ blocks : List (Finset V × ℕ),
+      k ≤ u.card ∧
+      u.card ≤ q ∧
+      NonemptyControlBlockUnion blocks ∧
+      ControlBlocksSeparated u blocks ∧
+      InducesModEqDegree G u q ∧
+      HasConstantModExternalBlockDegrees G u q blocks := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hfixed with ⟨s, baseBlocks, chain, hk, hq, hnonempty, hsep, hmod⟩
+  rcases
+      exists_controlBlockCascadeModularData_of_hasControlBlockModularCascadeFrom
+        G hnonempty hsep hmod with
+    ⟨u, blocks, huTerm, _hlen, _huSub, hnonemptyU, hsepU, _hunion, hdegU, hextU⟩
+  refine ⟨u, blocks, ?_, ?_, hnonemptyU, hsepU, ?_, hextU⟩
+  · simpa [huTerm, cascadeTerminal] using hk
+  · simpa [huTerm, cascadeTerminal] using hq
+  · exact
+      inducesModEqDegree_of_modEq_unionDegree_and_externalBlockDegrees
+        G hsepU hdegU hextU
+
 lemma hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
     {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
     {k q : ℕ} {s : Finset V} {blocks : List (Finset V × ℕ)} {chain : List (Finset V)}
@@ -1843,6 +1869,26 @@ def HasPolynomialCostEmptyControlDyadicLift (C : ℕ) : Prop :=
       HasFixedModulusCascadeWitnessOfCard G m (2 ^ (j + 1))
 
 /--
+Precise missing package behind the empty-control terminal bridge: starting from a large fixed-modulus
+cascade witness, produce a genuinely nonempty separated control-block family whose external degrees
+are already constant modulo `2^j` on the same cascade host. The existing finite bridge then turns
+this data into the terminal-capped control-block modular cascade package without further work.
+-/
+def HasPolynomialCostEmptyControlExternalBlockBridge (D : ℕ) : Prop := by
+  classical
+  exact
+    ∀ {n j m : ℕ} (G : SimpleGraph (Fin n)),
+      HasFixedModulusCascadeWitnessOfCard G ((2 ^ j) ^ D * m) (2 ^ j) →
+        ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+          ∃ blocks : List (Finset (Fin n) × ℕ),
+            m ≤ (cascadeTerminal s chain).card ∧
+            (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+            NonemptyControlBlockUnion blocks ∧
+            ControlBlocksSeparated s blocks ∧
+            HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+            HasConstantModExternalBlockDegrees G s (2 ^ j) blocks
+
+/--
 Polynomial-cost bridge from the empty-control fixed-modulus cascade package to the terminal-capped
 control-block modular cascade package. The modulus stays fixed; only the witness order pays a
 polynomial loss.
@@ -1867,6 +1913,34 @@ an ordinary fixed-modulus witness rather than from a full empty-control cascade.
 -/
 def HasPolynomialCostFixedWitnessTerminalSelfBridge (D : ℕ) : Prop :=
   ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
+      HasFixedModulusControlBlockModularCascadeWitnessOfCard G (2 ^ j) (2 ^ j)
+
+/--
+Honest self-target version of the external-block bridge: at positive dyadic moduli, a large
+fixed-modulus witness should already supply the separated control-block data needed by the finite
+cascade bridge, but only for the terminal target `m = q = 2^j`.
+-/
+def HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge (D : ℕ) : Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+      HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
+        ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+          ∃ blocks : List (Finset (Fin n) × ℕ),
+            2 ^ j ≤ (cascadeTerminal s chain).card ∧
+            (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+            NonemptyControlBlockUnion blocks ∧
+            ControlBlocksSeparated s blocks ∧
+            HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+            HasConstantModExternalBlockDegrees G s (2 ^ j) blocks
+
+/--
+Viable dyadic self-bridge after the `q = 8` obstruction: only positive dyadic moduli `2^j` with
+`j > 0` are requested, so the impossible `q = 1` control-block terminal case is excluded.
+-/
+def HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge (D : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
     HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
       HasFixedModulusControlBlockModularCascadeWitnessOfCard G (2 ^ j) (2 ^ j)
 
@@ -1907,6 +1981,16 @@ def HasExactCardFixedSingleControlHostTerminalRegularization : Prop :=
       HasRegularInducedSubgraphOfCard G (2 ^ j)
 
 /--
+Precise terminal upgrade singled out by the dropped-part roadmap: every exact-card fixed-modulus
+single-control host witness can be strengthened so that the dropped-part residue on `s \ u` is also
+frozen modulo `2^j`, while the control scalar into `t` is fixed exactly.
+-/
+def HasExactCardFixedSingleControlHostDroppedPartUpgrade : Prop :=
+  ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G (2 ^ j) (2 ^ j) →
+      HasExactCardFixedModulusSingleControlResidueHostWitnessOfCard G (2 ^ j) (2 ^ j)
+
+/--
 Terminal-size bounded host regularization: once a bounded fixed-modulus control-block modular host
 witness already lives on `q = 2^j` vertices, it collapses directly to a regular induced subgraph on
 `q` vertices.
@@ -1915,6 +1999,183 @@ def HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (r : ℕ
   ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
     HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
       HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+Weaker positive-dyadic terminal target for the bounded host package: at terminal size `q = 2^j`
+with `j > 0`, it is enough to produce a control-block modular cascade witness rather than a regular
+induced subgraph.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+    (r : ℕ) : Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+          ∃ blocks : List (Finset (Fin n) × ℕ),
+            2 ^ j ≤ (cascadeTerminal s chain).card ∧
+            (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+            NonemptyControlBlockUnion blocks ∧
+            ControlBlocksSeparated s blocks ∧
+            HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+            HasConstantModExternalBlockDegrees G s (2 ^ j) blocks
+
+/--
+Weaker positive-dyadic terminal target for the bounded host package: at terminal size `q = 2^j`
+with `j > 0`, it is enough to produce the explicit external-block data needed by the finite cascade
+bridge.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+      HasFixedModulusControlBlockModularCascadeWitnessOfCard G (2 ^ j) (2 ^ j)
+
+/--
+Honest one-step finite Branch B self-target: at positive dyadic modulus `q = 2^j`, every bounded
+host witness of size `q * q` should already collapse to a bounded exact single-control witness of
+size `q` with control budget `q - 1`.
+
+This packages exactly the output that the strengthened host-step theorem would deliver once the
+missing dropped-part residue on the reduced host is recovered.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G ((2 ^ j) * 2 ^ j) (2 ^ j) r →
+      HasBoundedSingleControlExactWitnessOfCard G (2 ^ j) (2 ^ j - 1)
+
+/--
+Surviving direct exact upgrade singled out by the current `q * q -> q` self-step: only exact-card
+fixed-modulus single-control modular host witnesses whose control set already has size `q - 1` need
+to be upgraded, and only to some bounded exact single-control witness.
+-/
+def HasExactCardFixedSingleControlHostMaximalControlUpgrade : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+        G (2 ^ j) (2 ^ j) (2 ^ j - 1) →
+      HasBoundedSingleControlExactWitnessOfCard G (2 ^ j) (2 ^ j - 1)
+
+/--
+Stronger local residue-host route behind the structured self-step: the `q - 1`-control exact-card
+host output should upgrade to the corresponding dropped-part residue package before the existing
+exactness collapse is applied.
+
+This is stronger than `HasExactCardFixedSingleControlHostMaximalControlUpgrade`; the script
+`verify_q4_structured_residue_upgrade_counterexample.py` shows that this stronger residue route is
+already false at `q = 4`, so the direct exact-upgrade target above is the honest live frontier.
+-/
+def HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+        G (2 ^ j) (2 ^ j) (2 ^ j - 1) →
+      HasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
+        G (2 ^ j) (2 ^ j) (2 ^ j - 1)
+
+/--
+Honest live finite bridge above the current `Cascade.lean` host-step theorem: instead of forgetting
+the extra ambient/control-block data down to a bare structured modular-host witness, ask directly
+that the full refined host-step package already collapses to a bounded exact single-control witness.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasBoundedSingleControlExactWitnessOfCard G (2 ^ j) (2 ^ j - 1)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+    {r : ℕ}
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlUpgrade) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hupgrade hj G
+      (hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_of_hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+        (G := G) hq href)
+
+theorem
+    hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade) :
+    HasExactCardFixedSingleControlHostMaximalControlUpgrade := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
+      (G := G)
+      (hupgrade hj G hhost)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+    {r : ℕ}
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlUpgrade) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hupgrade hj G
+      (hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_self_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) hq hhost)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+    {r : ℕ}
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+      (hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+        hupgrade)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hbridge hj G
+      (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) (q := 2 ^ j) (k := 2 ^ j) hq (Nat.pow_pos (by decide : 0 < 2)) hhost)
 
 theorem
     hasPolynomialCostFixedOneControlHostTerminalRegularization_iff_hasPolynomialCostFixedSingleControlHostTerminalRegularization
@@ -1956,11 +2217,137 @@ theorem hasPolynomialCostFixedSingleControlHostTerminalRegularization_of_zero
 /--
 The previously stated full bridge immediately implies the weaker self-target version.
 -/
+theorem hasPolynomialCostEmptyControlTerminalBridge_of_hasPolynomialCostEmptyControlExternalBlockBridge
+    {D : ℕ} (hbridge : HasPolynomialCostEmptyControlExternalBlockBridge D) :
+    HasPolynomialCostEmptyControlTerminalBridge D := by
+  classical
+  intro n j m G hcascade
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases hbridge G hcascade with
+    ⟨s, chain, blocks, hkm, hq, hnonempty, hsep, hfrom, hext⟩
+  exact
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+      G hkm hq hnonempty hsep hfrom hext
+
+/--
+Conversely, any terminal control-block modular cascade witness can be shrunk to its terminal bucket,
+where the external-block data become explicit.
+-/
+theorem hasPolynomialCostEmptyControlExternalBlockBridge_of_hasPolynomialCostEmptyControlTerminalBridge
+    {D : ℕ} (hbridge : HasPolynomialCostEmptyControlTerminalBridge D) :
+    HasPolynomialCostEmptyControlExternalBlockBridge D := by
+  classical
+  intro n j m G hcascade
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases
+      exists_terminal_externalBlockData_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard
+        (G := G) (hbridge G hcascade) with
+    ⟨u, blocks, hkm, hq, hnonemptyU, hsepU, huMod, hextU⟩
+  refine ⟨u, [], blocks, hkm, hq, hnonemptyU, hsepU, ?_, hextU⟩
+  simpa [HasFixedModulusCascadeFrom, InducesModEqDegree] using huMod
+
+/--
+So the two empty-control bridge presentations are equivalent.
+-/
+theorem hasPolynomialCostEmptyControlTerminalBridge_iff_hasPolynomialCostEmptyControlExternalBlockBridge
+    {D : ℕ} :
+    HasPolynomialCostEmptyControlTerminalBridge D ↔
+      HasPolynomialCostEmptyControlExternalBlockBridge D := by
+  constructor
+  · exact hasPolynomialCostEmptyControlExternalBlockBridge_of_hasPolynomialCostEmptyControlTerminalBridge
+  · exact hasPolynomialCostEmptyControlTerminalBridge_of_hasPolynomialCostEmptyControlExternalBlockBridge
+
+/--
+The previously stated full bridge immediately implies the weaker self-target version.
+-/
 theorem hasPolynomialCostEmptyControlTerminalSelfBridge_of_hasPolynomialCostEmptyControlTerminalBridge
     {D : ℕ} (hbridge : HasPolynomialCostEmptyControlTerminalBridge D) :
     HasPolynomialCostEmptyControlTerminalSelfBridge D := by
   intro n j G hcascade
   simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hbridge G hcascade
+
+/--
+An empty-control self-bridge is stronger than the fixed-witness self-bridge, since every fixed-modulus
+witness is already an empty-control cascade.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalSelfBridge_of_hasPolynomialCostEmptyControlTerminalSelfBridge
+    {D : ℕ} (hbridge : HasPolynomialCostEmptyControlTerminalSelfBridge D) :
+    HasPolynomialCostFixedWitnessTerminalSelfBridge D := by
+  intro n j G hfixed
+  exact hbridge G (hasFixedModulusCascadeWitnessOfCard_of_hasFixedModulusWitnessOfCard G hfixed)
+
+/--
+The external-block bridge feeds directly into the fixed-witness self-bridge pipeline.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalSelfBridge_of_hasPolynomialCostEmptyControlExternalBlockBridge
+    {D : ℕ} (hbridge : HasPolynomialCostEmptyControlExternalBlockBridge D) :
+    HasPolynomialCostFixedWitnessTerminalSelfBridge D := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalSelfBridge_of_hasPolynomialCostEmptyControlTerminalSelfBridge
+      (hasPolynomialCostEmptyControlTerminalSelfBridge_of_hasPolynomialCostEmptyControlTerminalBridge
+        (hasPolynomialCostEmptyControlTerminalBridge_of_hasPolynomialCostEmptyControlExternalBlockBridge
+          hbridge))
+
+/--
+The full empty-control external-block bridge implies the weaker positive-dyadic self-target version.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_hasPolynomialCostEmptyControlExternalBlockBridge
+    {D : ℕ} (hbridge : HasPolynomialCostEmptyControlExternalBlockBridge D) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D := by
+  intro n j hj G hfixed
+  exact
+    hbridge G
+      (hasFixedModulusCascadeWitnessOfCard_of_hasFixedModulusWitnessOfCard G hfixed)
+
+/--
+The positive-dyadic external-block self-target already yields the positive-dyadic terminal
+control-block cascade witness.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+    {D : ℕ} (hbridge : HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D) :
+    HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge D := by
+  intro n j hj G hfixed
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases hbridge hj G hfixed with
+    ⟨s, chain, blocks, hkm, hq, hnonempty, hsep, hfrom, hext⟩
+  exact
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+      G hkm hq hnonempty hsep hfrom hext
+
+/--
+Conversely, a positive-dyadic terminal cascade self-witness can be shrunk to its terminal bucket,
+recovering the external-block self-bridge presentation there.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+    {D : ℕ} (hbridge : HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge D) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D := by
+  intro n j hj G hfixed
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases
+      exists_terminal_externalBlockData_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard
+        (G := G) (hbridge hj G hfixed) with
+    ⟨u, blocks, hkm, hq, hnonemptyU, hsepU, huMod, hextU⟩
+  refine ⟨u, [], blocks, hkm, hq, hnonemptyU, hsepU, ?_, hextU⟩
+  simpa [HasFixedModulusCascadeFrom, InducesModEqDegree] using huMod
+
+/--
+So the two positive-dyadic self-target bridge presentations are equivalent.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_iff_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+    {D : ℕ} :
+    HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge D ↔
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D := by
+  constructor
+  · exact
+      hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+  · exact
+      hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
 
 /--
 Because the terminal bucket of an empty-control cascade is already a fixed-modulus witness, a
@@ -1982,6 +2369,58 @@ theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCost
   exact
     hasRegularInducedSubgraphOfCard_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard G
       (hbridge G hfixed)
+
+/--
+So the external-block bridge also yields direct terminal regularization in the fixed-witness package.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostEmptyControlExternalBlockBridge
+    {D : ℕ} (hbridge : HasPolynomialCostEmptyControlExternalBlockBridge D) :
+    HasPolynomialCostFixedWitnessTerminalRegularization D := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostFixedWitnessTerminalSelfBridge
+      (hasPolynomialCostFixedWitnessTerminalSelfBridge_of_hasPolynomialCostEmptyControlExternalBlockBridge
+        hbridge)
+
+/--
+So the positive-dyadic external-block self-target also suffices for the full regularization pipeline.
+-/
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+    {D : ℕ} (hbridge : HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D) :
+    HasPolynomialCostFixedWitnessTerminalRegularization D := by
+  intro n j G hfixed
+  by_cases hj : j = 0
+  · have hfixedOne : HasFixedModulusWitnessOfCard G 1 1 := by
+      simpa [hj] using hfixed
+    rcases hfixedOne with ⟨s, hs, _hmod⟩
+    have hsPos : 0 < s.card := lt_of_lt_of_le (by decide : 0 < 1) hs
+    rcases Finset.card_pos.mp hsPos with ⟨v, _hv⟩
+    letI : Nonempty (Fin n) := ⟨v⟩
+    simpa [hj] using hasRegularInducedSubgraphOfCard_one G
+  · exact
+      hasRegularInducedSubgraphOfCard_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard G
+        (hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+          hbridge (Nat.pos_of_ne_zero hj) G hfixed)
+
+/--
+The corrected positive-dyadic self-bridge is already enough for full terminal regularization: the
+only omitted case is `j = 0`, where the target is the trivial one-vertex regular induced subgraph.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+    {D : ℕ} (hbridge : HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge D) :
+    HasPolynomialCostFixedWitnessTerminalRegularization D := by
+  intro n j G hfixed
+  by_cases hj : j = 0
+  · have hfixedOne : HasFixedModulusWitnessOfCard G 1 1 := by
+      simpa [hj] using hfixed
+    rcases hfixedOne with ⟨s, hs, _hmod⟩
+    have hsPos : 0 < s.card := lt_of_lt_of_le (by decide : 0 < 1) hs
+    rcases Finset.card_pos.mp hsPos with ⟨v, _hv⟩
+    letI : Nonempty (Fin n) := ⟨v⟩
+    simpa [hj] using hasRegularInducedSubgraphOfCard_one G
+  · exact
+      hasRegularInducedSubgraphOfCard_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard G
+        (hbridge (Nat.pos_of_ne_zero hj) G hfixed)
 
 /--
 A fixed-modulus witness of size `q * ((q^D) * q)` can first be converted to a one-control host
@@ -2078,6 +2517,240 @@ theorem
     hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasPolynomialCostFixedOneControlHostTerminalRegularization
       (hasPolynomialCostFixedOneControlHostTerminalRegularization_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
         hterm)
+
+/--
+The large-card fixed-witness reduction also isolates the weaker positive-dyadic terminal target: if
+terminal bounded host witnesses on `2^j` vertices can already be bridged to the control-block
+modular cascade package for every `j > 0`, then the viable positive-dyadic fixed-witness self-bridge
+follows one exponent later.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+    {r : ℕ}
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases hterm hj G hhost with
+    ⟨s, chain, blocks, hkm, hq, hnonempty, hsep, hfrom, hext⟩
+  exact
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+      G hkm hq hnonempty hsep hfrom hext
+
+/--
+Conversely, a terminal control-block modular cascade witness can be shrunk to its terminal bucket,
+recovering the bounded-host external-block self-bridge presentation there.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge
+    {r : ℕ}
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases
+      exists_terminal_externalBlockData_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard
+        (G := G) (hterm hj G hhost) with
+    ⟨u, blocks, hkm, hq, hnonemptyU, hsepU, huMod, hextU⟩
+  refine ⟨u, [], blocks, hkm, hq, hnonemptyU, hsepU, ?_, hextU⟩
+  simpa [HasFixedModulusCascadeFrom, InducesModEqDegree] using huMod
+
+/--
+So the two bounded-host positive-dyadic terminal bridge presentations are equivalent.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge_iff_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+    {r : ℕ} :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge r ↔
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge r := by
+  constructor
+  · exact
+      hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge
+  · exact
+      hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+
+/--
+The large-card fixed-witness reduction also isolates the weaker positive-dyadic terminal target: if
+terminal bounded host witnesses on `2^j` vertices can already be bridged to the explicit external-block
+data package for every `j > 0`, then the viable positive-dyadic fixed-witness external-block
+self-bridge follows one exponent later.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+    {D : ℕ}
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+        (D + 1)) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge (D + 1) := by
+  intro n j hj G hfixed
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  have hhost :
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) (D + 1) := by
+    exact
+      hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusWitnessOfCard_pow
+        (G := G) (q := 2 ^ j) (k := 2 ^ j) (D := D) hq
+        (Nat.pow_pos (by decide : 0 < 2)) hfixed
+  exact hterm hj G hhost
+
+/--
+So the weaker terminal external-block bridge already implies the positive-dyadic terminal cascade
+self-bridge one exponent later.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+    {D : ℕ}
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+        (D + 1)) :
+    HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge (D + 1) := by
+  exact
+    hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+      (hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+        hterm)
+
+/--
+So the weaker terminal external-block bridge already implies the full fixed-witness terminal
+regularization theorem one exponent later.
+-/
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+    {D : ℕ}
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+        (D + 1)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 1) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+      (hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge
+        hterm)
+
+/--
+The large-card fixed-witness reduction also isolates the weaker positive-dyadic terminal target: if
+terminal bounded host witnesses on `2^j` vertices can already be bridged to the control-block
+modular cascade package for every `j > 0`, then the viable positive-dyadic fixed-witness self-bridge
+follows one exponent later.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge
+    {D : ℕ}
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge (D + 1)) :
+    HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge (D + 1) := by
+  intro n j hj G hfixed
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  have hhost :
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) (D + 1) := by
+    exact
+      hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusWitnessOfCard_pow
+        (G := G) (q := 2 ^ j) (k := 2 ^ j) (D := D) hq
+        (Nat.pow_pos (by decide : 0 < 2)) hfixed
+  exact hterm hj G hhost
+
+/--
+So the positive-dyadic bounded-host cascade bridge already implies the full fixed-witness terminal
+regularization theorem one exponent later.
+-/
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge
+    {D : ℕ}
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge (D + 1)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 1) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+      (hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge
+        hterm)
+
+/--
+If the positive-dyadic host package can be upgraded in one step to a bounded exact single-control
+witness, then one extra factor of `q` already yields terminal regularization.
+-/
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+    {D : ℕ}
+    (hstep :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge (D + 1)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 2) := by
+  intro n j G hfixed
+  by_cases hj : j = 0
+  · have hfixedOne : HasFixedModulusWitnessOfCard G 1 1 := by
+      simpa [hj] using hfixed
+    rcases hfixedOne with ⟨s, hs, _hmod⟩
+    have hsPos : 0 < s.card := lt_of_lt_of_le (by decide : 0 < 1) hs
+    rcases Finset.card_pos.mp hsPos with ⟨v, _hv⟩
+    letI : Nonempty (Fin n) := ⟨v⟩
+    simpa [hj] using hasRegularInducedSubgraphOfCard_one G
+  · rcases Nat.exists_eq_succ_of_ne_zero hj with ⟨r, rfl⟩
+    let q : ℕ := 2 ^ (r + 1)
+    have hq : 1 < q := by
+      have hpow : 1 ≤ 2 ^ r := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+      calc
+        1 < 2 := by decide
+        _ ≤ 2 * 2 ^ r := by
+          simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+        _ = q := by simp [q, Nat.pow_succ, Nat.mul_comm]
+    have hqpos : 0 < q := lt_trans (by decide : 0 < 1) hq
+    have hhost :
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * q) q (D + 1) := by
+      exact
+        hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusWitnessOfCard_pow
+          (G := G) (q := q) (k := q * q) (D := D) hq (Nat.mul_pos hqpos hqpos)
+          (by
+            simpa [q, Nat.pow_succ, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hfixed)
+    have hexact : HasBoundedSingleControlExactWitnessOfCard G q (q - 1) := by
+      exact hstep (j := r + 1) (Nat.succ_pos r) G hhost
+    simpa [q] using hasRegularInducedSubgraphOfCard_of_hasBoundedSingleControlExactWitnessOfCard G hexact
+
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+    {D : ℕ}
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlUpgrade) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 2) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+        (r := D + 1) hupgrade)
+
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_two_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlUpgrade) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 2 := by
+  intro n j G hfixed
+  simpa using
+    (hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+      (D := 0) hupgrade G hfixed)
+
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_two_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 2 := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_two_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+      (hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+        hupgrade)
 
 /--
 Gallai's theorem already proves the empty-control parity base case.
@@ -2709,6 +3382,36 @@ theorem targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCos
   exact
     (eventualNatPowerDomination_iff_targetStatement (b := 2) (by decide : 1 < 2)).mp hpow
 
+theorem forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostEmptyControlExternalBlockBridge
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostEmptyControlExternalBlockBridge D) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge
+      hr hlift
+      (hasPolynomialCostEmptyControlTerminalBridge_of_hasPolynomialCostEmptyControlExternalBlockBridge
+        hbridge)
+
+theorem eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostEmptyControlExternalBlockBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostEmptyControlExternalBlockBridge D) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge
+      hlift
+      (hasPolynomialCostEmptyControlTerminalBridge_of_hasPolynomialCostEmptyControlExternalBlockBridge
+        hbridge)
+
+theorem targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlExternalBlockBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostEmptyControlExternalBlockBridge D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge
+      hlift
+      (hasPolynomialCostEmptyControlTerminalBridge_of_hasPolynomialCostEmptyControlExternalBlockBridge
+        hbridge)
+
 theorem forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalSelfBridge
     {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
     (hbridge : HasPolynomialCostFixedWitnessTerminalSelfBridge D) :
@@ -2887,6 +3590,36 @@ theorem targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCos
   exact
     (eventualNatPowerDomination_iff_targetStatement (b := 2) (by decide : 1 < 2)).mp hpow
 
+theorem forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge D) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hr hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+        hbridge)
+
+theorem eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge D) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+        hbridge)
+
+theorem targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
+        hbridge)
+
 theorem
     forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
     {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
@@ -2919,6 +3652,155 @@ theorem
       hlift
       (hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
         hterm)
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hstep :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge (D + 1)) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 3) * r) := by
+  simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+    (forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      (C := C) (D := D + 2) hr hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+        hstep))
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hstep :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge (D + 1)) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+        hstep)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hstep :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+        hstep)
+
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+    {D : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge (D + 1)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 2) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+        hbridge)
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge (D + 1)) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 3) * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      hr hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+        hbridge)
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge (D + 1)) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+        hbridge)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+        hbridge)
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+    {C r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlUpgrade) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + 3 * r) := by
+  simpa using
+    (forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      (C := C) (D := 2) hr hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_two_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+        hupgrade))
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+    {C : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlUpgrade) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_two_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+        hupgrade)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+    {C : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlUpgrade) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_two_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+        hupgrade)
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+    {C r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + 3 * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+      hr hlift
+      (hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+        hupgrade)
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+    {C : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+      hlift
+      (hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+        hupgrade)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+    {C : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+      hlift
+      (hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+        hupgrade)
 
 theorem
     forcingThreshold_pow_two_le_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
@@ -3037,20 +3919,44 @@ theorem
       (eventualNatPowerDomination_two_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
         hterm)
 
+theorem
+    hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+    (hhost : HasPolynomialCostFixedSingleControlHostTerminalRegularization 0) :
+    HasBoundedFixedModulusControlBlockModularHostTerminalRegularization 1 := by
+  intro n j G hctrl
+  have hctrl' :
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G ((2 ^ j) ^ 0 * 2 ^ j) (2 ^ j) 1 := by
+    simpa using hctrl
+  simpa using
+    hhost G
+      (hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_one
+        G hctrl')
+
+theorem forcingThreshold_pow_two_le_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+    {r : ℕ} (hr : 0 < r)
+    (hhost : HasPolynomialCostFixedSingleControlHostTerminalRegularization 0) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (4 * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
+      hr
+      (hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+        hhost)
+
+theorem eventualNatPowerDomination_two_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+    (hhost : HasPolynomialCostFixedSingleControlHostTerminalRegularization 0) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
+      (hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+        hhost)
+
 theorem targetStatement_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
     (hhost : HasPolynomialCostFixedSingleControlHostTerminalRegularization 0) :
     TargetStatement := by
-  have hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization 1 := by
-    intro n j G hctrl
-    have hctrl' :
-        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G ((2 ^ j) ^ 0 * 2 ^ j) (2 ^ j) 1 := by
-      simpa using hctrl
-    simpa using
-      hhost G
-        (hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_one
-          G hctrl')
-  exact targetStatement_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
-    hterm
+  exact
+    targetStatement_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one
+      (hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+        hhost)
 
 theorem
     hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization :
@@ -3083,6 +3989,61 @@ theorem targetStatement_of_hasExactCardFixedSingleControlHostTerminalRegularizat
     targetStatement_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
       ((hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization).2
         hhost)
+
+theorem forcingThreshold_pow_two_le_of_hasExactCardFixedSingleControlHostTerminalRegularization
+    {r : ℕ} (hr : 0 < r)
+    (hhost : HasExactCardFixedSingleControlHostTerminalRegularization) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (4 * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+      hr
+      ((hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization).2
+        hhost)
+
+theorem eventualNatPowerDomination_two_of_hasExactCardFixedSingleControlHostTerminalRegularization
+    (hhost : HasExactCardFixedSingleControlHostTerminalRegularization) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_polynomialCostFixedSingleControlHostTerminalRegularization_zero
+      ((hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero_iff_hasExactCardFixedSingleControlHostTerminalRegularization).2
+        hhost)
+
+theorem
+    hasExactCardFixedSingleControlHostTerminalRegularization_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
+    (hupgrade : HasExactCardFixedSingleControlHostDroppedPartUpgrade) :
+    HasExactCardFixedSingleControlHostTerminalRegularization := by
+  classical
+  intro n j G hhost
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard
+      (G := G)
+      (hupgrade G hhost)
+
+theorem forcingThreshold_pow_two_le_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
+    {r : ℕ} (hr : 0 < r)
+    (hupgrade : HasExactCardFixedSingleControlHostDroppedPartUpgrade) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (4 * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_hasExactCardFixedSingleControlHostTerminalRegularization hr
+      (hasExactCardFixedSingleControlHostTerminalRegularization_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
+        hupgrade)
+
+theorem eventualNatPowerDomination_two_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
+    (hupgrade : HasExactCardFixedSingleControlHostDroppedPartUpgrade) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_hasExactCardFixedSingleControlHostTerminalRegularization
+      (hasExactCardFixedSingleControlHostTerminalRegularization_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
+        hupgrade)
+
+theorem targetStatement_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
+    (hupgrade : HasExactCardFixedSingleControlHostDroppedPartUpgrade) :
+    TargetStatement := by
+  exact
+    targetStatement_of_hasExactCardFixedSingleControlHostTerminalRegularization
+      (hasExactCardFixedSingleControlHostTerminalRegularization_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
+        hupgrade)
 
 end DyadicLift
 
