@@ -1302,6 +1302,25 @@ regular induced subgraph on `q` vertices:
 
 So modular decomposition cannot prove the theorem by a simple induction on module size.
 
+### Consequence 17.7 (branch `(1)` is genuinely infinite)
+
+For every dyadic `q >= 8`, let:
+
+- `m := ceil((q + 1) / 3)`,
+- `M_q := K_{m, m, m}`.
+
+Then:
+
+1. `q < |M_q| = 3 m <= q + 2 <= 2 q - 2`;
+2. every vertex degree in `M_q` is:
+   - `2 m`,
+   so `M_q` is `q`-modular;
+3. every proper module of `M_q` has size `< q`;
+4. no induced `q`-vertex subgraph of `M_q` is regular.
+
+So the small bad-module branch from Theorem `17.5` is a genuine infinite family, not a bookkeeping
+artifact of the prime weighted quotient reduction.
+
 ## 18. The dyadic obstruction after freezing `m` bits is the half-obstruction `eta_m`
 
 The naive dyadic-halving program already failed.
@@ -1410,6 +1429,179 @@ The honest missing lift object is:
 
 So any successful dyadic proof must control `eta_m(U)` itself, not merely the first `m` bits of the
 individual deleted layers.
+
+### Proposition 18.4 (exact residual-packet reformulation)
+
+Fix `U` and `m` as above, and write:
+
+- `N := q / 2^m`.
+
+Call a packet `P subseteq V \ U` **`m`-admissible** if there is some residue `a_P` such that
+
+- `Σ_{x in P} c_x ≡ a_P 1_U [MOD 2^m]`.
+
+For such a packet define
+
+- `nu_m(P) := [(Σ_{x in P} c_x - a_P 1_U) / 2^m] in M_N(U)`,
+
+and let:
+
+- `bar nu_m(P) in M_2(U)`
+
+be its reduction modulo `2`.
+
+If:
+
+- `V \ U = ⊔_i P_i`
+
+is any `m`-admissible packet decomposition, then:
+
+- `eta_m(U) = Σ_i nu_m(P_i)`.
+
+Reducing modulo `2`, one gets:
+
+- `bar eta_m(U) = Σ_i bar nu_m(P_i)` in `M_2(U)`.
+
+So the total packet-shadow sum is **independent of the chosen admissible packetization**.
+Hence the next dyadic lift on this fixed support is **exactly** equivalent to:
+
+- `eta_m(U) in 2 M_N(U)` if and only if `Σ_i bar nu_m(P_i) = 0` in `M_2(U)`.
+
+Equivalently:
+
+- `eta_m(U) in 2 M_N(U)` if and only if `bar eta_m(U) = 0`.
+
+So the top-bit theorem is precisely the vanishing of the **decomposition-independent** packet-shadow
+sum `bar eta_m(U)` in `M_2(U)`.
+
+### Consequence 18.5 (Section 18 data do not force packet-shadow cancellation)
+
+The residual-packet reformulation is exact, but it is not automatic.
+
+In the obstruction from Theorem `18.2`, the outside columns are only:
+
+- `0`,
+- `1`,
+- `d := 1 - e_0`,
+
+with `d` repeated exactly:
+
+- `q - 2^m = 2^m (N - 1)`
+
+times.
+
+For any `m`-admissible packet `P`, if `b(P)` denotes the number of `d`-columns in `P`, then:
+
+- admissibility forces `b(P) ≡ 0 [MOD 2^m]`,
+- and `bar nu_m(P)` is either `0` or the same nonzero class
+  `bar alpha`, where `alpha := [(0, 1, ..., 1)] in M_N(U)`.
+
+So in every `m`-admissible packetization of `V \ U`, all nonzero packet shadows are identical, and
+their total sum is:
+
+- `(N - 1) bar alpha = bar alpha != 0`.
+
+Therefore no `m`-admissible packet decomposition has zero-sum packet shadows.
+
+So Section `18`'s current data do **not** force the next top bit of `eta_m(U)` to vanish.
+
+The exact missing dyadic theorem is therefore simply:
+
+> for some fixed support `U`, prove that
+> - `bar eta_m(U) = 0`
+> in `M_2(U)`.
+
+Equivalently, fixing any basepoint:
+
+- `u_0 in U`,
+
+this is exactly the **pairwise next-bit compensation theorem**:
+
+- `r_U(u) - r_U(u_0) ≡ 0 [MOD 2^(m+1)]` for every `u in U`.
+
+In dual form, if:
+
+- `delta_u : M_2(U) -> F_2`
+
+denotes the functional:
+
+- `delta_u(x) := x(u) + x(u_0)` for `u != u_0`,
+
+then these `delta_u` form a basis of `M_2(U)^*`, and:
+
+- `bar eta_m(U) = 0` if and only if `delta_u(bar eta_m(U)) = 0` for every `u != u_0`.
+
+Packetwise, `delta_u(bar nu_m(P))` is exactly the parity of whether the packet shadow separates the
+pair `{u, u_0}`. So the exact basis-level reduction is the **pair-cut packet parity theorem**:
+
+> for every `u != u_0`, packets with odd `{u, u_0}`-shadow occur with even parity.
+
+The packet language remains useful only as a way to force that vanishing. In particular, one now
+needs genuine control on the **distribution of packet shadows**, not merely the fact that deleted
+layers are harmless through the first `m` bits.
+
+A sharper reading of the current bookkeeping is:
+
+1. for each `u != u_0`,
+   - `delta_u(bar eta_m(U)) = (r_U(u) - r_U(u_0)) / 2^m`
+     in `F_2`;
+2. if a block `D` already has constant external degree modulo `q = 2^j` on `U`, then for every
+   `m < j`,
+   - `(|N(u) ∩ D| - |N(u_0) ∩ D|) / 2^m ≡ 0 [MOD 2]`;
+   so every already-separated control / cascade block is `delta_u`-silent;
+3. letting `R` denote the final undecomposed tail and
+   - `rho_R(u) := |N(u) ∩ R|`,
+   the frozen first `m` bits imply
+   - `rho_R = K_m 1_U + 2^m h_m`
+     on `U`;
+4. therefore the exact unresolved one-functional theorem is already **terminal-tail only**: prove that
+   the terminal-tail class
+   - `tau_m(R, U) := [h_m mod 2]`
+     vanishes in `M_2(U)`;
+   equivalently,
+   - `rho_R = K_(m+1) 1_U + 2^(m+1) h_(m+1)`;
+5. equivalently, the normalized difference cocycle
+   - `kappa_m(u, v) := (rho_R(u) - rho_R(v)) / 2^m [MOD 2]`
+   vanishes identically; fixing a basepoint `u_0`, this is exactly the basis family
+   - `rho_R(u) - rho_R(u_0) ≡ 0 [MOD 2^(m+1)]`
+     for all `u in U`;
+6. if `n_A := # {x in R : N(x) ∩ U = A}` and
+   - `n_A = 2^m q_A + r_A`
+     with `0 <= r_A < 2^m`,
+   then
+   for pair-cut functionals only complement-orbits matter: if
+   - `chi_A(u, v) = 1`
+     exactly when one of `u, v` lies in `A`, then
+   - `kappa_m(u, v) = Σ_[A] floor((n_A + n_(U \ A)) / 2^m) chi_A(u, v) [MOD 2]`,
+     where the sum runs over complement-pairs `[A] = {A, U \ A}`;
+7. equivalently, the aggregate complement-orbit class is
+   - `beta_m := Σ_[A] epsilon_[A] [1_A]`
+     where
+   - `epsilon_[A] := floor((n_A + n_(U \ A)) / 2^m) [MOD 2]`,
+   and one has
+   - `kappa_m = partial beta_m`;
+8. hence
+   - `kappa_m = 0`
+     if and only if
+   - `beta_m = 0`,
+   equivalently if and only if the symmetric difference of the active complement-orbits is either
+   `∅` or `U` (equivalently, active-orbit incidence parity is constant on `U`);
+9. the visible top digit and the pure carry do not vanish separately: they cancel **inside each
+   complement pair** via
+   - `floor((n_A + n_(U \ A)) / 2^m) ≡ q_A + q_(U \ A) + floor((r_A + r_(U \ A)) / 2^m) [MOD 2]`;
+10. raw parity pairing on vertices of `R` is too weak for `m >= 1`: parity-only arguments miss exactly
+   the carry contribution `floor((r_A + r_(U \ A)) / 2^m)`.
+
+So individual orbit coefficients do **not** need to vanish. The smallest exact complement-orbit
+statement is the triviality of the aggregate class `beta_m`.
+
+Equivalently, one still needs a dyadic row-divisibility chain for the tail profile `rho_R`, and
+packet shadows remain only a language for forcing that last tail cancellation.
+
+Low-rank shadow space by itself is **not** enough: the standard obstruction from Theorem `18.2`
+already has all nonzero packet shadows in a `1`-dimensional subspace while still giving
+
+- `bar eta_m(U) != 0`.
 
 ## 19. Affine-line forcing is false
 
@@ -1664,12 +1856,161 @@ There is no automatic theorem of the form:
 
 > every `q`-bad module in the small window lifts to a good `q`-set using the outside world.
 
-The exact remaining small-window statement is:
+In fact the stronger universal target
 
 > for each regular induced `A subseteq M` with `|A| = a < q`, must the outside graph contain a
 > `(q - a)`-vertex `X / Y`-colored induced subgraph with the required degree pattern?
 
-That is the honest finite branch-(1) problem.
+is false.
+
+Indeed, by Proposition `22.1`, a regular induced `A subseteq M` of size `a` and internal degree
+`alpha` can be completed only if at least one of the following holds:
+
+- mixed `X / Y` completion: `a <= q / 2 - 1`;
+- `Y`-only completion: `alpha <= q - a - 1`;
+- `X`-only completion: `alpha >= 2 a - q`.
+
+So there is a dead zone
+
+- `a > q / 2 - 1` and `q - a <= alpha < 2 a - q`
+
+in which no completion exists, regardless of the outside graph.
+
+Section `17`'s family
+
+- `M_q := K_{m,m,m}`, with `m := ceil((q + 1) / 3)`,
+
+already contains such a regular piece. Take `A` to be the union of two parts, so
+
+- `A ≅ K_{m,m}`,
+- `a = 2 m`,
+- `alpha = m`,
+- `q - a = q - 2 m ∈ {m - 1, m - 2}`.
+
+Then:
+
+- mixed completion is impossible because `a > q / 2 - 1`;
+- `Y`-only completion would require an `m`-regular graph on at most `m - 1` vertices;
+- `X`-only completion would require degree `q - 3 m ∈ {-1, -2}`.
+
+So this `A` is intrinsically uncompletable.
+
+Thus the honest small-window branch-`(1)` theorem is **existential in `A`**, not universal:
+
+> given a `q`-modular host `G` and a `q`-bad module `M` with `q + 1 <= |M| <= 2 q - 2`, either
+> `G[W]` already contains a regular induced `q`-set, or there exists some regular induced
+> `A subseteq M` and some `B subseteq W` with `|A| + |B| = q` such that, writing
+> `a := |A|`, `alpha := deg_A`, and `s := |B ∩ X|`,
+>
+> - `deg_B(x) = alpha + s - a` for `x in B ∩ X`,
+> - `deg_B(y) = alpha + s` for `y in B ∩ Y`.
+
+Equivalently, the missing theorem is a host-side **admissible-`A` / `X / Y` completion theorem**:
+the extra host structure must either find the regular `q`-set entirely outside `M`, or force at
+least one extendable regular induced `A subseteq M`.
+
+More sharply, branch-`(1)` depends on the choice of regular `A` only through its profile
+
+- `(a, alpha) := (|A|, deg_A)`.
+
+For each size `a`, define the extremal regular degrees
+
+- `alpha_min(a) := min {alpha : exists alpha-regular induced A subseteq M with |A| = a}`,
+- `alpha_max(a) := max {alpha : exists alpha-regular induced A subseteq M with |A| = a}`.
+
+Then:
+
+1. some `Y`-only completion of size `a` exists if and only if
+   - `alpha_min(a) <= q - a - 1`;
+2. some `X`-only completion of size `a` exists if and only if
+   - `alpha_max(a) >= 2 a - q`;
+3. mixed completion depends only on `a`, namely
+   - `a <= q / 2 - 1`.
+
+So the next exact small-window theorem is not an existential theorem over arbitrary regular
+`A subseteq M`, but a **profile-completion theorem**, indeed already an **extremal-profile
+completion theorem**.
+
+Two positive slices are immediate:
+
+- if `M` contains an independent set `I_a` with `a > q / 2`, then any completion must be `Y`-only,
+  so the outside task collapses to finding an independent `(q - a)`-set in `Y`;
+- if `M` contains a clique `K_a` with `a > q / 2`, then any completion must be `X`-only, so the
+  outside task collapses to finding a clique `K_(q - a)` in `X`.
+
+It is cleaner to rewrite in terms of codimension
+
+- `s := q - a`.
+
+For `a > q / 2` (equivalently `s < q / 2`), mixed completion is impossible, so one needs purely:
+
+- `Y`-side completion from some
+  - `alpha in P_M(q - s) ∩ RegDeg(s)`;
+- or `X`-side completion from some
+  - `alpha in P_M(q - s) ∩ (q - 2 s + RegDeg(s))`,
+
+where `P_M(t)` is the realized regular-degree set on `t`-vertex induced regular subgraphs of `M`, and
+`RegDeg(s)` is the set of regular degrees realizable on `s` vertices.
+
+So `alpha_min(a)` and `alpha_max(a)` give only **window compatibility** inside `M`; they do not by
+themselves solve the outside realization problem.
+
+The first codimensions collapse quickly:
+
+1. `s = 1`: trivial;
+2. `s = 2`: exact theorem is easy, since regular `2`-sets are only edge / nonedge;
+3. `s = 3`: still Ramsey-level, since regular `3`-sets are only `I_3` or `K_3`.
+
+Thus the first genuinely new case is:
+
+> **codimension-4 completion theorem**.
+
+Indeed the regular `4`-vertex targets are exactly:
+
+- `I_4`,
+- `2 K_2`,
+- `C_4`,
+- `K_4`.
+
+If `A subseteq M` is induced `alpha`-regular with `|A| = q - 4`, and `B subseteq W` has `|B| = 4`,
+then Proposition `22.1` gives:
+
+- `deg_B(x) = alpha + s - (q - 4)` for `x in B ∩ X`,
+- `deg_B(y) = alpha + s` for `y in B ∩ Y`,
+
+where `s := |B ∩ X|`.
+
+So if `1 <= s <= 3`, then:
+
+- `deg_B(y) - deg_B(x) = q - 4 >= 4`,
+
+which is impossible on a `4`-vertex graph. Therefore mixed completion is impossible for codimension
+`4` (for `q >= 8`), and only pure `X`- or pure `Y`-side completions remain.
+
+Hence the feasible internal degrees are exactly:
+
+- `alpha in {0, 1, 2, 3}` on the `Y`-side,
+- `alpha in {q - 8, q - 7, q - 6, q - 5}` on the `X`-side,
+
+with the outside target determined by:
+
+- `0` / `q - 8`  <->  `I_4`,
+- `1` / `q - 7`  <->  `2 K_2`,
+- `2` / `q - 6`  <->  `C_4`,
+- `3` / `q - 5`  <->  `K_4`.
+
+So codimension `4` is already completely classified. The only genuine ambiguity is overlap between the
+two degree windows.
+
+If `q >= 12`, the windows are disjoint, so `alpha` alone already forces the side and the outside
+target. Therefore the next exact smaller theorem is:
+
+> **overlap-profile resolution** for `q in {9, 10, 11}`.
+
+In the current `q = 8` bad-module branch the windows coincide, and the surviving internal
+`4`-vertex regular profile is `C_4`, so the codimension-`4` problem there collapses to:
+
+> the outside `4`-set must also be a `C_4` (in `X` or in `Y`).
 
 ## 23. Prime weighted/residue quotient data is still insufficient
 
@@ -2776,3 +3117,2320 @@ with the edge `x y` forced by whether `y` distinguishes `x` from `v_0`.
 So the entire self-contained `C_5` branch collapses to a finite:
 
 - **16-case clone-distinguisher theorem on `S ∪ {x, y}`**.
+
+### Proposition 31.5 (clone-fiber closure lemma)
+
+Fix:
+
+- `K := S \ {v_0} = v_1 - v_2 - v_3 - v_4`,
+
+and define the position-`0` clone fiber:
+
+- `D_0 := {u : N_K(u) = {v_1, v_4}}`.
+
+This contains:
+
+- `v_0`,
+- every false clone of `v_0`,
+- every true clone of `v_0`.
+
+Take:
+
+- `p, q in D_0`,
+
+and let:
+
+- `y`
+
+distinguish `p` and `q`.
+Then:
+
+- `y in D_0`.
+
+### Proof
+
+The cycle:
+
+- `p - v_1 - v_2 - v_3 - v_4 - p`
+
+is again an induced `C_5`.
+Relative to this reseated cycle:
+
+- `q` is a false clone of `p` iff `p q = 0`,
+- `q` is a true clone of `p` iff `p q = 1`.
+
+Now apply Proposition `31.1` to `y` on that reseated cycle.
+If `y` is not a clone of `p`, then it has one of the six remaining local types.
+Because `y` distinguishes `p` from `q`, each of those six types immediately reseeds:
+
+1. anticenter gives a singleton-at-`p` attachment, hence an induced `P_5`;
+2. center gives a complement-of-singleton attachment, hence an induced `bar P_5`;
+3. the `F_1` type gives a singleton middle attachment, hence an induced `P_5`;
+4. the `T_1` type gives a consecutive-pair attachment, hence an induced `P_5`;
+5. the `F_2` type gives a complement-of-nonadjacent-pair attachment, hence an induced `bar P_5`;
+6. the `T_2` type gives a complement-of-singleton attachment, hence an induced `bar P_5`.
+
+So the only distinguishers that survive are again the clone types of `p`, i.e. the vertices of
+`D_0`.
+
+### Consequence 31.6 (internal elimination of the `C_5` seed)
+
+Let `Q` be a prime non-split graph containing an induced `C_5`:
+
+- `S = v_0 v_1 v_2 v_3 v_4 v_0`,
+
+and assume `Q` contains no induced `P_5` or `bar P_5`.
+Then:
+
+- `Q = S`.
+
+### Proof
+
+By Proposition `31.1`, every outside vertex is either:
+
+1. a center,
+2. an anticenter,
+3. a true clone of some `v_i`,
+4. or a false clone of some `v_i`.
+
+If every clone fiber `D_i` is trivial, then every outside vertex is a center or anticenter, hence is
+uniform on `S`.
+So `S` is a nontrivial module of `Q`, contradicting primeness unless `Q = S`.
+
+Therefore some `D_i` is nontrivial.
+By rotation symmetry, take `i = 0`.
+Proposition `31.5` says that every distinguisher of two vertices in `D_0` also lies in `D_0`.
+So every vertex outside `D_0` is uniform on `D_0`, i.e. `D_0` is a proper nontrivial module of `Q`.
+Again this contradicts primeness.
+
+Hence the only prime `{P_5, bar P_5}`-free graph containing an induced `C_5` is `C_5` itself.
+
+### Consequence 31.7 (the `C_5` seed is not independent)
+
+The `C_5` seed is not an independent remaining branch.
+Any prime non-split graph larger than `C_5` that contains an induced `C_5` must already contain an
+induced `P_5` or `bar P_5`.
+
+## 32. The house seed reduces to four exceptional orbit families
+
+Write the house seed as the `4`-cycle:
+
+- `a - b - c - d - a`,
+
+with roof:
+
+- `r ~ b, c`.
+
+Define the two skew correction parameters:
+
+- `alpha := c_a - c_d`,
+- `beta := c_b - c_c`.
+
+From the weighted congruence on the seed:
+
+- `alpha ≡ (rho_d - rho_a) + (n_a + n_c - n_b - n_d) [MOD 8]`,
+- `beta ≡ (rho_c - rho_b) + (n_b + n_d - n_a - n_c) [MOD 8]`.
+
+### Proposition 32.1 (one-vertex reseeding from the house)
+
+The only `4`-vertex induced subgraphs of the house that can extend to a `P_5` or `C_5` are the two
+paths:
+
+- `d - a - b - r`,
+- `a - d - c - r`.
+
+Hence an outside vertex `x` immediately reseeds to `P_5` or `C_5` if:
+
+1. `N_S(x) ∩ {d, a, b, r}` is one of
+   - `{d}`, `{r}`, `{d, r}`;
+2. or `N_S(x) ∩ {a, d, c, r}` is one of
+   - `{a}`, `{r}`, `{a, r}`.
+
+Up to the house automorphism `(a d)(b c)`, the forbidden one-vertex orbits are:
+
+- `{r}`,
+- `{a}`,
+- `{a, b}`,
+- `{a, r}`,
+- `{b, r}`,
+- `{a, b, r}`.
+
+### Consequence 32.2 (surviving house orbit types)
+
+After removing the immediate `P_5 / C_5` reseeding orbits, the remaining outside attachment orbits
+split into three classes.
+
+1. **Trivial orbits**
+   - `emptyset`,
+   - `S`.
+
+2. **House-reseating orbits**, each of which produces another induced house on `x` plus four seed
+   vertices:
+   - `{a, c}`,
+   - `{a, b, d}`,
+   - `{a, c, r}`,
+   - `{a, b, c, r}`,
+   - `{b, c}`,
+   - `{b, c, r}`,
+   - `{a, d}`,
+   - `{a, d, r}`.
+
+3. **Exceptional orbits**
+   - `B := {b} ~ {c}`,
+   - `T := {a, b, c} ~ {b, c, d}`,
+   - `U := S \ {b} ~ S \ {c}`,
+   - `Q := S \ {r}`.
+
+So after quotienting out trivial and house-reseating attachments, only the four exceptional orbit
+families `B, T, U, Q` remain.
+
+### Consequence 32.3 (congruence collapse on the exceptional house orbits)
+
+Let:
+
+- `u_b, u_c` be the total outside weights in the two `B`-orbits,
+- `t_b, t_c` the total outside weights in the two `T`-orbits,
+- `v_b, v_c` the total outside weights in the two `U`-orbits,
+- `q` the total outside weight in the `Q`-orbit.
+
+Then, modulo the house-reseating part:
+
+- `alpha ≡ t_b - t_c [MOD 8]`,
+- `beta ≡ u_b - u_c + v_c - v_b [MOD 8]`.
+
+The `Q`-orbit changes only the common constant part and can be absorbed into `lambda`.
+
+### Consequence 32.4 (the exact remaining house barrier)
+
+The `bar P_5` branch is now a finite local theorem on only:
+
+- the four exceptional orbit families `B, T, U, Q`,
+- the two skew residues `(alpha, beta)`,
+- and the labelled `C_6 / F` avoidance rules.
+
+So the house seed is not eliminated, but it has collapsed to a very small explicit attachment
+theorem.
+
+## 33. Two genuinely general theorems extracted from the `q = 8` analysis
+
+The `q = 8` case study should not be treated merely as a terminal finite grind.
+Two of its main outputs in fact generalize cleanly to arbitrary even modulus `q`.
+
+### Proposition 33.1 (general prime split weighted quotients are always good)
+
+Let `q >= 4` be even, and let:
+
+- `G = Q[H_v]`
+
+be a weighted quotient instance such that:
+
+1. `Q` is prime and split,
+2. every bag has size `< q`,
+3. the total bag weight is `q^2`.
+
+Then `G` contains an induced regular subgraph on exactly `q` vertices.
+
+### Proof
+
+Because `Q` is prime and split, it is a spider: its body bags are pairwise complete, its leg bags
+are pairwise anticomplete, and the head has size at most `1`.
+
+Call a bag an `E`-bag if it contains an edge, and an `N`-bag if it contains a nonedge.
+
+If there were `q / 2` leg bags that are `E`-bags, choose one edge from each of them.
+Since distinct leg bags are pairwise anticomplete, this would give an induced:
+
+- `(q / 2) K_2`,
+
+which is `1`-regular on `q` vertices.
+Therefore at most `q / 2 - 1` leg bags are `E`.
+
+Every remaining leg bag is independent.
+Since the legs are pairwise anticomplete, the union of all those independent leg bags is itself
+independent.
+Avoiding an induced `I_q` forces the total weight of the non-`E` legs to be at most `q - 1`.
+Each `E`-leg bag has size at most `q - 1`, so the total leg weight is at most:
+
+- `(q - 1) + (q / 2 - 1) (q - 1) = (q / 2) (q - 1)`.
+
+Dually, if there were `q / 2` body bags that are `N`-bags, choose one nonedge from each of them.
+Since distinct body bags are pairwise complete, this gives an induced:
+
+- `overline{(q / 2) K_2}`,
+
+which is `(q - 2)`-regular on `q` vertices.
+Therefore at most `q / 2 - 1` body bags are `N`.
+
+Every remaining body bag is a clique.
+Since the body bags are pairwise complete, the union of all those clique bags is itself a clique.
+Avoiding an induced `K_q` forces the total weight of the non-`N` body bags to be at most `q - 1`.
+Hence the total body weight is also at most:
+
+- `(q / 2) (q - 1)`.
+
+Finally the head contributes at most one bag, of size at most `q - 1`.
+So the total bag weight is at most:
+
+- `(q / 2) (q - 1) + (q / 2) (q - 1) + (q - 1) = q^2 - 1`,
+
+contradicting the assumed total weight `q^2`.
+
+So some induced regular `q`-vertex subgraph must already exist.
+
+### Consequence 33.2 (the split prime quotient branch is dead in general)
+
+For every even `q`, the prime weighted quotient branch of the last-gap problem can ignore split
+quotients entirely.
+
+They are always already good before any residue or profile analysis.
+
+### Proposition 33.3 (general elimination of the `C_5` seed)
+
+Let `q >= 4`, and let `Q` be a prime non-split weighted quotient with:
+
+- total bag weight `q^2`,
+- every bag of size `< q`.
+
+Then `Q` cannot have `C_5` as its only prime non-split seed.
+It must contain an induced `P_5` or `bar P_5`.
+
+### Proof
+
+Fix an induced `C_5` in `Q`.
+By Proposition 31.1, any outside vertex that is not a center, anticenter, true clone, or false
+clone of that cycle already produces an induced `P_5` or `bar P_5`.
+
+So if `Q` had no induced `P_5` or `bar P_5`, every outside vertex would have to be one of those
+four `C_5`-preserving types.
+Then the underlying prime graph of `Q` would be `{P_5, bar P_5}`-free and would contain an induced
+`C_5`.
+By Consequence `31.6`, that underlying graph would have to be `C_5` itself.
+
+But a `5`-vertex quotient with all bags of size at most `q - 1` has total weight at most:
+
+- `5 (q - 1)`,
+
+and for every `q >= 4` one has:
+
+- `5 (q - 1) < q^2`.
+
+So `Q` cannot have total weight `q^2`.
+Contradiction.
+
+### Consequence 33.4 (general seed frontier)
+
+By Proposition `33.3`, the general non-split prime quotient branch no longer needs a separate
+`C_5` seed theorem.
+
+The honest remaining general seed-attachment frontier is:
+
+- `P_5`,
+- and `bar P_5`.
+
+In other words, the `q = 8` analysis does suggest a real general theorem shape:
+
+> kill split prime quotients by a uniform weight count,
+> eliminate `C_5` by prime-graph structure,
+> and attack the last gap through weighted attachment theorems over `P_5` and `bar P_5`.
+
+### Proposition 33.5 (weighted quotient complementation)
+
+Let `G = Q[H_v]` be a weighted quotient instance at modulus `q`.
+Then:
+
+- `bar G = bar Q[bar H_v]`.
+
+Moreover:
+
+1. bag sizes are unchanged;
+2. primeness of the quotient is unchanged;
+3. if the weighted degree congruence on `Q` is
+   - `rho(v) + sum_{u ~ v} n_u ≡ lambda [MOD q]`,
+   then on `bar Q` it becomes
+   - `(n_v - 1 - rho(v)) + sum_{u not~ v} n_u ≡ -1 - lambda [MOD q]`;
+4. an induced regular `q`-set in `G` is equivalent to an induced regular `q`-set in `bar G`.
+
+So the weighted prime-quotient problem is complement-invariant.
+
+### Consequence 33.6 (the `P_5` branch is not independent)
+
+Every general `P_5`-seed instance is equivalent by complementation to a
+`bar P_5`-seed instance.
+
+So the general non-split prime quotient frontier is not really:
+
+- `P_5` and `bar P_5`,
+
+but just:
+
+- `bar P_5`.
+
+### Proposition 33.7 (direct local collapse of the `P_5` branch)
+
+Even without appealing immediately to complementation, the one-vertex attachment analysis on `P_5`
+already collapses almost completely.
+
+Up to reflection of the path `1 - 2 - 3 - 4 - 5`, the only surviving nontrivial outside attachment
+families are:
+
+- `M := {3}`,
+- `T := {2, 3} ~ {3, 4}`,
+- `B := {1, 2, 3, 4} ~ {2, 3, 4, 5}`.
+
+All other one-vertex orbits are either:
+
+1. trivial (`emptyset`, `S`),
+2. immediate `P_5`,
+3. or immediate `C_5 / bar P_5`.
+
+If:
+
+- `m` is the total outside weight in the `M`-orbit,
+- `t_2, t_4` are the total outside weights in the two `T`-orbits,
+- `b_1, b_5` are the total outside weights in the two `B`-orbits,
+
+then, modulo a common constant, the correction vector is:
+
+- `(c_1, ..., c_5) ≡ (b_1, t_2 + b_1 + b_5, m + t_2 + t_4 + b_1 + b_5, t_4 + b_1 + b_5, b_5)`.
+
+Equivalently the adjacent difference equations are:
+
+- `delta_12 = t_2 + b_5`,
+- `delta_23 = m + t_4`,
+- `delta_34 = - (m + t_2)`,
+- `delta_45 = - (t_4 + b_1)`.
+
+So if one insists on a direct `P_5` theorem, the exact remaining local statement is already a
+finite theorem on the three orbit families `M, T, B`.
+
+### Consequence 33.8 (the actual general prime-quotient frontier)
+
+Combining Propositions 33.1, 33.3, and 33.5, the general weighted prime-quotient problem has now
+collapsed to a single genuine seed family:
+
+- the house / `bar P_5` branch.
+
+So the cleanest current general theorem target is:
+
+> classify weighted attachments to a prime house seed under the modular weighted-degree equations,
+> then show that every such attachment already yields a regular induced `q`-set.
+
+## 34. The general house branch reduces to reseating plus a stable exceptional theorem
+
+Let the house seed be:
+
+- `a - b - c - d - a`,
+
+with roof:
+
+- `r ~ b, c`.
+
+Write `tau := (a d)(b c)` for the house automorphism.
+
+### Proposition 34.1 (general outside-vertex trichotomy for the house)
+
+For every outside vertex `x`, up to the automorphism `tau`, exactly one of the following holds.
+
+1. **Trivial**
+   - `N_S(x) = emptyset`,
+   - or `N_S(x) = S`.
+2. **`P_5 / C_5` reseeding**
+   - `{r}`,
+   - `{a}`,
+   - `{a, b}`,
+   - `{a, r}`,
+   - `{b, r}`,
+   - `{a, b, r}`.
+3. **House-reseating**
+   - `{a, c}`,
+   - `{a, b, d}`,
+   - `{a, c, r}`,
+   - `{a, b, c, r}`,
+   - `{b, c}`,
+   - `{b, c, r}`,
+   - `{a, d}`,
+   - `{a, d, r}`.
+4. **Exceptional**
+   - `B_b := {b}`,
+   - `B_c := {c}`,
+   - `T_b := {a, b, c}`,
+   - `T_c := {b, c, d}`,
+   - `U_b := S \ {b}`,
+   - `U_c := S \ {c}`,
+   - `Q_0 := S \ {r}`.
+
+Thus the genuine general house branch is:
+
+- a house-reseating automaton,
+- plus the seven exceptional orbit types above.
+
+### Consequence 34.2 (stable house seeds)
+
+Call a house seed **stable** if there are no outside vertices of house-reseating type relative to it.
+
+Then every general house-seed instance reduces to two separate problems:
+
+1. a **reseating-descent theorem**, showing that repeated house-reseating can be replaced by a stable
+   house seed (or by an already-good configuration);
+2. a **stable exceptional house theorem**, where all outside vertices lie only in the trivial or
+   exceptional orbit families.
+
+### Proposition 34.3 (stable exceptional congruence system)
+
+Assume the house seed is stable.
+Let:
+
+- `Z` be the total outside weight in the center orbit `S`,
+- `B_b, B_c, T_b, T_c, U_b, U_c, Q_0`
+
+denote the total outside weights in the seven exceptional orbit types.
+
+Then the seed congruences are exactly:
+
+- `rho_a + n_b + n_d + Z + Q_0 + T_b + U_b + U_c ≡ lambda [MOD q]`,
+- `rho_d + n_a + n_c + Z + Q_0 + T_c + U_b + U_c ≡ lambda [MOD q]`,
+- `rho_b + n_a + n_c + n_r + Z + Q_0 + B_b + T_b + T_c + U_c ≡ lambda [MOD q]`,
+- `rho_c + n_b + n_d + n_r + Z + Q_0 + B_c + T_b + T_c + U_b ≡ lambda [MOD q]`,
+- `rho_r + n_b + n_c + Z + U_b + U_c ≡ lambda [MOD q]`.
+
+### Consequence 34.4 (the skew sector)
+
+From the previous system, the skew correction parameters satisfy:
+
+- `alpha := c_a - c_d ≡ T_b - T_c [MOD q]`,
+- `beta := c_b - c_c ≡ (B_b - B_c) + (U_c - U_b) [MOD q]`.
+
+So the orbit families `T_b, T_c` control the `a/d` skew, while `B_b, B_c, U_b, U_c` control the
+`b/c` skew.
+
+### Consequence 34.5 (the exact remaining general barrier)
+
+The general prime-quotient branch is therefore reduced to exactly this:
+
+> **Stable exceptional house theorem, plus reseating descent.**
+>
+> Show that every prime weighted attachment to a stable house seed using only
+> `emptyset, S, B_b, B_c, T_b, T_c, U_b, U_c, Q_0` and satisfying the displayed congruences is
+> already good.
+
+What is still missing is the control of the **symmetric sector** of that stable system; the skew
+equations alone do not yet finish the argument.
+
+## 35. The stable exceptional house system has only one genuine `tau`-even parameter
+
+Keep the stable house setup from Section 34, and define:
+
+- `P_b := B_b - U_b`,
+- `P_c := B_c - U_c`,
+- `t := T_b + T_c`,
+- `p := P_b + P_c`.
+
+### Proposition 35.1 (stable-house correction vector)
+
+Modulo constants on the seed, the correction vector is:
+
+- `(c_a - c_r, c_b - c_r, c_c - c_r, c_d - c_r) ≡ (Q_0 + T_b, Q_0 + t + P_b, Q_0 + t + P_c, Q_0 + T_c)`.
+
+Hence:
+
+- `alpha = T_b - T_c`,
+- `beta = P_b - P_c`.
+
+So the skew sector is already completely controlled by:
+
+- the `T_b / T_c` imbalance,
+- and the `P_b / P_c` imbalance.
+
+### Proposition 35.2 (the symmetric equations)
+
+Adding and subtracting the five seed congruences gives two independent `tau`-even equations:
+
+- `2 Q_0 + t ≡ kappa_1 [MOD q]`,
+- `p + t ≡ kappa_2 [MOD q]`,
+
+where:
+
+- `kappa_1 := - (rho_a + rho_d - 2 rho_r + n_a + n_d - n_b - n_c)`,
+- `kappa_2 := - (rho_b + rho_c - rho_a - rho_d + 2 n_r)`.
+
+So after the skew data are fixed, the symmetric sector is governed only by:
+
+- `Q_0`,
+- `p`,
+- `t`,
+
+subject to those two congruences.
+
+### Proposition 35.3 (seed-invisible null directions)
+
+The seed-pattern identities are exact:
+
+- `B_b + U_b = S`,
+- `B_c + U_c = S`,
+- `T_b + T_c = Q_0 + B_b + B_c`.
+
+Therefore:
+
+- `Z`,
+- `B_b + U_b`,
+- `B_c + U_c`
+
+are seed-invisible null directions.
+
+So the stable exceptional system is not really a `7`-parameter problem.
+
+### Consequence 35.4 (the true stable-house obstruction)
+
+After quotienting out the null directions and fixing the skew pair `(alpha, beta)`, the stable
+exceptional system has only one genuine `tau`-even affine parameter left, which may be taken to be:
+
+- `t = T_b + T_c`.
+
+Necessarily:
+
+- `t ≡ alpha [MOD 2]`,
+- `p ≡ beta [MOD 2]`.
+
+So the exact remaining stable-house theorem is:
+
+> **`tau`-even stable-house theorem.**
+>
+> Control the single symmetric parameter `t` (equivalently the `tau`-even residual class) in every
+> prime weighted attachment to a stable house seed.
+
+In particular, congruences alone do not finish the proof: the true remaining obstruction is exactly
+this one-parameter `tau`-even sector.
+
+## 36. Reseating descent reduces to 16 local `7`-vertex templates
+
+Let `S` be a house seed, and let `x` be a house-reseating vertex.
+Choose a reseated house `S'` using `x`.
+Then `S'` shares exactly four vertices with `S` and omits a unique vertex `v in S`.
+
+### Proposition 36.1 (all reseating moves are one-vertex swaps)
+
+The eight house-reseating orbits collapse to three seed roles:
+
+- `corner`,
+- `shoulder`,
+- `roof`,
+
+together with one bit `epsilon in {0,1}` recording whether:
+
+- `x ~ v`.
+
+So there are only six double-house templates:
+
+- `D_(corner,0)`,
+- `D_(corner,1)`,
+- `D_(shoulder,0)`,
+- `D_(shoulder,1)`,
+- `D_(roof,0)`,
+- `D_(roof,1)`.
+
+### Consequence 36.2 (one-step descent is never final)
+
+In the reseated house `S'`, the omitted vertex `v` is itself again a house-reseating vertex of the
+same role-type.
+
+So `S union {x}` alone never yields final stability.
+
+### Proposition 36.3 (primality forces a distinguisher)
+
+If `Q` is prime, then the pair `{v, x}` cannot be a module.
+Hence there exists a vertex:
+
+- `y notin S union {x}`
+
+such that:
+
+- `y v != y x`.
+
+Thus every failure of reseating descent is already witnessed on at most `7` vertices:
+
+- one of the six double-house templates,
+- plus one distinguisher `y`.
+
+### Proposition 36.4 (overlap-trace reduction)
+
+Let `O := S cap S'` be the common `4`-vertex overlap, and write:
+
+- `A := N(y) cap O`.
+
+After swapping `x` and `v` if necessary, assume:
+
+- `y x = 1`,
+- `y v = 0`.
+
+Then relative to the two houses:
+
+- `y` sees `A` on `H_v := O union {v}`,
+- `y` sees `A union {x}` on `H_x := O union {x}`.
+
+So if either `A` or `A union {x}` is an immediate bad house trace, we already fall into:
+
+1. immediate `P_5 / C_5` reseeding, or
+2. the exceptional stable sector.
+
+Hence any genuine counterexample lies in the intersection of the non-bad traces for both houses.
+
+### Consequence 36.5 (the first local reseating barrier)
+
+That intersection is explicit and finite.
+The only overlap traces where `y` is reseating for both houses are:
+
+1. **corner**
+   - `{b, d}`,
+   - `{b, c, r}`;
+2. **shoulder**
+   - `{a, d}`,
+   - `{a, c, r}`;
+3. **roof**
+   - `{a, c}`,
+   - `{b, d}`,
+   - `{a, d}`,
+   - `{b, c}`.
+
+Therefore the genuinely hard reseating residue is only:
+
+- `8` double-reseating overlap traces,
+
+and hence:
+
+- `16` local `7`-vertex templates after the bit `epsilon in {0,1}` is included.
+
+### Proposition 36.6 (symmetry reduction from `16` to `12`)
+
+The `16` templates reduce further by the internal symmetries of the overlap graph.
+
+1. **Roof role.**
+   The overlap is a `C_4`, so `D_(roof, epsilon)` has an automorphism exchanging the two roof-swap
+   diagonals and the two roof-swap edges.
+   Hence:
+   - `{a, c}` is equivalent to `{b, d}` (diagonal type),
+   - `{a, d}` is equivalent to `{b, c}` (edge type).
+   So the roof role contributes only:
+   - `2` trace types, not `4`.
+
+2. **Corner / shoulder roles.**
+   The overlap is a `P_4`, whose only symmetry is reversal.
+   That symmetry preserves trace size, so the two hard traces in each role remain distinct:
+   - corner: `{b, d}` and `{b, c, r}`,
+   - shoulder: `{a, d}` and `{a, c, r}`.
+
+So the symmetry-reduced local list is:
+
+- `corner-2`,
+- `corner-3`,
+- `shoulder-2`,
+- `shoulder-3`,
+- `roof-diagonal`,
+- `roof-edge`,
+
+each with:
+
+- `epsilon in {0, 1}`.
+
+### Consequence 36.7 (the exact local reseating barrier)
+
+The double-reseating theorem is therefore a finite local theorem on only:
+
+- `12` explicit local `7`-vertex templates.
+
+To finish reseating descent, it now suffices to show that each of those `12` templates either:
+
+1. gives immediate `P_5 / C_5` reseeding,
+2. lands in the stable exceptional sector,
+3. or contradicts primeness/module structure.
+
+### Proposition 36.8 (`12 -> 5` by direct reseating)
+
+Using canonical `x`-roles
+
+- corner: `x ~ {b, d}` or `{a, b, d}`,
+- shoulder: `x ~ {a, c, r}` or `{a, b, c, r}`,
+- roof: `x ~ {b, c}` or `{b, c, r}`,
+
+and reseating on `y`, one gets the following direct reductions.
+
+1. **corner-2**
+   - `y ~ {b, d}` gives a new house `y b c d r`,
+   - and `x` becomes corner with `epsilon = 1`.
+
+2. **corner-3**
+   - `y ~ {b, c, r}` gives a new house `a b c d y`,
+   - if `epsilon = 0`, then `x` becomes shoulder with `epsilon = 1`,
+   - if `epsilon = 1`, then `x in U_c`, an exceptional off-ramp.
+
+3. **shoulder-2**
+   - `y ~ {a, d}` gives a new house `a b c d y`,
+   - if `epsilon = 0`, then `x` becomes shoulder with `epsilon = 1`,
+   - if `epsilon = 1`, then `x in T_b`, an exceptional off-ramp.
+
+4. **shoulder-3**
+   - `y ~ {a, c, r}` gives a new house `a y c d r`,
+   - and `x` becomes shoulder with `epsilon = 1`.
+
+5. **roof diagonal / edge**
+   - reseating on `y` always gives `a b c d y`,
+   - and `x` becomes roof with `epsilon = 1`;
+   - moreover roof-`epsilon = 1` always folds to the edge subtype because the old roof `r` is an
+     edge-type distinguisher.
+
+### Consequence 36.9 (the exact reseating core)
+
+Every `epsilon = 0` template either gives a module contradiction (if no fresh distinguisher exists)
+or propagates, by primeness, to an `epsilon = 1` template.
+
+Therefore the `12`-template list collapses to exactly:
+
+1. **three genuine self-loop cores**
+   - corner-2 with `epsilon = 1`,
+   - shoulder-3 with `epsilon = 1`,
+   - roof-edge with `epsilon = 1`;
+2. **two exceptional off-ramps**
+   - corner-3 with `epsilon = 1`  `-> U_c`,
+   - shoulder-2 with `epsilon = 1` `-> T_b`.
+
+So the reseating-descent problem is no longer a `12`-template theorem.
+It is now:
+
+- a `3`-core self-loop theorem,
+- together with routing of the two off-ramp templates into the stable exceptional sector.
+
+### Proposition 36.10 (`3 -> 2` by clone normalization)
+
+Each of the three self-loop cores normalizes to a false/true clone pair on a single fixed house.
+
+1. **corner-2, `epsilon = 1`**
+   After reseating to the house:
+   - `H_c := y - b - c - d - y`
+   with roof `r`, the old omitted vertex `a` has:
+   - `N_{H_c}(a) = {b, d}`,
+   while `x` has:
+   - `N_{H_c}(x) = {y, b, d}`.
+   So `(a, x)` is a false/true corner-clone pair.
+   Any fresh distinguisher of `{a, x}` is either:
+   - another corner-2 trace (same loop),
+   - or corner-3, hence the known off-ramp `-> U_c`.
+
+2. **shoulder-3, `epsilon = 1`**
+   After reseating to the house:
+   - `H_s := a - y - c - d - a`
+   with roof `r`, the old omitted vertex `b` has:
+   - `N_{H_s}(b) = {a, c, r}`,
+   while `x` has:
+   - `N_{H_s}(x) = {a, y, c, r}`.
+   So `(b, x)` is a false/true shoulder-clone pair.
+   Any fresh distinguisher is either:
+   - shoulder-3 again,
+   - or shoulder-2, hence the known off-ramp `-> T_b`.
+
+3. **roof-edge, `epsilon = 1`**
+   After reseating to the house:
+   - `H_r := a - b - c - d - a`
+   with roof `y`, the old roof `r` has:
+   - `N_{H_r}(r) = {b, c}`,
+   while `x` has:
+   - `N_{H_r}(x) = {b, c, y}`.
+   So `(r, x)` is a false/true roof-clone pair on a fixed `C_4`.
+   Any diagonal roof distinguisher folds back to the edge case, since the old roof `r` is already an
+   edge-type distinguisher.
+
+### Consequence 36.11 (the true reseating residue)
+
+The `3`-core theorem is equivalent to only:
+
+1. a **corner/shoulder twin-bag theorem**:
+   a house cannot support an endless chain of false-clone distinguishers of one seed vertex without
+   hitting the off-ramp or creating a module;
+2. a **roof opposite-edge oscillation theorem** on a fixed `C_4`.
+
+So the off-ramp cases are already integrated into the stable exceptional sector.
+The genuine reseating residue is no longer three two-house templates, but just these two
+clone-distinguisher statements.
+
+## 37. The `tau`-even stable sector is a packet-exchange theorem
+
+The `tau`-even reduction from Section 35 can be sharpened one step further.
+
+### Proposition 37.1 (packet identity)
+
+On the seed columns `(a, b, c, d, r)`, one has exactly:
+
+- `T_b + T_c = Q_0 + B_b + B_c`.
+
+So after fixing `(alpha, beta)`, the only free `tau`-even move is:
+
+1. add one **top packet**
+   - `D := {T_b, T_c}`,
+2. equivalently add one **rim packet**
+   - `E := {Q_0, B_b, B_c}`,
+
+because these two packets have the same seed shadow.
+
+### Consequence 37.2 (packet-exchange theorem)
+
+The remaining stable theorem is no longer primarily arithmetic.
+It is the following local structural statement:
+
+> **Packet-exchange theorem for a stable house.**
+>
+> In a prime stable-house attachment, every occurrence of the symmetric top packet
+> `(x_b in T_b, x_c in T_c)` is harmless.
+
+Equivalently, it suffices to classify the induced graphs on:
+
+- `S union {x_b, x_c, z}`,
+
+where `z` is one further outside vertex of type, up to `tau`,
+
+- `emptyset`,
+- `S`,
+- `B`,
+- `U`,
+- `Q_0`,
+- `T`.
+
+If every such local template either:
+
+1. yields immediate goodness,
+2. falls into reseating descent,
+3. or contradicts primeness by creating a module,
+
+then the stable exceptional house theorem is proved.
+
+### Consequence 37.3 (the exact current general barrier)
+
+The entire remaining prime-quotient frontier is now reduced to two finite local theorems:
+
+1. the `3`-core reseating self-loop theorem (plus two off-ramps) from Section 36;
+2. the packet-exchange theorem from Section 37.
+
+### Proposition 37.4 (first packet reduction)
+
+Let:
+
+- `C_b := a - d - x_c - b - a`,
+- `C_c := d - a - x_b - c - d`,
+
+and, when `x_b x_c = 1`,
+
+- `C_* := a - x_b - x_c - d - a`.
+
+If some vertex sees exactly one edge of one of these `C_4`'s, then those five vertices induce a
+house.
+So such a template is harmless by reseeding.
+
+### Consequence 37.5 (the `x_b x_c = 0` case is done)
+
+If:
+
+- `x_b x_c = 0`,
+
+then `x_b` is the roof on `C_b` (equivalently `x_c` is the roof on `C_c`), so the template
+reseats immediately.
+
+Thus only the case:
+
+- `x_b x_c = 1`
+
+can survive.
+
+### Proposition 37.6 (immediate reseating and decoupling in the packet theorem)
+
+Assume `x_b x_c = 1`.
+
+Then the following cases are already harmless:
+
+1. **Immediate reseating**
+   - `z in B_b` with `z x_c = 1` (and by `tau`, `z in B_c` with `z x_b = 1`);
+   - `z in U_b` with `z x_c = 0` (and by `tau`, the reflected case);
+   - `z in T_b` with `z x_c = 0` (and by `tau`, the reflected case);
+   - `z in emptyset` or `B` and `z` adjacent to both `x_b, x_c` (roof on `C_*`);
+   - `z in S`, `U`, or `Q_0` and `z` adjacent to neither `x_b, x_c` (roof on `C_*`).
+
+2. **Trivial decoupling**
+   - `z in emptyset` with `z x_b = z x_c = 0`,
+   - `z in S` with `z x_b = z x_c = 1`.
+
+   In these cases `z` is locally isolated or universal from the packet, so it can be ignored.
+
+### Proposition 37.7 (same-side top packets reduce by primeness)
+
+If:
+
+- `z in T_b`,
+- and `z x_c = 1`,
+
+then every vertex of `S union {x_c}` sees `x_b` and `z` identically.
+So `{x_b, z}` is a module unless some further vertex distinguishes them.
+
+Thus this case reduces to a:
+
+- `9`-vertex twin-distinguisher theorem.
+
+### Consequence 37.8 (the exact packet residual barrier)
+
+Up to `tau` and weighted-quotient complementation (`emptyset <-> S`, `B <-> U`), the packet-exchange
+theorem is reduced to:
+
+1. `x_b x_c = 1`, and one of
+   - `z in emptyset` with `N_{ {x_b, x_c} }(z) = {x_b}`;
+   - `z in B_b` with `z x_c = 0` (two subcases according to `z x_b = 0/1`);
+   - `z in Q_0` with `z` adjacent to at least one of `x_b, x_c` (up to `tau`: `{x_b}` or `{x_b, x_c}`);
+   - `z in T_b`, `z x_c = 1`, together with a distinguisher `y` for `{x_b, z}`.
+
+So the stable packet theorem is not yet proved, but it has collapsed to:
+
+- about `6` local `8`-vertex templates,
+- plus one `9`-vertex twin-distinguisher template.
+
+### Proposition 37.9 (canonical packet residuals)
+
+Up to `tau` and house-complement symmetry, the surviving `8`-vertex packet templates are exactly:
+
+- `A0`: `z in emptyset`, with `(z x_b, z x_c) = (1, 0)`;
+- `A1`: `z in B_b`, with `(z x_b, z x_c) = (0, 0)`;
+- `A2`: `z in B_b`, with `(z x_b, z x_c) = (1, 0)`;
+- `R1`: `z in Q_0`, with `(z x_b, z x_c) = (1, 0)`;
+- `R2`: `z in Q_0`, with `(z x_b, z x_c) = (1, 1)`.
+
+Structurally:
+
+- `A0, A1` are leaf-type templates,
+- `A2` is simplicial with clique neighborhood `{b, x_b}`,
+- `R1` has antineighborhood `{r, x_c}`,
+- `R2` has unique nonneighbor `r`.
+
+So no further one-step roofing argument exists at this point.
+
+### Proposition 37.10 (the mixed `9`-vertex case reduces to one fiber)
+
+Assume:
+
+- `x_b, z in T_b`,
+- `x_b x_c = z x_c = 1`,
+- and `y` distinguishes `{x_b, z}`.
+
+Since `x_b` and `z` have the same trace on `S union {x_c}`, necessarily:
+
+- `y notin S union {x_c}`.
+
+Now split by the type of `y`.
+
+1. `y in emptyset` (or `S` by complement): this is exactly `A0`.
+2. `y in B_b` (or `U_b` by complement): either immediate reseating by Proposition 37.6, or one of
+   `A1, A2`.
+3. `y in B_c` (or `U_c`): whichever of `x_b, z` is adjacent to `y`, that vertex together with `x_c`
+   is a top packet while the other `T_b`-vertex is a Proposition 37.6 reseating witness. So this is
+   impossible in a minimal obstruction.
+4. `y in Q_0`: exactly `R1, R2`.
+5. `y in T_c`: if `y` distinguishes, it is adjacent to exactly one of `x_b, z`; then the adjacent
+   one together with `y` is a top packet, and the other `T_b`-vertex has `0` to the `T_c` side, so
+   Proposition 37.6 reseats immediately. So this is impossible.
+
+Therefore the only surviving distinguisher type is:
+
+- `y in T_b` with `y x_c = 1`.
+
+### Consequence 37.11 (the one-fiber same-side theorem)
+
+Let:
+
+- `T_b^+(x_c) := {u in T_b : u x_c = 1}`.
+
+After excluding the five `8`-vertex residuals `A0, A1, A2, R1, R2`, any distinguisher of two
+vertices of `T_b^+(x_c)` must itself lie in `T_b^+(x_c)`.
+
+Hence the `9`-vertex barrier is not an arbitrary mixed twin-distinguisher problem.
+It is only:
+
+- three vertices `x_1, x_2, x_3 in T_b^+(x_c)`,
+- with the induced graph on `{x_1, x_2, x_3}` nonhomogeneous.
+
+Up to relabeling, that leaves only two internal `3`-vertex shapes:
+
+- `K_2 + K_1`,
+- `P_3`.
+
+### Consequence 37.12 (the exact packet residual barrier)
+
+The packet theorem is therefore reduced to:
+
+1. **five explicit `8`-vertex templates**
+   - `A0, A1, A2, R1, R2`;
+2. **two explicit internal `9`-vertex templates**
+   - `K_2 + K_1`,
+   - `P_3`,
+
+inside one fiber `T_b^+(x_c)`.
+
+So the genuine remaining stable-house theorem is now:
+
+> **one-fiber same-side theorem.**
+>
+> In a prime stable-house attachment, once `A0, A1, A2, R1, R2` are excluded, no
+> `T_b^+(x_c)` can contain an induced `K_2 + K_1` or `P_3`.
+
+## 38. The exact current local frontier
+
+At this point the prime-quotient branch is no longer a broad structural problem.
+It has been reduced to three tiny local theorems:
+
+1. **corner/shoulder twin-bag theorem**
+   - on a fixed `4`-frame `K`, a clone bag with fixed trace cannot support an endless chain of
+     false-clone distinguishers without hitting the off-ramp or creating a module;
+2. **roof one-bit theorem**
+   - the opposite-edge roof oscillation on a fixed `C_4` must be harmless;
+3. **one-fiber same-side theorem**
+   - once the five packet residuals `A0, A1, A2, R1, R2` are excluded, a single fiber
+     `T_b^+(x_c)` cannot contain an induced `K_2 + K_1` or `P_3`.
+
+The first and third items already have a common flavor:
+
+- a fixed seed frame,
+- a fixed attachment trace/fiber,
+- and a nonhomogeneous induced graph inside that one fiber.
+
+So the last genuinely conceptual step may be a unified:
+
+> **same-fiber nonhomogeneity theorem** for prime weighted house attachments.
+
+### Proposition 38.1 (closed-fiber reduction)
+
+Let `F` be a fixed trace/fiber over a fixed seed frame.
+Assume:
+
+- every vertex outside `F` that distinguishes two vertices of `F` already lands in a known
+  off-ramp or residual configuration.
+
+Then, after excluding those off-ramps, every outside vertex is uniform on `F`.
+Hence:
+
+1. any module of `G[F]` is a module of the ambient prime quotient;
+2. so in a minimal bad case, `G[F]` has no nontrivial module;
+3. therefore `G[F]` cannot be a cograph, and so contains an induced `P_4`.
+
+### Consequence 38.2 (same-fiber `P_4` theorem)
+
+Both same-fiber residuals now reduce to one local barrier:
+
+> **closed-fiber `P_4` theorem.**
+>
+> No externally closed fixed fiber in a prime weighted house attachment contains an induced `P_4`.
+
+Indeed:
+
+1. **stable-house one-fiber case**
+   - by Consequence 37.11, after excluding `A0, A1, A2, R1, R2`, the fiber `T_b^+(x_c)` is
+     externally closed;
+   - so the old target “no `K_2 + K_1` / no `P_3`” reduces to “no induced `P_4` in
+     `T_b^+(x_c)`”.
+
+2. **corner/shoulder twin-bag case**
+   - after the normalization from Proposition 36.10, the same-loop clone bag is externally closed
+     modulo the two off-ramps `U_c, T_b`;
+   - so this case also reduces to “no induced `P_4` in the fixed clone bag”.
+
+### Consequence 38.3 (the sharpened local frontier)
+
+At this stage, the non-roof side reduces to:
+
+1. **same-trace `P_3` theorem** on the residual fixed fibers.
+
+### Proposition 38.4 (prime closed fibers contain a prime `P_4`)
+
+Let `F` be an externally closed fixed fiber in a minimal bad prime weighted house attachment.
+Then:
+
+1. any module of `G[F]` is a module of the ambient quotient;
+2. so `G[F]` is prime;
+3. a prime cograph on more than one vertex cannot exist;
+4. hence `G[F]` is not a cograph and contains an induced `P_4`;
+5. by Gallai's prime-subgraph theorem, one may take a prime induced `4`-vertex subgraph of `G[F]`,
+   and the only prime graph on `4` vertices is `P_4`.
+
+So every counterexample contains an induced:
+
+- `P_4 = x_1 - x_2 - x_3 - x_4`
+
+inside one fixed fiber, with all `x_i` having the same trace on the seed frame.
+
+### Consequence 38.5 (trace-labelled `P_4` templates)
+
+The closed-fiber theorem is therefore not an abstract closure statement anymore.
+It is the explicit local problem of killing the following trace-labelled `P_4` templates:
+
+1. **stable-house branch**
+   - `S union {x_c}` together with four vertices of `T_b^+(x_c)` inducing `P_4`;
+2. **clone-bag branch**
+   - the normalized fixed house / `C_4` frame together with four vertices in the fixed clone bag
+     inducing `P_4`, modulo the known off-ramps.
+
+Equivalently, the endpoints `x_1, x_4` are a same-trace twin pair over the frame, and `x_2, x_3`
+are opposite internal distinguishers of that pair.
+
+So the real remaining `P_4` task is to eliminate those trace-labelled `8/9`-vertex local templates.
+
+### Proposition 38.6 (`P_4 -> P_3` inside one fixed fiber)
+
+Let `F` be one of the two residual fixed fibers:
+
+1. `F = T_b^+(x_c)` in the stable-house branch, after excluding `A0, A1, A2, R1, R2`;
+2. `F` the normalized fixed clone bag in the corner/shoulder branch, after excluding the off-ramps.
+
+If `F` contains an induced:
+
+- `x_1 - x_2 - x_3 - x_4`,
+
+then already:
+
+- `x_1, x_2, x_3`
+
+induce an induced `P_3` in the same fixed fiber.
+
+So the `P_4` template adds no new `4`-vertex phenomenon.
+
+### Consequence 38.7 (same-trace internal-distinguisher theorem)
+
+The real fixed-fiber barrier is therefore:
+
+> **same-trace internal-distinguisher theorem.**
+>
+> In the residual fixed fiber, no three vertices of one trace class induce `P_3`.
+
+Equivalently, no same-trace twin pair over the seed frame admits an internal distinguisher from the
+same fiber.
+
+Branch-by-branch this means:
+
+1. **stable-house branch**
+   - `S union {x_c}` together with three vertices of `T_b^+(x_c)` inducing `P_3`;
+2. **clone-bag branch**
+   - the normalized fixed frame together with three vertices in the fixed clone bag inducing `P_3`.
+
+### Consequence 38.8 (the sharpened non-roof frontier)
+
+The non-roof side is no longer a `P_4` theorem.
+It is exactly the same-trace `P_3` theorem on those two residual fibers.
+
+## 39. The roof branch reduces to a single five-roof theorem
+
+Fix:
+
+- `K = a - b - c - d - a`.
+
+Write:
+
+- `B` for roofs on edge `b c`,
+- `D` for roofs on edge `a d`.
+
+Assuming the current roof reduction, a persistent roof obstruction is exactly:
+
+- `B = {x_0, x_1}`,
+- `D = {y_0, y_1}`,
+
+with:
+
+- `x_i` adjacent exactly to `b, c` on `K`,
+- `y_i` adjacent exactly to `a, d` on `K`,
+- cross-edges alternating:
+  - `x_0 y_0 = x_1 y_1 = 1`,
+  - `x_0 y_1 = x_1 y_0 = 0`,
+- same-side edges constant with one bit `epsilon`:
+  - `x_0 x_1 = y_0 y_1 = epsilon`.
+
+Call this `8`-vertex skeleton:
+
+- `S_epsilon := K union B union D`.
+
+### Proposition 39.1 (any continuation is another roof)
+
+Let `z` be any outside vertex in a minimal counterexample extending `S_epsilon`.
+If the trace of `z` on `K` is not a roof trace on one of the two opposite edges, then `z` already
+falls into one of the settled cases:
+
+1. immediate reseeding,
+2. stable exceptional landing,
+3. or module / primeness contradiction.
+
+So every genuinely new continuation of `S_epsilon` is another roof on `b c` or on `a d`.
+
+### Proposition 39.2 (nonhomogeneous same-side roofs are not a roof-specific problem)
+
+Suppose:
+
+- `z in B` (the `D`-case is symmetric).
+
+If `z` is nonhomogeneous on its own side `{x_0, x_1}`, then inside the fixed roof fiber `B` one
+already has a nonhomogeneous induced graph on one trace class.
+That is exactly the closed-fiber `P_4` theorem from Section 38, not a genuinely new roof
+phenomenon.
+
+So the roof-specific residue is when every new roof is homogeneous on its own side and distinguishes
+only the opposite pair.
+
+### Consequence 39.3 (five-roof theorem `T_epsilon`)
+
+Up to dihedral symmetry and swapping `B` with `D`, the only remaining roof-specific local theorem is:
+
+- fixed `C_4 = a b c d`,
+- three `b c`-roofs `x_0, x_1, x_2`,
+- two `a d`-roofs `y_0, y_1`,
+- cross-edges:
+  - `x_0 y_0 = x_2 y_0 = 1`,
+  - `x_0 y_1 = x_2 y_1 = 0`,
+  - `x_1 y_0 = 0`,
+  - `x_1 y_1 = 1`,
+- same-side edges constant with the same bit `epsilon`.
+
+Call this local theorem:
+
+- **five-roof alternating theorem `T_epsilon`**.
+
+### Consequence 39.4 (the roof rigid case)
+
+The case `epsilon = 1` is self-dual:
+
+- the four roof vertices `x_0 - x_1 - y_1 - y_0 - x_0` form another `C_4`,
+- and the original cycle vertices become opposite-edge roofs over it.
+
+So `T_1` is the genuinely rigid roof case, while `T_0` should be the easier branch.
+
+### Consequence 39.5 (the intermediate roof frontier)
+
+The roof side reduces first to:
+
+1. **five-roof alternating theorem `T_epsilon`**.
+
+### Proposition 39.6 (roof twin-pair reduction)
+
+In both `T_0` and `T_1`, the vertices:
+
+- `x_0, x_2`
+
+are true twins inside:
+
+- `{a, b, c, d, x_0, x_1, x_2, y_0, y_1}`.
+
+So in a prime ambient graph there must exist some vertex:
+
+- `z`
+
+distinguishing `x_0` and `x_2`.
+
+By the previous reduction, if `z` is a `b c`-roof then that is exactly the closed-fiber same-trace
+branch.
+So the only genuinely roof-specific residue is:
+
+- `z` an `a d`-roof distinguishing `x_0, x_2`.
+
+### Consequence 39.7 (two twin-breaker templates)
+
+Up to the symmetry `x_0 <-> x_2`, there are only two opposite-side patterns:
+
+- `(z x_0, z x_1, z x_2) = (1, 0, 0)`,
+- `(z x_0, z x_1, z x_2) = (1, 1, 0)`.
+
+Call the resulting local templates:
+
+- `U_epsilon^0`,
+- `U_epsilon^1`.
+
+### Proposition 39.8 (`T_0` is harmless)
+
+For `epsilon = 0`, every prime resolution of the twin pair already falls into a settled case.
+
+1. In `U_0^0` with pattern `(1,0,0)`, the vertices:
+   - `x_1 - y_1 - a - z - x_0`
+   induce a `P_5`.
+2. In `U_0^1` with pattern `(1,1,0)`, the vertices:
+   - `x_2 - y_0 - x_0 - z - x_1`
+   induce a `P_5`.
+
+So every prime resolution of the twin pair in `T_0` gives either:
+
+- same-side nonhomogeneity, hence the fixed-fiber branch,
+- or immediate `P_5` reseeding.
+
+Therefore:
+
+- `T_0` is done.
+
+### Consequence 39.9 (the exact roof residue)
+
+The genuinely rigid roof branch is only:
+
+> **`U_1` twin-breaker theorem.**
+>
+> Start from `T_1`, add one opposite-side roof `z`, and require
+> `(z x_0, z x_1, z x_2) = (1, t, 0)` with `t in {0,1}`.
+
+So the prime-quotient frontier is now reduced to exactly:
+
+1. **same-trace `P_3` theorem** on the residual fixed fibers;
+2. **the two explicit rigid roof templates**
+   - `U_1^0`,
+   - `U_1^1`.
+
+### Proposition 39.10 (`U_1` collapses back to reseating)
+
+Let:
+
+- `eta := z y_0 = z y_1`,
+
+the roof-specific homogeneity bit on the `D`-side.
+
+1. If `eta = 0`, both templates reseed immediately to `C_5`:
+   - in `U_1^0`, the cycle `x_1 - y_1 - a - z - x_0 - x_1` is an induced `C_5`;
+   - in `U_1^1`, the cycle `x_2 - y_0 - a - z - x_1 - x_2` is an induced `C_5`.
+
+2. If `eta = 1`, both templates cease to be roof-specific.
+   Then:
+   - `a - b - x_0 - z - a`
+   is an induced `C_4`, and `c` is a roof on the edge `b x_0`.
+   So:
+   - `H := (a, b, x_0, z ; c)`
+   is a new induced house.
+
+   Relative to this new house, all remaining outside vertices lie in house-reseating orbits from
+   Section 34.
+
+So both `U_1^0` and `U_1^1` are harmless:
+
+- either they give an immediate `C_5`,
+- or they reseed to a house whose remaining outside vertices are entirely in the old house-reseating
+  automaton.
+
+### Consequence 39.11 (there is no new roof-specific branch)
+
+The roof side is therefore completely absorbed by the already-isolated house reseating / same-trace
+machinery.
+
+So the prime-quotient frontier is now reduced to only:
+
+- **same-trace `P_3` theorem** on the residual fixed fibers.
+
+## 40. The same-trace endgame reduces to two local theorems
+
+### Proposition 40.1 (four explicit labelled obstructions)
+
+After the closed-fiber reduction, the residual fixed fiber is itself the relevant trace class.
+So a same-trace `P_3` obstruction is already witnessed on the frozen frame plus three vertices:
+
+- `x_1 - x_2 - x_3`
+
+of one trace class.
+
+Up to the previous reductions, this yields exactly four labelled local obstructions:
+
+1. **stable-house template `Sigma_st`**
+   - frame `a - b - c - d - a` with roof `r`,
+   - fixed `x_c in T_c`,
+   - each `x_i` lies in `T_b^+(x_c)`, so
+     - `x_i ~ {a, b, c, x_c}`,
+     - `x_i !~ {d, r}`,
+   - and:
+     - `x_1 x_2 = x_2 x_3 = 1`,
+     - `x_1 x_3 = 0`.
+
+2. **corner false-clone template `Sigma_cor`**
+   - normalized false-clone trace `{b, d}`,
+   - three same-trace vertices inducing `P_3`.
+
+3. **shoulder false-clone template `Sigma_sh`**
+   - normalized false-clone trace `{a, c, r}`,
+   - three same-trace vertices inducing `P_3`.
+
+4. **roof false-clone template `Sigma_rf`**
+   - normalized false-clone trace `{b, c}`,
+   - three same-trace vertices inducing `P_3`.
+
+### Proposition 40.2 (`Sigma_cor` and `Sigma_sh` are equivalent)
+
+House-complement symmetry sends the corner false-clone trace `{b, d}` to the shoulder
+false-clone trace `{a, c, r}`.
+Since `P_3` is self-complementary, `Sigma_cor` and `Sigma_sh` are the same local theorem.
+
+### Proposition 40.3 (`Sigma_rf` is not a new roof branch)
+
+The roof false-clone trace `{b, c}` does not create a genuinely new local theorem.
+Any opposite-side breaker is already handled by the `T_epsilon / U_1` roof collapse from Section 39,
+so every persistent continuation either:
+
+1. reseeds immediately,
+2. returns to the old house-reseating machinery,
+3. or lands back in the same internal fixed-fiber problem.
+
+Therefore `Sigma_rf` is harmless as a separate roof phenomenon.
+
+### Consequence 40.4 (the false-clone side reduces to one descent theorem)
+
+By the house-complement symmetry from Proposition `40.2` and the roof collapse from Proposition
+`40.3`, it is enough to treat the **corner false-clone trace**:
+
+- `{b, d}`.
+
+Let `H` be a minimal counterexample in that normalized false-clone fiber.
+Then the endpoint-twin argument gives:
+
+- `H` is a prime induced subgraph entirely inside one false-clone fiber.
+
+Now start from an induced:
+
+- `x_1 - x_2 - x_3`
+
+in `H`, and let `x_4` distinguish `x_1, x_3`.
+
+1. If `x_4 !~ x_2`, then:
+   - `x_4 - x_1 - x_2 - x_3`
+   is an induced `P_4`.
+
+2. If `x_4 ~ x_2`, then `G[{x_1, x_2, x_3, x_4}]` is a paw, and `x_1, x_4` are twins over the
+   frozen frame together with `x_2, x_3`.
+   So primeness gives `x_5` distinguishing `x_1, x_4`.
+
+   Split by `(x_5 x_2, x_5 x_3)`:
+
+   - `(0,0)` gives an induced `P_4`;
+   - `(0,1)` gives an induced house;
+   - `(1,1)` gives an induced gem;
+   - `(1,0)` gives a **shifted same-fiber `P_3`**
+     - `x_5 - x_1 - x_4`.
+
+So the clone-bag side no longer requires a general false-clone-fiber prohibition.
+It reduces to the single descent statement:
+
+> **shifted twin-breaker descent theorem.**
+>
+> In a prime normalized corner false-clone fiber, the `(1,0)` shifted same-fiber `P_3` case
+> cannot iterate indefinitely.
+
+If that descent theorem is proved, the whole false-clone side is done.
+
+### Proposition 40.5 (the stable-house side reduces to one internal twin-breaker)
+
+Let:
+
+- `F := T_b^+(x_c)`.
+
+After excluding the packet residuals `A0, A1, A2, R1, R2`, every vertex outside `F` is uniform on
+`F`.
+So in a minimal prime counterexample, `G[F]` is itself prime.
+
+Start from a stable-house same-trace `P_3`:
+
+- `x_1 - x_2 - x_3`
+
+inside `F`.
+
+Then:
+
+1. `x_1, x_3` are twins in `G[{x_1, x_2, x_3}]`, so primeness gives `y in F` distinguishing them.
+   Normalize:
+   - `y x_1 = 1`,
+   - `y x_3 = 0`.
+
+2. If `y x_2 = 0`, then:
+   - `y - x_1 - x_2 - x_3`
+   is an induced `P_4`.
+
+3. If `y x_2 = 1`, then `x_1, y` are true twins in the paw
+   - `G[{x_1, x_2, x_3, y}]`.
+   So primeness gives `z in F` distinguishing `x_1, y`.
+   Normalize:
+   - `z x_1 = 1`,
+   - `z y = 0`.
+
+   Now split by `(z x_2, z x_3)`:
+
+   - `(0,0)` gives `z - x_1 - x_2 - x_3` as an induced `P_4`;
+   - `(0,1)` gives `z - x_3 - x_2 - y` as an induced `P_4`;
+   - `(1,1)` gives `x_3 - z - x_1 - y` as an induced `P_4`;
+   - only `(1,0)` survives.
+
+So every stable-house same-trace `P_3` either already yields a same-trace `P_4`, or contains the
+unique `5`-vertex residue:
+
+- `H`
+
+with:
+
+- `x_1 x_2 = x_2 x_3 = 1`,
+- `y, z` complete to `{x_1, x_2}`,
+- `y z = x_1 x_3 = y x_3 = z x_3 = 0`.
+
+Equivalently:
+
+- `x_3` is a leaf at `x_2`,
+- and `y, z` are false twins on `{x_1, x_2}`.
+
+### Consequence 40.6 (the stable-house microtheorem `O_10`)
+
+The pair `{y, z}` is a module in `G[H]`, so primeness forces `w in F` distinguishing `y, z`.
+Normalize:
+
+- `w y = 1`,
+- `w z = 0`,
+- `w x_2 = 1`,
+- `w x_1 = alpha`,
+- `w x_3 = beta`,
+
+with `alpha, beta in {0,1}`.
+
+This gives four labelled `6`-vertex continuations:
+
+- `O_{alpha beta}`.
+
+Among them:
+
+- `O_00` contains `w - y - x_1 - z` as an induced `P_4`;
+- `O_01` contains `w - y - x_1 - z` as an induced `P_4`;
+- `O_11` contains `z - x_1 - w - x_3` as an induced `P_4`;
+- only **`O_10`** is not immediately a `P_4`.
+
+Therefore the stable-house side reduces to the single internal theorem:
+
+> **stable-house `O_10` theorem.**
+>
+> The unique surviving stable-house continuation `O_10` cannot occur inside the closed fiber
+> `T_b^+(x_c)`.
+
+### Proposition 40.7 (`O_10` is impossible)
+
+Write:
+
+- `A_1 := y`,
+- `B_1 := z`,
+- `A_2 := w`,
+
+and keep:
+
+- `x_1, x_2, x_3`
+
+fixed.
+
+Inside `O_10`, the pair `{y, w}` is a true-twin pair.
+So primeness gives a distinguisher:
+
+- `B_2 := v`.
+
+Normalize:
+
+- `v y = 1`,
+- `v w = 0`.
+
+We first force the full pattern of `B_2`.
+
+1. If `v x_3 = 1`, then:
+   - `x_3 - v - y - w`
+   is an induced `P_4`.
+
+2. If `v x_3 = 0` and `v x_2 = 0`, then:
+   - `v - y - x_2 - x_3`
+   is an induced `P_4`.
+
+3. Assume now `v x_2 = 1`.
+   - If `v x_1 = 0` and `v z = 0`, then:
+     - `z - x_1 - y - v`
+     is an induced `P_4`.
+   - If `v x_1 = 0` and `v z = 1`, then:
+     - `w - x_1 - z - v`
+     is an induced `P_4`.
+   - If `v x_1 = 1` and `v z = 1`, then:
+     - `w - y - v - z`
+     is an induced `P_4`.
+
+So the only surviving pattern is:
+
+- `v` adjacent exactly to `{x_1, x_2, y}`,
+- `v` nonadjacent to `{x_3, z, w}`.
+
+Thus:
+
+- `A_1, A_2` are adjacent,
+- `B_1, B_2` are nonadjacent,
+- `B_1` sees no `A_i`,
+- `B_2` sees exactly `A_1`.
+
+Now inductively build vertices:
+
+- `A_n, B_n in F`
+
+for `n >= 2`, such that:
+
+1. every `A_i` and every `B_i` is adjacent to `x_1, x_2` and nonadjacent to `x_3`;
+2. `A_1, ..., A_n` is a clique;
+3. `B_1, ..., B_n` is an independent set;
+4. for every `j`, the vertex `B_j` is adjacent exactly to:
+   - `A_1, ..., A_{j-1}`.
+
+The base case `n = 2` is exactly the configuration just established.
+
+Assume now that `A_1, ..., A_n, B_1, ..., B_n` are built.
+By (1)-(4), the pair:
+
+- `A_n, B_n`
+
+is a false-twin pair over:
+
+- `{x_1, x_2, x_3, A_1, ..., A_{n-1}, B_1, ..., B_{n-1}}`.
+
+So primeness gives a new vertex:
+
+- `A_{n+1}`
+
+with:
+
+- `A_{n+1} A_n = 1`,
+- `A_{n+1} B_n = 0`.
+
+This new vertex is forced.
+
+1. If `A_{n+1} A_i = 0` for some `i < n`, then:
+   - `A_{n+1} - A_n - A_i - B_n`
+   is an induced `P_4`.
+
+2. Therefore `A_{n+1}` is adjacent to all:
+   - `A_1, ..., A_n`.
+
+3. If `A_{n+1} B_j = 1` for some `j < n`, then:
+   - `B_j - A_{n+1} - A_j - B_n`
+   is an induced `P_4`.
+
+4. Therefore `A_{n+1}` is nonadjacent to all:
+   - `B_1, ..., B_n`.
+
+5. If `A_{n+1} x_2 = 0`, then:
+   - `B_n - x_2 - A_n - A_{n+1}`
+   is an induced `P_4`.
+
+6. If `A_{n+1} x_1 = 0`, then:
+   - `z - x_1 - y - A_{n+1}`
+   is an induced `P_4`.
+
+7. If `A_{n+1} x_3 = 1`, then:
+   - `x_3 - A_{n+1} - x_1 - z`
+   is an induced `P_4`.
+
+So `A_{n+1}` is adjacent to:
+
+- `x_1, x_2, A_1, ..., A_n`,
+
+and nonadjacent to:
+
+- `x_3, B_1, ..., B_n`.
+
+Hence `A_n, A_{n+1}` are true twins over the current ladder.
+So primeness gives a new vertex:
+
+- `B_{n+1}`
+
+with:
+
+- `B_{n+1} A_n = 1`,
+- `B_{n+1} A_{n+1} = 0`.
+
+Again this new vertex is forced.
+
+1. If `B_{n+1} B_j = 1` for some `j ≤ n`, then:
+   - `B_j - B_{n+1} - A_n - A_{n+1}`
+   is an induced `P_4`.
+
+2. Therefore `B_{n+1}` is nonadjacent to all:
+   - `B_1, ..., B_n`.
+
+3. If `B_{n+1} A_i = 0` for some `i < n`, then:
+   - `B_{n+1} - A_n - A_i - B_n`
+   is an induced `P_4`.
+
+4. Therefore `B_{n+1}` is adjacent to all:
+   - `A_1, ..., A_n`.
+
+5. If `B_{n+1} x_1 = 0`, then:
+   - `B_{n+1} - A_n - x_1 - z`
+   is an induced `P_4`.
+
+6. If `B_{n+1} x_3 = 1`, then:
+   - `x_3 - B_{n+1} - A_n - A_{n+1}`
+   is an induced `P_4`.
+
+7. If `B_{n+1} x_2 = 0`, then:
+   - `B_{n+1} - A_n - x_2 - x_3`
+   is an induced `P_4`.
+
+So `B_{n+1}` is adjacent to:
+
+- `x_1, x_2, A_1, ..., A_n`,
+
+and nonadjacent to:
+
+- `x_3, A_{n+1}, B_1, ..., B_n`.
+
+Thus the induction continues forever.
+
+So `O_10` forces arbitrarily long half-graph ladders inside the finite fiber `F`, impossible.
+Hence:
+
+- **`O_10` cannot occur.**
+
+Therefore the stable-house branch is completely closed.
+
+### Proposition 40.8 (the shifted twin-breaker collapses to `O_10`)
+
+Start from the surviving first shift in the corner false-clone fiber:
+
+- `x_1 - x_2 - x_3`,
+- `x_4 ~ {x_1, x_2}`,
+- `x_4 !~ x_3`,
+- `x_5 ~ {x_1, x_2}`,
+- `x_5 !~ {x_3, x_4}`.
+
+So:
+
+- `x_5 - x_1 - x_4`
+
+is the new same-fiber `P_3`, and `x_4, x_5` are twins over:
+
+- the frozen frame together with `x_1, x_2, x_3`.
+
+Let `x_6` distinguish `x_5, x_4`.
+Normalize:
+
+- `x_6 x_5 = 1`,
+- `x_6 x_4 = 0`,
+- `x_6 x_1 = 1`,
+
+since otherwise:
+
+- `x_6 - x_5 - x_1 - x_4`
+
+is an induced `P_4`.
+
+Then the old anchor trace is forced:
+
+- if `(x_6 x_2, x_6 x_3) = (0,0)`, then `x_6 - x_5 - x_2 - x_3` is an induced `P_4`;
+- if `(x_6 x_2, x_6 x_3) = (0,1)`, then `x_6 - x_3 - x_2 - x_4` is an induced `P_4`;
+- if `(x_6 x_2, x_6 x_3) = (1,1)`, then `x_4 - x_1 - x_6 - x_3` is an induced `P_4`.
+
+So only:
+
+- `(x_6 x_2, x_6 x_3) = (1,0)`
+
+survives.
+
+Now relabel:
+
+- `y := x_5`,
+- `z := x_4`,
+- `w := x_6`.
+
+Then:
+
+- `x_1 - x_2 - x_3` is the initial path,
+- `y, z` are complete to `{x_1, x_2}`,
+- `y z = 0`,
+- `y, z` are anticomplete to `x_3`,
+- `w ~ {y, x_1, x_2}`,
+- `w !~ {z, x_3}`.
+
+This is exactly the stable-house configuration `O_10` from Proposition `40.7`.
+Therefore the surviving shifted twin-breaker case is impossible.
+
+### Consequence 40.9 (shifted twin-breaker descent theorem)
+
+In a prime normalized corner false-clone fiber, the surviving `(1,0)`
+shifted same-fiber `P_3` case cannot occur.
+
+So the false-clone side is completely closed.
+
+### Consequence 40.10 (same-trace closure)
+
+Both residual sides are closed:
+
+1. the stable-house side by Proposition `40.7`;
+2. the false-clone side by Consequence `40.9`.
+
+Hence the same-trace internal-distinguisher theorem holds.
+
+### Consequence 40.11 (weighted-house closure)
+
+Sections `34` through `40` prove the weighted house / `bar P_5`
+attachment theorem:
+
+> every prime weighted house attachment satisfying the modular weighted-degree equations
+> already yields a good induced `q`-set.
+
+### Consequence 40.12 (prime weighted quotient closure)
+
+Combine:
+
+1. the general split theorem from Section `33`;
+2. the elimination of `C_5` as an independent seed from Proposition `33.3`;
+3. the weighted quotient complementation reducing `P_5` to the house branch;
+4. Consequence `40.11`.
+
+Then every prime weighted quotient on total
+bag weight `q^2` is already good.
+
+So, under those assumptions, the prime-quotient obstruction module is finished.
+
+### Consequence 40.13 (audit correction on the global bridge)
+
+The previous bridge claim was too strong.
+
+The named refinement exact self-bridge is existential: it asks only for **some** exact witness of
+size `q`, not for exactness on the distinguished bucket `w`.
+So the old same-`w` objection is not the real issue.
+
+However, Section `10` above still needs a genuine completed host
+
+- `S`
+
+of size `q^2`, compatible with the refinement-data package, in order to search for some subset
+
+- `U ⊆ S`
+
+with vanishing obstruction.
+
+And this is not merely unproved: compatible completion from bare refinement data is false in
+general. One can take:
+
+- `s = w`,
+- `blocks = []`,
+- `G[w]` regular,
+- every `v in w` having exact degree `e` into `t`,
+
+and then add arbitrarily many vertices outside `w ∪ t` that are anticomplete to `w` but have
+degree into `t` different from `e`. The same tuple `(w, s, t, e, blocks)` still witnesses the
+refinement-data package, but no compatible size-`q^2` completion using the same control block `t`
+can contain those vertices.
+
+So the exact missing host-side statement is better phrased as an **anchored exact-`e` shell host
+theorem**.
+
+Write
+
+- `E_e(t) := {x ∉ t : |N(x) ∩ t| = e}`.
+
+Then the missing finite theorem is:
+
+> find a set `S` with
+> - `w ⊆ S ⊆ E_e(t)`,
+> - `|S| = q^2`,
+> - all degrees in `G[S]` congruent modulo `q`.
+
+Equivalently, if
+
+- `H := G[E_e(t)]`,
+
+then the exact host-side problem is an **anchored modular completion problem inside the shell graph**:
+
+> find `S ⊆ V(H)` with
+> - `w ⊆ S`,
+> - `|S| = q^2`,
+> - all degrees in `H[S]` congruent modulo `q`.
+
+This is the exact theorem because:
+
+1. any genuine compatible host `S` with control block `t` and exact `t`-degree `e` on `S`
+   automatically satisfies `S ⊆ E_e(t)`;
+2. conversely, any such `S ⊆ E_e(t)` is already a genuine size-`q^2` fixed-modulus single-control
+   host witness with the inherited control block `t`.
+
+If one insists on the stronger sufficient form
+
+- `S = s ⊔ C`,
+
+then one must additionally require that every vertex already in `s` has exact degree `e` into `t`,
+and then, writing `R := s \ w`, it suffices to choose
+
+- `C ⊆ E_e(t) \ s`
+
+of size `q^2 - |s|` and a residue shift `delta` such that:
+
+- `|N(v) ∩ C| ≡ delta [MOD q]` for every `v in w`;
+- `deg_{G[s]}(y) + |N(y) ∩ C| ≡ H + delta [MOD q]` for every `y in R`, where `H` is the common
+  host-degree residue on `w`;
+- `deg_{G[C]}(x) ≡ H + delta - |N(x) ∩ s| [MOD q]` for every `x in C`.
+
+So the old `s ⊔ C` shell-selection problem remains a useful stronger sufficient route, but the exact
+bridge target is the anchored shell theorem above.
+
+Writing `S = w ⊔ U`, this anchored shell theorem is further equivalent to the existence of
+
+- `U ⊆ V(H) \ w`,
+- `|U| = q^2 - q`,
+
+and a residue `delta` such that:
+
+- `|N_H(v) ∩ U| ≡ delta - deg_{H[w]}(v) [MOD q]` for every `v in w`;
+- `deg_{H[U]}(x) + |N_H(x) ∩ w| ≡ delta [MOD q]` for every `x in U`.
+
+So after passing to the shell graph, the remaining data from refinement theory are only:
+
+1. the anchor `w ⊆ V(H)`;
+2. the shell graph `H`;
+3. the anchored irregularity class of `deg_{H[w]}` modulo constants on `w`.
+
+No further exact reduction follows from bare refinement data alone.
+
+There is, however, one further exact reformulation **inside the shell problem itself**:
+
+### Proposition 40.14 (anchored near-regular completion on `q^2 - 1` vertices)
+
+The anchored shell host theorem is exactly equivalent to the following.
+
+There exist:
+
+- `T ⊆ V(H)` with `w ⊆ T` and `|T| = q^2 - 1`,
+- a residue `delta in Z / q Z`,
+- a low set
+  - `L(T) := {y in T : deg_{H[T]}(y) ≡ delta - 1 [MOD q]}`,
+
+such that:
+
+1. every `y in T` has `deg_{H[T]}(y) ≡ delta` or `delta - 1 [MOD q]`;
+2. `|L(T)| ≡ delta [MOD q]`;
+3. there exists `x ∉ T` with
+   - `N_H(x) ∩ T = L(T)`.
+
+### Proof
+
+If `S` is an anchored shell witness, choose any:
+
+- `x in S \ w`
+
+(possible because `q^2 > q`) and put:
+
+- `T := S \ {x}`.
+
+Then every vertex of `T` loses either one neighbor or none, so each degree in `H[T]` is congruent to
+either `delta - 1` or `delta`. The low set is exactly:
+
+- `L(T) = N_H(x) ∩ T`.
+
+Also:
+
+- `deg_{H[S]}(x) = |L(T)| ≡ delta [MOD q]`.
+
+Conversely, if `T` has those properties and `x ∉ T` satisfies `N_H(x) ∩ T = L(T)`, then adding `x`
+raises precisely the low vertices to degree `delta`, while `x` itself has degree
+
+- `|L(T)| ≡ delta [MOD q]`.
+
+So `T ∪ {x}` is an anchored shell witness.
+
+Thus the exact next host-side theorem beyond the shell formulation is an **anchored mod-`q`
+near-regular completion theorem on `q^2 - 1` vertices**.
+
+For a fixed such `T`, one may define the anchored discrepancy class:
+
+- `d_x^T := [1_{N_H(x) ∩ T} - 1_{L(T)}] in M_q(T)`.
+
+Then:
+
+- `x` completes `T` if and only if `d_x^T = 0`.
+
+This is an exact completer test for the fixed anchored near-regular set `T`, but unlike the old
+global completion/discrepancy route there is no automatic zero-sum identity for
+
+- `Σ_{x ∉ T} d_x^T`,
+
+because the shell graph `H` carries no global modular degree hypothesis outside the final host.
+
+There is, however, a sharper exact reformulation in the **raw** discrepancy space
+`(Z / q Z)^T`.
+
+### Proposition 40.15 (exact anchored short-packet theorem)
+
+For `x ∉ T`, define the raw discrepancy:
+
+- `Delta_x^T := 1_{N_H(x) ∩ T} - 1_{L(T)} in (Z / q Z)^T`.
+
+Then:
+
+1. `x` completes `T` if and only if `Delta_x^T = 0`;
+2. for every `1 <= p < q`, if `P ⊆ V(H) \ T` with `|P| = p`, then
+   - `Σ_{x in P} Delta_x^T = 0`
+     if and only if every `x in P` completes `T`.
+
+### Proof
+
+The first part is immediate from the definition.
+
+For the second, assume:
+
+- `Σ_{x in P} Delta_x^T = 0`
+
+with `|P| = p < q`.
+
+Fix `y in T`.
+
+If `y ∉ L(T)`, then the `y`-coordinate says:
+
+- `#{x in P : y in N_H(x)} ≡ 0 [MOD q]`.
+
+But this count lies in `[0, p]` with `p < q`, so it must be `0`.
+
+If `y ∈ L(T)`, then the `y`-coordinate says:
+
+- `#{x in P : y in N_H(x)} ≡ p [MOD q]`.
+
+Again the count lies in `[0, p]`, so it must be exactly `p`.
+
+Thus every `x in P` is adjacent to every vertex of `L(T)` and to no vertex of `T \ L(T)`, i.e.
+
+- `N_H(x) ∩ T = L(T)`,
+
+so every `x in P` completes `T`. The converse is immediate.
+
+So the anchored near-regular completion theorem is exactly equivalent to either of the following:
+
+1. there exists `T` with a completer `x`;
+2. there exists `T` and some nonempty raw zero-packet `P` of size `< q`.
+
+This sharpens the host-side frontier to an **exact anchored short-packet problem** on the peeled
+`q^2 - 1` set.
+
+There is a useful strict strengthening in the same raw space.
+
+### Proposition 40.16 (weighted raw short-packet rigidity)
+
+Let:
+
+- `m_x in {0, ..., q - 1}` for `x ∉ T`,
+- `M := Σ_{x ∉ T} m_x`,
+
+and assume:
+
+- `M < q`,
+- `Σ_{x ∉ T} m_x Delta_x^T = 0` in `(Z / q Z)^T`.
+
+Then every `x` with `m_x > 0` completes `T`.
+
+### Proof
+
+For `y ∉ L(T)`, the `y`-coordinate gives a count congruent to `0 [MOD q]`, but lying in `[0, M]`
+with `M < q`, so it is `0`.
+
+For `y ∈ L(T)`, the `y`-coordinate gives a count congruent to `M [MOD q]`, again lying in `[0, M]`,
+so it is exactly `M`.
+
+Thus every contributing vertex is adjacent to every vertex of `L(T)` and to no vertex of
+`T \ L(T)`, hence completes `T`.
+
+So any nontrivial raw relation of total mass `< q` is already a certificate of completers.
+
+There is also a simple exact counting identity. Write:
+
+- `O := V(H) \ T`,
+- `B := T \ L(T)`,
+- `epsilon(x) := |N_H(x) ∩ B| + |L(T) \ N_H(x)|`.
+
+Then:
+
+1. `x` completes `T` if and only if `epsilon(x) = 0`;
+2. one has
+   - `Σ_{x in O} epsilon(x) = Σ_{y in B} deg_O(y) + Σ_{z in L(T)} (|O| - deg_O(z))`;
+3. consequently
+   - `# {completers} >= |O| - Σ_{x in O} epsilon(x)`.
+
+So if the right-hand side is positive, one already gets a completer (equivalently a raw zero-packet
+of size `1 < q`).
+
+Therefore the exact host-side frontier sharpens once more to:
+
+> for some anchored near-regular `T`, prove that the completer count
+> - `c(T) > 0`.
+
+Equivalently, for any `U subseteq O := V(H) \ T`, the following are equivalent:
+
+1. `U` contains a completer;
+2. there is a nonzero weighted raw relation
+   - `Σ_{x in U} m_x Delta_x^T = 0`
+   of total mass `< q`.
+
+So the exact host-side target can be phrased either as completer positivity or as the existence of a
+small weighted raw relation.
+
+There is also a pointwise exact reformulation. Writing:
+
+- `B := T \ L(T)`,
+- `epsilon(x) := |N_H(x) ∩ B| + |L(T) \ N_H(x)|`,
+- `beta(x) := |N_H(x) ∩ L(T)| - |N_H(x) ∩ B| = |L(T)| - epsilon(x)`,
+
+one has:
+
+1. `x` completes `T` if and only if `epsilon(x) = 0`, equivalently if and only if
+   - `beta(x) = |L(T)|`;
+2. for every `U subseteq O`,
+   - `e(L(T), U) - e(B, U) = Σ_{x in U} beta(x)`
+   - `                         = |L(T)| |U| - Σ_{x in U} epsilon(x)`;
+3. therefore
+   - `c(T) > 0`
+     if and only if there exists `U subseteq O` such that
+   - `e(L(T), U) - e(B, U) > (|L(T)| - 1) |U|`.
+
+In fact a singleton `U = {x}` already captures this equivalence.
+
+More generally:
+
+- `e(L(T), U) - e(B, U) - (|L(T)| - 1) |U|`
+- `  = c_U(T) - Σ_{x in U, epsilon(x) >= 2} (epsilon(x) - 1)`.
+
+So the old edge-bias criterion is not merely sufficient: it is the exact existential formulation of
+completer positivity. On the one-error strip `epsilon(x) in {0, 1}`, it even counts completers
+exactly.
+
+Define:
+
+- `Phi(U) := e(L(T), U) - e(B, U) - (|L(T)| - 1) |U|`
+- `       = Σ_{x in U} (1 - epsilon(x))`.
+
+Then in fact:
+
+- `c(T) = max_{U subseteq O} Phi(U)`.
+
+Indeed a maximizer is obtained by taking every vertex with `epsilon = 0` and any subset of the
+vertices with `epsilon = 1`, while every vertex with `epsilon >= 2` lowers `Phi`.
+
+Because `U subseteq O` is arbitrary, this "one-error-strip extraction" collapses immediately to the
+pointwise statement:
+
+> **pointwise one-error witness**: there exists `x in O` such that
+> - `epsilon(x) <= 1`.
+
+There is therefore no additional subset combinatorics in the strip formulation.
+
+A useful averaged sufficient route is:
+
+> if some `W subseteq O` satisfies
+> - `Σ_{x in W} epsilon(x) < 2 |W|`,
+>   equivalently
+> - `e(L(T), W) - e(B, W) > (|L(T)| - 2) |W|`,
+> then some `x in W` has `epsilon(x) <= 1`.
+
+But to finish positivity one needs a **zero-error witness**:
+
+> - `c(T) > 0` if and only if there exists `x in O` with `epsilon(x) = 0`.
+
+So the real residual obstruction after the pointwise one-error witness is the degenerate case where
+all near-ideal vertices have exactly one defect. The next genuine structural input would have to be a
+**defect-multiplicity / Hall-type bound** limiting how often the same unique defect can repeat.
+
+This one-defect regime has an exact swap structure. Let:
+
+- `O_1 := {x in O : epsilon(x) = 1}`.
+
+For `x in O_1`, exactly one of the following holds:
+
+1. **miss-type:** `x` is complete to `L(T) \ {z}`, anticomplete to `B`, and misses a unique
+   - `z in L(T)`;
+2. **add-type:** `x` is complete to `L(T)`, has a unique neighbor
+   - `y in B`,
+   and no other neighbors in `B`.
+
+Define the defect map:
+
+- `d : O_1 -> T`
+
+by sending `x` to that unique defect site `z` or `y`.
+
+Then:
+
+> **anchored one-defect escape:** if there exists `x in O_1` with
+> - `d(x) notin w`,
+> then swapping out the defect site and inserting `x` preserves anchored near-regularity.
+
+So, if `c(T) = 0`, the irreducible one-defect obstruction is exactly:
+
+- `d(O_1) subseteq w`.
+
+Repeated unique defects are therefore measured by the defect-fiber multiplicities
+
+- `mu(u) := # d^(-1)(u)` for `u in T`,
+
+and one can package the anchor-capacity obstruction by
+
+- `h_T(Y) := # {x in O_1 : d(x) in Y} - (q - 1) |Y|`
+  for `Y subseteq T`.
+
+But in the anchor-supported regime this Hall condition collapses immediately. Since `d` is a
+function, for every `Y subseteq w`,
+
+- `h_T(Y) = Σ_{u in Y} (mu(u) - (q - 1))`,
+
+so
+
+- `h_T(Y) <= 0` for all `Y subseteq w`
+  if and only if
+- `mu(u) <= q - 1` for every `u in w`.
+
+Thus the only immediate Hall obstruction is an overloaded anchor fiber:
+
+- some `u in w` with `mu(u) >= q`.
+
+Equivalently, if:
+
+- `|O_1| > (q - 1) |w|`,
+
+then some anchor fiber is overloaded.
+
+So Hall is already exhausted. In any irreducible case one must have:
+
+- `d(O_1) subseteq w`,
+- `mu(u) <= q - 1` for every `u in w`.
+
+Hence `O_1` decomposes into at most `q - 1` layers on which the defect map is injective.
+
+Therefore the next genuine host-side bridge is not Hall capacity but a **multi-swap / compatibility
+theorem**:
+
+> if `X subseteq O_1` and `d | X` is injective, then under the right compatibility hypothesis,
+> `(T \ d(X)) ⊔ X`
+> is again anchored near-regular.
+
+Thus the exact host-side frontier is:
+
+> prove that some subset of outside vertices has strictly positive `L(T)`-vs-`B(T)` bias above the
+> trivial slope `( |L(T)| - 1 )`, equivalently that `c(T) > 0`.
+
+Equivalently:
+
+- `Z_p(T) = (c(T) choose p)` for every `1 <= p < q`,
+
+so the short-packet problem is not really separate: it is just another way of asking for
+`c(T) > 0`.
+
+Anchor data alone still do not force this positivity; some genuine shell structure is needed.
+
+Moreover, even conditional Consequence `40.12` only addresses the prime weighted quotient branch,
+while Theorem `17.5` also leaves the alternative of a small bad module.
+
+So the present notes do **not** yet prove the named refinement exact self-bridge.
+
+### Consequence 40.17 (audit correction on the top-level route)
+
+The previous claim that the conjecture follows is also too strong.
+The current asymptotic wrappers still require the open theorem
+
+- `HasPolynomialCostEmptyControlDyadicLift`,
+
+or at least the weaker one-parameter target family isolated by the dyadic-lift audit.
+
+More precisely, if `D` is the bridge exponent and `A := D + 1`, it is enough to prove a
+terminal-exponent lift that upgrades a `2^j`-cascade witness of size
+
+- `(2^j)^C (2^(j+1))^A`
+
+to a `2^(j+1)`-cascade witness of size
+
+- `(2^(j+1))^A`.
+
+Section `18` shows that the true fixed-support core is then a residual-packet / top-bit theorem:
+one must force the normalized obstruction `eta_m(U)` to vanish modulo `2` on one fixed support
+`U`, not merely prove naive layerwise divisibility.
+
+So the top-level conjecture is not finished by the present notes.

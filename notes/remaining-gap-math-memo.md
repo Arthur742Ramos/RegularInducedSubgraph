@@ -1,9 +1,59 @@
 # Remaining Gap: Detailed Math Memo
 
-This note goes deeper than the short roadmap. It is meant to isolate the exact mathematical core of
-the remaining gap and to record the most plausible proof programs before touching more Lean code.
+## Audit correction
 
-The standing live target is
+This memo is not fully historical after all.
+
+The earlier closure claim was too strong for two independent reasons:
+
+1. the local prime weighted quotient branch is now closed: the weighted-house endpoint is repaired
+   and the `C_5` seed is also eliminated internally;
+2. the formal self-bridge target is existential, while the host-side reformulation in
+   `remaining-gap-obstruction-module.md` needs a **genuine compatible completion** `S` of size
+   `q^2`; bare refinement data do not imply such a completion. The exact finite host-side target is
+   now an anchored exact-`e` shell host theorem, while the older `S = s ⊔ C` shell-selection problem
+   is only a stronger sufficient route. Equivalently, in the shell graph `H := G[E_e(t)]`, one must
+   find a mod-`q` regular `q^2`-vertex induced subgraph containing the anchor `w`; peeling one
+   non-anchor vertex gives an exact anchored mod-`q` near-regular completion theorem on `q^2 - 1`
+   vertices inside `H`, and for a fixed peeled set `T` raw short packets of size `< q` are already
+   exact completer tests; below that, the exact host-side frontier is simply proving completer
+   positivity `c(T) > 0`, equivalently a weighted raw relation of total mass `< q`, or equivalently
+   an exact `L(T)`-vs-`B(T)` edge-bias witness on some outside subset `U`; more sharply,
+   `c(T) = max_{U ⊆ O} Phi(U)`, and because `U` is arbitrary the putative one-error-strip theorem is
+   just the pointwise witness `∃ x, epsilon(x) <= 1`. More sharply, one-defect witnesses have a
+   defect map `d : O_1 -> T`, and any witness with defect off the anchor swaps into `T`; Hall then
+   collapses to the pointwise fiber bounds `mu(u) <= q-1`, so the residual host-side obstruction is
+   anchor-supported unique defects together with a multi-swap / compatibility theorem for injective
+   anchor transversals. The prime weighted
+   quotient branch is not the only remaining case because Theorem
+   `17.5` also has a small bad-module alternative; that branch is now best viewed as a
+   profile/extremal-profile completion problem, not a theorem quantifying over arbitrary regular
+   `A subseteq M`; codimension `4` is already classified, so the next exact smaller theorem is
+   overlap-profile resolution for `q in {9,10,11}`.
+
+Moreover the top-level asymptotic wrappers still require
+`HasPolynomialCostEmptyControlDyadicLift`, or at least the weaker one-parameter family isolated by
+the dyadic-lift audit: for bridge exponent `D`, it is enough to lift to target size
+`(2^(j+1))^(D+1)` rather than prove the full all-`m` lift theorem; Section `18` shows the true
+fixed-support core is a residual-packet / `eta`-top-bit theorem, not naive layerwise divisibility,
+and the standard Section `18` obstruction shows that packetization choice is irrelevant there: the
+exact theorem is `bar eta_m(U) = 0`, equivalently a pairwise next-bit compensation law on one fixed
+support `U`; in dual form the smallest exact target is pair-cut packet parity for a basis of
+pair-functionals. More sharply, all already-separated control / cascade blocks are silent for those
+functionals, so the only unresolved contribution is the final undecomposed tail, where the exact
+object is the terminal-tail class `tau_m(R, U) = [h_m mod 2]`, equivalently one more row-divisibility
+step for `rho_R(u) := |N(u) ∩ R|`; equivalently one must kill the normalized carry cocycle
+`kappa_m(u,v) = (rho_R(u)-rho_R(v))/2^m [MOD 2]`. More structurally, only complement-pairs of tail
+neighborhoods matter, and the exact smaller dyadic theorem is triviality of the aggregate
+complement-orbit class `beta_m`, not orbitwise coefficient vanishing. Parity-only pairings still
+miss the true carry contribution.
+On the direct completion side, the packet-compression / supported-seeding route is now locally
+closed by iterated one-vertex descent and terminal one-sided exclusion. The conjecture is not yet
+finished.
+
+This note still records the exact finite core that has to be solved.
+
+The standing live target at that stage was
 
 - `HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge`.
 
@@ -402,23 +452,31 @@ Reason:
 If one wants a genuinely new combinatorial idea, then the only route whose counting works cleanly is
 the dyadic bit-by-bit program in Section 10.
 
-## 13. Bottom line
+## 13. Bottom line (updated)
 
-The remaining math is no longer mysterious.
+The weighted-attachment route has now supplied the missing finite theorem.
 
-For the current bucket `w` of size `q`, the whole problem is:
+More precisely:
 
-- prove that the row sums of the bipartite adjacency matrix between `w` and `s \ w` are constant
-  modulo `q`.
+1. split prime weighted quotients are already good for every even `q`;
+2. `C_5` is not an independent prime seed;
+3. `P_5` reduces to the house / `bar P_5` branch by weighted quotient complementation;
+4. the house branch is finished by the attachment analysis in
+   `remaining-gap-obstruction-module.md`.
 
-Everything else in the existing refinement package is already enough to turn that statement into the
-desired exact witness.
+The last local obstruction there was the shifted twin-breaker case in a false-clone fiber, but that
+case reproduces the exact stable-house configuration `O_10` after one more forced distinguisher, and
+`O_10` is impossible because it forces arbitrarily long half-graph ladders inside one finite fiber.
 
-So the next genuine proof effort should be one of these two:
+So the prime weighted quotient branch is closed.
+Accordingly, the weighted-house analysis may still be the right way to resolve the missing finite
+theorem, but the current notes do **not** yet justify that conclusion.
 
-1. strengthen the host-step so the internal dropped part is itself decomposed into
-   residue-controlled proof-blocks;
-2. find a dyadic bit-by-bit argument that freezes the dropped-part residue modulo `2^j` using only
-   a factor `2` per binary digit.
+The weakest remaining issues are:
 
-That is the deepest mathematical reduction I currently trust.
+1. repair or replace the local `O_10` closure in Proposition `40.7`;
+2. identify a compatible-completion packaging theorem turning the refinement-data package into a
+   genuine size-`q^2` host completion `S`, and then close the remaining small bad-module branch from
+   Theorem `17.5`;
+3. separately, supply the still-open `HasPolynomialCostEmptyControlDyadicLift`, or prove the weaker
+   one-parameter target family that the current asymptotic wrappers actually need.

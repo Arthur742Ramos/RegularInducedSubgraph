@@ -134,14 +134,84 @@ object, for example an empty-control analogue of
 where the modulus is fixed in advance and the dropped-part residues are carried
 explicitly across one refinement step.
 
-The finite theorem to aim for is then:
+The finite theorem to aim for is now better phrased in the terminal-exponent form actually sufficient
+for the current wrappers:
 
-> **Dyadic lift step.**
-> For `q = 2^j`, every fixed-modulus `q` cascade witness of order `q^C * m`
-> contains a fixed-modulus `2q` cascade witness of order `m`.
+> **Terminal-exponent dyadic lift step.**
+> Let `A := D + 1`, where `D` is the bridge exponent. For `q = 2^j`, prove that a fixed-modulus `q`
+> cascade witness of size
+> - `q^C (2q)^A`
+> yields a fixed-modulus `2q` cascade witness of size
+> - `(2q)^A`.
 
-Once that is available, the asymptotic normalization already present in the repo
-should convert it into a proof of `TargetStatement`.
+Once that is available, the downstream bridge already present in the repo consumes exactly the final
+`(2^r)^A = (2^r)^D 2^r` witness needed for `TargetStatement`.
+
+The remaining fixed-support core is sharper still:
+
+> after freezing `m` bits on one final support `U`, force the residual class `eta_m(U)` to lie in
+> `2 M_{q / 2^m}(U)`.
+
+Equivalently:
+
+> the decomposition-independent top packet-shadow sum
+> - `bar eta_m(U) in M_2(U)`
+> must vanish.
+
+Equivalently again, fixing one basepoint `u_0 in U`, it is enough to prove the pairwise next-bit
+congruences
+
+> - `r_U(u) - r_U(u_0) ≡ 0 [MOD 2^(m+1)]`
+>   for every `u in U`.
+
+Moreover, every already-separated block `D` on which the external degree is constant modulo `q`
+across `U` is silent for these pairwise next-bit functionals. So only the final undecomposed tail can
+contribute to the missing top bit.
+
+Writing `R` for that tail and `rho_R(u) := |N(u) ∩ R|`, the frozen first `m` bits give
+
+> - `rho_R = K_m 1_U + 2^m h_m`.
+
+So the next exact theorem is the vanishing of the terminal-tail class
+
+> - `tau_m(R, U) := [h_m mod 2]`,
+
+equivalently one more row-divisibility step
+
+> - `rho_R = K_(m+1) 1_U + 2^(m+1) h_(m+1)`.
+
+Equivalently, the normalized difference cocycle
+
+> - `kappa_m(u, v) := (rho_R(u) - rho_R(v)) / 2^m [MOD 2]`
+
+must vanish. Fixing a basepoint `u_0`, this basis family is already the smallest exact linear target.
+
+If the tail neighborhood multiplicities are written
+
+> - `n_A = 2^m q_A + r_A`,
+
+then the exact cocycle depends only on complement-pairs `[A, U \ A]`, via the coefficients
+
+> - `epsilon_[A] := floor((n_A + n_(U \ A)) / 2^m) [MOD 2]`.
+
+Equivalently, the aggregate complement-orbit class
+
+> - `beta_m := Σ_[A] epsilon_[A] [1_A]`
+
+satisfies
+
+> - `kappa_m = partial beta_m`.
+
+So the exact smaller theorem is **not** individual orbitwise vanishing `epsilon_[A]=0`, but the
+triviality of the aggregate class `beta_m`, equivalently that the active-orbit family has constant
+vertex-incidence parity (or symmetric difference `∅` / `U`). The visible top digit and the pure carry
+cancel only after this aggregation.
+
+Raw parity pairings on vertices of `R` are therefore too weak for `m >= 1`, because carries after
+division by `2^m` matter.
+
+Any `m`-admissible packet decomposition is only a tool for certifying that vanishing; it does not
+create extra freedom, since every such decomposition has the same total shadow.
 
 ## 6. Immediate experiments
 

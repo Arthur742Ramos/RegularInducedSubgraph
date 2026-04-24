@@ -1,7 +1,85 @@
 # Current roadmap
 
-This note records the shortest credible path from the current modular-control formalization to the
-remaining open work.
+This note now serves as an archival record of the shortest path from the modular-control
+formalization to the last open work.
+
+## Audit correction
+
+The closure claim was too strong.
+
+What the current notes actually justify is weaker:
+
+1. the weighted-house analysis is now locally closed: Proposition `40.7` is repaired, and the
+   false-clone shifted twin-breaker reduces back to that same `O_10` endpoint;
+2. the named self-bridge target is **existential**: it asks only for some bounded exact
+   single-control witness of size `q`, not for exactness on the distinguished terminal bucket `w`;
+3. however, Section `10` of `remaining-gap-obstruction-module.md` needs a **genuine compatible
+   size-`q^2` completion** `S` to produce such an existential witness, while the formal
+   refinement-data input is only the package `∃ w s t ...`; in fact compatible completion from bare
+   refinement data is false. The exact missing finite theorem is an anchored exact-`e` shell host
+   theorem:
+   - find `S` with `w ⊆ S ⊆ E_e(t)`, `|S| = q^2`, and all degrees in `G[S]` constant modulo `q`;
+   - equivalently, in the shell graph `H := G[E_e(t)]`, find a mod-`q` regular `q^2`-vertex induced
+     subgraph containing the anchor `w`;
+   - peeling one non-anchor vertex gives an exact anchored mod-`q` near-regular completion theorem on
+     `q^2 - 1` vertices inside `H`;
+   - more sharply, for a fixed peeled set `T`, raw short packets of size `< q` are exact: a nonempty
+     raw zero-packet exists if and only if every vertex in it is already a completer;
+   - and the exact host-side frontier below that is simply **completer positivity** `c(T) > 0`,
+     equivalently the existence of a weighted raw relation of total mass `< q`;
+   - equivalently again, `c(T) > 0` is exactly the existence of some `U ⊆ O` with
+     `e(L(T), U) - e(B(T), U) > (|L(T)| - 1) |U|` (a singleton `U = {x}` already suffices);
+   - more sharply, if `Phi(U) := e(L(T), U) - e(B(T), U) - (|L(T)| - 1) |U|`, then
+     `c(T) = max_{U ⊆ O} Phi(U)`;
+   - because `U` is arbitrary, the putative one-error-strip theorem collapses to the **pointwise
+     one-error witness** `∃ x in O, epsilon(x) <= 1`;
+   - more sharply, one-defect witnesses carry a defect map `d : O_1 -> T`, and any witness with
+     `d(x) notin w` swaps into `T` while preserving anchored near-regularity;
+   - Hall already collapses pointwise: in the anchor-supported regime `h_T(Y) <= 0` for all
+     `Y subseteq w` is equivalent to `mu(u) <= q - 1` on each anchor fiber;
+   - so the residual host obstruction is **anchor-supported unique defects** together with a
+     **multi-swap / compatibility theorem** for injective defect selections across anchor fibers;
+   - the old `S = s ⊔ C` shell-selection/congruence problem is a stronger sufficient route, not the
+     exact theorem itself;
+4. the prime weighted quotient branch is now locally closed, but it still does not finish the
+   host-side theorem because Theorem `17.5` leaves a genuinely separate small bad-module
+   alternative; Section `22`'s old universal target "every regular `A ⊆ M` lifts" is false,
+   already for the family `K_{m,m,m}`. More sharply, branch-`(1)` depends on `A` only through its
+   profile `(a, alpha)`; rewriting by codimension `s := q - a`, codimension `4` is already fully
+   classified, and the next exact smaller theorem is **overlap-profile resolution** for
+   `q in {9,10,11}` (while the current `q=8` branch collapses to an outside `C_4`);
+5. globally, the asymptotic wrappers still require `HasPolynomialCostEmptyControlDyadicLift`, or at
+   least the weaker one-parameter target family isolated by the recent dyadic-lift audit:
+   - for `A := D + 1`, it is enough to prove a terminal-exponent lift that upgrades a
+     `2^j`-cascade witness of size `(2^j)^C (2^(j+1))^A` to a `2^(j+1)`-cascade witness of size
+     `(2^(j+1))^A`;
+   - Section `18` reduces the fixed-support core to a residual-packet / `eta`-top-bit theorem, not
+     to naive layerwise divisibility;
+   - more sharply, the packet-shadow sum is decomposition-independent and equals `bar eta_m(U)` in
+     `M_2(U)`, so the exact theorem is `bar eta_m(U) = 0`;
+   - equivalently, this is a **pairwise next-bit compensation theorem** on one fixed support `U`;
+   - in dual/basis form, the exact smaller theorem is **pair-cut packet parity** for every pair
+     `{u, u_0}`;
+   - more sharply, every already-separated block with constant external degree mod `q` on `U` is
+     silent for those pair-cut functionals, so only the final undecomposed tail can contribute;
+   - writing `rho_R(u) := |N(u) ∩ R|` for that last tail, the frozen first `m` bits give
+     `rho_R = K_m 1_U + 2^m h_m`;
+   - thus the exact remaining dyadic theorem is vanishing of the terminal-tail class
+     `tau_m(R, U) := [h_m mod 2]`, equivalently one more row-divisibility step
+     `rho_R = K_(m+1) 1_U + 2^(m+1) h_(m+1)`;
+   - equivalently, the normalized difference cocycle
+     `kappa_m(u,v) := (rho_R(u)-rho_R(v))/2^m [MOD 2]` is the coboundary of an aggregate
+     complement-orbit class `beta_m`;
+   - individual complement-orbit coefficients need not vanish: the exact smaller theorem is
+     `beta_m = 0`, equivalently constant incidence parity / symmetric-difference-zero for the active
+     complement-orbit family;
+   - raw parity pairing on `R` is too weak, because it misses the carry contribution hidden inside
+     those aggregate complement-orbit coefficients;
+   - the standard Section `18` obstruction shows that current `m`-bit data alone do not force this,
+     and low-rank shadow space by itself is not enough.
+
+So the sections below remain useful as a roadmap, but they should not be read as a completed proof
+of the conjecture.
 
 ## Where the formalization stands
 
@@ -216,6 +294,46 @@ The small dyadic cases are cleaner now as well:
   2. fixed-`U` dyadic lifting through the half-obstructions `eta_m(U)`.
   The old naive balanced-halving idea should be treated only as a possible sufficient shortcut, not
   as the main formulation of the gap.
+- The completion/discrepancy route has sharpened further:
+  1. every near-regular `(q - 1)`-set automatically carries a nonempty zero-sum packet of outside
+     discrepancy classes, by Davenport in `M_q(S) ~= C_q^(q - 2)`;
+  2. for proper targets `1 <= r <= q - 2`, any zero-sum packet of size strictly less than `q / 2`
+     already forces a regular induced `q`-set;
+  3. the endpoint cases `r = 0` and `r = q - 1` must be split off as independent/clique alternatives;
+  4. so the true missing lemma is a proper missing-pattern / short-packet forcing statement, not mere
+     existence of a zero-sum relation.
+  5. the strongest direct route is now packet compression: among all proper near-regular `(q - 1)`-sets,
+     pick a minimal nonempty zero-packet and prove its size is `< q / 2`.
+  6. pushing that route further, the only surviving `p < q` obstruction is a boundary `q / 2`-block
+     of anti-completers, but the isolated anti-packet lemma looks too weak: the last move has to use
+     global minimality across all proper near-regular sets, not just one local block.
+  7. in the boundary case, the leftover layer `W` is another zero-packet and must realize the exact
+     residue compensation `deg_W(b)-deg_W(a) \\equiv q/2-1 [MOD q]`, but that modular surplus is not
+     enough by itself: `(q/2-1)` anti-completers plus `2` empty-trace vertices already realize it
+     without producing any short zero-subpacket.
+  8. the live direct target is therefore a **supported seeding approach**: the `2` empty-trace
+     vertices alone are too weak, and any successful reseating must recruit a large outside support
+     set (from anti-completers and/or other vertices of `W`) to manufacture a different proper
+     near-regular `S'` carrying a genuine completer.
+  9. more sharply, any successful supported reseating must satisfy a **pointwise compensation law**
+     `deg_T(a)-deg_T(b)=x+deg_Y(a)-deg_Y(b)+sigma_{ab}` and therefore force many genuine
+     `A`-over-`B` separator vertices in the support whenever the deleted set is not `B`-heavier than
+     `A`.
+  10. pushing that one step further, the cyclic part is completely rigid, and after subtracting both
+      the cyclic contribution and the deleted-set bias, the off-cyclic level functions collapse to
+      total oscillation at most `2`;
+  11. hence any nonconstant compensation matrix produces a uniform extremal rectangle `A_+ × B_-`, and
+      one off-cyclic separator lowers the extremal compensation by exactly `1` on its own separated
+      subrectangle;
+  12. this resolves `(1,0)`, `(0,1)`, `(2,0)`, and `(0,2)` by descent, leaving only the mixed
+      `(1,1)` pattern as irreducible;
+  13. but the mixed `(1,1)` case also yields to iterated one-vertex descent until no doubly-mixed
+      support remains, and terminal one-sided traces fall into the already-settled `(1,0)` / `(0,1)`
+      branches;
+  14. so the direct supported-seeding / packet-compression route is now **locally closed**.
+- All vertex-transitive cases are positive: any vertex-transitive graph on `q^2` vertices already
+  contains a regular induced `q`-set on a `2`-power orbit cut. So any counterexample must be highly
+  asymmetric.
 - Use `Scratch.lean` only for local theorem-shape experiments and small finite sanity checks.
 - Update the README when the frontier moves, but avoid letting the documentation get ahead of the
   actual theorems.
