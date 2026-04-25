@@ -78,11 +78,180 @@ The script
 
 exhaustively checks all `2^21` labelled graphs on `7` vertices and reports that
 `regular-induced-4-free graphs: 0`, so every graph on `7` vertices contains a regular induced
-subgraph on at least `4` vertices.  We keep this as an explicit hypothesis until the finite proof is
-formalized in Lean.
+subgraph on at least `4` vertices.  The lemmas below give a formal Lean reduction from this
+semantic statement to a small labelled-edge Boolean certificate.  The full checked certificate lives
+in `RegularInducedSubgraph.SevenVertexCertificate`, where it is isolated from these lightweight
+definitions because the table proof is large.
 -/
 def SevenVertexFourRegularBaseCase : Prop :=
   4 ∈ admissibleBounds 7
+
+/-- The `21` unordered edges of the complete graph on seven labelled vertices. -/
+abbrev SevenVertexEdge := ((⊤ : SimpleGraph (Fin 7)).edgeSet)
+
+/-- A Boolean-labelled graph on seven vertices, encoded by its unordered edge labels. -/
+abbrev SevenVertexEdgeCode := SevenVertexEdge → Bool
+
+def sevenVertexEdgeOfNe {v w : Fin 7} (h : v ≠ w) : SevenVertexEdge := by
+  refine ⟨s(v, w), ?_⟩
+  change (⊤ : SimpleGraph (Fin 7)).Adj v w
+  simpa using h
+
+/-- Adjacency decoded from a seven-vertex edge code. -/
+def sevenVertexCodeAdj (x : SevenVertexEdgeCode) (v w : Fin 7) : Bool :=
+  if h : v = w then false else x (sevenVertexEdgeOfNe h)
+
+/-- Internal degree inside a finite vertex set, computed from an edge code. -/
+def sevenVertexCodeDegree (x : SevenVertexEdgeCode) (s : Finset (Fin 7)) (v : Fin 7) : ℕ :=
+  (s.filter fun w => sevenVertexCodeAdj x v w).card
+
+/--
+The executable seven-vertex version of `HasRegularInducedSubgraphOfCard`.
+
+The regularity degree is stored as `Fin (s.card + 1)` because every decoded internal degree is at
+most `s.card`; this keeps the finite search space small for external `native_decide` certificates.
+-/
+def SevenVertexCodeHasRegularInducedSubgraphOfCard (x : SevenVertexEdgeCode) (k : ℕ) : Prop :=
+  ∃ s : Finset (Fin 7), k ≤ s.card ∧
+    ∃ d : Fin (s.card + 1), ∀ v ∈ s, sevenVertexCodeDegree x s v = d.1
+
+instance sevenVertexCodeHasRegularDecidable (x : SevenVertexEdgeCode) (k : ℕ) :
+    Decidable (SevenVertexCodeHasRegularInducedSubgraphOfCard x k) := by
+  unfold SevenVertexCodeHasRegularInducedSubgraphOfCard sevenVertexCodeDegree
+    sevenVertexCodeAdj
+  infer_instance
+
+def sevenVertexGraphCode (G : SimpleGraph (Fin 7)) [DecidableRel G.Adj] :
+    SevenVertexEdgeCode :=
+  fun e => decide (e.1 ∈ G.edgeSet)
+
+lemma sevenVertexCodeAdj_graphCode (G : SimpleGraph (Fin 7)) [DecidableRel G.Adj]
+    (v w : Fin 7) :
+    sevenVertexCodeAdj (sevenVertexGraphCode G) v w = decide (G.Adj v w) := by
+  unfold sevenVertexCodeAdj sevenVertexGraphCode
+  by_cases h : v = w
+  · subst w
+    simp
+  · simp [h]
+    convert (SimpleGraph.mem_edgeSet (G := G) (v := v) (w := w)) using 1
+
+private lemma degree_inducedOn_eq_sevenVertexCodeDegree_graphCode
+    (G : SimpleGraph (Fin 7)) [DecidableRel G.Adj] (s : Finset (Fin 7))
+    (v : ↑(s : Set (Fin 7))) :
+    (inducedOn G s).degree v = sevenVertexCodeDegree (sevenVertexGraphCode G) s v := by
+  rw [← SimpleGraph.card_neighborFinset_eq_degree]
+  have hmap :
+      ((inducedOn G s).neighborFinset v).map
+          (Function.Embedding.subtype (fun x => x ∈ (s : Set (Fin 7)))) =
+        s.filter (fun w => sevenVertexCodeAdj (sevenVertexGraphCode G) v w) := by
+    ext x
+    simp [inducedOn, sevenVertexCodeAdj_graphCode, and_comm]
+  calc
+    ((inducedOn G s).neighborFinset v).card =
+        (((inducedOn G s).neighborFinset v).map
+          (Function.Embedding.subtype (fun x => x ∈ (s : Set (Fin 7))))).card := by
+            rw [Finset.card_map]
+    _ = (s.filter fun w => sevenVertexCodeAdj (sevenVertexGraphCode G) v w).card := by
+          rw [hmap]
+    _ = sevenVertexCodeDegree (sevenVertexGraphCode G) s v := rfl
+
+/--
+Soundness of the labelled-edge certificate route: a proof of the executable certificate for every
+edge labelling yields the semantic seven-vertex base case.
+-/
+theorem sevenVertexFourRegularBaseCase_of_codeCertificate
+    (hcode : ∀ x : SevenVertexEdgeCode,
+      SevenVertexCodeHasRegularInducedSubgraphOfCard x 4) :
+    SevenVertexFourRegularBaseCase := by
+  intro G
+  classical
+  rcases hcode (sevenVertexGraphCode G) with ⟨s, hks, d, hd⟩
+  refine ⟨s, hks, d.1, ?_⟩
+  rw [InducesRegularOfDegree]
+  intro v
+  rw [degree_inducedOn_eq_sevenVertexCodeDegree_graphCode]
+  exact hd v v.2
+
+private def sevenVertexBit (m i : ℕ) : Bool :=
+  decide ((m / 2 ^ i) % 2 = 1)
+
+/-- The vertex set encoded by a seven-bit mask. -/
+def sevenVertexFinsetOfMask (m : Fin 128) : Finset (Fin 7) :=
+  (Finset.univ : Finset (Fin 7)).filter fun v => sevenVertexBit m.1 v.1
+
+lemma sevenVertexCodeDegree_le_card
+    (x : SevenVertexEdgeCode) (s : Finset (Fin 7)) (v : Fin 7) :
+    sevenVertexCodeDegree x s v ≤ s.card := by
+  unfold sevenVertexCodeDegree
+  exact Finset.card_filter_le _ _
+
+/-- Boolean regularity test for a decoded set of vertices. -/
+def sevenVertexCodeRegular (x : SevenVertexEdgeCode) (s : Finset (Fin 7)) : Bool :=
+  (List.finRange 7).all fun v =>
+    (List.finRange 7).all fun w =>
+      decide (v ∈ s → w ∈ s →
+        sevenVertexCodeDegree x s v = sevenVertexCodeDegree x s w)
+
+lemma sevenVertexCodeRegular_sound {x : SevenVertexEdgeCode} {s : Finset (Fin 7)}
+    (hreg : sevenVertexCodeRegular x s = true) :
+    ∃ d : Fin (s.card + 1), ∀ v ∈ s, sevenVertexCodeDegree x s v = d.1 := by
+  by_cases hs : s.Nonempty
+  · rcases hs with ⟨v₀, hv₀⟩
+    refine ⟨⟨sevenVertexCodeDegree x s v₀,
+      Nat.lt_succ_of_le (sevenVertexCodeDegree_le_card x s v₀)⟩, ?_⟩
+    intro v hv
+    have hforall : ∀ v w : Fin 7,
+        v ∉ s ∨ w ∉ s ∨
+          sevenVertexCodeDegree x s v = sevenVertexCodeDegree x s w := by
+      simpa [sevenVertexCodeRegular, List.all_iff_forall_prop] using hreg
+    rcases hforall v v₀ with hvnot | hv₀not | heq
+    · exact False.elim (hvnot hv)
+    · exact False.elim (hv₀not hv₀)
+    · exact heq
+  · refine ⟨⟨0, Nat.succ_pos _⟩, ?_⟩
+    intro v hv
+    exact False.elim (hs ⟨v, hv⟩)
+
+/--
+A compact Boolean checker for the remaining finite certificate.  It searches the `128` vertex
+masks and accepts a regular induced set of size exactly `4` or `5` (the exhaustive search shows the
+`5`-vertex alternative is enough when no `4`-vertex regular set exists).
+-/
+def sevenVertexCodeHasRegularFourOrFiveBool (x : SevenVertexEdgeCode) : Bool :=
+  (List.finRange 128).any fun m =>
+    let s := sevenVertexFinsetOfMask m
+    let c := s.card
+    decide (c = 4 ∨ c = 5) && sevenVertexCodeRegular x s
+
+lemma sevenVertexCodeHasRegularFourOrFiveBool_sound {x : SevenVertexEdgeCode}
+    (h : sevenVertexCodeHasRegularFourOrFiveBool x = true) :
+    SevenVertexCodeHasRegularInducedSubgraphOfCard x 4 := by
+  unfold sevenVertexCodeHasRegularFourOrFiveBool at h
+  rw [List.any_eq_true] at h
+  rcases h with ⟨m, _hm, hm⟩
+  let s := sevenVertexFinsetOfMask m
+  have hcard : 4 ≤ s.card := by
+    have hm' := hm
+    simp at hm'
+    have hsize : s.card = 4 ∨ s.card = 5 := hm'.1
+    omega
+  have hreg : sevenVertexCodeRegular x s = true := by
+    have hm' := hm
+    simp at hm'
+    exact hm'.2
+  exact ⟨s, hcard, sevenVertexCodeRegular_sound hreg⟩
+
+/--
+Soundness of the compact Boolean finite-search route.  Proving the Boolean premise by an external
+or build-isolated `native_decide` certificate is enough to discharge
+`SevenVertexFourRegularBaseCase`.
+-/
+theorem sevenVertexFourRegularBaseCase_of_boolCertificate
+    (hcert : ∀ x : SevenVertexEdgeCode,
+      sevenVertexCodeHasRegularFourOrFiveBool x = true) :
+    SevenVertexFourRegularBaseCase :=
+  sevenVertexFourRegularBaseCase_of_codeCertificate fun x =>
+    sevenVertexCodeHasRegularFourOrFiveBool_sound (hcert x)
 
 theorem four_le_F_seven (hbase : SevenVertexFourRegularBaseCase) : 4 ≤ F 7 := by
   exact le_F_iff.mpr hbase

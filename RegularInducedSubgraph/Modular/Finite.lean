@@ -80,6 +80,44 @@ lemma hasFixedModulusWitnessOfCard_mono
   rcases hwitness with ⟨s, hℓ, hs⟩
   exact ⟨s, le_trans hkℓ hℓ, hs⟩
 
+lemma inducesModEqDegree_empty (G : SimpleGraph V) (q : ℕ) :
+    InducesModEqDegree G ∅ q := by
+  intro v w
+  have hv : False := by simpa using v.2
+  exact hv.elim
+
+lemma hasFixedModulusWitnessOfCard_zero (G : SimpleGraph V) (q : ℕ) :
+    HasFixedModulusWitnessOfCard G 0 q := by
+  exact ⟨∅, by simp, inducesModEqDegree_empty G q⟩
+
+lemma inducesModEqDegree_singleton (G : SimpleGraph V) (v : V) (q : ℕ) :
+    InducesModEqDegree G ({v} : Finset V) q := by
+  intro x y
+  have hxy : x = y := by
+    apply Subtype.ext
+    simpa [Finset.mem_singleton.mp x.2, Finset.mem_singleton.mp y.2]
+  rw [hxy]
+
+lemma hasFixedModulusWitnessOfCard_one (G : SimpleGraph V) [Nonempty V] (q : ℕ) :
+    HasFixedModulusWitnessOfCard G 1 q := by
+  obtain ⟨v⟩ := ‹Nonempty V›
+  exact ⟨{v}, by simp, inducesModEqDegree_singleton G v q⟩
+
+lemma inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness
+    (G : SimpleGraph V) {s : Finset V} {d q : ℕ}
+    (hreg : InducesRegularOfDegree G s d) :
+    InducesModEqDegree G s q := by
+  intro v w
+  rw [InducesRegularOfDegree] at hreg
+  rw [hreg v, hreg w]
+
+lemma hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard
+    (G : SimpleGraph V) {k q : ℕ}
+    (hreg : HasRegularInducedSubgraphOfCard G k) :
+    HasFixedModulusWitnessOfCard G k q := by
+  rcases hreg with ⟨s, hk, d, hsreg⟩
+  exact ⟨s, hk, inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G hsreg⟩
+
 private lemma degree_inducedOn_eq_card_neighborFinset_inter_modular
     (G : SimpleGraph V) [DecidableRel G.Adj] (s : Finset V) (v : ↑(s : Set V)) :
     (inducedOn G s).degree v = (G.neighborFinset v ∩ s).card := by
@@ -1009,6 +1047,156 @@ lemma inducesModEqDegree_of_modEq_unionDegree_and_externalDegree
       (fun a b => Classical.propDecidable (G.Adj a b))
   exact Nat.ModEq.add_right_cancel (hext v w) hsum
 
+lemma inducesModEqDegree_of_cross_modEq_unionDegree_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s t : Finset V} (hst : Disjoint s t) {q : ℕ}
+    (hcross :
+      ∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ t)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ +
+            (G.neighborFinset w ∩ t).card ≡
+          (inducedOn G (s ∪ t)).degree ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ +
+            (G.neighborFinset v ∩ t).card [MOD q]) :
+    InducesModEqDegree G s q := by
+  classical
+  rw [InducesModEqDegree]
+  intro v w
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  have hsum :
+      (inducedOn G s).degree v +
+          ((G.neighborFinset v ∩ t).card + (G.neighborFinset w ∩ t).card) ≡
+        (inducedOn G s).degree w +
+          ((G.neighborFinset v ∩ t).card + (G.neighborFinset w ∩ t).card) [MOD q] := by
+    simpa [degree_union_eq_degree_add_external (G := G) (hst := hst) (v := v),
+      degree_union_eq_degree_add_external (G := G) (hst := hst) (v := w),
+      Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hcross v w
+  exact Nat.ModEq.add_right_cancel (Nat.ModEq.refl
+    ((G.neighborFinset v ∩ t).card + (G.neighborFinset w ∩ t).card)) hsum
+
+lemma inducesModEqDegree_iff_cross_modEq_unionDegree_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s t : Finset V} (hst : Disjoint s t) {q : ℕ} :
+    InducesModEqDegree G s q ↔
+      ∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ t)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ +
+            (G.neighborFinset w ∩ t).card ≡
+          (inducedOn G (s ∪ t)).degree ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ +
+            (G.neighborFinset v ∩ t).card [MOD q] := by
+  constructor
+  · intro hmod
+    classical
+    rw [InducesModEqDegree] at hmod
+    intro v w
+    cases
+      Subsingleton.elim (‹DecidableRel G.Adj›)
+        (fun a b => Classical.propDecidable (G.Adj a b))
+    have hsum :
+        (inducedOn G s).degree v +
+            ((G.neighborFinset v ∩ t).card + (G.neighborFinset w ∩ t).card) ≡
+          (inducedOn G s).degree w +
+            ((G.neighborFinset v ∩ t).card + (G.neighborFinset w ∩ t).card) [MOD q] := by
+      exact Nat.ModEq.add (hmod v w) (Nat.ModEq.refl
+        ((G.neighborFinset v ∩ t).card + (G.neighborFinset w ∩ t).card))
+    simpa [degree_union_eq_degree_add_external (G := G) (hst := hst) (v := v),
+      degree_union_eq_degree_add_external (G := G) (hst := hst) (v := w),
+      Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hsum
+  · exact inducesModEqDegree_of_cross_modEq_unionDegree_externalDegree G hst
+
+lemma hasFixedModulusWitnessOfCard_of_subset_cross_modEq
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s u : Finset V} (hus : u ⊆ s) {m q : ℕ}
+    (hm : m ≤ u.card)
+    (hcross :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v, hus v.2⟩ +
+            (G.neighborFinset w ∩ (s \ u)).card ≡
+          (inducedOn G s).degree ⟨w, hus w.2⟩ +
+            (G.neighborFinset v ∩ (s \ u)).card [MOD q]) :
+    HasFixedModulusWitnessOfCard G m q := by
+  classical
+  have hdisj : Disjoint u (s \ u) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxTail
+    exact (Finset.mem_sdiff.mp hxTail).2 hxU
+  have hunion : u ∪ (s \ u) = s := by
+    ext x
+    constructor
+    · intro hx
+      rcases Finset.mem_union.mp hx with hxU | hxTail
+      · exact hus hxU
+      · exact (Finset.mem_sdiff.mp hxTail).1
+    · intro hxS
+      by_cases hxU : x ∈ u
+      · exact Finset.mem_union.mpr (Or.inl hxU)
+      · exact Finset.mem_union.mpr (Or.inr (Finset.mem_sdiff.mpr ⟨hxS, hxU⟩))
+  refine ⟨u, hm, ?_⟩
+  apply inducesModEqDegree_of_cross_modEq_unionDegree_externalDegree
+    (G := G) (s := u) (t := s \ u) hdisj
+  intro v w
+  have hvUnion : (v : V) ∈ u ∪ (s \ u) := Finset.mem_union.mpr (Or.inl v.2)
+  have hwUnion : (w : V) ∈ u ∪ (s \ u) := Finset.mem_union.mpr (Or.inl w.2)
+  have hvS : (v : V) ∈ s := hus v.2
+  have hwS : (w : V) ∈ s := hus w.2
+  have hvdeg :
+      (inducedOn G (u ∪ (s \ u))).degree ⟨v, hvUnion⟩ =
+        (inducedOn G s).degree ⟨v, hvS⟩ := by
+    exact inducedOn_degree_congr G hunion hvUnion hvS
+  have hwdeg :
+      (inducedOn G (u ∪ (s \ u))).degree ⟨w, hwUnion⟩ =
+        (inducedOn G s).degree ⟨w, hwS⟩ := by
+    exact inducedOn_degree_congr G hunion hwUnion hwS
+  simpa [hvdeg, hwdeg] using hcross v w
+
+lemma hasFixedModulusWitnessOfCard_of_subset_cross_modEq_card
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s u : Finset V} (hus : u ⊆ s) {m q : ℕ}
+    (hm : m ≤ u.card)
+    (hcross :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ s).card +
+            (G.neighborFinset w ∩ (s \ u)).card ≡
+          (G.neighborFinset w ∩ s).card +
+            (G.neighborFinset v ∩ (s \ u)).card [MOD q]) :
+    HasFixedModulusWitnessOfCard G m q := by
+  classical
+  have hdisj : Disjoint u (s \ u) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxTail
+    exact (Finset.mem_sdiff.mp hxTail).2 hxU
+  have hunion : u ∪ (s \ u) = s := by
+    ext x
+    constructor
+    · intro hx
+      rcases Finset.mem_union.mp hx with hxU | hxTail
+      · exact hus hxU
+      · exact (Finset.mem_sdiff.mp hxTail).1
+    · intro hxS
+      by_cases hxU : x ∈ u
+      · exact Finset.mem_union.mpr (Or.inl hxU)
+      · exact Finset.mem_union.mpr (Or.inr (Finset.mem_sdiff.mpr ⟨hxS, hxU⟩))
+  refine ⟨u, hm, ?_⟩
+  apply inducesModEqDegree_of_cross_modEq_unionDegree_externalDegree
+    (G := G) (s := u) (t := s \ u) hdisj
+  intro v w
+  have hvUnion : (v : V) ∈ u ∪ (s \ u) := Finset.mem_union.mpr (Or.inl v.2)
+  have hwUnion : (w : V) ∈ u ∪ (s \ u) := Finset.mem_union.mpr (Or.inl w.2)
+  have hvdeg :
+      (inducedOn G (u ∪ (s \ u))).degree ⟨v, hvUnion⟩ =
+        (G.neighborFinset v ∩ s).card := by
+    calc
+      (inducedOn G (u ∪ (s \ u))).degree ⟨v, hvUnion⟩ =
+          (G.neighborFinset v ∩ (u ∪ (s \ u))).card := by
+            exact degree_inducedOn_eq_card_neighborFinset_inter_modular
+              (G := G) (s := u ∪ (s \ u)) (v := ⟨v, hvUnion⟩)
+      _ = (G.neighborFinset v ∩ s).card := by rw [hunion]
+  have hwdeg :
+      (inducedOn G (u ∪ (s \ u))).degree ⟨w, hwUnion⟩ =
+        (G.neighborFinset w ∩ s).card := by
+    calc
+      (inducedOn G (u ∪ (s \ u))).degree ⟨w, hwUnion⟩ =
+          (G.neighborFinset w ∩ (u ∪ (s \ u))).card := by
+            exact degree_inducedOn_eq_card_neighborFinset_inter_modular
+              (G := G) (s := u ∪ (s \ u)) (v := ⟨w, hwUnion⟩)
+      _ = (G.neighborFinset w ∩ s).card := by rw [hunion]
+  simpa [hvdeg, hwdeg] using hcross v w
+
 lemma modEq_externalDegree_of_modEq_unionDegree_and_inducesModEqDegree
     (G : SimpleGraph V) [DecidableRel G.Adj] {s t : Finset V} (hst : Disjoint s t) {q : ℕ}
     (hdeg :
@@ -1121,6 +1309,26 @@ lemma inducesRegularOfDegree_of_card_le_modulus_of_inducesModEqDegree
   dsimp [InducesDegreeLtModulus]
   intro v
   exact lt_of_lt_of_le (by simpa using (SimpleGraph.degree_lt_card_verts (G := inducedOn G s) v)) hq
+
+/-- Exact-card terminal bucket form: if a `q`-set has all degrees congruent modulo `q`,
+then it is an actual regular induced `q`-set. -/
+lemma inducesRegularOfDegree_of_card_eq_modulus_of_inducesModEqDegree
+    (G : SimpleGraph V) {s : Finset V} {q : ℕ} (hcard : s.card = q)
+    (hmod : InducesModEqDegree G s q) :
+    ∃ d : ℕ, InducesRegularOfDegree G s d := by
+  exact
+    inducesRegularOfDegree_of_card_le_modulus_of_inducesModEqDegree G
+      (by simpa [hcard]) hmod
+
+/-- Exact-card terminal bucket form packaged as a regular induced subgraph witness. -/
+lemma hasRegularInducedSubgraphOfCard_of_card_eq_modulus_of_inducesModEqDegree
+    (G : SimpleGraph V) {s : Finset V} {q : ℕ} (hcard : s.card = q)
+    (hmod : InducesModEqDegree G s q) :
+    HasRegularInducedSubgraphOfCard G q := by
+  rcases
+    inducesRegularOfDegree_of_card_eq_modulus_of_inducesModEqDegree G hcard hmod with
+    ⟨d, hd⟩
+  exact ⟨s, by simpa [hcard], d, hd⟩
 
 lemma hasRegularInducedSubgraphOfCard_of_hasModularWitnessOfCard
     (G : SimpleGraph V) {k : ℕ} (hmod : HasModularWitnessOfCard G k) :
@@ -7342,6 +7550,85 @@ lemma inducesModEqDegree_of_modEq_hostDegree_and_dropDegree
     inducesModEqDegree_of_modEq_unionDegree_and_externalDegree
       (G := G) (s := u) (t := s \ u) huDrop hhost' hdrop
 
+/--
+Terminal dropped-tail endpoint, matching `proof.md` Lemma 3.1: if a bucket has exact cardinality
+`q`, its degrees in the host `G[s]` are constant modulo `q`, and the dropped tail `s \ u` has
+constant external degree modulo `q` on the bucket, then the bucket is an actual regular induced
+`q`-set.
+-/
+lemma hasRegularInducedSubgraphOfCard_of_card_eq_modulus_of_modEq_hostDegree_and_dropDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {u s : Finset V} {q : ℕ}
+    (hcard : u.card = q) (hu : u ⊆ s)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hdrop :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ (s \ u)).card ≡
+          (G.neighborFinset w ∩ (s \ u)).card [MOD q]) :
+    HasRegularInducedSubgraphOfCard G q := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_card_eq_modulus_of_inducesModEqDegree G hcard
+      (inducesModEqDegree_of_modEq_hostDegree_and_dropDegree (G := G) hu hhost hdrop)
+
+/--
+A dropped-tail selector for a bounded fixed-modulus control-block host witness: whenever concrete
+host-witness data are supplied, it selects an exact `k`-subbucket on which the dropped tail from the
+same host is constant modulo `q`.
+
+This is the small extra datum not stored by
+`HasBoundedFixedModulusControlBlockModularHostWitnessOfCard`.
+-/
+def HasDroppedTailModEqSubbucketForBoundedFixedModulusControlBlockModularHostWitnessOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact
+    ∀ u s : Finset V, k ≤ u.card →
+      ∀ (hu : u ⊆ s) (blocks : List (Finset V × ℕ)),
+        blocks.length ≤ r →
+        NonemptyControlBlockUnion blocks →
+        ControlBlocksSeparated s blocks →
+        (∀ v w : ↑(u : Set V),
+          (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+            (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) →
+        HasConstantModExternalBlockDegrees G u q blocks →
+        ∃ w : Finset V, w ⊆ u ∧ w.card = k ∧
+          ∀ v w' : ↑(w : Set V),
+            (G.neighborFinset v ∩ (s \ w)).card ≡
+              (G.neighborFinset w' ∩ (s \ w)).card [MOD q]
+
+/--
+Packed host-witness form of the terminal dropped-tail endpoint.  A bounded fixed-modulus host
+witness at target/modulus `q`, plus a selector proving dropped-tail constancy on an exact terminal
+`q`-subbucket, yields a regular induced subgraph on `q` vertices.
+-/
+lemma
+    hasRegularInducedSubgraphOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_and_droppedTailModEqSubbucket
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q r : ℕ}
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G q q r)
+    (hdrop :
+      HasDroppedTailModEqSubbucketForBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        G q q r) :
+    HasRegularInducedSubgraphOfCard G q := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hhost with ⟨u, s, hqu, hu, blocks, hlen, hnonempty, hsep, hhostDeg, hext⟩
+  rcases hdrop u s hqu hu blocks hlen hnonempty hsep hhostDeg hext with
+    ⟨w, hwu, hwcard, hdropw⟩
+  have hws : w ⊆ s := fun x hx => hu (hwu hx)
+  have hhostw :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hws v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hws w'.2⟩ [MOD q] := by
+    intro v w'
+    exact hhostDeg ⟨v.1, hwu v.2⟩ ⟨w'.1, hwu w'.2⟩
+  exact
+    hasRegularInducedSubgraphOfCard_of_card_eq_modulus_of_modEq_hostDegree_and_dropDegree
+      (G := G) hwcard hws hhostw hdropw
+
 lemma exists_inducesRegularOfDegree_iff_modEq_dropDegree_of_card_le_modulus_and_modEq_hostDegree
     (G : SimpleGraph V) [DecidableRel G.Adj] {u s : Finset V} (hu : u ⊆ s) {q : ℕ}
     (hq : u.card ≤ q)
@@ -9334,6 +9621,21 @@ lemma
       (G := G) hkq hq
       (hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
         (G := G) hbeta)
+
+/--
+`proof.md` Theorem 1.1 in refinement-data form: once all dyadic beta bits vanish for the dropped
+tail of an exact terminal host, the terminal bucket supplies a regular induced `q`-set.
+-/
+lemma
+    hasRegularInducedSubgraphOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    (hbeta :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard G k q r) :
+    HasRegularInducedSubgraphOfCard G k := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasBoundedSingleControlExactWitnessOfCard G
+      (hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+        (G := G) hkq hq hbeta)
 
 lemma
     hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard

@@ -150,6 +150,60 @@ def structured_residue_host_witnesses(
     return hits
 
 
+def effective_tail_beta_up_to_outputs(
+    adj: list[int],
+) -> list[
+    tuple[
+        tuple[int, ...],
+        tuple[int, ...],
+        tuple[int, ...],
+        tuple[int, ...],
+        tuple[int, ...],
+        tuple[int, ...],
+        tuple[int, ...],
+    ]
+]:
+    """Search outputs after collapsing all auxiliary tail blocks to one effective union."""
+    hits: list[
+        tuple[
+            tuple[int, ...],
+            tuple[int, ...],
+            tuple[int, ...],
+            tuple[int, ...],
+            tuple[int, ...],
+            tuple[int, ...],
+            tuple[int, ...],
+        ]
+    ] = []
+    all_vertices = tuple(range(N))
+    for w in combinations(all_vertices, Q):
+        w_mask = mask(w)
+        remaining_for_s = [v for v in all_vertices if not (w_mask & (1 << v))]
+        for host_extra_count in range(len(remaining_for_s) + 1):
+            for extra in combinations(remaining_for_s, host_extra_count):
+                s_mask = w_mask | mask(extra)
+                outside_s = [v for v in all_vertices if not (s_mask & (1 << v))]
+                for t in combinations(outside_s, Q - 1):
+                    t_mask = mask(t)
+                    outside_st = [v for v in outside_s if not (t_mask & (1 << v))]
+                    for b_size in range(len(outside_st) + 1):
+                        for b in combinations(outside_st, b_size):
+                            b_mask = mask(b)
+                            ambient_mask = s_mask | t_mask | b_mask
+                            ambient_vals = tuple(degree_on_mask(adj, vertex, ambient_mask) % Q for vertex in w)
+                            ctrl_vals = tuple(degree_on_mask(adj, vertex, t_mask) for vertex in w)
+                            host_vals = tuple(degree_on_mask(adj, vertex, s_mask) % Q for vertex in w)
+                            drop_vals = drop_degrees_mod_q(adj, w, s_mask, w_mask)
+                            if (
+                                len(set(ambient_vals)) == 1
+                                and len(set(ctrl_vals)) == 1
+                                and len(set(host_vals)) == 1
+                                and len(set(drop_vals)) == 1
+                            ):
+                                hits.append((w, vertices_of(s_mask), t, b, ambient_vals, ctrl_vals, drop_vals))
+    return hits
+
+
 def bounded_exact_witnesses(
     adj: list[int],
 ) -> list[tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...], tuple[int, ...]]]:
@@ -188,10 +242,12 @@ def main() -> None:
 
     modular_hits = structured_modular_host_witnesses(adj)
     residue_hits = structured_residue_host_witnesses(adj)
+    effective_beta_hits = effective_tail_beta_up_to_outputs(adj)
     exact_hits = bounded_exact_witnesses(adj)
 
     assert modular_hits == [((0, 1, 2, 3), (0, 1, 2, 3, 7), (4, 5, 6), (1, 1, 1, 1), (1, 1, 1, 1))]
     assert not residue_hits
+    assert not effective_beta_hits
     assert exact_hits
 
     print("q = 4 structured residue-upgrade counterexample verified")
@@ -206,6 +262,7 @@ def main() -> None:
     for hit in modular_hits:
         print(f"  {hit}")
     print("structured residue host witnesses with |u| = 4 and |t| = 3: none")
+    print("effective-tail beta-up-to outputs with |u| = 4 and |t| = 3: none")
     print("bounded exact single-control witnesses of size 4 and budget 3:")
     for hit in exact_hits:
         print(f"  {hit}")

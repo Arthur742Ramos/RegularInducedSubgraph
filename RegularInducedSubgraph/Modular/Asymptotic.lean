@@ -1,4 +1,5 @@
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Sqrt
 import RegularInducedSubgraph.Modular.Cascade
 import RegularInducedSubgraph.Modular.Frontier
@@ -1919,6 +1920,543 @@ def HasPolynomialCostEmptyControlDyadicLift (C : ℕ) : Prop :=
       HasFixedModulusCascadeWitnessOfCard G m (2 ^ (j + 1))
 
 /--
+Positive-dyadic version of the empty-control lift.  The dyadic induction starts from the proved
+modulus-`2` parity base case, so the lift is only needed for `j > 0`.
+-/
+def HasPolynomialCostPositiveEmptyControlDyadicLift (C : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasFixedModulusCascadeWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusCascadeWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+The literal empty-control lift used in `proof.md` Theorem 10.4: it climbs only in the
+fixed-modulus witness package.  No terminal cascade or control-block output is requested here.
+-/
+def HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift (C : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+Middle-range package for the fixed-witness positive dyadic lift.  It isolates exactly the
+complementary case left after the small-target branch `m ≤ 2` and the Ramsey fallback
+`4^(m - 1) ≤ (2^j)^C * m`: positive dyadic level, target `m > 2`, and failure of the
+Ramsey-size inequality.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftMiddleRange (C : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 0 < j) (_hm : 2 < m)
+      (_hmiddle : ¬ 4 ^ (m - 1) ≤ (2 ^ j) ^ C * m) (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+Sharper middle-range package using the actual finite Ramsey bound
+`choose (2 * (m - 1)) (m - 1)` instead of the coarse `4^(m - 1)` bound.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange (C : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 0 < j) (_hm : 2 < m)
+      (_hmiddle : ¬ Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ C * m)
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+Sharper residual window for the fixed-witness positive dyadic lift.  After the ambient Ramsey
+fallback and the coarse dyadic exponent comparison are removed, it remains only to handle graphs with
+fewer than the exact Ramsey bound and with `j * C < 2 * (m - 1)`.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow (C : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 0 < j) (_hm : 2 < m)
+      (_hindex : j * C < 2 * (m - 1))
+      (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+Residual dyadic window after also removing the target-size-four slice.  The `m = 4` case follows
+from the seven-vertex `q = 4` finite base whenever the dyadic loss exponent is positive.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour (C : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 0 < j) (_hm : 2 < m)
+      (_hindex : j * C < 2 * (m - 1))
+      (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+      (_hmne : m ≠ 4)
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+Residual Ramsey-index window with an explicit lower target cutoff.  This is used to record arithmetic
+closures of the first few target sizes without changing the original residual statement.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast
+    (C M : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 0 < j) (_hm : 2 < m) (_hM : M ≤ m)
+      (_hindex : j * C < 2 * (m - 1))
+      (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+The remaining `C = 6` Ramsey-index window after the elementary "near upper index" arithmetic
+subrange is removed.  In the exact residual assumptions, the input witness and ambient-small
+hypothesis force `m < 2 ^ (2 * (m - 1) - j * 6)`; this package records that stricter residual
+condition so later work can target only the genuinely logarithmically-large index gap.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap
+    (M : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 0 < j) (_hm : 2 < m) (_hM : M ≤ m)
+      (_hindex : j * 6 < 2 * (m - 1))
+      (_hgap : m < 2 ^ (2 * (m - 1) - j * 6))
+      (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+Sharper remaining `C = 6` residual after also removing the next dyadic gap slice.  In this package
+the exact index gap `d = 2 * (m - 1) - 6 * j` is large enough that `2^d` is strictly larger than
+`2m`; the complementary range is already arithmetically impossible by the central-binomial
+half-bound proved below.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap
+    (M : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 0 < j) (_hm : 2 < m) (_hM : M ≤ m)
+      (_hindex : j * 6 < 2 * (m - 1))
+      (_hgap : 2 * m < 2 ^ (2 * (m - 1) - j * 6))
+      (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+First-bit dyadic lift target with exactly the loss needed by the `j = 1`, `C = 6` residual.  It says
+that any parity-regular fixed witness has a mod-`4` subwitness on at least a `1/64` fraction of its
+vertices.
+
+This is deliberately independent of the Ramsey-index window and of the saturated terminal route.  If
+proved, it removes every `j = 1` case from the strict dyadic residual below.
+-/
+def HasParityToModFourLoss64FixedWitnessLift : Prop :=
+  ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
+    InducesModEqDegree G s 2 →
+      ∃ t : Finset (Fin n), t ⊆ s ∧ s.card ≤ 64 * t.card ∧ InducesModEqDegree G t 4
+
+/--
+A stronger, literature-shaped finite target for the first dyadic bit: every induced vertex set has a
+`1/64`-large induced subgraph whose internal degrees are all `0 mod 4`.
+
+This would imply the first-bit lift below without using the parity-regularity hypothesis.
+-/
+def HasModFourZeroLoss64InducedSubgraph : Prop :=
+  ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
+    ∃ t : Finset (Fin n), t ⊆ s ∧ s.card ≤ 64 * t.card ∧
+      InducesModEqDegree G t 4 ∧
+      ∀ v : ↑(t : Set (Fin n)), (inducedOn G t).degree v ≡ 0 [MOD 4]
+
+/--
+Sharper finite target suggested by the standard "large induced subgraph with degrees divisible by
+`k`" theorem at `k = 4`: a `1/5`-large induced subgraph with all degrees `0 mod 4`.
+-/
+def HasModFourZeroLossFiveInducedSubgraph : Prop :=
+  ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
+    ∃ t : Finset (Fin n), t ⊆ s ∧ s.card ≤ 5 * t.card ∧
+      InducesModEqDegree G t 4 ∧
+      ∀ v : ↑(t : Set (Fin n)), (inducedOn G t).degree v ≡ 0 [MOD 4]
+
+/--
+Strict dyadic residual after the first bit has been separated off.  This is the same as
+`HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap`, but with
+`j ≥ 2`.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo
+    (M : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 2 ≤ j) (_hm : 2 < m) (_hM : M ≤ m)
+      (_hindex : j * 6 < 2 * (m - 1))
+      (_hgap : 2 * m < 2 ^ (2 * (m - 1) - j * 6))
+      (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+The strict higher-bit residual after also removing the high-modulus terminal slice.  The remaining
+case has genuinely smaller modulus than target size: `2^j < m`.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus
+    (M : ℕ) : Prop :=
+  ∀ {n j m : ℕ} (_hj : 2 ≤ j) (_hm : 2 < m) (_hM : M ≤ m) (_hsmall : 2 ^ j < m)
+      (_hindex : j * 6 < 2 * (m - 1))
+      (_hgap : 2 * m < 2 ^ (2 * (m - 1) - j * 6))
+      (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/--
+Affine cross-selector form of the strict higher-bit residual.  Instead of directly asking for a
+next-modulus witness, it asks to choose a retained bucket `u` inside the current `2^j` witness support
+`s` so that the ambient top-bit discrepancy on `s` is exactly cancelled by the dropped tail `s \ u`.
+The generic graph-level bridge from `Finite.lean` turns this selector into the dyadic lift residual.
+-/
+def HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulusAffineCrossSelector
+    (M : ℕ) : Prop := by
+  classical
+  exact
+    ∀ {n j m : ℕ} (_hj : 2 ≤ j) (_hm : 2 < m) (_hM : M ≤ m)
+        (_hsmall : 2 ^ j < m)
+        (_hindex : j * 6 < 2 * (m - 1))
+        (_hgap : 2 * m < 2 ^ (2 * (m - 1) - j * 6))
+        (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+        (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
+      (2 ^ j) ^ 6 * m ≤ s.card →
+        InducesModEqDegree G s (2 ^ j) →
+          ∃ u : Finset (Fin n), ∃ hus : u ⊆ s, m ≤ u.card ∧
+            ∀ v w : ↑(u : Set (Fin n)),
+              (G.neighborFinset v ∩ s).card +
+                  (G.neighborFinset w ∩ (s \ u)).card ≡
+                (G.neighborFinset w ∩ s).card +
+                  (G.neighborFinset v ∩ (s \ u)).card [MOD 2 ^ (j + 1)]
+
+/-- The first higher-bit finite target after the first-bit split: `m = 10`, `j = 2`. -/
+def HasFourToEightTargetTenFixedWitnessLift : Prop :=
+  ∀ {n : ℕ}
+      (_hambient : n < Nat.choose ((10 - 1) + (10 - 1)) (10 - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ 2) ^ 6 * 10) (2 ^ 2) →
+      HasFixedModulusWitnessOfCard G 10 (2 ^ (2 + 1))
+
+/-- The next finite small-modulus higher-bit target: `m = 11`, `j = 2`. -/
+def HasFourToEightTargetElevenFixedWitnessLift : Prop :=
+  ∀ {n : ℕ}
+      (_hambient : n < Nat.choose ((11 - 1) + (11 - 1)) (11 - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ 2) ^ 6 * 11) (2 ^ 2) →
+      HasFixedModulusWitnessOfCard G 11 (2 ^ (2 + 1))
+
+/-- The next finite small-modulus higher-bit target after `m = 11`: `m = 12`, `j = 2`. -/
+def HasFourToEightTargetTwelveFixedWitnessLift : Prop :=
+  ∀ {n : ℕ}
+      (_hambient : n < Nat.choose ((12 - 1) + (12 - 1)) (12 - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ 2) ^ 6 * 12) (2 ^ 2) →
+      HasFixedModulusWitnessOfCard G 12 (2 ^ (2 + 1))
+
+/-- Exact finite dyadic-step target for a fixed bit `j` and target size `m`. -/
+def HasExactSmallModulusFixedWitnessDyadicLift (j m : ℕ) : Prop :=
+  ∀ {n : ℕ}
+      (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+      (G : SimpleGraph (Fin n)),
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1))
+
+/-- Exact finite affine cross-selector for a fixed bit `j` and target size `m`. -/
+def HasExactSmallModulusAffineCrossSelector (j m : ℕ) : Prop :=
+  by
+    classical
+    exact
+      ∀ {n : ℕ}
+          (_hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+          (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
+        (2 ^ j) ^ 6 * m ≤ s.card →
+          InducesModEqDegree G s (2 ^ j) →
+          ∃ u : Finset (Fin n), ∃ hus : u ⊆ s, m ≤ u.card ∧
+            ∀ v w : ↑(u : Set (Fin n)),
+              (G.neighborFinset v ∩ s).card +
+                  (G.neighborFinset w ∩ (s \ u)).card ≡
+                (G.neighborFinset w ∩ s).card +
+                  (G.neighborFinset v ∩ (s \ u)).card [MOD 2 ^ (j + 1)]
+
+/-- The affine cross-selector is sufficient for the exact finite dyadic-step target. -/
+theorem hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector
+    {j m : ℕ} (hselector : HasExactSmallModulusAffineCrossSelector j m) :
+    HasExactSmallModulusFixedWitnessDyadicLift j m := by
+  intro n hambient G hinput
+  classical
+  rcases hinput with ⟨s, hsCard, hsmod⟩
+  rcases hselector hambient G (s := s) hsCard hsmod with
+    ⟨u, hus, huCard, hcross⟩
+  refine hasFixedModulusWitnessOfCard_of_subset_cross_modEq_card G hus huCard ?_
+  intro v w
+  simpa using hcross v w
+
+/-- The uniform affine cross-selector closes the strict small-modulus dyadic residual. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
+    {M : ℕ}
+    (hselector :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulusAffineCrossSelector M) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus M := by
+  intro n j m hj hm hM hsmall hindex hgap hambient G hinput
+  classical
+  rcases hinput with ⟨s, hsCard, hsmod⟩
+  rcases hselector hj hm hM hsmall hindex hgap hambient G (s := s) hsCard hsmod with
+    ⟨u, hus, huCard, hcross⟩
+  refine hasFixedModulusWitnessOfCard_of_subset_cross_modEq_card G hus huCard ?_
+  intro v w
+  simpa using hcross v w
+
+/--
+Ramsey-10 certificate strong enough for the isolated `m = 10`, `j = 2` dyadic target.  It is the
+claim that every graph on at least `40960 = 4^6 * 10` vertices contains a regular induced 10-set.
+-/
+def HasRamseyTenRegularAtDyadicTarget : Prop :=
+  ∀ {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V),
+    40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard G 10
+
+/-- The small off-diagonal Ramsey table from `Ramsey.lean` supplies the 40960 regular-10 target. -/
+theorem hasRamseyTenRegularAtDyadicTarget_of_ramseyTenSmallTable
+    (h : RamseyTenSmallTable) : HasRamseyTenRegularAtDyadicTarget := by
+  intro V _ _ G hcard
+  exact hasRegularInducedSubgraphOfCard_ten_of_ramseyTenSmallTable h G hcard
+
+/--
+The fixed-witness lift implies the cascade-wrapped lift because a cascade terminal bucket is itself
+a fixed-modulus witness and a fixed witness is a length-zero cascade.
+-/
+theorem hasPolynomialCostPositiveEmptyControlDyadicLift_of_fixedWitness
+    {C : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C) :
+    HasPolynomialCostPositiveEmptyControlDyadicLift C := by
+  intro n j m hj G hcascade
+  exact
+    hasFixedModulusCascadeWitnessOfCard_of_hasFixedModulusWitnessOfCard G
+      (hlift hj G
+        (hasFixedModulusWitnessOfCard_of_hasFixedModulusCascadeWitnessOfCard G hcascade))
+
+/-- Conversely, the cascade-wrapped lift implies the fixed-witness lift. -/
+theorem hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_cascade
+    {C : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C) :
+    HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C := by
+  intro n j m hj G hfixed
+  exact
+    hasFixedModulusWitnessOfCard_of_hasFixedModulusCascadeWitnessOfCard G
+      (hlift hj G
+        (hasFixedModulusCascadeWitnessOfCard_of_hasFixedModulusWitnessOfCard G hfixed))
+
+/-- The all-dyadic empty-control lift immediately supplies the positive-dyadic lift used in the
+terminal descent induction. -/
+theorem hasPolynomialCostPositiveEmptyControlDyadicLift_of_hasPolynomialCostEmptyControlDyadicLift
+    {C : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C) :
+    HasPolynomialCostPositiveEmptyControlDyadicLift C := by
+  intro n j m _hj G h
+  exact hlift G h
+
+/-- The three-vertex path used to show that the all-`j` empty-control lift is too strong. -/
+private def emptyControlDyadicLiftCounterexampleGraph : SimpleGraph (Fin 3) :=
+  SimpleGraph.fromEdgeSet ({s(0, 1), s(1, 2)} : Finset (Sym2 (Fin 3)))
+
+private instance : DecidableRel emptyControlDyadicLiftCounterexampleGraph.Adj := by
+  unfold emptyControlDyadicLiftCounterexampleGraph
+  infer_instance
+
+private lemma emptyControlDyadicLiftCounterexample_has_mod_one_cascade :
+    HasFixedModulusCascadeWitnessOfCard emptyControlDyadicLiftCounterexampleGraph 3 1 := by
+  refine ⟨Finset.univ, [], by simp [cascadeTerminal], ?_⟩
+  intro v w
+  exact Nat.modEq_one
+
+private lemma emptyControlDyadicLiftCounterexample_not_mod_two_univ :
+    ¬ InducesModEqDegree emptyControlDyadicLiftCounterexampleGraph Finset.univ 2 := by
+  intro hmod
+  let v0 : ↑((Finset.univ : Finset (Fin 3)) : Set (Fin 3)) := ⟨0, by simp⟩
+  let v1 : ↑((Finset.univ : Finset (Fin 3)) : Set (Fin 3)) := ⟨1, by simp⟩
+  let v2 : ↑((Finset.univ : Finset (Fin 3)) : Set (Fin 3)) := ⟨2, by simp⟩
+  letI : DecidableRel emptyControlDyadicLiftCounterexampleGraph.Adj :=
+    fun a b => Classical.propDecidable (emptyControlDyadicLiftCounterexampleGraph.Adj a b)
+  have hneigh0 :
+      (inducedOn emptyControlDyadicLiftCounterexampleGraph Finset.univ).neighborFinset v0 =
+        {v1} := by
+    ext x
+    fin_cases x
+    all_goals
+      simp [SimpleGraph.mem_neighborFinset, inducedOn,
+        emptyControlDyadicLiftCounterexampleGraph, v0, v1]
+  have hneigh1 :
+      (inducedOn emptyControlDyadicLiftCounterexampleGraph Finset.univ).neighborFinset v1 =
+        {v0, v2} := by
+    ext x
+    fin_cases x
+    all_goals
+      simp [SimpleGraph.mem_neighborFinset, inducedOn,
+        emptyControlDyadicLiftCounterexampleGraph, v0, v1, v2]
+  have h01 := hmod v0 v1
+  have hdeg0 : (inducedOn emptyControlDyadicLiftCounterexampleGraph Finset.univ).degree v0 = 1 := by
+    rw [← SimpleGraph.card_neighborFinset_eq_degree, hneigh0]
+    simp
+  have hdeg1 : (inducedOn emptyControlDyadicLiftCounterexampleGraph Finset.univ).degree v1 = 2 := by
+    rw [← SimpleGraph.card_neighborFinset_eq_degree, hneigh1]
+    rw [Finset.card_insert_of_notMem]
+    · simp
+    · simp [v0, v2]
+  have hbad : (1 : ℕ) % 2 = 2 % 2 := by
+    simpa [Nat.ModEq, hdeg0, hdeg1] using h01
+  norm_num at hbad
+
+private lemma emptyControlDyadicLiftCounterexample_no_mod_two_cascade :
+    ¬ HasFixedModulusCascadeWitnessOfCard emptyControlDyadicLiftCounterexampleGraph 3 2 := by
+  intro h
+  have hfixed :
+      HasFixedModulusWitnessOfCard emptyControlDyadicLiftCounterexampleGraph 3 2 :=
+    hasFixedModulusWitnessOfCard_of_hasFixedModulusCascadeWitnessOfCard
+      emptyControlDyadicLiftCounterexampleGraph h
+  rcases hfixed with ⟨u, hu, hmod⟩
+  have huCard : u.card = 3 := by
+    exact le_antisymm (by simpa using (Finset.card_le_univ u)) hu
+  have huUniv : u = Finset.univ := by
+    exact Finset.eq_univ_of_card u (by simpa using huCard)
+  exact emptyControlDyadicLiftCounterexample_not_mod_two_univ (by simpa [huUniv] using hmod)
+
+/--
+The all-dyadic empty-control lift is false as stated: at `j = 0` it would lift a modulus-`1`
+witness of size `m` to a modulus-`2` witness of the same size.  The three-vertex path has the
+modulus-`1` witness of size `3`, but no size-`3` parity witness.
+-/
+theorem not_hasPolynomialCostEmptyControlDyadicLift (C : ℕ) :
+    ¬ HasPolynomialCostEmptyControlDyadicLift C := by
+  intro hlift
+  have hinput :
+      HasFixedModulusCascadeWitnessOfCard emptyControlDyadicLiftCounterexampleGraph
+        ((2 ^ 0) ^ C * 3) (2 ^ 0) := by
+    simpa using emptyControlDyadicLiftCounterexample_has_mod_one_cascade
+  have hout :
+      HasFixedModulusCascadeWitnessOfCard emptyControlDyadicLiftCounterexampleGraph 3 2 :=
+    by simpa using
+      (hlift (n := 3) (j := 0) (m := 3) emptyControlDyadicLiftCounterexampleGraph hinput)
+  exact emptyControlDyadicLiftCounterexample_no_mod_two_cascade hout
+
+/--
+A ten-vertex obstruction to the unit-cost positive dyadic lift.  The whole graph is a
+modulus-`2` fixed witness, but no five-vertex induced subgraph has degrees constant modulo `4`.
+-/
+private def positiveFixedWitnessLiftOneCounterexampleGraph : SimpleGraph (Fin 10) :=
+  SimpleGraph.fromEdgeSet
+    ({s(0, 2), s(0, 5), s(1, 2), s(1, 3), s(1, 5), s(1, 9),
+      s(2, 3), s(2, 5), s(2, 6), s(2, 8), s(3, 4), s(3, 7),
+      s(3, 8), s(3, 9), s(4, 5), s(4, 7), s(4, 8), s(5, 7),
+      s(5, 8), s(6, 9), s(7, 8), s(8, 9)} : Finset (Sym2 (Fin 10)))
+
+private instance : DecidableRel positiveFixedWitnessLiftOneCounterexampleGraph.Adj := by
+  unfold positiveFixedWitnessLiftOneCounterexampleGraph
+  infer_instance
+
+private abbrev HasFixedModulusWitnessOfCardDec10
+    (G : SimpleGraph (Fin 10)) [DecidableRel G.Adj] (k q : ℕ) : Prop :=
+  ∃ s : Finset (Fin 10), k ≤ s.card ∧
+    ∀ v w : ↑(s : Set (Fin 10)),
+      (inducedOn G s).degree v ≡ (inducedOn G s).degree w [MOD q]
+
+private lemma hasFixedModulusWitnessOfCardDec10_iff
+    (G : SimpleGraph (Fin 10)) [DecidableRel G.Adj] {k q : ℕ} :
+    HasFixedModulusWitnessOfCardDec10 G k q ↔ HasFixedModulusWitnessOfCard G k q := by
+  classical
+  unfold HasFixedModulusWitnessOfCardDec10 HasFixedModulusWitnessOfCard InducesModEqDegree
+  have hinst : (inferInstance : DecidableRel G.Adj) = Classical.decRel G.Adj :=
+    Subsingleton.elim _ _
+  cases hinst
+  rfl
+
+private lemma positiveFixedWitnessLiftOneCounterexample_has_mod_two_dec :
+    HasFixedModulusWitnessOfCardDec10 positiveFixedWitnessLiftOneCounterexampleGraph 10 2 := by
+  native_decide
+
+private lemma positiveFixedWitnessLiftOneCounterexample_no_mod_four_dec :
+    ¬ HasFixedModulusWitnessOfCardDec10 positiveFixedWitnessLiftOneCounterexampleGraph 5 4 := by
+  native_decide
+
+private lemma positiveFixedWitnessLiftOneCounterexample_has_mod_two :
+    HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph 10 2 :=
+  (hasFixedModulusWitnessOfCardDec10_iff positiveFixedWitnessLiftOneCounterexampleGraph).mp
+    positiveFixedWitnessLiftOneCounterexample_has_mod_two_dec
+
+private lemma positiveFixedWitnessLiftOneCounterexample_no_mod_four :
+    ¬ HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph 5 4 := by
+  intro h
+  exact positiveFixedWitnessLiftOneCounterexample_no_mod_four_dec
+    ((hasFixedModulusWitnessOfCardDec10_iff
+      positiveFixedWitnessLiftOneCounterexampleGraph).mpr h)
+
+/-- The positive empty-control fixed-witness lift is false with exponent `C = 1`. -/
+theorem not_hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_one :
+    ¬ HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift 1 := by
+  intro hlift
+  have hinput :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+        ((2 ^ 1) ^ 1 * 5) (2 ^ 1) := by
+    norm_num
+    exact positiveFixedWitnessLiftOneCounterexample_has_mod_two
+  have hout :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph 5 4 := by
+    simpa using
+      (hlift (n := 10) (j := 1) (m := 5) (by decide)
+        positiveFixedWitnessLiftOneCounterexampleGraph hinput)
+  exact positiveFixedWitnessLiftOneCounterexample_no_mod_four hout
+
+/--
+The narrowed Ramsey-index residual window is still false with unit dyadic-loss exponent: the same
+ten-vertex graph lies in the residual range for `j = 1`, `m = 5`.
+-/
+theorem not_hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow_one :
+    ¬ HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow 1 := by
+  intro hwindow
+  have hinput :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+        ((2 ^ 1) ^ 1 * 5) (2 ^ 1) := by
+    norm_num
+    exact positiveFixedWitnessLiftOneCounterexample_has_mod_two
+  have hout :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph 5 4 := by
+    simpa using
+      (hwindow (n := 10) (j := 1) (m := 5) (by decide) (by decide) (by decide)
+        (by decide) positiveFixedWitnessLiftOneCounterexampleGraph hinput)
+  exact positiveFixedWitnessLiftOneCounterexample_no_mod_four hout
+
+/--
+The target-size-four removal does not rescue unit dyadic loss: the same ten-vertex obstruction has
+target `m = 5`, so it still lies in the except-four residual window.
+-/
+theorem not_hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_one :
+    ¬ HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour 1 := by
+  intro hwindow
+  have hinput :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+        ((2 ^ 1) ^ 1 * 5) (2 ^ 1) := by
+    norm_num
+    exact positiveFixedWitnessLiftOneCounterexample_has_mod_two
+  have hout :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph 5 4 := by
+    simpa using
+      (hwindow (n := 10) (j := 1) (m := 5) (by decide) (by decide) (by decide)
+        (by decide) (by decide) positiveFixedWitnessLiftOneCounterexampleGraph hinput)
+  exact positiveFixedWitnessLiftOneCounterexample_no_mod_four hout
+
+/-- The cascade-wrapped positive empty-control dyadic lift is also false with exponent `C = 1`. -/
+theorem not_hasPolynomialCostPositiveEmptyControlDyadicLift_one :
+    ¬ HasPolynomialCostPositiveEmptyControlDyadicLift 1 := by
+  intro hlift
+  exact not_hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_one
+    (hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_cascade hlift)
+
+/-- The fixed-witness dyadic lift has no content for target size `0` or `1`. -/
+lemma positiveEmptyControlFixedWitnessDyadicLift_trivialTarget
+    {C n j m : ℕ} (hm : m ≤ 1) (_hj : 0 < j) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1)) := by
+  intro hinput
+  rcases Nat.eq_zero_or_pos m with rfl | hmpos
+  · exact hasFixedModulusWitnessOfCard_zero G (2 ^ (j + 1))
+  have hmOne : m = 1 := by omega
+  subst m
+  rcases hinput with ⟨s, hs, _hmod⟩
+  have hpowPos : 0 < (2 ^ j) ^ C := Nat.pow_pos (Nat.pow_pos (by decide : 0 < 2))
+  have hsPos : 0 < s.card := lt_of_lt_of_le (by simpa using hpowPos) hs
+  have hn : 0 < n := by
+    exact lt_of_lt_of_le hsPos (by simpa using (Finset.card_le_univ s))
+  letI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
+  exact hasFixedModulusWitnessOfCard_one G (2 ^ (j + 1))
+
+/--
 Precise missing package behind the empty-control terminal bridge: starting from a large fixed-modulus
 cascade witness, produce a genuinely nonempty separated control-block family whose external degrees
 are already constant modulo `2^j` on the same cascade host. The existing finite bridge then turns
@@ -1985,6 +2523,569 @@ def HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge (D : ℕ)
             HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
             HasConstantModExternalBlockDegrees G s (2 ^ j) blocks
 
+private lemma inducesModEqDegree_pair (G : SimpleGraph (Fin n)) (a b : Fin n) (q : ℕ) :
+    InducesModEqDegree G ({a, b} : Finset (Fin n)) q := by
+  classical
+  by_cases h : G.Adj a b
+  · have hclique : G.IsClique (({a, b} : Finset (Fin n)) : Set (Fin n)) := by
+      intro x hx y hy hxy
+      have hx' : x = a ∨ x = b := by simpa using hx
+      have hy' : y = a ∨ y = b := by simpa using hy
+      rcases hx' with rfl | rfl <;> rcases hy' with rfl | rfl
+      · contradiction
+      · simpa using h
+      · simpa [SimpleGraph.adj_comm] using h
+      · contradiction
+    exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+      (inducesRegularOfDegree_of_isClique G ({a, b} : Finset (Fin n)) hclique)
+  · have hind : G.IsIndepSet (({a, b} : Finset (Fin n)) : Set (Fin n)) := by
+      intro x hx y hy hxy hadj
+      have hx' : x = a ∨ x = b := by simpa using hx
+      have hy' : y = a ∨ y = b := by simpa using hy
+      rcases hx' with rfl | rfl <;> rcases hy' with rfl | rfl
+      · contradiction
+      · exact h hadj
+      · exact h (by simpa [SimpleGraph.adj_comm] using hadj)
+      · contradiction
+    exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+      (inducesRegularOfDegree_of_isIndepSet G ({a, b} : Finset (Fin n)) hind)
+
+private lemma exists_pair_same_adj_to_of_three_le_card
+    (G : SimpleGraph (Fin n)) (x : Fin n) {t : Finset (Fin n)} (ht : 3 ≤ t.card) :
+    ∃ a ∈ t, ∃ b ∈ t, a ≠ b ∧
+      ((G.Adj a x ∧ G.Adj b x) ∨ (¬ G.Adj a x ∧ ¬ G.Adj b x)) := by
+  classical
+  have hsplit :
+      (2 ≤ (t.filter fun y => G.Adj y x).card) ∨
+        (2 ≤ (t.filter fun y => ¬ G.Adj y x).card) := by
+    by_contra h
+    push Not at h
+    have hsum := Finset.card_filter_add_card_filter_not (s := t) (fun y => G.Adj y x)
+    have hle : t.card ≤ 2 := by
+      omega
+    omega
+  rcases hsplit with hA | hB
+  · have hA' : 1 < (t.filter fun y => G.Adj y x).card := by
+      omega
+    rcases Finset.one_lt_card.mp hA' with ⟨a, ha, b, hb, hab⟩
+    rcases Finset.mem_filter.mp ha with ⟨hat, hax⟩
+    rcases Finset.mem_filter.mp hb with ⟨hbt, hbx⟩
+    exact ⟨a, hat, b, hbt, hab, Or.inl ⟨hax, hbx⟩⟩
+  · have hB' : 1 < (t.filter fun y => ¬ G.Adj y x).card := by
+      omega
+    rcases Finset.one_lt_card.mp hB' with ⟨a, ha, b, hb, hab⟩
+    rcases Finset.mem_filter.mp ha with ⟨hat, hax⟩
+    rcases Finset.mem_filter.mp hb with ⟨hbt, hbx⟩
+    exact ⟨a, hat, b, hbt, hab, Or.inr ⟨hax, hbx⟩⟩
+
+private lemma positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+    (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] {j : ℕ} {s : Finset (Fin n)}
+    {x : Fin n} {r : ℕ} (hcard : s.card = 2 ^ j)
+    (hmod : InducesModEqDegree G s (2 ^ j)) (hx : x ∉ s)
+    (hext : ∀ v : ↑(s : Set (Fin n)),
+      (G.neighborFinset v ∩ ({x} : Finset (Fin n))).card ≡ r [MOD 2 ^ j]) :
+    ∃ s' : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+      ∃ blocks : List (Finset (Fin n) × ℕ),
+        2 ^ j ≤ (cascadeTerminal s' chain).card ∧
+        (cascadeTerminal s' chain).card ≤ 2 ^ j ∧
+        NonemptyControlBlockUnion blocks ∧
+        ControlBlocksSeparated s' blocks ∧
+        HasFixedModulusCascadeFrom G (2 ^ j) s' chain ∧
+        HasConstantModExternalBlockDegrees G s' (2 ^ j) blocks := by
+  classical
+  refine ⟨s, [], [(({x} : Finset (Fin n)), r)], ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simpa [cascadeTerminal, hcard]
+  · simpa [cascadeTerminal, hcard]
+  · simp [NonemptyControlBlockUnion]
+  · dsimp [ControlBlocksSeparated]
+    refine ⟨?_, by simp [controlBlockUnion], trivial⟩
+    refine Finset.disjoint_left.mpr ?_
+    intro y hy hyx
+    have hyx' : y = x := by
+      simpa using hyx
+    exact hx (by simpa [hyx'] using hy)
+  · change InducesModEqDegree G s (2 ^ j)
+    exact hmod
+  · dsimp [HasConstantModExternalBlockDegrees]
+    exact ⟨hext, trivial⟩
+
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_cliqueOrIndepSetBound
+    (G : SimpleGraph (Fin n)) {j K R : ℕ}
+    (hR : HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R)
+    (hlarge : 2 * R + 1 ≤ K) :
+    HasFixedModulusWitnessOfCard G K (2 ^ j) →
+      (by
+        classical
+        exact
+          ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+            ∃ blocks : List (Finset (Fin n) × ℕ),
+              2 ^ j ≤ (cascadeTerminal s chain).card ∧
+              (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+              NonemptyControlBlockUnion blocks ∧
+              ControlBlocksSeparated s blocks ∧
+              HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+              HasConstantModExternalBlockDegrees G s (2 ^ j) blocks) := by
+  classical
+  intro hfixed
+  let q : ℕ := 2 ^ j
+  have hqpos : 0 < q := by
+    positivity
+  rcases hfixed with ⟨S, hSCard, _hmod⟩
+  have hSbig : 2 * R + 1 ≤ S.card := by
+    exact le_trans hlarge hSCard
+  have hSpos : 0 < S.card := by
+    omega
+  rcases Finset.card_pos.mp hSpos with ⟨x, hxS⟩
+  let T : Finset (Fin n) := S.erase x
+  have hTbig : 2 * R ≤ T.card := by
+    have hErase : (S.erase x).card = S.card - 1 := Finset.card_erase_of_mem hxS
+    simpa [T] using (by omega : 2 * R ≤ (S.erase x).card)
+  have hbucket :
+      (R ≤ (T.filter fun y => G.Adj y x).card) ∨
+        (R ≤ (T.filter fun y => ¬ G.Adj y x).card) := by
+    by_contra h
+    push Not at h
+    have hsum := Finset.card_filter_add_card_filter_not (s := T) (fun y => G.Adj y x)
+    have hlt : T.card < 2 * R := by
+      omega
+    exact (Nat.not_lt_of_ge hTbig) hlt
+  rcases hbucket with hAdjLarge | hNonLarge
+  · let A : Finset (Fin n) := T.filter fun y => G.Adj y x
+    have hAcard : R ≤ A.card := by
+      change R ≤ (T.filter fun y => G.Adj y x).card
+      exact hAdjLarge
+    rcases hR G A hAcard with hclique | hindep
+    · rcases hclique with ⟨u, huA, huClique⟩
+      rw [SimpleGraph.isNClique_iff] at huClique
+      rcases huClique with ⟨huCliqueSet, hucard⟩
+      have hxU : x ∉ u := by
+        intro hxU
+        have hxA : x ∈ A := huA hxU
+        have hxAf : x ∈ T.filter fun y => G.Adj y x := by
+          change x ∈ T.filter (fun y => G.Adj y x)
+          exact hxA
+        have hxErase : x ∈ S.erase x := (Finset.mem_filter.mp hxAf).1
+        exact (Finset.mem_erase.mp hxErase).1 rfl
+      have hcard : u.card = 2 ^ j := by
+        simpa [q] using hucard
+      have hmod : InducesModEqDegree G u (2 ^ j) := by
+        exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+          (inducesRegularOfDegree_of_isClique G u huCliqueSet)
+      refine
+        positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+          (G := G) (j := j) (s := u) (x := x) (r := 1) hcard hmod hxU ?_
+      intro v
+      have hvA : v.1 ∈ A := huA v.2
+      have hvAf : v.1 ∈ T.filter fun y => G.Adj y x := by
+        change v.1 ∈ T.filter (fun y => G.Adj y x)
+        exact hvA
+      have hadj : G.Adj v.1 x := (Finset.mem_filter.mp hvAf).2
+      simpa [SimpleGraph.mem_neighborFinset, hadj] using
+        (Nat.ModEq.refl 1 : 1 ≡ 1 [MOD 2 ^ j])
+    · rcases hindep with ⟨u, huA, huIndep⟩
+      rw [SimpleGraph.isNIndepSet_iff] at huIndep
+      rcases huIndep with ⟨huIndepSet, hucard⟩
+      have hxU : x ∉ u := by
+        intro hxU
+        have hxA : x ∈ A := huA hxU
+        have hxAf : x ∈ T.filter fun y => G.Adj y x := by
+          change x ∈ T.filter (fun y => G.Adj y x)
+          exact hxA
+        have hxErase : x ∈ S.erase x := (Finset.mem_filter.mp hxAf).1
+        exact (Finset.mem_erase.mp hxErase).1 rfl
+      have hcard : u.card = 2 ^ j := by
+        simpa [q] using hucard
+      have hmod : InducesModEqDegree G u (2 ^ j) := by
+        exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+          (inducesRegularOfDegree_of_isIndepSet G u huIndepSet)
+      refine
+        positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+          (G := G) (j := j) (s := u) (x := x) (r := 1) hcard hmod hxU ?_
+      intro v
+      have hvA : v.1 ∈ A := huA v.2
+      have hvAf : v.1 ∈ T.filter fun y => G.Adj y x := by
+        change v.1 ∈ T.filter (fun y => G.Adj y x)
+        exact hvA
+      have hadj : G.Adj v.1 x := (Finset.mem_filter.mp hvAf).2
+      simpa [SimpleGraph.mem_neighborFinset, hadj] using
+        (Nat.ModEq.refl 1 : 1 ≡ 1 [MOD 2 ^ j])
+  · let B : Finset (Fin n) := T.filter fun y => ¬ G.Adj y x
+    have hBcard : R ≤ B.card := by
+      change R ≤ (T.filter fun y => ¬ G.Adj y x).card
+      exact hNonLarge
+    rcases hR G B hBcard with hclique | hindep
+    · rcases hclique with ⟨u, huB, huClique⟩
+      rw [SimpleGraph.isNClique_iff] at huClique
+      rcases huClique with ⟨huCliqueSet, hucard⟩
+      have hxU : x ∉ u := by
+        intro hxU
+        have hxB : x ∈ B := huB hxU
+        have hxBf : x ∈ T.filter fun y => ¬ G.Adj y x := by
+          change x ∈ T.filter (fun y => ¬ G.Adj y x)
+          exact hxB
+        have hxErase : x ∈ S.erase x := (Finset.mem_filter.mp hxBf).1
+        exact (Finset.mem_erase.mp hxErase).1 rfl
+      have hcard : u.card = 2 ^ j := by
+        simpa [q] using hucard
+      have hmod : InducesModEqDegree G u (2 ^ j) := by
+        exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+          (inducesRegularOfDegree_of_isClique G u huCliqueSet)
+      refine
+        positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+          (G := G) (j := j) (s := u) (x := x) (r := 0) hcard hmod hxU ?_
+      intro v
+      have hvB : v.1 ∈ B := huB v.2
+      have hvBf : v.1 ∈ T.filter fun y => ¬ G.Adj y x := by
+        change v.1 ∈ T.filter (fun y => ¬ G.Adj y x)
+        exact hvB
+      have hnot : ¬ G.Adj v.1 x := (Finset.mem_filter.mp hvBf).2
+      simpa [SimpleGraph.mem_neighborFinset, hnot] using
+        (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD 2 ^ j])
+    · rcases hindep with ⟨u, huB, huIndep⟩
+      rw [SimpleGraph.isNIndepSet_iff] at huIndep
+      rcases huIndep with ⟨huIndepSet, hucard⟩
+      have hxU : x ∉ u := by
+        intro hxU
+        have hxB : x ∈ B := huB hxU
+        have hxBf : x ∈ T.filter fun y => ¬ G.Adj y x := by
+          change x ∈ T.filter (fun y => ¬ G.Adj y x)
+          exact hxB
+        have hxErase : x ∈ S.erase x := (Finset.mem_filter.mp hxBf).1
+        exact (Finset.mem_erase.mp hxErase).1 rfl
+      have hcard : u.card = 2 ^ j := by
+        simpa [q] using hucard
+      have hmod : InducesModEqDegree G u (2 ^ j) := by
+        exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+          (inducesRegularOfDegree_of_isIndepSet G u huIndepSet)
+      refine
+        positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+          (G := G) (j := j) (s := u) (x := x) (r := 0) hcard hmod hxU ?_
+      intro v
+      have hvB : v.1 ∈ B := huB v.2
+      have hvBf : v.1 ∈ T.filter fun y => ¬ G.Adj y x := by
+        change v.1 ∈ T.filter (fun y => ¬ G.Adj y x)
+        exact hvB
+      have hnot : ¬ G.Adj v.1 x := (Finset.mem_filter.mp hvBf).2
+      simpa [SimpleGraph.mem_neighborFinset, hnot] using
+        (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD 2 ^ j])
+
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_ramsey_bound
+    (G : SimpleGraph (Fin n)) {j K : ℕ}
+    (hlarge :
+      2 * Nat.choose ((2 ^ j - 1) + (2 ^ j - 1)) (2 ^ j - 1) + 1 ≤ K) :
+    HasFixedModulusWitnessOfCard G K (2 ^ j) →
+      (by
+        classical
+        exact
+          ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+            ∃ blocks : List (Finset (Fin n) × ℕ),
+              2 ^ j ≤ (cascadeTerminal s chain).card ∧
+              (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+              NonemptyControlBlockUnion blocks ∧
+              ControlBlocksSeparated s blocks ∧
+              HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+              HasConstantModExternalBlockDegrees G s (2 ^ j) blocks) := by
+  classical
+  refine
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_cliqueOrIndepSetBound
+      (G := G) (j := j) (K := K)
+      (R := Nat.choose ((2 ^ j - 1) + (2 ^ j - 1)) (2 ^ j - 1)) ?_ ?_
+  · exact hasCliqueOrIndepSetBound_of_ramsey_finset
+      (a := 2 ^ j) (b := 2 ^ j)
+      (N := Nat.choose ((2 ^ j - 1) + (2 ^ j - 1)) (2 ^ j - 1))
+      (by positivity) (by positivity) le_rfl
+  · simpa using hlarge
+
+private lemma positiveDyadicFixedWitnessExternalBlockSelfBridgeData_two_of_pair
+    (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] {a b x : Fin n}
+    (hab : a ≠ b) (hxa : x ≠ a) (hxb : x ≠ b)
+    (hsame :
+      (G.Adj a x ∧ G.Adj b x) ∨ (¬ G.Adj a x ∧ ¬ G.Adj b x)) :
+    ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+      ∃ blocks : List (Finset (Fin n) × ℕ),
+        2 ^ 1 ≤ (cascadeTerminal s chain).card ∧
+        (cascadeTerminal s chain).card ≤ 2 ^ 1 ∧
+        NonemptyControlBlockUnion blocks ∧
+        ControlBlocksSeparated s blocks ∧
+        HasFixedModulusCascadeFrom G (2 ^ 1) s chain ∧
+        HasConstantModExternalBlockDegrees G s (2 ^ 1) blocks := by
+  classical
+  let s : Finset (Fin n) := {a, b}
+  let r : ℕ := (G.neighborFinset a ∩ ({x} : Finset (Fin n))).card
+  refine
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+      (G := G) (j := 1) (s := s) (x := x) (r := r) ?_ ?_ ?_ ?_
+  · simp [s, hab]
+  · simpa [s] using inducesModEqDegree_pair G a b (2 ^ 1)
+  · simp [s, hxa, hxb]
+  ·
+    intro v
+    rcases v with ⟨v, hv⟩
+    have hv' : v = a ∨ v = b := by
+      simpa [s] using hv
+    rcases hv' with hvA | hvB
+    · subst v
+      exact Nat.ModEq.refl r
+    · subst v
+      have hblockEq :
+          (G.neighborFinset b ∩ ({x} : Finset (Fin n))).card = r := by
+        rcases hsame with ⟨hax, hbx⟩ | ⟨hax, hbx⟩
+        · simp [r, SimpleGraph.mem_neighborFinset, hax, hbx]
+        · simp [r, SimpleGraph.mem_neighborFinset, hax, hbx]
+      simpa [hblockEq] using (Nat.ModEq.refl r)
+
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_one
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ 1) ^ 5 * 2 ^ 1) (2 ^ 1) →
+      (by
+        classical
+        exact
+          ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+            ∃ blocks : List (Finset (Fin n) × ℕ),
+              2 ^ 1 ≤ (cascadeTerminal s chain).card ∧
+              (cascadeTerminal s chain).card ≤ 2 ^ 1 ∧
+              NonemptyControlBlockUnion blocks ∧
+              ControlBlocksSeparated s blocks ∧
+              HasFixedModulusCascadeFrom G (2 ^ 1) s chain ∧
+              HasConstantModExternalBlockDegrees G s (2 ^ 1) blocks) := by
+  classical
+  intro hfixed
+  rcases hfixed with ⟨S, hSCard, _hmod⟩
+  have hS4 : 4 ≤ S.card := by
+    norm_num at hSCard
+    omega
+  have hSpos : 0 < S.card := by
+    omega
+  rcases Finset.card_pos.mp hSpos with ⟨x, hxS⟩
+  have hTcard : 3 ≤ (S.erase x).card := by
+    have hErase : (S.erase x).card = S.card - 1 := Finset.card_erase_of_mem hxS
+    omega
+  rcases exists_pair_same_adj_to_of_three_le_card G x hTcard with
+    ⟨a, haErase, b, hbErase, hab, hsame⟩
+  have hxa : x ≠ a := ((Finset.mem_erase.mp haErase).1).symm
+  have hxb : x ≠ b := ((Finset.mem_erase.mp hbErase).1).symm
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_two_of_pair G hab hxa hxb hsame
+
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_two
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ 2) ^ 5 * 2 ^ 2) (2 ^ 2) →
+      (by
+        classical
+        exact
+          ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+            ∃ blocks : List (Finset (Fin n) × ℕ),
+              2 ^ 2 ≤ (cascadeTerminal s chain).card ∧
+              (cascadeTerminal s chain).card ≤ 2 ^ 2 ∧
+              NonemptyControlBlockUnion blocks ∧
+              ControlBlocksSeparated s blocks ∧
+              HasFixedModulusCascadeFrom G (2 ^ 2) s chain ∧
+              HasConstantModExternalBlockDegrees G s (2 ^ 2) blocks) := by
+  classical
+  intro hfixed
+  rcases hfixed with ⟨S, hSCard, _hmod⟩
+  have hS40 : 40 ≤ S.card := by
+    norm_num at hSCard
+    omega
+  have hSpos : 0 < S.card := by
+    omega
+  rcases Finset.card_pos.mp hSpos with ⟨x, hxS⟩
+  let T : Finset (Fin n) := S.erase x
+  have hTcard : 39 ≤ T.card := by
+    have hErase : (S.erase x).card = S.card - 1 := Finset.card_erase_of_mem hxS
+    simpa [T] using (by omega : 39 ≤ (S.erase x).card)
+  have hbucket :
+      (20 ≤ (T.filter fun y => G.Adj y x).card) ∨
+        (20 ≤ (T.filter fun y => ¬ G.Adj y x).card) := by
+    by_contra h
+    push Not at h
+    have hsum := Finset.card_filter_add_card_filter_not (s := T) (fun y => G.Adj y x)
+    have hle : T.card ≤ 38 := by
+      omega
+    omega
+  rcases hbucket with hAdjLarge | hNonLarge
+  · let A : Finset (Fin n) := T.filter fun y => G.Adj y x
+    have hchoose : Nat.choose (3 + 3) 3 ≤ A.card := by
+      norm_num
+      change 20 ≤ (T.filter fun y => G.Adj y x).card
+      exact hAdjLarge
+    rcases ramsey_finset G 3 3 A hchoose with hclique | hindep
+    · rcases hclique with ⟨u, huA, huClique⟩
+      rw [SimpleGraph.isNClique_iff] at huClique
+      rcases huClique with ⟨huCliqueSet, hucard⟩
+      have hxU : x ∉ u := by
+        intro hxU
+        have hxA : x ∈ A := huA hxU
+        have hxAf : x ∈ T.filter fun y => G.Adj y x := by
+          change x ∈ T.filter (fun y => G.Adj y x)
+          exact hxA
+        have hxErase : x ∈ S.erase x := (Finset.mem_filter.mp hxAf).1
+        exact (Finset.mem_erase.mp hxErase).1 rfl
+      have hcard : u.card = 2 ^ 2 := by
+        norm_num [hucard]
+      have hmod : InducesModEqDegree G u (2 ^ 2) := by
+        exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+          (inducesRegularOfDegree_of_isClique G u huCliqueSet)
+      refine
+        positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+          (G := G) (j := 2) (s := u) (x := x) (r := 1) hcard hmod hxU ?_
+      intro v
+      have hvA : v.1 ∈ A := huA v.2
+      have hvAf : v.1 ∈ T.filter fun y => G.Adj y x := by
+        change v.1 ∈ T.filter (fun y => G.Adj y x)
+        exact hvA
+      have hadj : G.Adj v.1 x := (Finset.mem_filter.mp hvAf).2
+      simp [SimpleGraph.mem_neighborFinset, hadj, Nat.ModEq]
+    · rcases hindep with ⟨u, huA, huIndep⟩
+      rw [SimpleGraph.isNIndepSet_iff] at huIndep
+      rcases huIndep with ⟨huIndepSet, hucard⟩
+      have hxU : x ∉ u := by
+        intro hxU
+        have hxA : x ∈ A := huA hxU
+        have hxAf : x ∈ T.filter fun y => G.Adj y x := by
+          change x ∈ T.filter (fun y => G.Adj y x)
+          exact hxA
+        have hxErase : x ∈ S.erase x := (Finset.mem_filter.mp hxAf).1
+        exact (Finset.mem_erase.mp hxErase).1 rfl
+      have hcard : u.card = 2 ^ 2 := by
+        norm_num [hucard]
+      have hmod : InducesModEqDegree G u (2 ^ 2) := by
+        exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+          (inducesRegularOfDegree_of_isIndepSet G u huIndepSet)
+      refine
+        positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+          (G := G) (j := 2) (s := u) (x := x) (r := 1) hcard hmod hxU ?_
+      intro v
+      have hvA : v.1 ∈ A := huA v.2
+      have hvAf : v.1 ∈ T.filter fun y => G.Adj y x := by
+        change v.1 ∈ T.filter (fun y => G.Adj y x)
+        exact hvA
+      have hadj : G.Adj v.1 x := (Finset.mem_filter.mp hvAf).2
+      simp [SimpleGraph.mem_neighborFinset, hadj, Nat.ModEq]
+  · let B : Finset (Fin n) := T.filter fun y => ¬ G.Adj y x
+    have hchoose : Nat.choose (3 + 3) 3 ≤ B.card := by
+      norm_num
+      change 20 ≤ (T.filter fun y => ¬ G.Adj y x).card
+      exact hNonLarge
+    rcases ramsey_finset G 3 3 B hchoose with hclique | hindep
+    · rcases hclique with ⟨u, huB, huClique⟩
+      rw [SimpleGraph.isNClique_iff] at huClique
+      rcases huClique with ⟨huCliqueSet, hucard⟩
+      have hxU : x ∉ u := by
+        intro hxU
+        have hxB : x ∈ B := huB hxU
+        have hxBf : x ∈ T.filter fun y => ¬ G.Adj y x := by
+          change x ∈ T.filter (fun y => ¬ G.Adj y x)
+          exact hxB
+        have hxErase : x ∈ S.erase x := (Finset.mem_filter.mp hxBf).1
+        exact (Finset.mem_erase.mp hxErase).1 rfl
+      have hcard : u.card = 2 ^ 2 := by
+        norm_num [hucard]
+      have hmod : InducesModEqDegree G u (2 ^ 2) := by
+        exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+          (inducesRegularOfDegree_of_isClique G u huCliqueSet)
+      refine
+        positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+          (G := G) (j := 2) (s := u) (x := x) (r := 0) hcard hmod hxU ?_
+      intro v
+      have hvB : v.1 ∈ B := huB v.2
+      have hvBf : v.1 ∈ T.filter fun y => ¬ G.Adj y x := by
+        change v.1 ∈ T.filter (fun y => ¬ G.Adj y x)
+        exact hvB
+      have hnot : ¬ G.Adj v.1 x := (Finset.mem_filter.mp hvBf).2
+      simpa [SimpleGraph.mem_neighborFinset, hnot] using
+        (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD 2 ^ 2])
+    · rcases hindep with ⟨u, huB, huIndep⟩
+      rw [SimpleGraph.isNIndepSet_iff] at huIndep
+      rcases huIndep with ⟨huIndepSet, hucard⟩
+      have hxU : x ∉ u := by
+        intro hxU
+        have hxB : x ∈ B := huB hxU
+        have hxBf : x ∈ T.filter fun y => ¬ G.Adj y x := by
+          change x ∈ T.filter (fun y => ¬ G.Adj y x)
+          exact hxB
+        have hxErase : x ∈ S.erase x := (Finset.mem_filter.mp hxBf).1
+        exact (Finset.mem_erase.mp hxErase).1 rfl
+      have hcard : u.card = 2 ^ 2 := by
+        norm_num [hucard]
+      have hmod : InducesModEqDegree G u (2 ^ 2) := by
+        exact inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+          (inducesRegularOfDegree_of_isIndepSet G u huIndepSet)
+      refine
+        positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_singleton_block
+          (G := G) (j := 2) (s := u) (x := x) (r := 0) hcard hmod hxU ?_
+      intro v
+      have hvB : v.1 ∈ B := huB v.2
+      have hvBf : v.1 ∈ T.filter fun y => ¬ G.Adj y x := by
+        change v.1 ∈ T.filter (fun y => ¬ G.Adj y x)
+        exact hvB
+      have hnot : ¬ G.Adj v.1 x := (Finset.mem_filter.mp hvBf).2
+      simpa [SimpleGraph.mem_neighborFinset, hnot] using
+        (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD 2 ^ 2])
+
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_three
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ 3) ^ 5 * 2 ^ 3) (2 ^ 3) →
+      (by
+        classical
+        exact
+          ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+            ∃ blocks : List (Finset (Fin n) × ℕ),
+              2 ^ 3 ≤ (cascadeTerminal s chain).card ∧
+              (cascadeTerminal s chain).card ≤ 2 ^ 3 ∧
+              NonemptyControlBlockUnion blocks ∧
+              ControlBlocksSeparated s blocks ∧
+              HasFixedModulusCascadeFrom G (2 ^ 3) s chain ∧
+              HasConstantModExternalBlockDegrees G s (2 ^ 3) blocks) := by
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_ramsey_bound
+      (G := G) (j := 3) (K := (2 ^ 3) ^ 5 * 2 ^ 3) (by norm_num [Nat.choose])
+
+/--
+The first still-open dyadic terminal slice (`j = 4`, `q = 16`) is reduced to the
+exact finite Ramsey threshold needed by the singleton external-block construction.
+-/
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_four_of_cliqueOrIndepSetBound
+    (G : SimpleGraph (Fin n)) (h16 : HasCliqueOrIndepSetBound 16 16 8388607) :
+    HasFixedModulusWitnessOfCard G ((2 ^ 4) ^ 5 * 2 ^ 4) (2 ^ 4) →
+      (by
+        classical
+        exact
+          ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+            ∃ blocks : List (Finset (Fin n) × ℕ),
+              2 ^ 4 ≤ (cascadeTerminal s chain).card ∧
+              (cascadeTerminal s chain).card ≤ 2 ^ 4 ∧
+              NonemptyControlBlockUnion blocks ∧
+              ControlBlocksSeparated s blocks ∧
+              HasFixedModulusCascadeFrom G (2 ^ 4) s chain ∧
+              HasConstantModExternalBlockDegrees G s (2 ^ 4) blocks) := by
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_cliqueOrIndepSetBound
+      (G := G) (j := 4) (K := (2 ^ 4) ^ 5 * 2 ^ 4) (R := 8388607)
+      (by
+        intro α _ H s hs
+        exact h16 H s hs)
+      (by norm_num)
+
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_of_pos_le_three
+    {j : ℕ} (hj : 0 < j) (hjle : j ≤ 3) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 5 * 2 ^ j) (2 ^ j) →
+      (by
+        classical
+        exact
+          ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+            ∃ blocks : List (Finset (Fin n) × ℕ),
+              2 ^ j ≤ (cascadeTerminal s chain).card ∧
+              (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+              NonemptyControlBlockUnion blocks ∧
+              ControlBlocksSeparated s blocks ∧
+              HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+              HasConstantModExternalBlockDegrees G s (2 ^ j) blocks) := by
+  interval_cases j
+  · simpa using positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_one G
+  · simpa using positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_two G
+  · simpa using positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_three G
+
 /--
 Viable dyadic self-bridge after the `q = 8` obstruction: only positive dyadic moduli `2^j` with
 `j > 0` are requested, so the impossible `q = 1` control-block terminal case is excluded.
@@ -2040,6 +3141,711 @@ def HasExactCardFixedSingleControlHostDroppedPartUpgrade : Prop :=
     HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G (2 ^ j) (2 ^ j) →
       HasExactCardFixedModulusSingleControlResidueHostWitnessOfCard G (2 ^ j) (2 ^ j)
 
+/-- The `q = 8` terminal-host graph used to refute the raw dropped-part upgrade. -/
+private def droppedPartUpgradeCounterexampleGraph : SimpleGraph (Fin 11) :=
+  SimpleGraph.fromEdgeSet
+    ({s(0, 8), s(0, 9), s(1, 6), s(1, 7), s(2, 6), s(2, 8), s(3, 8),
+      s(3, 9), s(4, 8), s(4, 9), s(5, 8), s(5, 9), s(7, 8)} :
+      Finset (Sym2 (Fin 11)))
+
+private instance : DecidableRel droppedPartUpgradeCounterexampleGraph.Adj := by
+  unfold droppedPartUpgradeCounterexampleGraph
+  infer_instance
+
+private abbrev HasExactCardFixedModulusSingleControlModularHostWitnessOfCardDec
+    (G : SimpleGraph (Fin 11)) [DecidableRel G.Adj] (k q : ℕ) : Prop :=
+  ∃ u : Finset (Fin 11), u.card = k ∧ ∃ s t : Finset (Fin 11), 0 < t.card ∧
+    Disjoint s t ∧
+    (∃ hu : u ⊆ s, ∀ v w : ↑(u : Set (Fin 11)),
+      (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+        (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) ∧
+    ∃ e : ℕ, ∀ v : ↑(u : Set (Fin 11)), (G.neighborFinset v ∩ t).card ≡ e [MOD q]
+
+private lemma hasExactCardFixedModulusSingleControlModularHostWitnessOfCardDec_iff
+    (G : SimpleGraph (Fin 11)) [DecidableRel G.Adj] {k q : ℕ} :
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCardDec G k q ↔
+      HasExactCardFixedModulusSingleControlModularHostWitnessOfCard G k q := by
+  classical
+  unfold HasExactCardFixedModulusSingleControlModularHostWitnessOfCardDec
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCard
+  have hinst : (inferInstance : DecidableRel G.Adj) = Classical.decRel G.Adj :=
+    Subsingleton.elim _ _
+  cases hinst
+  constructor
+  · rintro ⟨u, hcard, s, t, ht, hst, ⟨hu, hdeg⟩, e, hext⟩
+    exact ⟨u, s, t, hcard, hu, ht, hst, hdeg, e, hext⟩
+  · rintro ⟨u, s, t, hcard, hu, ht, hst, hdeg, e, hext⟩
+    exact ⟨u, hcard, s, t, ht, hst, ⟨hu, hdeg⟩, e, hext⟩
+
+private lemma droppedPartUpgradeCounterexample_hostDec :
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCardDec
+      droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) := by
+  norm_num
+  let u : Finset (Fin 11) := {0, 1, 2, 3, 4, 5, 6, 7}
+  let s : Finset (Fin 11) := {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+  let t : Finset (Fin 11) := {10}
+  refine ⟨u, ?_, s, t, ?_, ?_, ?_, 0, ?_⟩
+  · native_decide
+  · native_decide
+  · native_decide
+  · refine ⟨?_, ?_⟩
+    · native_decide
+    · native_decide
+  · native_decide
+
+private lemma droppedPartUpgradeCounterexample_host :
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCard
+      droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) :=
+  (hasExactCardFixedModulusSingleControlModularHostWitnessOfCardDec_iff
+    droppedPartUpgradeCounterexampleGraph).mp
+      droppedPartUpgradeCounterexample_hostDec
+
+private abbrev InducesRegularOfDegreeDec
+    (G : SimpleGraph (Fin 11)) [DecidableRel G.Adj] (s : Finset (Fin 11))
+    (d : ℕ) : Prop :=
+  ∀ v : ↑(s : Set (Fin 11)), (inducedOn G s).degree v = d
+
+private lemma inducesRegularOfDegreeDec_iff
+    (G : SimpleGraph (Fin 11)) [DecidableRel G.Adj] {s : Finset (Fin 11)} {d : ℕ} :
+    InducesRegularOfDegreeDec G s d ↔ InducesRegularOfDegree G s d := by
+  classical
+  unfold InducesRegularOfDegreeDec InducesRegularOfDegree
+  have hinst : (inferInstance : DecidableRel G.Adj) = Classical.decRel G.Adj :=
+    Subsingleton.elim _ _
+  cases hinst
+  rfl
+
+private abbrev HasRegularInducedSubgraphOfCardBoundedDec
+    (G : SimpleGraph (Fin 11)) [DecidableRel G.Adj] (k : ℕ) : Prop :=
+  ∃ s : Finset (Fin 11), k ≤ s.card ∧
+    ∃ d : Fin 11, InducesRegularOfDegreeDec G s d.1
+
+private lemma droppedPartUpgradeCounterexample_noRegularBoundedDec :
+    ¬ HasRegularInducedSubgraphOfCardBoundedDec
+      droppedPartUpgradeCounterexampleGraph (2 ^ 3) := by
+  native_decide
+
+private lemma droppedPartUpgradeCounterexample_noRegular :
+    ¬ HasRegularInducedSubgraphOfCard droppedPartUpgradeCounterexampleGraph (2 ^ 3) := by
+  intro h
+  rcases h with ⟨s, hks, d, hreg⟩
+  have hregDec : InducesRegularOfDegreeDec droppedPartUpgradeCounterexampleGraph s d :=
+    (inducesRegularOfDegreeDec_iff droppedPartUpgradeCounterexampleGraph).mpr hreg
+  have hsne : s.Nonempty := by
+    exact Finset.card_pos.mp (lt_of_lt_of_le (by norm_num : 0 < 2 ^ 3) hks)
+  rcases hsne with ⟨x, hx⟩
+  have hcard_le : s.card ≤ 11 := by
+    simpa using (s.card_le_univ : s.card ≤ (Finset.univ : Finset (Fin 11)).card)
+  have hdeg_lt :
+      (inducedOn droppedPartUpgradeCounterexampleGraph s).degree ⟨x, hx⟩ < 11 := by
+    exact lt_of_lt_of_le
+      (by
+        simpa using
+          (SimpleGraph.degree_lt_card_verts
+            (G := inducedOn droppedPartUpgradeCounterexampleGraph s) ⟨x, hx⟩))
+      hcard_le
+  have hdlt : d < 11 := by
+    simpa [hregDec ⟨x, hx⟩] using hdeg_lt
+  exact droppedPartUpgradeCounterexample_noRegularBoundedDec
+    ⟨s, hks, ⟨d, hdlt⟩, hregDec⟩
+
+/--
+The raw dropped-part upgrade is false under the current definitions.  The counterexample has
+`j = 3`, `q = 8`, `u = {0, …, 7}`, `s = {0, …, 9}`, and `t = {10}`: the modular host
+witness exists, but any residue-host witness would imply an 8-vertex regular induced subgraph,
+which the finite certificate above rules out.
+-/
+theorem not_hasExactCardFixedSingleControlHostDroppedPartUpgrade :
+    ¬ HasExactCardFixedSingleControlHostDroppedPartUpgrade := by
+  intro hupgrade
+  have hres :
+      HasExactCardFixedModulusSingleControlResidueHostWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) :=
+    hupgrade droppedPartUpgradeCounterexampleGraph droppedPartUpgradeCounterexample_host
+  have hreg :
+      HasRegularInducedSubgraphOfCard droppedPartUpgradeCounterexampleGraph (2 ^ 3) := by
+    simpa using
+      (hasRegularInducedSubgraphOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard
+        (G := droppedPartUpgradeCounterexampleGraph) hres)
+  exact droppedPartUpgradeCounterexample_noRegular hreg
+
+/--
+The raw exact-card single-control terminal-regularization shortcut is false under the current
+definitions.  The same `q = 8` host witness has exact terminal bucket size, but no regular induced
+8-set.
+-/
+theorem not_hasExactCardFixedSingleControlHostTerminalRegularization :
+    ¬ HasExactCardFixedSingleControlHostTerminalRegularization := by
+  intro hterminal
+  have hreg :
+      HasRegularInducedSubgraphOfCard droppedPartUpgradeCounterexampleGraph (2 ^ 3) := by
+    exact hterminal droppedPartUpgradeCounterexampleGraph droppedPartUpgradeCounterexample_host
+  exact droppedPartUpgradeCounterexample_noRegular hreg
+
+/-- Equivalently, the zero-cost single-control-host terminal regularization package is false. -/
+theorem not_hasPolynomialCostFixedSingleControlHostTerminalRegularization_zero :
+    ¬ HasPolynomialCostFixedSingleControlHostTerminalRegularization 0 := by
+  intro hterminal
+  have hhost :
+      HasFixedModulusSingleControlModularHostWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph ((2 ^ 3) ^ 0 * 2 ^ 3) (2 ^ 3) := by
+    simpa using
+      (hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlModularHostWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph droppedPartUpgradeCounterexample_host)
+  have hreg :
+      HasRegularInducedSubgraphOfCard droppedPartUpgradeCounterexampleGraph (2 ^ 3) := by
+    exact hterminal droppedPartUpgradeCounterexampleGraph hhost
+  exact droppedPartUpgradeCounterexample_noRegular hreg
+
+/-- The `q = 4` structured refinement graph used to test the raw beta-up-to self-bridge. -/
+private def betaUpToBridgeCounterexampleGraph : SimpleGraph (Fin 8) :=
+  SimpleGraph.fromEdgeSet
+    ({s(0, 3), s(0, 5), s(1, 4), s(1, 7), s(2, 6), s(2, 7), s(3, 6),
+      s(4, 5), s(4, 7), s(5, 6), s(5, 7), s(6, 7)} :
+      Finset (Sym2 (Fin 8)))
+
+private instance : DecidableRel betaUpToBridgeCounterexampleGraph.Adj := by
+  unfold betaUpToBridgeCounterexampleGraph
+  infer_instance
+
+private abbrev betaUpToBridgeCounterexampleW : Finset (Fin 8) := {0, 1, 2, 3}
+private abbrev betaUpToBridgeCounterexampleS : Finset (Fin 8) := {0, 1, 2, 3, 7}
+private abbrev betaUpToBridgeCounterexampleT : Finset (Fin 8) := {4, 5, 6}
+
+private lemma betaUpToBridgeCounterexampleW_subset_S :
+    betaUpToBridgeCounterexampleW ⊆ betaUpToBridgeCounterexampleS := by
+  native_decide
+
+/-- Local induced-degree formula used by the finite q=4 beta-up-to obstruction. -/
+private lemma degree_inducedOn_eq_card_neighborFinset_inter_q4
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    (s : Finset (Fin n)) (v : ↑(s : Set (Fin n))) :
+    (inducedOn G s).degree v = (G.neighborFinset v ∩ s).card := by
+  classical
+  rw [← SimpleGraph.card_neighborFinset_eq_degree]
+  have hmap :
+      ((inducedOn G s).neighborFinset v).map (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) =
+        G.neighborFinset v ∩ s := by
+    ext x
+    simp [inducedOn, and_assoc]
+  calc
+    ((inducedOn G s).neighborFinset v).card =
+        (((inducedOn G s).neighborFinset v).map
+          (Function.Embedding.subtype (· ∈ (s : Set (Fin n))))).card := by
+            rw [Finset.card_map]
+    _ = (G.neighborFinset v ∩ s).card := by rw [hmap]
+
+/--
+Finite-search shadow of the exact beta-up-to conclusion with no auxiliary tail blocks at `q = 4`.
+The scalar on the distinguished block is finite because the block has size `3`.
+-/
+private abbrev Q4RefinementBetaUpToNoTailOutputDec
+    (G : SimpleGraph (Fin 8)) [DecidableRel G.Adj] : Prop :=
+  ∃ w s t : Finset (Fin 8), w.card = 4 ∧ ∃ hw : w ⊆ s,
+    t.card = 3 ∧ Disjoint s t ∧ ∃ e : Fin 4,
+      (∀ v w' : ↑(w : Set (Fin 8)),
+        (inducedOn G (s ∪ controlBlockUnion [(t, e.1)])).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion [(t, e.1)])).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD 4]) ∧
+      (∀ v : ↑(w : Set (Fin 8)), (G.neighborFinset v.1 ∩ t).card = e.1) ∧
+      (∀ v w' : ↑(w : Set (Fin 8)),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD 4]) ∧
+      (∀ v : ↑(w : Set (Fin 8)), (G.neighborFinset v.1 ∩ t).card ≡ e.1 [MOD 4]) ∧
+      (∀ v w' : ↑(w : Set (Fin 8)),
+        (G.neighborFinset v.1 ∩ (s \ w)).card ≡
+          (G.neighborFinset w'.1 ∩ (s \ w)).card [MOD 4])
+
+/--
+Proof-friendly shadow of the effective-tail beta-up-to output for the concrete q=4 graph.  It rewrites
+induced degrees to ambient neighbor-count intersections so a pruned computable search can certify
+nonexistence.
+-/
+private abbrev Q4RefinementBetaUpToEffectiveTailNeighborOutputDec : Prop :=
+  ∃ w s t b : Finset (Fin 8), w.card = 4 ∧ w ⊆ s ∧
+    t.card = 3 ∧ Disjoint s t ∧ Disjoint s b ∧ Disjoint t b ∧ ∃ e : Fin 4,
+      (∀ v ∈ w, ∀ w' ∈ w,
+        (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ (s ∪ (t ∪ b))).card ≡
+          (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ (s ∪ (t ∪ b))).card
+            [MOD 4]) ∧
+      (∀ v ∈ w, (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ t).card = e.1) ∧
+      (∀ v ∈ w, ∀ w' ∈ w,
+        (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ s).card ≡
+          (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ s).card [MOD 4]) ∧
+      (∀ v ∈ w, ∀ w' ∈ w,
+        (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ (s \ w)).card ≡
+          (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ (s \ w)).card [MOD 4])
+
+private def q4EffectiveTailAllSubsets : List (Finset (Fin 8)) :=
+  (List.range 256).map fun m =>
+    ((List.finRange 8).filter fun i : Fin 8 => m.testBit i.1).toFinset
+
+private lemma q4EffectiveTailAllSubsets_complete :
+    ∀ s : Finset (Fin 8), s ∈ q4EffectiveTailAllSubsets := by
+  native_decide
+
+private def q4EffectiveTailAllPairsIn
+    (w : Finset (Fin 8)) (p : Fin 8 → Fin 8 → Bool) : Bool :=
+  (List.finRange 8).all fun v =>
+    if decide (v ∈ w) then
+      (List.finRange 8).all fun w' => if decide (w' ∈ w) then p v w' else true
+    else
+      true
+
+private def q4EffectiveTailAllVerticesIn
+    (w : Finset (Fin 8)) (p : Fin 8 → Bool) : Bool :=
+  (List.finRange 8).all fun v => if decide (v ∈ w) then p v else true
+
+private def q4EffectiveTailConstMod4On
+    (w target : Finset (Fin 8)) : Bool :=
+  q4EffectiveTailAllPairsIn w fun v w' =>
+    decide ((betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ target).card ≡
+      (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ target).card [MOD 4])
+
+private def q4EffectiveTailWitnessBool
+    (w s t b : Finset (Fin 8)) : Bool :=
+  decide (w.card = 4) &&
+    decide (w ⊆ s) &&
+    decide (t.card = 3) &&
+    decide (Disjoint s t) &&
+    decide (Disjoint s b) &&
+    decide (Disjoint t b) &&
+    (List.finRange 4).any (fun e =>
+      q4EffectiveTailConstMod4On w (s ∪ (t ∪ b)) &&
+        q4EffectiveTailAllVerticesIn w
+          (fun v => decide ((betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ t).card = e.1)) &&
+        q4EffectiveTailConstMod4On w s &&
+        q4EffectiveTailConstMod4On w (s \ w))
+
+private def q4EffectiveTailOutputExistsBool : Bool :=
+  (q4EffectiveTailAllSubsets.filter fun w => decide (w.card = 4)).any fun w =>
+    (q4EffectiveTailAllSubsets.filter fun s => decide (w ⊆ s)).any fun s =>
+      (q4EffectiveTailAllSubsets.filter fun t => decide (t.card = 3 ∧ Disjoint s t)).any fun t =>
+        (q4EffectiveTailAllSubsets.filter fun b => decide (Disjoint s b ∧ Disjoint t b)).any
+          fun b => q4EffectiveTailWitnessBool w s t b
+
+private lemma q4EffectiveTailAllPairsIn_eq_true_of
+    {w : Finset (Fin 8)} {p : Fin 8 → Fin 8 → Bool}
+    (h : ∀ v ∈ w, ∀ w' ∈ w, p v w' = true) :
+    q4EffectiveTailAllPairsIn w p = true := by
+  unfold q4EffectiveTailAllPairsIn
+  rw [List.all_eq_true]
+  intro v _hv
+  by_cases hvw : v ∈ w
+  · simp [hvw]
+    intro w'
+    by_cases hw'w : w' ∈ w
+    · exact Or.inr (h v hvw w' hw'w)
+    · exact Or.inl hw'w
+  · simp [hvw]
+
+private lemma q4EffectiveTailAllVerticesIn_eq_true_of
+    {w : Finset (Fin 8)} {p : Fin 8 → Bool}
+    (h : ∀ v ∈ w, p v = true) :
+    q4EffectiveTailAllVerticesIn w p = true := by
+  unfold q4EffectiveTailAllVerticesIn
+  rw [List.all_eq_true]
+  intro v _hv
+  by_cases hvw : v ∈ w
+  · simp [hvw, h v hvw]
+  · simp [hvw]
+
+private lemma q4EffectiveTailWitnessBool_eq_true_of_neighborOutput
+    {w s t b : Finset (Fin 8)}
+    (hwcard : w.card = 4) (hws : w ⊆ s) (htcard : t.card = 3)
+    (hst : Disjoint s t) (hsb : Disjoint s b) (htb : Disjoint t b)
+    (h :
+      ∃ e : Fin 4,
+        (∀ v ∈ w, ∀ w' ∈ w,
+          (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ (s ∪ (t ∪ b))).card ≡
+            (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ (s ∪ (t ∪ b))).card
+              [MOD 4]) ∧
+        (∀ v ∈ w, (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ t).card = e.1) ∧
+        (∀ v ∈ w, ∀ w' ∈ w,
+          (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ s).card ≡
+            (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ s).card [MOD 4]) ∧
+        (∀ v ∈ w, ∀ w' ∈ w,
+          (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ (s \ w)).card ≡
+            (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ (s \ w)).card [MOD 4])) :
+    q4EffectiveTailWitnessBool w s t b = true := by
+  rcases h with ⟨e, hamb, hctrl, hhost, hdrop⟩
+  unfold q4EffectiveTailWitnessBool
+  simp [hwcard, hws, htcard, hst, hsb, htb]
+  refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩
+  · exact
+      q4EffectiveTailAllPairsIn_eq_true_of (w := w)
+        (p := fun v w' => decide
+          ((betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ (s ∪ (t ∪ b))).card ≡
+            (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ (s ∪ (t ∪ b))).card
+              [MOD 4]))
+        (by
+          intro v hv w' hw'
+          exact decide_eq_true (hamb v hv w' hw'))
+  · refine ⟨e, ?_⟩
+    exact
+      q4EffectiveTailAllVerticesIn_eq_true_of (w := w)
+        (p := fun v => decide
+          ((betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ t).card = e.1))
+        (by
+          intro v hv
+          exact decide_eq_true (hctrl v hv))
+  · exact
+      q4EffectiveTailAllPairsIn_eq_true_of (w := w)
+        (p := fun v w' => decide
+          ((betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ s).card ≡
+            (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ s).card [MOD 4]))
+        (by
+          intro v hv w' hw'
+          exact decide_eq_true (hhost v hv w' hw'))
+  · exact
+      q4EffectiveTailAllPairsIn_eq_true_of (w := w)
+        (p := fun v w' => decide
+          ((betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ (s \ w)).card ≡
+            (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ (s \ w)).card [MOD 4]))
+        (by
+          intro v hv w' hw'
+          exact decide_eq_true (hdrop v hv w' hw'))
+
+private lemma q4EffectiveTailOutputExistsBool_eq_true_of_neighborOutput
+    (h : Q4RefinementBetaUpToEffectiveTailNeighborOutputDec) :
+    q4EffectiveTailOutputExistsBool = true := by
+  rcases h with ⟨w, s, t, b, hwcard, hws, htcard, hst, hsb, htb, he⟩
+  unfold q4EffectiveTailOutputExistsBool
+  rw [List.any_eq_true]
+  refine ⟨w, ?_, ?_⟩
+  · simp [q4EffectiveTailAllSubsets_complete w, hwcard]
+  rw [List.any_eq_true]
+  refine ⟨s, ?_, ?_⟩
+  · simp [q4EffectiveTailAllSubsets_complete s, hws]
+  rw [List.any_eq_true]
+  refine ⟨t, ?_, ?_⟩
+  · simp [q4EffectiveTailAllSubsets_complete t, htcard, hst]
+  rw [List.any_eq_true]
+  refine ⟨b, ?_, ?_⟩
+  · simp [q4EffectiveTailAllSubsets_complete b, hsb, htb]
+  exact q4EffectiveTailWitnessBool_eq_true_of_neighborOutput
+    hwcard hws htcard hst hsb htb he
+
+private lemma q4EffectiveTailOutputExistsBool_eq_false :
+    q4EffectiveTailOutputExistsBool = false := by
+  native_decide
+
+private lemma betaUpToBridgeCounterexample_noOutputDec :
+    ¬ Q4RefinementBetaUpToNoTailOutputDec betaUpToBridgeCounterexampleGraph := by
+  native_decide
+
+/--
+Finite-search shadow of the beta-up-to conclusion after replacing all auxiliary tail blocks by their
+single effective union. In the q=4 counterexample this covers arbitrary bounded tail-block lists.
+-/
+private abbrev Q4RefinementBetaUpToEffectiveTailOutputDec
+    (G : SimpleGraph (Fin 8)) [DecidableRel G.Adj] : Prop :=
+  ∃ w s t b : Finset (Fin 8), w.card = 4 ∧ ∃ hw : w ⊆ s,
+    t.card = 3 ∧ Disjoint s t ∧ Disjoint s b ∧ Disjoint t b ∧ ∃ e : Fin 4,
+      (∀ v w' : ↑(w : Set (Fin 8)),
+        (inducedOn G (s ∪ (t ∪ b))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ (t ∪ b))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD 4]) ∧
+      (∀ v : ↑(w : Set (Fin 8)), (G.neighborFinset v.1 ∩ t).card = e.1) ∧
+      (∀ v w' : ↑(w : Set (Fin 8)),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD 4]) ∧
+      (∀ v w' : ↑(w : Set (Fin 8)),
+        (G.neighborFinset v.1 ∩ (s \ w)).card ≡
+          (G.neighborFinset w'.1 ∩ (s \ w)).card [MOD 4])
+
+/-- Decidable q=4 input shadow avoiding the noncomputable instances in the public package. -/
+private abbrev Q4RefinementInputDec
+    (G : SimpleGraph (Fin 8)) [DecidableRel G.Adj] : Prop :=
+  ∃ w s t : Finset (Fin 8), ∃ hw : w ⊆ s,
+    4 ≤ w.card ∧ t.card = 3 ∧ Disjoint s t ∧
+    (∀ v w' : ↑(w : Set (Fin 8)),
+      (inducedOn G (s ∪ controlBlockUnion [(t, 1)])).degree
+          ⟨v.1, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+        (inducedOn G (s ∪ controlBlockUnion [(t, 1)])).degree
+          ⟨w'.1, Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD 4]) ∧
+    (∀ v : ↑(w : Set (Fin 8)), (G.neighborFinset v.1 ∩ t).card = 1) ∧
+    (∀ v w' : ↑(w : Set (Fin 8)),
+      (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+        (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD 4]) ∧
+    (∀ v : ↑(w : Set (Fin 8)), (G.neighborFinset v.1 ∩ t).card ≡ 1 [MOD 4])
+
+private lemma q4RefinementInputDec_to_refinementInput
+    (G : SimpleGraph (Fin 8)) [DecidableRel G.Adj] (r : ℕ) :
+    Q4RefinementInputDec G →
+      HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G 4 4 r := by
+  classical
+  unfold Q4RefinementInputDec HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+  have hinst : (inferInstance : DecidableRel G.Adj) = Classical.decRel G.Adj :=
+    Subsingleton.elim _ _
+  cases hinst
+  rintro ⟨w, s, t, hw, hk, ht, hst, hbig, hctrl, hhost, hext⟩
+  refine ⟨w, s, t, hw, [], 1, hk, ht, by simp, ?_, hbig, hctrl, hhost, ?_⟩
+  · change Disjoint s t ∧ Disjoint t (controlBlockUnion ([] : List (Finset (Fin 8) × ℕ))) ∧
+      ControlBlocksSeparated s []
+    exact ⟨hst, by simp [controlBlockUnion], trivial⟩
+  · exact ⟨hext, trivial⟩
+
+private lemma betaUpToBridgeCounterexample_refinementInputDec :
+    Q4RefinementInputDec betaUpToBridgeCounterexampleGraph := by
+  refine
+    ⟨betaUpToBridgeCounterexampleW, betaUpToBridgeCounterexampleS,
+      betaUpToBridgeCounterexampleT, betaUpToBridgeCounterexampleW_subset_S,
+      ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · native_decide
+  · native_decide
+  · native_decide
+  · native_decide
+  · native_decide
+  · native_decide
+  · native_decide
+
+private lemma betaUpToBridgeCounterexample_refinementInputFour :
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+      betaUpToBridgeCounterexampleGraph 4 4 0 :=
+  q4RefinementInputDec_to_refinementInput betaUpToBridgeCounterexampleGraph 0
+    betaUpToBridgeCounterexample_refinementInputDec
+
+private lemma betaUpToBridgeCounterexample_refinementInputFourOf (r : ℕ) :
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+      betaUpToBridgeCounterexampleGraph 4 4 r :=
+  q4RefinementInputDec_to_refinementInput betaUpToBridgeCounterexampleGraph r
+    betaUpToBridgeCounterexample_refinementInputDec
+
+private lemma betaUpToBridgeCounterexample_refinementInput :
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+      betaUpToBridgeCounterexampleGraph (2 ^ 2) (2 ^ 2) 0 := by
+  simpa using betaUpToBridgeCounterexample_refinementInputFour
+
+private lemma betaUpToBridgeCounterexample_refinementInputOf (r : ℕ) :
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+      betaUpToBridgeCounterexampleGraph (2 ^ 2) (2 ^ 2) r := by
+  simpa using betaUpToBridgeCounterexample_refinementInputFourOf r
+
+private lemma q4RefinementBetaUpToNoTailOutputDec_of_betaUpToData
+    (G : SimpleGraph (Fin 8)) [DecidableRel G.Adj]
+    (hbeta :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+        G (2 ^ 2) (2 ^ 2) 0) :
+    Q4RefinementBetaUpToNoTailOutputDec G := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  norm_num at hbeta ⊢
+  rcases hbeta with
+    ⟨w, s, t, hwcard, hw, blocks, e, j, row, hqpow, htcard, hlen, hsep, hbig, hctrl,
+      hhost, _hext, hrow, hbetaUpTo⟩
+  have hblocks : blocks = [] := by
+    apply List.eq_nil_of_length_eq_zero
+    exact Nat.eq_zero_of_le_zero hlen
+  subst blocks
+  rcases hsep with ⟨hst, _htail, _hsepTail⟩
+  have hw_nonempty : w.Nonempty := by
+    exact Finset.card_pos.mp (by simpa [hwcard])
+  rcases hw_nonempty with ⟨v₀, hv₀⟩
+  have he_le_three : e ≤ 3 := by
+    have hle :
+        (G.neighborFinset v₀ ∩ t).card ≤ t.card :=
+      Finset.card_le_card (by intro x hx; exact (Finset.mem_inter.mp hx).2)
+    have heq : (G.neighborFinset v₀ ∩ t).card = e := hctrl ⟨v₀, hv₀⟩
+    simpa [htcard, ← heq] using hle
+  let eFin : Fin 4 := ⟨e, Nat.lt_succ_of_le he_le_three⟩
+  refine ⟨w, s, t, hwcard, hw, htcard, hst, eFin, ?_, ?_, ?_, ?_, ?_⟩
+  · intro v w'
+    simpa [eFin] using hbig v w'
+  · intro v
+    simpa [eFin] using hctrl v
+  · intro v w'
+    exact hhost v w'
+  · intro v
+    exact (hctrl v).symm ▸ Nat.ModEq.refl e
+  · intro v w'
+    have hdrop : row v ≡ row w' [MOD 4] := by
+      have hpow : 2 ^ j = 4 := hqpow.symm
+      simpa [hpow] using row_modEq_pow_of_dyadicTailBetaVanishesUpTo hbetaUpTo v w'
+    simpa [hrow v, hrow w'] using hdrop
+
+private lemma q4RefinementBetaUpToNoTailOutputDec_of_singleControlDropData
+    (G : SimpleGraph (Fin 8)) [DecidableRel G.Adj]
+    (hdropData :
+      HasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+        G (2 ^ 2) (2 ^ 2) (2 ^ 2 - 1)) :
+    Q4RefinementBetaUpToNoTailOutputDec G := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  norm_num at hdropData ⊢
+  rcases hdropData with
+    ⟨u, s, t, hucard, hu, _htpos, htcard, hst, hhost, hdrop, e₀, hextMod⟩
+  have hu_nonempty : u.Nonempty := by
+    exact Finset.card_pos.mp (by simpa [hucard])
+  rcases hu_nonempty with ⟨v₀, hv₀⟩
+  let e : ℕ := (G.neighborFinset v₀ ∩ t).card
+  have he_le_three : e ≤ 3 := by
+    have hle : (G.neighborFinset v₀ ∩ t).card ≤ t.card :=
+      Finset.card_le_card (by intro x hx; exact (Finset.mem_inter.mp hx).2)
+    simpa [e, htcard] using hle
+  let eFin : Fin 4 := ⟨e, Nat.lt_succ_of_le he_le_three⟩
+  have hextExact : ∀ v : ↑(u : Set (Fin 8)), (G.neighborFinset v.1 ∩ t).card = e := by
+    intro v
+    have hvlt : (G.neighborFinset v.1 ∩ t).card < 4 := by
+      have hle : (G.neighborFinset v.1 ∩ t).card ≤ t.card :=
+        Finset.card_le_card (by intro x hx; exact (Finset.mem_inter.mp hx).2)
+      omega
+    have h0lt : e < 4 := Nat.lt_succ_of_le he_le_three
+    have hmod : (G.neighborFinset v.1 ∩ t).card ≡ e [MOD 4] := by
+      exact (hextMod v).trans (hextMod ⟨v₀, hv₀⟩).symm
+    rw [Nat.ModEq, Nat.mod_eq_of_lt hvlt, Nat.mod_eq_of_lt h0lt] at hmod
+    exact hmod
+  have hbig :
+      ∀ v w : ↑(u : Set (Fin 8)),
+        (inducedOn G (s ∪ t)).degree ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ ≡
+          (inducedOn G (s ∪ t)).degree ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩
+            [MOD 4] := by
+    intro v w
+    have hvdeg :
+        (inducedOn G (s ∪ t)).degree ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ =
+          (inducedOn G s).degree ⟨v.1, hu v.2⟩ + (G.neighborFinset v.1 ∩ t).card := by
+      exact degree_union_eq_degree_add_external (G := G) (s := s) (t := t) hst
+        ⟨v.1, hu v.2⟩
+    have hwdeg :
+        (inducedOn G (s ∪ t)).degree ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩ =
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ + (G.neighborFinset w.1 ∩ t).card := by
+      exact degree_union_eq_degree_add_external (G := G) (s := s) (t := t) hst
+        ⟨w.1, hu w.2⟩
+    rw [hvdeg, hwdeg, hextExact v, hextExact w]
+    exact (hhost v w).add (Nat.ModEq.refl e)
+  refine ⟨u, s, t, hucard, hu, htcard, hst, eFin, ?_, ?_, ?_, ?_, ?_⟩
+  · intro v w
+    have hUnion : s ∪ controlBlockUnion [(t, eFin.1)] = s ∪ t := by
+      ext x
+      simp [controlBlockUnion]
+    have hvdeg :
+        (inducedOn G (s ∪ controlBlockUnion [(t, eFin.1)])).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ =
+          (inducedOn G (s ∪ t)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hu v.2))⟩ :=
+      inducedOn_degree_congr (G := G) hUnion
+        (Finset.mem_union.mpr (Or.inl (hu v.2)))
+        (Finset.mem_union.mpr (Or.inl (hu v.2)))
+    have hwdeg :
+        (inducedOn G (s ∪ controlBlockUnion [(t, eFin.1)])).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩ =
+          (inducedOn G (s ∪ t)).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl (hu w.2))⟩ :=
+      inducedOn_degree_congr (G := G) hUnion
+        (Finset.mem_union.mpr (Or.inl (hu w.2)))
+        (Finset.mem_union.mpr (Or.inl (hu w.2)))
+    rw [hvdeg, hwdeg]
+    exact hbig v w
+  · intro v
+    simpa [eFin] using hextExact v
+  · intro v w
+    exact hhost v w
+  · intro v
+    have hEq : (G.neighborFinset v.1 ∩ t).card = eFin.1 := by
+      simpa [eFin] using hextExact v
+    rw [hEq]
+  · intro v w
+    exact hdrop v w
+
+private lemma q4RefinementBetaUpToEffectiveTailOutputDec_of_betaUpToData
+    (G : SimpleGraph (Fin 8)) [DecidableRel G.Adj] {r : ℕ}
+    (hbeta :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+        G (2 ^ 2) (2 ^ 2) r) :
+    Q4RefinementBetaUpToEffectiveTailOutputDec G := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  norm_num at hbeta ⊢
+  rcases hbeta with
+    ⟨w, s, t, hwcard, hw, blocks, e, j, row, hqpow, htcard, _hlen, hsep, hbig, hctrl,
+      hhost, _hext, hrow, hbetaUpTo⟩
+  rcases hsep with ⟨hst, htBlocks, hsepBlocks⟩
+  have hbS : Disjoint s (controlBlockUnion blocks) :=
+    disjoint_controlBlockUnion_of_controlBlocksSeparated hsepBlocks
+  have hw_nonempty : w.Nonempty := by
+    exact Finset.card_pos.mp (by simpa [hwcard])
+  rcases hw_nonempty with ⟨v₀, hv₀⟩
+  have he_le_three : e ≤ 3 := by
+    have hle :
+        (G.neighborFinset v₀ ∩ t).card ≤ t.card :=
+      Finset.card_le_card (by intro x hx; exact (Finset.mem_inter.mp hx).2)
+    have heq : (G.neighborFinset v₀ ∩ t).card = e := hctrl ⟨v₀, hv₀⟩
+    simpa [htcard, ← heq] using hle
+  let eFin : Fin 4 := ⟨e, Nat.lt_succ_of_le he_le_three⟩
+  refine
+    ⟨w, s, t, controlBlockUnion blocks, hwcard, hw, htcard, hst, hbS, htBlocks, eFin,
+      ?_, ?_, ?_, ?_⟩
+  · intro v w'
+    exact hbig v w'
+  · intro v
+    simpa [eFin] using hctrl v
+  · intro v w'
+    exact hhost v w'
+  · intro v w'
+    have hdrop : row v ≡ row w' [MOD 4] := by
+      have hpow : 2 ^ j = 4 := hqpow.symm
+      simpa [hpow] using row_modEq_pow_of_dyadicTailBetaVanishesUpTo hbetaUpTo v w'
+    simpa [hrow v, hrow w'] using hdrop
+
+private lemma q4RefinementBetaUpToEffectiveTailNeighborOutputDec_of_effectiveTailOutputDec :
+    Q4RefinementBetaUpToEffectiveTailOutputDec betaUpToBridgeCounterexampleGraph →
+      Q4RefinementBetaUpToEffectiveTailNeighborOutputDec := by
+  intro h
+  rcases h with
+    ⟨w, s, t, b, hwcard, hw, htcard, hst, hsb, htb, e, hamb, hctrl, hhost, hdrop⟩
+  refine ⟨w, s, t, b, hwcard, hw, htcard, hst, hsb, htb, e, ?_, ?_, ?_, ?_⟩
+  · intro v hv w' hw'
+    have hvU : v ∈ s ∪ (t ∪ b) := Finset.mem_union.mpr (Or.inl (hw hv))
+    have hwU : w' ∈ s ∪ (t ∪ b) := Finset.mem_union.mpr (Or.inl (hw hw'))
+    have hdegV :
+        (inducedOn betaUpToBridgeCounterexampleGraph (s ∪ (t ∪ b))).degree ⟨v, hvU⟩ =
+          (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ (s ∪ (t ∪ b))).card :=
+      degree_inducedOn_eq_card_neighborFinset_inter_q4
+        betaUpToBridgeCounterexampleGraph (s ∪ (t ∪ b)) ⟨v, hvU⟩
+    have hdegW :
+        (inducedOn betaUpToBridgeCounterexampleGraph (s ∪ (t ∪ b))).degree ⟨w', hwU⟩ =
+          (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ (s ∪ (t ∪ b))).card :=
+      degree_inducedOn_eq_card_neighborFinset_inter_q4
+        betaUpToBridgeCounterexampleGraph (s ∪ (t ∪ b)) ⟨w', hwU⟩
+    simpa [hdegV, hdegW] using hamb ⟨v, hv⟩ ⟨w', hw'⟩
+  · intro v hv
+    simpa using hctrl ⟨v, hv⟩
+  · intro v hv w' hw'
+    have hdegV :
+        (inducedOn betaUpToBridgeCounterexampleGraph s).degree ⟨v, hw hv⟩ =
+          (betaUpToBridgeCounterexampleGraph.neighborFinset v ∩ s).card :=
+      degree_inducedOn_eq_card_neighborFinset_inter_q4
+        betaUpToBridgeCounterexampleGraph s ⟨v, hw hv⟩
+    have hdegW :
+        (inducedOn betaUpToBridgeCounterexampleGraph s).degree ⟨w', hw hw'⟩ =
+          (betaUpToBridgeCounterexampleGraph.neighborFinset w' ∩ s).card :=
+      degree_inducedOn_eq_card_neighborFinset_inter_q4
+        betaUpToBridgeCounterexampleGraph s ⟨w', hw hw'⟩
+    simpa [hdegV, hdegW] using hhost ⟨v, hv⟩ ⟨w', hw'⟩
+  · intro v hv w' hw'
+    exact hdrop ⟨v, hv⟩ ⟨w', hw'⟩
+
+private lemma betaUpToBridgeCounterexample_noEffectiveTailNeighborOutputDec :
+    ¬ Q4RefinementBetaUpToEffectiveTailNeighborOutputDec := by
+  intro h
+  have htrue := q4EffectiveTailOutputExistsBool_eq_true_of_neighborOutput h
+  have hfalse := q4EffectiveTailOutputExistsBool_eq_false
+  simpa [hfalse] using htrue
+
+private lemma betaUpToBridgeCounterexample_noEffectiveTailOutputDec :
+    ¬ Q4RefinementBetaUpToEffectiveTailOutputDec betaUpToBridgeCounterexampleGraph := by
+  intro h
+  exact betaUpToBridgeCounterexample_noEffectiveTailNeighborOutputDec
+    (q4RefinementBetaUpToEffectiveTailNeighborOutputDec_of_effectiveTailOutputDec h)
+
 /--
 Terminal-size bounded host regularization: once a bounded fixed-modulus control-block modular host
 witness already lives on `q = 2^j` vertices, it collapses directly to a regular induced subgraph on
@@ -2049,6 +3855,1559 @@ def HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (r : ℕ
   ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
     HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
       HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+Positive-dyadic form of the terminal regularization theorem proved in `proof.md` Theorem 9.3:
+the nontrivial terminal host has modulus `q = 2^j > 1`.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+      HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/-- Remaining terminal-regularization obligation after the unconditional `j = 1` slice is removed. -/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (_hj : 1 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+      HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+The positive-dyadic terminal theorem is enough for the all-`j` Lean landing surface: the omitted
+`j = 0` target is the one-vertex regular induced subgraph, forced by the nonempty host witness.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_of_positiveDyadic
+    {r : ℕ}
+    (hpos :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r) :
+    HasBoundedFixedModulusControlBlockModularHostTerminalRegularization r := by
+  intro n j G hhost
+  by_cases hj : j = 0
+  · subst j
+    rcases hhost with ⟨u, _s, hcard, _hu, _blocks, _hlen, _hnonempty, _hsep, _hdeg, _hext⟩
+    have huPos : 0 < u.card := Nat.succ_le_iff.mp (by simpa using hcard)
+    have hn : 0 < n := by
+      exact lt_of_lt_of_le huPos (by simpa using (Finset.card_le_univ u))
+    letI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
+    simpa using hasRegularInducedSubgraphOfCard_one G
+  · exact hpos (Nat.pos_of_ne_zero hj) G hhost
+
+/--
+Graph-local data needed to instantiate `proof.md` Theorem 9.3 for every positive dyadic terminal
+host.  The abstract Section 9 theorem in `Frontier.lean` proves `RegularQSet`; this package records
+the graph-specific meanings of the residue obstruction, fully skew marker, exits, and the final
+realization as a regular induced `q`-set.
+-/
+structure Q64PositiveDyadicTerminalRegularizationData (r : ℕ) : Type where
+  NonconstantResidue :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  FullySkewSplitter :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  ProperSubmarker :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  PrimeModuleExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  ClosedLocalExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  RegularQSet :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  terminalData :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64TerminalDyadicTheoremData (NonconstantResidue hj G hhost)
+        (FullySkewSplitter hj G hhost) (ProperSubmarker hj G hhost)
+        (PrimeModuleExit hj G hhost) (ClosedLocalExit hj G hhost)
+        (RegularQSet hj G hhost)
+  regularQSetRealizes :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      RegularQSet hj G hhost → HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+Host-local Section 9 obligations for the positive-dyadic terminal route.  This keeps the
+constant-residue branch as an explicit host-local input and isolates only the remaining q-marker
+maps; it does not assume terminal regularization.
+-/
+structure Q64PositiveDyadicTerminalGraphLocalObligations (r : ℕ) : Type where
+  NonconstantResidue :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  FullySkewSplitter :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  ProperSubmarker :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  PrimeModuleExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  ClosedLocalExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  RegularQSet :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  constantResidueRegular :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      (¬ NonconstantResidue hj G hhost) → RegularQSet hj G hhost
+  obstructionFullySkew :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      NonconstantResidue hj G hhost → FullySkewSplitter hj G hhost
+  qMarkerCoupling :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet
+        (FullySkewSplitter hj G hhost) (ProperSubmarker hj G hhost)
+        (PrimeModuleExit hj G hhost) (ClosedLocalExit hj G hhost)
+        (RegularQSet hj G hhost)
+  properSubmarkerCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      ProperSubmarker hj G hhost → RegularQSet hj G hhost
+  primeModuleCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      PrimeModuleExit hj G hhost → RegularQSet hj G hhost
+  closedLocalCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      ClosedLocalExit hj G hhost → RegularQSet hj G hhost
+  regularQSetRealizes :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      RegularQSet hj G hhost → HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+Turn the host-local Section 9 obligation package into the existing abstract terminal-data package.
+This only repackages the remaining q-marker maps and the separated constant-residue branch.
+-/
+def q64PositiveDyadicTerminalRegularizationData_of_graphLocalObligations
+    {r : ℕ} (hdata : Q64PositiveDyadicTerminalGraphLocalObligations r) :
+    Q64PositiveDyadicTerminalRegularizationData r where
+  NonconstantResidue := hdata.NonconstantResidue
+  FullySkewSplitter := hdata.FullySkewSplitter
+  ProperSubmarker := hdata.ProperSubmarker
+  PrimeModuleExit := hdata.PrimeModuleExit
+  ClosedLocalExit := hdata.ClosedLocalExit
+  RegularQSet := hdata.RegularQSet
+  terminalData := by
+    intro n j hj G hhost
+    exact
+      { constantResidueRegular := hdata.constantResidueRegular hj G hhost
+        obstructionFullySkew := hdata.obstructionFullySkew hj G hhost
+        qMarkerCoupling := hdata.qMarkerCoupling hj G hhost
+        properSubmarkerCloses := hdata.properSubmarkerCloses hj G hhost
+        primeModuleCloses := hdata.primeModuleCloses hj G hhost
+        closedLocalCloses := hdata.closedLocalCloses hj G hhost }
+  regularQSetRealizes := hdata.regularQSetRealizes
+
+/-- Host-local Section 9 obligations provide an instance of the abstract terminal-data package. -/
+theorem nonempty_q64PositiveDyadicTerminalRegularizationData_of_graphLocalObligations
+    {r : ℕ} (hdata : Q64PositiveDyadicTerminalGraphLocalObligations r) :
+    Nonempty (Q64PositiveDyadicTerminalRegularizationData r) :=
+  ⟨q64PositiveDyadicTerminalRegularizationData_of_graphLocalObligations hdata⟩
+
+universe uRoute vRoute
+
+/--
+Proof-md-facing saturated q-marker route to the positive dyadic terminal graph-local obligations.
+
+The fields follow `proof.md` §§4--9: constant residues close directly; a nonconstant residue produces
+a dyadic obstruction cut; the cut creates a q-marker; the q-marker either exits through the local
+closures or reaches the fully-skew endpoint; and that endpoint is excluded by the completed saturated
+`FR^sat` branch/closure maps.  The existing terminal-obligation slot named `FullySkewSplitter` is
+instantiated below by the q-marker carrier, while the actual fully-skew endpoint remains the separate
+`FullySkewSplitter` field of this route.
+-/
+structure Q64ProofMdSaturatedQMarkerTerminalRoute (r : ℕ) :
+    Type (max uRoute vRoute + 1) where
+  NonconstantResidue :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  DyadicObstructionCut :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  QMarker :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  FullySkewSplitter :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  OrderedBoundaryAdmissible :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  CompleteSmallerQMarker :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  LocalRegularizingExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  ProperSubmarker :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  PrimeModuleExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  ClosedLocalExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  RegularQSet :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  Row :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Type uRoute
+  Packet :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Type vRoute
+  frsatComplex :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64FRSatRawExchangeComplex (Row hj G hhost) (Packet hj G hhost)
+  frsatRow :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Row hj G hhost
+  constantResidueRegular :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      (¬ NonconstantResidue hj G hhost) → RegularQSet hj G hhost
+  dyadicObstructionCut_of_nonconstantResidue :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      NonconstantResidue hj G hhost → DyadicObstructionCut hj G hhost
+  qMarker_of_dyadicObstructionCut :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      DyadicObstructionCut hj G hhost → QMarker hj G hhost
+  saturatedQMarkerExclusion :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64SaturatedQMarkerExclusionData (frsatComplex hj G hhost) (frsatRow hj G hhost)
+        (QMarker hj G hhost) (FullySkewSplitter hj G hhost)
+        (OrderedBoundaryAdmissible hj G hhost) (CompleteSmallerQMarker hj G hhost)
+        (LocalRegularizingExit hj G hhost) (ProperSubmarker hj G hhost)
+        (PrimeModuleExit hj G hhost) (ClosedLocalExit hj G hhost)
+        (RegularQSet hj G hhost)
+  properSubmarkerCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      ProperSubmarker hj G hhost → RegularQSet hj G hhost
+  primeModuleCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      PrimeModuleExit hj G hhost → RegularQSet hj G hhost
+  closedLocalCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      ClosedLocalExit hj G hhost → RegularQSet hj G hhost
+  regularQSetRealizes :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      RegularQSet hj G hhost → HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+Assemble the saturated proof-md q-marker route into the existing terminal graph-local obligation
+package.  The proof is only packaging: nonconstant residue is expanded through the named
+obstruction/cut and q-marker steps, and q-marker coupling is supplied by the saturated `FR^sat`
+exclusion certificate.
+-/
+def q64PositiveDyadicTerminalGraphLocalObligations_of_proofMdSaturatedQMarkerRoute
+    {r : ℕ} (hroute : Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} r) :
+    Q64PositiveDyadicTerminalGraphLocalObligations r where
+  NonconstantResidue := hroute.NonconstantResidue
+  FullySkewSplitter := hroute.QMarker
+  ProperSubmarker := hroute.ProperSubmarker
+  PrimeModuleExit := hroute.PrimeModuleExit
+  ClosedLocalExit := hroute.ClosedLocalExit
+  RegularQSet := hroute.RegularQSet
+  constantResidueRegular := hroute.constantResidueRegular
+  obstructionFullySkew := by
+    intro n j hj G hhost hnonconstant
+    exact
+      hroute.qMarker_of_dyadicObstructionCut hj G hhost
+        (hroute.dyadicObstructionCut_of_nonconstantResidue hj G hhost hnonconstant)
+  qMarkerCoupling := by
+    intro n j hj G hhost
+    exact
+      q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_saturatedQMarkerExclusionData
+        (hroute.saturatedQMarkerExclusion hj G hhost)
+  properSubmarkerCloses := hroute.properSubmarkerCloses
+  primeModuleCloses := hroute.primeModuleCloses
+  closedLocalCloses := hroute.closedLocalCloses
+  regularQSetRealizes := hroute.regularQSetRealizes
+
+/-- A saturated proof-md q-marker route provides host-local terminal graph obligations. -/
+theorem nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_proofMdSaturatedQMarkerRoute
+    {r : ℕ} (hroute : Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} r) :
+    Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations r) :=
+  ⟨q64PositiveDyadicTerminalGraphLocalObligations_of_proofMdSaturatedQMarkerRoute hroute⟩
+
+/--
+Final-audit conversion when its terminal field is the proof-md saturated q-marker route itself.
+This keeps §§4--9 visible at the audit boundary while still feeding the existing graph-local terminal
+regularization endpoint.
+-/
+theorem q64_finalAuditComponentChain_of_proofMdSaturatedQMarkerRoute
+    {D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hchain :
+      Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (Nonempty (Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} (D + 1)))
+        GlobalBridge) :
+    Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting
+      (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))) GlobalBridge where
+  primeCycleBreaker := hchain.primeCycleBreaker
+  signLaw := hchain.signLaw
+  oneCornerLift := hchain.oneCornerLift
+  compensatorRouting := hchain.compensatorRouting
+  betaVanishes := fun hcouple =>
+    nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_proofMdSaturatedQMarkerRoute
+      (hchain.betaVanishes hcouple).some
+  globalBridge := hchain.globalBridge
+
+/-- A saturated proof-md q-marker route also instantiates the existing terminal regularization data. -/
+theorem nonempty_q64PositiveDyadicTerminalRegularizationData_of_proofMdSaturatedQMarkerRoute
+    {r : ℕ} (hroute : Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} r) :
+    Nonempty (Q64PositiveDyadicTerminalRegularizationData r) :=
+  nonempty_q64PositiveDyadicTerminalRegularizationData_of_graphLocalObligations
+    (q64PositiveDyadicTerminalGraphLocalObligations_of_proofMdSaturatedQMarkerRoute hroute)
+
+/--
+Exact-card modular terminal bucket for the constant-residue branch.  This is a concrete finite
+lemma and does not assume terminal regularization.
+-/
+theorem q64_constantResidueRegular_of_exactCard_inducesModEqDegree
+    {n j : ℕ} {NonconstantResidue : Prop} (G : SimpleGraph (Fin n))
+    {s : Finset (Fin n)} (hcard : s.card = 2 ^ j)
+    (hmod : InducesModEqDegree G s (2 ^ j)) :
+    (¬ NonconstantResidue) → HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  intro _hconstant
+  exact hasRegularInducedSubgraphOfCard_of_card_eq_modulus_of_inducesModEqDegree G hcard hmod
+
+/--
+The graph-local "nonconstant residue" predicate used by the dropped-tail terminal constructor:
+failure of the finite Section 3 dropped-tail selector for the current exact dyadic host.
+-/
+def Q64DroppedTailNonconstantResidue
+    (r : ℕ) {n j : ℕ} (_hj : 0 < j) (G : SimpleGraph (Fin n))
+    (_hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r) :
+    Prop :=
+  ¬ HasDroppedTailModEqSubbucketForBoundedFixedModulusControlBlockModularHostWitnessOfCard
+      G (2 ^ j) (2 ^ j) r
+
+/--
+Concrete Section 2--3 constant-residue branch: once the dropped-tail obstruction is absent,
+the existing finite dropped-tail endpoint realizes an actual regular induced `q`-set.
+-/
+theorem q64_constantResidueRegular_of_not_droppedTailNonconstant
+    {r n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r)
+    (hconstant : ¬ Q64DroppedTailNonconstantResidue r hj G hhost) :
+    HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  classical
+  have hdrop :
+      HasDroppedTailModEqSubbucketForBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        G (2 ^ j) (2 ^ j) r := by
+    exact Classical.byContradiction (by
+      simpa [Q64DroppedTailNonconstantResidue] using hconstant)
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_and_droppedTailModEqSubbucket
+      (G := G) hhost hdrop
+
+/--
+The graph-local Section 9 data package is exactly enough to produce the positive-dyadic terminal
+regularization landing surface used by the global argument.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalData
+    {r : ℕ} (hdata : Q64PositiveDyadicTerminalRegularizationData r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r := by
+  intro n j hj G hhost
+  exact
+    hdata.regularQSetRealizes hj G hhost
+      (q64_terminalDyadicTheorem_of_data (hdata.terminalData hj G hhost))
+
+/-- The graph-local Section 9 obligations directly close the positive-dyadic terminal landing surface. -/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalGraphLocalObligations
+    {r : ℕ} (hdata : Q64PositiveDyadicTerminalGraphLocalObligations r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalData
+      (q64PositiveDyadicTerminalRegularizationData_of_graphLocalObligations hdata)
+
+/--
+Constructor for the saturated proof-md terminal route in the structural completed-`FR^sat` convention.
+The completed branch maps are instantiated by `q64_saturatedQMarkerExclusionData_structural`, so the
+caller only supplies the q-marker local/skew dichotomy, the fully-skew transport to the saturated
+splitter, and regularity closures for the concrete complete-smaller and prefix/nonzero exits.
+-/
+def q64ProofMdSaturatedQMarkerTerminalRoute_of_structuralFRSat
+    {r : ℕ}
+    (NonconstantResidue DyadicObstructionCut QMarker FullySkewSplitter
+      PrimeModuleExit RegularQSet :
+      ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+          Prop)
+    (Row :
+      ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+          Type uRoute)
+    (Packet :
+      ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+          Type vRoute)
+    (frsatComplex :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        Q64FRSatRawExchangeComplex (Row hj G hhost) (Packet hj G hhost))
+    (frsatRow :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        Row hj G hhost)
+    (constantResidueRegular :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        (¬ NonconstantResidue hj G hhost) → RegularQSet hj G hhost)
+    (dyadicObstructionCut_of_nonconstantResidue :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        NonconstantResidue hj G hhost → DyadicObstructionCut hj G hhost)
+    (qMarker_of_dyadicObstructionCut :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        DyadicObstructionCut hj G hhost → QMarker hj G hhost)
+    (qMarkerLocalClosuresOrFullySkew :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        QMarker hj G hhost →
+          Q64FRSatExchangeCompleteSmallerQMarker
+              (frsatComplex hj G hhost).completeSupports.saturate
+              (frsatRow hj G hhost) ∨
+          PrimeModuleExit hj G hhost ∨
+          (Q64FRSatPrefixLocalFailure
+              (frsatComplex hj G hhost).completeSupports.saturate
+              (frsatRow hj G hhost) ∨
+            Q64FRSatNonzeroFirstTerminalResidue
+              (frsatComplex hj G hhost).completeSupports.saturate
+              (frsatRow hj G hhost)) ∨
+          FullySkewSplitter hj G hhost)
+    (fullySkewToCompletedFRSatSplitter :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        FullySkewSplitter hj G hhost →
+          (frsatComplex hj G hhost).completeSupports.saturate.splitter
+            (frsatRow hj G hhost))
+    (completeSmallerCloses :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        Q64FRSatExchangeCompleteSmallerQMarker
+            (frsatComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost) →
+          RegularQSet hj G hhost)
+    (primeModuleCloses :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        PrimeModuleExit hj G hhost → RegularQSet hj G hhost)
+    (completedLocalCloses :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        (Q64FRSatPrefixLocalFailure
+            (frsatComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost) ∨
+          Q64FRSatNonzeroFirstTerminalResidue
+            (frsatComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost)) →
+          RegularQSet hj G hhost)
+    (regularQSetRealizes :
+      ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+        (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+        RegularQSet hj G hhost → HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} r where
+  NonconstantResidue := NonconstantResidue
+  DyadicObstructionCut := DyadicObstructionCut
+  QMarker := QMarker
+  FullySkewSplitter := FullySkewSplitter
+  OrderedBoundaryAdmissible := fun {_n _j} _hj _G _hhost => False
+  CompleteSmallerQMarker := fun {_n _j} hj G hhost =>
+    Q64FRSatExchangeCompleteSmallerQMarker
+      (frsatComplex hj G hhost).completeSupports.saturate (frsatRow hj G hhost)
+  LocalRegularizingExit := fun {_n _j} hj G hhost =>
+    Q64FRSatPrefixLocalFailure
+        (frsatComplex hj G hhost).completeSupports.saturate (frsatRow hj G hhost) ∨
+      Q64FRSatNonzeroFirstTerminalResidue
+        (frsatComplex hj G hhost).completeSupports.saturate (frsatRow hj G hhost)
+  ProperSubmarker := fun {_n _j} hj G hhost =>
+    Q64FRSatExchangeCompleteSmallerQMarker
+      (frsatComplex hj G hhost).completeSupports.saturate (frsatRow hj G hhost)
+  PrimeModuleExit := PrimeModuleExit
+  ClosedLocalExit := fun {_n _j} hj G hhost =>
+    Q64FRSatPrefixLocalFailure
+        (frsatComplex hj G hhost).completeSupports.saturate (frsatRow hj G hhost) ∨
+      Q64FRSatNonzeroFirstTerminalResidue
+        (frsatComplex hj G hhost).completeSupports.saturate (frsatRow hj G hhost)
+  RegularQSet := RegularQSet
+  Row := Row
+  Packet := Packet
+  frsatComplex := frsatComplex
+  frsatRow := frsatRow
+  constantResidueRegular := constantResidueRegular
+  dyadicObstructionCut_of_nonconstantResidue := dyadicObstructionCut_of_nonconstantResidue
+  qMarker_of_dyadicObstructionCut := qMarker_of_dyadicObstructionCut
+  saturatedQMarkerExclusion := by
+    intro n j hj G hhost
+    exact
+      q64_saturatedQMarkerExclusionData_structural
+        (frsatComplex hj G hhost) (frsatRow hj G hhost)
+        (qMarkerLocalClosuresOrFullySkew hj G hhost)
+        (fullySkewToCompletedFRSatSplitter hj G hhost)
+  properSubmarkerCloses := completeSmallerCloses
+  primeModuleCloses := primeModuleCloses
+  closedLocalCloses := completedLocalCloses
+  regularQSetRealizes := regularQSetRealizes
+
+/--
+Proof-md-facing packet type for a terminal saturated first-return (`FR^sat`) exchange.  The four
+corner sets are the graph corners of the saturated square from `proof.md` Theorem 8.2; the two `Prop`
+fields name the remaining concrete graph facts: that the corners form an actual graph exchange square
+and that the terminal residue data agree.
+-/
+structure Q64ProofMdFRSatTerminalPacket
+    {n j r : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r) where
+  topLeftCorner : Finset (Fin n)
+  topRightCorner : Finset (Fin n)
+  bottomLeftCorner : Finset (Fin n)
+  bottomRightCorner : Finset (Fin n)
+  packetSupportVertices : Finset (Fin n)
+  graphExchangeSquare : Prop
+  equalTerminalResidues : Prop
+
+/--
+Proof-md-facing concrete row type for the terminal q-marker `FR^sat` argument.  A row records the
+selected boundary, saturated support packets, first terminal residue, and row-local predicates that
+drive Proposition 8.1.
+-/
+structure Q64ProofMdFRSatTerminalRow
+    {n j r : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r) where
+  boundaryRow : Finset (Fin n)
+  leftBoundaryTrace : Finset (Fin n)
+  rightBoundaryTrace : Finset (Fin n)
+  highErrorSplitter : Prop
+  prefixLocal : Prop
+  firstTerminalResidue : ℤ
+  packetSupport : Finset (Q64ProofMdFRSatTerminalPacket hj G hhost)
+  exchangeComplete : Finset (Q64ProofMdFRSatTerminalPacket hj G hhost) → Prop
+  orderedSaturatedBoundaryRow : Prop
+  localBranchRegularizingExit : Prop
+  completeSmallerQMarker : Prop
+
+/--
+The raw saturated first-return exchange complex canonically induced by the concrete proof-md terminal
+rows and packets.
+-/
+def q64ProofMdFRSatTerminalRawExchangeComplex
+    {n j r : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r) :
+    Q64FRSatRawExchangeComplex (Q64ProofMdFRSatTerminalRow hj G hhost)
+      (Q64ProofMdFRSatTerminalPacket hj G hhost) where
+  splitter := fun row => row.highErrorSplitter
+  prefixLocal := fun row => row.prefixLocal
+  terminalResidue := fun row => row.firstTerminalResidue
+  support := fun row => row.packetSupport
+  exchangeComplete := fun support =>
+    ∃ row : Q64ProofMdFRSatTerminalRow hj G hhost, row.exchangeComplete support
+
+/--
+Minimal remaining proof-md fields for the Phase 3 terminal graph-local package, after the concrete
+dropped-tail constant branch and the structural completed-`FR^sat` branch maps have been fixed.
+
+Compared with `Q64ProofMdSaturatedQMarkerTerminalRoute`, this package no longer asks for
+`constantResidueRegular`, `RegularQSet`, `properSubmarker`/`closedLocal` predicates, or
+`regularQSetRealizes`: those are instantiated below by the finite dropped-tail endpoint and by the
+completed saturated q-marker exclusion data.
+-/
+structure Q64ProofMdDroppedTailStructuralFRSatTerminalFields (r : ℕ) :
+    Type (max uRoute vRoute + 1) where
+  DyadicObstructionCut :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  QMarker :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  FullySkewSplitter :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  PrimeModuleExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  Row :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Type uRoute
+  Packet :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Type vRoute
+  frsatComplex :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64FRSatRawExchangeComplex (Row hj G hhost) (Packet hj G hhost)
+  frsatRow :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Row hj G hhost
+  dyadicObstructionCut_of_nonconstantDroppedTail :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64DroppedTailNonconstantResidue r hj G hhost → DyadicObstructionCut hj G hhost
+  qMarker_of_dyadicObstructionCut :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      DyadicObstructionCut hj G hhost → QMarker hj G hhost
+  qMarkerLocalClosuresOrFullySkew :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      QMarker hj G hhost →
+        Q64FRSatExchangeCompleteSmallerQMarker
+            (frsatComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost) ∨
+        PrimeModuleExit hj G hhost ∨
+        (Q64FRSatPrefixLocalFailure
+            (frsatComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost) ∨
+          Q64FRSatNonzeroFirstTerminalResidue
+            (frsatComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost)) ∨
+        FullySkewSplitter hj G hhost
+  fullySkewToCompletedFRSatSplitter :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      FullySkewSplitter hj G hhost →
+        (frsatComplex hj G hhost).completeSupports.saturate.splitter (frsatRow hj G hhost)
+  completeSmallerCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64FRSatExchangeCompleteSmallerQMarker
+          (frsatComplex hj G hhost).completeSupports.saturate
+          (frsatRow hj G hhost) →
+        HasRegularInducedSubgraphOfCard G (2 ^ j)
+  primeModuleCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      PrimeModuleExit hj G hhost → HasRegularInducedSubgraphOfCard G (2 ^ j)
+  completedLocalCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      (Q64FRSatPrefixLocalFailure
+          (frsatComplex hj G hhost).completeSupports.saturate
+          (frsatRow hj G hhost) ∨
+        Q64FRSatNonzeroFirstTerminalResidue
+          (frsatComplex hj G hhost).completeSupports.saturate
+          (frsatRow hj G hhost)) →
+        HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+Compile the remaining proof-md Phase 3 fields into the host-local terminal graph obligations.
+The constant-residue and realization fields are concrete finite consequences, while the
+q-marker coupling is the structural saturated `FR^sat` exclusion package.
+-/
+def q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailStructuralFRSatFields
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailStructuralFRSatTerminalFields.{uRoute, vRoute} r) :
+    Q64PositiveDyadicTerminalGraphLocalObligations r where
+  NonconstantResidue := fun {_n _j} hj G hhost =>
+    Q64DroppedTailNonconstantResidue r hj G hhost
+  FullySkewSplitter := hfields.QMarker
+  ProperSubmarker := fun {_n _j} hj G hhost =>
+    Q64FRSatExchangeCompleteSmallerQMarker
+      (hfields.frsatComplex hj G hhost).completeSupports.saturate
+      (hfields.frsatRow hj G hhost)
+  PrimeModuleExit := hfields.PrimeModuleExit
+  ClosedLocalExit := fun {_n _j} hj G hhost =>
+    Q64FRSatPrefixLocalFailure
+        (hfields.frsatComplex hj G hhost).completeSupports.saturate
+        (hfields.frsatRow hj G hhost) ∨
+      Q64FRSatNonzeroFirstTerminalResidue
+        (hfields.frsatComplex hj G hhost).completeSupports.saturate
+        (hfields.frsatRow hj G hhost)
+  RegularQSet := fun {_n j} _hj G _hhost => HasRegularInducedSubgraphOfCard G (2 ^ j)
+  constantResidueRegular := by
+    intro n j hj G hhost hconstant
+    exact q64_constantResidueRegular_of_not_droppedTailNonconstant hj G hhost hconstant
+  obstructionFullySkew := by
+    intro n j hj G hhost hnonconstant
+    exact
+      hfields.qMarker_of_dyadicObstructionCut hj G hhost
+        (hfields.dyadicObstructionCut_of_nonconstantDroppedTail hj G hhost hnonconstant)
+  qMarkerCoupling := by
+    intro n j hj G hhost
+    exact
+      q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_saturatedQMarkerExclusionData
+        (q64_saturatedQMarkerExclusionData_structural
+          (hfields.frsatComplex hj G hhost) (hfields.frsatRow hj G hhost)
+          (hfields.qMarkerLocalClosuresOrFullySkew hj G hhost)
+          (hfields.fullySkewToCompletedFRSatSplitter hj G hhost))
+  properSubmarkerCloses := hfields.completeSmallerCloses
+  primeModuleCloses := hfields.primeModuleCloses
+  closedLocalCloses := hfields.completedLocalCloses
+  regularQSetRealizes := by
+    intro n j hj G hhost hregular
+    exact hregular
+
+/-- The minimal dropped-tail/structural-`FR^sat` Phase 3 fields provide the target package. -/
+theorem nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailStructuralFRSatFields
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailStructuralFRSatTerminalFields.{uRoute, vRoute} r) :
+    Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations r) :=
+  ⟨q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailStructuralFRSatFields hfields⟩
+
+/--
+Concrete `FR^sat` version of the dropped-tail terminal fields.  The row and packet types and the raw
+exchange complex are fixed to `Q64ProofMdFRSatTerminalRow`,
+`Q64ProofMdFRSatTerminalPacket`, and `q64ProofMdFRSatTerminalRawExchangeComplex`; the remaining fields
+are exactly the graph facts still needed to run the proof-md q-marker argument.
+-/
+structure Q64ProofMdDroppedTailConcreteFRSatTerminalFields (r : ℕ) : Type where
+  DyadicObstructionCut :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  QMarker :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  FullySkewSplitter :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  PrimeModuleExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  frsatRow :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64ProofMdFRSatTerminalRow hj G hhost
+  dyadicObstructionCut_of_nonconstantDroppedTail :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64DroppedTailNonconstantResidue r hj G hhost → DyadicObstructionCut hj G hhost
+  qMarker_of_dyadicObstructionCut :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      DyadicObstructionCut hj G hhost → QMarker hj G hhost
+  qMarkerLocalClosuresOrFullySkew :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      QMarker hj G hhost →
+        Q64FRSatExchangeCompleteSmallerQMarker
+            (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost) ∨
+        PrimeModuleExit hj G hhost ∨
+        (Q64FRSatPrefixLocalFailure
+            (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost) ∨
+          Q64FRSatNonzeroFirstTerminalResidue
+            (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost)) ∨
+        FullySkewSplitter hj G hhost
+  fullySkewToCompletedFRSatSplitter :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      FullySkewSplitter hj G hhost →
+        (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate.splitter
+          (frsatRow hj G hhost)
+  completeSmallerCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64FRSatExchangeCompleteSmallerQMarker
+          (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+          (frsatRow hj G hhost) →
+        HasRegularInducedSubgraphOfCard G (2 ^ j)
+  primeModuleCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      PrimeModuleExit hj G hhost → HasRegularInducedSubgraphOfCard G (2 ^ j)
+  completedLocalCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      (Q64FRSatPrefixLocalFailure
+          (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+          (frsatRow hj G hhost) ∨
+        Q64FRSatNonzeroFirstTerminalResidue
+            (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+            (frsatRow hj G hhost)) →
+        HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+Concrete packet-level facts carried by the selected terminal `FR^sat` row.  These are the
+graph-exchange facts from the packets themselves; the q-marker branch closures below stay separate.
+-/
+structure Q64ProofMdFRSatTerminalExchangeFacts
+    {n j r : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r) :
+    Type where
+  row : Q64ProofMdFRSatTerminalRow hj G hhost
+  packetGraphExchangeSquare :
+    ∀ packet ∈ row.packetSupport, packet.graphExchangeSquare
+  packetEqualTerminalResidues :
+    ∀ packet ∈ row.packetSupport, packet.equalTerminalResidues
+
+/-- A vacuous terminal `FR^sat` row used when the dropped-tail selector already closes the host. -/
+def q64ProofMdFRSatTrivialTerminalRow
+    {n j r : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r) :
+    Q64ProofMdFRSatTerminalRow hj G hhost where
+  boundaryRow := ∅
+  leftBoundaryTrace := ∅
+  rightBoundaryTrace := ∅
+  highErrorSplitter := False
+  prefixLocal := True
+  firstTerminalResidue := 0
+  packetSupport := ∅
+  exchangeComplete := fun _ => False
+  orderedSaturatedBoundaryRow := False
+  localBranchRegularizingExit := False
+  completeSmallerQMarker := False
+
+/-- The vacuous terminal row has no packets, hence no packet graph facts to prove. -/
+def q64ProofMdFRSatTrivialTerminalExchangeFacts
+    {n j r : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r) :
+    Q64ProofMdFRSatTerminalExchangeFacts hj G hhost where
+  row := q64ProofMdFRSatTrivialTerminalRow hj G hhost
+  packetGraphExchangeSquare := by
+    intro packet hmem
+    simpa [q64ProofMdFRSatTrivialTerminalRow] using hmem
+  packetEqualTerminalResidues := by
+    intro packet hmem
+    simpa [q64ProofMdFRSatTrivialTerminalRow] using hmem
+
+/--
+Smaller graph-local terminal `FR^sat` field package.  The dropped-tail nonconstant residue itself is
+used as both the obstruction cut and the q-marker, so the package keeps only the selected exchange
+facts, the nonconstant q-marker exit dichotomy, and the three closure maps.
+-/
+structure Q64ProofMdDroppedTailConcreteFRSatGraphLocalFields (r : ℕ) : Type where
+  FullySkewSplitter :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  PrimeModuleExit :
+    ∀ {n j : ℕ}, 0 < j → (G : SimpleGraph (Fin n)) →
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
+        Prop
+  frsatExchangeFacts :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64ProofMdFRSatTerminalExchangeFacts hj G hhost
+  nonconstantDroppedTailExits :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64DroppedTailNonconstantResidue r hj G hhost →
+        Q64FRSatExchangeCompleteSmallerQMarker
+            (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+            (frsatExchangeFacts hj G hhost).row ∨
+        PrimeModuleExit hj G hhost ∨
+        (Q64FRSatPrefixLocalFailure
+            (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+            (frsatExchangeFacts hj G hhost).row ∨
+          Q64FRSatNonzeroFirstTerminalResidue
+            (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+            (frsatExchangeFacts hj G hhost).row) ∨
+        FullySkewSplitter hj G hhost
+  fullySkewToCompletedFRSatSplitter :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      FullySkewSplitter hj G hhost →
+        (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate.splitter
+          (frsatExchangeFacts hj G hhost).row
+  completeSmallerCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      Q64FRSatExchangeCompleteSmallerQMarker
+          (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+          (frsatExchangeFacts hj G hhost).row →
+        HasRegularInducedSubgraphOfCard G (2 ^ j)
+  primeModuleCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      PrimeModuleExit hj G hhost → HasRegularInducedSubgraphOfCard G (2 ^ j)
+  completedLocalCloses :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      (Q64FRSatPrefixLocalFailure
+          (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+          (frsatExchangeFacts hj G hhost).row ∨
+        Q64FRSatNonzeroFirstTerminalResidue
+          (q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost).completeSupports.saturate
+          (frsatExchangeFacts hj G hhost).row) →
+        HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+The graph-local package compiles to the concrete terminal field package by taking the dropped-tail
+nonconstant residue as both the obstruction cut and q-marker.
+-/
+def q64ProofMdDroppedTailConcreteFRSatTerminalFields_of_graphLocalFields
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailConcreteFRSatGraphLocalFields r) :
+    Q64ProofMdDroppedTailConcreteFRSatTerminalFields r where
+  DyadicObstructionCut := fun {_n _j} hj G hhost =>
+    Q64DroppedTailNonconstantResidue r hj G hhost
+  QMarker := fun {_n _j} hj G hhost =>
+    Q64DroppedTailNonconstantResidue r hj G hhost
+  FullySkewSplitter := hfields.FullySkewSplitter
+  PrimeModuleExit := hfields.PrimeModuleExit
+  frsatRow := fun {_n _j} hj G hhost => (hfields.frsatExchangeFacts hj G hhost).row
+  dyadicObstructionCut_of_nonconstantDroppedTail := by
+    intro n j hj G hhost hnonconstant
+    exact hnonconstant
+  qMarker_of_dyadicObstructionCut := by
+    intro n j hj G hhost hnonconstant
+    exact hnonconstant
+  qMarkerLocalClosuresOrFullySkew := hfields.nonconstantDroppedTailExits
+  fullySkewToCompletedFRSatSplitter := hfields.fullySkewToCompletedFRSatSplitter
+  completeSmallerCloses := hfields.completeSmallerCloses
+  primeModuleCloses := hfields.primeModuleCloses
+  completedLocalCloses := hfields.completedLocalCloses
+
+/--
+Pure dropped-tail selector package: every positive dyadic terminal host has the finite dropped-tail
+subbucket required by the Section 3 endpoint.
+-/
+structure Q64ProofMdDroppedTailSelectorTerminalFields (r : ℕ) : Type where
+  droppedTailSelector :
+    ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n))
+      (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r),
+      HasDroppedTailModEqSubbucketForBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/-- A dropped-tail selector rules out the nonconstant dropped-tail residue. -/
+theorem q64_not_droppedTailNonconstant_of_droppedTailSelector
+    {r n j : ℕ} (hfields : Q64ProofMdDroppedTailSelectorTerminalFields r)
+    (hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r) :
+    ¬ Q64DroppedTailNonconstantResidue r hj G hhost := by
+  intro hnonconstant
+  exact hnonconstant (hfields.droppedTailSelector hj G hhost)
+
+/--
+The finite dropped-tail selector is already the positive-dyadic terminal regularization theorem:
+for each terminal host it supplies the exact subbucket whose dropped tail has constant residue.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_droppedTailSelector
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailSelectorTerminalFields r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := fun a b => Classical.propDecidable (G.Adj a b)
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_and_droppedTailModEqSubbucket
+      (G := G) hhost (hfields.droppedTailSelector hj G hhost)
+
+/--
+The pure dropped-tail selector gives a graph-local `FR^sat` package with a vacuous q-marker branch;
+all closure maps close through the finite dropped-tail endpoint.
+-/
+def q64ProofMdDroppedTailConcreteFRSatGraphLocalFields_of_droppedTailSelector
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailSelectorTerminalFields r) :
+    Q64ProofMdDroppedTailConcreteFRSatGraphLocalFields r where
+  FullySkewSplitter := fun {_n _j} _hj _G _hhost => False
+  PrimeModuleExit := fun {_n _j} _hj _G _hhost => False
+  frsatExchangeFacts := fun {_n _j} hj G hhost =>
+    q64ProofMdFRSatTrivialTerminalExchangeFacts hj G hhost
+  nonconstantDroppedTailExits := by
+    intro n j hj G hhost hnonconstant
+    exact
+      False.elim
+        ((q64_not_droppedTailNonconstant_of_droppedTailSelector hfields hj G hhost)
+          hnonconstant)
+  fullySkewToCompletedFRSatSplitter := by
+    intro n j hj G hhost hfalse
+    exact False.elim hfalse
+  completeSmallerCloses := by
+    intro n j hj G hhost _hsmall
+    exact
+      q64_constantResidueRegular_of_not_droppedTailNonconstant hj G hhost
+        (q64_not_droppedTailNonconstant_of_droppedTailSelector hfields hj G hhost)
+  primeModuleCloses := by
+    intro n j hj G hhost hfalse
+    exact False.elim hfalse
+  completedLocalCloses := by
+    intro n j hj G hhost _hlocal
+    exact
+      q64_constantResidueRegular_of_not_droppedTailNonconstant hj G hhost
+        (q64_not_droppedTailNonconstant_of_droppedTailSelector hfields hj G hhost)
+
+/--
+The pure dropped-tail selector compiles all concrete `FR^sat` terminal fields; the saturated q-marker
+route is vacuous because the constant dropped-tail branch already produces the regular induced set.
+-/
+def q64ProofMdDroppedTailConcreteFRSatTerminalFields_of_droppedTailSelector
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailSelectorTerminalFields r) :
+    Q64ProofMdDroppedTailConcreteFRSatTerminalFields r :=
+  q64ProofMdDroppedTailConcreteFRSatTerminalFields_of_graphLocalFields
+    (q64ProofMdDroppedTailConcreteFRSatGraphLocalFields_of_droppedTailSelector hfields)
+
+/-- Concrete terminal rows/packets compile to the older structural `FR^sat` terminal field package. -/
+def q64ProofMdDroppedTailStructuralFRSatTerminalFields_of_concreteFRSatTerminalFields
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailConcreteFRSatTerminalFields r) :
+    Q64ProofMdDroppedTailStructuralFRSatTerminalFields.{0, 0} r where
+  DyadicObstructionCut := hfields.DyadicObstructionCut
+  QMarker := hfields.QMarker
+  FullySkewSplitter := hfields.FullySkewSplitter
+  PrimeModuleExit := hfields.PrimeModuleExit
+  Row := fun {_n _j} hj G hhost => Q64ProofMdFRSatTerminalRow hj G hhost
+  Packet := fun {_n _j} hj G hhost => Q64ProofMdFRSatTerminalPacket hj G hhost
+  frsatComplex := fun {_n _j} hj G hhost =>
+    q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost
+  frsatRow := hfields.frsatRow
+  dyadicObstructionCut_of_nonconstantDroppedTail :=
+    hfields.dyadicObstructionCut_of_nonconstantDroppedTail
+  qMarker_of_dyadicObstructionCut := hfields.qMarker_of_dyadicObstructionCut
+  qMarkerLocalClosuresOrFullySkew := hfields.qMarkerLocalClosuresOrFullySkew
+  fullySkewToCompletedFRSatSplitter := hfields.fullySkewToCompletedFRSatSplitter
+  completeSmallerCloses := hfields.completeSmallerCloses
+  primeModuleCloses := hfields.primeModuleCloses
+  completedLocalCloses := hfields.completedLocalCloses
+
+/--
+Concrete terminal `FR^sat` rows/packets instantiate the proof-md saturated q-marker terminal route.
+The completed branch maps are supplied structurally by support completion.
+-/
+def q64ProofMdSaturatedQMarkerTerminalRoute_of_droppedTailConcreteFRSatTerminalFields
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailConcreteFRSatTerminalFields r) :
+    Q64ProofMdSaturatedQMarkerTerminalRoute.{0, 0} r :=
+  q64ProofMdSaturatedQMarkerTerminalRoute_of_structuralFRSat
+    (r := r)
+    (NonconstantResidue := fun {_n _j} hj G hhost =>
+      Q64DroppedTailNonconstantResidue r hj G hhost)
+    (DyadicObstructionCut := hfields.DyadicObstructionCut)
+    (QMarker := hfields.QMarker)
+    (FullySkewSplitter := hfields.FullySkewSplitter)
+    (PrimeModuleExit := hfields.PrimeModuleExit)
+    (RegularQSet := fun {_n j} _hj G _hhost => HasRegularInducedSubgraphOfCard G (2 ^ j))
+    (Row := fun {_n _j} hj G hhost => Q64ProofMdFRSatTerminalRow hj G hhost)
+    (Packet := fun {_n _j} hj G hhost => Q64ProofMdFRSatTerminalPacket hj G hhost)
+    (frsatComplex := fun {_n _j} hj G hhost =>
+      q64ProofMdFRSatTerminalRawExchangeComplex hj G hhost)
+    (frsatRow := hfields.frsatRow)
+    (constantResidueRegular := fun hj G hhost =>
+      q64_constantResidueRegular_of_not_droppedTailNonconstant hj G hhost)
+    (dyadicObstructionCut_of_nonconstantResidue :=
+      hfields.dyadicObstructionCut_of_nonconstantDroppedTail)
+    (qMarker_of_dyadicObstructionCut := hfields.qMarker_of_dyadicObstructionCut)
+    (qMarkerLocalClosuresOrFullySkew := hfields.qMarkerLocalClosuresOrFullySkew)
+    (fullySkewToCompletedFRSatSplitter := hfields.fullySkewToCompletedFRSatSplitter)
+    (completeSmallerCloses := hfields.completeSmallerCloses)
+    (primeModuleCloses := hfields.primeModuleCloses)
+    (completedLocalCloses := hfields.completedLocalCloses)
+    (regularQSetRealizes := fun _hj _G _hhost hregular => hregular)
+
+/-- A concrete terminal `FR^sat` package supplies a nonempty proof-md saturated q-marker route. -/
+theorem nonempty_q64ProofMdSaturatedQMarkerTerminalRoute_of_droppedTailConcreteFRSatTerminalFields
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailConcreteFRSatTerminalFields r) :
+    Nonempty (Q64ProofMdSaturatedQMarkerTerminalRoute.{0, 0} r) :=
+  ⟨q64ProofMdSaturatedQMarkerTerminalRoute_of_droppedTailConcreteFRSatTerminalFields hfields⟩
+
+/-- A concrete terminal `FR^sat` package supplies the existing host-local terminal obligations. -/
+theorem nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailConcreteFRSatTerminalFields
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailConcreteFRSatTerminalFields r) :
+    Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations r) :=
+  nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailStructuralFRSatFields
+    (q64ProofMdDroppedTailStructuralFRSatTerminalFields_of_concreteFRSatTerminalFields hfields)
+
+/-- A graph-local concrete `FR^sat` package supplies host-local terminal obligations. -/
+theorem nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailConcreteFRSatGraphLocalFields
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailConcreteFRSatGraphLocalFields r) :
+    Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations r) :=
+  nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailConcreteFRSatTerminalFields
+    (q64ProofMdDroppedTailConcreteFRSatTerminalFields_of_graphLocalFields hfields)
+
+/-- A dropped-tail selector supplies the existing host-local terminal obligations. -/
+theorem nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailSelector
+    {r : ℕ} (hfields : Q64ProofMdDroppedTailSelectorTerminalFields r) :
+    Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations r) :=
+  nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailConcreteFRSatTerminalFields
+    (q64ProofMdDroppedTailConcreteFRSatTerminalFields_of_droppedTailSelector hfields)
+
+/--
+The `q = 8` single-control terminal-host counterexample is also a one-block bounded terminal
+host in the control-block language.
+-/
+private lemma droppedPartUpgradeCounterexample_boundedTerminalHost_one :
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+      droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) 1 := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusSingleControlModularHostWitnessOfCard
+      droppedPartUpgradeCounterexampleGraph
+      (hasFixedModulusSingleControlModularHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlModularHostWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph droppedPartUpgradeCounterexample_host)
+
+/-- The same terminal-host counterexample is available at every nonzero block budget. -/
+private lemma droppedPartUpgradeCounterexample_boundedTerminalHost_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+      droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_le
+      droppedPartUpgradeCounterexampleGraph hr
+      droppedPartUpgradeCounterexample_boundedTerminalHost_one
+
+/--
+The all-dyadic bounded-host terminal-regularization package is already false for every nonzero
+budget.  The `q = 8` terminal host supplies the counterexample at `j = 3`.
+-/
+theorem not_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostTerminalRegularization r := by
+  intro hterminal
+  have hhost :
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) r :=
+    droppedPartUpgradeCounterexample_boundedTerminalHost_of_one_le hr
+  have hregular :
+      HasRegularInducedSubgraphOfCard droppedPartUpgradeCounterexampleGraph (2 ^ 3) := by
+    exact hterminal (j := 3) droppedPartUpgradeCounterexampleGraph hhost
+  exact droppedPartUpgradeCounterexample_noRegular hregular
+
+/--
+The current positive-dyadic terminal-regularization landing surface is false for every nonzero
+block budget.  The obstruction is the formal `q = 8` terminal host above, which has no regular
+induced `8`-set.
+-/
+theorem not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r := by
+  intro hterminal
+  have hhost :
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) r :=
+    droppedPartUpgradeCounterexample_boundedTerminalHost_of_one_le hr
+  have hregular :
+      HasRegularInducedSubgraphOfCard droppedPartUpgradeCounterexampleGraph (2 ^ 3) := by
+    exact hterminal (by norm_num : 0 < 3) droppedPartUpgradeCounterexampleGraph hhost
+  exact droppedPartUpgradeCounterexample_noRegular hregular
+
+/-- The reduced `j > 1` terminal-regularization surface is also false for every nonzero budget. -/
+theorem
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne r := by
+  intro hterminal
+  have hhost :
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) r :=
+    droppedPartUpgradeCounterexample_boundedTerminalHost_of_one_le hr
+  have hregular :
+      HasRegularInducedSubgraphOfCard droppedPartUpgradeCounterexampleGraph (2 ^ 3) := by
+    exact hterminal (by norm_num : 1 < 3) droppedPartUpgradeCounterexampleGraph hhost
+  exact droppedPartUpgradeCounterexample_noRegular hregular
+
+/-- Consequently the abstract terminal-data package is uninhabited at every nonzero budget. -/
+theorem isEmpty_q64PositiveDyadicTerminalRegularizationData_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    IsEmpty (Q64PositiveDyadicTerminalRegularizationData r) := by
+  refine ⟨?_⟩
+  intro hdata
+  exact
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_one_le
+      hr
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalData
+        hdata)
+
+/-- The graph-local terminal-obligation package is also uninhabited at every nonzero budget. -/
+theorem isEmpty_q64PositiveDyadicTerminalGraphLocalObligations_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    IsEmpty (Q64PositiveDyadicTerminalGraphLocalObligations r) := by
+  refine ⟨?_⟩
+  intro hdata
+  exact
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_one_le
+      hr
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalGraphLocalObligations
+        hdata)
+
+/-- Concrete dropped-tail `FR^sat` terminal fields cannot exist at any nonzero budget. -/
+theorem isEmpty_q64ProofMdDroppedTailConcreteFRSatTerminalFields_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    IsEmpty (Q64ProofMdDroppedTailConcreteFRSatTerminalFields r) := by
+  refine ⟨?_⟩
+  intro hfields
+  exact
+    (isEmpty_q64PositiveDyadicTerminalGraphLocalObligations_of_one_le hr).false
+      (nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailConcreteFRSatTerminalFields
+        hfields).some
+
+/-- Graph-local concrete dropped-tail `FR^sat` terminal fields cannot exist at any nonzero budget. -/
+theorem isEmpty_q64ProofMdDroppedTailConcreteFRSatGraphLocalFields_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    IsEmpty (Q64ProofMdDroppedTailConcreteFRSatGraphLocalFields r) := by
+  refine ⟨?_⟩
+  intro hfields
+  exact
+    (isEmpty_q64PositiveDyadicTerminalGraphLocalObligations_of_one_le hr).false
+      (nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailConcreteFRSatGraphLocalFields
+        hfields).some
+
+/-- The pure dropped-tail selector package cannot exist at any nonzero budget. -/
+theorem isEmpty_q64ProofMdDroppedTailSelectorTerminalFields_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    IsEmpty (Q64ProofMdDroppedTailSelectorTerminalFields r) := by
+  refine ⟨?_⟩
+  intro hfields
+  exact
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_one_le
+      hr
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_droppedTailSelector
+        hfields)
+
+/--
+Direct terminal-regularity constructor for the proof-md saturated q-marker route.  It uses a vacuous
+q-marker layer and a trivial completed `FR^sat` row, so all branch exits close by the supplied positive
+dyadic terminal-regularization theorem.
+-/
+def q64ProofMdSaturatedQMarkerTerminalRoute_of_positiveDyadicTerminalRegularization
+    {r : ℕ}
+    (hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r) :
+    Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} r := by
+  refine
+    q64ProofMdSaturatedQMarkerTerminalRoute_of_structuralFRSat
+      (r := r)
+      (NonconstantResidue := fun {_n _j} _hj _G _hhost => False)
+      (DyadicObstructionCut := fun {_n _j} _hj _G _hhost => False)
+      (QMarker := fun {_n _j} _hj _G _hhost => False)
+      (FullySkewSplitter := fun {_n _j} _hj _G _hhost => False)
+      (PrimeModuleExit := fun {_n _j} _hj _G _hhost => False)
+      (RegularQSet := fun {_n j} _hj G _hhost => HasRegularInducedSubgraphOfCard G (2 ^ j))
+      (Row := fun {_n _j} _hj _G _hhost => PUnit)
+      (Packet := fun {_n _j} _hj _G _hhost => PUnit)
+      (frsatComplex := ?_)
+      (frsatRow := ?_)
+      (constantResidueRegular := ?_)
+      (dyadicObstructionCut_of_nonconstantResidue := ?_)
+      (qMarker_of_dyadicObstructionCut := ?_)
+      (qMarkerLocalClosuresOrFullySkew := ?_)
+      (fullySkewToCompletedFRSatSplitter := ?_)
+      (completeSmallerCloses := ?_)
+      (primeModuleCloses := ?_)
+      (completedLocalCloses := ?_)
+      (regularQSetRealizes := ?_)
+  · intro n j hj G hhost
+    exact
+      { splitter := fun _ => False
+        prefixLocal := fun _ => True
+        terminalResidue := fun _ => 0
+        support := fun _ => ∅
+        exchangeComplete := fun _ => False }
+  · intro n j hj G hhost
+    exact PUnit.unit
+  · intro n j hj G hhost _hconstant
+    exact hterminal hj G hhost
+  · intro n j hj G hhost hfalse
+    exact False.elim hfalse
+  · intro n j hj G hhost hfalse
+    exact False.elim hfalse
+  · intro n j hj G hhost hfalse
+    exact False.elim hfalse
+  · intro n j hj G hhost hfalse
+    exact False.elim hfalse
+  · intro n j hj G hhost _hcomplete
+    exact hterminal hj G hhost
+  · intro n j hj G hhost hfalse
+    exact False.elim hfalse
+  · intro n j hj G hhost _hlocal
+    exact hterminal hj G hhost
+  · intro n j hj G hhost hregular
+    exact hregular
+
+/-- A positive-dyadic terminal-regularization theorem supplies a nonempty proof-md saturated route. -/
+theorem nonempty_q64ProofMdSaturatedQMarkerTerminalRoute_of_positiveDyadicTerminalRegularization
+    {r : ℕ}
+    (hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r) :
+    Nonempty (Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} r) :=
+  ⟨q64ProofMdSaturatedQMarkerTerminalRoute_of_positiveDyadicTerminalRegularization hterminal⟩
+
+/-- Host-local graph obligations can also be compiled back to the proof-md saturated route. -/
+def q64ProofMdSaturatedQMarkerTerminalRoute_of_graphLocalObligations
+    {r : ℕ} (hdata : Q64PositiveDyadicTerminalGraphLocalObligations r) :
+    Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} r :=
+  q64ProofMdSaturatedQMarkerTerminalRoute_of_positiveDyadicTerminalRegularization
+    (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalGraphLocalObligations
+      hdata)
+
+/-- Nonempty host-local graph obligations supply a nonempty proof-md saturated route. -/
+theorem nonempty_q64ProofMdSaturatedQMarkerTerminalRoute_of_graphLocalObligations
+    {r : ℕ} (hdata : Q64PositiveDyadicTerminalGraphLocalObligations r) :
+    Nonempty (Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} r) :=
+  ⟨q64ProofMdSaturatedQMarkerTerminalRoute_of_graphLocalObligations hdata⟩
+
+/-- Final-audit conversion in the direction needed by proof-md wrappers: a direct terminal-regularity
+field can be compiled into the saturated q-marker route field. -/
+theorem q64_finalAuditComponentChain_to_proofMdSaturatedQMarkerRoute_of_terminalRegularization
+    {D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hchain :
+      Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1))
+        GlobalBridge) :
+    Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting
+      (Nonempty (Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} (D + 1)))
+      GlobalBridge where
+  primeCycleBreaker := hchain.primeCycleBreaker
+  signLaw := hchain.signLaw
+  oneCornerLift := hchain.oneCornerLift
+  compensatorRouting := hchain.compensatorRouting
+  betaVanishes := fun hcouple =>
+    nonempty_q64ProofMdSaturatedQMarkerTerminalRoute_of_positiveDyadicTerminalRegularization
+      (hchain.betaVanishes hcouple)
+  globalBridge := hchain.globalBridge
+
+/-- Final-audit conversion from host-local terminal obligations back into the proof-md saturated
+q-marker route field. -/
+theorem q64_finalAuditComponentChain_to_proofMdSaturatedQMarkerRoute_of_terminalGraphLocalObligations
+    {D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hchain :
+      Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))) GlobalBridge) :
+    Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting
+      (Nonempty (Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} (D + 1)))
+      GlobalBridge where
+  primeCycleBreaker := hchain.primeCycleBreaker
+  signLaw := hchain.signLaw
+  oneCornerLift := hchain.oneCornerLift
+  compensatorRouting := hchain.compensatorRouting
+  betaVanishes := fun hcouple =>
+    nonempty_q64ProofMdSaturatedQMarkerTerminalRoute_of_graphLocalObligations
+      (hchain.betaVanishes hcouple).some
+  globalBridge := hchain.globalBridge
+
+/-- Terminal data is stronger than the reduced high-dyadic (`j > 1`) terminal obligation. -/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne_of_q64TerminalData
+    {r : ℕ} (hdata : Q64PositiveDyadicTerminalRegularizationData r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne r := by
+  intro n j hj G hhost
+  have hjpos : 0 < j := by omega
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalData
+      hdata hjpos G hhost
+
+/-- Graph-local Section 9 obligations directly close the reduced high-dyadic terminal obligation. -/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne_of_q64TerminalGraphLocalObligations
+    {r : ℕ} (hdata : Q64PositiveDyadicTerminalGraphLocalObligations r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne_of_q64TerminalData
+      (q64PositiveDyadicTerminalRegularizationData_of_graphLocalObligations hdata)
+
+/--
+Conversely, an already-proved positive-dyadic terminal-regularization theorem can be packaged as
+graph-local Section 9 data by making the regular q-set conclusion the only live branch.
+-/
+def q64TerminalData_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+    {r : ℕ}
+    (hterm : HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r) :
+    Q64PositiveDyadicTerminalRegularizationData r where
+  NonconstantResidue := fun {_n _j} _hj _G _hhost => False
+  FullySkewSplitter := fun {_n _j} _hj _G _hhost => False
+  ProperSubmarker := fun {_n _j} _hj _G _hhost => False
+  PrimeModuleExit := fun {_n _j} _hj _G _hhost => False
+  ClosedLocalExit := fun {_n _j} _hj _G _hhost => False
+  RegularQSet := fun {_n j} _hj G _hhost => HasRegularInducedSubgraphOfCard G (2 ^ j)
+  terminalData := by
+    intro n j hj G hhost
+    refine
+      { constantResidueRegular := ?_
+        obstructionFullySkew := ?_
+        qMarkerCoupling := ?_
+        properSubmarkerCloses := ?_
+        primeModuleCloses := ?_
+        closedLocalCloses := ?_ }
+    · intro _hconstant
+      exact hterm hj G hhost
+    · intro hfalse
+      exact False.elim hfalse
+    · intro hfalse
+      exact False.elim hfalse
+    · intro hfalse
+      exact False.elim hfalse
+    · intro hfalse
+      exact False.elim hfalse
+    · intro hfalse
+      exact False.elim hfalse
+  regularQSetRealizes := by
+    intro n j hj G hhost hregular
+    exact hregular
+
+/--
+The graph-local Section 9 package is equivalent, as a proof obligation, to the positive-dyadic
+terminal-regularization landing statement.
+-/
+theorem nonempty_q64PositiveDyadicTerminalRegularizationData_iff
+    {r : ℕ} :
+    Nonempty (Q64PositiveDyadicTerminalRegularizationData r) ↔
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r := by
+  constructor
+  · rintro ⟨hdata⟩
+    exact
+      hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalData
+        hdata
+  · intro hterm
+    exact
+      ⟨q64TerminalData_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+        hterm⟩
+
+/--
+If the final audit produces the graph-local Section 9 terminal-data package, it also produces the
+positive-dyadic terminal-regularization theorem required by the saturated endgame.
+-/
+theorem q64_finalAuditComponentChain_of_terminalData
+    {D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hchain :
+      Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting (Nonempty (Q64PositiveDyadicTerminalRegularizationData (D + 1)))
+        GlobalBridge) :
+    Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1))
+      GlobalBridge where
+  primeCycleBreaker := hchain.primeCycleBreaker
+  signLaw := hchain.signLaw
+  oneCornerLift := hchain.oneCornerLift
+  compensatorRouting := hchain.compensatorRouting
+  betaVanishes := fun hcouple =>
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalData
+      (hchain.betaVanishes hcouple).some
+  globalBridge := hchain.globalBridge
+
+/--
+Final-audit conversion for the reduced saturated route: if the audit emits Section 9 terminal data,
+then its beta-vanishing field can be read as only the remaining high-dyadic terminal obligation.
+-/
+theorem q64_finalAuditComponentChain_of_terminalData_beyondOne
+    {D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hchain :
+      Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting (Nonempty (Q64PositiveDyadicTerminalRegularizationData (D + 1)))
+        GlobalBridge) :
+    Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne
+        (D + 1))
+      GlobalBridge where
+  primeCycleBreaker := hchain.primeCycleBreaker
+  signLaw := hchain.signLaw
+  oneCornerLift := hchain.oneCornerLift
+  compensatorRouting := hchain.compensatorRouting
+  betaVanishes := fun hcouple =>
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne_of_q64TerminalData
+      (hchain.betaVanishes hcouple).some
+  globalBridge := hchain.globalBridge
+
+/-- Final-audit conversion when the audit emits host-local Section 9 obligations directly. -/
+theorem q64_finalAuditComponentChain_of_terminalGraphLocalObligations
+    {D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hchain :
+      Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))) GlobalBridge) :
+    Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1))
+      GlobalBridge where
+  primeCycleBreaker := hchain.primeCycleBreaker
+  signLaw := hchain.signLaw
+  oneCornerLift := hchain.oneCornerLift
+  compensatorRouting := hchain.compensatorRouting
+  betaVanishes := fun hcouple =>
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalGraphLocalObligations
+      (hchain.betaVanishes hcouple).some
+  globalBridge := hchain.globalBridge
+
+/--
+Reduced final-audit conversion when the audit emits host-local Section 9 obligations directly.
+-/
+theorem q64_finalAuditComponentChain_of_terminalGraphLocalObligations_beyondOne
+    {D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hchain :
+      Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))) GlobalBridge) :
+    Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne
+        (D + 1))
+      GlobalBridge where
+  primeCycleBreaker := hchain.primeCycleBreaker
+  signLaw := hchain.signLaw
+  oneCornerLift := hchain.oneCornerLift
+  compensatorRouting := hchain.compensatorRouting
+  betaVanishes := fun hcouple =>
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne_of_q64TerminalGraphLocalObligations
+      (hchain.betaVanishes hcouple).some
+  globalBridge := hchain.globalBridge
 
 /--
 Positive-dyadic graph-local form of Corollary 10.2: every completed host/control pair at size
@@ -2103,6 +5462,53 @@ def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBr
     HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r →
       HasFixedModulusControlBlockModularCascadeWitnessOfCard G (2 ^ j) (2 ^ j)
 
+/-- The bounded-host positive-dyadic terminal cascade bridge is also false at every nonzero budget. -/
+theorem
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge r := by
+  intro hterminal
+  have hhost :
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) r :=
+    droppedPartUpgradeCounterexample_boundedTerminalHost_of_one_le hr
+  have hcascade :
+      HasFixedModulusControlBlockModularCascadeWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) := by
+    exact hterminal (by norm_num : 0 < 3) droppedPartUpgradeCounterexampleGraph hhost
+  have hregular :
+      HasRegularInducedSubgraphOfCard droppedPartUpgradeCounterexampleGraph (2 ^ 3) :=
+    hasRegularInducedSubgraphOfCard_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard
+      droppedPartUpgradeCounterexampleGraph hcascade
+  exact droppedPartUpgradeCounterexample_noRegular hregular
+
+/-- Likewise, the bounded-host positive-dyadic external-block self-bridge is not a viable terminal
+frontier: external-block data would immediately give the refuted terminal cascade witness. -/
+theorem
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge_of_one_le
+    {r : ℕ} (hr : 1 ≤ r) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalExternalBlockSelfBridge r := by
+  classical
+  intro hterminal
+  letI : DecidableRel droppedPartUpgradeCounterexampleGraph.Adj :=
+    Classical.decRel droppedPartUpgradeCounterexampleGraph.Adj
+  have hhost :
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) r :=
+    droppedPartUpgradeCounterexample_boundedTerminalHost_of_one_le hr
+  rcases hterminal (by norm_num : 0 < 3) droppedPartUpgradeCounterexampleGraph hhost with
+    ⟨s, chain, blocks, hkm, hq, hnonempty, hsep, hfrom, hext⟩
+  have hcascade :
+      HasFixedModulusControlBlockModularCascadeWitnessOfCard
+        droppedPartUpgradeCounterexampleGraph (2 ^ 3) (2 ^ 3) :=
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+      droppedPartUpgradeCounterexampleGraph hkm hq hnonempty hsep hfrom hext
+  have hregular :
+      HasRegularInducedSubgraphOfCard droppedPartUpgradeCounterexampleGraph (2 ^ 3) :=
+    hasRegularInducedSubgraphOfCard_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard
+      droppedPartUpgradeCounterexampleGraph hcascade
+  exact droppedPartUpgradeCounterexample_noRegular hregular
+
 /--
 Weaker positive-dyadic one-step self-target: at positive dyadic modulus `q = 2^j`, every bounded
 host witness of size `q * q` already collapses to the fixed-modulus control-block modular cascade
@@ -2134,6 +5540,17 @@ to be upgraded, and only to some bounded exact single-control witness.
 -/
 def HasExactCardFixedSingleControlHostMaximalControlUpgrade : Prop :=
   ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+        G (2 ^ j) (2 ^ j) (2 ^ j - 1) →
+      HasBoundedSingleControlExactWitnessOfCard G (2 ^ j) (2 ^ j - 1)
+
+/--
+Small-ambient fragment of the maximal-control exact upgrade.  If `|V(G)| ≤ 2q - 1`, then a
+`q`-vertex bucket and its `(q - 1)`-vertex control set already occupy every possible vertex of the
+host, so the dropped host tail is empty and the modular host data collapse to an exact witness.
+-/
+def HasExactCardFixedSingleControlHostMaximalControlSmallOrderUpgrade : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (hn : n ≤ 2 * 2 ^ j - 1) (G : SimpleGraph (Fin n)),
     HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
         G (2 ^ j) (2 ^ j) (2 ^ j - 1) →
       HasBoundedSingleControlExactWitnessOfCard G (2 ^ j) (2 ^ j - 1)
@@ -2264,6 +5681,40 @@ def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpT
         G (2 ^ j) (2 ^ j) r
 
 /--
+The raw zero-extra-block beta-up-to self-bridge is false.  The counterexample has a bounded
+`q = 4` refinement input, but the exact beta-up-to output would force the dropped row on `s \ w` to be
+constant modulo `4`, which the finite certificate rules out.
+-/
+theorem not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge_zero :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge 0 := by
+  intro hbridge
+  have hbeta :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+        betaUpToBridgeCounterexampleGraph (2 ^ 2) (2 ^ 2) 0 :=
+    hbridge (n := 8) (j := 2) (by decide) betaUpToBridgeCounterexampleGraph
+      betaUpToBridgeCounterexample_refinementInput
+  exact betaUpToBridgeCounterexample_noOutputDec
+    (q4RefinementBetaUpToNoTailOutputDec_of_betaUpToData betaUpToBridgeCounterexampleGraph hbeta)
+
+/--
+The raw beta-up-to self-bridge is false for every auxiliary-block budget.  Any beta-up-to output for the
+q=4 counterexample collapses its auxiliary blocks to one effective tail block, but the pruned finite
+certificate above shows that no such effective-tail output exists.
+-/
+theorem not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+    (r : ℕ) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge r := by
+  intro hbridge
+  have hbeta :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+        betaUpToBridgeCounterexampleGraph (2 ^ 2) (2 ^ 2) r :=
+    hbridge (n := 8) (j := 2) (by decide) betaUpToBridgeCounterexampleGraph
+      (betaUpToBridgeCounterexample_refinementInputOf r)
+  exact betaUpToBridgeCounterexample_noEffectiveTailOutputDec
+    (q4RefinementBetaUpToEffectiveTailOutputDec_of_betaUpToData
+      betaUpToBridgeCounterexampleGraph hbeta)
+
+/--
 Exact finite obstruction inside the current refinement-data package: recover the smaller ambient
 congruence on `w ∪ controlBlockUnion ((t, e) :: blocks)`. Once this is available, the dropped-part
 residue on `s \ w` follows algebraically.
@@ -2274,6 +5725,17 @@ def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAm
     HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
       HasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
         G (2 ^ j) (2 ^ j) r
+
+/--
+Small-order exact fragment of the refinement endpoint.  It does not recover the missing dropped-tail
+residue in general; it proves that the endpoint is automatic when the whole graph has size at most
+`2q - 1`, so no dropped host tail can remain after selecting the `q`-bucket and `(q - 1)` control set.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallOrderExactSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (hn : n ≤ 2 * 2 ^ j - 1) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasBoundedSingleControlExactWitnessOfCard G (2 ^ j) (2 ^ j - 1)
 
 /--
 Exact finite obstruction singled out by the current host notes: from the refinement-data package,
@@ -2445,6 +5907,56 @@ theorem
       HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r :=
   ⟨hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge,
     hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge⟩
+
+/-- The dyadic divisibility self-bridge is false for every auxiliary-block budget. -/
+theorem not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+    (r : ℕ) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r := by
+  intro hbridge
+  exact not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge r
+    (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+      hbridge)
+
+/-- The terminal self-bridge is false in the current refinement-data language. -/
+theorem not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+    (r : ℕ) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge r := by
+  intro hbridge
+  exact
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        hbridge)
+
+/-- The one-bit beta self-bridge is false in the current refinement-data language. -/
+theorem not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+    (r : ℕ) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge r := by
+  intro hbridge
+  exact
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+        hbridge)
+
+/-- The dropped-column pairing self-bridge is false in the current refinement-data language. -/
+theorem not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge
+    (r : ℕ) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge r := by
+  intro hbridge
+  exact
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge
+        hbridge)
+
+/-- The first-bit packet self-bridge is false in the current refinement-data language. -/
+theorem not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+    (r : ℕ) :
+    ¬ HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+      r := by
+  intro hbridge
+  exact
+    not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+        hbridge)
 
 theorem
     hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
@@ -2738,6 +6250,55 @@ theorem
       (hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_of_hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
         (G := G) hq href)
 
+theorem hasExactCardFixedSingleControlHostMaximalControlSmallOrderUpgrade :
+    HasExactCardFixedSingleControlHostMaximalControlSmallOrderUpgrade := by
+  intro n j hj hn G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  have hV : Fintype.card (Fin n) ≤ 2 ^ j + (2 ^ j - 1) := by
+    simp
+    omega
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_add_of_lt_and_hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+      (G := G) (k := 2 ^ j) (q := 2 ^ j) (r := 2 ^ j - 1) le_rfl hV
+      (by omega) hhost
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallOrderExactSelfBridge
+    (r : ℕ) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallOrderExactSelfBridge
+      r := by
+  intro n j hj hn G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_two_mul_sub_one_of_hasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard
+      (G := G) hq (by simpa using hn)
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+        (G := G) href)
+
 theorem
     hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
     (hupgrade : HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade) :
@@ -2782,6 +6343,38 @@ theorem
       hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
   · exact
       hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade
+
+/--
+The q=4 structured counterexample rules out the stronger maximal-control route that tries to add
+the dropped-part residue before extracting the exact regular set.  This leaves only the weaker
+exact-upgrade endpoint as a live finite target.
+-/
+theorem not_hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade :
+    ¬ HasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade := by
+  intro hupgrade
+  classical
+  have hq : 1 < 2 ^ 2 := by norm_num
+  have hhost :
+      HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+        betaUpToBridgeCounterexampleGraph (2 ^ 2) (2 ^ 2) (2 ^ 2 - 1) :=
+    hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_of_hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+      (G := betaUpToBridgeCounterexampleGraph) hq betaUpToBridgeCounterexample_refinementInput
+  have hdropData :
+      HasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+        betaUpToBridgeCounterexampleGraph (2 ^ 2) (2 ^ 2) (2 ^ 2 - 1) :=
+    hupgrade (n := 8) (j := 2) (by decide) betaUpToBridgeCounterexampleGraph hhost
+  exact betaUpToBridgeCounterexample_noOutputDec
+    (q4RefinementBetaUpToNoTailOutputDec_of_singleControlDropData
+      betaUpToBridgeCounterexampleGraph hdropData)
+
+/-- The stronger residue-host maximal-control upgrade is equivalent to, and therefore refuted with,
+the dropped-residue upgrade above. -/
+theorem not_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade :
+    ¬ HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade := by
+  intro hupgrade
+  exact not_hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade
+    (hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+      hupgrade)
 
 theorem
     hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade
@@ -3131,6 +6724,1363 @@ private lemma induced_pair_degree_eq
             degree_inducedOn_eq_card_neighborFinset_inter_asymptotic
               (G := G) ({a, b} : Finset (Fin n)) ⟨b, by simp [hab]⟩
 
+/-- Every graph on at least two `Fin n` vertices has a regular induced subgraph of size `2`. -/
+private lemma hasRegularInducedSubgraphOfCard_two_fin
+    {n : ℕ} (G : SimpleGraph (Fin n)) (hn : 2 ≤ n) :
+    HasRegularInducedSubgraphOfCard G 2 := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  let a : Fin n := ⟨0, by omega⟩
+  let b : Fin n := ⟨1, by omega⟩
+  have hab : a ≠ b := by
+    intro h
+    have h01 : (0 : ℕ) = 1 := congrArg Fin.val h
+    omega
+  let pair : Finset (Fin n) := {a, b}
+  let va : ↑(pair : Set (Fin n)) := ⟨a, by simp [pair, hab]⟩
+  let vb : ↑(pair : Set (Fin n)) := ⟨b, by simp [pair, hab]⟩
+  refine ⟨pair, ?_, (inducedOn G pair).degree va, ?_⟩
+  · simp [pair, hab]
+  · rw [InducesRegularOfDegree]
+    intro x
+    have hx : x.1 = a ∨ x.1 = b := by
+      simpa [pair] using x.2
+    rcases hx with hxa | hxb
+    · have hxva : x = va := Subtype.ext hxa
+      cases hxva
+      rfl
+    · have hxvb : x = vb := Subtype.ext hxb
+      have hdeg :
+          (inducedOn G pair).degree va = (inducedOn G pair).degree vb := by
+        simpa [pair, va, vb] using (induced_pair_degree_eq (G := G) hab)
+      cases hxvb
+      exact hdeg.symm
+
+/-- Fixed-modulus form of the two-vertex regular subgraph fact on `Fin n`. -/
+private lemma hasFixedModulusWitnessOfCard_two_fin_of_two_le
+    {n q : ℕ} (G : SimpleGraph (Fin n)) (hn : 2 ≤ n) :
+    HasFixedModulusWitnessOfCard G 2 q := by
+  exact
+    hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
+      (hasRegularInducedSubgraphOfCard_two_fin G hn)
+
+/-- The first positive terminal slice (`q = 2`) is unconditional: any two vertices induce a regular
+two-vertex graph, and the host witness supplies at least two ambient vertices. -/
+theorem
+    hasRegularInducedSubgraphOfCard_two_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+    {n r : ℕ} (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G 2 2 r) :
+    HasRegularInducedSubgraphOfCard G 2 := by
+  rcases hhost with ⟨u, _s, hcard, _hu, _blocks, _hlen, _hnonempty, _hsep, _hdeg, _hext⟩
+  have hn : 2 ≤ n := by
+    exact le_trans hcard (by simpa using (Finset.card_le_univ u))
+  exact hasRegularInducedSubgraphOfCard_two_fin G hn
+
+/-- The `j = 1` instance of positive-dyadic terminal regularization. -/
+theorem hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_one
+    (r : ℕ) :
+    ∀ {n : ℕ} (G : SimpleGraph (Fin n)),
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ 1) (2 ^ 1) r →
+        HasRegularInducedSubgraphOfCard G (2 ^ 1) := by
+  intro n G hhost
+  norm_num
+  exact
+    hasRegularInducedSubgraphOfCard_two_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+      (G := G) hhost
+
+/--
+Positive terminal regularization reduces to the true high-dyadic range `j > 1`: the `j = 1`
+case is the unconditional two-vertex slice.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_beyondOne
+    {r : ℕ}
+    (hbeyond :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r := by
+  intro n j hj G hhost
+  rcases Nat.eq_or_lt_of_le (Nat.succ_le_of_lt hj) with hjon | hjgt
+  · subst j
+    exact hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_one r G hhost
+  · exact hbeyond hjgt G hhost
+
+/--
+If the final audit only has to prove terminal regularization above the first dyadic slice, the
+closed `q = 2` case upgrades it to the positive terminal-regularization field expected downstream.
+-/
+theorem q64_finalAuditComponentChain_of_terminalRegularizationBeyondOne
+    {D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hchain :
+      Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne
+          (D + 1))
+        GlobalBridge) :
+    Q64FinalAuditComponentChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1))
+      GlobalBridge where
+  primeCycleBreaker := hchain.primeCycleBreaker
+  signLaw := hchain.signLaw
+  oneCornerLift := hchain.oneCornerLift
+  compensatorRouting := hchain.compensatorRouting
+  betaVanishes := fun hcouple =>
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_beyondOne
+      (hchain.betaVanishes hcouple)
+  globalBridge := hchain.globalBridge
+
+/--
+The reduced high-dyadic terminal obligation can still be repackaged as Section 9 terminal data,
+because the only omitted positive dyadic slice is the already-closed two-vertex case.
+-/
+def q64TerminalData_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne
+    {r : ℕ}
+    (hbeyond :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne r) :
+    Q64PositiveDyadicTerminalRegularizationData r :=
+  q64TerminalData_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+    (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_beyondOne
+      hbeyond)
+
+/--
+After the unconditional `j = 1` terminal slice is closed, Section 9 terminal data is equivalent to
+the reduced high-dyadic terminal regularization obligation.
+-/
+theorem nonempty_q64PositiveDyadicTerminalRegularizationData_iff_beyondOne
+    {r : ℕ} :
+    Nonempty (Q64PositiveDyadicTerminalRegularizationData r) ↔
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne r := by
+  constructor
+  · rintro ⟨hdata⟩
+    exact
+      hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne_of_q64TerminalData
+        hdata
+  · intro hbeyond
+    exact
+      ⟨q64TerminalData_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne
+        hbeyond⟩
+
+/-- The fixed-witness dyadic lift is automatic for target size at most `2`. -/
+lemma positiveEmptyControlFixedWitnessDyadicLift_smallTarget
+    {C n j m : ℕ} (hm : m ≤ 2) (hj : 0 < j) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1)) := by
+  intro hinput
+  by_cases hmOne : m ≤ 1
+  · exact positiveEmptyControlFixedWitnessDyadicLift_trivialTarget hmOne hj G hinput
+  have hmTwo : m = 2 := by omega
+  subst m
+  rcases hinput with ⟨s, hs, _hmod⟩
+  have hpowPos : 0 < (2 ^ j) ^ C := Nat.pow_pos (Nat.pow_pos (by decide : 0 < 2))
+  have hpowOne : 1 ≤ (2 ^ j) ^ C := Nat.succ_le_of_lt hpowPos
+  have hprodTwo : 2 ≤ (2 ^ j) ^ C * 2 := by
+    simpa using Nat.mul_le_mul_right 2 hpowOne
+  have hsTwo : 2 ≤ s.card := le_trans hprodTwo hs
+  have hn : 2 ≤ n := by
+    exact le_trans hsTwo (by simpa using (Finset.card_le_univ s))
+  exact hasFixedModulusWitnessOfCard_two_fin_of_two_le G hn
+
+/--
+The first nontrivial dyadic target size is automatic from the existing seven-vertex `q = 4`
+finite base: any input witness of size `(2^j)^C * 4` with positive dyadic level and
+positive loss exponent forces the ambient graph to have at least seven vertices, hence a regular
+induced four-set.
+-/
+lemma positiveEmptyControlFixedWitnessDyadicLift_target_four_of_sevenVertexFourRegularBaseCase
+    (hbase : SevenVertexFourRegularBaseCase) {C n j : ℕ} (hC : 0 < C) (hj : 0 < j)
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * 4) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G 4 (2 ^ (j + 1)) := by
+  intro hinput
+  rcases hinput with ⟨s, hs, _hmod⟩
+  have hpowTwo : 2 ≤ (2 ^ j) ^ C := by
+    have htwoj : 2 ≤ 2 ^ j := by
+      simpa using Nat.pow_le_pow_right (by decide : 0 < 2) hj
+    calc
+      2 ≤ 2 ^ j := htwoj
+      _ = (2 ^ j) ^ 1 := by rw [Nat.pow_one]
+      _ ≤ (2 ^ j) ^ C := Nat.pow_le_pow_right (Nat.pow_pos (by decide : 0 < 2)) hC
+  have hprod : 7 ≤ (2 ^ j) ^ C * 4 := by
+    nlinarith [Nat.mul_le_mul_right 4 hpowTwo]
+  have hn : 7 ≤ n := by
+    exact le_trans (le_trans hprod hs) (by simpa using (Finset.card_le_univ s))
+  exact
+    hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
+      (hasRegularInducedSubgraphOfCard_of_le_F_fintypeCard G
+        (by simpa using four_le_F_of_seven_le hbase hn))
+
+/--
+The seven-vertex `q = 4` finite base removes the target-size-four branch from the residual
+Ramsey-index dyadic window.
+-/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow_of_exceptFour
+    (hbase : SevenVertexFourRegularBaseCase) {C : ℕ} (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow C := by
+  intro n j m hj hm hindex hambient G hinput
+  by_cases hmFour : m = 4
+  · subst m
+    exact
+      positiveEmptyControlFixedWitnessDyadicLift_target_four_of_sevenVertexFourRegularBaseCase
+        hbase hC hj G hinput
+  · exact hwindow hj hm hindex hambient hmFour G hinput
+
+private lemma dyadicCost_pow_lower_bound
+    {C j a : ℕ} (ha : a ≤ C) (hj : 0 < j) :
+    2 ^ a ≤ (2 ^ j) ^ C := by
+  have htwoj : 2 ≤ 2 ^ j := by
+    simpa using Nat.pow_le_pow_right (by decide : 0 < 2) hj
+  calc
+    2 ^ a ≤ (2 ^ j) ^ a := Nat.pow_le_pow_left htwoj a
+    _ ≤ (2 ^ j) ^ C :=
+      Nat.pow_le_pow_right (Nat.pow_pos (by decide : 0 < 2)) ha
+
+/--
+The `m = 3` branch of the except-four residual window is empty for every positive loss exponent:
+the input witness already forces at least six ambient vertices, while the ambient Ramsey window has
+`n < choose 4 2 = 6`.
+-/
+lemma positiveEmptyControlFixedWitnessDyadicLift_no_target_three
+    {C n j : ℕ} (hC : 0 < C) (hj : 0 < j)
+    (hambient : n < Nat.choose ((3 - 1) + (3 - 1)) (3 - 1))
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * 3) (2 ^ j) → False := by
+  intro hinput
+  rcases hinput with ⟨s, hs, _hmod⟩
+  have hpowTwo : 2 ≤ (2 ^ j) ^ C := by
+    simpa using dyadicCost_pow_lower_bound (C := C) (j := j) (a := 1)
+      (Nat.succ_le_of_lt hC) hj
+  have hprod : 6 ≤ (2 ^ j) ^ C * 3 := by
+    simpa using Nat.mul_le_mul_right 3 hpowTwo
+  have hn : 6 ≤ n := by
+    exact le_trans (le_trans hprod hs) (by simpa using (Finset.card_le_univ s))
+  have hnlt : n < 6 := by
+    norm_num at hambient
+    exact hambient
+  omega
+
+/--
+For loss exponent at least four, the `m = 5` residual branch is arithmetically empty: the smallest
+possible input witness has size at least `16 * 5 = 80`, exceeding `choose 8 4 = 70`.
+-/
+lemma positiveEmptyControlFixedWitnessDyadicLift_no_target_five_of_four_le_C
+    {C n j : ℕ} (hC : 4 ≤ C) (hj : 0 < j)
+    (hambient : n < Nat.choose ((5 - 1) + (5 - 1)) (5 - 1))
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * 5) (2 ^ j) → False := by
+  intro hinput
+  rcases hinput with ⟨s, hs, _hmod⟩
+  have hpowSixteen : 16 ≤ (2 ^ j) ^ C := by
+    simpa using dyadicCost_pow_lower_bound (C := C) (j := j) (a := 4) hC hj
+  have hprod : 80 ≤ (2 ^ j) ^ C * 5 := by
+    simpa using Nat.mul_le_mul_right 5 hpowSixteen
+  have hn : 80 ≤ n := by
+    exact le_trans (le_trans hprod hs) (by simpa using (Finset.card_le_univ s))
+  have hnlt : n < 70 := by
+    norm_num at hambient
+    exact hambient
+  omega
+
+/--
+For loss exponent at least six, the `m = 6` residual branch is also empty: the input size is at
+least `64 * 6 = 384`, while the ambient window has `n < choose 10 5 = 252`.
+-/
+lemma positiveEmptyControlFixedWitnessDyadicLift_no_target_six_of_six_le_C
+    {C n j : ℕ} (hC : 6 ≤ C) (hj : 0 < j)
+    (hambient : n < Nat.choose ((6 - 1) + (6 - 1)) (6 - 1))
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * 6) (2 ^ j) → False := by
+  intro hinput
+  rcases hinput with ⟨s, hs, _hmod⟩
+  have hpowSixtyFour : 64 ≤ (2 ^ j) ^ C := by
+    simpa using dyadicCost_pow_lower_bound (C := C) (j := j) (a := 6) hC hj
+  have hprod : 384 ≤ (2 ^ j) ^ C * 6 := by
+    simpa using Nat.mul_le_mul_right 6 hpowSixtyFour
+  have hn : 384 ≤ n := by
+    exact le_trans (le_trans hprod hs) (by simpa using (Finset.card_le_univ s))
+  have hnlt : n < 252 := by
+    norm_num at hambient
+    exact hambient
+  omega
+
+/--
+General arithmetic emptiness criterion for one residual target size: if the smallest possible
+dyadic input witness at exponent lower bound `a` already exceeds the sharp ambient Ramsey bound,
+then no graph in the residual ambient-small window can carry such an input witness.
+-/
+lemma positiveEmptyControlFixedWitnessDyadicLift_no_target_of_choose_lt_dyadic_lower_bound
+    {C a n j m : ℕ} (haC : a ≤ C) (hj : 0 < j)
+    (hcut : Nat.choose ((m - 1) + (m - 1)) (m - 1) < 2 ^ a * m)
+    (hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) → False := by
+  intro hinput
+  rcases hinput with ⟨s, hs, _hmod⟩
+  have hpow : 2 ^ a ≤ (2 ^ j) ^ C :=
+    dyadicCost_pow_lower_bound (C := C) (j := j) (a := a) haC hj
+  have hprod : 2 ^ a * m ≤ (2 ^ j) ^ C * m :=
+    Nat.mul_le_mul_right m hpow
+  have hn : 2 ^ a * m ≤ n := by
+    exact le_trans (le_trans hprod hs) (by simpa using (Finset.card_le_univ s))
+  have hchoose_lt_n : Nat.choose ((m - 1) + (m - 1)) (m - 1) < n :=
+    lt_of_lt_of_le hcut hn
+  omega
+
+/--
+If the dyadic exponent is within a logarithmic gap of the Ramsey exponent, then the sharp Ramsey
+bound is already below the input fixed-witness size.  The residual window can therefore only contain
+cases with `m < 2 ^ (2 * (m - 1) - j * C)`.
+-/
+lemma ramseyBound_le_dyadicCost_of_gap_power_le_target
+    {C j m : ℕ} (hle : j * C ≤ 2 * (m - 1))
+    (hgap : 2 ^ (2 * (m - 1) - j * C) ≤ m) :
+    Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ C * m := by
+  let d := 2 * (m - 1) - j * C
+  have hgap' : 2 ^ d ≤ m := by simpa [d] using hgap
+  have hchoose :
+      Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤
+        2 ^ ((m - 1) + (m - 1)) := Nat.choose_le_two_pow _ _
+  have hsum : (m - 1) + (m - 1) = 2 * (m - 1) := by omega
+  have hdecomp : 2 * (m - 1) = j * C + d := by
+    dsimp [d]
+    omega
+  calc
+    Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤
+        2 ^ ((m - 1) + (m - 1)) := hchoose
+    _ = 2 ^ (2 * (m - 1)) := by rw [hsum]
+    _ = 2 ^ (j * C) * 2 ^ d := by rw [hdecomp, Nat.pow_add]
+    _ ≤ 2 ^ (j * C) * m := Nat.mul_le_mul_left _ hgap'
+    _ = (2 ^ j) ^ C * m := by simp [Nat.pow_mul]
+
+/--
+No exact ambient-small residual instance exists once the logarithmic gap is small enough: the input
+witness would already have at least the sharp Ramsey size, contradicting `n` being below that bound.
+-/
+lemma positiveEmptyControlFixedWitnessDyadicLift_no_residual_of_gap_power_le_target
+    {C n j m : ℕ} (hle : j * C ≤ 2 * (m - 1))
+    (hgap : 2 ^ (2 * (m - 1) - j * C) ≤ m)
+    (hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) → False := by
+  intro hinput
+  rcases hinput with ⟨s, hs, _hmod⟩
+  have hramsey :
+      Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ C * m :=
+    ramseyBound_le_dyadicCost_of_gap_power_le_target hle hgap
+  have hn : Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ n := by
+    exact le_trans (le_trans hramsey hs) (by simpa using (Finset.card_le_univ s))
+  omega
+
+/-- A convenient half-bound for the central Ramsey number used in the `C = 6` gap refinement. -/
+private lemma two_mul_centralRamseyBound_le_four_pow :
+    ∀ r : ℕ, 0 < r → 2 * Nat.choose (2 * r) r ≤ 4 ^ r := by
+  intro r hr
+  induction r with
+  | zero =>
+      cases hr
+  | succ r ih =>
+      cases r with
+      | zero =>
+          norm_num
+      | succ r =>
+          let cprev := Nat.choose (2 * (r + 1)) (r + 1)
+          let cnext := Nat.choose (2 * (r + 2)) (r + 2)
+          have ih' : 2 * cprev ≤ 4 ^ (r + 1) := by
+            simpa [cprev] using ih (Nat.succ_pos r)
+          have hrec := Nat.succ_mul_centralBinom_succ (r + 1)
+          rw [Nat.centralBinom_eq_two_mul_choose, Nat.centralBinom_eq_two_mul_choose] at hrec
+          have hrec' : (r + 2) * cnext = 2 * (2 * (r + 1) + 1) * cprev := by
+            simpa [cprev, cnext, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hrec
+          apply Nat.le_of_mul_le_mul_left (c := r + 2)
+          · calc
+              (r + 2) * (2 * cnext) = 2 * ((r + 2) * cnext) := by ring
+              _ = 2 * (2 * (2 * (r + 1) + 1) * cprev) := by rw [hrec']
+              _ = 2 * (2 * (r + 1) + 1) * (2 * cprev) := by ring
+              _ ≤ 2 * (2 * (r + 1) + 1) * 4 ^ (r + 1) := by
+                exact Nat.mul_le_mul_left _ ih'
+              _ ≤ (r + 2) * 4 ^ (r + 2) := by
+                have hcoef : 2 * (2 * (r + 1) + 1) ≤ 4 * (r + 2) := by omega
+                have hpow : 4 ^ (r + 2) = 4 * 4 ^ (r + 1) := by
+                  calc
+                    4 ^ (r + 2) = 4 ^ ((r + 1) + 1) := by
+                      rw [show r + 2 = (r + 1) + 1 by omega]
+                    _ = 4 ^ (r + 1) * 4 := by rw [pow_succ]
+                    _ = 4 * 4 ^ (r + 1) := by rw [Nat.mul_comm]
+                rw [hpow]
+                nlinarith [Nat.pow_pos (by decide : 0 < 4) (a := 4) (n := r + 1), hcoef]
+          · omega
+
+/--
+If the exact dyadic gap satisfies `2^d ≤ 2m`, the central-binomial half-bound already puts the sharp
+Ramsey threshold below the input witness size.
+-/
+lemma ramseyBound_le_dyadicCost_six_of_gap_power_le_two_mul_target
+    {j m : ℕ} (hm : 1 < m) (hle : j * 6 ≤ 2 * (m - 1))
+    (hgap : 2 ^ (2 * (m - 1) - j * 6) ≤ 2 * m) :
+    Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ 6 * m := by
+  let r := m - 1
+  let d := 2 * (m - 1) - j * 6
+  have hr : 0 < r := by
+    dsimp [r]
+    omega
+  have hsum : (m - 1) + (m - 1) = 2 * r := by
+    dsimp [r]
+    omega
+  have hdecomp : 2 * r = j * 6 + d := by
+    dsimp [r, d]
+    omega
+  have hcentral : 2 * Nat.choose (2 * r) r ≤ 4 ^ r :=
+    two_mul_centralRamseyBound_le_four_pow r hr
+  have hpowfour : 4 ^ r = 2 ^ (2 * r) := by
+    rw [show 4 = 2 ^ 2 by decide, ← pow_mul]
+  have htwoChoose :
+      2 * Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤
+        2 * ((2 ^ j) ^ 6 * m) := by
+    calc
+      2 * Nat.choose ((m - 1) + (m - 1)) (m - 1)
+          = 2 * Nat.choose (2 * r) r := by simp [hsum, r]
+      _ ≤ 4 ^ r := hcentral
+      _ = 2 ^ (2 * r) := hpowfour
+      _ = 2 ^ (j * 6) * 2 ^ d := by rw [hdecomp, Nat.pow_add]
+      _ ≤ 2 ^ (j * 6) * (2 * m) := Nat.mul_le_mul_left _ hgap
+      _ = 2 * ((2 ^ j) ^ 6 * m) := by
+        simp [Nat.pow_mul, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
+  omega
+
+/--
+The improved near-upper-index slice is empty: if `2^d ≤ 2m`, the input witness has at least the
+sharp Ramsey size, contradicting the ambient-small hypothesis.
+-/
+lemma positiveEmptyControlFixedWitnessDyadicLift_no_residual_six_of_gap_power_le_two_mul_target
+    {n j m : ℕ} (hm : 2 < m) (hindex : j * 6 < 2 * (m - 1))
+    (hgap : 2 ^ (2 * (m - 1) - j * 6) ≤ 2 * m)
+    (hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * m) (2 ^ j) → False := by
+  intro hinput
+  rcases hinput with ⟨s, hs, _hmod⟩
+  have hramsey :
+      Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ 6 * m :=
+    ramseyBound_le_dyadicCost_six_of_gap_power_le_two_mul_target
+      (j := j) (m := m) (by omega) (le_of_lt hindex) hgap
+  have hn : Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ n := by
+    exact le_trans (le_trans hramsey hs) (by simpa using (Finset.card_le_univ s))
+  omega
+
+/--
+Specialized `C = 6` no-go corollary for the top residual index slice.  Thus every surviving
+`m ≥ 7` residual case satisfies `j * 6 + 3 < 2 * (m - 1)`.
+-/
+lemma positiveEmptyControlFixedWitnessDyadicLift_no_residual_six_near_upper_index
+    {n j m : ℕ} (hM : 7 ≤ m)
+    (hindex : j * 6 < 2 * (m - 1))
+    (hnear : 2 * (m - 1) ≤ j * 6 + 3)
+    (hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * m) (2 ^ j) → False := by
+  have hm8 : 8 ≤ m := by omega
+  have hgapExp : 2 * (m - 1) - j * 6 ≤ 3 := by omega
+  have hgapPow : 2 ^ (2 * (m - 1) - j * 6) ≤ 8 := by
+    calc
+      2 ^ (2 * (m - 1) - j * 6) ≤ 2 ^ 3 :=
+        Nat.pow_le_pow_right (by decide : 0 < 2) hgapExp
+      _ = 8 := by norm_num
+  exact
+    positiveEmptyControlFixedWitnessDyadicLift_no_residual_of_gap_power_le_target
+      (C := 6) (j := j) (m := m) (n := n) (le_of_lt hindex)
+      (le_trans hgapPow hm8) hambient G
+
+/--
+The exact `C = 6` residual assumptions force the large-gap inequality.  Equivalently, the
+near-upper-index subrange is already arithmetically empty before any structural graph argument.
+-/
+lemma hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow_six_residual_gap_large
+    {n j m : ℕ} (_hj : 0 < j) (_hm : 2 < m) (_hM : 7 ≤ m)
+    (hindex : j * 6 < 2 * (m - 1))
+    (hambient : n < Nat.choose ((m - 1) + (m - 1)) (m - 1))
+    (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * m) (2 ^ j) →
+      m < 2 ^ (2 * (m - 1) - j * 6) := by
+  intro hinput
+  exact Nat.lt_of_not_ge fun hgap =>
+    positiveEmptyControlFixedWitnessDyadicLift_no_residual_of_gap_power_le_target
+      (C := 6) (j := j) (m := m) (n := n) (le_of_lt hindex)
+      hgap hambient G hinput
+
+/--
+It is enough to prove the `C = 6` dyadic window on the strictly smaller large-gap residual.
+This is the Phase 2 reduction left after closing the infinite near-upper-index subrange.
+-/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_six_of_largeGap
+    {M : ℕ}
+    (hwindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap M) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 M := by
+  intro n j m hj hm hM hindex hambient G hinput
+  by_cases hgap : 2 ^ (2 * (m - 1) - j * 6) ≤ m
+  · exact False.elim
+      (positiveEmptyControlFixedWitnessDyadicLift_no_residual_of_gap_power_le_target
+        (C := 6) (j := j) (m := m) (n := n) (le_of_lt hindex)
+        hgap hambient G hinput)
+  · exact hwindow hj hm hM hindex (Nat.lt_of_not_ge hgap) hambient G hinput
+
+/-- Phase 2 endpoint reduced to the large-gap residual for the intended exponent `C = 6`. -/
+theorem dyadicWindowAtLeastSeven_six_of_largeGap
+    (hwindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 7 := by
+  exact
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_six_of_largeGap
+      (M := 7) hwindow
+
+/--
+It is enough to handle the stricter `2m < 2^d` residual: when `2^d ≤ 2m`, the central-binomial
+half-bound makes the input witness at least the exact Ramsey threshold, contradicting the ambient-small
+window.
+-/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap_of_twiceLargeGap
+    {M : ℕ}
+    (hwindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap M) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap M := by
+  intro n j m hj hm hM hindex _hgap hambient G hinput
+  by_cases hgap₂ : 2 ^ (2 * (m - 1) - j * 6) ≤ 2 * m
+  · exact False.elim
+      (positiveEmptyControlFixedWitnessDyadicLift_no_residual_six_of_gap_power_le_two_mul_target
+        (j := j) (m := m) (n := n) hm hindex hgap₂ hambient G hinput)
+  · exact hwindow hj hm hM hindex (Nat.lt_of_not_ge hgap₂) hambient G hinput
+
+/-- Phase 2 endpoint reduced to the stricter `2m < 2^d` residual for the intended exponent `C = 6`. -/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_six_of_twiceLargeGap
+    {M : ℕ}
+    (hwindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap M) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 M := by
+  exact
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_six_of_largeGap
+      (M := M)
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap_of_twiceLargeGap
+        (M := M) hwindow)
+
+/-- The `M = 7`, `C = 6` dyadic window now only needs the stricter `2m < 2^d` residual. -/
+theorem dyadicWindowAtLeastSeven_six_of_twiceLargeGap
+    (hwindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap 7) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 7 := by
+  exact
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_six_of_twiceLargeGap
+      (M := 7) hwindow
+
+/--
+A `1/64`-large induced subgraph with all degrees `0 mod 4` is more than enough for the first-bit
+dyadic lift.
+-/
+theorem hasParityToModFourLoss64FixedWitnessLift_of_modFourZeroLoss64InducedSubgraph
+    (hzero : HasModFourZeroLoss64InducedSubgraph) :
+    HasParityToModFourLoss64FixedWitnessLift := by
+  intro n G s _hsmod
+  rcases hzero G (s := s) with ⟨t, hts, hcard, htmod, _htzero⟩
+  exact ⟨t, hts, hcard, htmod⟩
+
+/-- The sharper loss-5 all-`0 mod 4` theorem implies the loss-64 theorem used by the dyadic split. -/
+theorem hasModFourZeroLoss64InducedSubgraph_of_modFourZeroLossFiveInducedSubgraph
+    (hfive : HasModFourZeroLossFiveInducedSubgraph) :
+    HasModFourZeroLoss64InducedSubgraph := by
+  intro n G s
+  rcases hfive G (s := s) with ⟨t, hts, hcard, htmod, htzero⟩
+  refine ⟨t, hts, ?_, htmod, htzero⟩
+  exact le_trans hcard (by omega)
+
+/-- The literature-shaped loss-5 all-`0 mod 4` target closes the first-bit loss-64 lift. -/
+theorem hasParityToModFourLoss64FixedWitnessLift_of_modFourZeroLossFiveInducedSubgraph
+    (hfive : HasModFourZeroLossFiveInducedSubgraph) :
+    HasParityToModFourLoss64FixedWitnessLift :=
+  hasParityToModFourLoss64FixedWitnessLift_of_modFourZeroLoss64InducedSubgraph
+    (hasModFourZeroLoss64InducedSubgraph_of_modFourZeroLossFiveInducedSubgraph hfive)
+
+/-- The first-bit loss-64 lift closes the `j = 1` instance of the fixed-witness dyadic lift. -/
+theorem hasFixedModulusWitnessOfCard_four_of_parityToModFourLoss64FixedWitnessLift
+    (hloss : HasParityToModFourLoss64FixedWitnessLift)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ 1) ^ 6 * m) (2 ^ 1) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (1 + 1)) := by
+  intro hinput
+  rcases hinput with ⟨s, hs, hsmod⟩
+  rcases hloss G (by simpa using hsmod) with ⟨t, hts, hlosscard, htmod⟩
+  refine ⟨t, ?_, ?_⟩
+  · have h64 : 64 * m ≤ s.card := by
+      simpa using hs
+    have hbound : 64 * m ≤ 64 * t.card := le_trans h64 hlosscard
+    omega
+  · simpa using htmod
+
+/--
+The strict dyadic residual splits into a first-bit loss-64 lift plus the strictly higher-bit residual.
+After this reduction, the remaining large-gap proof can focus on `j ≥ 2`.
+-/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap_of_parityToModFourLoss64_and_jAtLeastTwo
+    {M : ℕ}
+    (hloss : HasParityToModFourLoss64FixedWitnessLift)
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo M) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap M := by
+  intro n j m hj hm hM hindex hgap hambient G hinput
+  by_cases hj1 : j = 1
+  · subst j
+    exact hasFixedModulusWitnessOfCard_four_of_parityToModFourLoss64FixedWitnessLift
+      hloss G hinput
+  · have hj2 : 2 ≤ j := by omega
+    exact hrest hj2 hm hM hindex hgap hambient G hinput
+
+/--
+For `M = 7`, the dyadic window follows from the first-bit loss-64 lift and the strict residual with
+`j ≥ 2`.
+-/
+theorem dyadicWindowAtLeastSeven_six_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwo
+    (hloss : HasParityToModFourLoss64FixedWitnessLift)
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 7) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 7 := by
+  exact
+    dyadicWindowAtLeastSeven_six_of_twiceLargeGap
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap_of_parityToModFourLoss64_and_jAtLeastTwo
+        (M := 7) hloss hrest)
+
+/--
+In the strict residual, the higher-bit range `j ≥ 2` cannot occur for targets below `10`.
+Consequently the first live higher-bit case is `m = 10`, `j = 2`.
+-/
+lemma ten_le_target_of_twiceLargeGap_and_two_le_index
+    {j m : ℕ} (hj : 2 ≤ j) (hindex : j * 6 < 2 * (m - 1))
+    (hgap : 2 * m < 2 ^ (2 * (m - 1) - j * 6)) :
+    10 ≤ m := by
+  by_contra hlt
+  have hmle : m ≤ 9 := by omega
+  interval_cases m
+  · omega
+  · omega
+  · omega
+  · omega
+  · omega
+  · omega
+  · omega
+  · omega
+  · have hgapExp : 2 * (8 - 1) - j * 6 ≤ 2 := by omega
+    have hpow : 2 ^ (2 * (8 - 1) - j * 6) ≤ 4 := by
+      calc
+        2 ^ (2 * (8 - 1) - j * 6) ≤ 2 ^ 2 :=
+          Nat.pow_le_pow_right (by decide : 0 < 2) hgapExp
+        _ = 4 := by norm_num
+    have : 16 < 4 := by
+      exact lt_of_lt_of_le hgap hpow
+    norm_num at this
+  · have hgapExp : 2 * (9 - 1) - j * 6 ≤ 4 := by omega
+    have hpow : 2 ^ (2 * (9 - 1) - j * 6) ≤ 16 := by
+      calc
+        2 ^ (2 * (9 - 1) - j * 6) ≤ 2 ^ 4 :=
+          Nat.pow_le_pow_right (by decide : 0 < 2) hgapExp
+        _ = 16 := by norm_num
+    have : 18 < 16 := by
+      exact lt_of_lt_of_le hgap hpow
+    norm_num at this
+
+/-- The `j ≥ 2` strict residual for `M = 7` is already a residual for `M = 10`. -/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_seven_of_ten
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 7 := by
+  intro n j m hj hm _hM hindex hgap hambient G hinput
+  exact hrest hj hm
+    (ten_le_target_of_twiceLargeGap_and_two_le_index hj hindex hgap)
+    hindex hgap hambient G hinput
+
+/--
+Terminal regularization removes the high-modulus higher-bit slice.  If `m ≤ 2^j`, the input witness
+has enough vertices to build a terminal host of size `2^j` with six control-block refinement steps;
+terminal regularization then gives a regular `2^j`-set, hence an `m`-vertex fixed-modulus witness at
+the next dyadic modulus.
+-/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_of_terminalRegularization_and_smallModulus
+    {M r : ℕ} (hr : 1 ≤ r)
+    (hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r)
+    (hsmall :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus M) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo M := by
+  intro n j m hj hm hM hindex hgap hambient G hinput
+  by_cases hqSmall : 2 ^ j < m
+  · exact hsmall hj hm hM hqSmall hindex hgap hambient G hinput
+  · have hmq : m ≤ 2 ^ j := by omega
+    have hq : 1 < 2 ^ j := by
+      cases j with
+      | zero => omega
+      | succ j =>
+          have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+          calc
+            1 < 2 := by decide
+            _ ≤ 2 * 2 ^ j := by
+              simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+            _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+    have hqpos : 0 < 2 ^ j := Nat.pow_pos (by decide : 0 < 2)
+    have hfixedTerminal :
+        HasFixedModulusWitnessOfCard G ((2 ^ j) * (2 ^ j)) (2 ^ j) := by
+      exact
+        hasFixedModulusWitnessOfCard_mono G
+          (by
+            calc
+              (2 ^ j) * (2 ^ j) = (2 ^ j) ^ 2 := by rw [pow_two]
+              _ ≤ (2 ^ j) ^ 6 := Nat.pow_le_pow_right hqpos (by decide : 2 ≤ 6)
+              _ = (2 ^ j) ^ 6 * 1 := by rw [Nat.mul_one]
+              _ ≤ (2 ^ j) ^ 6 * m := by
+                have hm1 : 1 ≤ m := by omega
+                exact Nat.mul_le_mul_left ((2 ^ j) ^ 6) hm1)
+          hinput
+    have hhost :
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 ^ j) (2 ^ j) r := by
+      exact
+        hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_le G hr
+          (hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusWitnessOfCard
+            (G := G) (q := 2 ^ j) (m := 2 ^ j) hq hqpos (by simpa [Nat.mul_comm] using hfixedTerminal))
+    have hreg : HasRegularInducedSubgraphOfCard G (2 ^ j) := hterminal (by omega) G hhost
+    exact
+      hasFixedModulusWitnessOfCard_mono G hmq
+        (hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard
+          (G := G) (q := 2 ^ (j + 1)) hreg)
+
+/--
+Honest terminal-slice reduction using the surviving fixed-witness terminal landing surface.  In the
+high-modulus case `m ≤ 2^j`, the input witness has enough vertices for the `D = 5` terminal
+regularization call, which returns a regular `2^j`-set and hence the next-modulus `m`-witness.
+-/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_of_fixedWitnessTerminalRegularizationFive_and_smallModulus
+    {M : ℕ}
+    (hterminal : HasPolynomialCostFixedWitnessTerminalRegularization 5)
+    (hsmall :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus M) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo M := by
+  intro n j m hj hm hM hindex hgap hambient G hinput
+  by_cases hqSmall : 2 ^ j < m
+  · exact hsmall hj hm hM hqSmall hindex hgap hambient G hinput
+  · have hmq : m ≤ 2 ^ j := by omega
+    have hfixedTerminal :
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 5 * 2 ^ j) (2 ^ j) := by
+      exact
+        hasFixedModulusWitnessOfCard_mono G
+          (by
+            calc
+              (2 ^ j) ^ 5 * 2 ^ j = (2 ^ j) ^ 6 := by
+                rw [← Nat.pow_succ]
+              _ = (2 ^ j) ^ 6 * 1 := by rw [Nat.mul_one]
+              _ ≤ (2 ^ j) ^ 6 * m := by
+                have hm1 : 1 ≤ m := by omega
+                exact Nat.mul_le_mul_left ((2 ^ j) ^ 6) hm1)
+          hinput
+    have hreg : HasRegularInducedSubgraphOfCard G (2 ^ j) := hterminal G hfixedTerminal
+    exact
+      hasFixedModulusWitnessOfCard_mono G hmq
+        (hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard
+          (G := G) (q := 2 ^ (j + 1)) hreg)
+
+/--
+A Ramsey-10 certificate below `40960` closes the isolated finite `m = 10`, `j = 2` dyadic target:
+the input witness itself has `40960` vertices, so it contains a regular induced 10-set.
+-/
+theorem hasFourToEightTargetTenFixedWitnessLift_of_ramseyTenRegularAtDyadicTarget
+    (hramsey : HasRamseyTenRegularAtDyadicTarget) :
+    HasFourToEightTargetTenFixedWitnessLift := by
+  intro n _hambient G hinput
+  classical
+  rcases hinput with ⟨s, hs, _hsmod⟩
+  let H : SimpleGraph ↑(s : Set (Fin n)) := inducedOn G s
+  have hcard : Fintype.card ↑(s : Set (Fin n)) = s.card := by
+    simp
+  have hsLarge : 40960 ≤ s.card := by
+    norm_num at hs ⊢
+    exact hs
+  have hlarge : 40960 ≤ Fintype.card ↑(s : Set (Fin n)) := by
+    simpa [hcard] using hsLarge
+  have hregH : HasRegularInducedSubgraphOfCard H 10 := hramsey H hlarge
+  let e : H ↪g G :=
+    SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
+  exact
+    hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
+      (hasRegularInducedSubgraphOfCard_of_embedding e hregH)
+
+/--
+The first higher-bit slice can be isolated as the single finite target `m = 10`, `j = 2`; after that
+the strict `j ≥ 2` residual starts at `m = 11`.
+-/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_ten
+    (hfirst : HasFourToEightTargetTenFixedWitnessLift)
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10 := by
+  intro n j m hj hm hM hindex hgap hambient G hinput
+  rcases Nat.eq_or_lt_of_le hM with hten | hgt
+  · subst m
+    have hj_eq : j = 2 := by omega
+    subst j
+    exact hfirst hambient G hinput
+  · exact hrest hj hm (Nat.succ_le_of_lt hgt) hindex hgap hambient G hinput
+
+/--
+After the high-modulus slice is removed, the first live `m = 11` case has only `j = 2`; `j = 3`
+would make the strict gap inequality read `22 < 4`.  Thus a finite `m = 11`, `4 -> 8` target raises
+the small-modulus residual to `m >= 12`.
+-/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven
+    (hfirst :
+      HasFourToEightTargetElevenFixedWitnessLift)
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 12) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 := by
+  intro n j m hj hm hM hsmall hindex hgap hambient G hinput
+  rcases Nat.eq_or_lt_of_le hM with heleven | hgt
+  · subst m
+    have hjle : j ≤ 3 := by omega
+    interval_cases j
+    · exact hfirst hambient G hinput
+    · norm_num at hgap
+  · exact hrest hj hm (Nat.succ_le_of_lt hgt) hsmall hindex hgap hambient G hinput
+
+/--
+The same arithmetic repeats at `m = 12`: in the small-modulus residual, `j = 3` contradicts
+`24 < 2^(22 - 18) = 16`, so only the finite `m = 12`, `j = 2` target remains before the
+infinite residual starts at `m >= 13`.
+-/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_twelve
+    (hfirst :
+      HasFourToEightTargetTwelveFixedWitnessLift)
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 12 := by
+  intro n j m hj hm hM hsmall hindex hgap hambient G hinput
+  rcases Nat.eq_or_lt_of_le hM with htwelve | hgt
+  · subst m
+    have hjle : j ≤ 3 := by omega
+    interval_cases j
+    · exact hfirst hambient G hinput
+    · norm_num at hgap
+  · exact hrest hj hm (Nat.succ_le_of_lt hgt) hsmall hindex hgap hambient G hinput
+
+/--
+The exact `m = 13`, `j = 3` small-modulus target is already a Ramsey fallback: the input witness has
+`8^6 * 13` vertices, which is larger than the generic binomial bound `R(13,13) <= choose 24 12`.
+-/
+theorem hasExactSmallModulusFixedWitnessDyadicLift_three_thirteen :
+    HasExactSmallModulusFixedWitnessDyadicLift 3 13 := by
+  intro n _hambient G hinput
+  classical
+  rcases hinput with ⟨s, hs, _hsmod⟩
+  let H : SimpleGraph ↑(s : Set (Fin n)) := inducedOn G s
+  have hcard : Fintype.card ↑(s : Set (Fin n)) = s.card := by
+    simp
+  have hsLarge :
+      Nat.choose ((13 - 1) + (13 - 1)) (13 - 1) ≤ s.card := by
+    exact le_trans (by decide : Nat.choose ((13 - 1) + (13 - 1)) (13 - 1) ≤
+      (2 ^ 3) ^ 6 * 13) hs
+  have hlarge :
+      Nat.choose ((13 - 1) + (13 - 1)) (13 - 1) ≤
+        Fintype.card ↑(s : Set (Fin n)) := by
+    simpa [hcard] using hsLarge
+  rcases ramsey_finset H (13 - 1) (13 - 1) Finset.univ hlarge with hclique | hindep
+  · rcases hclique with ⟨t, _ht, ht⟩
+    have hregH : HasRegularInducedSubgraphOfCard H 13 := by
+      simpa [ht.card_eq] using
+        (hasRegularInducedSubgraphOfCard_of_isClique H t ht.isClique)
+    let e : H ↪g G :=
+      SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
+    exact
+      hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
+        (hasRegularInducedSubgraphOfCard_of_embedding e hregH)
+  · rcases hindep with ⟨t, _ht, ht⟩
+    have hregH : HasRegularInducedSubgraphOfCard H 13 := by
+      simpa [ht.card_eq] using
+        (hasRegularInducedSubgraphOfCard_of_isIndepSet H t ht.isIndepSet)
+    let e : H ↪g G :=
+      SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
+    exact
+      hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
+        (hasRegularInducedSubgraphOfCard_of_embedding e hregH)
+
+/--
+The next small-modulus block is finite too.  For `13 <= m < 17`, the index inequality bounds
+`j <= 4`; the small-modulus condition rules out `j = 4`, so only the exact finite cases
+`j = 2, 3` for `m = 13, 14, 15, 16` remain.
+-/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen
+    (h13_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 13)
+    (h14_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 14)
+    (h14_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 14)
+    (h15_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 15)
+    (h15_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 15)
+    (h16_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 16)
+    (h16_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 16)
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 17) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 := by
+  intro n j m hj hm hM hsmall hindex hgap hambient G hinput
+  by_cases hge17 : 17 ≤ m
+  · exact hrest hj hm hge17 hsmall hindex hgap hambient G hinput
+  · have hlt17 : m < 17 := Nat.lt_of_not_ge hge17
+    interval_cases m
+    · have hjle : j ≤ 4 := by omega
+      interval_cases j
+      · exact h13_2 hambient G hinput
+      · exact hasExactSmallModulusFixedWitnessDyadicLift_three_thirteen hambient G hinput
+      · norm_num at hsmall
+    · have hjle : j ≤ 4 := by omega
+      interval_cases j
+      · exact h14_2 hambient G hinput
+      · exact h14_3 hambient G hinput
+      · norm_num at hsmall
+    · have hjle : j ≤ 4 := by omega
+      interval_cases j
+      · exact h15_2 hambient G hinput
+      · exact h15_3 hambient G hinput
+      · norm_num at hsmall
+    · have hjle : j ≤ 4 := by omega
+      interval_cases j
+      · exact h16_2 hambient G hinput
+      · exact h16_3 hambient G hinput
+      · norm_num at hsmall
+
+/--
+Dyadic window from the first-bit loss-64 lift plus the strict higher-bit residual starting at `m = 10`.
+This is the current sharp split of the dyadic frontier.
+-/
+theorem dyadicWindowAtLeastSeven_six_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+    (hloss : HasParityToModFourLoss64FixedWitnessLift)
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 7 := by
+  exact
+    dyadicWindowAtLeastSeven_six_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwo
+      hloss
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_seven_of_ten
+        hrest)
+
+/--
+Dyadic window after isolating both the first dyadic bit and the first higher-bit finite case
+`m = 10`, `j = 2`.
+-/
+theorem dyadicWindowAtLeastSeven_six_of_parityToModFourLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+    (hloss : HasParityToModFourLoss64FixedWitnessLift)
+    (hfirst : HasFourToEightTargetTenFixedWitnessLift)
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 7 := by
+  exact
+    dyadicWindowAtLeastSeven_six_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+      hloss
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_ten
+        hfirst hrest)
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_of_atLeast_succ
+    {C M a : ℕ} (haC : a ≤ C)
+    (hcut : Nat.choose ((M - 1) + (M - 1)) (M - 1) < 2 ^ a * M)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C (M + 1)) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C M := by
+  intro n j m hj hm hM hindex hambient G hinput
+  rcases Nat.eq_or_lt_of_le hM with rfl | hgt
+  · exact False.elim
+      (positiveEmptyControlFixedWitnessDyadicLift_no_target_of_choose_lt_dyadic_lower_bound
+        (C := C) (a := a) (j := j) (m := M) haC hj hcut hambient G hinput)
+  · exact hwindow hj hm (Nat.succ_le_of_lt hgt) hindex hambient G hinput
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_of_exceptFour
+    {C M : ℕ} (hM : 5 ≤ M)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C M := by
+  intro n j m hj hm hMle hindex hambient G hinput
+  exact hwindow hj hm hindex hambient (by omega) G hinput
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_of_atLeastFive
+    {C : ℕ} (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 5) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C := by
+  intro n j m hj hm hindex hambient hmne G hinput
+  have hmCases : m = 3 ∨ 5 ≤ m := by omega
+  rcases hmCases with rfl | hmfive
+  · exact False.elim
+      (positiveEmptyControlFixedWitnessDyadicLift_no_target_three hC hj hambient G hinput)
+  · exact hwindow hj hm hmfive hindex hambient G hinput
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastFive
+    {C : ℕ} (hC : 0 < C) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C ↔
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 5 := by
+  constructor
+  · exact hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_of_exceptFour
+      (C := C) (M := 5) (by decide)
+  · exact hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_of_atLeastFive hC
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastFive_of_atLeastSix
+    {C : ℕ} (hC : 4 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 6) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 5 := by
+  intro n j m hj hm hmfive hindex hambient G hinput
+  have hmCases : m = 5 ∨ 6 ≤ m := by omega
+  rcases hmCases with rfl | hmsix
+  · exact False.elim
+      (positiveEmptyControlFixedWitnessDyadicLift_no_target_five_of_four_le_C
+        hC hj hambient G hinput)
+  · exact hwindow hj hm hmsix hindex hambient G hinput
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSix_of_four_le
+    {C : ℕ} (hC : 4 ≤ C) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C ↔
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 6 := by
+  constructor
+  · exact hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_of_exceptFour
+      (C := C) (M := 6) (by decide)
+  · intro hwindow
+    exact
+      hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_of_atLeastFive
+        (lt_of_lt_of_le (by decide : 0 < 4) hC)
+        (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastFive_of_atLeastSix
+          hC hwindow)
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSix_of_atLeastSeven
+    {C : ℕ} (hC : 6 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 7) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 6 := by
+  intro n j m hj hm hmsix hindex hambient G hinput
+  have hmCases : m = 6 ∨ 7 ≤ m := by omega
+  rcases hmCases with rfl | hmseven
+  · exact False.elim
+      (positiveEmptyControlFixedWitnessDyadicLift_no_target_six_of_six_le_C
+        hC hj hambient G hinput)
+  · exact hwindow hj hm hmseven hindex hambient G hinput
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSeven_of_six_le
+    {C : ℕ} (hC : 6 ≤ C) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C ↔
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 7 := by
+  constructor
+  · exact hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_of_exceptFour
+      (C := C) (M := 7) (by decide)
+  · intro hwindow
+    exact
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSix_of_four_le
+        (C := C) (le_trans (by decide : 4 ≤ 6) hC)).mpr
+        (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSix_of_atLeastSeven
+          hC hwindow)
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSeven_of_atLeastEight
+    {C : ℕ} (hC : 8 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 8) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 7 := by
+  exact
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_of_atLeast_succ
+      (C := C) (M := 7) (a := 8) hC (by native_decide) hwindow
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastEight_of_eight_le
+    {C : ℕ} (hC : 8 ≤ C) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C ↔
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 8 := by
+  constructor
+  · exact hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast_of_exceptFour
+      (C := C) (M := 8) (by decide)
+  · intro hwindow
+    exact
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSeven_of_six_le
+        (C := C) (le_trans (by decide : 6 ≤ 8) hC)).mpr
+        (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSeven_of_atLeastEight
+          hC hwindow)
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_two_iff_atLeastFive :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour 2 ↔
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 2 5 := by
+  exact hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastFive
+    (C := 2) (by decide)
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_four_iff_atLeastSix :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour 4 ↔
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 4 6 := by
+  exact
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSix_of_four_le
+      (C := 4) (by decide)
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_six_iff_atLeastSeven :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour 6 ↔
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 7 := by
+  exact
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSeven_of_six_le
+      (C := 6) (by decide)
+
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_eight_iff_atLeastEight :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour 8 ↔
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 8 8 := by
+  exact
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastEight_of_eight_le
+      (C := 8) (by decide)
+
+/--
+Ramsey fallback for the fixed-witness lift: once the input witness is at least `4^(k - 1)`,
+the induced graph on that witness contains a regular induced `k`-set, hence a fixed-modulus
+witness at any target modulus.
+-/
+lemma hasFixedModulusWitnessOfCard_of_large_fixedModulusWitness_ramsey
+    {n K k q q' : ℕ} (G : SimpleGraph (Fin n)) (hk : 0 < k)
+    (hlarge : 4 ^ (k - 1) ≤ K)
+    (hwitness : HasFixedModulusWitnessOfCard G K q) :
+    HasFixedModulusWitnessOfCard G k q' := by
+  classical
+  rcases hwitness with ⟨s, hKs, _hmod⟩
+  have hsLarge : 4 ^ (k - 1) ≤ s.card := le_trans hlarge hKs
+  let H : SimpleGraph ↑(s : Set (Fin n)) := inducedOn G s
+  have hcard : Fintype.card ↑(s : Set (Fin n)) = s.card := by
+    simp
+  have hF : k ≤ F s.card := by
+    have hforced : (k - 1) + 1 ≤ F s.card :=
+      four_pow_bound_le_F (k - 1) s.card hsLarge
+    have hpred : (k - 1) + 1 = k := by omega
+    rw [hpred] at hforced
+    exact hforced
+  have hFH : k ≤ F (Fintype.card ↑(s : Set (Fin n))) := by
+    simpa [hcard] using hF
+  have hregH : HasRegularInducedSubgraphOfCard H k :=
+    hasRegularInducedSubgraphOfCard_of_le_F_fintypeCard H hFH
+  let e : H ↪g G :=
+    SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
+  exact
+    hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
+      (hasRegularInducedSubgraphOfCard_of_embedding e hregH)
+
+/--
+Sharp Ramsey fallback for the fixed-witness lift: the finite Ramsey theorem only needs
+`choose (2 * (k - 1)) (k - 1)` vertices, while `4^(k - 1)` is a convenient coarse corollary.
+-/
+lemma hasFixedModulusWitnessOfCard_of_ramseyBound_fixedModulusWitness
+    {n K k q q' : ℕ} (G : SimpleGraph (Fin n)) (hk : 0 < k)
+    (hramsey : Nat.choose ((k - 1) + (k - 1)) (k - 1) ≤ K)
+    (hwitness : HasFixedModulusWitnessOfCard G K q) :
+    HasFixedModulusWitnessOfCard G k q' := by
+  classical
+  rcases hwitness with ⟨s, hKs, _hmod⟩
+  let H : SimpleGraph ↑(s : Set (Fin n)) := inducedOn G s
+  have hsRamsey :
+      Nat.choose ((k - 1) + (k - 1)) (k - 1) ≤
+        (Finset.univ : Finset ↑(s : Set (Fin n))).card := by
+    simpa using le_trans hramsey hKs
+  have hkpred : (k - 1) + 1 = k := by omega
+  have hregH : HasRegularInducedSubgraphOfCard H k := by
+    rcases ramsey_finset H (k - 1) (k - 1) Finset.univ hsRamsey with hclique | hindep
+    · rcases hclique with ⟨t, _ht, hct⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isClique H t hct.isClique
+      simpa [hct.card_eq, hkpred] using hreg
+    · rcases hindep with ⟨t, _ht, hit⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isIndepSet H t hit.isIndepSet
+      simpa [hit.card_eq, hkpred] using hreg
+  let e : H ↪g G :=
+    SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
+  exact
+    hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
+      (hasRegularInducedSubgraphOfCard_of_embedding e hregH)
+
+/-- Ambient sharp Ramsey fallback: if the whole graph has Ramsey size, the input witness is unused. -/
+lemma hasFixedModulusWitnessOfCard_of_card_ramseyBound_fin
+    {n k q' : ℕ} (G : SimpleGraph (Fin n)) (hk : 0 < k)
+    (hramsey : Nat.choose ((k - 1) + (k - 1)) (k - 1) ≤ n) :
+    HasFixedModulusWitnessOfCard G k q' := by
+  classical
+  have hsRamsey :
+      Nat.choose ((k - 1) + (k - 1)) (k - 1) ≤
+        (Finset.univ : Finset (Fin n)).card := by
+    simpa using hramsey
+  have hkpred : (k - 1) + 1 = k := by omega
+  have hregG : HasRegularInducedSubgraphOfCard G k := by
+    rcases ramsey_finset G (k - 1) (k - 1) Finset.univ hsRamsey with hclique | hindep
+    · rcases hclique with ⟨t, _ht, hct⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isClique G t hct.isClique
+      simpa [hct.card_eq, hkpred] using hreg
+    · rcases hindep with ⟨t, _ht, hit⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isIndepSet G t hit.isIndepSet
+      simpa [hit.card_eq, hkpred] using hreg
+  exact hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G hregG
+
+/--
+Coarse dyadic comparison used only to shrink the Ramsey middle range: if the dyadic exponent already
+dominates `2 * (m - 1)`, then the exact Ramsey bound is below the input witness size.
+-/
+lemma ramseyBound_le_dyadicCost_of_two_mul_pred_le_mul
+    {C j m : ℕ} (hm : 0 < m) (hindex : 2 * (m - 1) ≤ j * C) :
+    Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ C * m := by
+  have hchoose :
+      Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤
+        2 ^ ((m - 1) + (m - 1)) := Nat.choose_le_two_pow _ _
+  have hpow : 2 ^ ((m - 1) + (m - 1)) ≤ 2 ^ (j * C) := by
+    apply Nat.pow_le_pow_right (by decide : 0 < 2)
+    omega
+  have hmul : 2 ^ (j * C) ≤ 2 ^ (j * C) * m := by
+    have hmOne : 1 ≤ m := Nat.succ_le_of_lt hm
+    calc
+      2 ^ (j * C) = 2 ^ (j * C) * 1 := by rw [Nat.mul_one]
+      _ ≤ 2 ^ (j * C) * m := Nat.mul_le_mul_left _ hmOne
+  calc
+    Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ 2 ^ ((m - 1) + (m - 1)) := hchoose
+    _ ≤ 2 ^ (j * C) := hpow
+    _ ≤ (2 ^ j) ^ C * m := by
+      simpa [Nat.pow_mul] using hmul
+
+/--
+Large-input Ramsey fallback for the proof-md fixed-witness dyadic step.  It closes exactly the
+range where the input fixed-modulus witness is large enough to force a regular `m`-set by the
+ambient Ramsey bound.
+-/
+lemma positiveEmptyControlFixedWitnessDyadicLift_ramseyFallback
+    {C n j m : ℕ} (_hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hlarge : 4 ^ (m - 1) ≤ (2 ^ j) ^ C * m) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1)) := by
+  intro hinput
+  rcases Nat.eq_zero_or_pos m with rfl | hm
+  · exact hasFixedModulusWitnessOfCard_zero G (2 ^ (j + 1))
+  exact
+    hasFixedModulusWitnessOfCard_of_large_fixedModulusWitness_ramsey
+      (G := G) (K := (2 ^ j) ^ C * m) (k := m) (q := 2 ^ j)
+      (q' := 2 ^ (j + 1)) hm hlarge hinput
+
+/-- Sharp finite-Ramsey fallback for the proof-md fixed-witness dyadic step. -/
+lemma positiveEmptyControlFixedWitnessDyadicLift_sharpRamseyFallback
+    {C n j m : ℕ} (_hj : 0 < j) (G : SimpleGraph (Fin n))
+    (hramsey : Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ C * m) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ C * m) (2 ^ j) →
+      HasFixedModulusWitnessOfCard G m (2 ^ (j + 1)) := by
+  intro hinput
+  rcases Nat.eq_zero_or_pos m with rfl | hm
+  · exact hasFixedModulusWitnessOfCard_zero G (2 ^ (j + 1))
+  exact
+    hasFixedModulusWitnessOfCard_of_ramseyBound_fixedModulusWitness
+      (G := G) (K := (2 ^ j) ^ C * m) (k := m) (q := 2 ^ j)
+      (q' := 2 ^ (j + 1)) hm hramsey hinput
+
+/--
+The small-target and Ramsey fallback lemmas reduce the fixed-witness positive dyadic lift to the
+middle range `2 < m` and `¬ 4^(m - 1) ≤ (2^j)^C * m`.
+-/
+theorem hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_middleRange
+    {C : ℕ} (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftMiddleRange C) :
+    HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C := by
+  intro n j m hj G hinput
+  by_cases hsmall : m ≤ 2
+  · exact positiveEmptyControlFixedWitnessDyadicLift_smallTarget hsmall hj G hinput
+  by_cases hlarge : 4 ^ (m - 1) ≤ (2 ^ j) ^ C * m
+  · exact positiveEmptyControlFixedWitnessDyadicLift_ramseyFallback hj G hlarge hinput
+  have hmtwo : 2 < m := by omega
+  exact hmiddle hj hmtwo hlarge G hinput
+
+/--
+The small-target and sharp Ramsey fallback lemmas reduce the fixed-witness positive dyadic lift to
+the smaller middle range where the exact finite Ramsey threshold is still too large.
+-/
+theorem hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyMiddleRange
+    {C : ℕ} (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C) :
+    HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C := by
+  intro n j m hj G hinput
+  by_cases hsmall : m ≤ 2
+  · exact positiveEmptyControlFixedWitnessDyadicLift_smallTarget hsmall hj G hinput
+  by_cases hramsey : Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ C * m
+  · exact positiveEmptyControlFixedWitnessDyadicLift_sharpRamseyFallback hj G hramsey hinput
+  have hmtwo : 2 < m := by omega
+  exact hmiddle hj hmtwo hramsey G hinput
+
+/-- The sharp Ramsey middle range is still impossible with unit dyadic-loss exponent. -/
+theorem not_hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange_one :
+    ¬ HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange 1 := by
+  intro hmiddle
+  exact not_hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_one
+    (hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyMiddleRange hmiddle)
+
+/--
+The exact Ramsey middle range reduces further to the ambient-small, exponent-small index window.
+The two discarded cases are closed by ambient Ramsey and by the coarse comparison
+`choose (2m-2) (m-1) ≤ 2^(j*C) * m`.
+-/
+theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange_of_ramseyIndexWindow
+    {C : ℕ} (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow C) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C := by
+  intro n j m hj hm hmiddle G hinput
+  by_cases hambient : Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ n
+  · exact
+      hasFixedModulusWitnessOfCard_of_card_ramseyBound_fin
+        (G := G) (k := m) (q' := 2 ^ (j + 1)) (by omega) hambient
+  · have hindex : j * C < 2 * (m - 1) := by
+      refine Nat.lt_of_not_ge ?_
+      intro hlarge
+      exact hmiddle
+        (ramseyBound_le_dyadicCost_of_two_mul_pred_le_mul
+          (C := C) (j := j) (m := m) (by omega) hlarge)
+    exact hwindow hj hm hindex (Nat.lt_of_not_ge hambient) G hinput
+
+/-- Fixed-witness positive dyadic lift from the sharper Ramsey-index residual window. -/
+theorem hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindow
+    {C : ℕ} (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow C) :
+    HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C := by
+  exact
+    hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyMiddleRange
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange_of_ramseyIndexWindow hwindow)
+
+/--
+Fixed-witness positive dyadic lift after removing the `m = 4` residual branch via the seven-vertex
+finite base.
+-/
+theorem hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindowExceptFour
+    (hbase : SevenVertexFourRegularBaseCase) {C : ℕ} (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C) :
+    HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C := by
+  exact
+    hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindow
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow_of_exceptFour
+        hbase hC hwindow)
+
+/--
+Cascade-wrapped positive dyadic lift obtained once the exact complementary fixed-witness middle
+range has been supplied.
+-/
+theorem hasPolynomialCostPositiveEmptyControlDyadicLift_of_middleRange
+    {C : ℕ} (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftMiddleRange C) :
+    HasPolynomialCostPositiveEmptyControlDyadicLift C := by
+  exact
+    hasPolynomialCostPositiveEmptyControlDyadicLift_of_fixedWitness
+      (hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_middleRange hmiddle)
+
+/--
+Cascade-wrapped positive dyadic lift obtained from the sharp finite-Ramsey middle-range package.
+-/
+theorem hasPolynomialCostPositiveEmptyControlDyadicLift_of_ramseyMiddleRange
+    {C : ℕ} (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C) :
+    HasPolynomialCostPositiveEmptyControlDyadicLift C := by
+  exact
+    hasPolynomialCostPositiveEmptyControlDyadicLift_of_fixedWitness
+      (hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyMiddleRange hmiddle)
+
+/-- Cascade-wrapped positive dyadic lift from the Ramsey-index residual window. -/
+theorem hasPolynomialCostPositiveEmptyControlDyadicLift_of_ramseyIndexWindow
+    {C : ℕ} (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow C) :
+    HasPolynomialCostPositiveEmptyControlDyadicLift C := by
+  exact
+    hasPolynomialCostPositiveEmptyControlDyadicLift_of_fixedWitness
+      (hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindow hwindow)
+
+/--
+Cascade-wrapped positive dyadic lift from the residual window with the target-size-four branch
+already closed by the seven-vertex finite base.
+-/
+theorem hasPolynomialCostPositiveEmptyControlDyadicLift_of_ramseyIndexWindowExceptFour
+    (hbase : SevenVertexFourRegularBaseCase) {C : ℕ} (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C) :
+    HasPolynomialCostPositiveEmptyControlDyadicLift C := by
+  exact
+    hasPolynomialCostPositiveEmptyControlDyadicLift_of_fixedWitness
+      (hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindowExceptFour
+        hbase hC hwindow)
+
 /--
 At modulus `2`, the missing dropped-part residue can be recovered directly from the exact-card
 refinement data: on a 2-vertex bucket, the induced degrees inside the bucket are automatically equal.
@@ -3286,6 +8236,55 @@ theorem hasDropResidueExtractionAtModulusTwo (r : ℕ) :
       (G := G) hhost
 
 /--
+The first positive dyadic slice of the live terminal-cascade bridge is unconditional.  At
+`q = 2`, the dropped-part residue is forced by the fact that every two-vertex induced graph is
+regular, and the existing drop-data-to-cascade conversion supplies the exact terminal package.
+-/
+theorem
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_two_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+    {n r : ℕ} (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 * 2) 2 r) :
+    HasFixedModulusControlBlockModularCascadeWitnessOfCard G 2 2 := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hdrop :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G 2 2 r := by
+    simpa using
+      hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_two_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) hhost
+  exact
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+      (G := G) (k := 2) (q := 2) (r := r) le_rfl (by decide) hdrop
+
+/--
+The `j = 1` instance of
+`HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge`.
+-/
+theorem hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge_one
+    (r : ℕ) :
+    ∀ {n : ℕ} (G : SimpleGraph (Fin n)),
+      HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G ((2 ^ 1) * 2 ^ 1) (2 ^ 1) r →
+        HasFixedModulusControlBlockModularCascadeWitnessOfCard G (2 ^ 1) (2 ^ 1) := by
+  intro n G hhost
+  norm_num
+  exact
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_two_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+      (G := G) hhost
+
+/--
+The first positive dyadic terminal-regularization slice (`q = 2`) follows from the stronger
+terminal-cascade slice.
+-/
+theorem hasBoundedFixedModulusControlBlockModularHostStepRegularization_two
+    {n r : ℕ} (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (2 * 2) 2 r) :
+    HasRegularInducedSubgraphOfCard G 2 := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard G
+      (hasFixedModulusControlBlockModularCascadeWitnessOfCard_two_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) hhost)
+
+/--
 The step-self-bridge at positive dyadic modulus reduces to the single combinatorial obstruction
 `HasDropResidueExtractionFromHostWitness`.
 
@@ -3320,6 +8319,38 @@ theorem
     hext (q := 2 ^ j) hq G hhost
   exact
     hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+      (G := G) (k := 2 ^ j) (q := 2 ^ j) (r := r) le_rfl hq hdrop
+
+/--
+The same dropped-residue extraction closes the live terminal-cascade bridge directly.  This is the
+route needed by the current `proof.md` descent: once the dropped part is frozen on the `q`-bucket, the
+existing finite conversion packages the nonempty separated control blocks and terminal cap.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge_of_hasDropResidueExtractionFromHostWitness
+    {r : ℕ}
+    (hext : HasDropResidueExtractionFromHostWitness r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  have hdrop :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+        G (2 ^ j) (2 ^ j) r :=
+    hext (q := 2 ^ j) hq G hhost
+  exact
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
       (G := G) (k := 2 ^ j) (q := 2 ^ j) (r := r) le_rfl hq hdrop
 
 theorem
@@ -3398,6 +8429,105 @@ theorem hasBoundedFixedModulusControlBlockModularHostStepExactSelfBridge_four
   simpa using
     (hasBoundedSingleControlExactWitnessOfCard_four_of_sixteen_le_card
       hbase (G := G) (r := 4 - 1) (by decide : 1 ≤ 4 - 1) hn)
+
+/--
+The `q = 4` terminal-regularization slice available from the current finite base case.  This proves
+the regular `4`-set conclusion from a bounded host witness at bucket `16`, but it does not package the
+stronger terminal-cascade witness needed by the global dyadic route.
+-/
+theorem hasBoundedFixedModulusControlBlockModularHostStepRegularization_four
+    (hbase : SevenVertexFourRegularBaseCase)
+    {n r : ℕ} (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G 16 4 r) :
+    HasRegularInducedSubgraphOfCard G 4 := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasBoundedSingleControlExactWitnessOfCard G
+      (hasBoundedFixedModulusControlBlockModularHostStepExactSelfBridge_four
+        hbase (G := G) hhost)
+
+/-- A 7-vertex graph with a regular induced 5-set but no regular induced 4-set. -/
+private def exactFourTrimCounterexampleGraph : SimpleGraph (Fin 7) :=
+  SimpleGraph.fromEdgeSet
+    ({s(0, 1), s(0, 2), s(0, 3), s(0, 4), s(0, 5), s(1, 4),
+      s(1, 5), s(2, 3), s(2, 5), s(3, 4)} : Finset (Sym2 (Fin 7)))
+
+private instance : DecidableRel exactFourTrimCounterexampleGraph.Adj := by
+  unfold exactFourTrimCounterexampleGraph
+  infer_instance
+
+private abbrev InducesRegularOfDegreeDec7
+    (G : SimpleGraph (Fin 7)) [DecidableRel G.Adj] (s : Finset (Fin 7))
+    (d : ℕ) : Prop :=
+  ∀ v : ↑(s : Set (Fin 7)), (inducedOn G s).degree v = d
+
+private lemma inducesRegularOfDegreeDec7_iff
+    (G : SimpleGraph (Fin 7)) [DecidableRel G.Adj] {s : Finset (Fin 7)} {d : ℕ} :
+    InducesRegularOfDegreeDec7 G s d ↔ InducesRegularOfDegree G s d := by
+  classical
+  unfold InducesRegularOfDegreeDec7 InducesRegularOfDegree
+  have hinst : (inferInstance : DecidableRel G.Adj) = Classical.decRel G.Adj :=
+    Subsingleton.elim _ _
+  cases hinst
+  rfl
+
+private abbrev HasExactRegularFourDec
+    (G : SimpleGraph (Fin 7)) [DecidableRel G.Adj] : Prop :=
+  ∃ s : Finset (Fin 7), s.card = 4 ∧ ∃ d : Fin 7, InducesRegularOfDegreeDec7 G s d.1
+
+private lemma exactFourTrimCounterexample_noExactRegularFourDec :
+    ¬ HasExactRegularFourDec exactFourTrimCounterexampleGraph := by
+  native_decide
+
+private lemma exactFourTrimCounterexample_noExactRegularFour :
+    ¬ ∃ s : Finset (Fin 7), s.card = 4 ∧
+      ∃ d : ℕ, InducesRegularOfDegree exactFourTrimCounterexampleGraph s d := by
+  intro h
+  rcases h with ⟨s, hcard, d, hreg⟩
+  have hregDec : InducesRegularOfDegreeDec7 exactFourTrimCounterexampleGraph s d :=
+    (inducesRegularOfDegreeDec7_iff exactFourTrimCounterexampleGraph).mpr hreg
+  have hsne : s.Nonempty := by
+    exact Finset.card_pos.mp (by omega)
+  rcases hsne with ⟨x, hx⟩
+  have hcard_le : s.card ≤ 7 := by
+    simpa using (s.card_le_univ : s.card ≤ (Finset.univ : Finset (Fin 7)).card)
+  have hdeg_lt :
+      (inducedOn exactFourTrimCounterexampleGraph s).degree ⟨x, hx⟩ < 7 := by
+    exact lt_of_lt_of_le
+      (by
+        simpa using
+          (SimpleGraph.degree_lt_card_verts
+            (G := inducedOn exactFourTrimCounterexampleGraph s) ⟨x, hx⟩))
+      hcard_le
+  have hdlt : d < 7 := by
+    simpa [hregDec ⟨x, hx⟩] using hdeg_lt
+  exact exactFourTrimCounterexample_noExactRegularFourDec
+    ⟨s, hcard, ⟨d, hdlt⟩, hregDec⟩
+
+private lemma exactFourTrimCounterexample_regularFiveDec :
+    InducesRegularOfDegreeDec7 exactFourTrimCounterexampleGraph
+      ({1, 2, 3, 4, 5} : Finset (Fin 7)) 2 := by
+  native_decide
+
+private lemma exactFourTrimCounterexample_hasRegularAtLeastFour :
+    HasRegularInducedSubgraphOfCard exactFourTrimCounterexampleGraph 4 := by
+  refine ⟨({1, 2, 3, 4, 5} : Finset (Fin 7)), ?_, 2, ?_⟩
+  · native_decide
+  · exact
+      (inducesRegularOfDegreeDec7_iff exactFourTrimCounterexampleGraph).mp
+        exactFourTrimCounterexample_regularFiveDec
+
+/--
+The q=4 finite regularization theorem cannot be promoted to a terminal-capped exact-size statement by
+trimming an arbitrary regular set: a graph may have a regular induced subgraph of size at least `4`
+without having one of exact size `4`.
+-/
+theorem not_regularAtLeastFour_implies_exactRegularFour :
+    ¬ (∀ G : SimpleGraph (Fin 7),
+      HasRegularInducedSubgraphOfCard G 4 →
+        ∃ s : Finset (Fin 7), s.card = 4 ∧ ∃ d : ℕ, InducesRegularOfDegree G s d) := by
+  intro htrim
+  exact exactFourTrimCounterexample_noExactRegularFour
+    (htrim exactFourTrimCounterexampleGraph exactFourTrimCounterexample_hasRegularAtLeastFour)
 
 /--
 At `q = 4`, the stripped maximal-control exact-upgrade target is already settled outside the
@@ -4135,6 +9265,46 @@ lemma hasFixedModulusCascadeWitnessOfCard_of_emptyControlDyadicLift
             exact ih (Nat.succ_pos _) hprev
           simpa [m'] using hlift G hfixedPrev
 
+lemma hasFixedModulusCascadeWitnessOfCard_of_positiveEmptyControlDyadicLift
+    {C n r m : ℕ} (hr : 0 < r) (hbase : EmptyControlDyadicParityBaseCase)
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hsize : dyadicLiftVertexCost C r * m ≤ n) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusCascadeWitnessOfCard G m (2 ^ r) := by
+  induction r generalizing m with
+  | zero =>
+      cases hr
+  | succ r ih =>
+      cases r with
+      | zero =>
+          have htwo : 2 * m ≤ n := by
+            simpa [dyadicLiftVertexCost] using hsize
+          have hm : m ≤ n / 2 := by
+            exact (Nat.le_div_iff_mul_le (by decide : 0 < 2)).2 (by simpa [Nat.mul_comm] using htwo)
+          exact hasFixedModulusCascadeWitnessOfCard_mono G hm (hbase n G)
+      | succ r =>
+          let m' : ℕ := (2 ^ (r + 1)) ^ C * m
+          have hprev : dyadicLiftVertexCost C (r + 1) * m' ≤ n := by
+            dsimp [m']
+            simpa [dyadicLiftVertexCost, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hsize
+          have hfixedPrev : HasFixedModulusCascadeWitnessOfCard G m' (2 ^ (r + 1)) := by
+            exact ih (Nat.succ_pos _) hprev
+          simpa [m'] using hlift (Nat.succ_pos r) G hfixedPrev
+
+/--
+Fixed-witness form of the empty-control dyadic iteration used in `proof.md` Theorem 10.4.
+The parity base is still available in the cascade package, but the output needed for terminal
+regularization is only an ordinary fixed-modulus witness.
+-/
+lemma hasFixedModulusWitnessOfCard_of_positiveEmptyControlFixedWitnessDyadicLift
+    {C n r m : ℕ} (hr : 0 < r) (hbase : EmptyControlDyadicParityBaseCase)
+    (hlift : HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C)
+    (hsize : dyadicLiftVertexCost C r * m ≤ n) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G m (2 ^ r) := by
+  exact
+    hasFixedModulusWitnessOfCard_of_hasFixedModulusCascadeWitnessOfCard G
+      (hasFixedModulusCascadeWitnessOfCard_of_positiveEmptyControlDyadicLift hr hbase
+        (hasPolynomialCostPositiveEmptyControlDyadicLift_of_fixedWitness hlift) hsize G)
+
 lemma hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_dyadicLift
     {C n r m : ℕ} (hr : 0 < r) (hbase : DyadicParityBaseCase)
     (hlift : HasPolynomialCostDyadicLift C) (hsize : dyadicLiftVertexCost C r * m ≤ n)
@@ -4776,6 +9946,36 @@ theorem forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostF
   exact
     hbridge G (hasFixedModulusWitnessOfCard_of_hasFixedModulusCascadeWitnessOfCard G hempty)
 
+/--
+`proof.md` Theorem 10.4 in its literal form: the empty-control dyadic lift produces a
+fixed-modulus witness, and the terminal landing is terminal regularization rather than a
+terminal-cascade bridge.
+-/
+theorem
+    forcingThreshold_pow_two_le_of_positiveEmptyControlFixedWitnessDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+    {C D r : ℕ} (hr : 0 < r)
+    (hlift : HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C)
+    (hbridge : HasPolynomialCostFixedWitnessTerminalRegularization D) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+  apply forcingThreshold_le_of_le_F
+  rw [le_F_iff]
+  intro G
+  have hsize :
+      dyadicLiftVertexCost C r * ((2 ^ r) ^ D * 2 ^ r) ≤
+        2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+    calc
+      dyadicLiftVertexCost C r * ((2 ^ r) ^ D * 2 ^ r) ≤
+          2 ^ (1 + C * r ^ 2) * ((2 ^ r) ^ D * 2 ^ r) := by
+            exact Nat.mul_le_mul_right _ (dyadicLiftVertexCost_le_two_pow_quadratic hr)
+      _ = 2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+            rw [← Nat.pow_mul, ← Nat.pow_add, ← Nat.pow_add]
+            congr 1
+            ring
+  exact
+    hbridge G
+      (hasFixedModulusWitnessOfCard_of_positiveEmptyControlFixedWitnessDyadicLift hr
+        emptyControlDyadicParityBaseCase hlift hsize G)
+
 theorem eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
     {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
     (hbridge : HasPolynomialCostFixedWitnessTerminalRegularization D) :
@@ -4898,6 +10098,173 @@ theorem targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCos
   exact
     (eventualNatPowerDomination_iff_targetStatement (b := 2) (by decide : 1 < 2)).mp hpow
 
+theorem eventualNatPowerDomination_two_of_positiveEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostFixedWitnessTerminalRegularization D) :
+    EventualNatPowerDomination 2 := by
+  intro M
+  by_cases hM : M = 0
+  · refine ⟨0, ?_⟩
+    intro k hk
+    rw [le_F_iff]
+    intro G
+    refine ⟨∅, ?_, 0, inducesRegularOfDegree_empty G⟩
+    simp [hM]
+  · let E : ℕ := C + D + 2
+    have hE : 0 < E := by
+      dsimp [E]
+      omega
+    rcases exists_eventually_mul_sq_le_two_pow (A := 2 * M * E) with ⟨R, hR⟩
+    let S : ℕ := max 1 R
+    have hS :
+        ∀ ⦃r : ℕ⦄, S ≤ r → 2 * M * E * (r + 1) ^ 2 ≤ 2 ^ r := by
+      intro r hr
+      exact hR (le_trans (le_max_right _ _) hr)
+    refine ⟨max E (E * S ^ 2), ?_⟩
+    intro k hk
+    rw [le_F_iff]
+    intro G
+    let r : ℕ := Nat.sqrt (k / E)
+    have hkE : E ≤ k := le_trans (le_max_left _ _) hk
+    have hdivOne : 1 ≤ k / E := by
+      exact (Nat.le_div_iff_mul_le hE).2 (by simpa using hkE)
+    have hrS : S ≤ r := by
+      apply Nat.le_sqrt.2
+      have hmul : E * S ^ 2 ≤ k := by
+        exact le_trans (le_max_right _ _) hk
+      have hdiv : S ^ 2 ≤ k / E := by
+        exact (Nat.le_div_iff_mul_le hE).2
+          (by simpa [Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using hmul)
+      simpa [r, Nat.pow_two] using hdiv
+    have hrPos : 0 < r := lt_of_lt_of_le (lt_of_lt_of_le (by decide : 0 < 1) (le_max_left _ _)) hrS
+    have hquadratic : 1 + C * r ^ 2 + (D + 1) * r ≤ k := by
+      let n : ℕ := k / E
+      have hn1 : 1 ≤ n := by
+        simpa [n] using hdivOne
+      have hrSq : r ^ 2 ≤ k / E := by
+        simpa [r] using Nat.sqrt_le' (k / E)
+      have hrLeDiv : r ≤ k / E := by
+        exact le_trans (by simpa [r] using Nat.sqrt_le_self (k / E)) le_rfl
+      have hbound : 1 + C * r ^ 2 + (D + 1) * r ≤ 1 + C * n + (D + 1) * n := by
+        dsimp [n]
+        gcongr
+      have hstep : 1 + C * n + (D + 1) * n ≤ E * n := by
+        have h1cn : 1 + C * n ≤ n + C * n := Nat.add_le_add_right hn1 _
+        calc
+          1 + C * n + (D + 1) * n ≤ n + C * n + (D + 1) * n := Nat.add_le_add_right h1cn _
+          _ = E * n := by
+              dsimp [E]
+              ring
+      have hkn : E * n ≤ k := by
+        dsimp [n]
+        exact Nat.mul_div_le k E
+      exact le_trans hbound (le_trans hstep hkn)
+    have hsize : M * k ≤ 2 ^ r := by
+      have hkSmall : k ≤ 2 * E * (r + 1) ^ 2 := by
+        let n : ℕ := k / E
+        let t : ℕ := (r + 1) ^ 2
+        have hnLt : n < t := by
+          simpa [n, t, r] using Nat.lt_succ_sqrt' (k / E)
+        have hmodLt : k % E < E := Nat.mod_lt _ hE
+        have hEq : k = E * n + k % E := by
+          simpa [n] using (Nat.div_add_mod k E).symm
+        have hkAux : k < E * t + E := by
+          rw [hEq]
+          exact add_lt_add (Nat.mul_lt_mul_of_pos_left hnLt hE) hmodLt
+        have htOne : 1 ≤ t := Nat.succ_le_of_lt (Nat.pow_pos (Nat.succ_pos r))
+        have hEle : E ≤ E * t := by
+          simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using Nat.mul_le_mul_left E htOne
+        have hsum : E * t + E ≤ 2 * E * t := by
+          calc
+            E * t + E ≤ E * t + E * t := by
+              exact Nat.add_le_add_left hEle _
+            _ = 2 * E * t := by
+                ring
+        exact le_trans (Nat.le_of_lt hkAux) hsum
+      have hkBound : M * k ≤ 2 * M * E * (r + 1) ^ 2 := by
+        calc
+          M * k ≤ M * (2 * E * (r + 1) ^ 2) := Nat.mul_le_mul_left _ hkSmall
+          _ = 2 * M * E * (r + 1) ^ 2 := by
+              ring
+      exact le_trans hkBound (hS hrS)
+    have hrequired : dyadicLiftVertexCost C r * ((2 ^ r) ^ D * 2 ^ r) ≤ 2 ^ k := by
+      calc
+        dyadicLiftVertexCost C r * ((2 ^ r) ^ D * 2 ^ r) ≤
+            2 ^ (1 + C * r ^ 2) * ((2 ^ r) ^ D * 2 ^ r) := by
+              exact Nat.mul_le_mul_right _ (dyadicLiftVertexCost_le_two_pow_quadratic hrPos)
+        _ = 2 ^ (1 + C * r ^ 2 + (D + 1) * r) := by
+              rw [← Nat.pow_mul, ← Nat.pow_add, ← Nat.pow_add]
+              congr 1
+              ring
+        _ ≤ 2 ^ k := by
+              exact Nat.pow_le_pow_right (by decide : 0 < 2) hquadratic
+    have hreg :
+        HasRegularInducedSubgraphOfCard G (2 ^ r) := by
+      exact
+        hbridge G
+          (hasFixedModulusWitnessOfCard_of_hasFixedModulusCascadeWitnessOfCard G
+            (hasFixedModulusCascadeWitnessOfCard_of_positiveEmptyControlDyadicLift hrPos
+              emptyControlDyadicParityBaseCase hlift hrequired G))
+    rcases hreg with ⟨s, hs, d, hsreg⟩
+    exact ⟨s, le_trans hsize hs, d, hsreg⟩
+
+theorem targetStatement_of_positiveEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hbridge : HasPolynomialCostFixedWitnessTerminalRegularization D) :
+    TargetStatement := by
+  have hpow :
+      EventualNatPowerDomination 2 :=
+    eventualNatPowerDomination_two_of_positiveEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift hbridge
+  exact
+    (eventualNatPowerDomination_iff_targetStatement (b := 2) (by decide : 1 < 2)).mp hpow
+
+/-- Theorem 10.4 plus Lemma 1.1, using the literal fixed-witness dyadic lift surface. -/
+theorem
+    eventualNatPowerDomination_two_of_positiveEmptyControlFixedWitnessDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C)
+    (hbridge : HasPolynomialCostFixedWitnessTerminalRegularization D) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_positiveEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      (hasPolynomialCostPositiveEmptyControlDyadicLift_of_fixedWitness hlift) hbridge
+
+/--
+End-to-end global conclusion from the `proof.md` route with no terminal-cascade bridge: fixed-witness
+dyadic lift followed by fixed-witness terminal regularization.
+-/
+theorem
+    targetStatement_of_positiveEmptyControlFixedWitnessDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C)
+    (hbridge : HasPolynomialCostFixedWitnessTerminalRegularization D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      (hasPolynomialCostPositiveEmptyControlDyadicLift_of_fixedWitness hlift) hbridge
+
+/--
+Compact certificate for `proof.md` Lemma 10.2 and Theorem 10.4: a fixed-witness dyadic lift and a
+fixed-witness terminal-regularization landing surface imply the global threshold statement.
+-/
+structure ProofMdDyadicThresholdCertificate (C D : ℕ) : Prop where
+  fixedWitnessDyadicLift : HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C
+  terminalRegularization : HasPolynomialCostFixedWitnessTerminalRegularization D
+
+/-- End-to-end conclusion from the compact dyadic-threshold certificate. -/
+theorem targetStatement_of_proofMdDyadicThresholdCertificate
+    {C D : ℕ} (h : ProofMdDyadicThresholdCertificate C D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlFixedWitnessDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      h.fixedWitnessDyadicLift h.terminalRegularization
+
+/-- The compact `proof.md` dyadic-threshold certificate cannot use unit dyadic-loss exponent. -/
+theorem not_proofMdDyadicThresholdCertificate_one {D : ℕ} :
+    ¬ ProofMdDyadicThresholdCertificate 1 D := by
+  intro h
+  exact not_hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_one
+    h.fixedWitnessDyadicLift
+
 theorem forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
     {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
     (hbridge : HasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge D) :
@@ -4960,6 +10327,157 @@ theorem
       hlift
       (hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
         hterm)
+
+/--
+Section 9 proves terminal regularization only for positive dyadic moduli; this theorem supplies the
+trivial `j = 0` endpoint and then runs the existing fixed-witness route.
+-/
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_of_positiveDyadic hterm)
+
+/-- Positive-dyadic-lift version of the terminal-regularization landing surface. -/
+theorem
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hterm : HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+        hterm)
+
+/--
+Positive-dyadic-lift version where the terminal theorem itself is only assumed for `q > 1`.
+-/
+theorem
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_of_positiveDyadic hterm)
+
+/--
+End-to-end target route after the Section 9 terminal data has been instantiated and the corrected
+positive empty-control dyadic lift is available.
+-/
+theorem targetStatement_of_positiveEmptyControlDyadicLift_of_q64TerminalData
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hdata : Q64PositiveDyadicTerminalRegularizationData (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalData
+        hdata)
+
+/-- Fixed-witness lift version of the positive-dyadic terminal-regularization landing surface. -/
+theorem
+    targetStatement_of_positiveEmptyControlFixedWitnessDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C)
+    (hterm :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+      (hasPolynomialCostPositiveEmptyControlDyadicLift_of_fixedWitness hlift) hterm
+
+/--
+Minimal graph-local endgame for the route in `proof.md`: the dyadic lift is only the fixed-witness
+empty-control lift, and Section 9 supplies terminal regularization data.
+-/
+theorem targetStatement_of_positiveEmptyControlFixedWitnessDyadicLift_of_q64TerminalData
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C)
+    (hdata : Q64PositiveDyadicTerminalRegularizationData (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlFixedWitnessDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalData
+        hdata)
+
+/--
+Saturated `proof.md` landing surface: the Ramsey-index dyadic residual window plus the positive
+terminal-regularization data imply the final target statement.
+-/
+theorem targetStatement_of_ramseyIndexWindowDyadicLift_of_q64TerminalData
+    {C D : ℕ} (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow C)
+    (hdata : Q64PositiveDyadicTerminalRegularizationData (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlFixedWitnessDyadicLift_of_q64TerminalData
+      (hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindow hwindow)
+      hdata
+
+/--
+Updated `FR^sat` landing surface: the final audit may output the positive-dyadic terminal cascade
+self-bridge directly, avoiding the refuted arbitrary dropped-part and beta-up-to upgrades.
+-/
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hstep :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        hstep)
+
+/--
+Positive-lift version of the same updated terminal-cascade landing surface.
+-/
+theorem
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hstep :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        hstep)
+
+/--
+If the dropped-residue extraction theorem is proved at the same control budget, the global target
+follows through the live terminal-cascade bridge.
+-/
+theorem targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasDropResidueExtractionFromHostWitness
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hdrop : HasDropResidueExtractionFromHostWitness (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge_of_hasDropResidueExtractionFromHostWitness
+        hdrop)
+
+/-- Positive-dyadic-lift version of the dropped-residue extraction landing surface. -/
+theorem targetStatement_of_positiveEmptyControlDyadicLift_of_hasDropResidueExtractionFromHostWitness
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hdrop : HasDropResidueExtractionFromHostWitness (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge_of_hasDropResidueExtractionFromHostWitness
+        hdrop)
 
 theorem
     forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
@@ -5203,6 +10721,19 @@ theorem
         hbridge)
 
 theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        hbridge)
+
+theorem
     targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
     {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
     (hbridge :
@@ -5226,6 +10757,234 @@ theorem
       hlift
       (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
         hbridge)
+
+theorem
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+        (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          hbridge))
+
+theorem
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      hlift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+        (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          hbridge))
+
+/--
+Lean-facing package for the finite outputs that the audited proof route would need.
+
+`emptyControlDyadicLift` is the polynomial dyadic lift, while `dyadicBetaUpTo` is the bit-by-bit
+beta-vanishing/refinement bridge in the existing refinement-data language.
+-/
+structure ProofMdFiniteOutputs (C D : ℕ) : Prop where
+  emptyControlDyadicLift : HasPolynomialCostEmptyControlDyadicLift C
+  dyadicBetaUpTo :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+      (D + 1)
+
+/--
+The exact finite-output existence claim needed to turn the conditional proof route into the
+unconditional target statement.
+-/
+def ProofMdFiniteOutputExistence : Prop :=
+  ∃ C D : ℕ, ProofMdFiniteOutputs C D
+
+/-- Threshold estimate from the conditional finite outputs. -/
+theorem forcingThreshold_pow_two_le_of_proofMdFiniteOutputs
+    {C D r : ℕ} (hr : 0 < r) (h : ProofMdFiniteOutputs C D) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 3) * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hr h.emptyControlDyadicLift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        h.dyadicBetaUpTo)
+
+/-- Power-subsequence conclusion from the conditional finite outputs. -/
+theorem eventualNatPowerDomination_two_of_proofMdFiniteOutputs
+    {C D : ℕ} (h : ProofMdFiniteOutputs C D) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      h.emptyControlDyadicLift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        h.dyadicBetaUpTo)
+
+/-- Final target conclusion from the conditional finite outputs. -/
+theorem targetStatement_of_proofMdFiniteOutputs
+    {C D : ℕ} (h : ProofMdFiniteOutputs C D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+      h.emptyControlDyadicLift h.dyadicBetaUpTo
+
+/--
+Fully quantified reduction: proving the finite-output existence claim is sufficient for the original
+target statement.
+-/
+theorem targetStatement_of_proofMdFiniteOutputExistence
+    (h : ProofMdFiniteOutputExistence) :
+    TargetStatement := by
+  rcases h with ⟨C, D, houtputs⟩
+  exact targetStatement_of_proofMdFiniteOutputs houtputs
+
+/-- The beta-up-to finite-output package is impossible in the current refinement-data language. -/
+theorem not_proofMdFiniteOutputs {C D : ℕ} :
+    ¬ ProofMdFiniteOutputs C D := by
+  intro h
+  exact not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+    (D + 1) h.dyadicBetaUpTo
+
+/-- The old beta-up-to finite-output existence claim is refuted by the q=4 effective-tail certificate. -/
+theorem not_proofMdFiniteOutputExistence :
+    ¬ ProofMdFiniteOutputExistence := by
+  rintro ⟨C, D, h⟩
+  exact not_proofMdFiniteOutputs (C := C) (D := D) h
+
+/--
+Live finite-output package after the beta-up-to and terminal endpoints are refuted.  The remaining
+finite input is the weaker maximal-control exact upgrade, which asks only for some bounded exact
+single-control witness rather than a dropped-tail residue certificate on the original host.
+-/
+structure ProofMdMaximalControlOutputs (C : ℕ) : Prop where
+  emptyControlDyadicLift : HasPolynomialCostEmptyControlDyadicLift C
+  maximalControlUpgrade : HasExactCardFixedSingleControlHostMaximalControlUpgrade
+
+/-- Existence of the surviving maximal-control finite-output package. -/
+def ProofMdMaximalControlOutputExistence : Prop :=
+  ∃ C : ℕ, ProofMdMaximalControlOutputs C
+
+/-- Threshold estimate from the surviving maximal-control finite outputs. -/
+theorem forcingThreshold_pow_two_le_of_proofMdMaximalControlOutputs
+    {C r : ℕ} (hr : 0 < r) (h : ProofMdMaximalControlOutputs C) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + 3 * r) := by
+  simpa using
+    (forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      (C := C) (D := 2) hr h.emptyControlDyadicLift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_two_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+        h.maximalControlUpgrade))
+
+/-- Power-subsequence conclusion from the surviving maximal-control finite outputs. -/
+theorem eventualNatPowerDomination_two_of_proofMdMaximalControlOutputs
+    {C : ℕ} (h : ProofMdMaximalControlOutputs C) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      h.emptyControlDyadicLift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_two_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+        h.maximalControlUpgrade)
+
+/-- Final target conclusion from the surviving maximal-control finite outputs. -/
+theorem targetStatement_of_proofMdMaximalControlOutputs
+    {C : ℕ} (h : ProofMdMaximalControlOutputs C) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      h.emptyControlDyadicLift
+      (hasPolynomialCostFixedWitnessTerminalRegularization_two_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
+        h.maximalControlUpgrade)
+
+/-- Reduction from maximal-control finite-output existence to the target statement. -/
+theorem targetStatement_of_proofMdMaximalControlOutputExistence
+    (h : ProofMdMaximalControlOutputExistence) :
+    TargetStatement := by
+  rcases h with ⟨C, houtputs⟩
+  exact targetStatement_of_proofMdMaximalControlOutputs houtputs
+
+/--
+Fully expanded conditional certificate surface: the q-marker/product-firewall proof supplies
+carrier-marker coupling, and the final audit emits the all-bits beta-up-to refinement bridge consumed
+by the finite outputs above.
+-/
+structure ProofMdQ64ProductFirewallCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop)
+    (markerSize packetSize : TransportFailure → ℕ) : Prop where
+  emptyControlDyadicLift : HasPolynomialCostEmptyControlDyadicLift C
+  qMarkerAudit :
+    Q64ProductFirewallQMarkerCouplingAudit q FullySkewSplitter ProperSubmarker
+      PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+      WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+      TransportFailure markerSize packetSize
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1))
+      GlobalBridge
+
+/-- The expanded q64/product-firewall certificate produces the conditional finite outputs. -/
+theorem proofMdFiniteOutputs_of_q64ProductFirewallCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (h :
+      ProofMdQ64ProductFirewallCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge
+        markerSize packetSize) :
+    ProofMdFiniteOutputs C D := by
+  refine ⟨h.emptyControlDyadicLift, ?_⟩
+  exact (q64_finalAuditConditionalChain_of_components h.finalAudit
+    (q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingAudit h.qMarkerAudit)).2.2.2.2.1
+
+/-- End-to-end target theorem from the expanded q64/product-firewall certificate. -/
+theorem targetStatement_of_proofMdQ64ProductFirewallCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (h :
+      ProofMdQ64ProductFirewallCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge
+        markerSize packetSize) :
+    TargetStatement := by
+  exact targetStatement_of_proofMdFiniteOutputs
+    (proofMdFiniteOutputs_of_q64ProductFirewallCertificate h)
+
+/-- The expanded q64/product-firewall beta-up-to certificate is inconsistent. -/
+theorem not_proofMdQ64ProductFirewallCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ} :
+    ¬ ProofMdQ64ProductFirewallCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge
+        markerSize packetSize := by
+  intro h
+  exact not_proofMdFiniteOutputs (proofMdFiniteOutputs_of_q64ProductFirewallCertificate h)
 
 theorem
     hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
@@ -5778,6 +11537,210 @@ theorem targetStatement_of_q64FinalAuditConditionalChain
     (hchain hcouple).2.2.2.2.2
 
 /--
+`proof.md` four-exit q-marker version of the final audit route.  The explicit regular-`q`-set exit
+is folded into the already closed local-exit channel before applying the existing final audit chain.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/--
+Product-firewall q-marker route with the explicit regular-`q`-set exit from `proof.md` kept in the
+certificate surface.
+-/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingDataWithRegularQSet
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hdata :
+      Q64ProductFirewallQMarkerCouplingDataWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallQMarkerCouplingData
+        hdata)
+      hregular
+
+/--
+Component-level product-firewall q-marker route with an explicit regular-`q`-set exit.
+-/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingComponentsWithRegularQSet
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (h :
+      Q64ProductFirewallQMarkerCouplingComponentsWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallQMarkerCouplingDataWithRegularQSet
+      (q64_productFirewallQMarkerCouplingDataWithRegularQSet_of_components h)
+      hchain hregular
+
+/--
+Fully componentized product-firewall q-marker route with an explicit regular-`q`-set exit.
+-/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingAuditWithRegularQSet
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (h :
+      Q64ProductFirewallQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallQMarkerCouplingComponentsWithRegularQSet
+      (q64_productFirewallQMarkerCouplingComponentsWithRegularQSet_of_audit h)
+      hchain hregular
+
+/--
+Theorem-G product-firewall q-marker route to the target.  This is the proof.md conditional q-marker
+closure with the single open routing theorem supplied as `theoremG` inside the data object.
+-/
+theorem targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingDataWithRegularQSet
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingDataWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingData
+        h)
+      hregular
+
+/-- Audit-level Theorem-G product-firewall q-marker route to the target. -/
+theorem targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingDataWithRegularQSet
+      (q64_productFirewallTheoremGQMarkerCouplingDataWithRegularQSet_of_audit h)
+      hchain hregular
+
+/--
+Lean-facing conditional certificate for the updated `proof.md`: all closed parts of the q-marker and
+final-audit pipeline are supplied, and the only q-marker routing field is Gap Theorem G.
+-/
+structure ProofMdTheoremGCertificate
+    (q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop) : Prop where
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+      HasExactCardFixedSingleControlHostDroppedPartUpgrade
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conditional conclusion from the updated proof.md certificate with Gap Theorem G. -/
+theorem targetStatement_of_proofMdTheoremGCertificate
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (h :
+      ProofMdTheoremGCertificate q FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        BetaVanishes) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/--
 Dyadic-tail version of the q=64 audit: the notes' `BetaVanishes` output is interpreted as the
 refinement-data dyadic divisibility bridge.  Existing finite theorems turn that into the exact
 self-bridge, and the empty-control lift then gives the conjecture.
@@ -5830,6 +11793,102 @@ theorem targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBeta
     targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
       hlift hbeta
 
+/-- Final-audit route when the audit emits the terminal dyadic theorem directly. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_dyadicTerminal
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+      hlift hterminal
+
+/--
+Final-audit route matching the current `proof.md` Section 10: `FR^sat` terminal descent outputs only
+bounded terminal regularization, not the stronger refinement-terminal or terminal-cascade package.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_terminalRegularization
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+      hlift hterminal
+
+/--
+Final-audit route for the exact Theorem 9.3 shape: the terminal theorem is only required for
+positive dyadic moduli `q = 2^j > 1`; Lean supplies the trivial `q = 1` case separately.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminalRegularizationLanding
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+      hlift hterminal
+
+/--
+Final-audit route for the updated `proof.md` global argument: the audit emits the positive-dyadic
+terminal cascade bridge directly, instead of the stronger terminal-refinement package refuted by the
+finite q=4 obstruction.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_dyadicStepTerminalCascade
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+      hlift hterminal
+
 /-- Final-audit route when the audit outputs beta-vanishing at every dyadic level. -/
 theorem targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo
     {C D : ℕ}
@@ -5851,6 +11910,1340 @@ theorem targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo
   exact
     targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
       hlift hbeta
+
+/-- Final-audit route using only the positive-dyadic empty-control lift needed by the induction. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicBetaUpTo
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hbeta :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+      hlift hbeta
+
+/-- Positive-lift final-audit route when the audit emits the terminal dyadic theorem directly. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminal
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+      hlift hterminal
+
+/-- Positive-lift version of the terminal-regularization final-audit route. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminalRegularization
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization
+      hlift hterminal
+
+/--
+Positive-lift final-audit route for the exact Theorem 9.3 shape: only positive dyadic terminal
+regularization is assumed.
+-/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminalRegularizationLanding_posLift
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+      hlift hterminal
+
+/-- Positive-lift version of the updated terminal-cascade final-audit route. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicStepTerminalCascade
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+      hlift hterminal
+
+/--
+Four-exit q-marker version of the all-bits beta-tail final audit.  The regular-`q`-set exit is
+folded into the closed local-exit channel before applying the beta-up-to bridge.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_dyadicBetaUpTo
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/-- Four-exit q-marker route using only the positive-dyadic empty-control lift. -/
+theorem targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicBetaUpTo
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicBetaUpTo hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/-- Four-exit q-marker route when the final audit emits the terminal dyadic theorem directly. -/
+theorem targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_dyadicTerminal
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicTerminal hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/-- Four-exit q-marker terminal route using only the positive-dyadic empty-control lift. -/
+theorem targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicTerminal
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminal hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/--
+Four-exit q-marker route for the current `proof.md` endpoint: the final audit emits bounded
+terminal regularization, and the regular-`q`-set exit is folded into the local channel.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_terminalRegularization
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_terminalRegularization hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/--
+Four-exit q-marker route for the exact Theorem 9.3 endpoint: terminal regularization is required
+only for positive dyadic moduli.
+-/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicTerminalRegularizationLanding
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminalRegularizationLanding
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/-- Positive-lift version of the four-exit terminal-regularization route. -/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicTerminalRegularization
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminalRegularization hlift
+      hchain (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/--
+Positive-lift four-exit route for the exact Theorem 9.3 endpoint.
+-/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicTerminalRegularizationLanding_posLift
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminalRegularizationLanding_posLift
+      hlift hchain (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/--
+Four-exit q-marker route for the updated saturated descent endpoint: the regular-`q`-set exit is
+folded into the local channel, and the final audit emits the positive-dyadic terminal-cascade bridge.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_dyadicStepTerminalCascade
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicStepTerminalCascade hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/-- Positive-lift version of the four-exit terminal-cascade route. -/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicStepTerminalCascade
+    {C D : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple :
+      Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicStepTerminalCascade hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit hcouple hregular)
+
+/--
+Audit-level Theorem-G product-firewall q-marker route for the honest all-bits beta-tail endpoint.
+-/
+theorem targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_dyadicBetaUpTo
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_dyadicBetaUpTo hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/--
+Audit-level Theorem-G product-firewall q-marker route with only the positive-dyadic lift.
+-/
+theorem
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicBetaUpTo
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicBetaUpTo
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/-- Audit-level Theorem-G product-firewall q-marker route with the terminal dyadic endpoint. -/
+theorem targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_dyadicTerminal
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_dyadicTerminal hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/-- Audit-level Theorem-G product-firewall q-marker route with the positive-lift terminal endpoint. -/
+theorem
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicTerminal
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicTerminal
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/--
+Audit-level Theorem-G product-firewall q-marker route with the terminal-regularization endpoint used
+by the current Section 10 proof.
+-/
+theorem
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_terminalRegularization
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_terminalRegularization
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/-- Product-firewall q-marker route for the exact positive-dyadic terminal theorem of Section 9. -/
+theorem
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicTerminalRegularizationLanding
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicTerminalRegularizationLanding
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/-- Positive-lift product-firewall q-marker route for terminal regularization. -/
+theorem
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicTerminalRegularization
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicTerminalRegularization
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/-- Positive-lift product-firewall q-marker route for the exact positive-dyadic terminal theorem. -/
+theorem
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicTerminalRegularizationLanding_posLift
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicTerminalRegularizationLanding_posLift
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/--
+Audit-level Theorem-G product-firewall q-marker route for the updated saturated terminal-cascade
+endpoint.
+-/
+theorem
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_dyadicStepTerminalCascade
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_dyadicStepTerminalCascade
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/-- Positive-lift product-firewall q-marker route for the updated terminal-cascade endpoint. -/
+theorem
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicStepTerminalCascade
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hregular : RegularQSet → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChainWithRegularQSet_via_positiveDyadicStepTerminalCascade
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h)
+      hregular
+
+/--
+Lean-facing certificate for the old beta-up-to `proof.md` route: Gap Theorem G supplies the q-marker
+coupling, the final audit supplies beta-vanishing at every dyadic level, and the finite endpoint is
+the beta-up-to refinement bridge rather than the false dropped-part upgrade.
+
+This package is now known to be inconsistent in the current refinement-data language; see
+`not_proofMdTheoremGBetaUpToCertificate`.
+-/
+structure ProofMdTheoremGBetaUpToCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  emptyControlDyadicLift : HasPolynomialCostEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conditional conclusion from the old Theorem-G/beta-up-to certificate. -/
+theorem targetStatement_of_proofMdTheoremGBetaUpToCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGBetaUpToCertificate C D q FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_dyadicBetaUpTo
+      h.emptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/-- The Theorem-G/beta-up-to certificate is inconsistent with the q=4 effective-tail refutation. -/
+theorem not_proofMdTheoremGBetaUpToCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop} :
+    ¬ ProofMdTheoremGBetaUpToCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        GlobalBridge := by
+  intro h
+  have hcouple :
+      Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit :=
+    q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h.qMarker)
+      h.regularExit
+  have hbeta :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1) :=
+    (q64_finalAuditConditionalChain_of_components h.finalAudit hcouple).2.2.2.2.1
+  exact not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+    (D + 1) hbeta
+
+/-- Positive-lift version of the old beta-up-to `proof.md` certificate. -/
+structure ProofMdTheoremGPositiveBetaUpToCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  positiveEmptyControlDyadicLift : HasPolynomialCostPositiveEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conclusion from the old certificate using only positive dyadic lifts. -/
+theorem targetStatement_of_proofMdTheoremGPositiveBetaUpToCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGPositiveBetaUpToCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicBetaUpTo
+      h.positiveEmptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/-- The positive-lift Theorem-G/beta-up-to certificate is also inconsistent. -/
+theorem not_proofMdTheoremGPositiveBetaUpToCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop} :
+    ¬ ProofMdTheoremGPositiveBetaUpToCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        GlobalBridge := by
+  intro h
+  have hcouple :
+      Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit :=
+    q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h.qMarker)
+      h.regularExit
+  have hbeta :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1) :=
+    (q64_finalAuditConditionalChain_of_components h.finalAudit hcouple).2.2.2.2.1
+  exact not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+    (D + 1) hbeta
+
+/--
+Lean-facing certificate for the terminal `proof.md` route: Gap Theorem G supplies the q-marker
+coupling, and the final audit emits the terminal dyadic theorem directly.
+
+This terminal package is also inconsistent for the present refinement endpoint; see
+`not_proofMdTheoremGTerminalCertificate`.
+-/
+structure ProofMdTheoremGTerminalCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  emptyControlDyadicLift : HasPolynomialCostEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conclusion from the Theorem-G terminal certificate. -/
+theorem targetStatement_of_proofMdTheoremGTerminalCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGTerminalCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_dyadicTerminal
+      h.emptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/-- The Theorem-G terminal certificate is inconsistent in the current refinement-data language. -/
+theorem not_proofMdTheoremGTerminalCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop} :
+    ¬ ProofMdTheoremGTerminalCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        GlobalBridge := by
+  intro h
+  have hcouple :
+      Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit :=
+    q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h.qMarker)
+      h.regularExit
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        (D + 1) :=
+    (q64_finalAuditConditionalChain_of_components h.finalAudit hcouple).2.2.2.2.1
+  exact not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+    (D + 1) hterminal
+
+/-- Positive-lift version of the terminal `proof.md` certificate. -/
+structure ProofMdTheoremGPositiveTerminalCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  positiveEmptyControlDyadicLift : HasPolynomialCostPositiveEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conclusion from the positive-lift Theorem-G terminal certificate. -/
+theorem targetStatement_of_proofMdTheoremGPositiveTerminalCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGPositiveTerminalCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicTerminal
+      h.positiveEmptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/-- The positive-lift Theorem-G terminal certificate is also inconsistent. -/
+theorem not_proofMdTheoremGPositiveTerminalCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop} :
+    ¬ ProofMdTheoremGPositiveTerminalCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        GlobalBridge := by
+  intro h
+  have hcouple :
+      Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit :=
+    q64_qMarkerCarrierMarkerCoupling_of_regularQSetExit
+      (q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+        h.qMarker)
+      h.regularExit
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        (D + 1) :=
+    (q64_finalAuditConditionalChain_of_components h.finalAudit hcouple).2.2.2.2.1
+  exact not_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+    (D + 1) hterminal
+
+/--
+Minimal Lean-facing certificate for the corrected `proof.md` route: the dyadic induction uses only
+the positive empty-control lift, and Section 9 is supplied as graph-local terminal data.
+-/
+structure ProofMdTheoremGTerminalDataCertificate (C D : ℕ) : Type where
+  positiveEmptyControlDyadicLift : HasPolynomialCostPositiveEmptyControlDyadicLift C
+  terminalData : Q64PositiveDyadicTerminalRegularizationData (D + 1)
+
+/-- End-to-end conclusion from the corrected terminal-data certificate. -/
+theorem targetStatement_of_proofMdTheoremGTerminalDataCertificate
+    {C D : ℕ} (h : ProofMdTheoremGTerminalDataCertificate C D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_q64TerminalData
+      h.positiveEmptyControlDyadicLift h.terminalData
+
+/--
+Literal fixed-witness version of the corrected `proof.md` certificate.  The dyadic field is exactly
+the empty-control fixed-modulus lift from Theorem 10.4; the second field is the Section 9 terminal
+regularization data.
+-/
+structure ProofMdTheoremGFixedWitnessTerminalDataCertificate (C D : ℕ) : Type where
+  fixedWitnessDyadicLift : HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift C
+  terminalData : Q64PositiveDyadicTerminalRegularizationData (D + 1)
+
+/-- End-to-end conclusion from the literal fixed-witness terminal-data certificate. -/
+theorem targetStatement_of_proofMdTheoremGFixedWitnessTerminalDataCertificate
+    {C D : ℕ} (h : ProofMdTheoremGFixedWitnessTerminalDataCertificate C D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlFixedWitnessDyadicLift_of_q64TerminalData
+      h.fixedWitnessDyadicLift h.terminalData
+
+/--
+Terminal-data certificate whose dyadic field is only the Ramsey-index residual window.  The ambient
+Ramsey and exponent-comparison cases are discharged before the fixed-witness lift is assembled.
+-/
+structure ProofMdTheoremGRamseyIndexWindowTerminalDataCertificate (C D : ℕ) : Type where
+  ramseyIndexWindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow C
+  terminalData : Q64PositiveDyadicTerminalRegularizationData (D + 1)
+
+/-- End-to-end conclusion from the Ramsey-index terminal-data certificate. -/
+theorem targetStatement_of_proofMdTheoremGRamseyIndexWindowTerminalDataCertificate
+    {C D : ℕ} (h : ProofMdTheoremGRamseyIndexWindowTerminalDataCertificate C D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowDyadicLift_of_q64TerminalData
+      h.ramseyIndexWindow h.terminalData
+
+/-- The Ramsey-index terminal-data certificate also cannot use unit dyadic-loss exponent. -/
+theorem isEmpty_proofMdTheoremGRamseyIndexWindowTerminalDataCertificate_one {D : ℕ} :
+    IsEmpty (ProofMdTheoremGRamseyIndexWindowTerminalDataCertificate 1 D) := by
+  refine ⟨?_⟩
+  intro h
+  exact not_hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow_one
+    h.ramseyIndexWindow
+
+/-- The fixed-witness terminal-data certificate also cannot use unit dyadic-loss exponent. -/
+theorem isEmpty_proofMdTheoremGFixedWitnessTerminalDataCertificate_one {D : ℕ} :
+    IsEmpty (ProofMdTheoremGFixedWitnessTerminalDataCertificate 1 D) := by
+  refine ⟨?_⟩
+  intro h
+  exact not_hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_one
+    h.fixedWitnessDyadicLift
+
+/--
+Lean-facing certificate for the current `proof.md` route: Gap Theorem G supplies q-marker coupling,
+and the final audit lands on bounded terminal regularization.  This is weaker than terminal-cascade
+and avoids the refuted refinement-terminal endpoint.
+-/
+structure ProofMdTheoremGTerminalRegularizationCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  emptyControlDyadicLift : HasPolynomialCostEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conditional conclusion from the terminal-regularization `proof.md` certificate. -/
+theorem targetStatement_of_proofMdTheoremGTerminalRegularizationCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGTerminalRegularizationCertificate C D q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_terminalRegularization
+      h.emptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/-- The all-`j` terminal-regularization certificate is impossible because its lift field is false. -/
+theorem not_proofMdTheoremGTerminalRegularizationCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop} :
+    ¬ ProofMdTheoremGTerminalRegularizationCertificate C D q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting GlobalBridge := by
+  intro h
+  exact not_hasPolynomialCostEmptyControlDyadicLift C h.emptyControlDyadicLift
+
+/--
+Lean-facing certificate matching the literal quantifier range of Theorem 9.3: the terminal theorem
+only has to regularize positive dyadic moduli `q = 2^j > 1`.
+-/
+structure ProofMdTheoremGPositiveDyadicTerminalRegularizationCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  emptyControlDyadicLift : HasPolynomialCostEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+        (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conclusion from the literal positive-dyadic terminal-regularization certificate. -/
+theorem targetStatement_of_proofMdTheoremGPositiveDyadicTerminalRegularizationCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGPositiveDyadicTerminalRegularizationCertificate C D q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicTerminalRegularizationLanding
+      h.emptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/--
+The all-`j` lift version of the literal positive-dyadic terminal certificate is impossible because
+the all-`j` lift is false.
+-/
+theorem not_proofMdTheoremGPositiveDyadicTerminalRegularizationCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop} :
+    ¬ ProofMdTheoremGPositiveDyadicTerminalRegularizationCertificate C D q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting GlobalBridge := by
+  intro h
+  exact not_hasPolynomialCostEmptyControlDyadicLift C h.emptyControlDyadicLift
+
+/-- Positive-lift version of the terminal-regularization `proof.md` certificate. -/
+structure ProofMdTheoremGPositiveTerminalRegularizationCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  positiveEmptyControlDyadicLift : HasPolynomialCostPositiveEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conditional conclusion from the positive-lift terminal-regularization certificate. -/
+theorem targetStatement_of_proofMdTheoremGPositiveTerminalRegularizationCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGPositiveTerminalRegularizationCertificate C D q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicTerminalRegularization
+      h.positiveEmptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/--
+Positive-lift certificate matching the literal positive-dyadic terminal theorem.
+-/
+structure ProofMdTheoremGPositiveLiftPositiveDyadicTerminalRegularizationCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  positiveEmptyControlDyadicLift : HasPolynomialCostPositiveEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+        (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conclusion from the positive-lift, positive-dyadic terminal certificate. -/
+theorem
+    targetStatement_of_proofMdTheoremGPositiveLiftPositiveDyadicTerminalRegularizationCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGPositiveLiftPositiveDyadicTerminalRegularizationCertificate C D q
+        FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+        MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter
+        OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker PrimeCycleBreaker SignLaw
+        OneCornerLift CompensatorRouting GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicTerminalRegularizationLanding_posLift
+      h.positiveEmptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/--
+Lean-facing certificate for the updated `proof.md` route: Gap Theorem G supplies q-marker coupling,
+and the final audit lands on the weaker positive-dyadic terminal-cascade bridge rather than the
+refuted beta-up-to or terminal-refinement endpoints.
+-/
+structure ProofMdTheoremGStepTerminalCascadeCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  emptyControlDyadicLift : HasPolynomialCostEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conditional conclusion from the updated terminal-cascade certificate. -/
+theorem targetStatement_of_proofMdTheoremGStepTerminalCascadeCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGStepTerminalCascadeCertificate C D q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+        CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_dyadicStepTerminalCascade
+      h.emptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
+
+/-- Positive-lift version of the updated terminal-cascade `proof.md` certificate. -/
+structure ProofMdTheoremGPositiveStepTerminalCascadeCertificate
+    (C D q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop) : Prop where
+  positiveEmptyControlDyadicLift : HasPolynomialCostPositiveEmptyControlDyadicLift C
+  qMarker :
+    Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker
+  finalAudit :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        (D + 1))
+      GlobalBridge
+  regularExit : RegularQSet → ClosedLocalExit
+
+/-- End-to-end conclusion from the positive-lift updated terminal-cascade certificate. -/
+theorem targetStatement_of_proofMdTheoremGPositiveStepTerminalCascadeCertificate
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit CompleteSmallerQMarker
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (h :
+      ProofMdTheoremGPositiveStepTerminalCascadeCertificate C D q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet_via_positiveDyadicStepTerminalCascade
+      h.positiveEmptyControlDyadicLift h.qMarker
+      (q64_finalAuditConditionalChain_of_components h.finalAudit)
+      h.regularExit
 
 /--
 Global landing theorem for the claimed final obstruction proof: if the marker-splitting zero-sum
@@ -5940,6 +13333,48 @@ theorem targetStatement_of_q64LastObstructionLanding_via_dyadicBetaUpTo
     (hpack : WeightedQuotientPackaging) :
     TargetStatement :=
   targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo hlift hchain
+    (hlanding hzero hfirewall hpack)
+
+/-- Landing theorem for the updated saturated terminal-cascade reading of the final obstruction proof. -/
+theorem targetStatement_of_q64LastObstructionLanding_via_dyadicStepTerminalCascade
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hlanding :
+      Q64LastObstructionLandingSurface MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging) :
+    TargetStatement :=
+  targetStatement_of_q64FinalAuditConditionalChain_via_dyadicStepTerminalCascade hlift hchain
+    (hlanding hzero hfirewall hpack)
+
+/-- Positive-lift landing theorem for the updated saturated terminal-cascade endpoint. -/
+theorem targetStatement_of_q64LastObstructionLanding_via_positiveDyadicStepTerminalCascade
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hlanding :
+      Q64LastObstructionLandingSurface MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging) :
+    TargetStatement :=
+  targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicStepTerminalCascade hlift hchain
     (hlanding hzero hfirewall hpack)
 
 /--
@@ -6081,6 +13516,76 @@ theorem targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicBetaUpTo
     targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
       hlift hbeta
 
+/-- One-object updated terminal-cascade certificate-to-conjecture theorem. -/
+theorem targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicStepTerminalCascade
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hcert :
+      Q64ClaimedFinalProofCertificate MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  have hstep :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        (D + 1) :=
+    q64_betaVanishes_of_claimedFinalProofCertificate
+      (MarkerSplittingZeroSumAtom := MarkerSplittingZeroSumAtom)
+      (ProductFirewall := ProductFirewall)
+      (WeightedQuotientPackaging := WeightedQuotientPackaging)
+      (CarrierMarkerCoupling := CarrierMarkerCoupling)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (BetaVanishes :=
+        HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+      (GlobalBridge := GlobalBridge)
+      hcert
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+      hlift hstep
+
+/-- Positive-lift one-object updated terminal-cascade certificate-to-conjecture theorem. -/
+theorem targetStatement_of_q64ClaimedFinalProofCertificate_via_positiveDyadicStepTerminalCascade
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hcert :
+      Q64ClaimedFinalProofCertificate MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  have hstep :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        (D + 1) :=
+    q64_betaVanishes_of_claimedFinalProofCertificate
+      (MarkerSplittingZeroSumAtom := MarkerSplittingZeroSumAtom)
+      (ProductFirewall := ProductFirewall)
+      (WeightedQuotientPackaging := WeightedQuotientPackaging)
+      (CarrierMarkerCoupling := CarrierMarkerCoupling)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (BetaVanishes :=
+        HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+      (GlobalBridge := GlobalBridge)
+      hcert
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+      hlift hstep
+
 /--
 Fully expanded product-firewall-transport route to the conjecture.  The sub-`q` trap removes the
 transport-failure branch; ordered-boundary and local-exit branches feed carrier/marker coupling; the
@@ -6201,6 +13706,34 @@ theorem targetStatement_of_q64ProductFirewallTransportTrapCertificate_via_dyadic
     (q64_claimedFinalProofCertificate_of_productFirewallTransportTrap hzero hfirewall hpack
       hbreaker hreduce htrap hboundary hlocal hchain)
 
+/-- Fully expanded product-firewall transport route for the updated terminal-cascade endpoint. -/
+theorem targetStatement_of_q64ProductFirewallTransportTrapCertificate_via_dyadicStepTerminalCascade
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging)
+    (hbreaker :
+      MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+        AmbientPacketBreaker)
+    (hreduce : AmbientPacketBreaker → OrderedBoundaryRow ∨ LocalExit ∨ TransportFailure)
+    (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize)
+    (hboundary : OrderedBoundaryRow → CarrierMarkerCoupling)
+    (hlocal : LocalExit → CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicStepTerminalCascade hlift
+    (q64_claimedFinalProofCertificate_of_productFirewallTransportTrap hzero hfirewall hpack
+      hbreaker hreduce htrap hboundary hlocal hchain)
+
 /--
 Named transport-reduction version of the product-firewall route to the conjecture.  This uses the
 frontier certificate surface `Q64ProductFirewallTransportReduction` and the two-exit
@@ -6236,6 +13769,37 @@ theorem targetStatement_of_q64TransportReductionCertificate_via_dyadicBetaUpTo
     (q64_claimedFinalProofCertificate_of_transportReduction_and_subqTrap hzero hfirewall hpack
       hbreaker htransport htrap hexits hchain)
 
+/-- Named transport-reduction version of the updated terminal-cascade route. -/
+theorem targetStatement_of_q64TransportReductionCertificate_via_dyadicStepTerminalCascade
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging)
+    (hbreaker :
+      MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+        AmbientPacketBreaker)
+    (htransport :
+      ProductFirewall →
+        Q64ProductFirewallTransportReduction AmbientPacketBreaker OrderedBoundaryRow LocalExit
+          TransportFailure)
+    (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize)
+    (hexits :
+      Q64BoundaryExitCarrierMarkerCoupling OrderedBoundaryRow LocalExit CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicStepTerminalCascade hlift
+    (q64_claimedFinalProofCertificate_of_transportReduction_and_subqTrap hzero hfirewall hpack
+      hbreaker htransport htrap hexits hchain)
+
 /--
 Global theorem from the named product-firewall proof certificate.  This is the tightest current Lean
 translation of the note route: product-firewall transport proves the landing/coupling certificate,
@@ -6263,6 +13827,28 @@ theorem targetStatement_of_q64ProductFirewallProofCertificate_via_dyadicBetaUpTo
   exact targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicBetaUpTo hlift
     (q64_claimedFinalProofCertificate_of_productFirewallProofCertificate hcert hchain)
 
+/-- Global theorem from the named product-firewall proof certificate for the terminal-cascade endpoint. -/
+theorem targetStatement_of_q64ProductFirewallProofCertificate_via_dyadicStepTerminalCascade
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hcert :
+      Q64ProductFirewallProofCertificate q MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling AmbientPacketBreaker OrderedBoundaryRow
+        LocalExit TransportFailure markerSize)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicStepTerminalCascade hlift
+    (q64_claimedFinalProofCertificate_of_productFirewallProofCertificate hcert hchain)
+
 /--
 Global theorem from the fully expanded failed-transport marker-data product-firewall certificate.
 This keeps the note's sub-`q` trap as data: each failed transport produces a positive marker contained
@@ -6287,6 +13873,28 @@ theorem targetStatement_of_q64ProductFirewallProofDataCertificate_via_dyadicBeta
         GlobalBridge) :
     TargetStatement := by
   exact targetStatement_of_q64ProductFirewallProofCertificate_via_dyadicBetaUpTo hlift
+    (q64_productFirewallProofCertificate_of_dataCertificate hcert) hchain
+
+/-- Fully expanded failed-transport marker-data route for the terminal-cascade endpoint. -/
+theorem targetStatement_of_q64ProductFirewallProofDataCertificate_via_dyadicStepTerminalCascade
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hcert :
+      Q64ProductFirewallProofDataCertificate q MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling AmbientPacketBreaker OrderedBoundaryRow
+        LocalExit TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ProductFirewallProofCertificate_via_dyadicStepTerminalCascade hlift
     (q64_productFirewallProofCertificate_of_dataCertificate hcert) hchain
 
 /--
@@ -6319,6 +13927,31 @@ theorem targetStatement_of_q64ProductFirewallQMarkerCouplingData_via_dyadicBetaU
   exact targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo hlift hchain
     (q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingData hdata)
 
+/-- Product-firewall q-marker coupling data routed to the updated terminal-cascade endpoint. -/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingData_via_dyadicStepTerminalCascade
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hdata :
+      Q64ProductFirewallQMarkerCouplingData q FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+        AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64FinalAuditConditionalChain_via_dyadicStepTerminalCascade hlift hchain
+    (q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingData hdata)
+
 /--
 End-to-end product-firewall route with the failed-transport contradiction split into its three
 note-level subclaims: dirty submarker production, proper-packet bound, and low-set congruence.
@@ -6348,6 +13981,32 @@ theorem targetStatement_of_q64ProductFirewallQMarkerCouplingComponents_via_dyadi
   exact targetStatement_of_q64ProductFirewallQMarkerCouplingData_via_dyadicBetaUpTo hlift
     (q64_productFirewallQMarkerCouplingData_of_components h) hchain
 
+/-- Componentized product-firewall route for the updated terminal-cascade endpoint. -/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingComponents_via_dyadicStepTerminalCascade
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallQMarkerCouplingComponents q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ProductFirewallQMarkerCouplingData_via_dyadicStepTerminalCascade hlift
+    (q64_productFirewallQMarkerCouplingData_of_components h) hchain
+
 /--
 Most expanded dyadic-beta product-firewall route currently present in Lean: static split-quotient
 exhaustion, failed-transport contradiction, and the final audit chain are all componentized.
@@ -6375,6 +14034,34 @@ theorem targetStatement_of_q64ProductFirewallQMarkerCouplingAudit_via_dyadicBeta
         GlobalBridge) :
     TargetStatement := by
   exact targetStatement_of_q64ProductFirewallQMarkerCouplingComponents_via_dyadicBetaUpTo hlift
+    (q64_productFirewallQMarkerCouplingComponents_of_audit haudit)
+    (q64_finalAuditConditionalChain_of_components hchain)
+
+/-- Fully componentized product-firewall audit routed to the updated terminal-cascade endpoint. -/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingAudit_via_dyadicStepTerminalCascade
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (haudit :
+      Q64ProductFirewallQMarkerCouplingAudit q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ProductFirewallQMarkerCouplingComponents_via_dyadicStepTerminalCascade
+    hlift
     (q64_productFirewallQMarkerCouplingComponents_of_audit haudit)
     (q64_finalAuditConditionalChain_of_components hchain)
 
@@ -6492,6 +14179,3776 @@ theorem targetStatement_of_q64FinalAuditConditionalChain_of_provenanceRouting
     targetStatement_of_q64FinalAuditConditionalChain hchain
       (q64_qMarkerCarrierMarkerCoupling_of_routing hroute hchoice htransport hadm hclass
         hnonmarker hdescent hadmissible hsmaller hlocal)
+
+/--
+End-to-end square-provenance route: if the ambient splitter has been transported into an ordered
+first-return square, the square-provenance low-set update supplies the marker-complete descent clause
+needed by the q-marker support-decrease theorem.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_squareProvenanceRouting
+    {FullySkewSplitter ProvenanceSelection OrderedFirstReturnRow ValidBreaker
+      OrderedBoundaryAdmissible FirstFailedRow MarkerInternalFailure NonMarkerFailure
+      SquareProvenance CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker PrimeModuleExit
+      ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hroute :
+      Q64AmbientToProvenanceRouting FullySkewSplitter ProvenanceSelection
+        LocalRegularizingExit)
+    (hchoice : Q64OrderedFirstReturnChoice ProvenanceSelection OrderedFirstReturnRow)
+    (htransport :
+      Q64RowToBreakerTransport OrderedFirstReturnRow ValidBreaker LocalRegularizingExit)
+    (hadm :
+      Q64IntervalAdmissibilityDichotomy ValidBreaker OrderedBoundaryAdmissible
+        FirstFailedRow)
+    (hclass :
+      Q64FirstFailureClassification FirstFailedRow MarkerInternalFailure NonMarkerFailure)
+    (hnonmarker : Q64LocalNonMarkerExitTheorem NonMarkerFailure LocalRegularizingExit)
+    (hsquare : SquareProvenance)
+    (hsquareDescent :
+      Q64SquareProvenanceMarkerCompleteDescent SquareProvenance MarkerInternalFailure
+        CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_squareProvenanceRouting hroute hchoice htransport hadm hclass
+            hnonmarker hsquare hsquareDescent hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the sharp final normal form in proof.md.  Once minimal transverse-breaker
+admissibility is proved, the rest of the pipeline reaches `TargetStatement` through already named
+closure maps; no additional global gap is introduced here.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_minimalTransverseBreakerAdmissibility
+    {FullySkewSplitter MinimalTransverseBreaker OrderedBoundaryAdmissible FixedFrameCoalescence
+      StrictSupportDecrease CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hminimal : FullySkewSplitter → MinimalTransverseBreaker)
+    (hadm :
+      Q64MinimalTransverseBreakerAdmissibility MinimalTransverseBreaker
+        OrderedBoundaryAdmissible FixedFrameCoalescence StrictSupportDecrease
+        LocalRegularizingExit)
+    (hcoalesce : FixedFrameCoalescence → LocalRegularizingExit)
+    (hdecrease : StrictSupportDecrease → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_minimalTransverseBreakerAdmissibility hminimal hadm hcoalesce
+            hdecrease hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the admissible-module-primality formulation isolated in proof.md.  Proving
+that formulation is enough to provide the q-marker support-decrease atom and hence the global target.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_admissibleModulePrimeness
+    {FullySkewSplitter OrderedBoundaryAdmissible StrictSmallerAdmissibleModule
+      CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hprime :
+      Q64AdmissibleModulePrimeness FullySkewSplitter OrderedBoundaryAdmissible
+        StrictSmallerAdmissibleModule LocalRegularizingExit)
+    (hdecrease : StrictSmallerAdmissibleModule → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_admissibleModulePrimeness hprime hdecrease hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the first-return packet-primality endpoint.  This keeps the package-prime
+branch as the existing prime-module exit and sends packet-refining admissible rows to proper
+submarkers.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_firstReturnPacketPrimality
+    {FullySkewSplitter GenuineQMarkerPacketAtom FirstReturnPackagePrime
+      PacketRefiningAdmissibleRow PacketLocalExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hpacket :
+      Q64FirstReturnPacketPrimality GenuineQMarkerPacketAtom FirstReturnPackagePrime
+        PacketRefiningAdmissibleRow PacketLocalExit)
+    (hskewToPacket : FullySkewSplitter → GenuineQMarkerPacketAtom)
+    (hprime : FirstReturnPackagePrime → PrimeModuleExit)
+    (hrefine : PacketRefiningAdmissibleRow → ProperSubmarker)
+    (hlocal : PacketLocalExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_firstReturnPacketPrimality hpacket hskewToPacket
+        hprime hrefine hlocal)
+
+/-- End-to-end route from primitive first-wall antichain realization. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_primitiveAntichainRealization
+    {FullySkewSplitter PrimitiveAntichain ProperRealizedZeroSumSubcarrier
+      BinaryCircuitEliminationRow OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hrealize :
+      Q64PrimitiveAntichainRealization PrimitiveAntichain ProperRealizedZeroSumSubcarrier
+        BinaryCircuitEliminationRow LocalRegularizingExit)
+    (hskewToAntichain : FullySkewSplitter → PrimitiveAntichain)
+    (hproper : ProperRealizedZeroSumSubcarrier → CompleteSmallerQMarker)
+    (hbinary : BinaryCircuitEliminationRow → OrderedBoundaryAdmissible)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_primitiveAntichainRealization hrealize hskewToAntichain
+            hproper hbinary hskew)
+        hadmissible hsmaller hlocal)
+
+/-- End-to-end route from product-firewall transport reduction plus the sub-`q` trap. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_productFirewallTransportReduction
+    {q : ℕ}
+    {FullySkewSplitter AmbientPacketBreaker OrderedBoundaryRow CompleteSmallerQMarker
+      LocalRegularizingExit TransportFailure ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hbreaker : FullySkewSplitter → AmbientPacketBreaker)
+    (hreduce :
+      Q64ProductFirewallTransportReduction AmbientPacketBreaker OrderedBoundaryRow
+        LocalRegularizingExit TransportFailure)
+    (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize)
+    (hadmissible : OrderedBoundaryRow → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_productFirewallTransportReduction_and_subqTrap hbreaker hreduce htrap
+            hskew)
+        hadmissible hsmaller hlocal)
+
+/-- End-to-end route from the final sign-coherent separator-bag formulation. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_signCoherentSeparatorBagEndpoint
+    {FullySkewSplitter SeparatorBag AmbientBreaker FirstReturnSide CompleteSmallerBag
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hendpoint :
+      Q64SignCoherentSeparatorBagEndpoint SeparatorBag AmbientBreaker FirstReturnSide
+        CompleteSmallerBag LocalRegularizingExit)
+    (hbag : FullySkewSplitter → SeparatorBag)
+    (hbreaker : FullySkewSplitter → AmbientBreaker)
+    (hside : FirstReturnSide → OrderedBoundaryAdmissible)
+    (hsmall : CompleteSmallerBag → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_signCoherentSeparatorBagEndpoint hendpoint hbag hbreaker hside hsmall
+            hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the exact-marker packet-firewall normal form.  This keeps the final high-error
+breaker promotion explicit as the remaining Theorem-G branch rather than treating packet-firewall
+normalization as an unconditional proof.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_exactMarkerPacketFirewallNormalForm
+    {FullySkewSplitter FinitePacketQuotientSelection ProtectedCliqueModule CompensatorPacketModule
+      AmbientHighErrorBreaker OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit
+      ProperSubmarker PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hnormal :
+      Q64ExactMarkerPacketFirewallNormalForm FinitePacketQuotientSelection ProtectedCliqueModule
+        CompensatorPacketModule AmbientHighErrorBreaker)
+    (hselect : FullySkewSplitter → FinitePacketQuotientSelection)
+    (hclique : ProtectedCliqueModule → CompleteSmallerQMarker ∨ LocalRegularizingExit)
+    (hcompensator : CompensatorPacketModule → CompleteSmallerQMarker ∨ LocalRegularizingExit)
+    (hbreaker :
+      AmbientHighErrorBreaker →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_exactMarkerPacketFirewallNormalForm hnormal hselect hclique
+            hcompensator hbreaker hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the ordered-boundary transport formulation: the transported boundary branch has
+a formal smaller-marker certificate; the remaining one-state bounce must be closed explicitly.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_ambientToBoundaryTransportWithBounce
+    {FullySkewSplitter OrderedBoundaryRow InternalFailureWholeSplitterSide CompleteSmallerQMarker
+      LocalRegularizingExit OneStateHighErrorBounceSameSlippedSide OrderedBoundaryAdmissible
+      ProperSubmarker PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (htransport :
+      Q64AmbientToBoundaryTransportWithBounce FullySkewSplitter OrderedBoundaryRow
+        LocalRegularizingExit OneStateHighErrorBounceSameSlippedSide)
+    (hcert :
+      Q64OrderedBoundarySlipCertificate OrderedBoundaryRow InternalFailureWholeSplitterSide
+        CompleteSmallerQMarker)
+    (hbounce :
+      OneStateHighErrorBounceSameSlippedSide →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_ambientToBoundaryTransportWithBounce htransport hcert hbounce hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the latest two-sheeted hidden-package cover formulation: edge-table purification
+reduces nonlocal separators to mixed branch points, base-boundary cuts, or the 2-primary sheet-character
+provenance problem.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_twoPrimarySheetCharacterProvenance
+    {FullySkewSplitter NonlocalAmbientSeparator MixedEdgeBranchPoint BaseBoundaryCut
+      GlobalSheetCharacterSeparator FirstReturnBoundarySide BranchPoint0001OrSquareTransverse
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hseparator : FullySkewSplitter → NonlocalAmbientSeparator)
+    (hpurify :
+      Q64HiddenPackageCoverEdgeTablePurification NonlocalAmbientSeparator MixedEdgeBranchPoint
+        BaseBoundaryCut GlobalSheetCharacterSeparator)
+    (hsheet :
+      Q64TwoPrimarySheetCharacterProvenance GlobalSheetCharacterSeparator FirstReturnBoundarySide
+        BranchPoint0001OrSquareTransverse)
+    (hmixed :
+      MixedEdgeBranchPoint →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hbase :
+      BaseBoundaryCut →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hside : FirstReturnBoundarySide → OrderedBoundaryAdmissible)
+    (hbranch :
+      BranchPoint0001OrSquareTransverse →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_twoPrimarySheetCharacterProvenance hseparator hpurify hsheet hmixed hbase
+            hside hbranch hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the sharpened single-slip child-realization endpoint produced by tree-gauge
+normalization of the two-sheeted cover.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_singleSlipChildRealization
+    {FullySkewSplitter DistributedMonodromy PrimitiveHalfCarrierCarry AnchoredRankOneSlipEdge
+      OrderedFirstReturnBoundaryEdge QHalfChildCarrier BranchPoint0001OrSquareTransverse
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hmonodromy : FullySkewSplitter → DistributedMonodromy)
+    (hcarry : FullySkewSplitter → PrimitiveHalfCarrierCarry)
+    (htree :
+      Q64TreeGaugeSingleSlipReduction DistributedMonodromy PrimitiveHalfCarrierCarry
+        AnchoredRankOneSlipEdge)
+    (hchild :
+      Q64SingleSlipChildRealization AnchoredRankOneSlipEdge OrderedFirstReturnBoundaryEdge
+        QHalfChildCarrier BranchPoint0001OrSquareTransverse)
+    (hordered :
+      OrderedFirstReturnBoundaryEdge → QHalfChildCarrier →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hbranch :
+      BranchPoint0001OrSquareTransverse →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_singleSlipChildRealization hmonodromy hcarry htree hchild hordered
+            hbranch hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the sharpest current tail formulation: star-to-boundary normality, with the first
+static-but-not-first-return square kept as the explicit remaining provenance/cubicality branch.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_starToBoundaryNormality
+    {FullySkewSplitter LocallyStarFlatSheetCharacterSeparator BoundaryHistoryCommutation
+      OrderedFirstReturnBoundaryEdge StaticNotFirstReturnSquare OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hlocalStar : FullySkewSplitter → LocallyStarFlatSheetCharacterSeparator)
+    (hcommutes : FullySkewSplitter → BoundaryHistoryCommutation)
+    (hnormal :
+      Q64StarToBoundaryNormality LocallyStarFlatSheetCharacterSeparator
+        BoundaryHistoryCommutation OrderedFirstReturnBoundaryEdge StaticNotFirstReturnSquare)
+    (hordered : OrderedFirstReturnBoundaryEdge → OrderedBoundaryAdmissible)
+    (hstatic :
+      StaticNotFirstReturnSquare →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_starToBoundaryNormality hlocalStar hcommutes hnormal hordered hstatic
+            hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from star-to-boundary normality plus the boundary-exchange gate reduction.  The
+idempotent one-edge boundary-normality failure remains an explicit branch rather than being hidden.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_starToBoundaryNormality_and_exchangeGate
+    {FullySkewSplitter LocallyStarFlatSheetCharacterSeparator BoundaryHistoryCommutation
+      OrderedFirstReturnBoundaryEdge StaticNotFirstReturnSquare ExchangeGateEdge
+      FixedTraceCleanLocal MinimalSquareTransverseBreaker ProperChildCarrier PrimitiveCircuit
+      BranchSquare GateParallelSheetCharacterBounce IdempotentOneEdgeBoundaryNormalityFailure
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hlocalStar : FullySkewSplitter → LocallyStarFlatSheetCharacterSeparator)
+    (hcommutes : FullySkewSplitter → BoundaryHistoryCommutation)
+    (hnormal :
+      Q64StarToBoundaryNormality LocallyStarFlatSheetCharacterSeparator
+        BoundaryHistoryCommutation OrderedFirstReturnBoundaryEdge StaticNotFirstReturnSquare)
+    (hordered : OrderedFirstReturnBoundaryEdge → OrderedBoundaryAdmissible)
+    (hexpose :
+      Q64StaticNotFirstReturnExchangeGate StaticNotFirstReturnSquare ExchangeGateEdge)
+    (hprime :
+      Q64ExchangeGatePrimeBreakerReduction ExchangeGateEdge FixedTraceCleanLocal
+        MinimalSquareTransverseBreaker)
+    (hdirty :
+      Q64BoundaryExchangeDirtyRowReduction MinimalSquareTransverseBreaker ProperChildCarrier
+        PrimitiveCircuit BranchSquare GateParallelSheetCharacterBounce)
+    (hbounce :
+      Q64GateParallelBounceNormalForm GateParallelSheetCharacterBounce
+        IdempotentOneEdgeBoundaryNormalityFailure)
+    (hfixed :
+      FixedTraceCleanLocal →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hchild :
+      ProperChildCarrier →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hcircuit :
+      PrimitiveCircuit →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hbranch :
+      BranchSquare →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hidempotent :
+      IdempotentOneEdgeBoundaryNormalityFailure →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_starToBoundaryNormality_and_exchangeGate hlocalStar hcommutes hnormal
+            hordered hexpose hprime hdirty hbounce hfixed hchild hcircuit hbranch hidempotent
+            hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from rank-one boundary-category fullness for the unique central deck involution.  The
+prefix-insertion branch remains explicit as the current residual atom.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_rankOneBoundaryCategoryFullness
+    {FullySkewSplitter UniqueCentralDeckInvolution FirstReturnCategoryMembership
+      PrefixInsertionFullness OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit
+      ProperSubmarker PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift
+      CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hdeck : FullySkewSplitter → UniqueCentralDeckInvolution)
+    (hfull :
+      Q64RankOneBoundaryCategoryFullness UniqueCentralDeckInvolution
+        FirstReturnCategoryMembership PrefixInsertionFullness)
+    (hfirst : FirstReturnCategoryMembership → OrderedBoundaryAdmissible)
+    (hprefix :
+      PrefixInsertionFullness →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_rankOneBoundaryCategoryFullness hdeck hfull hfirst hprefix hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from root selector fullness: realized ambient child-cut rows can be used as initial
+first-return boundaries, unless they already give local or branch exits.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_rootSelectorFullness
+    {FullySkewSplitter RealizedAmbientChildCutRow InitialFirstReturnBoundary LocalExit BranchExit
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hrow : FullySkewSplitter → RealizedAmbientChildCutRow)
+    (hselector :
+      Q64RootSelectorFullness RealizedAmbientChildCutRow InitialFirstReturnBoundary LocalExit
+        BranchExit)
+    (hboundary : InitialFirstReturnBoundary → OrderedBoundaryAdmissible)
+    (hlocalExit : LocalExit → LocalRegularizingExit)
+    (hbranch :
+      BranchExit →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_rootSelectorFullness hrow hselector hboundary hlocalExit hbranch hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the latest saturation-compatibility audit for the residue-saturated exchange
+complex `FR^sat`.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_frsatSaturationCompatibility
+    {FullySkewSplitter FRSatFirstReturnCompleteSupport OriginalFirstReturnCompleteSupport
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hsupport : FullySkewSplitter → FRSatFirstReturnCompleteSupport)
+    (hcompat :
+      Q64FRSatSaturationCompatibility FRSatFirstReturnCompleteSupport
+        OriginalFirstReturnCompleteSupport)
+    (horiginal : OriginalFirstReturnCompleteSupport → OrderedBoundaryAdmissible)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_frsatSaturationCompatibility hsupport hcompat horiginal hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from path-saturation equivalence, transporting the saturated convention back to the
+original unsaturated Theorem-G statement.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_pathSaturationEquivalence
+    {FullySkewSplitter HistoricalPathConvention CanonicalSaturatedConvention
+      TerminalHostDescentUnchanged LocalBranchExit OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hhistorical : FullySkewSplitter → HistoricalPathConvention)
+    (hcanonical : FullySkewSplitter → CanonicalSaturatedConvention)
+    (hequiv :
+      Q64PathSaturationEquivalence HistoricalPathConvention CanonicalSaturatedConvention
+        TerminalHostDescentUnchanged LocalBranchExit)
+    (hdescent :
+      TerminalHostDescentUnchanged →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hexit : LocalBranchExit → LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_pathSaturationEquivalence hhistorical hcanonical hequiv hdescent
+            hexit hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+Same end-to-end route with the actual Section 8.2 obligation exposed: an unsaturated-to-saturated
+path comparison, plus the homotopy-to-descent map, is what produces path-saturation equivalence.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_unsaturatedToSaturatedPathComparison
+    {FullySkewSplitter HistoricalPathConvention CanonicalSaturatedConvention HomotopyComparison
+      TerminalHostDescentUnchanged LocalBranchExit OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hhistorical : FullySkewSplitter → HistoricalPathConvention)
+    (hcanonical : FullySkewSplitter → CanonicalSaturatedConvention)
+    (hcomparison :
+      Q64UnsaturatedToSaturatedPathComparison HistoricalPathConvention
+        CanonicalSaturatedConvention HomotopyComparison LocalBranchExit)
+    (hhomotopy : HomotopyComparison → TerminalHostDescentUnchanged)
+    (hdescent :
+      TerminalHostDescentUnchanged →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hexit : LocalBranchExit → LocalRegularizingExit)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_of_pathSaturationEquivalence hchain
+      hhistorical hcanonical
+      (q64_pathSaturationEquivalence_of_unsaturatedToSaturatedPathComparison hcomparison
+        hhomotopy)
+      hdescent hexit hadmissible hsmaller hlocal
+
+/--
+End-to-end route from the saturated provenance/support-decrease theorem itself.  This is the minimal
+canonical saturated endpoint after the convention has been fixed.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_saturatedProvenanceSupportDecrease
+    {FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+      ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hsat :
+      Q64SaturatedProvenanceSupportDecrease FullySkewSplitter PrefixLocalFailure
+        NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_saturatedProvenanceSupportDecrease hsat hprefix hnonzero hsmall hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+Saturated provenance/support-decrease routed to the updated terminal-cascade dyadic endpoint rather
+than the refuted dropped-host upgrade.
+-/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChain_of_saturatedProvenanceSupportDecrease_via_dyadicStepTerminalCascade
+    {C D : ℕ}
+    {FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+      ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hsat :
+      Q64SaturatedProvenanceSupportDecrease FullySkewSplitter PrefixLocalFailure
+        NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicStepTerminalCascade hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_of_saturatedProvenanceSupportDecrease hsat hprefix hnonzero hsmall hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+End-to-end route from the granular branch-data certificate for the canonical saturated convention.
+This keeps the actual missing content split into prefix-test, residue, `FR^sat` boundary, and
+exchange-complete packet-internal failure obligations.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_canonicalSaturatedBranchData
+    {FullySkewSplitter PrefixLocalFailure PrefixLocalPass NonzeroFirstTerminalResidue
+      TerminalResidueZero ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hdata :
+      Q64CanonicalSaturatedBranchData FullySkewSplitter PrefixLocalFailure PrefixLocalPass
+        NonzeroFirstTerminalResidue TerminalResidueZero ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_of_saturatedProvenanceSupportDecrease hchain
+      (q64_saturatedProvenanceSupportDecrease_of_canonicalSaturatedBranchData hdata)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/-- Branch-data version of the updated terminal-cascade saturated endpoint. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_canonicalSaturatedBranchData_via_dyadicStepTerminalCascade
+    {C D : ℕ}
+    {FullySkewSplitter PrefixLocalFailure PrefixLocalPass NonzeroFirstTerminalResidue
+      TerminalResidueZero ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hdata :
+      Q64CanonicalSaturatedBranchData FullySkewSplitter PrefixLocalFailure PrefixLocalPass
+        NonzeroFirstTerminalResidue TerminalResidueZero ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_of_saturatedProvenanceSupportDecrease_via_dyadicStepTerminalCascade
+      hlift hchain
+      (q64_saturatedProvenanceSupportDecrease_of_canonicalSaturatedBranchData hdata)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+End-to-end route from a concrete row in the canonical saturated first-return exchange complex.
+The only row-level inputs left are the two graph-specific zero-residue facts: saturated boundary
+admission and exchange-complete packet support.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_frsatExchangeComplex
+    {Row Packet : Type*} (C : Q64FRSatExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (C.splitter r) ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hboundary :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 → C.inFRSat r)
+    (hpacket :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 →
+        C.exchangeComplete (C.support r))
+    (hprefix : Q64FRSatPrefixLocalFailure C r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue C r → LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker C r → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_of_saturatedProvenanceSupportDecrease hchain
+      (q64_saturatedProvenanceSupportDecrease_of_frsatExchangeComplex C r hboundary hpacket)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/-- Concrete `FR^sat` row-level route to the updated terminal-cascade endpoint. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_frsatExchangeComplex_via_dyadicStepTerminalCascade
+    {Cexp D : ℕ} {Row Packet : Type*} (C : Q64FRSatExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift Cexp)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (C.splitter r) ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hboundary :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 → C.inFRSat r)
+    (hpacket :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 →
+        C.exchangeComplete (C.support r))
+    (hprefix : Q64FRSatPrefixLocalFailure C r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue C r → LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker C r → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_of_saturatedProvenanceSupportDecrease_via_dyadicStepTerminalCascade
+      hlift hchain
+      (q64_saturatedProvenanceSupportDecrease_of_frsatExchangeComplex C r hboundary hpacket)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+End-to-end route from the explicit zero-residue saturation of a raw first-return exchange complex.
+Here zero-residue boundary admission is no longer an assumption; only packet exchange-completeness is.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_rawFRSatSaturation
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (C.saturate.splitter r) ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hpacket :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 →
+        C.exchangeComplete (C.support r))
+    (hprefix : Q64FRSatPrefixLocalFailure C.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue C.saturate r → LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker C.saturate r → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_of_saturatedProvenanceSupportDecrease hchain
+      (q64_saturatedProvenanceSupportDecrease_of_rawFRSatSaturation C r hpacket)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/-- Raw `FR^sat` saturation route to the updated terminal-cascade endpoint. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_rawFRSatSaturation_via_dyadicStepTerminalCascade
+    {Cexp D : ℕ} {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift Cexp)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (C.saturate.splitter r) ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hpacket :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 →
+        C.exchangeComplete (C.support r))
+    (hprefix : Q64FRSatPrefixLocalFailure C.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue C.saturate r → LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker C.saturate r → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_of_saturatedProvenanceSupportDecrease_via_dyadicStepTerminalCascade
+      hlift hchain
+      (q64_saturatedProvenanceSupportDecrease_of_rawFRSatSaturation C r hpacket)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+End-to-end route from the completed saturated first-return exchange complex.  Boundary admission and
+packet exchange-completeness are now structural; the remaining external maps identify prefix failures,
+nonzero residues, and completed supports with the already-closed local/smaller-marker exits.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_completedRawFRSatSaturation
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (C.completeSupports.saturate.splitter r)
+          ProperSubmarker PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hprefix : Q64FRSatPrefixLocalFailure C.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_of_saturatedProvenanceSupportDecrease hchain
+      (q64_saturatedProvenanceSupportDecrease_of_completedRawFRSatSaturation C r)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+Dyadic endgame from the completed saturated first-return exchange complex: completed `FR^sat` gives
+carrier/marker coupling, the final audit supplies beta-up-to vanishing, and the existing dyadic lift
+pipeline yields the target statement.
+-/
+theorem targetStatement_of_completedRawFRSatSaturation_via_dyadicBetaUpTo
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation X r hprefix hnonzero
+        hsmall hadmissible hsmaller hlocal)
+
+/--
+Dyadic terminal endgame from the completed saturated first-return exchange complex: completed `FR^sat`
+gives carrier/marker coupling, and the final audit supplies the terminal theorem directly.
+-/
+theorem targetStatement_of_completedRawFRSatSaturation_via_dyadicTerminal
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicTerminal hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation X r hprefix hnonzero
+        hsmall hadmissible hsmaller hlocal)
+
+/--
+Updated `proof.md` endgame from the completed saturated first-return exchange complex: completed
+`FR^sat` supplies carrier/marker coupling, and the final audit supplies the positive-dyadic terminal
+cascade bridge directly.
+-/
+theorem targetStatement_of_completedRawFRSatSaturation_via_dyadicStepTerminalCascade
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicStepTerminalCascade hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation X r hprefix hnonzero
+        hsmall hadmissible hsmaller hlocal)
+
+/-- Positive-lift version of the completed saturated first-return terminal-cascade endgame. -/
+theorem targetStatement_of_completedRawFRSatSaturation_via_positiveDyadicStepTerminalCascade
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicStepTerminalCascade
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation X r hprefix hnonzero
+        hsmall hadmissible hsmaller hlocal)
+
+/--
+Positive-lift version of the completed saturated first-return endgame for the exact Theorem 9.3
+landing surface: terminal regularization is only required for positive dyadic moduli.
+-/
+theorem targetStatement_of_completedRawFRSatSaturation_via_positiveDyadicTerminalRegularization
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminalRegularizationLanding_posLift
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation X r hprefix hnonzero
+        hsmall hadmissible hsmaller hlocal)
+
+/-- Packaged-map form of the positive-dyadic terminal-regularization endgame for completed `FR^sat`. -/
+theorem targetStatement_of_completedRawFRSatSaturation_via_positiveDyadicTerminalRegularization_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminalRegularizationLanding_posLift
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation_maps X r hmaps)
+
+/--
+Componentized dyadic endgame from the completed saturated first-return exchange complex.  This is the
+same route as `targetStatement_of_completedRawFRSatSaturation_via_dyadicBetaUpTo`, but the final audit is
+split into named post-coupling components.
+-/
+theorem targetStatement_of_completedRawFRSatSaturation_components_via_dyadicBetaUpTo
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_completedRawFRSatSaturation_via_dyadicBetaUpTo X r hlift
+      (q64_finalAuditConditionalChain_of_components hchain)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/-- Componentized dyadic terminal endgame from the completed saturated first-return exchange complex. -/
+theorem targetStatement_of_completedRawFRSatSaturation_components_via_dyadicTerminal
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_completedRawFRSatSaturation_via_dyadicTerminal X r hlift
+      (q64_finalAuditConditionalChain_of_components hchain)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/-- Componentized updated terminal-cascade endgame from the completed saturated first-return complex. -/
+theorem targetStatement_of_completedRawFRSatSaturation_components_via_dyadicStepTerminalCascade
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_completedRawFRSatSaturation_via_dyadicStepTerminalCascade X r hlift
+      (q64_finalAuditConditionalChain_of_components hchain)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/-- Componentized positive-lift terminal-cascade endgame from the completed saturated complex. -/
+theorem targetStatement_of_completedRawFRSatSaturation_components_via_positiveDyadicStepTerminalCascade
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_completedRawFRSatSaturation_via_positiveDyadicStepTerminalCascade X r hlift
+      (q64_finalAuditConditionalChain_of_components hchain)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+Componentized positive-lift endgame for the exact positive-dyadic terminal-regularization landing
+surface.
+-/
+theorem
+    targetStatement_of_completedRawFRSatSaturation_components_via_positiveDyadicTerminalRegularization
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_completedRawFRSatSaturation_via_positiveDyadicTerminalRegularization X r
+      hlift (q64_finalAuditConditionalChain_of_components hchain) hprefix hnonzero hsmall
+      hadmissible hsmaller hlocal
+
+/-- Componentized packaged-map form of the completed `FR^sat` positive terminal-regularization route. -/
+theorem
+    targetStatement_of_completedRawFRSatSaturation_components_via_positiveDyadicTerminalRegularization_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_completedRawFRSatSaturation_via_positiveDyadicTerminalRegularization_maps X r
+      hlift (q64_finalAuditConditionalChain_of_components hchain) hmaps
+
+/--
+Proof-md saturated route, frozen at the completed `FR^sat` positive terminal-regularization
+endpoint.  This wrapper deliberately exposes only the inputs used by the saturated route:
+positive dyadic lift, the final audit component chain, the completed saturated row, and the
+three branch-routing plus three closure maps.
+-/
+theorem targetStatement_of_proofMd_saturated_of_components
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_completedRawFRSatSaturation_components_via_positiveDyadicTerminalRegularization
+      X r hlift hchain hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+Proof-md saturated route when the final audit emits the Section 9 terminal-data package itself.
+This is the direct Lean version of instantiating `Q64PositiveDyadicTerminalRegularizationData`
+before entering the completed `FR^sat` endgame.
+-/
+theorem targetStatement_of_proofMd_saturated_of_terminalDataComponents
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalRegularizationData (D + 1)))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_components X r hlift
+      (q64_finalAuditComponentChain_of_terminalData (D := D) hchain)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+Smallest currently isolated saturated proof-md endpoint: the dyadic input is only the middle-range
+obligation left after small-target/Ramsey fallback, and the terminal input is only the `j > 1`
+regularization obligation left after the closed two-vertex slice.
+-/
+theorem targetStatement_of_proofMd_saturated_of_middleRange_beyondOneComponents
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne
+          (D + 1))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_components X r
+      (hasPolynomialCostPositiveEmptyControlDyadicLift_of_ramseyMiddleRange hmiddle)
+      (q64_finalAuditComponentChain_of_terminalRegularizationBeyondOne (D := D) hchain)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+Reduced saturated proof-md endpoint when the final audit emits Section 9 terminal data directly:
+the terminal field is lowered to the remaining `j > 1` obligation before the closed `q = 2`
+slice restores positive-dyadic terminal regularization.
+-/
+theorem targetStatement_of_proofMd_saturated_of_middleRange_terminalDataComponents
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalRegularizationData (D + 1)))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_middleRange_beyondOneComponents X r hmiddle
+      (q64_finalAuditComponentChain_of_terminalData_beyondOne (D := D) hchain)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+Reduced saturated proof-md endpoint with host-local Section 9 obligations as the final-audit output,
+removing the abstract high-dyadic terminal-regularization Prop from the certificate surface.
+-/
+theorem targetStatement_of_proofMd_saturated_of_middleRange_terminalGraphLocalComponents
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+        GlobalBridge)
+    (hprefix : Q64FRSatPrefixLocalFailure X.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_middleRange_beyondOneComponents X r hmiddle
+      (q64_finalAuditComponentChain_of_terminalGraphLocalObligations_beyondOne (D := D) hchain)
+      hprefix hnonzero hsmall hadmissible hsmaller hlocal
+
+/--
+Proof-md saturated route with the six completed `FR^sat` branch/closure maps bundled into a single
+certificate.
+-/
+theorem targetStatement_of_proofMd_saturated_of_components_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_completedRawFRSatSaturation_components_via_positiveDyadicTerminalRegularization_maps
+      X r hlift hchain hmaps
+
+/-- Terminal-data proof-md saturated route with bundled completed `FR^sat` branch/closure maps. -/
+theorem targetStatement_of_proofMd_saturated_of_terminalDataComponents_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalRegularizationData (D + 1)))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_components_maps X r hlift
+      (q64_finalAuditComponentChain_of_terminalData (D := D) hchain) hmaps
+
+/--
+Reduced proof-md saturated route with the dyadic middle range, high-dyadic terminal regularization,
+and one bundled completed `FR^sat` branch/closure map certificate.
+-/
+theorem targetStatement_of_proofMd_saturated_of_middleRange_beyondOneComponents_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne
+          (D + 1))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_components_maps X r
+      (hasPolynomialCostPositiveEmptyControlDyadicLift_of_ramseyMiddleRange hmiddle)
+      (q64_finalAuditComponentChain_of_terminalRegularizationBeyondOne (D := D) hchain)
+      hmaps
+
+/-- Reduced terminal-data proof-md saturated route with bundled branch/closure maps. -/
+theorem targetStatement_of_proofMd_saturated_of_middleRange_terminalDataComponents_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalRegularizationData (D + 1)))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_middleRange_beyondOneComponents_maps X r hmiddle
+      (q64_finalAuditComponentChain_of_terminalData_beyondOne (D := D) hchain) hmaps
+
+/--
+Reduced graph-local terminal proof-md saturated route with bundled branch/closure maps.
+-/
+theorem targetStatement_of_proofMd_saturated_of_middleRange_terminalGraphLocalComponents_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_middleRange_beyondOneComponents_maps X r hmiddle
+      (q64_finalAuditComponentChain_of_terminalGraphLocalObligations_beyondOne (D := D) hchain)
+      hmaps
+
+universe u v
+
+/--
+No-argument proof-md certificate for the completed saturated `FR^sat` route.  It freezes exactly
+the positive-dyadic lift, final audit component chain, saturated row, and bundled branch/closure maps
+used by `targetStatement_of_proofMd_saturated_of_components_maps`.
+-/
+structure ProofMdSaturatedCertificate : Type (max u v + 1) where
+  C : ℕ
+  D : ℕ
+  Row : Type u
+  Packet : Type v
+  X : Q64FRSatRawExchangeComplex Row Packet
+  r : Row
+  OrderedBoundaryAdmissible : Prop
+  CompleteSmallerQMarker : Prop
+  LocalRegularizingExit : Prop
+  ProperSubmarker : Prop
+  PrimeModuleExit : Prop
+  ClosedLocalExit : Prop
+  PrimeCycleBreaker : Prop
+  SignLaw : Prop
+  OneCornerLift : Prop
+  CompensatorRouting : Prop
+  GlobalBridge : Prop
+  hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C
+  hchain :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r)
+        ProperSubmarker PrimeModuleExit ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+        (D + 1))
+      GlobalBridge
+  hmaps :
+    Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker ClosedLocalExit
+
+/-- The completed saturated proof-md certificate closes the target statement. -/
+theorem targetStatement_of_proofMdSaturatedCertificate
+    (h : ProofMdSaturatedCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_components_maps
+      (C := h.C) (D := h.D) (Row := h.Row) (Packet := h.Packet)
+      (X := h.X) (r := h.r)
+      (OrderedBoundaryAdmissible := h.OrderedBoundaryAdmissible)
+      (CompleteSmallerQMarker := h.CompleteSmallerQMarker)
+      (LocalRegularizingExit := h.LocalRegularizingExit)
+      (ProperSubmarker := h.ProperSubmarker)
+      (PrimeModuleExit := h.PrimeModuleExit)
+      (ClosedLocalExit := h.ClosedLocalExit)
+      (PrimeCycleBreaker := h.PrimeCycleBreaker)
+      (SignLaw := h.SignLaw)
+      (OneCornerLift := h.OneCornerLift)
+      (CompensatorRouting := h.CompensatorRouting)
+      (GlobalBridge := h.GlobalBridge)
+      h.hlift h.hchain h.hmaps
+
+/-- A nonempty completed saturated proof-md certificate is enough to close the target statement. -/
+theorem targetStatement_of_nonempty_proofMdSaturatedCertificate
+    (h : Nonempty ProofMdSaturatedCertificate) :
+    TargetStatement := by
+  rcases h with ⟨hcert⟩
+  exact targetStatement_of_proofMdSaturatedCertificate hcert
+
+/--
+Terminal-data variant of the completed saturated proof-md certificate.  The final audit may emit
+the Section 9 terminal data directly; the route converts it through
+`targetStatement_of_proofMd_saturated_of_terminalDataComponents_maps`.
+-/
+structure ProofMdSaturatedTerminalDataCertificate : Type (max u v + 1) where
+  C : ℕ
+  D : ℕ
+  Row : Type u
+  Packet : Type v
+  X : Q64FRSatRawExchangeComplex Row Packet
+  r : Row
+  OrderedBoundaryAdmissible : Prop
+  CompleteSmallerQMarker : Prop
+  LocalRegularizingExit : Prop
+  ProperSubmarker : Prop
+  PrimeModuleExit : Prop
+  ClosedLocalExit : Prop
+  PrimeCycleBreaker : Prop
+  SignLaw : Prop
+  OneCornerLift : Prop
+  CompensatorRouting : Prop
+  GlobalBridge : Prop
+  hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C
+  hchain :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r)
+        ProperSubmarker PrimeModuleExit ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (Nonempty (Q64PositiveDyadicTerminalRegularizationData (D + 1)))
+      GlobalBridge
+  hmaps :
+    Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker ClosedLocalExit
+
+/-- The terminal-data completed saturated proof-md certificate closes the target statement. -/
+theorem targetStatement_of_proofMdSaturatedTerminalDataCertificate
+    (h : ProofMdSaturatedTerminalDataCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_terminalDataComponents_maps
+      (C := h.C) (D := h.D) (Row := h.Row) (Packet := h.Packet)
+      (X := h.X) (r := h.r)
+      (OrderedBoundaryAdmissible := h.OrderedBoundaryAdmissible)
+      (CompleteSmallerQMarker := h.CompleteSmallerQMarker)
+      (LocalRegularizingExit := h.LocalRegularizingExit)
+      (ProperSubmarker := h.ProperSubmarker)
+      (PrimeModuleExit := h.PrimeModuleExit)
+      (ClosedLocalExit := h.ClosedLocalExit)
+      (PrimeCycleBreaker := h.PrimeCycleBreaker)
+      (SignLaw := h.SignLaw)
+      (OneCornerLift := h.OneCornerLift)
+      (CompensatorRouting := h.CompensatorRouting)
+      (GlobalBridge := h.GlobalBridge)
+      h.hlift h.hchain h.hmaps
+
+/-- A nonempty terminal-data completed saturated certificate is enough to close the target statement. -/
+theorem targetStatement_of_nonempty_proofMdSaturatedTerminalDataCertificate
+    (h : Nonempty ProofMdSaturatedTerminalDataCertificate) :
+    TargetStatement := by
+  rcases h with ⟨hcert⟩
+  exact targetStatement_of_proofMdSaturatedTerminalDataCertificate hcert
+
+/--
+Reduced completed saturated proof-md certificate after closing the automatic dyadic small/Ramsey
+branches and the terminal `q = 2` branch.  Its remaining global fields are exactly the dyadic
+middle range, the high-dyadic (`j > 1`) terminal regularization output of the final audit, and
+the bundled completed `FR^sat` branch/closure maps.
+-/
+structure ProofMdSaturatedReducedCertificate : Type (max u v + 1) where
+  C : ℕ
+  D : ℕ
+  Row : Type u
+  Packet : Type v
+  X : Q64FRSatRawExchangeComplex Row Packet
+  r : Row
+  OrderedBoundaryAdmissible : Prop
+  CompleteSmallerQMarker : Prop
+  LocalRegularizingExit : Prop
+  ProperSubmarker : Prop
+  PrimeModuleExit : Prop
+  ClosedLocalExit : Prop
+  PrimeCycleBreaker : Prop
+  SignLaw : Prop
+  OneCornerLift : Prop
+  CompensatorRouting : Prop
+  GlobalBridge : Prop
+  hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C
+  hchain :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r)
+        ProperSubmarker PrimeModuleExit ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularizationBeyondOne
+        (D + 1))
+      GlobalBridge
+  hmaps :
+    Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker ClosedLocalExit
+
+/-- The reduced completed saturated proof-md certificate closes the target statement. -/
+theorem targetStatement_of_proofMdSaturatedReducedCertificate
+    (h : ProofMdSaturatedReducedCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_middleRange_beyondOneComponents_maps
+      (C := h.C) (D := h.D) (Row := h.Row) (Packet := h.Packet)
+      (X := h.X) (r := h.r)
+      (OrderedBoundaryAdmissible := h.OrderedBoundaryAdmissible)
+      (CompleteSmallerQMarker := h.CompleteSmallerQMarker)
+      (LocalRegularizingExit := h.LocalRegularizingExit)
+      (ProperSubmarker := h.ProperSubmarker)
+      (PrimeModuleExit := h.PrimeModuleExit)
+      (ClosedLocalExit := h.ClosedLocalExit)
+      (PrimeCycleBreaker := h.PrimeCycleBreaker)
+      (SignLaw := h.SignLaw)
+      (OneCornerLift := h.OneCornerLift)
+      (CompensatorRouting := h.CompensatorRouting)
+      (GlobalBridge := h.GlobalBridge)
+      h.hmiddle h.hchain h.hmaps
+
+/-- A nonempty reduced completed saturated certificate is enough to close the target statement. -/
+theorem targetStatement_of_nonempty_proofMdSaturatedReducedCertificate
+    (h : Nonempty ProofMdSaturatedReducedCertificate) :
+    TargetStatement := by
+  rcases h with ⟨hcert⟩
+  exact targetStatement_of_proofMdSaturatedReducedCertificate hcert
+
+/-- Any reduced saturated certificate must use dyadic-loss exponent strictly beyond `1`. -/
+theorem proofMdSaturatedReducedCertificate_C_ne_one
+    (h : ProofMdSaturatedReducedCertificate) :
+    h.C ≠ 1 := by
+  intro hC
+  have hliftC :
+      HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift h.C :=
+    hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyMiddleRange h.hmiddle
+  have hinput :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+        ((2 ^ 1) ^ h.C * 5) (2 ^ 1) := by
+    have hinputOne :
+        HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+          ((2 ^ 1) ^ 1 * 5) (2 ^ 1) := by
+      norm_num
+      exact positiveFixedWitnessLiftOneCounterexample_has_mod_two
+    simpa [hC] using hinputOne
+  have hout :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph 5 4 := by
+    simpa using
+      (hliftC (n := 10) (j := 1) (m := 5) (by decide)
+        positiveFixedWitnessLiftOneCounterexampleGraph hinput)
+  exact positiveFixedWitnessLiftOneCounterexample_no_mod_four hout
+
+/--
+Reduced completed saturated proof-md certificate whose final audit emits host-local Section 9
+terminal obligations directly, rather than the abstract high-dyadic terminal-regularization Prop.
+-/
+structure ProofMdSaturatedGraphLocalReducedCertificate : Type (max u v + 1) where
+  C : ℕ
+  D : ℕ
+  Row : Type u
+  Packet : Type v
+  X : Q64FRSatRawExchangeComplex Row Packet
+  r : Row
+  OrderedBoundaryAdmissible : Prop
+  CompleteSmallerQMarker : Prop
+  LocalRegularizingExit : Prop
+  ProperSubmarker : Prop
+  PrimeModuleExit : Prop
+  ClosedLocalExit : Prop
+  PrimeCycleBreaker : Prop
+  SignLaw : Prop
+  OneCornerLift : Prop
+  CompensatorRouting : Prop
+  GlobalBridge : Prop
+  hmiddle : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange C
+  hchain :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r)
+        ProperSubmarker PrimeModuleExit ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+      GlobalBridge
+  hmaps :
+    Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker ClosedLocalExit
+
+/-- The graph-local reduced completed saturated proof-md certificate closes the target statement. -/
+theorem targetStatement_of_proofMdSaturatedGraphLocalReducedCertificate
+    (h : ProofMdSaturatedGraphLocalReducedCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_middleRange_terminalGraphLocalComponents_maps
+      (C := h.C) (D := h.D) (Row := h.Row) (Packet := h.Packet)
+      (X := h.X) (r := h.r)
+      (OrderedBoundaryAdmissible := h.OrderedBoundaryAdmissible)
+      (CompleteSmallerQMarker := h.CompleteSmallerQMarker)
+      (LocalRegularizingExit := h.LocalRegularizingExit)
+      (ProperSubmarker := h.ProperSubmarker)
+      (PrimeModuleExit := h.PrimeModuleExit)
+      (ClosedLocalExit := h.ClosedLocalExit)
+      (PrimeCycleBreaker := h.PrimeCycleBreaker)
+      (SignLaw := h.SignLaw)
+      (OneCornerLift := h.OneCornerLift)
+      (CompensatorRouting := h.CompensatorRouting)
+      (GlobalBridge := h.GlobalBridge)
+      h.hmiddle h.hchain h.hmaps
+
+/-- A nonempty graph-local reduced saturated certificate is enough to close the target statement. -/
+theorem targetStatement_of_nonempty_proofMdSaturatedGraphLocalReducedCertificate
+    (h : Nonempty ProofMdSaturatedGraphLocalReducedCertificate) :
+    TargetStatement := by
+  rcases h with ⟨hcert⟩
+  exact targetStatement_of_proofMdSaturatedGraphLocalReducedCertificate hcert
+
+/-- Any graph-local reduced saturated certificate must use dyadic-loss exponent strictly beyond `1`. -/
+theorem proofMdSaturatedGraphLocalReducedCertificate_C_ne_one
+    (h : ProofMdSaturatedGraphLocalReducedCertificate) :
+    h.C ≠ 1 := by
+  intro hC
+  have hliftC :
+      HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift h.C :=
+    hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyMiddleRange h.hmiddle
+  have hinput :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+        ((2 ^ 1) ^ h.C * 5) (2 ^ 1) := by
+    have hinputOne :
+        HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+          ((2 ^ 1) ^ 1 * 5) (2 ^ 1) := by
+      norm_num
+      exact positiveFixedWitnessLiftOneCounterexample_has_mod_two
+    simpa [hC] using hinputOne
+  have hout :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph 5 4 := by
+    simpa using
+      (hliftC (n := 10) (j := 1) (m := 5) (by decide)
+        positiveFixedWitnessLiftOneCounterexampleGraph hinput)
+  exact positiveFixedWitnessLiftOneCounterexample_no_mod_four hout
+
+/--
+Ramsey-index-window version of the graph-local completed `FR^sat` route.  This is the
+strictest dyadic field isolated in §10, while keeping the saturated branch/closure maps bundled and
+the final audit landing on the host-local §9.3 terminal obligations.
+-/
+theorem targetStatement_of_proofMd_saturated_of_ramseyIndexWindow_terminalGraphLocalComponents_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_middleRange_terminalGraphLocalComponents_maps
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (OrderedBoundaryAdmissible := OrderedBoundaryAdmissible)
+      (CompleteSmallerQMarker := CompleteSmallerQMarker)
+      (LocalRegularizingExit := LocalRegularizingExit)
+      (ProperSubmarker := ProperSubmarker)
+      (PrimeModuleExit := PrimeModuleExit)
+      (ClosedLocalExit := ClosedLocalExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyMiddleRange_of_ramseyIndexWindow
+        hwindow)
+      hchain hmaps
+
+/--
+No-argument certificate matching the saturated proof-md table with the stricter Ramsey-index dyadic
+window: dyadic §10 field, bundled completed `FR^sat` maps, final audit component chain, and
+host-local terminal obligations as the final-audit landing surface.
+-/
+structure ProofMdSaturatedGraphLocalRamseyIndexWindowCertificate : Type (max u v + 1) where
+  C : ℕ
+  D : ℕ
+  Row : Type u
+  Packet : Type v
+  X : Q64FRSatRawExchangeComplex Row Packet
+  r : Row
+  OrderedBoundaryAdmissible : Prop
+  CompleteSmallerQMarker : Prop
+  LocalRegularizingExit : Prop
+  ProperSubmarker : Prop
+  PrimeModuleExit : Prop
+  ClosedLocalExit : Prop
+  PrimeCycleBreaker : Prop
+  SignLaw : Prop
+  OneCornerLift : Prop
+  CompensatorRouting : Prop
+  GlobalBridge : Prop
+  hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow C
+  hchain :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r)
+        ProperSubmarker PrimeModuleExit ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+      GlobalBridge
+  hmaps :
+    Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker ClosedLocalExit
+
+/-- The Ramsey-index graph-local saturated proof-md certificate closes the target statement. -/
+theorem targetStatement_of_proofMdSaturatedGraphLocalRamseyIndexWindowCertificate
+    (h : ProofMdSaturatedGraphLocalRamseyIndexWindowCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_ramseyIndexWindow_terminalGraphLocalComponents_maps
+      (C := h.C) (D := h.D) (Row := h.Row) (Packet := h.Packet)
+      (X := h.X) (r := h.r)
+      (OrderedBoundaryAdmissible := h.OrderedBoundaryAdmissible)
+      (CompleteSmallerQMarker := h.CompleteSmallerQMarker)
+      (LocalRegularizingExit := h.LocalRegularizingExit)
+      (ProperSubmarker := h.ProperSubmarker)
+      (PrimeModuleExit := h.PrimeModuleExit)
+      (ClosedLocalExit := h.ClosedLocalExit)
+      (PrimeCycleBreaker := h.PrimeCycleBreaker)
+      (SignLaw := h.SignLaw)
+      (OneCornerLift := h.OneCornerLift)
+      (CompensatorRouting := h.CompensatorRouting)
+      (GlobalBridge := h.GlobalBridge)
+      h.hwindow h.hchain h.hmaps
+
+/-- A nonempty Ramsey-index graph-local saturated certificate is enough to close the target statement. -/
+theorem targetStatement_of_nonempty_proofMdSaturatedGraphLocalRamseyIndexWindowCertificate
+    (h : Nonempty ProofMdSaturatedGraphLocalRamseyIndexWindowCertificate) :
+    TargetStatement := by
+  rcases h with ⟨hcert⟩
+  exact targetStatement_of_proofMdSaturatedGraphLocalRamseyIndexWindowCertificate hcert
+
+/-- Any Ramsey-index graph-local saturated certificate must use dyadic-loss exponent beyond `1`. -/
+theorem proofMdSaturatedGraphLocalRamseyIndexWindowCertificate_C_ne_one
+    (h : ProofMdSaturatedGraphLocalRamseyIndexWindowCertificate) :
+    h.C ≠ 1 := by
+  intro hC
+  have hliftC :
+      HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift h.C :=
+    hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindow h.hwindow
+  have hinput :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+        ((2 ^ 1) ^ h.C * 5) (2 ^ 1) := by
+    have hinputOne :
+        HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+          ((2 ^ 1) ^ 1 * 5) (2 ^ 1) := by
+      norm_num
+      exact positiveFixedWitnessLiftOneCounterexample_has_mod_two
+    simpa [hC] using hinputOne
+  have hout :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph 5 4 := by
+    simpa using
+      (hliftC (n := 10) (j := 1) (m := 5) (by decide)
+        positiveFixedWitnessLiftOneCounterexampleGraph hinput)
+  exact positiveFixedWitnessLiftOneCounterexample_no_mod_four hout
+
+/--
+Ramsey-index-window version with the `m = 4` residual slice discharged by the existing
+seven-vertex finite base.  This is the sharpest currently isolated §10 dyadic field feeding the
+graph-local saturated `FR^sat` endpoint.
+-/
+theorem
+    targetStatement_of_proofMd_saturated_of_ramseyIndexWindowExceptFour_terminalGraphLocalComponents_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_ramseyIndexWindow_terminalGraphLocalComponents_maps
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (OrderedBoundaryAdmissible := OrderedBoundaryAdmissible)
+      (CompleteSmallerQMarker := CompleteSmallerQMarker)
+      (LocalRegularizingExit := LocalRegularizingExit)
+      (ProperSubmarker := ProperSubmarker)
+      (PrimeModuleExit := PrimeModuleExit)
+      (ClosedLocalExit := ClosedLocalExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindow_of_exceptFour
+        hbase hC hwindow)
+      hchain hmaps
+
+/--
+Except-four final wrapper whose audit terminal field is the saturated q-marker route from
+`proof.md` §§4--9, rather than an already-assembled graph-local obligation package.
+-/
+theorem targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_components_maps
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r) ProperSubmarker
+          PrimeModuleExit ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} (D + 1)))
+        GlobalBridge)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_ramseyIndexWindowExceptFour_terminalGraphLocalComponents_maps
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (OrderedBoundaryAdmissible := OrderedBoundaryAdmissible)
+      (CompleteSmallerQMarker := CompleteSmallerQMarker)
+      (LocalRegularizingExit := LocalRegularizingExit)
+      (ProperSubmarker := ProperSubmarker)
+      (PrimeModuleExit := PrimeModuleExit)
+      (ClosedLocalExit := ClosedLocalExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      hbase hC hwindow
+      (q64_finalAuditComponentChain_of_proofMdSaturatedQMarkerRoute (D := D) hchain)
+      hmaps
+
+/--
+Except-four final wrapper with no separate `FR^sat` branch-map assumption.  The completed saturated
+branch maps are instantiated structurally by naming the smaller/local exits as the completed branch
+events themselves.
+-/
+theorem targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_structuralFRSat
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {PrimeModuleExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r)
+          (Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r)
+          PrimeModuleExit
+          (Q64FRSatPrefixLocalFailure X.completeSupports.saturate r ∨
+            Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r))
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (Nonempty (Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} (D + 1)))
+        GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_components_maps
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (OrderedBoundaryAdmissible := False)
+      (CompleteSmallerQMarker :=
+        Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r)
+      (LocalRegularizingExit :=
+        Q64FRSatPrefixLocalFailure X.completeSupports.saturate r ∨
+          Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r)
+      (ProperSubmarker :=
+        Q64FRSatExchangeCompleteSmallerQMarker X.completeSupports.saturate r)
+      (PrimeModuleExit := PrimeModuleExit)
+      (ClosedLocalExit :=
+        Q64FRSatPrefixLocalFailure X.completeSupports.saturate r ∨
+          Q64FRSatNonzeroFirstTerminalResidue X.completeSupports.saturate r)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      hbase hC hwindow hchain
+      (q64_completedFRSatBranchClosureMaps_structural X r)
+
+/--
+Direct-component form of the structural `FR^sat` saturated endpoint.  The final audit component chain
+is built internally from the component conclusions and the proof-md saturated q-marker terminal route.
+-/
+theorem targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_directComponents
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {PrimeModuleExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C)
+    (hprimeCycleBreaker : PrimeCycleBreaker) (hsignLaw : SignLaw)
+    (honeCornerLift : OneCornerLift) (hcompensatorRouting : CompensatorRouting)
+    (hterminalRoute : Nonempty (Q64ProofMdSaturatedQMarkerTerminalRoute.{uRoute, vRoute} (D + 1)))
+    (hglobalBridge : GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_structuralFRSat
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (PrimeModuleExit := PrimeModuleExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      hbase hC hwindow
+      { primeCycleBreaker := fun _ => hprimeCycleBreaker
+        signLaw := fun _ => hsignLaw
+        oneCornerLift := fun _ => honeCornerLift
+        compensatorRouting := fun _ => hcompensatorRouting
+        betaVanishes := fun _ => hterminalRoute
+        globalBridge := fun _ => hglobalBridge }
+
+/--
+Direct-terminal-regularity form of the saturated q-marker route.  The terminal route field is compiled
+internally from the positive-dyadic terminal-regularization theorem, while the completed `FR^sat`
+branch maps remain structural.
+-/
+theorem targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_directTerminalRegularity
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {PrimeModuleExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C)
+    (hprimeCycleBreaker : PrimeCycleBreaker) (hsignLaw : SignLaw)
+    (honeCornerLift : OneCornerLift) (hcompensatorRouting : CompensatorRouting)
+    (hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1))
+    (hglobalBridge : GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_directComponents.{0, 0}
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (PrimeModuleExit := PrimeModuleExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      hbase hC hwindow hprimeCycleBreaker hsignLaw honeCornerLift hcompensatorRouting
+      (nonempty_q64ProofMdSaturatedQMarkerTerminalRoute_of_positiveDyadicTerminalRegularization.{0, 0}
+        hterminal)
+      hglobalBridge
+
+/--
+Host-local terminal-obligation form of the direct saturated q-marker route.  Existing graph-local
+Section 9 obligations are compiled back into the nonempty proof-md saturated terminal route.
+-/
+theorem targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_directGraphLocalTerminal
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {PrimeModuleExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C)
+    (hprimeCycleBreaker : PrimeCycleBreaker) (hsignLaw : SignLaw)
+    (honeCornerLift : OneCornerLift) (hcompensatorRouting : CompensatorRouting)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+    (hglobalBridge : GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_directComponents.{0, 0}
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (PrimeModuleExit := PrimeModuleExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      hbase hC hwindow hprimeCycleBreaker hsignLaw honeCornerLift hcompensatorRouting
+      (nonempty_q64ProofMdSaturatedQMarkerTerminalRoute_of_graphLocalObligations.{0, 0}
+        hterminalGraphLocal.some)
+      hglobalBridge
+
+/--
+Final saturated route using the first narrowed dyadic residual: after the arithmetic closures of
+`m = 3` and `m = 4`, it is enough to prove the Ramsey-index window for target sizes `m ≥ 5`.
+-/
+theorem targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowAtLeastFive_directGraphLocalTerminal
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {PrimeModuleExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 5)
+    (hprimeCycleBreaker : PrimeCycleBreaker) (hsignLaw : SignLaw)
+    (honeCornerLift : OneCornerLift) (hcompensatorRouting : CompensatorRouting)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+    (hglobalBridge : GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_directGraphLocalTerminal
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (PrimeModuleExit := PrimeModuleExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      hbase hC
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_of_atLeastFive
+        hC hwindow)
+      hprimeCycleBreaker hsignLaw honeCornerLift hcompensatorRouting hterminalGraphLocal
+      hglobalBridge
+
+/--
+For loss exponent at least four, the `m = 5` residual is arithmetically empty, so the final
+saturated endpoint only needs the dyadic Ramsey-index window for `m ≥ 6`.
+-/
+theorem
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowAtLeastSix_directGraphLocalTerminal
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {PrimeModuleExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 4 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 6)
+    (hprimeCycleBreaker : PrimeCycleBreaker) (hsignLaw : SignLaw)
+    (honeCornerLift : OneCornerLift) (hcompensatorRouting : CompensatorRouting)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+    (hglobalBridge : GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_directGraphLocalTerminal
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (PrimeModuleExit := PrimeModuleExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      hbase (lt_of_lt_of_le (by decide : 0 < 4) hC)
+      ((hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSix_of_four_le
+        (C := C) hC).mpr hwindow)
+      hprimeCycleBreaker hsignLaw honeCornerLift hcompensatorRouting hterminalGraphLocal
+      hglobalBridge
+
+/--
+For loss exponent at least six, the arithmetic closures remove the residual targets through `m = 6`;
+the final saturated endpoint only needs the dyadic Ramsey-index window for `m ≥ 7`.
+-/
+theorem
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowAtLeastSeven_directGraphLocalTerminal
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {PrimeModuleExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 6 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 7)
+    (hprimeCycleBreaker : PrimeCycleBreaker) (hsignLaw : SignLaw)
+    (honeCornerLift : OneCornerLift) (hcompensatorRouting : CompensatorRouting)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+    (hglobalBridge : GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_directGraphLocalTerminal
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (PrimeModuleExit := PrimeModuleExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      hbase (lt_of_lt_of_le (by decide : 0 < 6) hC)
+      ((hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSeven_of_six_le
+        (C := C) hC).mpr hwindow)
+      hprimeCycleBreaker hsignLaw honeCornerLift hcompensatorRouting hterminalGraphLocal
+      hglobalBridge
+
+/--
+For loss exponent at least eight, the generic arithmetic cutoff removes the residual target `m = 7`;
+the final saturated endpoint only needs the dyadic Ramsey-index window for `m ≥ 8`.
+-/
+theorem
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowAtLeastEight_directGraphLocalTerminal
+    {C D : ℕ} {Row Packet : Type*} (X : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {PrimeModuleExit PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hbase : SevenVertexFourRegularBaseCase) (hC : 8 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 8)
+    (hprimeCycleBreaker : PrimeCycleBreaker) (hsignLaw : SignLaw)
+    (honeCornerLift : OneCornerLift) (hcompensatorRouting : CompensatorRouting)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+    (hglobalBridge : GlobalBridge) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturatedQMarkerRoute_of_ramseyIndexWindowExceptFour_directGraphLocalTerminal
+      (C := C) (D := D) (Row := Row) (Packet := Packet) (X := X) (r := r)
+      (PrimeModuleExit := PrimeModuleExit)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (GlobalBridge := GlobalBridge)
+      hbase (lt_of_lt_of_le (by decide : 0 < 8) hC)
+      ((hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastEight_of_eight_le
+        (C := C) hC).mpr hwindow)
+      hprimeCycleBreaker hsignLaw honeCornerLift hcompensatorRouting hterminalGraphLocal
+      hglobalBridge
+
+/--
+Core proof-md asymptotic endpoint: the positive dyadic lift, reduced to the except-four
+Ramsey-index window, together with positive-dyadic terminal regularization already gives the target
+statement.  The saturated `FR^sat` route is therefore only needed upstream to prove the terminal field.
+-/
+theorem targetStatement_of_ramseyIndexWindowExceptFour_and_positiveDyadicTerminalRegularization
+    {C D : ℕ} (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C)
+    (hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+      (hasPolynomialCostPositiveEmptyControlDyadicLift_of_ramseyIndexWindowExceptFour
+        hbase hC hwindow)
+      hterminal
+
+/-- Host-local terminal obligations feed the core proof-md asymptotic endpoint. -/
+theorem targetStatement_of_ramseyIndexWindowExceptFour_and_terminalGraphLocalObligations
+    {C D : ℕ} (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowExceptFour_and_positiveDyadicTerminalRegularization
+      (C := C) (D := D) hbase hC hwindow
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalGraphLocalObligations
+        hterminalGraphLocal.some)
+
+/--
+Core endpoint after the arithmetic closures of `m = 3` and `m = 4`: only the `m ≥ 5` residual
+dyadic window and host-local terminal obligations remain.
+-/
+theorem targetStatement_of_ramseyIndexWindowAtLeastFive_and_terminalGraphLocalObligations
+    {C D : ℕ} (hbase : SevenVertexFourRegularBaseCase) (hC : 0 < C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 5)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowExceptFour_and_terminalGraphLocalObligations
+      (C := C) (D := D) hbase hC
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_of_atLeastFive
+        hC hwindow)
+      hterminalGraphLocal
+
+/--
+Core endpoint for loss exponent at least four: the remaining dyadic residual can start at `m ≥ 6`.
+-/
+theorem targetStatement_of_ramseyIndexWindowAtLeastSix_and_terminalGraphLocalObligations
+    {C D : ℕ} (hbase : SevenVertexFourRegularBaseCase) (hC : 4 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 6)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowExceptFour_and_terminalGraphLocalObligations
+      (C := C) (D := D) hbase (lt_of_lt_of_le (by decide : 0 < 4) hC)
+      ((hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSix_of_four_le
+        (C := C) hC).mpr hwindow)
+      hterminalGraphLocal
+
+/--
+Core endpoint for loss exponent at least six: the remaining dyadic residual can start at `m ≥ 7`.
+-/
+theorem targetStatement_of_ramseyIndexWindowAtLeastSeven_and_terminalGraphLocalObligations
+    {C D : ℕ} (hbase : SevenVertexFourRegularBaseCase) (hC : 6 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 7)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowExceptFour_and_terminalGraphLocalObligations
+      (C := C) (D := D) hbase (lt_of_lt_of_le (by decide : 0 < 6) hC)
+      ((hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSeven_of_six_le
+        (C := C) hC).mpr hwindow)
+      hterminalGraphLocal
+
+/--
+Selector-only terminal variant of the `m ≥ 7` endpoint.  It bypasses the saturated q-marker
+packaging because the finite dropped-tail selector directly gives positive terminal regularization.
+-/
+theorem targetStatement_of_ramseyIndexWindowAtLeastSeven_and_droppedTailSelector
+    {C D : ℕ} (hbase : SevenVertexFourRegularBaseCase) (hC : 6 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 7)
+    (hterminalSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlFixedWitnessDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+      (hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindowExceptFour
+        hbase (lt_of_lt_of_le (by decide : 0 < 6) hC)
+        ((hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSeven_of_six_le
+          (C := C) hC).mpr hwindow))
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_droppedTailSelector
+        hterminalSelector)
+
+/--
+Core endpoint for loss exponent at least eight: the remaining dyadic residual can start at `m ≥ 8`.
+-/
+theorem targetStatement_of_ramseyIndexWindowAtLeastEight_and_terminalGraphLocalObligations
+    {C D : ℕ} (hbase : SevenVertexFourRegularBaseCase) (hC : 8 ≤ C)
+    (hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast C 8)
+    (hterminalGraphLocal :
+      Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowExceptFour_and_terminalGraphLocalObligations
+      (C := C) (D := D) hbase (lt_of_lt_of_le (by decide : 0 < 8) hC)
+      ((hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastEight_of_eight_le
+        (C := C) hC).mpr hwindow)
+      hterminalGraphLocal
+
+/--
+Compact certificate for the current handoff endpoint: finite `q = 4` base, the `C = 6`
+Ramsey-index residual window beginning at `m ≥ 7`, and host-local terminal graph obligations.
+-/
+structure ProofMdHandoffCertificate : Type where
+  D : ℕ
+  hbase : SevenVertexFourRegularBaseCase
+  hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 7
+  hterminalGraphLocal :
+    Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1))
+
+/-- The compact handoff certificate is exactly enough to close the target statement. -/
+theorem targetStatement_of_proofMdHandoffCertificate
+    (h : ProofMdHandoffCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowAtLeastSeven_and_terminalGraphLocalObligations
+      (C := 6) (D := h.D) h.hbase (by decide) h.hwindow h.hterminalGraphLocal
+
+/--
+Concrete `FR^sat` handoff certificate: the terminal graph-local obligation is supplied by the
+dropped-tail concrete saturated terminal fields rather than as an already-assembled package.
+-/
+structure ProofMdConcreteFRSatHandoffCertificate : Type where
+  D : ℕ
+  hbase : SevenVertexFourRegularBaseCase
+  hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeast 6 7
+  hterminalFields : Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)
+
+/-- Concrete `FR^sat` terminal fields plus the dyadic handoff close the target statement. -/
+theorem targetStatement_of_proofMdConcreteFRSatHandoffCertificate
+    (h : ProofMdConcreteFRSatHandoffCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowAtLeastSeven_and_terminalGraphLocalObligations
+      (C := 6) (D := h.D) h.hbase (by decide) h.hwindow
+      (nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailConcreteFRSatTerminalFields
+        h.hterminalFields)
+
+/--
+Current sharp concrete handoff: the `C = 6` dyadic input is reduced to the large-gap residual, and
+the terminal input is the concrete dropped-tail saturated `FR^sat` field package.
+-/
+structure ProofMdConcreteFRSatLargeGapHandoffCertificate : Type where
+  D : ℕ
+  hbase : SevenVertexFourRegularBaseCase
+  hlargeGap : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7
+  hterminalFields : Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)
+
+/--
+The sharp concrete handoff certificate closes the target statement.  Remaining open fields are now
+exactly the seven-vertex finite base, the large-gap dyadic residual, and the concrete dropped-tail
+`FR^sat` terminal package.
+-/
+theorem targetStatement_of_proofMdConcreteFRSatLargeGapHandoffCertificate
+    (h : ProofMdConcreteFRSatLargeGapHandoffCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdConcreteFRSatHandoffCertificate
+      { D := h.D
+        hbase := h.hbase
+        hwindow := dyadicWindowAtLeastSeven_six_of_largeGap h.hlargeGap
+        hterminalFields := h.hterminalFields }
+
+/--
+Executable finite-base version of the sharp concrete handoff.  The seven-vertex input is the compact
+Boolean certificate from `Problem.lean`; its soundness bridge supplies `SevenVertexFourRegularBaseCase`.
+This is kept as the compatibility certificate name; the public `proof.md` handoff below exposes the
+same mathematical content as exactly the three remaining named fields.
+-/
+structure ProofMdConcreteFRSatLargeGapBoolHandoffCertificate : Type where
+  D : ℕ
+  hbaseCert :
+    ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
+  hlargeGap : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7
+  hterminalFields : Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)
+
+/--
+The Boolean finite-base compatibility handoff certificate closes the target statement.  It is
+retained for existing users; `targetStatement_of_proofMdFinalHandoff` below is the public endpoint
+with the same remaining mathematical inputs named directly.
+-/
+theorem targetStatement_of_proofMdConcreteFRSatLargeGapBoolHandoffCertificate
+    (h : ProofMdConcreteFRSatLargeGapBoolHandoffCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdConcreteFRSatLargeGapHandoffCertificate
+      { D := h.D
+        hbase := sevenVertexFourRegularBaseCase_of_boolCertificate h.hbaseCert
+        hlargeGap := h.hlargeGap
+        hterminalFields := h.hterminalFields }
+
+/--
+Graph-local concrete `FR^sat` handoff: the obstruction cut and q-marker are compiled from the
+dropped-tail nonconstant residue, leaving only packet exchange facts and closure maps at the endpoint.
+-/
+structure ProofMdConcreteFRSatGraphLocalLargeGapBoolHandoffCertificate : Type where
+  D : ℕ
+  hbaseCert :
+    ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
+  hlargeGap : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7
+  hterminalFields : Q64ProofMdDroppedTailConcreteFRSatGraphLocalFields (D + 1)
+
+/-- The graph-local concrete `FR^sat` handoff certificate closes the target statement. -/
+theorem targetStatement_of_proofMdConcreteFRSatGraphLocalLargeGapBoolHandoffCertificate
+    (h : ProofMdConcreteFRSatGraphLocalLargeGapBoolHandoffCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdConcreteFRSatLargeGapBoolHandoffCertificate
+      { D := h.D
+        hbaseCert := h.hbaseCert
+        hlargeGap := h.hlargeGap
+        hterminalFields :=
+          q64ProofMdDroppedTailConcreteFRSatTerminalFields_of_graphLocalFields h.hterminalFields }
+
+/--
+Dropped-tail selector handoff: the terminal package is reduced to the finite Section 3 selector for
+every positive dyadic terminal host.
+-/
+structure ProofMdDroppedTailSelectorLargeGapBoolHandoffCertificate : Type where
+  D : ℕ
+  hbaseCert :
+    ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
+  hlargeGap : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7
+  hterminalFields : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)
+
+/-- The dropped-tail selector handoff certificate closes the target statement. -/
+theorem targetStatement_of_proofMdDroppedTailSelectorLargeGapBoolHandoffCertificate
+    (h : ProofMdDroppedTailSelectorLargeGapBoolHandoffCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowAtLeastSeven_and_droppedTailSelector
+      (C := 6) (D := h.D)
+      (sevenVertexFourRegularBaseCase_of_boolCertificate h.hbaseCert)
+      (by decide) (dyadicWindowAtLeastSeven_six_of_largeGap h.hlargeGap) h.hterminalFields
+
+/--
+Public `proof.md` final handoff certificate.  The budget `D` is a parameter, so the certificate has
+exactly the three remaining proof fields: the seven-vertex Boolean certificate, the `C = 6`
+large-gap dyadic residual window, and the concrete dropped-tail saturated `FR^sat` terminal fields.
+
+This route follows `proof.md` by running terminal descent directly in the concrete saturated
+`FR^sat` convention.  It does not use the original path-only Theorem G, and it does not use the
+stronger terminal-cascade bridge.
+-/
+structure ProofMdFinalHandoffCertificate (D : ℕ) : Type where
+  sevenVertexBooleanCertificate :
+    ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
+  largeGapDyadicWindow :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7
+  droppedTailConcreteFRSatTerminalFields :
+    Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)
+
+/--
+Public final assembly theorem matching the handoff language.  Apart from the implicit terminal budget
+`D`, the only named inputs are:
+
+* `sevenVertexBooleanCertificate`;
+* `largeGapDyadicWindow`;
+* `droppedTailConcreteFRSatTerminalFields`.
+
+No path-only Theorem G or terminal-cascade bridge hypothesis appears here, and neither is used in the
+proof.
+-/
+theorem targetStatement_of_proofMdFinalHandoff
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (largeGapDyadicWindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdConcreteFRSatLargeGapBoolHandoffCertificate
+      { D := D
+        hbaseCert := sevenVertexBooleanCertificate
+        hlargeGap := largeGapDyadicWindow
+        hterminalFields := droppedTailConcreteFRSatTerminalFields }
+
+/--
+The current public final handoff certificate cannot be instantiated as stated: its terminal field has
+budget `D + 1`, and the concrete dropped-tail `FR^sat` terminal package is refuted for every nonzero
+budget by the `q = 8` terminal-host counterexample.
+-/
+theorem isEmpty_proofMdFinalHandoffCertificate (D : ℕ) :
+    IsEmpty (ProofMdFinalHandoffCertificate D) := by
+  refine ⟨?_⟩
+  intro h
+  exact
+    (isEmpty_q64ProofMdDroppedTailConcreteFRSatTerminalFields_of_one_le
+      (r := D + 1) (Nat.succ_le_succ (Nat.zero_le D))).false
+      h.droppedTailConcreteFRSatTerminalFields
+
+/--
+Replacement handoff after the terminal-host obstruction: keep the seven-vertex and dyadic fields, but
+ask the terminal side for the honest fixed-witness terminal regularization landing surface from
+`proof.md` Lemma 10.2 rather than the refuted arbitrary bounded-host field.
+-/
+structure ProofMdFixedWitnessTerminalRegularizationHandoffCertificate (D : ℕ) : Type where
+  sevenVertexBooleanCertificate :
+    ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
+  largeGapDyadicWindow :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7
+  terminalRegularization : HasPolynomialCostFixedWitnessTerminalRegularization D
+
+/--
+The viable terminal replacement endpoint: a polynomial fixed-witness terminal-regularization theorem,
+together with the existing finite base and large-gap dyadic residual, still closes `TargetStatement`.
+This avoids quantifying over all bounded terminal hosts, which is exactly the surface refuted by the
+`q = 8` obstruction.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_fixedWitnessTerminalRegularization
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (largeGapDyadicWindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7)
+    (terminalRegularization : HasPolynomialCostFixedWitnessTerminalRegularization D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_positiveEmptyControlFixedWitnessDyadicLift_of_polynomialCostFixedWitnessTerminalRegularization
+      (C := 6) (D := D)
+      (hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindowExceptFour
+        (sevenVertexFourRegularBaseCase_of_boolCertificate sevenVertexBooleanCertificate)
+        (by decide : 0 < 6)
+        ((hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour_iff_atLeastSeven_of_six_le
+          (C := 6) (by decide : 6 ≤ 6)).mpr
+          (dyadicWindowAtLeastSeven_six_of_largeGap largeGapDyadicWindow)))
+      terminalRegularization
+
+/-- The replacement fixed-witness terminal-regularization handoff closes the target statement. -/
+theorem targetStatement_of_proofMdFixedWitnessTerminalRegularizationHandoffCertificate
+    {D : ℕ} (h : ProofMdFixedWitnessTerminalRegularizationHandoffCertificate D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_fixedWitnessTerminalRegularization
+      h.sevenVertexBooleanCertificate h.largeGapDyadicWindow h.terminalRegularization
+
+/--
+Sharper fixed-witness terminal handoff: it is enough to produce the positive-dyadic external-block
+self-bridge.  Existing Lean reductions turn that bridge into
+`HasPolynomialCostFixedWitnessTerminalRegularization`, including the trivial `j = 0` slice.
+-/
+structure ProofMdFixedWitnessExternalBlockHandoffCertificate (D : ℕ) : Type where
+  sevenVertexBooleanCertificate :
+    ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
+  largeGapDyadicWindow :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7
+  fixedWitnessExternalBlockSelfBridge :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D
+
+/--
+Final handoff variant with the terminal side pushed to the fixed-witness external-block frontier.
+This is the terminal task that remains after the `q = 8` obstruction: produce the nonempty separated
+external-block data from a large fixed-modulus witness, rather than regularize arbitrary terminal hosts.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_fixedWitnessExternalBlockSelfBridge
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (largeGapDyadicWindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7)
+    (fixedWitnessExternalBlockSelfBridge :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_fixedWitnessTerminalRegularization
+      sevenVertexBooleanCertificate largeGapDyadicWindow
+      (hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+        fixedWitnessExternalBlockSelfBridge)
+
+/-- The fixed-witness external-block handoff certificate closes the target statement. -/
+theorem targetStatement_of_proofMdFixedWitnessExternalBlockHandoffCertificate
+    {D : ℕ} (h : ProofMdFixedWitnessExternalBlockHandoffCertificate D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_fixedWitnessExternalBlockSelfBridge
+      h.sevenVertexBooleanCertificate h.largeGapDyadicWindow
+      h.fixedWitnessExternalBlockSelfBridge
+
+/--
+Sharper public handoff variant: the arithmetic half-bound reduces the dyadic input further to the
+strict residual `2m < 2^d`, packaged as
+`HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap 7`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_twiceLargeGap
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (twiceLargeGapDyadicWindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap 7)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff
+      sevenVertexBooleanCertificate
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap_of_twiceLargeGap
+        (M := 7) twiceLargeGapDyadicWindow)
+      droppedTailConcreteFRSatTerminalFields
+
+/--
+Public final handoff with the dyadic frontier split into the first-bit loss-64 lift and the strict
+higher-bit residual starting at `m = 10`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (parityToModFourLoss64Lift : HasParityToModFourLoss64FixedWitnessLift)
+    (twiceLargeGapJAtLeastTwoFromTen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdConcreteFRSatHandoffCertificate
+      { D := D
+        hbase := sevenVertexFourRegularBaseCase_of_boolCertificate sevenVertexBooleanCertificate
+        hwindow :=
+          dyadicWindowAtLeastSeven_six_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+            parityToModFourLoss64Lift twiceLargeGapJAtLeastTwoFromTen
+        hterminalFields := droppedTailConcreteFRSatTerminalFields }
+
+/--
+Public final handoff after isolating the first dyadic bit and the first higher-bit finite case
+`m = 10`, `j = 2`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_parityToModFourLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (parityToModFourLoss64Lift : HasParityToModFourLoss64FixedWitnessLift)
+    (fourToEightTargetTen : HasFourToEightTargetTenFixedWitnessLift)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdConcreteFRSatHandoffCertificate
+      { D := D
+        hbase := sevenVertexFourRegularBaseCase_of_boolCertificate sevenVertexBooleanCertificate
+        hwindow :=
+          dyadicWindowAtLeastSeven_six_of_parityToModFourLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+            parityToModFourLoss64Lift fourToEightTargetTen twiceLargeGapJAtLeastTwoFromEleven
+        hterminalFields := droppedTailConcreteFRSatTerminalFields }
+
+/--
+Same handoff, using a Ramsey-10 certificate to close the isolated `m = 10`, `j = 2` finite target.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_parityToModFourLoss64_and_ramseyTenRegular_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (parityToModFourLoss64Lift : HasParityToModFourLoss64FixedWitnessLift)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_parityToModFourLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+      sevenVertexBooleanCertificate parityToModFourLoss64Lift
+      (hasFourToEightTargetTenFixedWitnessLift_of_ramseyTenRegularAtDyadicTarget
+        ramseyTenRegular)
+      twiceLargeGapJAtLeastTwoFromEleven droppedTailConcreteFRSatTerminalFields
+
+/--
+Same final handoff, but replacing the first-bit lift by the stronger finite theorem that every induced
+set has a `1/64`-large all-`0 mod 4` induced subgraph.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLoss64 : HasModFourZeroLoss64InducedSubgraph)
+    (twiceLargeGapJAtLeastTwoFromTen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+      sevenVertexBooleanCertificate
+      (hasParityToModFourLoss64FixedWitnessLift_of_modFourZeroLoss64InducedSubgraph
+        modFourZeroLoss64)
+      twiceLargeGapJAtLeastTwoFromTen droppedTailConcreteFRSatTerminalFields
+
+/--
+Same final handoff with the stronger all-`0 mod 4` first-bit theorem and the isolated finite
+`m = 10`, `j = 2` higher-bit target.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLoss64 : HasModFourZeroLoss64InducedSubgraph)
+    (fourToEightTargetTen : HasFourToEightTargetTenFixedWitnessLift)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_parityToModFourLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+      sevenVertexBooleanCertificate
+      (hasParityToModFourLoss64FixedWitnessLift_of_modFourZeroLoss64InducedSubgraph
+        modFourZeroLoss64)
+      fourToEightTargetTen twiceLargeGapJAtLeastTwoFromEleven
+      droppedTailConcreteFRSatTerminalFields
+
+/--
+Same final handoff with the stronger all-`0 mod 4` first-bit theorem and a Ramsey-10 certificate for
+the isolated `m = 10`, `j = 2` higher-bit target.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLoss64_and_ramseyTenRegular_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLoss64 : HasModFourZeroLoss64InducedSubgraph)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_modFourZeroLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+      sevenVertexBooleanCertificate modFourZeroLoss64
+      (hasFourToEightTargetTenFixedWitnessLift_of_ramseyTenRegularAtDyadicTarget
+        ramseyTenRegular)
+      twiceLargeGapJAtLeastTwoFromEleven droppedTailConcreteFRSatTerminalFields
+
+/--
+Same final handoff using the sharper loss-5 all-`0 mod 4` finite theorem for the first bit.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenRegular_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_modFourZeroLoss64_and_ramseyTenRegular_and_twiceLargeGapJAtLeastTwoFromEleven
+      sevenVertexBooleanCertificate
+      (hasModFourZeroLoss64InducedSubgraph_of_modFourZeroLossFiveInducedSubgraph
+        modFourZeroLossFive)
+      ramseyTenRegular twiceLargeGapJAtLeastTwoFromEleven droppedTailConcreteFRSatTerminalFields
+
+/--
+Strongest concrete handoff after removing the high-modulus terminal slice from the higher-bit
+residual.  The remaining dyadic residual now explicitly assumes `2^j < m`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenRegular_and_terminalFields_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11)
+    (droppedTailConcreteFRSatTerminalFields :
+      Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)) :
+    TargetStatement := by
+  have hterminal :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization (D + 1) :=
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization_of_q64TerminalGraphLocalObligations
+      (nonempty_q64PositiveDyadicTerminalGraphLocalObligations_of_droppedTailConcreteFRSatTerminalFields
+        droppedTailConcreteFRSatTerminalFields).some
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenRegular_and_twiceLargeGapJAtLeastTwoFromEleven
+      sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenRegular
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_of_terminalRegularization_and_smallModulus
+        (M := 11) (r := D + 1) (Nat.succ_le_succ (Nat.zero_le D)) hterminal
+        twiceLargeGapJAtLeastTwoSmallModulusFromEleven)
+      droppedTailConcreteFRSatTerminalFields
+
+/--
+Strongest viable handoff with the refuted bounded-host terminal fields removed.  The remaining
+assumptions are the seven-vertex Boolean certificate, the loss-5 mod-4 theorem, the Ramsey-10
+certificate, the honest `D = 5` fixed-witness terminal regularization, and the small-modulus
+higher-bit dyadic residual.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenRegular_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (terminalRegularizationFive : HasPolynomialCostFixedWitnessTerminalRegularization 5)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11) :
+    TargetStatement := by
+  have hrestEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_of_fixedWitnessTerminalRegularizationFive_and_smallModulus
+      terminalRegularizationFive twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+  have hrestTen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_ten
+      (hasFourToEightTargetTenFixedWitnessLift_of_ramseyTenRegularAtDyadicTarget ramseyTenRegular)
+      hrestEleven
+  have htwiceSeven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap 7 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap_of_parityToModFourLoss64_and_jAtLeastTwo
+      (M := 7)
+      (hasParityToModFourLoss64FixedWitnessLift_of_modFourZeroLossFiveInducedSubgraph
+        modFourZeroLossFive)
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_seven_of_ten
+        hrestTen)
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_fixedWitnessTerminalRegularization
+      sevenVertexBooleanCertificate
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap_of_twiceLargeGap
+        htwiceSeven)
+      terminalRegularizationFive
+
+/--
+Same strongest viable handoff, with the terminal assumption pushed to the fixed-witness
+external-block frontier.  This is the terminal-facing version to use while avoiding the refuted
+bounded-host terminal packages.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenRegular_and_fixedWitnessExternalBlockSelfBridgeFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenRegular_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenRegular
+    (hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+      fixedWitnessExternalBlockSelfBridgeFive)
+    twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+
+/--
+Same strongest viable handoff, with the Ramsey-10 input reduced to a small off-diagonal Ramsey
+table: `R(4,5) <= 26`.  The `R(3,k)` row is supplied by the generic binomial Ramsey
+bound, and `R(5,5) <= 52` then follows by the Ramsey recurrence.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (terminalRegularizationFive : HasPolynomialCostFixedWitnessTerminalRegularization 5)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenRegular_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    sevenVertexBooleanCertificate modFourZeroLossFive
+    (hasRamseyTenRegularAtDyadicTarget_of_ramseyTenSmallTable ramseyTenSmallTable)
+    terminalRegularizationFive twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+
+/--
+Strongest current viable handoff: Ramsey-10 is reduced to the small off-diagonal table, and the
+terminal side is reduced to the fixed-witness external-block self-bridge frontier.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenSmallTable
+    (hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+      fixedWitnessExternalBlockSelfBridgeFive)
+    twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+
+/--
+Handoff after also isolating the first live small-modulus case `m = 11, j = 2` as a finite
+`4 -> 8` target.  The infinite higher-bit residual starts at `m >= 12`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetEleven_and_twiceLargeGapJAtLeastTwoSmallModulusFromTwelve
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (fourToEightTargetEleven : HasFourToEightTargetElevenFixedWitnessLift)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromTwelve :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 12) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenSmallTable
+    fixedWitnessExternalBlockSelfBridgeFive
+    (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven
+      fourToEightTargetEleven twiceLargeGapJAtLeastTwoSmallModulusFromTwelve)
+
+/--
+Handoff after isolating the next small-modulus case too.  The remaining infinite higher-bit
+residual starts at `m >= 13`; the newly exposed finite case is `m = 12, j = 2`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetEleven_and_fourToEightTargetTwelve_and_twiceLargeGapJAtLeastTwoSmallModulusFromThirteen
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (fourToEightTargetEleven : HasFourToEightTargetElevenFixedWitnessLift)
+    (fourToEightTargetTwelve : HasFourToEightTargetTwelveFixedWitnessLift)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromThirteen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetEleven_and_twiceLargeGapJAtLeastTwoSmallModulusFromTwelve
+    sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenSmallTable
+    fixedWitnessExternalBlockSelfBridgeFive fourToEightTargetEleven
+    (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_twelve
+      fourToEightTargetTwelve twiceLargeGapJAtLeastTwoSmallModulusFromThirteen)
+
+/--
+Handoff after also isolating all small-modulus cases with `13 <= m < 17`.  These expose exact
+finite dyadic-step targets for `j = 2, 3` and `m = 13, 14, 15, 16`; the remaining infinite
+higher-bit residual starts at `m >= 17`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetsToSixteen_and_twiceLargeGapJAtLeastTwoSmallModulusFromSeventeen
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (fourToEightTargetEleven : HasFourToEightTargetElevenFixedWitnessLift)
+    (fourToEightTargetTwelve : HasFourToEightTargetTwelveFixedWitnessLift)
+    (h13_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 13)
+    (h14_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 14)
+    (h14_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 14)
+    (h15_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 15)
+    (h15_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 15)
+    (h16_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 16)
+    (h16_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 16)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromSeventeen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 17) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetEleven_and_fourToEightTargetTwelve_and_twiceLargeGapJAtLeastTwoSmallModulusFromThirteen
+    sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenSmallTable
+    fixedWitnessExternalBlockSelfBridgeFive fourToEightTargetEleven fourToEightTargetTwelve
+    (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen
+      h13_2 h14_2 h14_3 h15_2 h15_3 h16_2 h16_3
+      twiceLargeGapJAtLeastTwoSmallModulusFromSeventeen)
+
+/--
+Same handoff, but with the remaining infinite `m >= 17` higher-bit residual expressed as the affine
+cross-selector target.  This is the current Lean-facing dyadic-lift attack surface: after choosing the
+retained bucket `u`, prove the ambient top bit on the old witness support cancels against the dropped
+tail `s \ u` modulo the next dyadic modulus.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetsToSixteen_and_affineCrossSelectorFromSeventeen
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (fourToEightTargetEleven : HasFourToEightTargetElevenFixedWitnessLift)
+    (fourToEightTargetTwelve : HasFourToEightTargetTwelveFixedWitnessLift)
+    (h13_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 13)
+    (h14_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 14)
+    (h14_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 14)
+    (h15_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 15)
+    (h15_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 15)
+    (h16_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 16)
+    (h16_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 16)
+    (affineCrossSelectorFromSeventeen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulusAffineCrossSelector 17) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetsToSixteen_and_twiceLargeGapJAtLeastTwoSmallModulusFromSeventeen
+    sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenSmallTable
+    fixedWitnessExternalBlockSelfBridgeFive fourToEightTargetEleven fourToEightTargetTwelve
+    h13_2 h14_2 h14_3 h15_2 h15_3 h16_2 h16_3
+    (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
+      affineCrossSelectorFromSeventeen)
+
+/-- The named-field final handoff certificate closes the target statement. -/
+theorem targetStatement_of_proofMdFinalHandoffCertificate
+    {D : ℕ} (h : ProofMdFinalHandoffCertificate D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff
+      h.sevenVertexBooleanCertificate h.largeGapDyadicWindow
+      h.droppedTailConcreteFRSatTerminalFields
+
+/-- A nonempty final handoff certificate is enough to close the target statement. -/
+theorem targetStatement_of_nonempty_proofMdFinalHandoffCertificate
+    {D : ℕ} (h : Nonempty (ProofMdFinalHandoffCertificate D)) :
+    TargetStatement := by
+  rcases h with ⟨hcert⟩
+  exact targetStatement_of_proofMdFinalHandoffCertificate hcert
+
+/--
+Named-field version of the sharper strict-gap handoff.  This is the current smallest dyadic
+residual exposed by the formal assembly.
+-/
+structure ProofMdFinalTwiceLargeGapHandoffCertificate (D : ℕ) : Type where
+  sevenVertexBooleanCertificate :
+    ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
+  twiceLargeGapDyadicWindow :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap 7
+  droppedTailConcreteFRSatTerminalFields :
+    Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1)
+
+/-- The named-field strict-gap final handoff certificate closes the target statement. -/
+theorem targetStatement_of_proofMdFinalTwiceLargeGapHandoffCertificate
+    {D : ℕ} (h : ProofMdFinalTwiceLargeGapHandoffCertificate D) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_twiceLargeGap
+      h.sevenVertexBooleanCertificate h.twiceLargeGapDyadicWindow
+      h.droppedTailConcreteFRSatTerminalFields
+
+/-- A nonempty strict-gap final handoff certificate is enough to close the target statement. -/
+theorem targetStatement_of_nonempty_proofMdFinalTwiceLargeGapHandoffCertificate
+    {D : ℕ} (h : Nonempty (ProofMdFinalTwiceLargeGapHandoffCertificate D)) :
+    TargetStatement := by
+  rcases h with ⟨hcert⟩
+  exact targetStatement_of_proofMdFinalTwiceLargeGapHandoffCertificate hcert
+
+/--
+Nonempty-terminal-fields variant of the public final handoff.  This is useful when the concrete
+`FR^sat` terminal field package is produced as a `Nonempty` certificate.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_nonemptyTerminalFields
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (largeGapDyadicWindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7)
+    (droppedTailConcreteFRSatTerminalFields :
+      Nonempty (Q64ProofMdDroppedTailConcreteFRSatTerminalFields (D + 1))) :
+    TargetStatement := by
+  rcases droppedTailConcreteFRSatTerminalFields with ⟨hfields⟩
+  exact
+    targetStatement_of_proofMdFinalHandoff
+      sevenVertexBooleanCertificate largeGapDyadicWindow hfields
+
+/--
+Selector-terminal variant of the public final handoff.  This is the Section 2--3 terminal
+regularity route before compiling the selector into the concrete saturated `FR^sat` field package.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (largeGapDyadicWindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7)
+    (droppedTailSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowAtLeastSeven_and_droppedTailSelector
+      (C := 6) (D := D)
+      (sevenVertexFourRegularBaseCase_of_boolCertificate sevenVertexBooleanCertificate)
+      (by decide) (dyadicWindowAtLeastSeven_six_of_largeGap largeGapDyadicWindow)
+      droppedTailSelector
+
+/-- Strict-gap variant of the selector-terminal public final handoff. -/
+theorem targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_twiceLargeGap
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (twiceLargeGapDyadicWindow :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap 7)
+    (droppedTailSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowAtLeastSeven_and_droppedTailSelector
+      (C := 6) (D := D)
+      (sevenVertexFourRegularBaseCase_of_boolCertificate sevenVertexBooleanCertificate)
+      (by decide) (dyadicWindowAtLeastSeven_six_of_twiceLargeGap twiceLargeGapDyadicWindow)
+      droppedTailSelector
+
+/-- Selector-terminal variant with the dyadic frontier split at the first bit and `j ≥ 2, m ≥ 10`. -/
+theorem targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (parityToModFourLoss64Lift : HasParityToModFourLoss64FixedWitnessLift)
+    (twiceLargeGapJAtLeastTwoFromTen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10)
+    (droppedTailSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowAtLeastSeven_and_droppedTailSelector
+      (C := 6) (D := D)
+      (sevenVertexFourRegularBaseCase_of_boolCertificate sevenVertexBooleanCertificate)
+      (by decide)
+      (dyadicWindowAtLeastSeven_six_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+        parityToModFourLoss64Lift twiceLargeGapJAtLeastTwoFromTen)
+      droppedTailSelector
+
+/--
+Selector-terminal variant after isolating the first dyadic bit and the finite `m = 10`, `j = 2`
+higher-bit case.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_parityToModFourLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (parityToModFourLoss64Lift : HasParityToModFourLoss64FixedWitnessLift)
+    (fourToEightTargetTen : HasFourToEightTargetTenFixedWitnessLift)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_ramseyIndexWindowAtLeastSeven_and_droppedTailSelector
+      (C := 6) (D := D)
+      (sevenVertexFourRegularBaseCase_of_boolCertificate sevenVertexBooleanCertificate)
+      (by decide)
+      (dyadicWindowAtLeastSeven_six_of_parityToModFourLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+        parityToModFourLoss64Lift fourToEightTargetTen twiceLargeGapJAtLeastTwoFromEleven)
+      droppedTailSelector
+
+/--
+Selector-terminal variant using a Ramsey-10 certificate to close the isolated `m = 10`, `j = 2`
+higher-bit case.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_parityToModFourLoss64_and_ramseyTenRegular_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (parityToModFourLoss64Lift : HasParityToModFourLoss64FixedWitnessLift)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_parityToModFourLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+      sevenVertexBooleanCertificate parityToModFourLoss64Lift
+      (hasFourToEightTargetTenFixedWitnessLift_of_ramseyTenRegularAtDyadicTarget
+        ramseyTenRegular)
+      twiceLargeGapJAtLeastTwoFromEleven droppedTailSelector
+
+/--
+Selector-terminal variant using the stronger finite all-`0 mod 4` loss-64 theorem for the first bit.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_modFourZeroLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLoss64 : HasModFourZeroLoss64InducedSubgraph)
+    (twiceLargeGapJAtLeastTwoFromTen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10)
+    (droppedTailSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_parityToModFourLoss64_and_twiceLargeGapJAtLeastTwoFromTen
+      sevenVertexBooleanCertificate
+      (hasParityToModFourLoss64FixedWitnessLift_of_modFourZeroLoss64InducedSubgraph
+        modFourZeroLoss64)
+      twiceLargeGapJAtLeastTwoFromTen droppedTailSelector
+
+/--
+Selector-terminal variant using the stronger all-`0 mod 4` first-bit theorem and the isolated finite
+`m = 10`, `j = 2` higher-bit target.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_modFourZeroLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLoss64 : HasModFourZeroLoss64InducedSubgraph)
+    (fourToEightTargetTen : HasFourToEightTargetTenFixedWitnessLift)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_parityToModFourLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+      sevenVertexBooleanCertificate
+      (hasParityToModFourLoss64FixedWitnessLift_of_modFourZeroLoss64InducedSubgraph
+        modFourZeroLoss64)
+      fourToEightTargetTen twiceLargeGapJAtLeastTwoFromEleven droppedTailSelector
+
+/--
+Selector-terminal variant using the stronger all-`0 mod 4` first-bit theorem and a Ramsey-10
+certificate for the isolated `m = 10`, `j = 2` higher-bit target.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_modFourZeroLoss64_and_ramseyTenRegular_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLoss64 : HasModFourZeroLoss64InducedSubgraph)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_modFourZeroLoss64_and_fourToEightTargetTen_and_twiceLargeGapJAtLeastTwoFromEleven
+      sevenVertexBooleanCertificate modFourZeroLoss64
+      (hasFourToEightTargetTenFixedWitnessLift_of_ramseyTenRegularAtDyadicTarget
+        ramseyTenRegular)
+      twiceLargeGapJAtLeastTwoFromEleven droppedTailSelector
+
+/--
+Selector-terminal variant using the sharper loss-5 all-`0 mod 4` finite theorem for the first bit.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_modFourZeroLossFive_and_ramseyTenRegular_and_twiceLargeGapJAtLeastTwoFromEleven
+    {D : ℕ}
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (twiceLargeGapJAtLeastTwoFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11)
+    (droppedTailSelector : Q64ProofMdDroppedTailSelectorTerminalFields (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_droppedTailSelector_of_modFourZeroLoss64_and_ramseyTenRegular_and_twiceLargeGapJAtLeastTwoFromEleven
+      sevenVertexBooleanCertificate
+      (hasModFourZeroLoss64InducedSubgraph_of_modFourZeroLossFiveInducedSubgraph
+        modFourZeroLossFive)
+      ramseyTenRegular twiceLargeGapJAtLeastTwoFromEleven droppedTailSelector
+
+/-- Compatibility nonempty variant for the previous executable finite-base handoff certificate. -/
+theorem targetStatement_of_nonempty_proofMdConcreteFRSatLargeGapBoolHandoffCertificate
+    (h : Nonempty ProofMdConcreteFRSatLargeGapBoolHandoffCertificate) :
+    TargetStatement := by
+  rcases h with ⟨hcert⟩
+  exact targetStatement_of_proofMdConcreteFRSatLargeGapBoolHandoffCertificate hcert
+
+/-
+The remaining saturated/path-only and terminal-cascade landing surfaces below are retained as
+compatibility wrappers for older assembly routes.  The public final `proof.md` endpoint above does not
+depend on the path-only Theorem G or on any terminal-cascade bridge.
+-/
+
+/--
+No-argument certificate matching the saturated proof-md route after removing the target-size-four
+dyadic branch through `SevenVertexFourRegularBaseCase`.
+-/
+structure ProofMdSaturatedGraphLocalRamseyIndexWindowExceptFourCertificate :
+    Type (max u v + 1) where
+  C : ℕ
+  D : ℕ
+  Row : Type u
+  Packet : Type v
+  X : Q64FRSatRawExchangeComplex Row Packet
+  r : Row
+  OrderedBoundaryAdmissible : Prop
+  CompleteSmallerQMarker : Prop
+  LocalRegularizingExit : Prop
+  ProperSubmarker : Prop
+  PrimeModuleExit : Prop
+  ClosedLocalExit : Prop
+  PrimeCycleBreaker : Prop
+  SignLaw : Prop
+  OneCornerLift : Prop
+  CompensatorRouting : Prop
+  GlobalBridge : Prop
+  hbase : SevenVertexFourRegularBaseCase
+  hC : 0 < C
+  hwindow : HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowExceptFour C
+  hchain :
+    Q64FinalAuditComponentChain
+      (Q64QMarkerCarrierMarkerCoupling (X.completeSupports.saturate.splitter r)
+        ProperSubmarker PrimeModuleExit ClosedLocalExit)
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      (Nonempty (Q64PositiveDyadicTerminalGraphLocalObligations (D + 1)))
+      GlobalBridge
+  hmaps :
+    Q64CompletedFRSatBranchClosureMaps X r OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker ClosedLocalExit
+
+/-- The except-four graph-local saturated proof-md certificate closes the target statement. -/
+theorem targetStatement_of_proofMdSaturatedGraphLocalRamseyIndexWindowExceptFourCertificate
+    (h : ProofMdSaturatedGraphLocalRamseyIndexWindowExceptFourCertificate) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMd_saturated_of_ramseyIndexWindowExceptFour_terminalGraphLocalComponents_maps
+      (C := h.C) (D := h.D) (Row := h.Row) (Packet := h.Packet)
+      (X := h.X) (r := h.r)
+      (OrderedBoundaryAdmissible := h.OrderedBoundaryAdmissible)
+      (CompleteSmallerQMarker := h.CompleteSmallerQMarker)
+      (LocalRegularizingExit := h.LocalRegularizingExit)
+      (ProperSubmarker := h.ProperSubmarker)
+      (PrimeModuleExit := h.PrimeModuleExit)
+      (ClosedLocalExit := h.ClosedLocalExit)
+      (PrimeCycleBreaker := h.PrimeCycleBreaker)
+      (SignLaw := h.SignLaw)
+      (OneCornerLift := h.OneCornerLift)
+      (CompensatorRouting := h.CompensatorRouting)
+      (GlobalBridge := h.GlobalBridge)
+      h.hbase h.hC h.hwindow h.hchain h.hmaps
+
+/-- A nonempty except-four graph-local saturated certificate is enough to close the target statement. -/
+theorem targetStatement_of_nonempty_proofMdSaturatedGraphLocalRamseyIndexWindowExceptFourCertificate
+    (h : Nonempty ProofMdSaturatedGraphLocalRamseyIndexWindowExceptFourCertificate) :
+    TargetStatement := by
+  rcases h with ⟨hcert⟩
+  exact targetStatement_of_proofMdSaturatedGraphLocalRamseyIndexWindowExceptFourCertificate hcert
+
+/-- Any except-four saturated certificate still needs dyadic-loss exponent beyond `1`. -/
+theorem proofMdSaturatedGraphLocalRamseyIndexWindowExceptFourCertificate_C_ne_one
+    (h : ProofMdSaturatedGraphLocalRamseyIndexWindowExceptFourCertificate) :
+    h.C ≠ 1 := by
+  intro hC
+  have hliftC :
+      HasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift h.C :=
+    hasPolynomialCostPositiveEmptyControlFixedWitnessDyadicLift_of_ramseyIndexWindowExceptFour
+      h.hbase (C := h.C) h.hC h.hwindow
+  have hinput :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+        ((2 ^ 1) ^ h.C * 5) (2 ^ 1) := by
+    have hinputOne :
+        HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph
+          ((2 ^ 1) ^ 1 * 5) (2 ^ 1) := by
+      norm_num
+      exact positiveFixedWitnessLiftOneCounterexample_has_mod_two
+    simpa [hC] using hinputOne
+  have hout :
+      HasFixedModulusWitnessOfCard positiveFixedWitnessLiftOneCounterexampleGraph 5 4 := by
+    simpa using
+      (hliftC (n := 10) (j := 1) (m := 5) (by decide)
+        positiveFixedWitnessLiftOneCounterexampleGraph hinput)
+  exact positiveFixedWitnessLiftOneCounterexample_no_mod_four hout
+
+/--
+End-to-end route inside the canonical saturated first-return convention, where `proof.md` now places the
+saturated provenance/support-decrease theorem.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_in_canonicalSaturatedFirstReturnConvention
+    {CanonicalSaturatedConvention FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hcanon :
+      Q64CanonicalSaturatedProvenanceTheorem CanonicalSaturatedConvention FullySkewSplitter
+        PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker)
+    (hcanonical : CanonicalSaturatedConvention)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_in_canonicalSaturatedFirstReturnConvention hcanon hcanonical hprefix
+            hnonzero hsmall hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+Canonical saturated first-return convention with the honest dyadic beta-up-to endpoint.  This is the
+current `proof.md` landing surface: saturated provenance gives carrier/marker coupling, and the final
+audit emits the all-bits beta refinement bridge.
+-/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChain_in_canonicalSaturatedFirstReturnConvention_via_dyadicBetaUpTo
+    {C D : ℕ}
+    {CanonicalSaturatedConvention FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcanon :
+      Q64CanonicalSaturatedProvenanceTheorem CanonicalSaturatedConvention FullySkewSplitter
+        PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker)
+    (hcanonical : CanonicalSaturatedConvention)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_in_canonicalSaturatedFirstReturnConvention hcanon hcanonical hprefix
+            hnonzero hsmall hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+Canonical saturated first-return convention with the terminal dyadic endpoint from the current
+`proof.md` route.
+-/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChain_in_canonicalSaturatedFirstReturnConvention_via_dyadicTerminal
+    {C D : ℕ}
+    {CanonicalSaturatedConvention FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcanon :
+      Q64CanonicalSaturatedProvenanceTheorem CanonicalSaturatedConvention FullySkewSplitter
+        PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker)
+    (hcanonical : CanonicalSaturatedConvention)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicTerminal hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_in_canonicalSaturatedFirstReturnConvention hcanon hcanonical hprefix
+            hnonzero hsmall hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+Canonical saturated first-return convention with the updated terminal-cascade endpoint from `proof.md`:
+saturated provenance gives carrier/marker coupling, and the final audit emits exactly the bridge used by
+the dyadic threshold argument.
+-/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChain_in_canonicalSaturatedFirstReturnConvention_via_dyadicStepTerminalCascade
+    {C D : ℕ}
+    {CanonicalSaturatedConvention FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcanon :
+      Q64CanonicalSaturatedProvenanceTheorem CanonicalSaturatedConvention FullySkewSplitter
+        PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker)
+    (hcanonical : CanonicalSaturatedConvention)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_dyadicStepTerminalCascade hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_in_canonicalSaturatedFirstReturnConvention hcanon hcanonical hprefix
+            hnonzero hsmall hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+Positive-lift canonical saturated first-return route with the updated terminal-cascade endpoint.
+-/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChain_in_canonicalSaturatedFirstReturnConvention_via_positiveDyadicStepTerminalCascade
+    {C D : ℕ}
+    {CanonicalSaturatedConvention FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcanon :
+      Q64CanonicalSaturatedProvenanceTheorem CanonicalSaturatedConvention FullySkewSplitter
+        PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker)
+    (hcanonical : CanonicalSaturatedConvention)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicStepTerminalCascade
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_in_canonicalSaturatedFirstReturnConvention hcanon hcanonical hprefix
+            hnonzero hsmall hskew)
+        hadmissible hsmaller hlocal)
+
+/--
+Canonical saturated first-return route with the corrected positive dyadic lift and the exact
+positive-dyadic terminal-regularization endpoint.
+-/
+theorem
+    targetStatement_of_q64FinalAuditConditionalChain_in_canonicalSaturatedFirstReturnConvention_via_positiveDyadicTerminalRegularization
+    {C D : ℕ}
+    {CanonicalSaturatedConvention FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostPositiveEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization
+          (D + 1))
+        GlobalBridge)
+    (hcanon :
+      Q64CanonicalSaturatedProvenanceTheorem CanonicalSaturatedConvention FullySkewSplitter
+        PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker)
+    (hcanonical : CanonicalSaturatedConvention)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain_via_positiveDyadicTerminalRegularizationLanding_posLift
+      hlift hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+        (fun hskew =>
+          q64_theoremG_in_canonicalSaturatedFirstReturnConvention hcanon hcanonical hprefix
+            hnonzero hsmall hskew)
+        hadmissible hsmaller hlocal)
 
 end DyadicLift
 

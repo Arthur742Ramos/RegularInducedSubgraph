@@ -1,4 +1,5 @@
 import RegularInducedSubgraph.Basic
+import RegularInducedSubgraph.CertifiedHandoff
 import RegularInducedSubgraph.Modular
 import RegularInducedSubgraph.Problem
 import RegularInducedSubgraph.Ramsey

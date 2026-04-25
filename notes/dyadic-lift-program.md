@@ -207,6 +207,84 @@ In fact one has the exact identity:
 > - `tau_m(R, U) = beta_m`
 >   in `M_2(U)`.
 
+For the fixed-witness dyadic lift there is one additional affine term.  The ambient q-modular support
+`A = U union R` need not have all degrees congruent modulo `2q`; after fixing the common q-residue, write
+
+> - `deg_A(u) = d + q b_A(u) [MOD 2q]`, with `b_A(u) in F_2`.
+
+Then the target is not `beta_m = 0` by itself, but
+
+> - `beta_m + b_A = 0`
+>   in `M_2(U)` modulo constants.
+
+Equivalently, the tail must be affine-complete:
+
+> - `rho_R(u) = C + q b_A(u) [MOD 2q]`
+>   for every `u in U`.
+
+This is exactly the identity `deg_U(u)=deg_A(u)-rho_R(u)` written at the next dyadic bit.  The older
+untwisted `beta_m` formulation is the special case in which the ambient support already has constant
+top bit modulo `2q`.
+
+Pairwise, the affine obstruction is the alternating form
+
+> - `lambda_R(u,v) := ((rho_R(u)-rho_R(v))-(deg_A(u)-deg_A(v))) / q [MOD 2]`.
+
+The lift holds exactly when `lambda_R` is identically zero.  If it is not, choose a basepoint `u_0`; the
+bad cut is
+
+> - `X = {u : lambda_R(u,u_0)=1}`.
+
+Thus every affine carry obstruction has a single oriented-pair witness across `X`.  This is the pair
+chamber that must either promote to a label-transporting q-complete descent packet or become one of the
+support-local square breakers (`host-orient115`, `host-opppair123`, `host-silentedge128`).
+
+In host notation that pair chamber is the reduced two-fiber overlap table: the one-sided repair classes
+`Omega_10` and `Omega_01` are nonempty, and the affine obstruction is exactly the absence of a common
+`0111` witness.  Filling the overlap makes `lambda_R` vanish on the pair; failure to fill it must expose
+the complete shared-slack side that becomes the next q-complete descent packet.
+
+After the standard local exits, this overlap atom has the split-marker quotient
+`K_(q-2) disjoint_union H` with `H in {K_2, 2K_1}`.  The remaining finite selection is a clique in the
+one-sided compensator/provenance fiber: size `(q-4)/2` for the adjacent pair `H=K_2`, and size
+`q/2-1` for the independent pair `H=2K_1`, apart from the proper-divisor bypass.  Therefore the dyadic
+carry endpoint is now the same common-package routing theorem as the host split-marker endpoint: absence
+of the required compensator clique must produce Section-40 closure, a proper marker-complete split, or a
+packet refinement.
+
+With first-return interpreted in the saturated exchange complex `FR^sat`, this routing theorem is closed
+by the saturated provenance/support-decrease proposition: the compensator components are admissible
+modules, and any ambient splitter either becomes a saturated boundary row, gives a local/branch exit, or
+exposes a smaller exchange-complete q-marker.  Therefore the strict higher-bit affine dyadic lift has no
+remaining carry obstruction in the saturated proof pipeline; only the external path-saturation comparison
+can distinguish the historical path-only convention.
+
+The first bit `q=2` is different: the same affine equation reads
+`rho_T(v)=c+2b_A(v) [MOD 4]` on the retained set, but the terminal marker has size `2`, so the
+split-marker compensator quotient has no large marker side.  Gallai supplies the parity shadow only.  The
+remaining first-bit input is exactly the loss-64 affine selector from parity-regular supports to
+mod-4-regular supports.  Equivalently, after Gallai reduces the odd-parity case to an even induced
+bucket, it is enough to prove the loss-32 even selector: every induced even-degree graph contains a
+`1/32`-large induced subgraph whose degrees are congruent modulo `4`.  With an Eulerian orientation of
+the even graph, the zero/two-residue strengthening asks for a large induced set `W` and a bit `r` with
+both `out_W(v)` and `in_W(v)` equal to `r` modulo `2` on all retained vertices.  This bidirected parity
+selector is sufficient but not equivalent, because the full selector may also return all degrees `1` or
+`3 mod 4`.  In matrix language, the exact first-bit obstruction left after the higher-bit q-marker
+closure is the deterministic principal-submatrix theorem for symmetric zero-diagonal matrices with even
+row sums: find a `1/32`-large principal submatrix whose row sums are constant modulo `4`.  Edge-count
+zero-sum partitions and random-graph modulo partitions do not imply this vertex-degree statement.  Nor do
+the currently checked Scott/Ferber--Krivelevich parity tools: Scott gives a real bipartite mod-`k`
+linear bound and frames the arbitrary-graph linear residue problem as a target, while
+Ferber--Krivelevich and its prescribed-label extension remain mod-`2` inputs.  The primary-source
+Alon--Friedland--Kalai theorem is also not enough: it produces non-induced regular subgraphs under
+almost-regular/density hypotheses, so it does not select a large principal submatrix of an arbitrary
+Eulerian witness.
+
+The current internal attack is the exposed-layer refinement diagnostic.  Once a discarded layer has been
+exposed and the retained set is refined by degree into that layer modulo `4`, its contribution remains
+constant forever.  The desired constant would follow if the final self-layer contribution could be
+synchronized without another factor; this is exactly the missing terminal self-layer lemma.
+
 So if `beta_m != 0`, there is a unique proper nonempty subset `S_m ⊊ U`, up to complement, such
 that:
 

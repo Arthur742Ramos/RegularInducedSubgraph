@@ -796,12 +796,121 @@ theorem q64_mixed_pair_of_omega_nonempty_of_disjoint
       ⟨q64_mem_omega01.mp hl01, hl10not⟩
   exact ⟨⟨k, hkPattern⟩, ⟨l, hlPattern⟩⟩
 
+/--
+The exact abstract remainder: with only the terminal two-fiber row axioms, nonempty opposite fibers
+either overlap in a common `0111` row or else realize the mixed non-overlap pair `0101/0011`.
+-/
+theorem q64_twoFiber_overlap_or_mixed_pair
+    {d00 d10 d01 d11 : K → ℕ}
+    (hrow : ∀ k, Q64TwoFiberRow (d00 k) (d10 k) (d01 k) (d11 k))
+    (h10 : (q64Omega10 d10).Nonempty) (h01 : (q64Omega01 d01).Nonempty) :
+    ((q64Omega10 d10) ∩ (q64Omega01 d01)).Nonempty ∨
+      ((∃ k, d00 k = 0 ∧ d10 k = 1 ∧ d01 k = 0 ∧ d11 k = 1) ∧
+        ∃ l, d00 l = 0 ∧ d10 l = 0 ∧ d01 l = 1 ∧ d11 l = 1) := by
+  by_cases hinter : ((q64Omega10 d10) ∩ (q64Omega01 d01)).Nonempty
+  · exact Or.inl hinter
+  · exact Or.inr
+      (q64_mixed_pair_of_omega_nonempty_of_disjoint hrow h10 h01
+        (Finset.not_nonempty_iff_eq_empty.mp hinter))
+
 theorem q64_twoFiberSingleFlipOverlap_inter_ne_empty
     {d10 d01 : K → ℕ}
     (hoverlap : Q64TwoFiberSingleFlipOverlap d10 d01)
     (h10 : (q64Omega10 d10).Nonempty) (h01 : (q64Omega01 d01).Nonempty) :
     (q64Omega10 d10 ∩ q64Omega01 d01) ≠ ∅ :=
   Finset.nonempty_iff_ne_empty.mp (hoverlap h10 h01)
+
+/-- The reduced non-overlap quotient-side table has exactly the two rows `0101` and `0011`. -/
+def q64ReducedNonOverlapRowD00 (_ : Fin 2) : ℕ := 0
+
+/-- The first coordinate of the reduced non-overlap quotient-side table. -/
+def q64ReducedNonOverlapRowD10 (k : Fin 2) : ℕ := if k = 0 then 1 else 0
+
+/-- The second coordinate of the reduced non-overlap quotient-side table. -/
+def q64ReducedNonOverlapRowD01 (k : Fin 2) : ℕ := if k = 0 then 0 else 1
+
+/-- The terminal coordinate of the reduced non-overlap quotient-side table. -/
+def q64ReducedNonOverlapRowD11 (_ : Fin 2) : ℕ := 1
+
+/-- The reduced non-overlap table satisfies the terminal two-fiber row axioms. -/
+theorem q64_reducedNonOverlap_twoFiberRows :
+    ∀ k : Fin 2,
+      Q64TwoFiberRow (q64ReducedNonOverlapRowD00 k) (q64ReducedNonOverlapRowD10 k)
+        (q64ReducedNonOverlapRowD01 k) (q64ReducedNonOverlapRowD11 k) := by
+  intro k
+  fin_cases k <;>
+    simp [Q64TwoFiberRow, q64ReducedNonOverlapRowD00, q64ReducedNonOverlapRowD10,
+      q64ReducedNonOverlapRowD01, q64ReducedNonOverlapRowD11]
+
+/-- The reduced two-row table has both shadows nonempty but no common overlap. -/
+theorem q64_reducedNonOverlap_twoFiberTable :
+    (q64Omega10 q64ReducedNonOverlapRowD10).Nonempty ∧
+      (q64Omega01 q64ReducedNonOverlapRowD01).Nonempty ∧
+        q64Omega10 q64ReducedNonOverlapRowD10 ∩ q64Omega01 q64ReducedNonOverlapRowD01 = ∅ := by
+  refine ⟨?_, ?_, ?_⟩
+  · exact ⟨0, by simp [q64Omega10, q64ReducedNonOverlapRowD10]⟩
+  · exact ⟨1, by simp [q64Omega01, q64ReducedNonOverlapRowD01]⟩
+  · ext k
+    fin_cases k <;> simp [q64Omega10, q64Omega01, q64ReducedNonOverlapRowD10,
+      q64ReducedNonOverlapRowD01]
+
+/-- The reduced table has no common `0111` witness. -/
+theorem q64_reducedNonOverlap_no_common_0111 :
+    ¬ ∃ k : Fin 2,
+      q64ReducedNonOverlapRowD00 k = 0 ∧ q64ReducedNonOverlapRowD10 k = 1 ∧
+        q64ReducedNonOverlapRowD01 k = 1 ∧ q64ReducedNonOverlapRowD11 k = 1 := by
+  rintro ⟨k, _h00, h10, h01, _h11⟩
+  fin_cases k <;> simp [q64ReducedNonOverlapRowD10, q64ReducedNonOverlapRowD01] at h10 h01
+
+/-- Therefore the mixed non-overlap table is a genuine countermodel to pure abstract overlap. -/
+theorem q64_reducedNonOverlap_not_twoFiberSingleFlipOverlap :
+    ¬ Q64TwoFiberSingleFlipOverlap q64ReducedNonOverlapRowD10
+      q64ReducedNonOverlapRowD01 := by
+  intro hoverlap
+  rcases q64_reducedNonOverlap_twoFiberTable with ⟨h10, h01, hdisj⟩
+  have hinter := hoverlap h10 h01
+  rw [hdisj] at hinter
+  simpa using hinter
+
+/--
+The row list and nonempty opposite fibers alone do not force a common `0111` row.  The reduced
+`{0101,0011}` table satisfies all raw two-fiber row axioms, so any closure of the missing-`0111`
+endpoint must use additional boundary/provenance/history input.
+-/
+theorem q64_twoFiberRows_nonempty_do_not_force_common_0111 :
+    ¬ (∀ (X : Type) [Fintype X] [DecidableEq X] (d00 d10 d01 d11 : X → ℕ),
+        (∀ x, Q64TwoFiberRow (d00 x) (d10 x) (d01 x) (d11 x)) →
+          (q64Omega10 d10).Nonempty →
+            (q64Omega01 d01).Nonempty →
+              ∃ x, d00 x = 0 ∧ d10 x = 1 ∧ d01 x = 1 ∧ d11 x = 1) := by
+  intro h
+  rcases q64_reducedNonOverlap_twoFiberTable with ⟨h10, h01, _hdisj⟩
+  exact q64_reducedNonOverlap_no_common_0111
+    (h (X := Fin 2) q64ReducedNonOverlapRowD00 q64ReducedNonOverlapRowD10
+      q64ReducedNonOverlapRowD01 q64ReducedNonOverlapRowD11
+      q64_reducedNonOverlap_twoFiberRows h10 h01)
+
+/--
+Equivalently, raw terminal row axioms plus nonempty `Omega_10` and `Omega_01` do not imply the
+two-fiber single-flip overlap conclusion.
+-/
+theorem q64_twoFiberRows_nonempty_do_not_force_overlap :
+    ¬ (∀ (X : Type) [Fintype X] [DecidableEq X] (d00 d10 d01 d11 : X → ℕ),
+        (∀ x, Q64TwoFiberRow (d00 x) (d10 x) (d01 x) (d11 x)) →
+          (q64Omega10 d10).Nonempty →
+            (q64Omega01 d01).Nonempty →
+              ((q64Omega10 d10) ∩ (q64Omega01 d01)).Nonempty) := by
+  intro h
+  rcases q64_reducedNonOverlap_twoFiberTable with ⟨h10, h01, hdisj⟩
+  have hoverlap :
+      ((q64Omega10 q64ReducedNonOverlapRowD10) ∩
+          (q64Omega01 q64ReducedNonOverlapRowD01)).Nonempty :=
+    h (X := Fin 2) q64ReducedNonOverlapRowD00 q64ReducedNonOverlapRowD10
+      q64ReducedNonOverlapRowD01 q64ReducedNonOverlapRowD11
+      q64_reducedNonOverlap_twoFiberRows h10 h01
+  rw [hdisj] at hoverlap
+  rcases hoverlap with ⟨x, hx⟩
+  simpa using hx
 
 end TwoFiberRows
 
@@ -942,6 +1051,25 @@ theorem q64_no_three_corner_counterexample_of_missingCorner
   rintro ⟨h00, h10, h01, hnot11⟩
   exact hnot11 (hcorner h00 h10 h01)
 
+/-- The abstract anti-Horn feasible set `{00,10,01}` from the pair-exchange audit. -/
+def q64AntiHornFeasible (x y : Bool) : Prop := x = false ∨ y = false
+
+/-- The anti-Horn table has every one-coordinate predecessor from `00`, but misses `11`. -/
+theorem q64_antiHorn_three_corner_counterexample :
+    q64AntiHornFeasible false false ∧ q64AntiHornFeasible true false ∧
+      q64AntiHornFeasible false true ∧ ¬ q64AntiHornFeasible true true := by
+  simp [q64AntiHornFeasible]
+
+/--
+Concrete formal no-go for the packaged pair-exchange route: one-coordinate predecessor data alone do
+not imply the mixed two-coordinate corner.
+-/
+theorem q64_antiHorn_not_twoFiberMissingCorner :
+    ¬ Q64TwoFiberMissingCorner q64AntiHornFeasible := by
+  intro hcorner
+  rcases q64_antiHorn_three_corner_counterexample with ⟨h00, h10, h01, hnot11⟩
+  exact hnot11 (hcorner h00 h10 h01)
+
 end SharedSliceExchange
 
 section OneCornerMedianFiber
@@ -1009,6 +1137,1466 @@ def q64MedianSquareMixedSecondDifference (p : Bool → Bool → ℤ) : ℤ :=
 def Q64MedianSquareInteractionSignLaw (p : Bool → Bool → ℤ) : Prop :=
   q64MedianSquareMixedSecondDifference p ≤ 0
 
+/-- Integer-valued positive-AND square, the pointwise sign-law forbidden pattern. -/
+def Q64IntPositiveANDAtom (p : Bool → Bool → ℤ) : Prop :=
+  p false false = 0 ∧ p true false = 0 ∧ p false true = 0 ∧ p true true = 1
+
+/-- A pointwise median-square sign law excludes the successor-side positive-AND square. -/
+theorem q64_no_intPositiveAND_of_medianSquareSignLaw
+    {p : Bool → Bool → ℤ} (hsign : Q64MedianSquareInteractionSignLaw p) :
+    ¬ Q64IntPositiveANDAtom p := by
+  intro hpos
+  unfold Q64MedianSquareInteractionSignLaw at hsign
+  rcases hpos with ⟨h00, h10, h01, h11⟩
+  have hdiff : q64MedianSquareMixedSecondDifference p = 1 := by
+    simp [q64MedianSquareMixedSecondDifference, h00, h10, h01, h11]
+  rw [hdiff] at hsign
+  omega
+
+/-- The five terminal square row types left by the normalized endpoint catalogue. -/
+inductive Q64TerminalSquareRow
+  | r0000
+  | r0001
+  | r0101
+  | r0011
+  | r0111
+  deriving DecidableEq, Repr
+
+/-- Integer characteristic table for a terminal square row, in `(00,10,01,11)` order. -/
+def Q64TerminalSquareRow.eval : Q64TerminalSquareRow → Bool → Bool → ℤ
+  | .r0000, _, _ => 0
+  | .r0001, true, true => 1
+  | .r0001, _, _ => 0
+  | .r0101, true, _ => 1
+  | .r0101, false, _ => 0
+  | .r0011, _, true => 1
+  | .r0011, _, false => 0
+  | .r0111, false, false => 0
+  | .r0111, _, _ => 1
+
+/-- In the terminal row catalogue, only `0001` has positive mixed second difference. -/
+theorem q64_terminalSquareRow_positive_mixed_iff
+    {row : Q64TerminalSquareRow} :
+    0 < q64MedianSquareMixedSecondDifference row.eval ↔ row = .r0001 := by
+  cases row <;> simp [Q64TerminalSquareRow.eval, q64MedianSquareMixedSecondDifference]
+
+/-- In the terminal row catalogue, only `0111` has negative mixed second difference. -/
+theorem q64_terminalSquareRow_negative_mixed_iff
+    {row : Q64TerminalSquareRow} :
+    q64MedianSquareMixedSecondDifference row.eval < 0 ↔ row = .r0111 := by
+  cases row <;> simp [Q64TerminalSquareRow.eval, q64MedianSquareMixedSecondDifference]
+
+/-- The raw-space Mobius cancellation identity for the terminal rows. -/
+theorem q64_terminalSquareRow_mobius_identity :
+    ∀ x y,
+      Q64TerminalSquareRow.eval .r0001 x y + Q64TerminalSquareRow.eval .r0111 x y =
+        Q64TerminalSquareRow.eval .r0101 x y + Q64TerminalSquareRow.eval .r0011 x y := by
+  intro x y
+  cases x <;> cases y <;>
+    simp [Q64TerminalSquareRow.eval]
+
+/--
+Mobius-leak cycle endpoint: scalar mixed mass may cancel, but unless the cycle has trivial package
+holonomy it reduces to a shortest rank-one successor-side `0001` loop.
+-/
+def Q64MobiusLeakCycleNormalForm
+    (MobiusLeakCycle TrivialHolonomyTelescopes NontrivialHolonomyLoop SuccessorSide0001 : Prop) :
+    Prop :=
+  MobiusLeakCycle →
+    TrivialHolonomyTelescopes ∨ (NontrivialHolonomyLoop ∧ SuccessorSide0001)
+
+/--
+Shortest nontrivial package-monodromy loops are reduced by any common-package chord; the survivor is a
+sign-coherent simple cycle of adjacent package-change `0001` edges.
+-/
+def Q64MonodromyLoopChordlessNormalForm
+    (ShortestNontrivialLoop CommonPackageChord ProperCommonPackageTelescoping
+      SmallerOneCornerFailure SignCoherentSimple0001Cycle : Prop) : Prop :=
+  ShortestNontrivialLoop →
+    CommonPackageChord ∨ ProperCommonPackageTelescoping ∨ SmallerOneCornerFailure ∨
+      SignCoherentSimple0001Cycle
+
+/--
+The final sign-coherent monodromy survivor carries a cyclic interval atom whose number of package
+changes is bounded by the modulus.
+-/
+def Q64CyclicIntervalAtomBound
+    (q : ℕ) (PackageChanges : Finset U) (CyclicIntervalAtom : Prop) : Prop :=
+  CyclicIntervalAtom → PackageChanges.card ≤ q
+
+/--
+The moved coordinate orbit of a final monodromy cycle is anonymous to admissible rows unless a first
+distinguishing edge already gives a smaller one-corner package failure.
+-/
+def Q64AnonymousCoordinateOrbitReduction
+    (CoordinateOrbit AnonymousToAdmissibleRows SmallerOneCornerPackageFailure : Prop) : Prop :=
+  CoordinateOrbit → AnonymousToAdmissibleRows ∨ SmallerOneCornerPackageFailure
+
+/--
+Nontrivial monodromy is the admissible-module-primality failure for the anonymous coordinate orbit:
+without an ambient breaker it is a prime-shell module/local exit; with one, the breaker must be routed
+into first-return provenance.
+-/
+def Q64MonodromyAsAdmissibleModuleFailure
+    (NontrivialMonodromy PrimeShellModuleOrLocalExit AmbientBreakerNeedsRouting : Prop) : Prop :=
+  NontrivialMonodromy → PrimeShellModuleOrLocalExit ∨ AmbientBreakerNeedsRouting
+
+/--
+Restricting a minimal ambient breaker to the cyclic monodromy order leaves either a consecutive
+interval face or a crossing-cut primitive circuit face.
+-/
+def Q64CyclicBreakerRestrictionNormalForm
+    (MinimalCyclicBreaker ConsecutiveIntervalFace CrossingPrimitiveCircuitFace : Prop) : Prop :=
+  MinimalCyclicBreaker → ConsecutiveIntervalFace ∨ CrossingPrimitiveCircuitFace
+
+/--
+Choosing the cyclic breaker with the fewest sign changes sharpens the normal form to a two-transition
+interval atom or a four-or-more-transition primitive circuit with no realized diagonal.
+-/
+def Q64FewestSignChangesCyclicBreaker
+    (FewestSignChangesBreaker TwoTransitionIntervalAtom FourPlusTransitionPrimitiveNoDiagonal :
+      Prop) : Prop :=
+  FewestSignChangesBreaker → TwoTransitionIntervalAtom ∨ FourPlusTransitionPrimitiveNoDiagonal
+
+/--
+Abstract equal-residue cycles with only constant admissible rows demonstrate that cyclic arithmetic
+alone does not promote a breaker to a realized first-return subcarrier.
+-/
+def Q64AbstractEqualResidueCycleNoPromotion
+    (EqualResidueCycle ConstantAdmissibleRows AmbientSplitter NoPromotionFromArithmetic : Prop) :
+    Prop :=
+  EqualResidueCycle → ConstantAdmissibleRows → AmbientSplitter → NoPromotionFromArithmetic
+
+/--
+Omni-saturating the carrier collapses any longer active monodromy cycle to a bipartite module, a local
+exit, or the single-active-pair endpoint.
+-/
+def Q64OmniSaturatedMonodromyCollapse
+    (LongActiveMonodromy BipartiteModule LocalExit SingleActivePair : Prop) : Prop :=
+  LongActiveMonodromy → BipartiteModule ∨ LocalExit ∨ SingleActivePair
+
+/--
+Breaker sign-normalization: constant-on-pair and opposite-sign breakers fall to local/common-package
+cases, so the survivor is a same-sign separator row outside the admissible package.
+-/
+def Q64BreakerSignNormalization
+    (Breaker ConstantOnPair OppositeSign LocalOrCommonPackage SameSignSeparatorOutsidePackage :
+      Prop) : Prop :=
+  Breaker →
+    ConstantOnPair ∨ OppositeSign ∨ LocalOrCommonPackage ∨ SameSignSeparatorOutsidePackage
+
+/-- If the closed sign-normalization branches are impossible, only the same-sign separator survives. -/
+theorem q64_sameSignSeparator_of_breakerSignNormalization
+    {Breaker ConstantOnPair OppositeSign LocalOrCommonPackage SameSignSeparatorOutsidePackage : Prop}
+    (hnorm :
+      Q64BreakerSignNormalization Breaker ConstantOnPair OppositeSign LocalOrCommonPackage
+        SameSignSeparatorOutsidePackage)
+    (hnoConst : ¬ ConstantOnPair) (hnoOpp : ¬ OppositeSign)
+    (hnoLocal : ¬ LocalOrCommonPackage) (hbreaker : Breaker) :
+    SameSignSeparatorOutsidePackage := by
+  rcases hnorm hbreaker with hconst | hopp | hlocal | hsame
+  · exact False.elim (hnoConst hconst)
+  · exact False.elim (hnoOpp hopp)
+  · exact False.elim (hnoLocal hlocal)
+  · exact hsame
+
+/--
+Choosing a same-sign breaker with minimum side leaves either the singleton-side promotion gap or the
+crossing primitive `2×2` circuit.
+-/
+def Q64MinimumSideBreakerNormalForm
+    (MinimumSideBreaker SingletonSidePromotionGap CrossingPrimitiveCircuit : Prop) : Prop :=
+  MinimumSideBreaker → SingletonSidePromotionGap ∨ CrossingPrimitiveCircuit
+
+/--
+The singleton-side promotion gap is stable under first-failed-row iteration: every departure closes
+locally, contradicts minimum side, forms the primitive circuit, or leaves a high-error same-sign
+isolator loop on one row.
+-/
+def Q64SingletonSideIterationNormalForm
+    (SingletonSidePromotionGap LocalDeparture MinimumSideContradiction PrimitiveCircuit
+      HighErrorSameSignIsolatorLoop : Prop) : Prop :=
+  SingletonSidePromotionGap →
+    LocalDeparture ∨ MinimumSideContradiction ∨ PrimitiveCircuit ∨ HighErrorSameSignIsolatorLoop
+
+/--
+After local quotienting, distinct isolators either coalesce by the same-trace/twin catalogue or
+regenerate the same square-transverse breaker, leaving a single high-error isolator self-loop.
+-/
+def Q64IsolatorLoopQuotientNormalForm
+    (HighErrorSameSignIsolatorLoop SameTraceTwinCoalescence SquareTransverseBreaker
+      SingleHighErrorIsolatorSelfLoop : Prop) : Prop :=
+  HighErrorSameSignIsolatorLoop →
+    SameTraceTwinCoalescence ∨ SquareTransverseBreaker ∨ SingleHighErrorIsolatorSelfLoop
+
+/--
+Pure same-defect token loops close locally, so the remaining single isolator self-loop is the
+defect-switching fully skew square.
+-/
+def Q64IsolatorSelfLoopToDefectSwitchingSquare
+    (SingleHighErrorIsolatorSelfLoop PureSameDefectTokenLoopClosed DefectSwitchingFullySkewSquare :
+      Prop) : Prop :=
+  SingleHighErrorIsolatorSelfLoop →
+    PureSameDefectTokenLoopClosed ∨ DefectSwitchingFullySkewSquare
+
+/--
+The defect-switching fully skew square is the final honest gap: a reduced trace model exists unless
+genuine first-return history promotes the isolated row or a larger side to a complete transported bag.
+-/
+def Q64DefectSwitchingSelfLoopPromotionGap
+    (DefectSwitchingFullySkewSquare IsolatedRowPromoted LargerSideCompleteTransportedBag
+      ReducedTraceSelfLoopModel : Prop) : Prop :=
+  DefectSwitchingFullySkewSquare →
+    IsolatedRowPromoted ∨ LargerSideCompleteTransportedBag ∨ ReducedTraceSelfLoopModel
+
+/--
+If the defect-switching square is seated with the singleton isolator as first axis, the remaining rows
+have zero mixed second difference, so the complete slack bag lies in a sub-`q` side and low-set
+congruence closes that in-frame branch.
+-/
+def Q64SingletonFirstAxisSeatedClosure
+    (SingletonFirstAxisSeated ZeroMixedSecondDifferenceRows SubqCompleteSlackSide
+      LowSetCongruenceKilled : Prop) : Prop :=
+  SingletonFirstAxisSeated →
+    ZeroMixedSecondDifferenceRows ∧ SubqCompleteSlackSide ∧ LowSetCongruenceKilled
+
+/--
+Axis analysis for the final defect-switching square: either the singleton isolator is the first axis, or
+first-return transport drifts the square to an incomparable first axis.
+-/
+def Q64DefectSwitchingSquareAxisAnalysis
+    (DefectSwitchingFullySkewSquare SingletonFirstAxisSeated
+      TransportDriftsToIncomparableFirstAxis : Prop) : Prop :=
+  DefectSwitchingFullySkewSquare →
+    SingletonFirstAxisSeated ∨ TransportDriftsToIncomparableFirstAxis
+
+/--
+Common-frame ordered axis-lock: first-return transport cannot drift to an incomparable first axis except
+through a local exit or the primitive `2×2` circuit.
+-/
+def Q64CommonFrameOrderedAxisLock
+    (TransportDriftsToIncomparableFirstAxis LocalExit PrimitiveCircuit : Prop) : Prop :=
+  TransportDriftsToIncomparableFirstAxis → LocalExit ∨ PrimitiveCircuit
+
+/--
+Equivalent single-turn common-frame gluing form: consecutive dirty axes force the first
+package-change edge to carry a complete smaller marker or a local exit.
+-/
+def Q64SingleTurnCommonFrameGluing
+    (ConsecutiveDirtyAxes FirstPackageChangeCompleteSmallerMarker LocalExit : Prop) : Prop :=
+  ConsecutiveDirtyAxes → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit
+
+/--
+Hidden-median form of the common-frame gluing gap: nonempty opposite single-flip fibers `Omega_10`
+and `Omega_01` must share a common `0111` witness, except for the abstract mixed non-overlap table
+`{0101,0011}`.
+-/
+def Q64TwoFiberSingleFlipOverlapLemma
+    (Omega10Nonempty Omega01Nonempty Common0111Witness MixedNonOverlapPair0101_0011 : Prop) :
+    Prop :=
+  Omega10Nonempty → Omega01Nonempty → Common0111Witness ∨ MixedNonOverlapPair0101_0011
+
+/--
+Binary pair-status constancy on the one-corner median fiber, in the form isolated by the final
+hidden-median reduction: either the pair status is constant on that fiber, or the failure is already the
+successor-side `0001` shared-slack marker.
+-/
+def Q64OneCornerMedianPairStatusConstancy
+    (OneCornerMedianFiber PairStatusConstant SuccessorSide0001SharedSlackMarker : Prop) : Prop :=
+  OneCornerMedianFiber → PairStatusConstant ∨ SuccessorSide0001SharedSlackMarker
+
+/--
+Scalar wall-order potentials cannot see the final obstruction: their edge signs are coboundaries with
+zero square circulation, whereas the forbidden `0001` row is same-row two-face curvature.
+-/
+def Q64ScalarWallOrderPotentialNoGo
+    (ScalarWallOrderPotential EdgeSignsAreCoboundaries ZeroSquareCirculation
+      SameRowTwoFaceCurvature : Prop) : Prop :=
+  ScalarWallOrderPotential →
+    EdgeSignsAreCoboundaries ∧ ZeroSquareCirculation ∧ SameRowTwoFaceCurvature
+
+/-- The same-row two-face curvature appears only after both successor increments are placed in one
+peeled package. -/
+def Q64SameRowCurvatureRequiresCommonPeeledPackage
+    (SameRowTwoFaceCurvature BothSuccessorIncrementsInOnePeeledPackage : Prop) : Prop :=
+  SameRowTwoFaceCurvature → BothSuccessorIncrementsInOnePeeledPackage
+
+/--
+Commutator form of common-frame gluing: consecutive dirty axes either have commuting successor package
+identifications, or a nontrivial commutator remains.
+-/
+def Q64CommonFrameSuccessorCommutation
+    (ConsecutiveDirtyAxes SuccessorPackageIdentificationsCommute NontrivialCommutator : Prop) :
+    Prop :=
+  ConsecutiveDirtyAxes → SuccessorPackageIdentificationsCommute ∨ NontrivialCommutator
+
+/--
+A nontrivial successor-package commutator is exactly the mixed `{0101,0011}` non-overlap table, or
+after marking the first package leak, the positive `0001` shared-slack row.
+-/
+def Q64SuccessorPackageCommutatorNormalForm
+    (NontrivialCommutator MixedNonOverlapPair0101_0011 Positive0001PackageLeak : Prop) : Prop :=
+  NontrivialCommutator → MixedNonOverlapPair0101_0011 ∨ Positive0001PackageLeak
+
+/--
+Finite order of the package commutator produces only an anonymous coordinate orbit unless a boundary
+splitter has already been promoted; the anonymous-orbit branch is just admissible-module primeness again.
+-/
+def Q64FiniteCommutatorOrderReduction
+    (FiniteCommutatorOrder AnonymousCoordinateOrbit PromotedBoundarySplitter : Prop) : Prop :=
+  FiniteCommutatorOrder → AnonymousCoordinateOrbit ∨ PromotedBoundarySplitter
+
+/--
+Flat-connection restatement of the final obstruction: every failure is a nonfilled repair face, a
+curved filled face, or a flat nontrivial monodromy loop.
+-/
+def Q64FlatConnectionFailureTrichotomy
+    (FlatConnectionFailure NonfilledRepairFace CurvedFilledFace FlatNontrivialMonodromyLoop :
+      Prop) : Prop :=
+  FlatConnectionFailure →
+    NonfilledRepairFace ∨ CurvedFilledFace ∨ FlatNontrivialMonodromyLoop
+
+/--
+The three flat-connection failures are exactly the existing endpoints: square-transverse breaker,
+shared-slack q-marker, and admissible-module primeness.
+-/
+def Q64FlatConnectionFailureEndpointIdentification
+    (NonfilledRepairFace CurvedFilledFace FlatNontrivialMonodromyLoop SquareTransverseBreaker
+      SharedSlackQMarker AdmissibleModulePrimenessAgain : Prop) : Prop :=
+  (NonfilledRepairFace → SquareTransverseBreaker) ∧
+    (CurvedFilledFace → SharedSlackQMarker) ∧
+      (FlatNontrivialMonodromyLoop → AdmissibleModulePrimenessAgain)
+
+/-- Shortest saturated flat loops leave no independent higher-polygon residue. -/
+def Q64ShortestFlatLoopSaturation
+    (ShortestFlatLoop OddCycle LongEvenCycle TwoPointAdjacentPackageChangeTurn ModuleOrLocalExit :
+      Prop) : Prop :=
+  ShortestFlatLoop → OddCycle ∨ LongEvenCycle ∨ TwoPointAdjacentPackageChangeTurn ∨ ModuleOrLocalExit
+
+/-- Ternary dirty-row configurations close pairwise or reduce to the already-known flat/curved atoms. -/
+def Q64TernaryDirtyRowReduction
+    (TernaryDirtyRows PairwiseClosure FlatMonodromyTriangle Curved0001Face : Prop) : Prop :=
+  TernaryDirtyRows → PairwiseClosure ∨ FlatMonodromyTriangle ∨ Curved0001Face
+
+/--
+Signed-edge normal form for the remaining adjacent turn: opposite signs give the balanced flip,
+same signs give the singleton-isolator edge, and in either case the unresolved data are the dirty
+chart change rather than the sign choice.
+-/
+def Q64AdjacentTurnSignedEdgeNormalForm
+    (AdjacentTurn OppositeSigns BalancedFlip SameSigns SingletonIsolatorEdge DirtyChartChange :
+      Prop) : Prop :=
+  AdjacentTurn →
+    (OppositeSigns ∧ BalancedFlip ∧ DirtyChartChange) ∨
+      (SameSigns ∧ SingletonIsolatorEdge ∧ DirtyChartChange)
+
+/--
+Carrier trichotomy for the dirty chart-change edge: it has a proper complete subcarrier, crosses another
+dirty edge as the primitive `2×2` circuit, or is an admissible module split only by a non-promoted
+ambient row.
+-/
+def Q64DirtyChartChangeCarrierTrichotomy
+    (DirtyChartChangeCarrier ProperCompleteSubcarrier Primitive2x2Circuit
+      NonPromotedAmbientSplitAdmissibleModule : Prop) : Prop :=
+  DirtyChartChangeCarrier →
+    ProperCompleteSubcarrier ∨ Primitive2x2Circuit ∨ NonPromotedAmbientSplitAdmissibleModule
+
+/-- Minimum-side normalization on the admissible-module branch returns to the singleton-isolator
+self-loop. -/
+def Q64AdmissibleModuleMinimumSideSingletonLoop
+    (AdmissibleModuleFailure MinimumSideNormalization SingletonIsolatorSelfLoop : Prop) : Prop :=
+  AdmissibleModuleFailure → MinimumSideNormalization → SingletonIsolatorSelfLoop
+
+/--
+Out-of-frame axis drift is the same rank-one frame slip: it is a nonfilled face, a curved face, a flat
+monodromy loop, or the irreducible dirty chart-change edge.
+-/
+def Q64OutOfFrameAxisDriftRankOneSlip
+    (OutOfFrameAxisDrift NonfilledFace CurvedFace FlatMonodromyLoop DirtyChartChangeEdge : Prop) :
+    Prop :=
+  OutOfFrameAxisDrift → NonfilledFace ∨ CurvedFace ∨ FlatMonodromyLoop ∨ DirtyChartChangeEdge
+
+/--
+Reduced two-chart boundary-certificate endpoint for the dirty slip: the slipped coordinate must carry a
+complete shared-slack side, or its absence is a smaller square-transverse breaker.
+-/
+def Q64TwoChartSlipBoundaryCertificate
+    (DirtyChartChangeEdge CompleteSharedSlackSide SmallerSquareTransverseBreaker : Prop) : Prop :=
+  DirtyChartChangeEdge → CompleteSharedSlackSide ∨ SmallerSquareTransverseBreaker
+
+/--
+Once the slipped splitter is an ordered boundary row, the two-chart boundary certificate is formal: the
+internal failure set is a whole splitter side and hence a smaller complete marker.
+-/
+def Q64OrderedBoundarySlipCertificate
+    (OrderedBoundaryRow InternalFailureWholeSplitterSide SmallerCompleteMarker : Prop) : Prop :=
+  OrderedBoundaryRow → InternalFailureWholeSplitterSide ∧ SmallerCompleteMarker
+
+/--
+Ambient-to-boundary transport endpoint: transport reaches an ordered boundary row, exits locally, or
+leaves the minimal one-state high-error bounce on the same slipped side.
+-/
+def Q64AmbientToBoundaryTransportWithBounce
+    (AmbientSplitter OrderedBoundaryRow LocalExit OneStateHighErrorBounceSameSlippedSide : Prop) :
+    Prop :=
+  AmbientSplitter → OrderedBoundaryRow ∨ LocalExit ∨ OneStateHighErrorBounceSameSlippedSide
+
+/--
+The one-state bounce is the common shadow of the three named host frontiers; if none of them kills it,
+the survivor is the same missing-`0111` table.
+-/
+def Q64OneStateBounceHostFrontierShadow
+    (OneStateHighErrorBounce PairChamberHiddenChoiceSeparation AnchoredPersistenceNoSplitQPlus
+      AnchoredOneCornerLiftQj Missing0111Table : Prop) : Prop :=
+  OneStateHighErrorBounce →
+    PairChamberHiddenChoiceSeparation ∨ AnchoredPersistenceNoSplitQPlus ∨
+      AnchoredOneCornerLiftQj ∨ Missing0111Table
+
+/--
+A prime-shell breaker of the two bounced rows reduces to a same-cut high-error clone packet: an
+admissible module whose ambient breaker is still not promoted.
+-/
+def Q64SameCutHighErrorClonePacketReduction
+    (PrimeShellBreakerOfBouncedRows SameCutHighErrorClonePacket
+      AdmissibleModuleWithUnpromotedAmbientBreaker : Prop) : Prop :=
+  PrimeShellBreakerOfBouncedRows →
+    SameCutHighErrorClonePacket ∧ AdmissibleModuleWithUnpromotedAmbientBreaker
+
+/--
+Recentring on two clone rows is self-similar: it does not decrease the carrier; maximal clone packets
+form a directed package-change cycle; saturation reduces that cycle to the two-packet `{0101,0011}` atom
+unless a boundary provenance certificate breaks the loop.
+-/
+def Q64ClonePacketCycleReduction
+    (SameCutHighErrorClonePacket BoundaryProvenanceCertificate TwoPacketNonOverlapAtom0101_0011 :
+      Prop) : Prop :=
+  SameCutHighErrorClonePacket → BoundaryProvenanceCertificate ∨ TwoPacketNonOverlapAtom0101_0011
+
+/--
+If same-cut clone closure were hereditary under ambient breakers, primeness would close the endpoint by
+a module argument; the missing heredity is exactly boundary provenance.
+-/
+def Q64SameCutCloneHeredityOrBoundaryProvenance
+    (SameCutCloneClosure HereditaryUnderAmbientBreakers ModuleClosure BoundaryProvenance : Prop) :
+    Prop :=
+  SameCutCloneClosure → (HereditaryUnderAmbientBreakers ∧ ModuleClosure) ∨ BoundaryProvenance
+
+/--
+Acyclic clone-package graphs close by the same module argument, so the hereditary failure is a two-state
+package transposition.
+-/
+def Q64ClonePackageGraphReduction
+    (ClonePackageGraph AcyclicClonePackageGraph TwoStatePackageTransposition : Prop) : Prop :=
+  ClonePackageGraph → AcyclicClonePackageGraph ∨ TwoStatePackageTransposition
+
+/--
+The two-state package transposition is the rank-one flat holonomy/missing-`0111` atom.  Its anchored
+subcase closes; an irreducible transposition moves the anchor and is the anchored frame-slip endpoint.
+-/
+def Q64TwoStateTranspositionFrameSlip
+    (TwoStatePackageTransposition AnchoredSubcaseClosed IrreducibleMovesAnchor
+      AnchoredFrameSlipEndpoint : Prop) : Prop :=
+  TwoStatePackageTransposition → AnchoredSubcaseClosed ∨
+    (IrreducibleMovesAnchor ∧ AnchoredFrameSlipEndpoint)
+
+/--
+Choosing the first package-label change on a shortest flat anchor path reduces an anchored frame slip to
+a single chamber-flat anchored slip edge.
+-/
+def Q64ShortestFlatAnchorPathReduction
+    (AnchoredFrameSlipEndpoint SingleChamberFlatAnchoredSlipEdge : Prop) : Prop :=
+  AnchoredFrameSlipEndpoint → SingleChamberFlatAnchoredSlipEdge
+
+/--
+The one-corner lift kills the single chamber-flat anchored slip; failure of that lift is the `0001`
+square.
+-/
+def Q64SingleChamberFlatSlipLiftDichotomy
+    (SingleChamberFlatAnchoredSlipEdge OneCornerLiftClosed OneCornerLiftFailure0001Square : Prop) :
+    Prop :=
+  SingleChamberFlatAnchoredSlipEdge → OneCornerLiftClosed ∨ OneCornerLiftFailure0001Square
+
+/--
+One-edge form of the endpoint: a minimal square-transverse breaker whose first dirty failed row is fully
+skew on the same support and changes only the hidden package label has exactly the two-fiber
+non-overlap table with missing `0111`.
+-/
+def Q64OneEdgeHiddenLabelSlipNormalForm
+    (MinimalSquareTransverseBreaker FirstDirtyRowFullySkewSameSupport HiddenPackageLabelOnlyChange
+      TwoFiberNonOverlapMissing0111 : Prop) : Prop :=
+  MinimalSquareTransverseBreaker → FirstDirtyRowFullySkewSameSupport →
+    HiddenPackageLabelOnlyChange → TwoFiberNonOverlapMissing0111
+
+/--
+Hidden-cover formulation: visible chamber data carry an unbranched nontrivial two-sheeted
+hidden-package cover, equivalently a nonzero flat `Z/2` holonomy class.
+-/
+def Q64HiddenPackageCoverHolonomy
+    (VisibleChamberData UnbranchedNontrivialTwoSheetedHiddenPackageCover
+      NonzeroFlatZMod2HolonomyClass : Prop) : Prop :=
+  VisibleChamberData →
+    UnbranchedNontrivialTwoSheetedHiddenPackageCover ∨ NonzeroFlatZMod2HolonomyClass
+
+/--
+Branch points of the hidden package cover are exactly one-corner lift failures or square-transverse
+breakers; odd filled faces are the `0001` marker.
+-/
+def Q64HiddenCoverBranchPointClassification
+    (HiddenPackageCoverBranchPoint OneCornerLiftFailure SquareTransverseBreaker OddFilledFace
+      Marker0001 : Prop) : Prop :=
+  (HiddenPackageCoverBranchPoint → OneCornerLiftFailure ∨ SquareTransverseBreaker) ∧
+    (OddFilledFace → Marker0001)
+
+/-- Coordinate cancellation kills hidden holonomy when every repeated-coordinate swap is filled and flat. -/
+def Q64CoordinateCancellationKillsHolonomy
+    (EveryRepeatedCoordinateSwapFilledFlat NonzeroFlatZMod2HolonomyClass : Prop) : Prop :=
+  EveryRepeatedCoordinateSwapFilledFlat → ¬ NonzeroFlatZMod2HolonomyClass
+
+/--
+The remaining cubical input after coordinate cancellation: rank-one coordinate-swap completeness along
+a shortest holonomy loop, or a live candidate-switching gate failure.
+-/
+def Q64RankOneCoordinateSwapCompleteness
+    (ShortestHolonomyLoop CoordinateSwapComplete CandidateSwitchingGateFailure : Prop) : Prop :=
+  ShortestHolonomyLoop → CoordinateSwapComplete ∨ CandidateSwitchingGateFailure
+
+/--
+The fixed-candidate half of coordinate-swap completeness is closed by interval arithmetic; a live
+candidate-switching gate failure localizes to the three-corner anti-Horn square with absent `11`.
+-/
+def Q64CandidateSwitchingGateFailureNormalForm
+    (CandidateSwitchingGateFailure FixedCandidateIntervalClosed ThreeCornerAntiHornMissing11 :
+      Prop) : Prop :=
+  CandidateSwitchingGateFailure →
+    FixedCandidateIntervalClosed ∨ ThreeCornerAntiHornMissing11
+
+/--
+Candidate data on the anti-Horn square form a three-certificate cycle; repeated or sink certificates
+return to the fixed-candidate interval calculation.
+-/
+def Q64ThreeCertificateCycleNormalForm
+    (ThreeCornerAntiHornMissing11 ThreeCertificateCycle RepeatedCertificate SinkCertificate
+      FixedCandidateIntervalCalculation : Prop) : Prop :=
+  ThreeCornerAntiHornMissing11 →
+    ThreeCertificateCycle ∨ RepeatedCertificate ∨ SinkCertificate ∨
+      FixedCandidateIntervalCalculation
+
+/--
+First breakers on the three-certificate cycle have no independent ternary residue: two same-sign
+breakers coalesce in one residual frame or expose the same two-state package-change edge.
+-/
+def Q64ThreeCertificateBreakerReduction
+    (ThreeCertificateCycle SameSignBreakersCoalesce TwoStatePackageChangeEdge : Prop) : Prop :=
+  ThreeCertificateCycle → SameSignBreakersCoalesce ∨ TwoStatePackageChangeEdge
+
+/--
+The geometric form of the certificate cycle is a distributed alternating hexagon, `K_{3,3}` minus a
+perfect matching; once any cyclic five-vertex seed is localized on one Section 40 frame, the scalar part
+is automatic and the live input is distributed-hexagon-to-one-frame synchronization.
+-/
+def Q64DistributedHexagonSynchronizationEndpoint
+    (DistributedAlternatingHexagonK33MinusPerfectMatching Section40P5SeedLocalized
+      DistributedHexagonToOneFrameSynchronization : Prop) : Prop :=
+  DistributedAlternatingHexagonK33MinusPerfectMatching →
+    Section40P5SeedLocalized ∨ DistributedHexagonToOneFrameSynchronization
+
+/--
+The distributed-hexagon synchronization endpoint is equivalent to ambient-to-fixed fiber-preserving
+shared-slice lift, compatible degree-congruent transversal for one shared slice, and adjacent-slice
+admissibility at the unique median-entry point.
+-/
+def Q64SharedSliceSynchronizationEquivalence
+    (DistributedHexagonToOneFrameSynchronization AmbientToFixedFiberPreservingSharedSliceLift
+      CompatibleDegreeCongruentTransversalOneSharedSlice AdjacentSliceAdmissibilityAtMedianEntry :
+      Prop) : Prop :=
+  (DistributedHexagonToOneFrameSynchronization ↔ AmbientToFixedFiberPreservingSharedSliceLift) ∧
+    (AmbientToFixedFiberPreservingSharedSliceLift ↔
+      CompatibleDegreeCongruentTransversalOneSharedSlice) ∧
+      (CompatibleDegreeCongruentTransversalOneSharedSlice ↔
+        AdjacentSliceAdmissibilityAtMedianEntry)
+
+/--
+The visible half of adjacent-slice lift is closed; the hidden half is single-witness uniformity on the
+median fiber.  A mixed witness reduces to the successor-side `0001` square.
+-/
+def Q64MedianFiberUniformityEndpoint
+    (AdjacentSliceAdmissibilityAtMedianEntry VisibleHalfClosed SingleWitnessUniformityOnMedianFiber
+      MixedWitnessOnMedianFiber SuccessorSide0001Square : Prop) : Prop :=
+  AdjacentSliceAdmissibilityAtMedianEntry →
+    VisibleHalfClosed ∧
+      (SingleWitnessUniformityOnMedianFiber ∨
+        (MixedWitnessOnMedianFiber ∧ SuccessorSide0001Square))
+
+/--
+After one-edge predecessor/persistence inputs are factored off, the quotient table is again the
+`{0101,0011}` table with missing `0111`, equivalently fixed pair-chamber cylinder rigidity for the
+elementary hidden choice.
+-/
+def Q64FixedPairChamberCylinderRigidityEndpoint
+    (PredecessorPersistenceFactored QuotientTable0101_0011Missing0111
+      FixedPairChamberCylinderRigidity : Prop) : Prop :=
+  PredecessorPersistenceFactored →
+    (QuotientTable0101_0011Missing0111 ↔ FixedPairChamberCylinderRigidity)
+
+/--
+The intrinsic two-square form is elementary two-sided silent-component injectivity; basin localization
+reduces it to boundary outgoing anchored witness persistence plus realized componentwise singleton on
+`Q^+`.
+-/
+def Q64SilentComponentBasinLocalization
+    (TwoSidedSilentComponentInjectivity BoundaryOutgoingAnchoredWitnessPersistence
+      RealizedComponentwiseSingletonQPlus HostOpppair123Surface : Prop) : Prop :=
+  TwoSidedSilentComponentInjectivity →
+    BoundaryOutgoingAnchoredWitnessPersistence ∧ RealizedComponentwiseSingletonQPlus ∧
+      HostOpppair123Surface
+
+/--
+The one-square endpoint is edgelessness of the silent graph or incident-square opposite-defect wall
+detection; its minimal failure is one chamber-flat silent edge, and vertex potentials cannot exclude it.
+-/
+def Q64SilentGraphOneSquareEndpoint
+    (EdgelessSilentGraph IncidentSquareOppositeDefectWallDetection ChamberFlatSilentEdge
+      VertexPotentialsCannotExclude : Prop) : Prop :=
+  EdgelessSilentGraph ∨ IncidentSquareOppositeDefectWallDetection ∨
+    (ChamberFlatSilentEdge ∧ VertexPotentialsCannotExclude)
+
+/--
+Prefix-star sign uniqueness for silent edges with fixed lower packet prefix and first changed
+coordinate: opposite signs force the anchored one-corner lift or the `0001` failure.
+-/
+def Q64PrefixStarSignUniqueness
+    (SilentEdgeFixedLowerPacketPrefix FirstChangedCoordinate OppositeSigns AnchoredOneCornerLift
+      SuccessorSide0001Failure : Prop) : Prop :=
+  SilentEdgeFixedLowerPacketPrefix → FirstChangedCoordinate → OppositeSigns →
+    AnchoredOneCornerLift ∨ SuccessorSide0001Failure
+
+/--
+Support-local fourth-corner route to transverse-breaker admissibility: fixed-candidate interval failures
+close, clean marked support closes, and the only live case is dirty budget-one `Abs(1)` /
+reanchor-breaker prime-shell cycle-breaker.
+-/
+def Q64SupportLocalFourthCornerToAbs1Route
+    (SupportLocalFourthCorner FixedCandidateIntervalClosed CleanMarkedSupportClosed
+      DirtyBudgetOneAbs1ReanchorBreaker TransverseBreakerAdmissibility : Prop) : Prop :=
+  SupportLocalFourthCorner →
+    FixedCandidateIntervalClosed ∨ CleanMarkedSupportClosed ∨
+      DirtyBudgetOneAbs1ReanchorBreaker ∨ TransverseBreakerAdmissibility
+
+/--
+Minimum-side normalization of the dirty budget-one reanchor-breaker branch turns it into a one-point
+isolator self-loop.
+-/
+def Q64DirtyBudgetOneReanchorMinimumSide
+    (DirtyBudgetOneAbs1ReanchorBreaker MinimumSideNormalization OnePointIsolatorSelfLoop : Prop) :
+    Prop :=
+  DirtyBudgetOneAbs1ReanchorBreaker → MinimumSideNormalization → OnePointIsolatorSelfLoop
+
+/--
+At the one-point isolator self-loop, an aligned defect-switching square is sub-`q` and impossible; any
+survivor is axis drift, equivalently the same rank-one package slip / common-frame gluing endpoint.
+-/
+def Q64OnePointIsolatorSelfLoopNormalForm
+    (OnePointIsolatorSelfLoop AlignedDefectSwitchingSquareSubqImpossible
+      AxisDriftRankOnePackageSlip : Prop) : Prop :=
+  OnePointIsolatorSelfLoop →
+    AlignedDefectSwitchingSquareSubqImpossible ∨ AxisDriftRankOnePackageSlip
+
+/--
+Edge-table purification for the final two-sheeted hidden-package cover: a nonlocal ambient separator is
+either a mixed-edge branch point, a base-boundary cut, or the global sheet character.
+-/
+def Q64HiddenPackageCoverEdgeTablePurification
+    (NonlocalAmbientSeparator MixedEdgeBranchPoint BaseBoundaryCut
+      GlobalSheetCharacterSeparator : Prop) : Prop :=
+  NonlocalAmbientSeparator →
+    MixedEdgeBranchPoint ∨ BaseBoundaryCut ∨ GlobalSheetCharacterSeparator
+
+/--
+Modulus split for a promoted sheet side: odd moduli already give a smaller q-marker, while dyadic
+moduli leave the half-carrier carry identified in the tail of `proof.md`.
+-/
+def Q64PromotedSheetSideModulusSplit
+    (PromotedSheetSide OddModulus DyadicModulus SmallerQMarker HalfCarrierCarry : Prop) : Prop :=
+  PromotedSheetSide → (OddModulus → SmallerQMarker) ∧ (DyadicModulus → HalfCarrierCarry)
+
+/--
+The remaining 2-primary sheet-character provenance problem: the global sheet separator must promote to
+a first-return boundary side, or its first discontinuity is a branch point (`0001` / square-transverse).
+-/
+def Q64TwoPrimarySheetCharacterProvenance
+    (GlobalSheetCharacterSeparator FirstReturnBoundarySide BranchPoint0001OrSquareTransverse : Prop) :
+    Prop :=
+  GlobalSheetCharacterSeparator → FirstReturnBoundarySide ∨ BranchPoint0001OrSquareTransverse
+
+/--
+Dyadic sheet multiplicity reduction in the final cover: even sheet multiplicity closes, so the only
+dyadic survivor is the primitive half-carrier carry.
+-/
+def Q64DyadicSheetMultiplicityReduction
+    (DyadicSheetCase EvenSheetMultiplicityClosed PrimitiveHalfCarrierCarry : Prop) : Prop :=
+  DyadicSheetCase → EvenSheetMultiplicityClosed ∨ PrimitiveHalfCarrierCarry
+
+/--
+Tree-gauge normalization collapses the distributed hidden-package monodromy of the primitive survivor
+to one anchored rank-one slip edge.
+-/
+def Q64TreeGaugeSingleSlipReduction
+    (DistributedMonodromy PrimitiveHalfCarrierCarry AnchoredRankOneSlipEdge : Prop) : Prop :=
+  DistributedMonodromy → PrimitiveHalfCarrierCarry → AnchoredRankOneSlipEdge
+
+/--
+Single-slip child-realization endpoint: the anchored slip is either an ordered first-return boundary edge
+with one `q/2` child carrier, or its first failed star transport is a branch point.
+-/
+def Q64SingleSlipChildRealization
+    (AnchoredRankOneSlipEdge OrderedFirstReturnBoundaryEdge QHalfChildCarrier
+      BranchPoint0001OrSquareTransverse : Prop) : Prop :=
+  AnchoredRankOneSlipEdge →
+    (OrderedFirstReturnBoundaryEdge ∧ QHalfChildCarrier) ∨ BranchPoint0001OrSquareTransverse
+
+/--
+Locally star-flat slip-edge provenance: a primitive anchored slip edge whose anchored star faces are all
+filled and flat is ordered first-return boundary unless hidden-sheet renaming is a branch square.
+-/
+def Q64StarFlatSlipEdgeProvenance
+    (PrimitiveAnchoredSlipEdge EveryAnchoredStarFaceFilledFlat OrderedFirstReturnBoundaryEdge
+      BranchSquare : Prop) : Prop :=
+  PrimitiveAnchoredSlipEdge →
+    EveryAnchoredStarFaceFilledFlat → OrderedFirstReturnBoundaryEdge ∨ BranchSquare
+
+/--
+Peripheral boundary tests add no new endpoint: the first failed commutation from the slip edge to an old
+boundary row is a nonfilled/curved face, hence already a local exit or branch square.
+-/
+def Q64PeripheralBoundaryTestReduction
+    (PeripheralBoundaryTest NonfilledOrCurvedFace LocalExit BranchSquare : Prop) : Prop :=
+  PeripheralBoundaryTest → NonfilledOrCurvedFace ∧ (LocalExit ∨ BranchSquare)
+
+/--
+Star-to-boundary normality is the final local atom from the moving proof tail: a locally star-flat
+sheet-character separator commuting with the whole boundary history is ordered first-return admissible,
+unless the first static commutation square fails to be a genuine first-return exchange square.
+-/
+def Q64StarToBoundaryNormality
+    (LocallyStarFlatSheetCharacterSeparator BoundaryHistoryCommutation
+      OrderedFirstReturnBoundaryEdge StaticNotFirstReturnSquare : Prop) : Prop :=
+  LocallyStarFlatSheetCharacterSeparator →
+    BoundaryHistoryCommutation → OrderedFirstReturnBoundaryEdge ∨ StaticNotFirstReturnSquare
+
+/-- A static-but-not-first-return commutation square exposes an exchange-gate edge. -/
+def Q64StaticNotFirstReturnExchangeGate
+    (StaticNotFirstReturnSquare ExchangeGateEdge : Prop) : Prop :=
+  StaticNotFirstReturnSquare → ExchangeGateEdge
+
+/--
+A prime breaker of the exchange gate either closes in the fixed-trace/clean local catalogue or becomes a
+minimal square-transverse breaker.
+-/
+def Q64ExchangeGatePrimeBreakerReduction
+    (ExchangeGateEdge FixedTraceCleanLocal MinimalSquareTransverseBreaker : Prop) : Prop :=
+  ExchangeGateEdge → FixedTraceCleanLocal ∨ MinimalSquareTransverseBreaker
+
+/--
+Boundary-exchange closure: the first dirty row of the minimal square-transverse breaker gives a proper
+child carrier, a primitive circuit, a branch square, or the support-preserving gate-parallel bounce.
+-/
+def Q64BoundaryExchangeDirtyRowReduction
+    (MinimalSquareTransverseBreaker ProperChildCarrier PrimitiveCircuit BranchSquare
+      GateParallelSheetCharacterBounce : Prop) : Prop :=
+  MinimalSquareTransverseBreaker →
+    ProperChildCarrier ∨ PrimitiveCircuit ∨ BranchSquare ∨ GateParallelSheetCharacterBounce
+
+/--
+The gate-parallel sheet-character bounce is the same two-chart renaming atom, whose smallest form is an
+idempotent one-edge boundary-normality failure.
+-/
+def Q64GateParallelBounceNormalForm
+    (GateParallelSheetCharacterBounce IdempotentOneEdgeBoundaryNormalityFailure : Prop) : Prop :=
+  GateParallelSheetCharacterBounce → IdempotentOneEdgeBoundaryNormalityFailure
+
+/--
+Named smallest live atom: a global sheet character commutes flatly with all boundary history but is not
+admitted as a first-return boundary edge.
+-/
+def Q64IdempotentBoundaryNormalityFailure
+    (GlobalSheetCharacter FlatBoundaryCommutation NotFirstReturnBoundaryEdge : Prop) : Prop :=
+  GlobalSheetCharacter ∧ FlatBoundaryCommutation ∧ NotFirstReturnBoundaryEdge
+
+/--
+No higher-rank deck group remains: two distinct sheet-character separators either expose a
+base-boundary child carrier/gate breaker or collapse to fixed-trace twins, leaving one central deck
+involution.
+-/
+def Q64DeckGroupRankOneReduction
+    (TwoDistinctSheetCharacterSeparators BaseBoundaryChildCarrier GateBreaker FixedTraceTwins
+      UniqueCentralDeckInvolution : Prop) : Prop :=
+  TwoDistinctSheetCharacterSeparators →
+    BaseBoundaryChildCarrier ∨ GateBreaker ∨ FixedTraceTwins ∨ UniqueCentralDeckInvolution
+
+/--
+Boundary-category fullness for the rank-one deck atom: the unique central involution is already in the
+ordered first-return category, or the obstruction is prefix-insertion fullness for the central sheet edge.
+-/
+def Q64RankOneBoundaryCategoryFullness
+    (UniqueCentralDeckInvolution FirstReturnCategoryMembership PrefixInsertionFullness : Prop) :
+    Prop :=
+  UniqueCentralDeckInvolution → FirstReturnCategoryMembership ∨ PrefixInsertionFullness
+
+/--
+Abstract index-two extensions show local category axioms alone are insufficient: all reduced local tests
+can hold while the central involution stays outside the first-return category.
+-/
+def Q64IndexTwoBoundaryCategoryNoGo
+    (AllReducedLocalTests CentralInvolutionOutsideFirstReturnCategory : Prop) : Prop :=
+  AllReducedLocalTests ∧ CentralInvolutionOutsideFirstReturnCategory
+
+/--
+Lowering to modulus `q/2` closes exactly when one sheet is a first-return child carrier; otherwise the
+same rank-one atom is prefix-insertion fullness.
+-/
+def Q64HalfModulusLoweringOrPrefixInsertion
+    (PrimitiveDyadicSheetAtom FirstReturnChildCarrier LowerModulusCloses
+      PrefixInsertionFullness : Prop) : Prop :=
+  PrimitiveDyadicSheetAtom → (FirstReturnChildCarrier ∧ LowerModulusCloses) ∨ PrefixInsertionFullness
+
+/--
+Root-edge fullness after prefix commutations erase the history: an ambient separator of the primitive
+`q/2` child carrier is a first-return child edge or gives a local/branch exit.
+-/
+def Q64RootEdgeFullness
+    (AmbientSeparatorPrimitiveChildCarrier FirstReturnChildEdge LocalExit BranchExit : Prop) :
+    Prop :=
+  AmbientSeparatorPrimitiveChildCarrier → FirstReturnChildEdge ∨ LocalExit ∨ BranchExit
+
+/--
+Root reseating invariance: the ambient separator can be chosen as the first boundary of an equivalent
+terminal descent, unless the reseating exposes the branch square.
+-/
+def Q64RootReseatingInvariance
+    (AmbientSeparatorPrimitiveChildCarrier EquivalentTerminalFirstBoundary BranchSquare : Prop) :
+    Prop :=
+  AmbientSeparatorPrimitiveChildCarrier → EquivalentTerminalFirstBoundary ∨ BranchSquare
+
+/--
+Root selector fullness, the current graph-specific endpoint: realized ambient child-cut rows are
+selectable as initial first-return boundaries, barring local or branch exits.
+-/
+def Q64RootSelectorFullness
+    (RealizedAmbientChildCutRow InitialFirstReturnBoundary LocalExit BranchExit : Prop) : Prop :=
+  RealizedAmbientChildCutRow → InitialFirstReturnBoundary ∨ LocalExit ∨ BranchExit
+
+/--
+Memory-free selector theorem: at the anchored prefix, eligibility is decided by prefix-local tests unless
+there is hidden dependence on a vanished first-return word.
+-/
+def Q64MemoryFreeSelectorTheorem
+    (AnchoredPrefixEligibility PrefixLocalAdmitted HiddenSelectorMemory : Prop) : Prop :=
+  AnchoredPrefixEligibility → PrefixLocalAdmitted ∨ HiddenSelectorMemory
+
+/--
+A globally restart-minimal terminal descent removes hidden selector memory unless the first divergence is
+an already classified local/branch exchange failure.
+-/
+def Q64RestartMinimalityKillsHiddenMemory
+    (HiddenSelectorMemory RestartAdmissibility LocalBranchExchangeFailure : Prop) : Prop :=
+  HiddenSelectorMemory → RestartAdmissibility ∨ LocalBranchExchangeFailure
+
+/--
+Restart admissibility is controlled by the finite terminal-template residue vector: a nonzero vector
+closes by its first nonzero coordinate, so a survivor has hidden restart residue.
+-/
+def Q64RestartResidueVectorDichotomy
+    (RestartAdmissibility NonzeroRestartResidueVector ClosedFirstNonzeroCoordinate
+      HiddenRestartResidue : Prop) : Prop :=
+  RestartAdmissibility →
+    (NonzeroRestartResidueVector ∧ ClosedFirstNonzeroCoordinate) ∨ HiddenRestartResidue
+
+/--
+Provenance saturation at the anchored prefix: after saturating residue-zero prefix-local rows, a hidden
+restart residue is either removed or becomes a residue-zero non-square row.
+-/
+def Q64AnchoredPrefixProvenanceSaturation
+    (HiddenRestartResidue ResidueZeroPrefixLocalSaturation ResidueZeroNonSquareRow : Prop) :
+    Prop :=
+  HiddenRestartResidue → ResidueZeroPrefixLocalSaturation ∨ ResidueZeroNonSquareRow
+
+/--
+`FR^sat` saturation compatibility, the latest final audit endpoint: first-return-complete support in the
+residue-saturated exchange complex descends unchanged to the original first-return family.
+-/
+def Q64FRSatSaturationCompatibility
+    (FRSatFirstReturnCompleteSupport OriginalFirstReturnCompleteSupport : Prop) : Prop :=
+  FRSatFirstReturnCompleteSupport → OriginalFirstReturnCompleteSupport
+
+/--
+Intrinsic exchange-completeness makes the saturation audit pass: the low-set congruence depends only on
+the four graph corners and the terminal residue vector.
+-/
+def Q64IntrinsicExchangeCompletenessAudit
+    (FourGraphCorners TerminalResidueVector FRSatFirstReturnCompleteSupport
+      OriginalFirstReturnCompleteSupport : Prop) : Prop :=
+  FourGraphCorners → TerminalResidueVector →
+    FRSatFirstReturnCompleteSupport → OriginalFirstReturnCompleteSupport
+
+/--
+Path-saturation equivalence: replacing the historical path convention by the intrinsic
+exchange-complete convention does not change terminal-host descent except through a local/branch exit.
+-/
+def Q64PathSaturationEquivalence
+    (HistoricalPathConvention CanonicalSaturatedConvention TerminalHostDescentUnchanged
+      LocalBranchExit : Prop) : Prop :=
+  HistoricalPathConvention →
+    CanonicalSaturatedConvention → TerminalHostDescentUnchanged ∨ LocalBranchExit
+
+/--
+Saturated provenance/support-decrease in `FR^sat`: a splitter fails prefix-local tests, has nonzero first
+terminal residue, or is a zero-residue `FR^sat` boundary whose first packet-internal failure is a smaller
+exchange-complete q-marker.
+-/
+def Q64SaturatedProvenanceSupportDecrease
+    (Splitter PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+      ExchangeCompleteSmallerQMarker : Prop) : Prop :=
+  Splitter →
+    PrefixLocalFailure ∨ NonzeroFirstTerminalResidue ∨
+      (ZeroResidueFRSatBoundary ∧ ExchangeCompleteSmallerQMarker)
+
+/--
+Concrete row-level skeleton for the canonical saturated first-return exchange complex `FR^sat`.
+The fields are intentionally minimal: the graph-specific work is to prove that zero-residue
+prefix-local splitter rows are saturated boundaries and carry exchange-complete smaller packet support.
+-/
+structure Q64FRSatExchangeComplex (Row Packet : Type*) where
+  splitter : Row → Prop
+  prefixLocal : Row → Prop
+  terminalResidue : Row → ℤ
+  inFRSat : Row → Prop
+  support : Row → Finset Packet
+  exchangeComplete : Finset Packet → Prop
+
+/--
+Unsaturated row-level exchange data before closing the first-return family under zero-residue,
+prefix-local rows.
+-/
+structure Q64FRSatRawExchangeComplex (Row Packet : Type*) where
+  splitter : Row → Prop
+  prefixLocal : Row → Prop
+  terminalResidue : Row → ℤ
+  support : Row → Finset Packet
+  exchangeComplete : Finset Packet → Prop
+
+/--
+The canonical `FR^sat` enlargement: every zero-residue prefix-local row is admitted as a saturated
+first-return boundary.
+-/
+def Q64FRSatRawExchangeComplex.saturate {Row Packet : Type*}
+    (C : Q64FRSatRawExchangeComplex Row Packet) : Q64FRSatExchangeComplex Row Packet where
+  splitter := C.splitter
+  prefixLocal := C.prefixLocal
+  terminalResidue := C.terminalResidue
+  inFRSat := fun r => C.prefixLocal r ∧ C.terminalResidue r = 0
+  support := C.support
+  exchangeComplete := C.exchangeComplete
+
+/--
+Support completion for `FR^sat`: the support of every zero-residue prefix-local splitter row is declared
+exchange-complete in the completed saturated exchange complex.
+-/
+def Q64FRSatRawExchangeComplex.completeSupports {Row Packet : Type*}
+    (C : Q64FRSatRawExchangeComplex Row Packet) : Q64FRSatRawExchangeComplex Row Packet where
+  splitter := C.splitter
+  prefixLocal := C.prefixLocal
+  terminalResidue := C.terminalResidue
+  support := C.support
+  exchangeComplete := fun S =>
+    ∃ r, C.splitter r ∧ C.prefixLocal r ∧ C.terminalResidue r = 0 ∧ C.support r = S
+
+/-- Zero-residue prefix-local rows are boundaries in the saturated enlargement by construction. -/
+theorem q64_inFRSat_saturate_of_prefixLocal_zeroResidue
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) {r : Row}
+    (hprefix : C.prefixLocal r) (hzero : C.terminalResidue r = 0) :
+    C.saturate.inFRSat r := by
+  exact ⟨hprefix, hzero⟩
+
+/--
+In the support-completed raw complex, a zero-residue prefix-local splitter row has exchange-complete
+support by construction.
+-/
+theorem q64_exchangeComplete_completeSupports_of_zeroResidue
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) {r : Row}
+    (hsplit : C.splitter r) (hprefix : C.prefixLocal r) (hzero : C.terminalResidue r = 0) :
+    C.completeSupports.exchangeComplete (C.completeSupports.support r) := by
+  exact ⟨r, hsplit, hprefix, hzero, rfl⟩
+
+/-- A saturated row fails the prefix-local eligibility test. -/
+def Q64FRSatPrefixLocalFailure {Row Packet : Type*}
+    (C : Q64FRSatExchangeComplex Row Packet) (r : Row) : Prop :=
+  C.splitter r ∧ ¬ C.prefixLocal r
+
+/-- A saturated row passes the prefix-local eligibility test. -/
+def Q64FRSatPrefixLocalPass {Row Packet : Type*}
+    (C : Q64FRSatExchangeComplex Row Packet) (r : Row) : Prop :=
+  C.splitter r ∧ C.prefixLocal r
+
+/-- A prefix-local saturated row has nonzero first terminal residue. -/
+def Q64FRSatNonzeroFirstTerminalResidue {Row Packet : Type*}
+    (C : Q64FRSatExchangeComplex Row Packet) (r : Row) : Prop :=
+  C.splitter r ∧ C.prefixLocal r ∧ C.terminalResidue r ≠ 0
+
+/-- A prefix-local saturated row has zero terminal residue. -/
+def Q64FRSatTerminalResidueZero {Row Packet : Type*}
+    (C : Q64FRSatExchangeComplex Row Packet) (r : Row) : Prop :=
+  C.splitter r ∧ C.prefixLocal r ∧ C.terminalResidue r = 0
+
+/-- A zero-residue prefix-local row is admitted as an `FR^sat` boundary. -/
+def Q64FRSatZeroResidueBoundary {Row Packet : Type*}
+    (C : Q64FRSatExchangeComplex Row Packet) (r : Row) : Prop :=
+  C.splitter r ∧ C.prefixLocal r ∧ C.terminalResidue r = 0 ∧ C.inFRSat r
+
+/-- The packet-internal failure support of the row is exchange-complete in `FR^sat`. -/
+def Q64FRSatExchangeCompleteSmallerQMarker {Row Packet : Type*}
+    (C : Q64FRSatExchangeComplex Row Packet) (r : Row) : Prop :=
+  C.exchangeComplete (C.support r)
+
+/--
+Granular proof obligations for saturated provenance/support-decrease in the canonical `FR^sat`
+convention.  This deliberately separates the real mathematical content from convention bookkeeping:
+first classify a splitter by prefix-local tests, then by terminal residue, then prove the zero-residue
+case is an `FR^sat` boundary with an exchange-complete smaller packet-internal q-marker.
+-/
+structure Q64CanonicalSaturatedBranchData
+    (Splitter PrefixLocalFailure PrefixLocalPass NonzeroFirstTerminalResidue TerminalResidueZero
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker : Prop) : Prop where
+  prefixStep : Splitter → PrefixLocalFailure ∨ PrefixLocalPass
+  residueStep : PrefixLocalPass → NonzeroFirstTerminalResidue ∨ TerminalResidueZero
+  frsatBoundary : PrefixLocalPass → TerminalResidueZero → ZeroResidueFRSatBoundary
+  packetInternalFailure :
+    PrefixLocalPass → TerminalResidueZero → ExchangeCompleteSmallerQMarker
+
+/--
+The branch-data certificate is exactly the non-bookkeeping content needed for the saturated
+provenance/support-decrease theorem.
+-/
+theorem q64_saturatedProvenanceSupportDecrease_of_canonicalSaturatedBranchData
+    {Splitter PrefixLocalFailure PrefixLocalPass NonzeroFirstTerminalResidue TerminalResidueZero
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker : Prop}
+    (hdata :
+      Q64CanonicalSaturatedBranchData Splitter PrefixLocalFailure PrefixLocalPass
+        NonzeroFirstTerminalResidue TerminalResidueZero ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker) :
+    Q64SaturatedProvenanceSupportDecrease Splitter PrefixLocalFailure
+      NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker := by
+  intro hsplit
+  rcases hdata.prefixStep hsplit with hprefix | hpass
+  · exact Or.inl hprefix
+  rcases hdata.residueStep hpass with hnonzero | hzero
+  · exact Or.inr (Or.inl hnonzero)
+  · exact Or.inr (Or.inr ⟨hdata.frsatBoundary hpass hzero,
+      hdata.packetInternalFailure hpass hzero⟩)
+
+/--
+A concrete `FR^sat` row-level complex supplies the abstract branch-data certificate once the two
+graph-specific zero-residue facts are proved: boundary admission and exchange-complete smaller support.
+-/
+theorem q64_canonicalSaturatedBranchData_of_frsatExchangeComplex
+    {Row Packet : Type*} (C : Q64FRSatExchangeComplex Row Packet) (r : Row)
+    (hboundary :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 → C.inFRSat r)
+    (hpacket :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 →
+        C.exchangeComplete (C.support r)) :
+    Q64CanonicalSaturatedBranchData (C.splitter r) (Q64FRSatPrefixLocalFailure C r)
+      (Q64FRSatPrefixLocalPass C r) (Q64FRSatNonzeroFirstTerminalResidue C r)
+      (Q64FRSatTerminalResidueZero C r) (Q64FRSatZeroResidueBoundary C r)
+      (Q64FRSatExchangeCompleteSmallerQMarker C r) := by
+  classical
+  refine
+    { prefixStep := ?_
+      residueStep := ?_
+      frsatBoundary := ?_
+      packetInternalFailure := ?_ }
+  · intro hsplit
+    by_cases hprefix : C.prefixLocal r
+    · exact Or.inr ⟨hsplit, hprefix⟩
+    · exact Or.inl ⟨hsplit, hprefix⟩
+  · intro hpass
+    by_cases hzero : C.terminalResidue r = 0
+    · exact Or.inr ⟨hpass.1, hpass.2, hzero⟩
+    · exact Or.inl ⟨hpass.1, hpass.2, hzero⟩
+  · intro hpass hzero
+    exact ⟨hpass.1, hpass.2, hzero.2.2, hboundary hpass.1 hpass.2 hzero.2.2⟩
+  · intro hpass hzero
+    exact hpacket hpass.1 hpass.2 hzero.2.2
+
+/--
+Concrete `FR^sat` row-level branch classification gives the saturated provenance/support-decrease
+theorem for that row.
+-/
+theorem q64_saturatedProvenanceSupportDecrease_of_frsatExchangeComplex
+    {Row Packet : Type*} (C : Q64FRSatExchangeComplex Row Packet) (r : Row)
+    (hboundary :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 → C.inFRSat r)
+    (hpacket :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 →
+        C.exchangeComplete (C.support r)) :
+    Q64SaturatedProvenanceSupportDecrease (C.splitter r) (Q64FRSatPrefixLocalFailure C r)
+      (Q64FRSatNonzeroFirstTerminalResidue C r) (Q64FRSatZeroResidueBoundary C r)
+      (Q64FRSatExchangeCompleteSmallerQMarker C r) :=
+  q64_saturatedProvenanceSupportDecrease_of_canonicalSaturatedBranchData
+    (q64_canonicalSaturatedBranchData_of_frsatExchangeComplex C r hboundary hpacket)
+
+/--
+In the explicit saturated enlargement, the boundary-admission half is definitional.  The remaining
+graph-specific input is exactly the packet-internal exchange-completeness of zero-residue splitter rows.
+-/
+theorem q64_saturatedProvenanceSupportDecrease_of_rawFRSatSaturation
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    (hpacket :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 →
+        C.exchangeComplete (C.support r)) :
+    Q64SaturatedProvenanceSupportDecrease (C.saturate.splitter r)
+      (Q64FRSatPrefixLocalFailure C.saturate r)
+      (Q64FRSatNonzeroFirstTerminalResidue C.saturate r)
+      (Q64FRSatZeroResidueBoundary C.saturate r)
+      (Q64FRSatExchangeCompleteSmallerQMarker C.saturate r) := by
+  exact
+    q64_saturatedProvenanceSupportDecrease_of_frsatExchangeComplex C.saturate r
+      (fun _hsplit hprefix hzero =>
+        q64_inFRSat_saturate_of_prefixLocal_zeroResidue C hprefix hzero)
+      hpacket
+
+/--
+The explicit saturated enlargement supplies the granular branch-data certificate once zero-residue
+supports are known to be exchange-complete.
+-/
+theorem q64_canonicalSaturatedBranchData_of_rawFRSatSaturation
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    (hpacket :
+      C.splitter r → C.prefixLocal r → C.terminalResidue r = 0 →
+        C.exchangeComplete (C.support r)) :
+    Q64CanonicalSaturatedBranchData (C.saturate.splitter r)
+      (Q64FRSatPrefixLocalFailure C.saturate r) (Q64FRSatPrefixLocalPass C.saturate r)
+      (Q64FRSatNonzeroFirstTerminalResidue C.saturate r)
+      (Q64FRSatTerminalResidueZero C.saturate r)
+      (Q64FRSatZeroResidueBoundary C.saturate r)
+      (Q64FRSatExchangeCompleteSmallerQMarker C.saturate r) := by
+  exact
+    q64_canonicalSaturatedBranchData_of_frsatExchangeComplex C.saturate r
+      (fun _hsplit hprefix hzero =>
+        q64_inFRSat_saturate_of_prefixLocal_zeroResidue C hprefix hzero)
+      hpacket
+
+/--
+After both zero-residue boundary saturation and support completion, the granular branch-data certificate
+is structural.
+-/
+theorem q64_canonicalSaturatedBranchData_of_completedRawFRSatSaturation
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row) :
+    Q64CanonicalSaturatedBranchData (C.completeSupports.saturate.splitter r)
+      (Q64FRSatPrefixLocalFailure C.completeSupports.saturate r)
+      (Q64FRSatPrefixLocalPass C.completeSupports.saturate r)
+      (Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r)
+      (Q64FRSatTerminalResidueZero C.completeSupports.saturate r)
+      (Q64FRSatZeroResidueBoundary C.completeSupports.saturate r)
+      (Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r) := by
+  exact
+    q64_canonicalSaturatedBranchData_of_rawFRSatSaturation C.completeSupports r
+      (fun hsplit hprefix hzero =>
+        q64_exchangeComplete_completeSupports_of_zeroResidue C hsplit hprefix hzero)
+
+/--
+After both zero-residue boundary saturation and support completion, the row-level saturated
+provenance/support-decrease theorem is purely structural.
+-/
+theorem q64_saturatedProvenanceSupportDecrease_of_completedRawFRSatSaturation
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row) :
+    Q64SaturatedProvenanceSupportDecrease (C.completeSupports.saturate.splitter r)
+      (Q64FRSatPrefixLocalFailure C.completeSupports.saturate r)
+      (Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r)
+      (Q64FRSatZeroResidueBoundary C.completeSupports.saturate r)
+      (Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r) := by
+  exact
+    q64_saturatedProvenanceSupportDecrease_of_canonicalSaturatedBranchData
+      (q64_canonicalSaturatedBranchData_of_completedRawFRSatSaturation C r)
+
+/--
+Canonical saturated first-return convention: boundaries are chosen in `FR^sat` after support
+minimization and a fixed lexicographic tie-break.
+-/
+def Q64CanonicalSaturatedFirstReturnConvention
+    (BoundariesChosenInFRSat SupportMinimized LexicographicTieBreak : Prop) : Prop :=
+  BoundariesChosenInFRSat ∧ SupportMinimized ∧ LexicographicTieBreak
+
+/--
+The canonical saturated convention supplies the saturated provenance/support-decrease theorem directly;
+older unsaturated paths are handled separately by path-saturation equivalence.
+-/
+def Q64CanonicalSaturatedProvenanceTheorem
+    (CanonicalSaturatedConvention Splitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker : Prop) : Prop :=
+  CanonicalSaturatedConvention →
+    Q64SaturatedProvenanceSupportDecrease Splitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker
+
+/--
+Completed `FR^sat` supplies the canonical saturated provenance theorem structurally: once the raw
+first-return complex is saturated and zero-residue supports are completed, the convention hypotheses no
+longer add separate graph-theoretic content.
+-/
+theorem q64_canonicalSaturatedProvenanceTheorem_of_completedRawFRSatSaturation
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {CanonicalSaturatedConvention : Prop} :
+    Q64CanonicalSaturatedProvenanceTheorem CanonicalSaturatedConvention
+      (C.completeSupports.saturate.splitter r)
+      (Q64FRSatPrefixLocalFailure C.completeSupports.saturate r)
+      (Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r)
+      (Q64FRSatZeroResidueBoundary C.completeSupports.saturate r)
+      (Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r) := by
+  intro _hcanonical
+  exact q64_saturatedProvenanceSupportDecrease_of_completedRawFRSatSaturation C r
+
+/--
+If an older unsaturated path must be preserved, the remaining obligation is a homotopy/comparison theorem
+from that path to the canonical saturated path.
+-/
+def Q64UnsaturatedToSaturatedPathComparison
+    (OlderUnsaturatedPath CanonicalSaturatedPath HomotopyComparison LocalBranchExit : Prop) :
+    Prop :=
+  OlderUnsaturatedPath → CanonicalSaturatedPath → HomotopyComparison ∨ LocalBranchExit
+
+/--
+The path-saturation equivalence used to transport Theorem G back to the historical path convention
+is exactly the unsaturated-to-saturated comparison plus the assertion that homotopic comparisons
+preserve terminal-host descent.
+-/
+theorem q64_pathSaturationEquivalence_of_unsaturatedToSaturatedPathComparison
+    {HistoricalPathConvention CanonicalSaturatedConvention HomotopyComparison
+      TerminalHostDescentUnchanged LocalBranchExit : Prop}
+    (hcomparison :
+      Q64UnsaturatedToSaturatedPathComparison HistoricalPathConvention
+        CanonicalSaturatedConvention HomotopyComparison LocalBranchExit)
+    (hhomotopy : HomotopyComparison → TerminalHostDescentUnchanged) :
+    Q64PathSaturationEquivalence HistoricalPathConvention CanonicalSaturatedConvention
+      TerminalHostDescentUnchanged LocalBranchExit := by
+  intro hhistorical hcanonical
+  rcases hcomparison hhistorical hcanonical with hhom | hexit
+  · exact Or.inl (hhomotopy hhom)
+  · exact Or.inr hexit
+
+/-- Finite commutator order yields common-frame gluing only after the anonymous-orbit and promoted
+boundary branches are routed. -/
+theorem q64_singleTurnCommonFrameGluing_of_finiteCommutatorOrderReduction
+    {ConsecutiveDirtyAxes FiniteCommutatorOrder AnonymousCoordinateOrbit PromotedBoundarySplitter
+      FirstPackageChangeCompleteSmallerMarker LocalExit : Prop}
+    (hfinite :
+      Q64FiniteCommutatorOrderReduction FiniteCommutatorOrder AnonymousCoordinateOrbit
+        PromotedBoundarySplitter)
+    (horder : ConsecutiveDirtyAxes → FiniteCommutatorOrder)
+    (horbit : AnonymousCoordinateOrbit → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit)
+    (hpromoted : PromotedBoundarySplitter → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit) :
+    Q64SingleTurnCommonFrameGluing ConsecutiveDirtyAxes FirstPackageChangeCompleteSmallerMarker
+      LocalExit := by
+  intro haxes
+  rcases hfinite (horder haxes) with horbit' | hpromoted'
+  · exact horbit horbit'
+  · exact hpromoted hpromoted'
+
+/-- Dirty chart-change carrier analysis gives single-turn gluing once all three carrier branches route. -/
+theorem q64_singleTurnCommonFrameGluing_of_dirtyChartCarrier
+    {ConsecutiveDirtyAxes AdjacentTurn OppositeSigns BalancedFlip SameSigns SingletonIsolatorEdge
+      DirtyChartChange DirtyChartChangeCarrier ProperCompleteSubcarrier Primitive2x2Circuit
+      NonPromotedAmbientSplitAdmissibleModule FirstPackageChangeCompleteSmallerMarker LocalExit :
+      Prop}
+    (hturn : ConsecutiveDirtyAxes → AdjacentTurn)
+    (hnormal :
+      Q64AdjacentTurnSignedEdgeNormalForm AdjacentTurn OppositeSigns BalancedFlip SameSigns
+        SingletonIsolatorEdge DirtyChartChange)
+    (hcarrier : DirtyChartChange → DirtyChartChangeCarrier)
+    (htri :
+      Q64DirtyChartChangeCarrierTrichotomy DirtyChartChangeCarrier ProperCompleteSubcarrier
+        Primitive2x2Circuit NonPromotedAmbientSplitAdmissibleModule)
+    (hproper : ProperCompleteSubcarrier → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit)
+    (hprimitive : Primitive2x2Circuit → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit)
+    (hmodule :
+      NonPromotedAmbientSplitAdmissibleModule →
+        FirstPackageChangeCompleteSmallerMarker ∨ LocalExit) :
+    Q64SingleTurnCommonFrameGluing ConsecutiveDirtyAxes FirstPackageChangeCompleteSmallerMarker
+      LocalExit := by
+  intro haxes
+  rcases hnormal (hturn haxes) with hbalanced | hisolator
+  · rcases hbalanced with ⟨_, _, hdirty⟩
+    rcases htri (hcarrier hdirty) with hsub | hcircuit | hmodule'
+    · exact hproper hsub
+    · exact hprimitive hcircuit
+    · exact hmodule hmodule'
+  · rcases hisolator with ⟨_, _, hdirty⟩
+    rcases htri (hcarrier hdirty) with hsub | hcircuit | hmodule'
+    · exact hproper hsub
+    · exact hprimitive hcircuit
+    · exact hmodule hmodule'
+
+/-- The reduced two-chart boundary certificate directly routes the irreducible slip branch. -/
+theorem q64_singleTurnCommonFrameGluing_of_twoChartSlipBoundaryCertificate
+    {ConsecutiveDirtyAxes DirtyChartChangeEdge CompleteSharedSlackSide SmallerSquareTransverseBreaker
+      FirstPackageChangeCompleteSmallerMarker LocalExit : Prop}
+    (hdirty : ConsecutiveDirtyAxes → DirtyChartChangeEdge)
+    (hcert :
+      Q64TwoChartSlipBoundaryCertificate DirtyChartChangeEdge CompleteSharedSlackSide
+        SmallerSquareTransverseBreaker)
+    (hside : CompleteSharedSlackSide → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit)
+    (hbreaker : SmallerSquareTransverseBreaker → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit) :
+    Q64SingleTurnCommonFrameGluing ConsecutiveDirtyAxes FirstPackageChangeCompleteSmallerMarker
+      LocalExit := by
+  intro haxes
+  rcases hcert (hdirty haxes) with hshared | hsmall
+  · exact hside hshared
+  · exact hbreaker hsmall
+
+/-- The commutator formulation also yields single-turn common-frame gluing once its branches route. -/
+theorem q64_singleTurnCommonFrameGluing_of_successorCommutation
+    {ConsecutiveDirtyAxes SuccessorPackageIdentificationsCommute NontrivialCommutator
+      MixedNonOverlapPair0101_0011 Positive0001PackageLeak FirstPackageChangeCompleteSmallerMarker
+      LocalExit : Prop}
+    (hcomm :
+      Q64CommonFrameSuccessorCommutation ConsecutiveDirtyAxes
+        SuccessorPackageIdentificationsCommute NontrivialCommutator)
+    (hnormal :
+      Q64SuccessorPackageCommutatorNormalForm NontrivialCommutator
+        MixedNonOverlapPair0101_0011 Positive0001PackageLeak)
+    (hcommute :
+      SuccessorPackageIdentificationsCommute → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit)
+    (hmixed :
+      MixedNonOverlapPair0101_0011 → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit)
+    (hpositive : Positive0001PackageLeak → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit) :
+    Q64SingleTurnCommonFrameGluing ConsecutiveDirtyAxes FirstPackageChangeCompleteSmallerMarker
+      LocalExit := by
+  intro haxes
+  rcases hcomm haxes with hcommutes | hnontrivial
+  · exact hcommute hcommutes
+  rcases hnormal hnontrivial with hmixedPair | hpositiveLeak
+  · exact hmixed hmixedPair
+  · exact hpositive hpositiveLeak
+
+/-- Pair-status constancy on the one-corner fiber is another route to single-turn common-frame gluing. -/
+theorem q64_singleTurnCommonFrameGluing_of_oneCornerPairStatusConstancy
+    {ConsecutiveDirtyAxes OneCornerMedianFiber PairStatusConstant
+      SuccessorSide0001SharedSlackMarker FirstPackageChangeCompleteSmallerMarker LocalExit : Prop}
+    (hconst :
+      Q64OneCornerMedianPairStatusConstancy OneCornerMedianFiber PairStatusConstant
+        SuccessorSide0001SharedSlackMarker)
+    (hfiber : ConsecutiveDirtyAxes → OneCornerMedianFiber)
+    (hconstant : PairStatusConstant → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit)
+    (hmarker :
+      SuccessorSide0001SharedSlackMarker → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit) :
+    Q64SingleTurnCommonFrameGluing ConsecutiveDirtyAxes FirstPackageChangeCompleteSmallerMarker
+      LocalExit := by
+  intro haxes
+  rcases hconst (hfiber haxes) with hpair | hmarker'
+  · exact hconstant hpair
+  · exact hmarker hmarker'
+
+/-- The two-fiber overlap lemma is an equivalent route to single-turn common-frame gluing once both
+branches are routed to a smaller marker or local exit. -/
+theorem q64_singleTurnCommonFrameGluing_of_twoFiberOverlap
+    {ConsecutiveDirtyAxes Omega10Nonempty Omega01Nonempty Common0111Witness
+      MixedNonOverlapPair0101_0011 FirstPackageChangeCompleteSmallerMarker LocalExit : Prop}
+    (hoverlap :
+      Q64TwoFiberSingleFlipOverlapLemma Omega10Nonempty Omega01Nonempty Common0111Witness
+        MixedNonOverlapPair0101_0011)
+    (hfibers : ConsecutiveDirtyAxes → Omega10Nonempty ∧ Omega01Nonempty)
+    (hcommon : Common0111Witness → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit)
+    (hmixed :
+      MixedNonOverlapPair0101_0011 → FirstPackageChangeCompleteSmallerMarker ∨ LocalExit) :
+    Q64SingleTurnCommonFrameGluing ConsecutiveDirtyAxes FirstPackageChangeCompleteSmallerMarker
+      LocalExit := by
+  intro haxes
+  rcases hfibers haxes with ⟨h10, h01⟩
+  rcases hoverlap h10 h01 with hwitness | hmixedPair
+  · exact hcommon hwitness
+  · exact hmixed hmixedPair
+
+/-- A defect-switching square closes once the two first-return promotion branches close and the reduced
+trace self-loop model is ruled out in the realized graph. -/
+theorem q64_defectSwitchingSquare_closed_of_promotionGap
+    {DefectSwitchingFullySkewSquare IsolatedRowPromoted LargerSideCompleteTransportedBag
+      ReducedTraceSelfLoopModel FirstReturnSide CompleteSmallerBag LocalExit : Prop}
+    (hgap :
+      Q64DefectSwitchingSelfLoopPromotionGap DefectSwitchingFullySkewSquare IsolatedRowPromoted
+        LargerSideCompleteTransportedBag ReducedTraceSelfLoopModel)
+    (hrow : IsolatedRowPromoted → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hside : LargerSideCompleteTransportedBag → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hnoModel : ¬ ReducedTraceSelfLoopModel) :
+    DefectSwitchingFullySkewSquare → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit := by
+  intro hsquare
+  rcases hgap hsquare with hpromote | hbag | hmodel
+  · exact hrow hpromote
+  · exact hside hbag
+  · exact False.elim (hnoModel hmodel)
+
+/-- The sharpened axis-lock endpoint closes the defect-switching square branch. -/
+theorem q64_defectSwitchingSquare_closed_of_commonFrameAxisLock
+    {DefectSwitchingFullySkewSquare SingletonFirstAxisSeated TransportDriftsToIncomparableFirstAxis
+      LocalExit PrimitiveCircuit FirstReturnSide CompleteSmallerBag : Prop}
+    (hanalysis :
+      Q64DefectSwitchingSquareAxisAnalysis DefectSwitchingFullySkewSquare
+        SingletonFirstAxisSeated TransportDriftsToIncomparableFirstAxis)
+    (hseated : SingletonFirstAxisSeated → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hlock :
+      Q64CommonFrameOrderedAxisLock TransportDriftsToIncomparableFirstAxis LocalExit
+        PrimitiveCircuit)
+    (hprimitive : PrimitiveCircuit → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit) :
+    DefectSwitchingFullySkewSquare → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit := by
+  intro hsquare
+  rcases hanalysis hsquare with hfirst | hdrift
+  · exact hseated hfirst
+  rcases hlock hdrift with hlocal | hprimitiveCircuit
+  · exact Or.inr (Or.inr hlocal)
+  · exact hprimitive hprimitiveCircuit
+
+/--
+The equivalent single-turn common-frame gluing endpoint also closes the defect-switching square branch:
+the drift branch becomes consecutive dirty axes, whose first package-change edge is a complete smaller
+bag or a local exit.
+-/
+theorem q64_defectSwitchingSquare_closed_of_singleTurnCommonFrameGluing
+    {DefectSwitchingFullySkewSquare SingletonFirstAxisSeated TransportDriftsToIncomparableFirstAxis
+      ConsecutiveDirtyAxes FirstReturnSide CompleteSmallerBag LocalExit : Prop}
+    (hanalysis :
+      Q64DefectSwitchingSquareAxisAnalysis DefectSwitchingFullySkewSquare
+        SingletonFirstAxisSeated TransportDriftsToIncomparableFirstAxis)
+    (hseated : SingletonFirstAxisSeated → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hdirty : TransportDriftsToIncomparableFirstAxis → ConsecutiveDirtyAxes)
+    (hglue : Q64SingleTurnCommonFrameGluing ConsecutiveDirtyAxes CompleteSmallerBag LocalExit) :
+    DefectSwitchingFullySkewSquare → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit := by
+  intro hsquare
+  rcases hanalysis hsquare with hfirst | hdrift
+  · exact hseated hfirst
+  rcases hglue (hdirty hdrift) with hsmall | hlocal
+  · exact Or.inr (Or.inl hsmall)
+  · exact Or.inr (Or.inr hlocal)
+
+/--
+Higher-rank package-coordinate monodromy is not a separate endpoint after quotienting fixed-trace,
+unary, and false-clone kernels: its first moved coordinate is rank-one `0001`, or the reverse
+orientation is represented by the `0111` compensator with unary leaks.
+-/
+def Q64HigherRankMonodromyReduction
+    (HigherRankMonodromy RankOneSuccessor0001 Reverse0111WithUnaryLeaks : Prop) : Prop :=
+  HigherRankMonodromy → RankOneSuccessor0001 ∨ Reverse0111WithUnaryLeaks
+
+/-- If both rank-one exits are impossible, no higher-rank monodromy survivor remains. -/
+theorem q64_no_higherRankMonodromy_of_reduction
+    {HigherRankMonodromy RankOneSuccessor0001 Reverse0111WithUnaryLeaks : Prop}
+    (hred :
+      Q64HigherRankMonodromyReduction HigherRankMonodromy RankOneSuccessor0001
+        Reverse0111WithUnaryLeaks)
+    (hno0001 : ¬ RankOneSuccessor0001)
+    (hnoReverse : ¬ Reverse0111WithUnaryLeaks) :
+    ¬ HigherRankMonodromy := by
+  intro hmono
+  rcases hred hmono with h0001 | hreverse
+  · exact hno0001 h0001
+  · exact hnoReverse hreverse
+
 /--
 Directional sign coherence on a thickened bad hidden edge: a lower edge of type `10` cannot reverse
 to `01` on the opposite side, and symmetrically after swapping the square directions.
@@ -1070,6 +2658,33 @@ def Q64OneCornerSharedSliceToTransversal
   Q64AmbientToFixedSharedSliceLift AmbientBinaryCylinder FixedFrameShadow SharedSliceEntry →
     Q64PrescribedSharedSliceEntry FixedFrameShadow SharedSliceEntry AdmissibleCylinderEntry →
       LocalCommonCore → AmbientBinaryCylinder → CompatibleTransversal
+
+/--
+Outgoing anti-Horn/no-split is formal once persistence, silent-edge exclusion, and componentwise
+no-split are available.
+-/
+def Q64OutgoingAntiHornFormal
+    (AnchoredPersistence SilentEdgeExclusion ComponentwiseNoSplit OutgoingAntiHorn : Prop) : Prop :=
+  AnchoredPersistence → SilentEdgeExclusion → ComponentwiseNoSplit → OutgoingAntiHorn
+
+/--
+Failures of the outgoing no-split formulation reduce to repair-fiber cubicality or to the same
+square-breaker routing package.
+-/
+def Q64OutgoingNoSplitFailureReduction
+    (OutgoingNoSplitFailure RepairFiberCubicality SquareBreakerRouting : Prop) : Prop :=
+  OutgoingNoSplitFailure → RepairFiberCubicality ∨ SquareBreakerRouting
+
+/-- The formal outgoing anti-Horn surface projects the anti-Horn conclusion. -/
+theorem q64_outgoingAntiHorn_of_formal
+    {AnchoredPersistence SilentEdgeExclusion ComponentwiseNoSplit OutgoingAntiHorn : Prop}
+    (h :
+      Q64OutgoingAntiHornFormal AnchoredPersistence SilentEdgeExclusion ComponentwiseNoSplit
+        OutgoingAntiHorn)
+    (hpersist : AnchoredPersistence) (hsilent : SilentEdgeExclusion)
+    (hnosplit : ComponentwiseNoSplit) :
+    OutgoingAntiHorn :=
+  h hpersist hsilent hnosplit
 
 end OneCornerMedianFiber
 
@@ -1158,6 +2773,40 @@ cylinder-constant ordered sign, or it localizes to binary trace coalescence.
 def Q64PairChamberOrderedSignOrTraceCoalescence
     (ChamberFlatHiddenStep CylinderConstantOrderedSign BinaryTraceCoalescence : Prop) : Prop :=
   ChamberFlatHiddenStep → CylinderConstantOrderedSign ∨ BinaryTraceCoalescence
+
+/--
+Filled-overlap pair-injectivity, pair-chamber hidden-choice separation, and two-fiber overlap all
+reduce to either a fixed-trace local exit or a square-transverse breaker.
+-/
+def Q64FilledOverlapPairInjectivityReduction
+    (FilledOverlapFailure FixedTraceLocalExit SquareTransverseBreaker : Prop) : Prop :=
+  FilledOverlapFailure → FixedTraceLocalExit ∨ SquareTransverseBreaker
+
+/--
+Binary skew-ladder endpoint: after common discrepancy packaging is missing, every dirty-row turn is
+either a balanced flip, a same-side twin turn needing an outside boundary distinguisher, or the
+successor-side `0001` square.
+-/
+def Q64BinarySkewLadderTurnDichotomy
+    (DirtyRowTurn BalancedFlip SameSideTwinTurn BoundaryDistinguisher SuccessorSide0001 : Prop) :
+    Prop :=
+  DirtyRowTurn → BalancedFlip ∨ (SameSideTwinTurn ∧ BoundaryDistinguisher) ∨ SuccessorSide0001
+
+/--
+Fixed-square opposite-defect uniqueness is not a raw short-packet consequence; it reduces to a
+same-trace/false-clone exit or to the square-transverse breaker theorem.
+-/
+def Q64FixedSquareOppositeDefectUniquenessReduction
+    (TwoCompleters SameTraceOrFalseCloneExit SquareTransverseBreaker : Prop) : Prop :=
+  TwoCompleters → SameTraceOrFalseCloneExit ∨ SquareTransverseBreaker
+
+/--
+Failed-row acyclicity closes only when the first dirty failed row strictly decreases the active side;
+the nondecreasing survivor is exactly the skew binary ladder.
+-/
+def Q64FailedRowAcyclicityEndpointReduction
+    (DirtyFailedRowCycle StrictActiveSideDecrease SkewBinaryLadder : Prop) : Prop :=
+  DirtyFailedRowCycle → StrictActiveSideDecrease ∨ SkewBinaryLadder
 
 end CommonEdgeRigidity
 
@@ -1449,6 +3098,88 @@ theorem q64_three_medianConvex_sets_helly
   exact ⟨⟨hA (Or.inr (Or.inr ⟨hbA, hcA⟩)),
     hB (Or.inr (Or.inl ⟨haB, hcB⟩))⟩,
     hC (Or.inl ⟨haC, hbC⟩)⟩
+
+/-- First packet in the abstract candidate-switching Helly no-go. -/
+def q64CandidateSwitchingNoGoA : Set (Fin 3) := fun x => x = 0 ∨ x = 1
+
+/-- Second packet in the abstract candidate-switching Helly no-go. -/
+def q64CandidateSwitchingNoGoB : Set (Fin 3) := fun x => x = 1 ∨ x = 2
+
+/-- Third packet in the abstract candidate-switching Helly no-go. -/
+def q64CandidateSwitchingNoGoC : Set (Fin 3) := fun x => x = 2 ∨ x = 0
+
+/--
+Pairwise packet overlaps do not imply a common witness without the graph-specific gatedness input.
+-/
+theorem q64_candidateSwitching_pairwise_not_triple_helly :
+    (q64CandidateSwitchingNoGoA ∩ q64CandidateSwitchingNoGoB).Nonempty ∧
+      (q64CandidateSwitchingNoGoB ∩ q64CandidateSwitchingNoGoC).Nonempty ∧
+        (q64CandidateSwitchingNoGoC ∩ q64CandidateSwitchingNoGoA).Nonempty ∧
+          ¬ (q64CandidateSwitchingNoGoA ∩ q64CandidateSwitchingNoGoB ∩
+            q64CandidateSwitchingNoGoC).Nonempty := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · refine ⟨(1 : Fin 3), ?_⟩
+    constructor
+    · unfold q64CandidateSwitchingNoGoA
+      right
+      rfl
+    · unfold q64CandidateSwitchingNoGoB
+      left
+      rfl
+  · refine ⟨(2 : Fin 3), ?_⟩
+    constructor
+    · unfold q64CandidateSwitchingNoGoB
+      right
+      rfl
+    · unfold q64CandidateSwitchingNoGoC
+      left
+      rfl
+  · refine ⟨(0 : Fin 3), ?_⟩
+    constructor
+    · unfold q64CandidateSwitchingNoGoC
+      right
+      rfl
+    · unfold q64CandidateSwitchingNoGoA
+      left
+      rfl
+  · rintro ⟨x, hx⟩
+    rcases hx with ⟨⟨hA, hB⟩, hC⟩
+    unfold q64CandidateSwitchingNoGoA at hA
+    unfold q64CandidateSwitchingNoGoB at hB
+    unfold q64CandidateSwitchingNoGoC at hC
+    rcases hA with rfl | rfl
+    · change (0 : Fin 3) = 1 ∨ (0 : Fin 3) = 2 at hB
+      rcases hB with h | h
+      · exact (by decide : (0 : Fin 3) ≠ 1) h
+      · exact (by decide : (0 : Fin 3) ≠ 2) h
+    · change (1 : Fin 3) = 2 ∨ (1 : Fin 3) = 0 at hC
+      rcases hC with h | h
+      · exact (by decide : (1 : Fin 3) ≠ 2) h
+      · exact (by decide : (1 : Fin 3) ≠ 0) h
+
+/--
+Graph-specific candidate-switching gatedness: pairwise face overlaps must either produce a common
+witness, give a transverse gate, or expose the shared-slack marker.
+-/
+def Q64CandidateSwitchingGatedness
+    (PairwiseFaceOverlap CommonWitness TransverseGate SharedSlackMarker : Prop) : Prop :=
+  PairwiseFaceOverlap → CommonWitness ∨ TransverseGate ∨ SharedSlackMarker
+
+/--
+If no transverse gate or marker remains, candidate-switching gatedness gives a common witness.
+-/
+theorem q64_commonWitness_of_candidateSwitchingGatedness
+    {PairwiseFaceOverlap CommonWitness TransverseGate SharedSlackMarker : Prop}
+    (hgated :
+      Q64CandidateSwitchingGatedness PairwiseFaceOverlap CommonWitness TransverseGate
+        SharedSlackMarker)
+    (hnoGate : ¬ TransverseGate) (hnoMarker : ¬ SharedSlackMarker)
+    (hoverlap : PairwiseFaceOverlap) :
+    CommonWitness := by
+  rcases hgated hoverlap with hcommon | hgate | hmarker
+  · exact hcommon
+  · exact False.elim (hnoGate hgate)
+  · exact False.elim (hnoMarker hmarker)
 
 end UpperFaceHelly
 
@@ -1989,6 +3720,22 @@ def Q64PositiveANDCarryAtom (f : Bool → Bool → ZMod 2) : Prop :=
 def Q64BoolPositiveANDAtom (p : Bool → Bool → Bool) : Prop :=
   p false false = false ∧ p true false = false ∧ p false true = false ∧ p true true = true
 
+/-- Gated-Helly square implication for one localized candidate packet. -/
+def Q64GatedHellySquareImplication (Omega : Bool → Bool → Bool) : Prop :=
+  Omega false false = true → Omega true false = true → Omega false true = true →
+    Omega true true = true
+
+/--
+The exact first failure of the gated-Helly square implication is a successor-side positive-AND row,
+represented by the Boolean complement of the candidate-membership table.
+-/
+theorem q64_positiveAND_of_gatedHellySquare_failure
+    {Omega : Bool → Bool → Bool}
+    (h00 : Omega false false = true) (h10 : Omega true false = true)
+    (h01 : Omega false true = true) (h11 : Omega true true = false) :
+    Q64BoolPositiveANDAtom (fun x y => !Omega x y) := by
+  simp [Q64BoolPositiveANDAtom, h00, h10, h01, h11]
+
 /-- Coerce a Boolean endpoint table into its `F₂` characteristic table. -/
 def q64BoolToF2 (b : Bool) : ZMod 2 := if b then 1 else 0
 
@@ -2010,6 +3757,17 @@ theorem q64_boolPositiveANDAtom_to_f2
 theorem q64_positiveANDCarryAtom_mixedSecondDifference
     {f : Bool → Bool → ZMod 2} (h : Q64PositiveANDCarryAtom f) :
     q64BoolMixedSecondDifference f = 1 := by
+  rcases h with ⟨h00, h10, h01, h11⟩
+  simp [q64BoolMixedSecondDifference, h00, h10, h01, h11]
+
+/--
+The positive-AND square is invisible to the two lower unary increments while its mixed second
+difference is nonzero.
+-/
+theorem q64_positiveANDCarryAtom_unary_increments_zero
+    {f : Bool → Bool → ZMod 2} (h : Q64PositiveANDCarryAtom f) :
+    f true false - f false false = 0 ∧ f false true - f false false = 0 ∧
+      q64BoolMixedSecondDifference f = 1 := by
   rcases h with ⟨h00, h10, h01, h11⟩
   simp [q64BoolMixedSecondDifference, h00, h10, h01, h11]
 
@@ -2169,6 +3927,44 @@ theorem q64_no_fullySkewQMarkerSurvivor_of_regularQSetCoupling
   · exact hnoRegular hreg
 
 /--
+Lean-facing data for `proof.md` Theorem 9.3.  A nonconstant terminal residue produces a fully skew
+q-marker survivor; the four q-marker exits all close to a regular q-set; and if no residue is
+nonconstant, the constant-residue lemma directly gives the regular q-set.
+-/
+structure Q64TerminalDyadicTheoremData
+    (NonconstantResidue FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      RegularQSet : Prop) : Prop where
+  constantResidueRegular : (¬ NonconstantResidue) → RegularQSet
+  obstructionFullySkew : NonconstantResidue → FullySkewSplitter
+  qMarkerCoupling :
+    Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+      PrimeModuleExit ClosedLocalExit RegularQSet
+  properSubmarkerCloses : ProperSubmarker → RegularQSet
+  primeModuleCloses : PrimeModuleExit → RegularQSet
+  closedLocalCloses : ClosedLocalExit → RegularQSet
+
+/--
+Abstract terminal dyadic theorem: the Section 9 contradiction proof is just case analysis once its
+graph-specific ingredients are supplied.
+-/
+theorem q64_terminalDyadicTheorem_of_data
+    {NonconstantResidue FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      RegularQSet : Prop}
+    (hdata :
+      Q64TerminalDyadicTheoremData NonconstantResidue FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet) :
+    RegularQSet := by
+  classical
+  by_cases hnonconstant : NonconstantResidue
+  · rcases hdata.qMarkerCoupling (hdata.obstructionFullySkew hnonconstant) with
+      hsub | hmodule | hlocal | hregular
+    · exact hdata.properSubmarkerCloses hsub
+    · exact hdata.primeModuleCloses hmodule
+    · exact hdata.closedLocalCloses hlocal
+    · exact hregular
+  · exact hdata.constantResidueRegular hnonconstant
+
+/--
 Static split-quotient exhaustion at the q-marker endpoint: every fully skew splitter survivor is
 reduced to the marker-splitting zero-sum atom, the product-firewall frame, and its weighted quotient
 packaging.
@@ -2282,6 +4078,28 @@ fall to the clean marked-add catalogue, or enter the dirty budget-one absorption
 def Q64NoSharedSlackReduction
     (DoubleSlackSaturation Coalesces CleanMarkedAdd DirtyAbs1 : Prop) : Prop :=
   DoubleSlackSaturation → Coalesces ∨ CleanMarkedAdd ∨ DirtyAbs1
+
+/--
+Final pair-status endpoint: a first-return `0001` coordinate must be killed either by the
+history-sensitive anti-Horn/submodularity law or by support decrease of its shared-slack carrier.
+-/
+def Q64PairStatusAntiHornOrSharedSlackSupportDecrease
+    (FirstReturn0001 PairStatusAntiHornSubmodularity SharedSlackSupportDecrease : Prop) : Prop :=
+  FirstReturn0001 → PairStatusAntiHornSubmodularity ∨ SharedSlackSupportDecrease
+
+/-- If both closing routes are impossible, no first-return `0001` coordinate survives. -/
+theorem q64_no_firstReturn0001_of_pairStatusAntiHornOrSupportDecrease
+    {FirstReturn0001 PairStatusAntiHornSubmodularity SharedSlackSupportDecrease : Prop}
+    (h :
+      Q64PairStatusAntiHornOrSharedSlackSupportDecrease FirstReturn0001
+        PairStatusAntiHornSubmodularity SharedSlackSupportDecrease)
+    (hnoHorn : ¬ PairStatusAntiHornSubmodularity)
+    (hnoDecrease : ¬ SharedSlackSupportDecrease) :
+    ¬ FirstReturn0001 := by
+  intro h0001
+  rcases h h0001 with hhorn | hdecrease
+  · exact hnoHorn hhorn
+  · exact hnoDecrease hdecrease
 
 /-- Prime-shell budget-one cycle-breaker, isolated as a named endpoint. -/
 def Q64PrimeShellBudgetOneCycleBreaker
@@ -2403,6 +4221,31 @@ theorem q64_binaryCarrier_does_not_bound_q4_marker :
   · exact q64_staticQ4ActiveComponent_card
   · exact q64_staticQ4Marker_card
 
+/--
+Two static outside rows from the `proof.md` binary-carrier warning: each row sees exactly one endpoint
+of each active binary component while the whole marker still has size `q=4`.
+-/
+def q64StaticQ4SkewRow (row : Fin 2) (p : Fin 4) : Bool :=
+  if row = 0 then decide (p = 0 ∨ p = 2) else decide (p = 0 ∨ p = 3)
+
+/-- The two q=4 static rows are fully skew on both binary components. -/
+theorem q64_staticQ4SkewRows_split_both_binary_components :
+    q64StaticQ4SkewRow 0 0 ≠ q64StaticQ4SkewRow 0 1 ∧
+      q64StaticQ4SkewRow 0 2 ≠ q64StaticQ4SkewRow 0 3 ∧
+        q64StaticQ4SkewRow 1 0 ≠ q64StaticQ4SkewRow 1 1 ∧
+          q64StaticQ4SkewRow 1 2 ≠ q64StaticQ4SkewRow 1 3 := by
+  decide
+
+/--
+Binary carrier collapse plus ambient separation is still compatible with an exact size-`q` marker in
+the concrete `q=4` model.
+-/
+theorem q64_binaryCarrier_staticRows_do_not_shrink_q4_marker :
+    (∃ row : Fin 2, q64StaticQ4SkewRow row 0 ≠ q64StaticQ4SkewRow row 1) ∧
+      (∃ row : Fin 2, q64StaticQ4SkewRow row 2 ≠ q64StaticQ4SkewRow row 3) ∧
+        q64StaticQ4Marker.card = 4 := by
+  refine ⟨⟨0, ?_⟩, ⟨⟨0, ?_⟩, q64_staticQ4Marker_card⟩⟩ <;> decide
+
 /-- A preserved-side proper submarker contradicts q-marker minimality. -/
 theorem q64_no_preservedSide_submarker_of_minimalQMarker
     {Marker : ℕ → Prop} {R R' : ℕ} (hmin : Q64MinimalQMarker Marker R)
@@ -2416,6 +4259,738 @@ carries a complete smaller first-return shared-slack marker.
 def Q64QMarkerProvenanceSupportDecrease
     (ProvenanceSplitterAdmissible SmallerCompleteMarker LocalNonMarkerExit : Prop) : Prop :=
   ProvenanceSplitterAdmissible ∨ SmallerCompleteMarker ∨ LocalNonMarkerExit
+
+/-- The flat-connection trichotomy gives a Theorem-G branch once its three identified endpoints route. -/
+theorem q64_theoremG_of_flatConnectionFailureTrichotomy
+    {AmbientHighErrorSplitter FlatConnectionFailure NonfilledRepairFace CurvedFilledFace
+      FlatNontrivialMonodromyLoop SquareTransverseBreaker SharedSlackQMarker
+      AdmissibleModulePrimenessAgain OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hfailure : AmbientHighErrorSplitter → FlatConnectionFailure)
+    (htri :
+      Q64FlatConnectionFailureTrichotomy FlatConnectionFailure NonfilledRepairFace CurvedFilledFace
+        FlatNontrivialMonodromyLoop)
+    (hid :
+      Q64FlatConnectionFailureEndpointIdentification NonfilledRepairFace CurvedFilledFace
+        FlatNontrivialMonodromyLoop SquareTransverseBreaker SharedSlackQMarker
+        AdmissibleModulePrimenessAgain)
+    (hrepair :
+      SquareTransverseBreaker →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hcurved :
+      SharedSlackQMarker →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hflat :
+      AdmissibleModulePrimenessAgain →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases htri (hfailure hsplit) with hnonfilled | hcurvedFace | hflatLoop
+  · exact hrepair (hid.1 hnonfilled)
+  · exact hcurved (hid.2.1 hcurvedFace)
+  · exact hflat (hid.2.2 hflatLoop)
+
+/--
+The ordered-boundary certificate closes the transported branch; the only non-formal branch left by
+ambient-to-boundary transport is the one-state bounce.
+-/
+theorem q64_theoremG_of_ambientToBoundaryTransportWithBounce
+    {AmbientHighErrorSplitter OrderedBoundaryRow InternalFailureWholeSplitterSide
+      CompleteSmallerQMarker LocalRegularizingExit OneStateHighErrorBounceSameSlippedSide
+      OrderedBoundaryAdmissible : Prop}
+    (htransport :
+      Q64AmbientToBoundaryTransportWithBounce AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit OneStateHighErrorBounceSameSlippedSide)
+    (hcert :
+      Q64OrderedBoundarySlipCertificate OrderedBoundaryRow InternalFailureWholeSplitterSide
+        CompleteSmallerQMarker)
+    (hbounce :
+      OneStateHighErrorBounceSameSlippedSide →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases htransport hsplit with hboundary | hlocal | hbounce'
+  · exact Or.inr (Or.inl (hcert hboundary).2)
+  · exact Or.inr (Or.inr hlocal)
+  · exact hbounce hbounce'
+
+/-- The three host-frontier closures reduce the one-state bounce to the missing-`0111` table branch. -/
+theorem q64_oneStateBounce_closed_of_hostFrontierShadow
+    {OneStateHighErrorBounce PairChamberHiddenChoiceSeparation AnchoredPersistenceNoSplitQPlus
+      AnchoredOneCornerLiftQj Missing0111Table OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hshadow :
+      Q64OneStateBounceHostFrontierShadow OneStateHighErrorBounce
+        PairChamberHiddenChoiceSeparation AnchoredPersistenceNoSplitQPlus
+        AnchoredOneCornerLiftQj Missing0111Table)
+    (hpair :
+      PairChamberHiddenChoiceSeparation →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hpersist :
+      AnchoredPersistenceNoSplitQPlus →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hlift :
+      AnchoredOneCornerLiftQj →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hmissing :
+      Missing0111Table →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit) :
+    OneStateHighErrorBounce →
+      Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit := by
+  intro hbounce
+  rcases hshadow hbounce with hpair' | hpersist' | hlift' | hmissing'
+  · exact hpair hpair'
+  · exact hpersist hpersist'
+  · exact hlift hlift'
+  · exact hmissing hmissing'
+
+/--
+The clone-packet loop analysis closes the one-state bounce only through a boundary provenance
+certificate or by returning to the two-packet non-overlap atom.
+-/
+theorem q64_oneStateBounce_closed_of_clonePacketCycle
+    {OneStateHighErrorBounce PrimeShellBreakerOfBouncedRows SameCutHighErrorClonePacket
+      AdmissibleModuleWithUnpromotedAmbientBreaker BoundaryProvenanceCertificate
+      TwoPacketNonOverlapAtom0101_0011 OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hbreaker : OneStateHighErrorBounce → PrimeShellBreakerOfBouncedRows)
+    (hclone :
+      Q64SameCutHighErrorClonePacketReduction PrimeShellBreakerOfBouncedRows
+        SameCutHighErrorClonePacket AdmissibleModuleWithUnpromotedAmbientBreaker)
+    (hcycle :
+      Q64ClonePacketCycleReduction SameCutHighErrorClonePacket BoundaryProvenanceCertificate
+        TwoPacketNonOverlapAtom0101_0011)
+    (hcert :
+      BoundaryProvenanceCertificate →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hatom :
+      TwoPacketNonOverlapAtom0101_0011 →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit) :
+    OneStateHighErrorBounce →
+      Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit := by
+  intro hbounce
+  rcases hclone (hbreaker hbounce) with ⟨hpacket, _⟩
+  rcases hcycle hpacket with hboundary | htwoPacket
+  · exact hcert hboundary
+  · exact hatom htwoPacket
+
+/-- Clone-package graph reduction closes after routing the acyclic and transposition branches. -/
+theorem q64_clonePackageGraph_closed_of_transpositionReduction
+    {ClonePackageGraph AcyclicClonePackageGraph TwoStatePackageTransposition AnchoredSubcaseClosed
+      IrreducibleMovesAnchor AnchoredFrameSlipEndpoint OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hgraph :
+      Q64ClonePackageGraphReduction ClonePackageGraph AcyclicClonePackageGraph
+        TwoStatePackageTransposition)
+    (htransposition :
+      Q64TwoStateTranspositionFrameSlip TwoStatePackageTransposition AnchoredSubcaseClosed
+        IrreducibleMovesAnchor AnchoredFrameSlipEndpoint)
+    (hacyclic :
+      AcyclicClonePackageGraph →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hanchored :
+      AnchoredSubcaseClosed →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hslip :
+      AnchoredFrameSlipEndpoint →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit) :
+    ClonePackageGraph →
+      Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit := by
+  intro hcloneGraph
+  rcases hgraph hcloneGraph with hacyclicGraph | htwoState
+  · exact hacyclic hacyclicGraph
+  rcases htransposition htwoState with hclosed | hmove
+  · exact hanchored hclosed
+  · exact hslip hmove.2
+
+/-- The anchored frame-slip endpoint closes through the single-chamber lift dichotomy once both branches
+route. -/
+theorem q64_anchoredFrameSlip_closed_of_singleChamberLift
+    {AnchoredFrameSlipEndpoint SingleChamberFlatAnchoredSlipEdge OneCornerLiftClosed
+      OneCornerLiftFailure0001Square OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hpath :
+      Q64ShortestFlatAnchorPathReduction AnchoredFrameSlipEndpoint
+        SingleChamberFlatAnchoredSlipEdge)
+    (hlift :
+      Q64SingleChamberFlatSlipLiftDichotomy SingleChamberFlatAnchoredSlipEdge
+        OneCornerLiftClosed OneCornerLiftFailure0001Square)
+    (hclosed :
+      OneCornerLiftClosed →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hfailure :
+      OneCornerLiftFailure0001Square →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit) :
+    AnchoredFrameSlipEndpoint →
+      Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit := by
+  intro hslip
+  rcases hlift (hpath hslip) with hliftClosed | h0001
+  · exact hclosed hliftClosed
+  · exact hfailure h0001
+
+/-- Hidden-package cover classification closes once the cover branch and odd-face branches route. -/
+theorem q64_hiddenCover_closed_of_branchPointClassification
+    {HiddenPackageCoverBranchPoint OneCornerLiftFailure SquareTransverseBreaker OddFilledFace
+      Marker0001 OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hclass :
+      Q64HiddenCoverBranchPointClassification HiddenPackageCoverBranchPoint OneCornerLiftFailure
+        SquareTransverseBreaker OddFilledFace Marker0001)
+    (hlift :
+      OneCornerLiftFailure →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hbreaker :
+      SquareTransverseBreaker →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hmarker :
+      Marker0001 →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit) :
+    (HiddenPackageCoverBranchPoint ∨ OddFilledFace) →
+      Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit := by
+  intro hbranch
+  rcases hbranch with hcover | hodd
+  · rcases hclass.1 hcover with hfail | hsq
+    · exact hlift hfail
+    · exact hbreaker hsq
+  · exact hmarker (hclass.2 hodd)
+
+/--
+The latest two-sheeted-cover endpoint gives Theorem G once mixed edge tables, base-boundary cuts, and
+sheet-character discontinuities are routed to the already named exits.
+-/
+theorem q64_theoremG_of_twoPrimarySheetCharacterProvenance
+    {FullySkewSplitter NonlocalAmbientSeparator MixedEdgeBranchPoint BaseBoundaryCut
+      GlobalSheetCharacterSeparator FirstReturnBoundarySide BranchPoint0001OrSquareTransverse
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hseparator : FullySkewSplitter → NonlocalAmbientSeparator)
+    (hpurify :
+      Q64HiddenPackageCoverEdgeTablePurification NonlocalAmbientSeparator MixedEdgeBranchPoint
+        BaseBoundaryCut GlobalSheetCharacterSeparator)
+    (hsheet :
+      Q64TwoPrimarySheetCharacterProvenance GlobalSheetCharacterSeparator FirstReturnBoundarySide
+        BranchPoint0001OrSquareTransverse)
+    (hmixed :
+      MixedEdgeBranchPoint →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hbase :
+      BaseBoundaryCut →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hside : FirstReturnBoundarySide → OrderedBoundaryAdmissible)
+    (hbranch :
+      BranchPoint0001OrSquareTransverse →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hpurify (hseparator hskew) with hmixed' | hbase' | hsheet'
+  · exact hmixed hmixed'
+  · exact hbase hbase'
+  · rcases hsheet hsheet' with hfirst | hbranch'
+    · exact Or.inl (hside hfirst)
+    · exact hbranch hbranch'
+
+/-- Star-flat slip-edge provenance supplies the single-slip child-realization endpoint. -/
+theorem q64_singleSlipChildRealization_of_starFlatSlipEdgeProvenance
+    {AnchoredRankOneSlipEdge PrimitiveAnchoredSlipEdge EveryAnchoredStarFaceFilledFlat
+      OrderedFirstReturnBoundaryEdge QHalfChildCarrier BranchSquare
+      BranchPoint0001OrSquareTransverse : Prop}
+    (hstar :
+      Q64StarFlatSlipEdgeProvenance PrimitiveAnchoredSlipEdge EveryAnchoredStarFaceFilledFlat
+        OrderedFirstReturnBoundaryEdge BranchSquare)
+    (hprimitive : AnchoredRankOneSlipEdge → PrimitiveAnchoredSlipEdge)
+    (hfaces : AnchoredRankOneSlipEdge → EveryAnchoredStarFaceFilledFlat)
+    (hchild : OrderedFirstReturnBoundaryEdge → QHalfChildCarrier)
+    (hbranch : BranchSquare → BranchPoint0001OrSquareTransverse) :
+    Q64SingleSlipChildRealization AnchoredRankOneSlipEdge OrderedFirstReturnBoundaryEdge
+      QHalfChildCarrier BranchPoint0001OrSquareTransverse := by
+  intro hslip
+  rcases hstar (hprimitive hslip) (hfaces hslip) with hordered | hbranch'
+  · exact Or.inl ⟨hordered, hchild hordered⟩
+  · exact Or.inr (hbranch hbranch')
+
+/--
+The single-slip child-realization endpoint gives Theorem G once the ordered-child branch and branch-point
+branch are routed to the existing provenance/support-decrease exits.
+-/
+theorem q64_theoremG_of_singleSlipChildRealization
+    {FullySkewSplitter DistributedMonodromy PrimitiveHalfCarrierCarry AnchoredRankOneSlipEdge
+      OrderedFirstReturnBoundaryEdge QHalfChildCarrier BranchPoint0001OrSquareTransverse
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hmonodromy : FullySkewSplitter → DistributedMonodromy)
+    (hcarry : FullySkewSplitter → PrimitiveHalfCarrierCarry)
+    (htree :
+      Q64TreeGaugeSingleSlipReduction DistributedMonodromy PrimitiveHalfCarrierCarry
+        AnchoredRankOneSlipEdge)
+    (hchild :
+      Q64SingleSlipChildRealization AnchoredRankOneSlipEdge OrderedFirstReturnBoundaryEdge
+        QHalfChildCarrier BranchPoint0001OrSquareTransverse)
+    (hordered :
+      OrderedFirstReturnBoundaryEdge → QHalfChildCarrier →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hbranch :
+      BranchPoint0001OrSquareTransverse →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hchild (htree (hmonodromy hskew) (hcarry hskew)) with horderedChild | hbranch'
+  · exact hordered horderedChild.1 horderedChild.2
+  · exact hbranch hbranch'
+
+/--
+Star-to-boundary normality is a still sharper Theorem-G route: the normal branch is admissible, and the
+first static-but-not-first-return square is precisely the remaining provenance/cubicality branch.
+-/
+theorem q64_theoremG_of_starToBoundaryNormality
+    {FullySkewSplitter LocallyStarFlatSheetCharacterSeparator BoundaryHistoryCommutation
+      OrderedFirstReturnBoundaryEdge StaticNotFirstReturnSquare OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hlocalStar : FullySkewSplitter → LocallyStarFlatSheetCharacterSeparator)
+    (hcommutes : FullySkewSplitter → BoundaryHistoryCommutation)
+    (hnormal :
+      Q64StarToBoundaryNormality LocallyStarFlatSheetCharacterSeparator
+        BoundaryHistoryCommutation OrderedFirstReturnBoundaryEdge StaticNotFirstReturnSquare)
+    (hordered : OrderedFirstReturnBoundaryEdge → OrderedBoundaryAdmissible)
+    (hstatic :
+      StaticNotFirstReturnSquare →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hnormal (hlocalStar hskew) (hcommutes hskew) with hordered' | hstatic'
+  · exact Or.inl (hordered hordered')
+  · exact hstatic hstatic'
+
+/--
+The boundary-exchange gate analysis routes a static-but-not-first-return square to the already named
+local/proper/circuit/branch exits, except for the idempotent boundary-normality atom kept explicit.
+-/
+theorem q64_staticNotFirstReturnSquare_closed_of_exchangeGate
+    {StaticNotFirstReturnSquare ExchangeGateEdge FixedTraceCleanLocal MinimalSquareTransverseBreaker
+      ProperChildCarrier PrimitiveCircuit BranchSquare GateParallelSheetCharacterBounce
+      IdempotentOneEdgeBoundaryNormalityFailure OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hexpose :
+      Q64StaticNotFirstReturnExchangeGate StaticNotFirstReturnSquare ExchangeGateEdge)
+    (hprime :
+      Q64ExchangeGatePrimeBreakerReduction ExchangeGateEdge FixedTraceCleanLocal
+        MinimalSquareTransverseBreaker)
+    (hdirty :
+      Q64BoundaryExchangeDirtyRowReduction MinimalSquareTransverseBreaker ProperChildCarrier
+        PrimitiveCircuit BranchSquare GateParallelSheetCharacterBounce)
+    (hbounce :
+      Q64GateParallelBounceNormalForm GateParallelSheetCharacterBounce
+        IdempotentOneEdgeBoundaryNormalityFailure)
+    (hfixed :
+      FixedTraceCleanLocal →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hchild :
+      ProperChildCarrier →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hcircuit :
+      PrimitiveCircuit →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hbranch :
+      BranchSquare →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hidempotent :
+      IdempotentOneEdgeBoundaryNormalityFailure →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit) :
+    StaticNotFirstReturnSquare →
+      Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit := by
+  intro hstatic
+  rcases hprime (hexpose hstatic) with hclean | hbreaker
+  · exact hfixed hclean
+  rcases hdirty hbreaker with hproper | hcircuit' | hbranch' | hbounce'
+  · exact hchild hproper
+  · exact hcircuit hcircuit'
+  · exact hbranch hbranch'
+  · exact hidempotent (hbounce hbounce')
+
+/--
+Star-to-boundary normality plus the exchange-gate reduction gives the q-marker provenance/support
+decrease endpoint; the idempotent one-edge atom is the only explicit unresolved branch.
+-/
+theorem q64_theoremG_of_starToBoundaryNormality_and_exchangeGate
+    {FullySkewSplitter LocallyStarFlatSheetCharacterSeparator BoundaryHistoryCommutation
+      OrderedFirstReturnBoundaryEdge StaticNotFirstReturnSquare ExchangeGateEdge
+      FixedTraceCleanLocal MinimalSquareTransverseBreaker ProperChildCarrier PrimitiveCircuit
+      BranchSquare GateParallelSheetCharacterBounce IdempotentOneEdgeBoundaryNormalityFailure
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hlocalStar : FullySkewSplitter → LocallyStarFlatSheetCharacterSeparator)
+    (hcommutes : FullySkewSplitter → BoundaryHistoryCommutation)
+    (hnormal :
+      Q64StarToBoundaryNormality LocallyStarFlatSheetCharacterSeparator
+        BoundaryHistoryCommutation OrderedFirstReturnBoundaryEdge StaticNotFirstReturnSquare)
+    (hordered : OrderedFirstReturnBoundaryEdge → OrderedBoundaryAdmissible)
+    (hexpose :
+      Q64StaticNotFirstReturnExchangeGate StaticNotFirstReturnSquare ExchangeGateEdge)
+    (hprime :
+      Q64ExchangeGatePrimeBreakerReduction ExchangeGateEdge FixedTraceCleanLocal
+        MinimalSquareTransverseBreaker)
+    (hdirty :
+      Q64BoundaryExchangeDirtyRowReduction MinimalSquareTransverseBreaker ProperChildCarrier
+        PrimitiveCircuit BranchSquare GateParallelSheetCharacterBounce)
+    (hbounce :
+      Q64GateParallelBounceNormalForm GateParallelSheetCharacterBounce
+        IdempotentOneEdgeBoundaryNormalityFailure)
+    (hfixed :
+      FixedTraceCleanLocal →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hchild :
+      ProperChildCarrier →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hcircuit :
+      PrimitiveCircuit →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hbranch :
+      BranchSquare →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hidempotent :
+      IdempotentOneEdgeBoundaryNormalityFailure →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit :=
+  q64_theoremG_of_starToBoundaryNormality hlocalStar hcommutes hnormal hordered
+    (q64_staticNotFirstReturnSquare_closed_of_exchangeGate hexpose hprime hdirty hbounce hfixed
+      hchild hcircuit hbranch hidempotent)
+    hskew
+
+/--
+Rank-one boundary-category fullness closes the idempotent one-edge failure once prefix-insertion
+fullness is routed; local category axioms alone are not assumed to supply this.
+-/
+theorem q64_idempotentBoundaryNormality_closed_of_rankOneBoundaryCategoryFullness
+    {IdempotentOneEdgeBoundaryNormalityFailure UniqueCentralDeckInvolution
+      FirstReturnCategoryMembership PrefixInsertionFullness OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hdeck : IdempotentOneEdgeBoundaryNormalityFailure → UniqueCentralDeckInvolution)
+    (hfull :
+      Q64RankOneBoundaryCategoryFullness UniqueCentralDeckInvolution
+        FirstReturnCategoryMembership PrefixInsertionFullness)
+    (hfirst : FirstReturnCategoryMembership → OrderedBoundaryAdmissible)
+    (hprefix :
+      PrefixInsertionFullness →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit) :
+    IdempotentOneEdgeBoundaryNormalityFailure →
+      Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit := by
+  intro hidem
+  rcases hfull (hdeck hidem) with hmember | hprefix'
+  · exact Or.inl (hfirst hmember)
+  · exact hprefix hprefix'
+
+/--
+The rank-one boundary-category fullness formulation itself is a Theorem-G endpoint: the first-return
+membership branch is admissible and the prefix-insertion branch is kept explicit.
+-/
+theorem q64_theoremG_of_rankOneBoundaryCategoryFullness
+    {FullySkewSplitter UniqueCentralDeckInvolution FirstReturnCategoryMembership
+      PrefixInsertionFullness OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hdeck : FullySkewSplitter → UniqueCentralDeckInvolution)
+    (hfull :
+      Q64RankOneBoundaryCategoryFullness UniqueCentralDeckInvolution
+        FirstReturnCategoryMembership PrefixInsertionFullness)
+    (hfirst : FirstReturnCategoryMembership → OrderedBoundaryAdmissible)
+    (hprefix :
+      PrefixInsertionFullness →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hfull (hdeck hskew) with hmember | hprefix'
+  · exact Or.inl (hfirst hmember)
+  · exact hprefix hprefix'
+
+/--
+Root selector fullness gives the q-marker provenance/support-decrease atom directly: initial
+first-return boundaries are admissible, and the local/branch alternatives are routed explicitly.
+-/
+theorem q64_theoremG_of_rootSelectorFullness
+    {FullySkewSplitter RealizedAmbientChildCutRow InitialFirstReturnBoundary LocalExit BranchExit
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hrow : FullySkewSplitter → RealizedAmbientChildCutRow)
+    (hselector :
+      Q64RootSelectorFullness RealizedAmbientChildCutRow InitialFirstReturnBoundary LocalExit
+        BranchExit)
+    (hboundary : InitialFirstReturnBoundary → OrderedBoundaryAdmissible)
+    (hlocal : LocalExit → LocalRegularizingExit)
+    (hbranch :
+      BranchExit →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hselector (hrow hskew) with hfirst | hlocal' | hbranch'
+  · exact Or.inl (hboundary hfirst)
+  · exact Or.inr (Or.inr (hlocal hlocal'))
+  · exact hbranch hbranch'
+
+/--
+Root-edge fullness is the same endpoint after identifying the primitive child-carrier separator with a
+realized ambient child-cut row.
+-/
+theorem q64_rootSelectorFullness_of_rootEdgeFullness
+    {RealizedAmbientChildCutRow AmbientSeparatorPrimitiveChildCarrier InitialFirstReturnBoundary
+      FirstReturnChildEdge LocalExit BranchExit : Prop}
+    (hedge :
+      Q64RootEdgeFullness AmbientSeparatorPrimitiveChildCarrier FirstReturnChildEdge LocalExit
+        BranchExit)
+    (htoCarrier : RealizedAmbientChildCutRow → AmbientSeparatorPrimitiveChildCarrier)
+    (hfirst : FirstReturnChildEdge → InitialFirstReturnBoundary) :
+    Q64RootSelectorFullness RealizedAmbientChildCutRow InitialFirstReturnBoundary LocalExit
+      BranchExit := by
+  intro hrow
+  rcases hedge (htoCarrier hrow) with hedgeFirst | hlocal | hbranch
+  · exact Or.inl (hfirst hedgeFirst)
+  · exact Or.inr (Or.inl hlocal)
+  · exact Or.inr (Or.inr hbranch)
+
+/--
+The memory-free/restart-residue chain reduces anchored prefix eligibility to admitted prefix-local
+support, classified local/branch exchange failures, or the residue-zero non-square provenance atom.
+-/
+theorem q64_rootSelectorFullness_of_memoryFree_restartSaturation
+    {RealizedAmbientChildCutRow AnchoredPrefixEligibility PrefixLocalAdmitted HiddenSelectorMemory
+      RestartAdmissibility LocalBranchExchangeFailure NonzeroRestartResidueVector
+      ClosedFirstNonzeroCoordinate HiddenRestartResidue ResidueZeroPrefixLocalSaturation
+      ResidueZeroNonSquareRow InitialFirstReturnBoundary LocalExit BranchExit : Prop}
+    (heligible : RealizedAmbientChildCutRow → AnchoredPrefixEligibility)
+    (hmemory :
+      Q64MemoryFreeSelectorTheorem AnchoredPrefixEligibility PrefixLocalAdmitted
+        HiddenSelectorMemory)
+    (hrestart :
+      Q64RestartMinimalityKillsHiddenMemory HiddenSelectorMemory RestartAdmissibility
+        LocalBranchExchangeFailure)
+    (hresidue :
+      Q64RestartResidueVectorDichotomy RestartAdmissibility NonzeroRestartResidueVector
+        ClosedFirstNonzeroCoordinate HiddenRestartResidue)
+    (hsaturate :
+      Q64AnchoredPrefixProvenanceSaturation HiddenRestartResidue
+        ResidueZeroPrefixLocalSaturation ResidueZeroNonSquareRow)
+    (hprefix : PrefixLocalAdmitted → InitialFirstReturnBoundary)
+    (hlocalBranch : LocalBranchExchangeFailure → LocalExit ∨ BranchExit)
+    (hnonzero : NonzeroRestartResidueVector → ClosedFirstNonzeroCoordinate → LocalExit ∨ BranchExit)
+    (hresidueZero : ResidueZeroPrefixLocalSaturation → InitialFirstReturnBoundary)
+    (hnonsquare : ResidueZeroNonSquareRow → BranchExit) :
+    Q64RootSelectorFullness RealizedAmbientChildCutRow InitialFirstReturnBoundary LocalExit
+      BranchExit := by
+  intro hrow
+  rcases hmemory (heligible hrow) with hprefixLocal | hhidden
+  · exact Or.inl (hprefix hprefixLocal)
+  rcases hrestart hhidden with hadm | hlocalBranch'
+  · rcases hresidue hadm with hnonzero' | hhiddenResidue
+    · rcases hnonzero hnonzero'.1 hnonzero'.2 with hlocal | hbranch
+      · exact Or.inr (Or.inl hlocal)
+      · exact Or.inr (Or.inr hbranch)
+    · rcases hsaturate hhiddenResidue with hsat | hnonsq
+      · exact Or.inl (hresidueZero hsat)
+      · exact Or.inr (Or.inr (hnonsquare hnonsq))
+  · rcases hlocalBranch hlocalBranch' with hlocal | hbranch
+    · exact Or.inr (Or.inl hlocal)
+    · exact Or.inr (Or.inr hbranch)
+
+/--
+If first-return completeness in `FR^sat` is compatible with the original first-return family, then the
+residue-zero non-square row is routed back to the original ordered-boundary support.
+-/
+theorem q64_theoremG_of_frsatSaturationCompatibility
+    {FullySkewSplitter FRSatFirstReturnCompleteSupport OriginalFirstReturnCompleteSupport
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hsupport : FullySkewSplitter → FRSatFirstReturnCompleteSupport)
+    (hcompat :
+      Q64FRSatSaturationCompatibility FRSatFirstReturnCompleteSupport
+        OriginalFirstReturnCompleteSupport)
+    (horiginal : OriginalFirstReturnCompleteSupport → OrderedBoundaryAdmissible)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit :=
+  Or.inl (horiginal (hcompat (hsupport hskew)))
+
+/-- Intrinsic exchange-completeness supplies the `FR^sat` saturation-compatibility map. -/
+theorem q64_frsatSaturationCompatibility_of_intrinsicExchangeCompleteness
+    {FourGraphCorners TerminalResidueVector FRSatFirstReturnCompleteSupport
+      OriginalFirstReturnCompleteSupport : Prop}
+    (haudit :
+      Q64IntrinsicExchangeCompletenessAudit FourGraphCorners TerminalResidueVector
+        FRSatFirstReturnCompleteSupport OriginalFirstReturnCompleteSupport)
+    (hcorners : FourGraphCorners) (hresidue : TerminalResidueVector) :
+    Q64FRSatSaturationCompatibility FRSatFirstReturnCompleteSupport
+      OriginalFirstReturnCompleteSupport := by
+  intro hsat
+  exact haudit hcorners hresidue hsat
+
+/-- The saturated `FR^sat` provenance theorem routes immediately to the Theorem-G endpoint. -/
+theorem q64_theoremG_of_saturatedProvenanceSupportDecrease
+    {FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+      ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hsat :
+      Q64SaturatedProvenanceSupportDecrease FullySkewSplitter PrefixLocalFailure
+        NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hsat hskew with hprefix' | hnonzero' | hzero
+  · exact Or.inr (Or.inr (hprefix hprefix'))
+  · exact Or.inr (Or.inr (hnonzero hnonzero'))
+  · exact Or.inr (Or.inl (hsmall hzero.2))
+
+/--
+In the canonical saturated convention, the saturated provenance theorem is the Theorem-G atom once the
+three saturated branches are routed.
+-/
+theorem q64_theoremG_in_canonicalSaturatedFirstReturnConvention
+    {CanonicalSaturatedConvention FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hcanon :
+      Q64CanonicalSaturatedProvenanceTheorem CanonicalSaturatedConvention FullySkewSplitter
+        PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker)
+    (hcanonical : CanonicalSaturatedConvention)
+    (hprefix : PrefixLocalFailure → LocalRegularizingExit)
+    (hnonzero : NonzeroFirstTerminalResidue → LocalRegularizingExit)
+    (hsmall : ExchangeCompleteSmallerQMarker → CompleteSmallerQMarker)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit :=
+  q64_theoremG_of_saturatedProvenanceSupportDecrease (hcanon hcanonical) hprefix hnonzero hsmall
+    hskew
+
+/--
+With the canonical saturated convention already in force, the named canonical-provenance surface is
+exactly the saturated provenance/support-decrease statement.  Thus the remaining Lean content at this
+endpoint is the support-decrease theorem itself, not another bookkeeping implication.
+-/
+theorem q64_canonicalSaturatedProvenanceTheorem_iff_saturatedProvenanceSupportDecrease
+    {CanonicalSaturatedConvention FullySkewSplitter PrefixLocalFailure NonzeroFirstTerminalResidue
+      ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker : Prop}
+    (hcanonical : CanonicalSaturatedConvention) :
+    Q64CanonicalSaturatedProvenanceTheorem CanonicalSaturatedConvention FullySkewSplitter
+        PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker ↔
+      Q64SaturatedProvenanceSupportDecrease FullySkewSplitter PrefixLocalFailure
+        NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker := by
+  unfold Q64CanonicalSaturatedProvenanceTheorem
+  constructor
+  · intro h
+    exact h hcanonical
+  · intro h _
+    exact h
+
+/--
+The three conjuncts in `Q64CanonicalSaturatedFirstReturnConvention` do not, by themselves, imply the
+saturated support-decrease theorem in the abstract `Prop` interface.  This small countermodel keeps
+the missing mathematical input explicit.
+-/
+theorem q64_canonicalSaturatedFirstReturnConvention_alone_does_not_imply_saturatedProvenanceSupportDecrease :
+    ∃ BoundariesChosenInFRSat SupportMinimized LexicographicTieBreak FullySkewSplitter
+        PrefixLocalFailure NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary
+        ExchangeCompleteSmallerQMarker : Prop,
+      Q64CanonicalSaturatedFirstReturnConvention BoundariesChosenInFRSat SupportMinimized
+          LexicographicTieBreak ∧
+        FullySkewSplitter ∧
+          ¬ Q64SaturatedProvenanceSupportDecrease FullySkewSplitter PrefixLocalFailure
+            NonzeroFirstTerminalResidue ZeroResidueFRSatBoundary ExchangeCompleteSmallerQMarker := by
+  refine ⟨True, True, True, True, False, False, False, False, ?_, trivial, ?_⟩
+  · exact ⟨trivial, trivial, trivial⟩
+  · intro h
+    rcases h trivial with hprefix | hnonzero | hzero
+    · exact hprefix
+    · exact hnonzero
+    · exact hzero.1
+
+/--
+The historical and canonical path conventions alone do not imply path-saturation equivalence in the
+abstract interface.  The missing mathematical input is the comparison/homotopy theorem, not merely the
+choice of two conventions.
+-/
+theorem q64_pathConventions_alone_do_not_imply_pathSaturationEquivalence :
+    ∃ HistoricalPathConvention CanonicalSaturatedConvention TerminalHostDescentUnchanged
+        LocalBranchExit : Prop,
+      HistoricalPathConvention ∧ CanonicalSaturatedConvention ∧
+        ¬ Q64PathSaturationEquivalence HistoricalPathConvention CanonicalSaturatedConvention
+          TerminalHostDescentUnchanged LocalBranchExit := by
+  refine ⟨True, True, False, False, trivial, trivial, ?_⟩
+  intro hequiv
+  rcases hequiv trivial trivial with hdescent | hexit
+  · exact hdescent
+  · exact hexit
+
+/--
+Path-saturation equivalence transports the saturated support-decrease proof back to the original
+unsaturated Theorem-G statement, with local/branch exits kept explicit.
+-/
+theorem q64_theoremG_of_pathSaturationEquivalence
+    {FullySkewSplitter HistoricalPathConvention CanonicalSaturatedConvention
+      TerminalHostDescentUnchanged LocalBranchExit OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hhistorical : FullySkewSplitter → HistoricalPathConvention)
+    (hcanonical : FullySkewSplitter → CanonicalSaturatedConvention)
+    (hequiv :
+      Q64PathSaturationEquivalence HistoricalPathConvention CanonicalSaturatedConvention
+        TerminalHostDescentUnchanged LocalBranchExit)
+    (hdescent :
+      TerminalHostDescentUnchanged →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hexit : LocalBranchExit → LocalRegularizingExit)
+    (hskew : FullySkewSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hequiv (hhistorical hskew) (hcanonical hskew) with hsame | hexit'
+  · exact hdescent hsame
+  · exact Or.inr (Or.inr (hexit hexit'))
 
 /--
 The three explicit subclaims in the final q-marker atom: provenance selection, local non-marker exit,
@@ -2487,6 +5062,126 @@ theorem q64_no_completeSmallerMarker_of_minimalQMarker
   hmin.2 R' hsmall.1 hsmall.2.2
 
 /--
+Square-provenance is the strengthened provenance promised in the hard attack on Theorem G: a
+selected splitter carries the whole ordered first-return square, so marker-internal failure can be
+read as the complete shared-slack marker of the transported quartet.
+-/
+def Q64SquareProvenanceMarkerCompleteDescent
+    (SquareProvenance MarkerInternalFailure CompleteSmallerQMarker : Prop) : Prop :=
+  SquareProvenance → MarkerInternalFailure → CompleteSmallerQMarker
+
+/--
+Once square-provenance for the selected row is available, the marker-complete descent clause in
+Theorem G is exactly the transported low-set update.
+-/
+theorem q64_markerCompleteDescentTheorem_of_squareProvenance
+    {SquareProvenance MarkerInternalFailure CompleteSmallerQMarker : Prop}
+    (hsquare : SquareProvenance)
+    (hdescent :
+      Q64SquareProvenanceMarkerCompleteDescent SquareProvenance MarkerInternalFailure
+        CompleteSmallerQMarker) :
+    Q64MarkerCompleteDescentTheorem MarkerInternalFailure CompleteSmallerQMarker := by
+  intro hinternal
+  exact hdescent hsquare hinternal
+
+/--
+Wall-order is enough only after marker-completeness has been supplied: then the low-set residue
+calculation can be applied to a complete first-return side.
+-/
+def Q64FirstReturnWallOrderSupportDecrease
+    (FirstReturnWallOrder MarkerComplete LowSetResidue ProperFirstReturnSide SupportDecrease : Prop) :
+    Prop :=
+  FirstReturnWallOrder → MarkerComplete → LowSetResidue → ProperFirstReturnSide → SupportDecrease
+
+/-- The conditional wall-order route exposes marker-completeness as the missing support-decrease input. -/
+theorem q64_supportDecrease_of_wallOrder_markerComplete
+    {FirstReturnWallOrder MarkerComplete LowSetResidue ProperFirstReturnSide SupportDecrease : Prop}
+    (h :
+      Q64FirstReturnWallOrderSupportDecrease FirstReturnWallOrder MarkerComplete LowSetResidue
+        ProperFirstReturnSide SupportDecrease)
+    (horder : FirstReturnWallOrder) (hcomplete : MarkerComplete) (hresidue : LowSetResidue)
+    (hproper : ProperFirstReturnSide) :
+    SupportDecrease :=
+  h horder hcomplete hresidue hproper
+
+/--
+Dirty shared-slack absorption, in the form identified by the hard attack: a budget-one reanchor cycle
+must either give a completer, coalesce into a local same-trace/false-clone exit, or expose a
+square-provenance smaller marker.
+-/
+def Q64DirtySharedSlackAbsorptionTheorem
+    (BudgetOneReanchorCycle Completer SameTraceOrFalseCloneExit
+      SquareProvenanceSmallerMarker : Prop) : Prop :=
+  BudgetOneReanchorCycle →
+    Completer ∨ SameTraceOrFalseCloneExit ∨ SquareProvenanceSmallerMarker
+
+/-- The current hard attack records dirty shared-slack absorption as equivalent to Theorem G. -/
+def Q64DirtySharedSlackAbsorptionEquivTheoremG
+    (TheoremG DirtySharedSlackAbsorption : Prop) : Prop :=
+  TheoremG ↔ DirtySharedSlackAbsorption
+
+/-- Dirty shared-slack absorption closes Theorem G when the audited equivalence is supplied. -/
+theorem q64_theoremG_of_dirtySharedSlackAbsorption
+    {TheoremG DirtySharedSlackAbsorption : Prop}
+    (hequiv : Q64DirtySharedSlackAbsorptionEquivTheoremG TheoremG DirtySharedSlackAbsorption)
+    (hdirty : DirtySharedSlackAbsorption) :
+    TheoremG :=
+  hequiv.mpr hdirty
+
+/-- Theorem G gives dirty shared-slack absorption under the same audited equivalence. -/
+theorem q64_dirtySharedSlackAbsorption_of_theoremG
+    {TheoremG DirtySharedSlackAbsorption : Prop}
+    (hequiv : Q64DirtySharedSlackAbsorptionEquivTheoremG TheoremG DirtySharedSlackAbsorption)
+    (hG : TheoremG) :
+    DirtySharedSlackAbsorption :=
+  hequiv.mp hG
+
+/-- Two-point incidence model used by the audit no-go for provenance selection. -/
+def q64NoGoAmbientTrace (_row : Unit) (p : Fin 2) : Bool :=
+  decide (p = 0)
+
+/-- In the no-go model, the designated provenance family is constant on the marker. -/
+def q64NoGoProvenanceTrace (_row : Unit) (_p : Fin 2) : Bool :=
+  false
+
+/-- The ambient family separates the two marker points in the no-go model. -/
+theorem q64_noGo_ambientSeparates :
+    ∃ row : Unit,
+      q64NoGoAmbientTrace row 0 ≠ q64NoGoAmbientTrace row 1 := by
+  refine ⟨(), ?_⟩
+  decide
+
+/-- No designated provenance row separates any two marker points in the no-go model. -/
+theorem q64_noGo_noProvenanceSplitter :
+    ¬ ∃ row : Unit, ∃ a b : Fin 2,
+      q64NoGoProvenanceTrace row a ≠ q64NoGoProvenanceTrace row b := by
+  rintro ⟨row, a, b, hsplit⟩
+  simp [q64NoGoProvenanceTrace] at hsplit
+
+/--
+Concrete formal version of the proof.md no-go: ambient separation of a marker does not by itself
+imply the existence of a provenance splitter.
+-/
+theorem q64_ambientSeparation_does_not_force_provenanceSelection :
+    (∃ row : Unit, q64NoGoAmbientTrace row 0 ≠ q64NoGoAmbientTrace row 1) ∧
+      ¬ ∃ row : Unit, ∃ a b : Fin 2,
+        q64NoGoProvenanceTrace row a ≠ q64NoGoProvenanceTrace row b := by
+  exact ⟨q64_noGo_ambientSeparates, q64_noGo_noProvenanceSplitter⟩
+
+/--
+Static residue data are compatible with an exact q-marker: residue coupling can certify
+`|R| = 0 mod q`, but it does not make the marker a proper sub-`q` side.
+-/
+def Q64StaticResidueExactMarkerProfile (q lowDegree highDegree marker : ℕ) : Prop :=
+  1 < q ∧ 0 < marker ∧ marker = q ∧ marker % q = 0 ∧
+    highDegree % q = (lowDegree + 1) % q
+
+/-- The `q=4` exact-marker profile realizes the static residue no-go from `proof.md`. -/
+theorem q64_staticResidue_exactMarkerProfile_q4 :
+    Q64StaticResidueExactMarkerProfile 4 1 2 4 ∧ ¬ 4 < 4 := by
+  simp [Q64StaticResidueExactMarkerProfile]
+
+/--
 The detailed provenance-routing chain implies the sharpened q-marker support-decrease atom.
 This is the Lean-facing dependency skeleton of provenance selection, ordered first-return choice,
 row-to-breaker transport, non-marker local exits, and marker-complete descent.
@@ -2520,6 +5215,287 @@ theorem q64_provenanceSupportDecrease_of_routing
   · exact Or.inr (Or.inr hlocal)
 
 /--
+`proof.md` Theorem G as a one-splitter implication: an ambient high-error splitter, routed through
+the provenance/first-return chain, yields an ordered-boundary admissible splitter, a complete smaller
+marker, or a local non-marker exit.
+-/
+theorem q64_theoremG_of_provenanceRouting
+    {AmbientHighErrorSplitter ProvenanceSelection OrderedFirstReturnRow ValidBreaker
+      OrderedBoundaryAdmissible FirstFailedRow MarkerInternalFailure NonMarkerFailure
+      CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hroute :
+      Q64AmbientToProvenanceRouting AmbientHighErrorSplitter ProvenanceSelection
+        LocalRegularizingExit)
+    (hchoice : Q64OrderedFirstReturnChoice ProvenanceSelection OrderedFirstReturnRow)
+    (htransport :
+      Q64RowToBreakerTransport OrderedFirstReturnRow ValidBreaker LocalRegularizingExit)
+    (hadm :
+      Q64IntervalAdmissibilityDichotomy ValidBreaker OrderedBoundaryAdmissible
+        FirstFailedRow)
+    (hclass :
+      Q64FirstFailureClassification FirstFailedRow MarkerInternalFailure NonMarkerFailure)
+    (hnonmarker : Q64LocalNonMarkerExitTheorem NonMarkerFailure LocalRegularizingExit)
+    (hdescent : Q64MarkerCompleteDescentTheorem MarkerInternalFailure CompleteSmallerQMarker)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  exact
+    q64_provenanceSupportDecrease_of_routing hroute hchoice htransport hadm hclass
+      hnonmarker hdescent hsplit
+
+/--
+Theorem G after the product-firewall transport trap has reached square-provenance: the ordinary
+marker-complete descent premise is supplied by the square-provenance low-set update.
+-/
+theorem q64_theoremG_of_squareProvenanceRouting
+    {AmbientHighErrorSplitter ProvenanceSelection OrderedFirstReturnRow ValidBreaker
+      OrderedBoundaryAdmissible FirstFailedRow MarkerInternalFailure NonMarkerFailure
+      SquareProvenance CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hroute :
+      Q64AmbientToProvenanceRouting AmbientHighErrorSplitter ProvenanceSelection
+        LocalRegularizingExit)
+    (hchoice : Q64OrderedFirstReturnChoice ProvenanceSelection OrderedFirstReturnRow)
+    (htransport :
+      Q64RowToBreakerTransport OrderedFirstReturnRow ValidBreaker LocalRegularizingExit)
+    (hadm :
+      Q64IntervalAdmissibilityDichotomy ValidBreaker OrderedBoundaryAdmissible
+        FirstFailedRow)
+    (hclass :
+      Q64FirstFailureClassification FirstFailedRow MarkerInternalFailure NonMarkerFailure)
+    (hnonmarker : Q64LocalNonMarkerExitTheorem NonMarkerFailure LocalRegularizingExit)
+    (hsquare : SquareProvenance)
+    (hsquareDescent :
+      Q64SquareProvenanceMarkerCompleteDescent SquareProvenance MarkerInternalFailure
+        CompleteSmallerQMarker)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  exact
+    q64_theoremG_of_provenanceRouting hroute hchoice htransport hadm hclass hnonmarker
+      (q64_markerCompleteDescentTheorem_of_squareProvenance hsquare hsquareDescent)
+      hsplit
+
+/--
+Final proof.md normal form for Gap Theorem G: after fixed-trace and clean exits are removed, a minimal
+transverse breaker must pass the interval tests, coalesce into a fixed frame, strictly reduce support,
+or already be a local regularizing exit.
+-/
+def Q64MinimalTransverseBreakerAdmissibility
+    (MinimalTransverseBreaker OrderedBoundaryAdmissible FixedFrameCoalescence
+      StrictSupportDecrease LocalRegularizingExit : Prop) : Prop :=
+  MinimalTransverseBreaker →
+    OrderedBoundaryAdmissible ∨ FixedFrameCoalescence ∨ StrictSupportDecrease ∨
+      LocalRegularizingExit
+
+/--
+The minimal transverse-breaker normal form is exactly strong enough to supply Theorem G's
+support-decrease alternative.
+-/
+theorem q64_theoremG_of_minimalTransverseBreakerAdmissibility
+    {AmbientHighErrorSplitter MinimalTransverseBreaker OrderedBoundaryAdmissible
+      FixedFrameCoalescence StrictSupportDecrease CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hminimal : AmbientHighErrorSplitter → MinimalTransverseBreaker)
+    (hadm :
+      Q64MinimalTransverseBreakerAdmissibility MinimalTransverseBreaker
+        OrderedBoundaryAdmissible FixedFrameCoalescence StrictSupportDecrease
+        LocalRegularizingExit)
+    (hcoalesce : FixedFrameCoalescence → LocalRegularizingExit)
+    (hdecrease : StrictSupportDecrease → CompleteSmallerQMarker)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hadm (hminimal hsplit) with hboundary | hcoal | hdecrease' | hlocal
+  · exact Or.inl hboundary
+  · exact Or.inr (Or.inr (hcoalesce hcoal))
+  · exact Or.inr (Or.inl (hdecrease hdecrease'))
+  · exact Or.inr (Or.inr hlocal)
+
+/--
+Admissible-module primeness form of the same gap: an ambient splitter of an admissible module must
+become admissible after local marking, strictly reduce the admissible module, or exit locally.
+-/
+def Q64AdmissibleModulePrimeness
+    (AmbientSplitter AdmissibleAfterMarking StrictSmallerAdmissibleModule LocalExit : Prop) :
+    Prop :=
+  AmbientSplitter → AdmissibleAfterMarking ∨ StrictSmallerAdmissibleModule ∨ LocalExit
+
+/--
+Primitive antichain realization is the large-marker form of Theorem G: a primitive first-wall
+zero-sum antichain must realize a proper zero-sum subcarrier, produce a binary-circuit-elimination
+row, or exit locally.
+-/
+def Q64PrimitiveAntichainRealization
+    (PrimitiveAntichain ProperRealizedZeroSumSubcarrier BinaryCircuitEliminationRow LocalExit : Prop) :
+    Prop :=
+  PrimitiveAntichain →
+    ProperRealizedZeroSumSubcarrier ∨ BinaryCircuitEliminationRow ∨ LocalExit
+
+/--
+Final saturated separator-bag endpoint: over one active pair, an ambient breaker of the sign-coherent
+q-divisible separator bag must promote to a first-return side, give a complete smaller bag, or exit
+locally.
+-/
+def Q64SignCoherentSeparatorBagEndpoint
+    (SeparatorBag AmbientBreaker FirstReturnSide CompleteSmallerBag LocalExit : Prop) : Prop :=
+  SeparatorBag → AmbientBreaker → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit
+
+/--
+Exact-marker packet-firewall normal form: every finite packet-quotient selection reduces to a protected
+clique module, a compensator-packet module, or the ambient high-error breaker whose promotion is exactly
+Theorem G.
+-/
+def Q64ExactMarkerPacketFirewallNormalForm
+    (FinitePacketQuotientSelection ProtectedCliqueModule CompensatorPacketModule
+      AmbientHighErrorBreaker : Prop) : Prop :=
+  FinitePacketQuotientSelection →
+    ProtectedCliqueModule ∨ CompensatorPacketModule ∨ AmbientHighErrorBreaker
+
+/--
+Full propositional wiring of the latest separator-bag normal-form analysis.  Once every earlier branch
+is routed to a first-return side, a complete smaller bag, or a local exit, it remains only to close the
+defect-switching fully skew square.
+-/
+theorem q64_signCoherentSeparatorBagEndpoint_of_defectSwitchingClosure
+    {SeparatorBag AmbientBreaker ConstantOnPair OppositeSign LocalOrCommonPackage
+      SameSignSeparatorOutsidePackage MinimumSideBreaker SingletonSidePromotionGap
+      CrossingPrimitiveCircuit LocalDeparture MinimumSideContradiction PrimitiveCircuit
+      HighErrorSameSignIsolatorLoop SameTraceTwinCoalescence SquareTransverseBreaker
+      SingleHighErrorIsolatorSelfLoop PureSameDefectTokenLoopClosed DefectSwitchingFullySkewSquare
+      FirstReturnSide CompleteSmallerBag LocalExit : Prop}
+    (hnorm :
+      Q64BreakerSignNormalization AmbientBreaker ConstantOnPair OppositeSign LocalOrCommonPackage
+        SameSignSeparatorOutsidePackage)
+    (hconst : ConstantOnPair → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hopp : OppositeSign → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hlocalCommon : LocalOrCommonPackage → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hsameToMin : SameSignSeparatorOutsidePackage → MinimumSideBreaker)
+    (hmin :
+      Q64MinimumSideBreakerNormalForm MinimumSideBreaker SingletonSidePromotionGap
+        CrossingPrimitiveCircuit)
+    (hcross : CrossingPrimitiveCircuit → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hsingle :
+      Q64SingletonSideIterationNormalForm SingletonSidePromotionGap LocalDeparture
+        MinimumSideContradiction PrimitiveCircuit HighErrorSameSignIsolatorLoop)
+    (hdepart : LocalDeparture → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hcontradict : MinimumSideContradiction → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hprimitive : PrimitiveCircuit → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hiso :
+      Q64IsolatorLoopQuotientNormalForm HighErrorSameSignIsolatorLoop SameTraceTwinCoalescence
+        SquareTransverseBreaker SingleHighErrorIsolatorSelfLoop)
+    (hcoalesce : SameTraceTwinCoalescence → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hsquare : SquareTransverseBreaker → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hself :
+      Q64IsolatorSelfLoopToDefectSwitchingSquare SingleHighErrorIsolatorSelfLoop
+        PureSameDefectTokenLoopClosed DefectSwitchingFullySkewSquare)
+    (hpure : PureSameDefectTokenLoopClosed → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit)
+    (hdefect :
+      DefectSwitchingFullySkewSquare → FirstReturnSide ∨ CompleteSmallerBag ∨ LocalExit) :
+    Q64SignCoherentSeparatorBagEndpoint SeparatorBag AmbientBreaker FirstReturnSide
+      CompleteSmallerBag LocalExit := by
+  intro _ hbreaker
+  rcases hnorm hbreaker with hconstant | hopposite | hlocal | hsame
+  · exact hconst hconstant
+  · exact hopp hopposite
+  · exact hlocalCommon hlocal
+  rcases hmin (hsameToMin hsame) with hsingleton | hcrossing
+  · rcases hsingle hsingleton with hdeparture | hminimum | hprim | hisolator
+    · exact hdepart hdeparture
+    · exact hcontradict hminimum
+    · exact hprimitive hprim
+    rcases hiso hisolator with htwin | hsq | hselfloop
+    · exact hcoalesce htwin
+    · exact hsquare hsq
+    rcases hself hselfloop with hpureLoop | hskew
+    · exact hpure hpureLoop
+    · exact hdefect hskew
+  · exact hcross hcrossing
+
+/-- Admissible-module primeness supplies the q-marker support-decrease alternatives. -/
+theorem q64_theoremG_of_admissibleModulePrimeness
+    {AmbientHighErrorSplitter OrderedBoundaryAdmissible StrictSmallerAdmissibleModule
+      CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hprime :
+      Q64AdmissibleModulePrimeness AmbientHighErrorSplitter OrderedBoundaryAdmissible
+        StrictSmallerAdmissibleModule LocalRegularizingExit)
+    (hsmaller : StrictSmallerAdmissibleModule → CompleteSmallerQMarker)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hprime hsplit with hadm | hsmall | hlocal
+  · exact Or.inl hadm
+  · exact Or.inr (Or.inl (hsmaller hsmall))
+  · exact Or.inr (Or.inr hlocal)
+
+/-- Primitive antichain realization is another direct route to Theorem G's three alternatives. -/
+theorem q64_theoremG_of_primitiveAntichainRealization
+    {AmbientHighErrorSplitter PrimitiveAntichain ProperRealizedZeroSumSubcarrier
+      BinaryCircuitEliminationRow OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hrealize :
+      Q64PrimitiveAntichainRealization PrimitiveAntichain ProperRealizedZeroSumSubcarrier
+        BinaryCircuitEliminationRow LocalRegularizingExit)
+    (hskewToAntichain : AmbientHighErrorSplitter → PrimitiveAntichain)
+    (hproper : ProperRealizedZeroSumSubcarrier → CompleteSmallerQMarker)
+    (hbinary : BinaryCircuitEliminationRow → OrderedBoundaryAdmissible)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hrealize (hskewToAntichain hsplit) with hsub | hbin | hlocal
+  · exact Or.inr (Or.inl (hproper hsub))
+  · exact Or.inl (hbinary hbin)
+  · exact Or.inr (Or.inr hlocal)
+
+/-- The sign-coherent separator-bag endpoint is exactly a Theorem-G support-decrease route. -/
+theorem q64_theoremG_of_signCoherentSeparatorBagEndpoint
+    {AmbientHighErrorSplitter SeparatorBag AmbientBreaker FirstReturnSide CompleteSmallerBag
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hendpoint :
+      Q64SignCoherentSeparatorBagEndpoint SeparatorBag AmbientBreaker FirstReturnSide
+        CompleteSmallerBag LocalRegularizingExit)
+    (hbag : AmbientHighErrorSplitter → SeparatorBag)
+    (hbreaker : AmbientHighErrorSplitter → AmbientBreaker)
+    (hside : FirstReturnSide → OrderedBoundaryAdmissible)
+    (hsmall : CompleteSmallerBag → CompleteSmallerQMarker)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hendpoint (hbag hsplit) (hbreaker hsplit) with hfirst | hsmaller | hlocal
+  · exact Or.inl (hside hfirst)
+  · exact Or.inr (Or.inl (hsmall hsmaller))
+  · exact Or.inr (Or.inr hlocal)
+
+/--
+The exact-marker packet-firewall normal form is not a new unconditional proof: the module branches must
+close, and the ambient-breaker branch is precisely the Theorem-G promotion step.
+-/
+theorem q64_theoremG_of_exactMarkerPacketFirewallNormalForm
+    {AmbientHighErrorSplitter FinitePacketQuotientSelection ProtectedCliqueModule
+      CompensatorPacketModule AmbientHighErrorBreaker OrderedBoundaryAdmissible
+      CompleteSmallerQMarker LocalRegularizingExit : Prop}
+    (hnormal :
+      Q64ExactMarkerPacketFirewallNormalForm FinitePacketQuotientSelection ProtectedCliqueModule
+        CompensatorPacketModule AmbientHighErrorBreaker)
+    (hselect : AmbientHighErrorSplitter → FinitePacketQuotientSelection)
+    (hclique : ProtectedCliqueModule → CompleteSmallerQMarker ∨ LocalRegularizingExit)
+    (hcompensator : CompensatorPacketModule → CompleteSmallerQMarker ∨ LocalRegularizingExit)
+    (hbreaker :
+      AmbientHighErrorBreaker →
+        Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+          LocalRegularizingExit)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hnormal (hselect hsplit) with hprotected | hcomp | hambient
+  · rcases hclique hprotected with hsmall | hlocal
+    · exact Or.inr (Or.inl hsmall)
+    · exact Or.inr (Or.inr hlocal)
+  · rcases hcompensator hcomp with hsmall | hlocal
+    · exact Or.inr (Or.inl hsmall)
+    · exact Or.inr (Or.inr hlocal)
+  · exact hbreaker hambient
+
+/--
 Once admissible provenance splitters and local non-marker exits are closed, and complete smaller
 markers give proper submarkers, provenance/support-decrease yields carrier/marker coupling.
 -/
@@ -2540,6 +5516,199 @@ theorem q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
   · exact Or.inr (Or.inr (hadmissible hadm))
   · exact Or.inl (hsmaller hsmall)
   · exact Or.inr (Or.inr (hlocal hloc))
+
+/--
+Compact package for the six completed `FR^sat` proof-md branch/closure maps: prefix and nonzero
+branches close locally, completed support gives a smaller q-marker, and admissible/smaller/local exits
+route to the final closed endpoint.
+-/
+structure Q64CompletedFRSatBranchClosureMaps {Row Packet : Type*}
+    (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    (OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      ClosedLocalExit : Prop) : Prop where
+  hprefix : Q64FRSatPrefixLocalFailure C.completeSupports.saturate r → LocalRegularizingExit
+  hnonzero :
+    Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r → LocalRegularizingExit
+  hsmall : Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r →
+    CompleteSmallerQMarker
+  hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit
+  hsmaller : CompleteSmallerQMarker → ProperSubmarker
+  hlocal : LocalRegularizingExit → ClosedLocalExit
+
+/--
+Structural instance of the completed `FR^sat` branch/closure maps.  It names the three routed
+outcomes by the actual completed branch events: prefix/nonzero rows are local exits, and
+exchange-complete support is the smaller-marker branch.  This removes any extra routing input when the
+final audit is stated directly over the completed saturated branch predicates.
+-/
+theorem q64_completedFRSatBranchClosureMaps_structural {Row Packet : Type*}
+    (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row) :
+    Q64CompletedFRSatBranchClosureMaps C r False
+      (Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r)
+      (Q64FRSatPrefixLocalFailure C.completeSupports.saturate r ∨
+        Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r)
+      (Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r)
+      (Q64FRSatPrefixLocalFailure C.completeSupports.saturate r ∨
+        Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r) where
+  hprefix := Or.inl
+  hnonzero := Or.inr
+  hsmall := id
+  hadmissible := False.elim
+  hsmaller := id
+  hlocal := id
+
+/--
+The six branch/closure maps for completed `FR^sat` are the only external routing input needed to
+promote the structural saturated provenance theorem to q-marker carrier/marker coupling.
+-/
+theorem q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit : Prop}
+    (hprefix : Q64FRSatPrefixLocalFailure C.completeSupports.saturate r → LocalRegularizingExit)
+    (hnonzero : Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r →
+      LocalRegularizingExit)
+    (hsmall : Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r →
+      CompleteSmallerQMarker)
+    (hadmissible : OrderedBoundaryAdmissible → ClosedLocalExit)
+    (hsmaller : CompleteSmallerQMarker → ProperSubmarker)
+    (hlocal : LocalRegularizingExit → ClosedLocalExit) :
+    Q64QMarkerCarrierMarkerCoupling (C.completeSupports.saturate.splitter r) ProperSubmarker
+      PrimeModuleExit ClosedLocalExit := by
+  exact
+    q64_qMarkerCarrierMarkerCoupling_of_provenanceSupportDecrease
+      (fun hskew =>
+        q64_theoremG_of_saturatedProvenanceSupportDecrease
+           (q64_saturatedProvenanceSupportDecrease_of_completedRawFRSatSaturation C r)
+           hprefix hnonzero hsmall hskew)
+      hadmissible hsmaller hlocal
+
+/--
+Packaged form of `q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation`: all six
+remaining proof-md saturated branch/closure maps are carried by one compact certificate.
+-/
+theorem q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation_maps
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit : Prop}
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps C r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    Q64QMarkerCarrierMarkerCoupling (C.completeSupports.saturate.splitter r) ProperSubmarker
+      PrimeModuleExit ClosedLocalExit := by
+  exact
+    q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation C r
+      hmaps.hprefix hmaps.hnonzero hmaps.hsmall hmaps.hadmissible hmaps.hsmaller
+      hmaps.hlocal
+
+/--
+Proof-md-facing q-marker exclusion data for the saturated `FR^sat` route.  A q-marker first exits by
+one of the proved local closures, or it reaches the fully-skew endpoint; in that endpoint the completed
+`FR^sat` branch maps route prefix/nonzero/complete-smaller cases to the three terminal exits.
+-/
+structure Q64SaturatedQMarkerExclusionData {Row Packet : Type*}
+    (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    (QMarker FullySkewSplitter OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet : Prop) :
+    Prop where
+  qMarkerLocalClosuresOrFullySkew :
+    QMarker → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ FullySkewSplitter
+  fullySkewToCompletedFRSatSplitter :
+    FullySkewSplitter → C.completeSupports.saturate.splitter r
+  completedBranchClosureMaps :
+    Q64CompletedFRSatBranchClosureMaps C r OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker ClosedLocalExit
+
+/-- Package saturated q-marker exclusion data from its local/skew dichotomy, the fully-skew
+transport into the completed `FR^sat` splitter, and a bundled branch-closure map certificate. -/
+theorem q64_saturatedQMarkerExclusionData_of_completedBranchClosureMaps
+    {Row Packet : Type*} {C : Q64FRSatRawExchangeComplex Row Packet} {r : Row}
+    {QMarker FullySkewSplitter OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet : Prop}
+    (hlocalOrSkew :
+      QMarker → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ FullySkewSplitter)
+    (hskew : FullySkewSplitter → C.completeSupports.saturate.splitter r)
+    (hmaps :
+      Q64CompletedFRSatBranchClosureMaps C r OrderedBoundaryAdmissible CompleteSmallerQMarker
+        LocalRegularizingExit ProperSubmarker ClosedLocalExit) :
+    Q64SaturatedQMarkerExclusionData C r QMarker FullySkewSplitter
+      OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+      PrimeModuleExit ClosedLocalExit RegularQSet where
+  qMarkerLocalClosuresOrFullySkew := hlocalOrSkew
+  fullySkewToCompletedFRSatSplitter := hskew
+  completedBranchClosureMaps := hmaps
+
+/-- Structural saturated q-marker exclusion data: the completed branch maps are the canonical
+`FR^sat` prefix/nonzero and exchange-complete exits, so no external branch-map certificate remains. -/
+theorem q64_saturatedQMarkerExclusionData_structural
+    {Row Packet : Type*} (C : Q64FRSatRawExchangeComplex Row Packet) (r : Row)
+    {QMarker FullySkewSplitter PrimeModuleExit RegularQSet : Prop}
+    (hlocalOrSkew :
+      QMarker →
+        Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r ∨
+        PrimeModuleExit ∨
+        (Q64FRSatPrefixLocalFailure C.completeSupports.saturate r ∨
+          Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r) ∨
+        FullySkewSplitter)
+    (hskew : FullySkewSplitter → C.completeSupports.saturate.splitter r) :
+    Q64SaturatedQMarkerExclusionData C r QMarker FullySkewSplitter False
+      (Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r)
+      (Q64FRSatPrefixLocalFailure C.completeSupports.saturate r ∨
+        Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r)
+      (Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r)
+      PrimeModuleExit
+      (Q64FRSatPrefixLocalFailure C.completeSupports.saturate r ∨
+        Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r)
+      RegularQSet := by
+  exact
+    q64_saturatedQMarkerExclusionData_of_completedBranchClosureMaps
+      (C := C) (r := r)
+      (OrderedBoundaryAdmissible := False)
+      (CompleteSmallerQMarker :=
+        Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r)
+      (LocalRegularizingExit :=
+        Q64FRSatPrefixLocalFailure C.completeSupports.saturate r ∨
+          Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r)
+      (ProperSubmarker :=
+        Q64FRSatExchangeCompleteSmallerQMarker C.completeSupports.saturate r)
+      (PrimeModuleExit := PrimeModuleExit)
+      (ClosedLocalExit :=
+        Q64FRSatPrefixLocalFailure C.completeSupports.saturate r ∨
+          Q64FRSatNonzeroFirstTerminalResidue C.completeSupports.saturate r)
+      (RegularQSet := RegularQSet)
+      hlocalOrSkew hskew (q64_completedFRSatBranchClosureMaps_structural C r)
+
+/--
+The saturated q-marker exclusion package supplies the four-exit carrier/marker coupling used by the
+terminal dyadic theorem.  The `RegularQSet` exit remains available for compatibility with the Section 9
+API, but the saturated `FR^sat` branch maps already route fully-skew survivors to the other exits.
+-/
+theorem q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_saturatedQMarkerExclusionData
+    {Row Packet : Type*} {C : Q64FRSatRawExchangeComplex Row Packet} {r : Row}
+    {QMarker FullySkewSplitter OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet : Prop}
+    (hdata :
+      Q64SaturatedQMarkerExclusionData C r QMarker FullySkewSplitter
+        OrderedBoundaryAdmissible CompleteSmallerQMarker LocalRegularizingExit ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet) :
+    Q64QMarkerCarrierMarkerCouplingWithRegularQSet QMarker ProperSubmarker PrimeModuleExit
+      ClosedLocalExit RegularQSet := by
+  intro hmarker
+  rcases hdata.qMarkerLocalClosuresOrFullySkew hmarker with hsub | hmodule | hlocal | hskew
+  · exact Or.inl hsub
+  · exact Or.inr (Or.inl hmodule)
+  · exact Or.inr (Or.inr (Or.inl hlocal))
+  ·
+    have hcoupling :
+        Q64QMarkerCarrierMarkerCoupling (C.completeSupports.saturate.splitter r)
+          ProperSubmarker PrimeModuleExit ClosedLocalExit :=
+      q64_qMarkerCarrierMarkerCoupling_of_completedRawFRSatSaturation_maps C r
+        hdata.completedBranchClosureMaps
+    rcases hcoupling (hdata.fullySkewToCompletedFRSatSplitter hskew) with
+      hsub' | hmodule' | hlocal'
+    · exact Or.inl hsub'
+    · exact Or.inr (Or.inl hmodule')
+    · exact Or.inr (Or.inr (Or.inl hlocal'))
 
 /--
 If the detailed routing chain is available in the fully skew branch, then the older carrier/marker
@@ -2595,6 +5764,30 @@ theorem q64_positive_divisible_marker_lt_two_mul_eq
   have hm : m = 1 := by omega
   simp [hm]
 
+/-- If two internal degrees are both below `q`, congruence modulo `q` is actual equality. -/
+theorem q64_degree_eq_of_mod_eq_of_lt_q
+    {q a b : ℕ} (ha : a < q) (hb : b < q) (hmod : a % q = b % q) : a = b := by
+  rw [Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb] at hmod
+  exact hmod
+
+/--
+Exact-size marker regularity layer: once every internal marker degree is below `q` and congruent
+modulo `q`, the marker is internally regular.
+-/
+def Q64ExactMarkerInternalDegreeCongruence
+    (q : ℕ) (R : Finset U) (degree : U → ℕ) : Prop :=
+  R.card = q ∧ (∀ r ∈ R, degree r < q) ∧
+    ∀ r ∈ R, ∀ s ∈ R, degree r % q = degree s % q
+
+omit [Fintype U] [DecidableEq U] in
+/-- The exact-size state-internal splitter argument may use residues only after exact size is known. -/
+theorem q64_exactMarker_internalRegular_of_degreeCongruence
+    {q : ℕ} {R : Finset U} {degree : U → ℕ}
+    (h : Q64ExactMarkerInternalDegreeCongruence q R degree) :
+    ∀ ⦃r s : U⦄, r ∈ R → s ∈ R → degree r = degree s := by
+  intro r s hr hs
+  exact q64_degree_eq_of_mod_eq_of_lt_q (h.2.1 r hr) (h.2.1 s hs) (h.2.2 r hr s hs)
+
 /--
 Frozen large-marker closure: a same-trace marker whose outside rows are constant is closed by a
 same-trace `P₃`/roof template, by cluster extraction, or by an induced regular `q`-set.
@@ -2614,8 +5807,289 @@ def Q64LargeMarkerNoQJumpTheorem
   SimultaneousWallBlock →
     RegularQSet ∨ LocalExit ∨ SmallerCompleteMarker ∨ ZeroSumPacketAtom
 
+/--
+First-return packet-primality packaging: a packet quotient from a genuine q-marker atom is prime
+inside the first-return package, or every ambient quotient-module breaker transports to a
+packet-refining admissible row or a local exit.
+-/
+def Q64FirstReturnPacketPrimality
+    (GenuineQMarkerPacketAtom FirstReturnPackagePrime PacketRefiningAdmissibleRow LocalExit : Prop) :
+    Prop :=
+  GenuineQMarkerPacketAtom →
+    FirstReturnPackagePrime ∨ PacketRefiningAdmissibleRow ∨ LocalExit
+
+/--
+First-return packet-primality supplies the q-marker support-decrease atom once the three packet exits
+are identified with the Theorem-G exits.
+-/
+theorem q64_theoremG_of_firstReturnPacketPrimality
+    {AmbientHighErrorSplitter GenuineQMarkerPacketAtom FirstReturnPackagePrime
+      PacketRefiningAdmissibleRow OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit : Prop}
+    (hpacket :
+      Q64FirstReturnPacketPrimality GenuineQMarkerPacketAtom FirstReturnPackagePrime
+        PacketRefiningAdmissibleRow LocalRegularizingExit)
+    (hskewToPacket : AmbientHighErrorSplitter → GenuineQMarkerPacketAtom)
+    (hprime : FirstReturnPackagePrime → OrderedBoundaryAdmissible)
+    (hrefine : PacketRefiningAdmissibleRow → CompleteSmallerQMarker)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryAdmissible CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  rcases hpacket (hskewToPacket hsplit) with hpkg | href | hlocal
+  · exact Or.inl (hprime hpkg)
+  · exact Or.inr (Or.inl (hrefine href))
+  · exact Or.inr (Or.inr hlocal)
+
+/-- Admissible-module primeness and first-return packet-primality are interchangeable endpoint forms. -/
+def Q64AdmissibleModulePacketPrimalityEquivalence
+    (AdmissibleModulePrimeness FirstReturnPacketPrimality : Prop) : Prop :=
+  AdmissibleModulePrimeness ↔ FirstReturnPacketPrimality
+
+/--
+Minimal failure of admissible-module primeness has the two-splitter crossing normal form: the ambient
+split and the first failed ordered row cross both sides, and no quadrant is first-return complete.
+-/
+def Q64TwoSplitterCrossingNormalForm
+    (MinimalPrimenessFailure AmbientCrossesOrdered OrderedCrossesAmbient NoCompleteQuadrant : Prop) :
+    Prop :=
+  MinimalPrimenessFailure →
+    AmbientCrossesOrdered ∧ OrderedCrossesAmbient ∧ NoCompleteQuadrant
+
+/--
+Binary circuit elimination is the graph-specific theorem missing from the primitive `2×2` carrier:
+a realized admissible boundary trace must supply a diagonal/quadrant, or the omitted diagonal is the
+same first-return `0001` corner.
+-/
+def Q64BinaryCircuitElimination
+    (PrimitiveCircuit RealizedDiagonalOrQuadrant FirstReturn0001 : Prop) : Prop :=
+  PrimitiveCircuit → RealizedDiagonalOrQuadrant ∨ FirstReturn0001
+
+/--
+The row/column/diagonal pairings of a primitive carrier form a three-pairing triality.  Its
+irreducible branch is package-coordinate monodromy rather than residue arithmetic.
+-/
+def Q64ThreePairingTriality
+    (RowPairing ColumnPairing DiagonalPairing RealizedDiagonal PackageMonodromy : Prop) : Prop :=
+  RowPairing → ColumnPairing → DiagonalPairing → RealizedDiagonal ∨ PackageMonodromy
+
+/-- Project packet-primality from the equivalence package. -/
+theorem q64_packetPrimality_of_admissibleModulePrimeness
+    {AdmissibleModulePrimeness FirstReturnPacketPrimality : Prop}
+    (heq :
+      Q64AdmissibleModulePacketPrimalityEquivalence AdmissibleModulePrimeness
+        FirstReturnPacketPrimality)
+    (h : AdmissibleModulePrimeness) :
+    FirstReturnPacketPrimality :=
+  heq.mp h
+
+/-- Project admissible-module primeness from the equivalence package. -/
+theorem q64_admissibleModulePrimeness_of_packetPrimality
+    {AdmissibleModulePrimeness FirstReturnPacketPrimality : Prop}
+    (heq :
+      Q64AdmissibleModulePacketPrimalityEquivalence AdmissibleModulePrimeness
+        FirstReturnPacketPrimality)
+    (h : FirstReturnPacketPrimality) :
+    AdmissibleModulePrimeness :=
+  heq.mpr h
+
+/-- First-return packet-primality directly supplies the older carrier/marker coupling API. -/
+theorem q64_qMarkerCarrierMarkerCoupling_of_firstReturnPacketPrimality
+    {FullySkewSplitter GenuineQMarkerPacketAtom FirstReturnPackagePrime
+      PacketRefiningAdmissibleRow LocalExit ProperSubmarker PrimeModuleExit ClosedLocalExit : Prop}
+    (hpacket :
+      Q64FirstReturnPacketPrimality GenuineQMarkerPacketAtom FirstReturnPackagePrime
+        PacketRefiningAdmissibleRow LocalExit)
+    (hskewToPacket : FullySkewSplitter → GenuineQMarkerPacketAtom)
+    (hprime : FirstReturnPackagePrime → PrimeModuleExit)
+    (hrefine : PacketRefiningAdmissibleRow → ProperSubmarker)
+    (hlocal : LocalExit → ClosedLocalExit) :
+    Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+      ClosedLocalExit := by
+  intro hskew
+  rcases hpacket (hskewToPacket hskew) with hpkg | href | hloc
+  · exact Or.inr (Or.inl (hprime hpkg))
+  · exact Or.inl (hrefine href)
+  · exact Or.inr (Or.inr (hlocal hloc))
+
+/--
+Side-replacement normal form: after side homogeneity, any residual replacement atom either closes
+locally, freezes a packet, exposes a proper first-return-complete arc, or becomes a directed
+replacement cycle.
+-/
+def Q64SideReplacementCycleNormalForm
+    (SideReplacementAtom LocalExit FrozenPacket ProperFirstReturnCompleteArc
+      DirectedReplacementCycle : Prop) : Prop :=
+  SideReplacementAtom →
+    LocalExit ∨ FrozenPacket ∨ ProperFirstReturnCompleteArc ∨ DirectedReplacementCycle
+
+/--
+The ordered-cycle shortcut is valid only after all replacement-cycle edges have been packaged in one
+peeled first-return space: then the earliest edge distinguishes a proper arc or one of the closed
+local/weighted quotient exits applies.
+-/
+def Q64ReplacementCycleCommonPackageReduction
+    (DirectedReplacementCycle CommonPeeledPackage ProperFirstReturnArc CompleterExit
+      ProperMarkerExit LocalCoalescence CommonPackageFailure : Prop) : Prop :=
+  DirectedReplacementCycle →
+    (CommonPeeledPackage →
+      ProperFirstReturnArc ∨ CompleterExit ∨ ProperMarkerExit ∨ LocalCoalescence) ∧
+    (¬ CommonPeeledPackage → CommonPackageFailure)
+
+/--
+Two-cycle replacement normal form: if both arcs are in one package the cycle is just the balanced
+`0101/0011` flip; otherwise the first failed common-space edge is again `0001`.
+-/
+def Q64ReplacementTwoCycleNormalForm
+    (ReplacementTwoCycle SamePackageBalancedFlip FirstFailedCommonSpace0001 : Prop) : Prop :=
+  ReplacementTwoCycle → SamePackageBalancedFlip ∨ FirstFailedCommonSpace0001
+
+/--
+Irreducible directed replacement cycles carry no first-return-complete arc, frozen packet, local exit,
+or complete quadrant.
+-/
+def Q64IrreducibleReplacementCycle
+    (DirectedReplacementCycle NoProperFirstReturnArc NoFrozenPacket NoLocalExit NoCompleteQuadrant :
+      Prop) : Prop :=
+  DirectedReplacementCycle ∧ NoProperFirstReturnArc ∧ NoFrozenPacket ∧ NoLocalExit ∧
+    NoCompleteQuadrant
+
+/-- In the irreducible side-replacement atom, the normal form leaves only a directed cycle. -/
+theorem q64_directedReplacementCycle_of_irreducible_sideReplacement
+    {SideReplacementAtom LocalExit FrozenPacket ProperFirstReturnCompleteArc
+      DirectedReplacementCycle : Prop}
+    (hnf :
+      Q64SideReplacementCycleNormalForm SideReplacementAtom LocalExit FrozenPacket
+        ProperFirstReturnCompleteArc DirectedReplacementCycle)
+    (hnoLocal : ¬ LocalExit) (hnoFrozen : ¬ FrozenPacket)
+    (hnoArc : ¬ ProperFirstReturnCompleteArc) (hatom : SideReplacementAtom) :
+    DirectedReplacementCycle := by
+  rcases hnf hatom with hlocal | hfrozen | harc | hcycle
+  · exact False.elim (hnoLocal hlocal)
+  · exact False.elim (hnoFrozen hfrozen)
+  · exact False.elim (hnoArc harc)
+  · exact hcycle
+
 /-- Natural packet weight used in the clique-quotient audit. -/
 def q64PacketWeight (cliqueSize cliqueCount : ℕ) : ℕ := cliqueCount * cliqueSize
+
+/-- Total weight of a primitive `2×2` carrier. -/
+def q64TwoByTwoTotal (w : Bool → Bool → ℕ) : ℕ :=
+  w false false + w true false + w false true + w true true
+
+/-- Row-pair weight of a primitive `2×2` carrier. -/
+def q64TwoByTwoRow (w : Bool → Bool → ℕ) (x : Bool) : ℕ :=
+  w x false + w x true
+
+/-- Column-pair weight of a primitive `2×2` carrier. -/
+def q64TwoByTwoColumn (w : Bool → Bool → ℕ) (y : Bool) : ℕ :=
+  w false y + w true y
+
+/-- Main-diagonal pair weight of a primitive `2×2` carrier. -/
+def q64TwoByTwoMainDiagonal (w : Bool → Bool → ℕ) : ℕ :=
+  w false false + w true true
+
+/-- Off-diagonal pair weight of a primitive `2×2` carrier. -/
+def q64TwoByTwoOffDiagonal (w : Bool → Bool → ℕ) : ℕ :=
+  w true false + w false true
+
+/--
+Primitive `2×2` residue circuit: the total carrier has zero residue, while every row, column,
+quadrant, and packaged diagonal has nonzero residue.
+-/
+def Q64PrimitiveTwoByTwoResidueCircuit (q : ℕ) (w : Bool → Bool → ℕ) : Prop :=
+  q64TwoByTwoTotal w % q = 0 ∧
+    (∀ x, q64TwoByTwoRow w x % q ≠ 0) ∧
+      (∀ y, q64TwoByTwoColumn w y % q ≠ 0) ∧
+        (∀ x y, w x y % q ≠ 0) ∧
+          q64TwoByTwoMainDiagonal w % q ≠ 0 ∧
+            q64TwoByTwoOffDiagonal w % q ≠ 0
+
+/-- Constant positive quadrant weights form a primitive `2×2` circuit at modulus `4k`. -/
+theorem q64_primitiveTwoByTwoResidueCircuit_const_quadrants
+    {q k : ℕ} (hq : q = 4 * k) (hk : 0 < k) :
+    Q64PrimitiveTwoByTwoResidueCircuit q (fun _ _ => k) := by
+  subst q
+  have htotal : (k + k + k + k) % (4 * k) = 0 := by
+    have hsum : k + k + k + k = 4 * k := by omega
+    rw [hsum, Nat.mod_self]
+  have hkmod : k % (4 * k) ≠ 0 := by
+    have hlt : k < 4 * k := by omega
+    rw [Nat.mod_eq_of_lt hlt]
+    exact Nat.ne_of_gt hk
+  have h2mod : (k + k) % (4 * k) ≠ 0 := by
+    have hpos : 0 < k + k := by omega
+    have hlt : k + k < 4 * k := by omega
+    rw [Nat.mod_eq_of_lt hlt]
+    exact Nat.ne_of_gt hpos
+  unfold Q64PrimitiveTwoByTwoResidueCircuit q64TwoByTwoTotal q64TwoByTwoRow
+    q64TwoByTwoColumn q64TwoByTwoMainDiagonal q64TwoByTwoOffDiagonal
+  simp [htotal, hkmod, h2mod]
+
+/--
+Primitive simultaneous-wall antichain: the whole antichain is zero-sum, all packet pieces survive the
+common-divisor residue-shadow removal, and no proper first-return-complete subcarrier is zero-sum.
+-/
+def Q64PrimitiveFirstWallAntichain
+    (q : ℕ) (P : Finset U) (weight : U → ℕ) (FirstReturnComplete : Finset U → Prop) :
+    Prop :=
+  P.Nonempty ∧ (∑ p ∈ P, weight p) % q = 0 ∧
+    (∀ p ∈ P, Nat.Coprime q (weight p)) ∧
+      ∀ T : Finset U, T ⊂ P → T.Nonempty → FirstReturnComplete T →
+        (∑ p ∈ T, weight p) % q ≠ 0
+
+/--
+Product-firewall containment closes when the dirty shared-slack set lies in one proper breaker side;
+otherwise the survivor is the simultaneous-wall antichain.
+-/
+def Q64ProductFirewallContainmentOrAntichain
+    (DirtySharedSlackSet ProperBreakerSide SimultaneousWallAntichain : Prop) : Prop :=
+  DirtySharedSlackSet → ProperBreakerSide ∨ SimultaneousWallAntichain
+
+/-- The primitive antichain residue pattern `(1,1,1,q-3)` is arithmetically viable for `q ≥ 4`. -/
+theorem q64_primitiveAntichain_one_one_one_qMinusThree
+    {q : ℕ} (hq : 4 ≤ q) :
+    (1 + 1 + 1 + (q - 3)) % q = 0 ∧ 1 % q ≠ 0 ∧ (q - 3) % q ≠ 0 := by
+  have hsum : 1 + 1 + 1 + (q - 3) = q := by omega
+  have h1lt : 1 < q := by omega
+  have hq3pos : 0 < q - 3 := by omega
+  have hq3lt : q - 3 < q := by omega
+  refine ⟨?_, ?_, ?_⟩
+  · rw [hsum, Nat.mod_self]
+  · rw [Nat.mod_eq_of_lt h1lt]
+    norm_num
+  · rw [Nat.mod_eq_of_lt hq3lt]
+    exact Nat.ne_of_gt hq3pos
+
+/--
+Dyadic odd-layer endpoint: a survivor with no realized first-return-complete odd-pair carrier closes
+only by crossing odd-cut elimination, laminar even-interval realization, or the first adjacent laminar
+common-package failure.
+-/
+def Q64DyadicOddLayerEndpoint
+    (DyadicOddLayerSurvivor CrossingOddCutElimination LaminarEvenIntervalRealization
+      AdjacentLaminarPackageChange0001 : Prop) : Prop :=
+  DyadicOddLayerSurvivor →
+    CrossingOddCutElimination ∨ LaminarEvenIntervalRealization ∨
+      AdjacentLaminarPackageChange0001
+
+/--
+Maximal length-`q` zero-sum atoms have no remaining residue heterogeneity after unit scaling: all
+packet residues are one generator.  This is bookkeeping only; it still does not realize a subcarrier.
+-/
+def Q64MaximalZeroSumAtomUnitGenerator
+    (MaximalLengthQAtom UnitScaledGeneratorResidues : Prop) : Prop :=
+  MaximalLengthQAtom → UnitScaledGeneratorResidues
+
+/--
+Binary skew-ladder adjacent-turn test: opposite-side turns in one package are zero raw packets, and
+same-side turns in one fixed frame are local same-trace/twin exits; any surviving edge is an adjacent
+package-change `0001`.
+-/
+def Q64BinarySkewLadderAdjacentTurnTest
+    (LadderEdge OppositeSideOnePackageZeroRaw SameSideFixedFrameTwinExit
+      AdjacentPackageChange0001 : Prop) : Prop :=
+  LadderEdge →
+    OppositeSideOnePackageZeroRaw ∨ SameSideFixedFrameTwinExit ∨ AdjacentPackageChange0001
 
 /-- A packet quotient has total marker weight zero modulo `q`. -/
 def Q64ZeroResiduePacketQuotient
@@ -2648,6 +6122,35 @@ packages into Section 40, or exposes a smaller first-return-complete zero-sum ma
 def Q64PacketQuotientRegularSelection
     (RegularQSelection Section40Package ProperZeroSumMarker : Prop) : Prop :=
   RegularQSelection ∨ Section40Package ∨ ProperZeroSumMarker
+
+/--
+Exact-marker selection reduction from the latest proof.md status: all one-splitter exact branches are
+closed, and the residual survivor is the two-splitter / zero-sum packet atom.
+-/
+def Q64ExactMarkerSelectionReduction
+    (ExactMarkerSurvivor NoSplitClosed LowUniversalClosed HighNullClosed SingletonLiftClosed
+      TwoSplitterZeroSumPacketAtom : Prop) : Prop :=
+  ExactMarkerSurvivor →
+    NoSplitClosed ∨ LowUniversalClosed ∨ HighNullClosed ∨ SingletonLiftClosed ∨
+      TwoSplitterZeroSumPacketAtom
+
+/-- If every closed exact-marker branch is ruled out, the residual is the two-splitter packet atom. -/
+theorem q64_twoSplitterZeroSumPacketAtom_of_exactMarkerSelectionReduction
+    {ExactMarkerSurvivor NoSplitClosed LowUniversalClosed HighNullClosed SingletonLiftClosed
+      TwoSplitterZeroSumPacketAtom : Prop}
+    (hred :
+      Q64ExactMarkerSelectionReduction ExactMarkerSurvivor NoSplitClosed LowUniversalClosed
+        HighNullClosed SingletonLiftClosed TwoSplitterZeroSumPacketAtom)
+    (hnoSplit : ¬ NoSplitClosed) (hnoLow : ¬ LowUniversalClosed)
+    (hnoHigh : ¬ HighNullClosed) (hnoLift : ¬ SingletonLiftClosed)
+    (hsurvivor : ExactMarkerSurvivor) :
+    TwoSplitterZeroSumPacketAtom := by
+  rcases hred hsurvivor with hsplit | hlow | hhigh | hlift | hatom
+  · exact False.elim (hnoSplit hsplit)
+  · exact False.elim (hnoLow hlow)
+  · exact False.elim (hnoHigh hhigh)
+  · exact False.elim (hnoLift hlift)
+  · exact hatom
 
 /--
 Product-firewall routing target from the latest zero-sum audit: provenance rows and ambient high-error
@@ -2684,6 +6187,20 @@ theorem q64_positive_subq_residue_ne_zero {q n : ℕ} (hpos : 0 < n) (hlt : n < 
   rw [Nat.mod_eq_of_lt hlt]
   exact Nat.ne_of_gt hpos
 
+omit [Fintype U] in
+/--
+Ordered boundary completeness only needs side provenance after this point: any failed set contained
+in a proper protected packet has cardinality below `q`.
+-/
+theorem q64_orderedBoundary_failedSet_card_lt_q
+    {q : ℕ} {P F : Finset U} (hsub : F ⊆ P) (hpacket : P.card < q) : F.card < q :=
+  lt_of_le_of_lt (Finset.card_le_card hsub) hpacket
+
+/-- A nonempty failed side below `q` cannot be a q-marker by residue alone. -/
+theorem q64_nonempty_subq_failedSide_not_qMarker
+    {q : ℕ} {F : Finset U} (hF : F.Nonempty) (hlt : F.card < q) : F.card % q ≠ 0 :=
+  q64_positive_subq_residue_ne_zero hF.card_pos hlt
+
 /-- In an exact two-packet marker, the whole pair has zero residue and neither packet does. -/
 theorem q64_two_packet_exact_minimal_zero_sum {q a b : ℕ}
     (ha : 0 < a) (hb : 0 < b) (hsum : a + b = q) :
@@ -2694,6 +6211,40 @@ theorem q64_two_packet_exact_minimal_zero_sum {q a b : ℕ}
     q64_positive_subq_residue_ne_zero hb hb_lt⟩
   rw [hsum]
   exact Nat.mod_self q
+
+/--
+Two-packet half-excess arithmetic: in the one-sided compensator quotient, degree equality and total
+size force the combined smaller-clique/compensator mass to be exactly `b+t`.
+-/
+theorem q64_twoPacket_halfExcess_sum
+    {a b t q alpha beta gamma : ℕ}
+    (ha : a = b + 2 * t) (hq : q = a + b)
+    (hdegree : alpha = beta + gamma) (hsize : alpha + beta + gamma = q) :
+    beta + gamma = b + t := by
+  omega
+
+/--
+Consequently, if at most all `b` vertices of the smaller marker clique are selected, the compensator
+part contains at least the half-excess `t`.
+-/
+theorem q64_twoPacket_compensator_at_least_halfExcess
+    {a b t q alpha beta gamma : ℕ}
+    (ha : a = b + 2 * t) (hq : q = a + b)
+    (hdegree : alpha = beta + gamma) (hsize : alpha + beta + gamma = q)
+    (hbeta : beta ≤ b) :
+    t ≤ gamma := by
+  have hsum := q64_twoPacket_halfExcess_sum ha hq hdegree hsize
+  omega
+
+/--
+The static `K_(q-2) ∪ K_2` independent-compensator shortcut cannot produce the claimed mixed regular
+selection under its forced equations when `q ≥ 8`.
+-/
+theorem q64_qMinusTwo_independentCompensator_no_mixed_selection
+    {q x y z : ℕ} (hq : 8 ≤ q) (hy : y ≤ 2) (hz : z = 1)
+    (hx : x = y + 1) (hsize : x + y + z = q) :
+    False := by
+  omega
 
 /--
 Exact packet partitions are automatically minimal at the bare residue level: a proper positive
@@ -3016,6 +6567,64 @@ structure Q64ProductFirewallQMarkerCouplingData
       FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit
 
 /--
+Four-exit version of the product-firewall q-marker route from `proof.md`: the surviving
+ordered-boundary/local branches may close by producing an explicit regular `q`-set.
+-/
+structure Q64ProductFirewallQMarkerCouplingDataWithRegularQSet
+    (q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure : Prop)
+    (markerSize packetSize : TransportFailure → ℕ) : Prop where
+  splitQuotient :
+    Q64StaticSplitQuotientExhaustion FullySkewSplitter MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging
+  breaker :
+    MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+      AmbientPacketBreaker
+  transport :
+    ProductFirewall →
+      Q64ProductFirewallTransportReduction AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure
+  subqMarkerData :
+    Q64FailedTransportSubqMarkerData q TransportFailure markerSize packetSize
+  boundary :
+    OrderedBoundaryRow →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+  localExit :
+    LocalExit →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+
+/--
+Product-firewall q-marker route conditional on Gap Theorem G.  Static split-quotient exhaustion
+produces the product-firewall frame and an ambient high-error splitter; Theorem G routes that splitter
+to one of the three proof.md outcomes, each of which lands in the carrier/marker coupling exits.
+-/
+structure Q64ProductFirewallTheoremGQMarkerCouplingDataWithRegularQSet
+    (q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+      CompleteSmallerQMarker : Prop) : Prop where
+  splitQuotient :
+    Q64StaticSplitQuotientExhaustion FullySkewSplitter MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging
+  splitter :
+    MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+      AmbientHighErrorSplitter
+  theoremG :
+    AmbientHighErrorSplitter →
+      Q64QMarkerProvenanceSupportDecrease OrderedBoundaryRow CompleteSmallerQMarker
+        LocalRegularizingExit
+  boundary :
+    OrderedBoundaryRow →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+  localExit :
+    LocalRegularizingExit →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+  smallerMarker : CompleteSmallerQMarker → ProperSubmarker
+
+/--
 Component-level product-firewall q-marker route.  This version keeps the failed-transport
 contradiction split into the three subclaims named in the notes instead of preassembling
 `Q64FailedTransportSubqMarkerData`.
@@ -3049,6 +6658,39 @@ structure Q64ProductFirewallQMarkerCouplingComponents
     LocalExit → FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit
 
 /--
+Four-exit component-level product-firewall route.  This keeps the failed-transport contradiction
+split into the three note-level subclaims and keeps the explicit regular-`q`-set exit.
+-/
+structure Q64ProductFirewallQMarkerCouplingComponentsWithRegularQSet
+    (q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure : Prop)
+    (markerSize packetSize : TransportFailure → ℕ) : Prop where
+  splitQuotient :
+    Q64StaticSplitQuotientExhaustion FullySkewSplitter MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging
+  breaker :
+    MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+      AmbientPacketBreaker
+  transport :
+    ProductFirewall →
+      Q64ProductFirewallTransportReduction AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure
+  submarker :
+    Q64TransportFailureProducesDirtySubmarker TransportFailure markerSize packetSize
+  packetBound :
+    Q64TransportFailureProperPacketBound q TransportFailure packetSize
+  lowSetCongruence :
+    Q64TransportFailureLowSetCongruence q TransportFailure markerSize
+  boundary :
+    OrderedBoundaryRow →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+  localExit :
+    LocalExit →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+
+/--
 Fully componentized product-firewall q-marker route: the static split-quotient input is also split
 into its zero-sum, firewall, and weighted-packaging constructors.
 -/
@@ -3080,6 +6722,67 @@ structure Q64ProductFirewallQMarkerCouplingAudit
   localExit :
     LocalExit → FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit
 
+/--
+Four-exit fully componentized product-firewall q-marker route: the split-quotient audit and the
+failed-transport trap are both split, and the regular-`q`-set exit is kept explicit.
+-/
+structure Q64ProductFirewallQMarkerCouplingAuditWithRegularQSet
+    (q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure : Prop)
+    (markerSize packetSize : TransportFailure → ℕ) : Prop where
+  splitQuotient :
+    Q64StaticSplitQuotientAudit FullySkewSplitter MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging
+  breaker :
+    MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+      AmbientPacketBreaker
+  transport :
+    ProductFirewall →
+      Q64ProductFirewallTransportReduction AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure
+  submarker :
+    Q64TransportFailureProducesDirtySubmarker TransportFailure markerSize packetSize
+  packetBound :
+    Q64TransportFailureProperPacketBound q TransportFailure packetSize
+  lowSetCongruence :
+    Q64TransportFailureLowSetCongruence q TransportFailure markerSize
+  boundary :
+    OrderedBoundaryRow →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+  localExit :
+    LocalExit →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+
+/--
+Audit-level version of the Theorem-G q-marker route: the static split quotient is supplied by its
+component audit, while the only unclosed q-marker ingredient is the explicit support-decrease theorem.
+-/
+structure Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet
+    (q : ℕ)
+    (FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+      CompleteSmallerQMarker : Prop) : Prop where
+  splitQuotient :
+    Q64StaticSplitQuotientAudit FullySkewSplitter MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging
+  splitter :
+    MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+      AmbientHighErrorSplitter
+  theoremG :
+    AmbientHighErrorSplitter →
+      Q64QMarkerProvenanceSupportDecrease OrderedBoundaryRow CompleteSmallerQMarker
+        LocalRegularizingExit
+  boundary :
+    OrderedBoundaryRow →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+  localExit :
+    LocalRegularizingExit →
+      FullySkewSplitter → ProperSubmarker ∨ PrimeModuleExit ∨ ClosedLocalExit ∨ RegularQSet
+  smallerMarker : CompleteSmallerQMarker → ProperSubmarker
+
 /-- The fully componentized q-marker audit assembles to the component route. -/
 theorem q64_productFirewallQMarkerCouplingComponents_of_audit
     {q : ℕ}
@@ -3104,6 +6807,54 @@ theorem q64_productFirewallQMarkerCouplingComponents_of_audit
   boundary := h.boundary
   localExit := h.localExit
 
+/-- The four-exit fully componentized q-marker audit assembles to the four-exit component route. -/
+theorem q64_productFirewallQMarkerCouplingComponentsWithRegularQSet_of_audit
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (h :
+      Q64ProductFirewallQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize) :
+    Q64ProductFirewallQMarkerCouplingComponentsWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+      TransportFailure markerSize packetSize where
+  splitQuotient := q64_staticSplitQuotientExhaustion_of_audit h.splitQuotient
+  breaker := h.breaker
+  transport := h.transport
+  submarker := h.submarker
+  packetBound := h.packetBound
+  lowSetCongruence := h.lowSetCongruence
+  boundary := h.boundary
+  localExit := h.localExit
+
+/-- The audit-level Theorem-G q-marker route assembles to the exhaustion-level route. -/
+theorem q64_productFirewallTheoremGQMarkerCouplingDataWithRegularQSet_of_audit
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+      CompleteSmallerQMarker : Prop}
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker) :
+    Q64ProductFirewallTheoremGQMarkerCouplingDataWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+      LocalRegularizingExit CompleteSmallerQMarker where
+  splitQuotient := q64_staticSplitQuotientExhaustion_of_audit h.splitQuotient
+  splitter := h.splitter
+  theoremG := h.theoremG
+  boundary := h.boundary
+  localExit := h.localExit
+  smallerMarker := h.smallerMarker
+
 /-- The component-level product-firewall route assembles to the marker-data route. -/
 theorem q64_productFirewallQMarkerCouplingData_of_components
     {q : ℕ}
@@ -3119,6 +6870,31 @@ theorem q64_productFirewallQMarkerCouplingData_of_components
     Q64ProductFirewallQMarkerCouplingData q FullySkewSplitter ProperSubmarker PrimeModuleExit
       ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
       AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure markerSize packetSize where
+  splitQuotient := h.splitQuotient
+  breaker := h.breaker
+  transport := h.transport
+  subqMarkerData :=
+    q64_failedTransportSubqMarkerData_of_components h.submarker h.packetBound
+      h.lowSetCongruence
+  boundary := h.boundary
+  localExit := h.localExit
+
+/-- Four-exit componentized q-marker route assembles to the packed four-exit marker-data route. -/
+theorem q64_productFirewallQMarkerCouplingDataWithRegularQSet_of_components
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (h :
+      Q64ProductFirewallQMarkerCouplingComponentsWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize) :
+    Q64ProductFirewallQMarkerCouplingDataWithRegularQSet q FullySkewSplitter
+      ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+      ProductFirewall WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+      TransportFailure markerSize packetSize where
   splitQuotient := h.splitQuotient
   breaker := h.breaker
   transport := h.transport
@@ -3175,6 +6951,31 @@ theorem q64_productFirewallTransportClosure_of_transportReduction_and_subqTrap
     (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize) :
     Q64ProductFirewallTransportClosure AmbientPacketBreaker OrderedBoundaryRow LocalExit :=
   q64_productFirewallTransportClosure_of_subqTrap hreduce htrap
+
+/--
+Product-firewall transport closure is a direct Theorem-G support-decrease route: after failed
+transports are killed by the sub-`q` trap, the ambient splitter reaches an ordered row or a local exit.
+-/
+theorem q64_theoremG_of_productFirewallTransportReduction_and_subqTrap
+    {q : ℕ}
+    {AmbientHighErrorSplitter AmbientPacketBreaker OrderedBoundaryRow CompleteSmallerQMarker
+      LocalRegularizingExit TransportFailure : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hbreaker : AmbientHighErrorSplitter → AmbientPacketBreaker)
+    (hreduce :
+      Q64ProductFirewallTransportReduction AmbientPacketBreaker OrderedBoundaryRow
+        LocalRegularizingExit TransportFailure)
+    (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize)
+    (hsplit : AmbientHighErrorSplitter) :
+    Q64QMarkerProvenanceSupportDecrease OrderedBoundaryRow CompleteSmallerQMarker
+      LocalRegularizingExit := by
+  have hclosure :
+      Q64ProductFirewallTransportClosure AmbientPacketBreaker OrderedBoundaryRow
+        LocalRegularizingExit :=
+    q64_productFirewallTransportClosure_of_transportReduction_and_subqTrap hreduce htrap
+  rcases hclosure (hbreaker hsplit) with hboundary | hlocal
+  · exact Or.inl hboundary
+  · exact Or.inr (Or.inr hlocal)
 
 /--
 Once the product-firewall transport closure has been proved, the last-obstruction landing surface is
@@ -3293,6 +7094,78 @@ theorem q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingData
   · exact hdata.localExit hlocal hskew
 
 /--
+Four-exit product-firewall closure of q-marker carrier/marker coupling, matching Theorem 2.1 in
+`proof.md` with the regular-`q`-set branch kept explicit.
+-/
+theorem q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallQMarkerCouplingData
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hdata :
+      Q64ProductFirewallQMarkerCouplingDataWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize) :
+    Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+      PrimeModuleExit ClosedLocalExit RegularQSet := by
+  intro hskew
+  rcases hdata.splitQuotient hskew with ⟨hzero, hfirewall, hpack⟩
+  have htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize :=
+    q64_productFirewallTransportTrap_of_failedTransportSubqMarkerData hdata.subqMarkerData
+  have hclosure :
+      Q64ProductFirewallTransportClosure AmbientPacketBreaker OrderedBoundaryRow LocalExit :=
+    q64_productFirewallTransportClosure_of_transportReduction_and_subqTrap
+      (hdata.transport hfirewall) htrap
+  rcases hclosure (hdata.breaker hzero hfirewall hpack) with hboundary | hlocal
+  · exact hdata.boundary hboundary hskew
+  · exact hdata.localExit hlocal hskew
+
+/--
+Theorem-G product-firewall closure of q-marker carrier/marker coupling.  The complete-smaller-marker
+branch is exactly the proper-submarker exit in the older carrier/marker API.
+-/
+theorem q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingData
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+      CompleteSmallerQMarker : Prop}
+    (hdata :
+      Q64ProductFirewallTheoremGQMarkerCouplingDataWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker) :
+    Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+      PrimeModuleExit ClosedLocalExit RegularQSet := by
+  intro hskew
+  rcases hdata.splitQuotient hskew with ⟨hzero, hfirewall, hpack⟩
+  rcases hdata.theoremG (hdata.splitter hzero hfirewall hpack) with
+    hboundary | hsmall | hlocal
+  · exact hdata.boundary hboundary hskew
+  · exact Or.inl (hdata.smallerMarker hsmall)
+  · exact hdata.localExit hlocal hskew
+
+/-- Audit-level Theorem-G product-firewall closure of q-marker carrier/marker coupling. -/
+theorem q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingAudit
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientHighErrorSplitter OrderedBoundaryRow LocalRegularizingExit
+      CompleteSmallerQMarker : Prop}
+    (h :
+      Q64ProductFirewallTheoremGQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientHighErrorSplitter OrderedBoundaryRow
+        LocalRegularizingExit CompleteSmallerQMarker) :
+    Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+      PrimeModuleExit ClosedLocalExit RegularQSet := by
+  exact
+    q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallTheoremGQMarkerCouplingData
+      (q64_productFirewallTheoremGQMarkerCouplingDataWithRegularQSet_of_audit h)
+
+/--
 Component-level product-firewall closure of q-marker carrier/marker coupling.  This is the same
 claim as `q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingData`, but its hypotheses
 are exactly the three failed-transport subclaims rather than the packed sub-`q` marker-data field.
@@ -3313,6 +7186,23 @@ theorem q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingCompon
   exact q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingData
     (q64_productFirewallQMarkerCouplingData_of_components h)
 
+/-- Four-exit component-level product-firewall closure of q-marker carrier/marker coupling. -/
+theorem q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallQMarkerCouplingComponents
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (h :
+      Q64ProductFirewallQMarkerCouplingComponentsWithRegularQSet q FullySkewSplitter
+        ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom
+        ProductFirewall WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize) :
+    Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+      PrimeModuleExit ClosedLocalExit RegularQSet := by
+  exact q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallQMarkerCouplingData
+    (q64_productFirewallQMarkerCouplingDataWithRegularQSet_of_components h)
+
 /--
 Fully componentized product-firewall closure of q-marker carrier/marker coupling.  This exposes both
 the static split-quotient audit components and the failed-transport trap components.
@@ -3331,6 +7221,23 @@ theorem q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingAudit
       ClosedLocalExit := by
   exact q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingComponents
     (q64_productFirewallQMarkerCouplingComponents_of_audit h)
+
+/-- Four-exit fully componentized product-firewall closure of q-marker carrier/marker coupling. -/
+theorem q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallQMarkerCouplingAudit
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit RegularQSet
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (h :
+      Q64ProductFirewallQMarkerCouplingAuditWithRegularQSet q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit RegularQSet MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize) :
+    Q64QMarkerCarrierMarkerCouplingWithRegularQSet FullySkewSplitter ProperSubmarker
+      PrimeModuleExit ClosedLocalExit RegularQSet := by
+  exact q64_qMarkerCarrierMarkerCouplingWithRegularQSet_of_productFirewallQMarkerCouplingComponents
+    (q64_productFirewallQMarkerCouplingComponentsWithRegularQSet_of_audit h)
 
 /-- The final obstruction landing surface directly supplies the older carrier/marker coupling API. -/
 theorem q64_qMarkerCarrierMarkerCoupling_of_lastObstructionLanding
@@ -3493,8 +7400,8 @@ theorem q64_finalAudit_of_lastObstructionLanding
 /--
 One Lean-facing certificate for the strongest claimed final-proof route in the notes: the zero-sum
 atom is present, the product-firewall and weighted-quotient packages are present, the landing proof
-turns them into carrier/marker coupling, and the final audit chain turns carrier/marker coupling into
-the global bridge.
+turns them into carrier/marker coupling, and the final audit chain turns that coupling into the
+global bridge.
 -/
 def Q64ClaimedFinalProofCertificate
     (MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
@@ -3531,9 +7438,9 @@ theorem q64_betaVanishes_of_claimedFinalProofCertificate
   exact (hchain (hlanding hzero hfirewall hpack)).2.2.2.2.1
 
 /--
-The product-firewall sub-`q` transport trap supplies the landing component of the claimed final-proof
-certificate, once the ordered-boundary and local-exit branches are known to imply carrier/marker
-coupling.
+The product-firewall sub-`q` transport trap supplies the landing component of the claimed
+final-proof certificate, once the ordered-boundary and local-exit branches are known to imply
+carrier/marker coupling.
 -/
 theorem q64_claimedFinalProofCertificate_of_productFirewallTransportTrap
     {q : ℕ}
@@ -3563,8 +7470,9 @@ theorem q64_claimedFinalProofCertificate_of_productFirewallTransportTrap
 
 /--
 Named transport-reduction version of the final-proof certificate constructor.  This is the
-product-firewall certificate surface closest to the notes: pre-trap transport gives ordered-boundary,
-local-exit, or failure; the sub-`q` trap kills failure; both exits feed carrier/marker coupling.
+product-firewall certificate surface closest to the notes: pre-trap transport gives
+ordered-boundary, local-exit, or failure; the sub-`q` trap kills failure; both exits feed
+carrier/marker coupling.
 -/
 theorem q64_claimedFinalProofCertificate_of_transportReduction_and_subqTrap
     {q : ℕ}
@@ -3618,8 +7526,8 @@ theorem q64_claimedFinalProofCertificate_of_productFirewallProofCertificate
   exact q64_lastObstructionLanding_of_productFirewallProofCertificate hcert
 
 /--
-The failed-transport marker-data product-firewall certificate is a direct constructor for the claimed
-final-proof certificate once the final audit chain is available.
+The failed-transport marker-data product-firewall certificate is a direct constructor for the
+claimed final-proof certificate once the final audit chain is available.
 -/
 theorem q64_claimedFinalProofCertificate_of_productFirewallProofDataCertificate
     {q : ℕ}
@@ -3649,8 +7557,9 @@ def Q64FirstReturnFixedPeeledPackageTheorem
   CommonPackage ∨ SuccessorCoalesced
 
 /--
-Active-packet preservation for the same-side holonomy branch: the first boundary of a prime-shell
-distinguisher must keep the active packet, or it already localizes to Section 40 / the balanced flip.
+Active-packet preservation for the same-side holonomy branch: the first boundary of a
+prime-shell distinguisher must keep the active packet, or it already localizes to Section 40 /
+the balanced flip.
 -/
 def Q64ActivePacketPreservation
     (BoundaryDistinguisher PreservesActivePacket Section40Exit BalancedFlipQuartet : Prop) : Prop :=
@@ -3662,8 +7571,8 @@ successor shadows, and the nonempty shadow case either intersects or is exactly 
 successor-side positive-AND atom.
 -/
 def Q64FirstReturnTwoShadowTheorem
-    (AmbientCylinderMembership ShadowHLift ShadowJLift ShadowsIntersect FullySkewPositiveAND : Prop) :
-    Prop :=
+    (AmbientCylinderMembership ShadowHLift ShadowJLift ShadowsIntersect
+      FullySkewPositiveAND : Prop) : Prop :=
   AmbientCylinderMembership →
     ShadowHLift ∧ ShadowJLift ∧ (ShadowsIntersect ∨ FullySkewPositiveAND)
 
@@ -3680,6 +7589,95 @@ theorem q64_commonShadow_of_firstReturnTwoShadow
   rcases htwo hamb with ⟨_, _, hinter | hand⟩
   · exact hinter
   · exact False.elim (hnoAND hand)
+
+/--
+The reduction circle from `proof.md`: excluding the fully skew positive-AND square, proving common
+fixed-package shadow routing, proving dirty shared-slack absorption, and proving Theorem G are
+treated as equivalent theorem surfaces.
+-/
+def Q64PositiveANDTransportGapEquivalence
+    (NoPositiveAND CommonShadowRouting DirtySharedSlackAbsorption TheoremG : Prop) : Prop :=
+  (NoPositiveAND ↔ CommonShadowRouting) ∧
+    (CommonShadowRouting ↔ DirtySharedSlackAbsorption) ∧
+      (DirtySharedSlackAbsorption ↔ TheoremG)
+
+/-- Common-shadow routing closes Theorem G through the audited positive-AND reduction circle. -/
+theorem q64_theoremG_of_commonShadowRouting
+    {NoPositiveAND CommonShadowRouting DirtySharedSlackAbsorption TheoremG : Prop}
+    (heq :
+      Q64PositiveANDTransportGapEquivalence NoPositiveAND CommonShadowRouting
+        DirtySharedSlackAbsorption TheoremG)
+    (hshadow : CommonShadowRouting) :
+    TheoremG :=
+  heq.2.2.mp (heq.2.1.mp hshadow)
+
+/-- Excluding positive-AND also closes Theorem G through the same reduction circle. -/
+theorem q64_theoremG_of_noPositiveAND
+    {NoPositiveAND CommonShadowRouting DirtySharedSlackAbsorption TheoremG : Prop}
+    (heq :
+      Q64PositiveANDTransportGapEquivalence NoPositiveAND CommonShadowRouting
+        DirtySharedSlackAbsorption TheoremG)
+    (hno : NoPositiveAND) :
+    TheoremG :=
+  q64_theoremG_of_commonShadowRouting heq (heq.1.mp hno)
+
+/--
+The conditional host route from proof.md: failed-row acyclicity plus transverse-breaker routing
+fills the support-local fourth corner and yields the three downstream host-frontier consequences.
+-/
+def Q64SupportLocalFourthCornerRoute
+    (FailedRowAcyclicity TransverseBreakerRouting FourthCornerFilling SilentEdgeExclusion
+      OutgoingNoSplit PairChamberSeparation : Prop) : Prop :=
+  FailedRowAcyclicity → TransverseBreakerRouting →
+    FourthCornerFilling ∧ SilentEdgeExclusion ∧ OutgoingNoSplit ∧ PairChamberSeparation
+
+/-- Pair-chamber separation is downstream of the conditional support-local fourth-corner route. -/
+theorem q64_pairChamberSeparation_of_supportLocalFourthCornerRoute
+    {FailedRowAcyclicity TransverseBreakerRouting FourthCornerFilling SilentEdgeExclusion
+      OutgoingNoSplit PairChamberSeparation : Prop}
+    (hroute :
+      Q64SupportLocalFourthCornerRoute FailedRowAcyclicity TransverseBreakerRouting
+        FourthCornerFilling SilentEdgeExclusion OutgoingNoSplit PairChamberSeparation)
+    (hacyclic : FailedRowAcyclicity) (htransverse : TransverseBreakerRouting) :
+    PairChamberSeparation :=
+  (hroute hacyclic htransverse).2.2.2
+
+/--
+Dyadic two-child carry reduction: a primitive mixed carry must be localized to a common package,
+become a successor-side `0001` endpoint, expose a one-corner lift failure, or produce a
+homogeneous child obstruction.
+-/
+def Q64DyadicTwoChildCarryReduction
+    (PrimitiveCarry CommonShadowPackage SuccessorSide0001 OneCornerLiftFailure
+      HomogeneousChildObstruction : Prop) : Prop :=
+  PrimitiveCarry →
+    CommonShadowPackage ∨ SuccessorSide0001 ∨ OneCornerLiftFailure ∨ HomogeneousChildObstruction
+
+/--
+If every non-common-package branch is excluded, the two-child carry reduction gives package equality.
+-/
+theorem q64_commonPackage_of_dyadicTwoChildCarryReduction
+    {PrimitiveCarry CommonShadowPackage SuccessorSide0001 OneCornerLiftFailure
+      HomogeneousChildObstruction : Prop}
+    (hred :
+      Q64DyadicTwoChildCarryReduction PrimitiveCarry CommonShadowPackage SuccessorSide0001
+        OneCornerLiftFailure HomogeneousChildObstruction)
+    (hno0001 : ¬ SuccessorSide0001) (hnoLift : ¬ OneCornerLiftFailure)
+    (hnoChild : ¬ HomogeneousChildObstruction) (hcarry : PrimitiveCarry) :
+    CommonShadowPackage := by
+  rcases hred hcarry with hcommon | h0001 | hlift | hchild
+  · exact hcommon
+  · exact False.elim (hno0001 h0001)
+  · exact False.elim (hnoLift hlift)
+  · exact False.elim (hnoChild hchild)
+
+/--
+Endpoint mass has only the two noncircular closing routes identified in proof.md: a pointwise sign
+law or paired-compensator routing with unary leaks absorbed in the same package.
+-/
+def Q64EndpointMassClosingRoutes
+    (EndpointMass PointwiseSignLaw PairedCompensatorWithUnaryLeaks : Prop) : Prop :=
+  EndpointMass → PointwiseSignLaw ∨ PairedCompensatorWithUnaryLeaks
 
 /--
 Full residual compensator routing: a first-return `0001` row either coalesces into Section 40, or
@@ -3968,7 +7966,8 @@ theorem q64_anchorHallExcess_nonpos_iff_fiber_bounds
 
 omit [Fintype U] [DecidableEq U] in
 /--
-If the total anchor-fiber multiplicity exceeds `(q-1)|anchor|`, then some anchor fiber is overloaded.
+If the total anchor-fiber multiplicity exceeds `(q-1)|anchor|`, then some anchor fiber is
+overloaded.
 -/
 theorem q64_exists_overloaded_anchor_fiber_of_sum_gt
     {q : ℕ} {anchor : Finset U} {mu : U → ℕ}
@@ -3990,8 +7989,8 @@ theorem q64_exists_overloaded_anchor_fiber_of_sum_gt
   exact not_lt_of_ge hle hsum
 
 /--
-One-defect escape surface: if a unique defect is off the anchor, swapping that defect for the outside
-vertex preserves the anchored near-regular shell.
+One-defect escape surface: if a unique defect is off the anchor, swapping that defect for the
+outside vertex preserves the anchored near-regular shell.
 -/
 def Q64AnchoredOneDefectEscape
     (OneDefectWitness DefectOffAnchor AnchoredNearRegularSwap : Prop) : Prop :=
@@ -4004,6 +8003,28 @@ collapsed to pointwise anchor-fiber bounds.
 def Q64AnchorInjectiveMultiSwapCompatibility
     (InjectiveDefectSubfamily CompatibleTransversal AnchoredNearRegularMultiSwap : Prop) : Prop :=
   InjectiveDefectSubfamily → CompatibleTransversal → AnchoredNearRegularMultiSwap
+
+/--
+Residual host absorption after Hall capacity collapses: anchor-supported one-defect fibers require
+compatible-transversal positivity, or else the same candidate-switching fourth-corner obstruction
+appears.
+-/
+def Q64CompatibleTransversalPositivityReduction
+    (AnchorSupportedOneDefect CompatibleTransversalPositive CandidateSwitchingFourthCorner : Prop) :
+    Prop :=
+  AnchorSupportedOneDefect → CompatibleTransversalPositive ∨ CandidateSwitchingFourthCorner
+
+/-- Host absorption reaches compatible-transversal positivity unless candidate switching fires. -/
+theorem q64_compatibleTransversalPositive_of_no_candidateSwitching
+    {AnchorSupportedOneDefect CompatibleTransversalPositive CandidateSwitchingFourthCorner : Prop}
+    (hred :
+      Q64CompatibleTransversalPositivityReduction AnchorSupportedOneDefect
+        CompatibleTransversalPositive CandidateSwitchingFourthCorner)
+    (hnoSwitch : ¬ CandidateSwitchingFourthCorner) (hanchor : AnchorSupportedOneDefect) :
+    CompatibleTransversalPositive := by
+  rcases hred hanchor with hpos | hswitch
+  · exact hpos
+  · exact False.elim (hnoSwitch hswitch)
 
 /--
 Exact host-side frontier after the one-error strip: either completer positivity holds, or all
@@ -4045,8 +8066,9 @@ def Q64WeightedMixedTraceAdmissibility
     PreservesBadCut ∨ ClosedWeightedTemplate ∨ MarkedQMarkerKernel
 
 /--
-Trace-refinement failed-row acyclicity: the first dirty failed row of a minimal mixed-trace breaker is
-admissible, strictly decreases the active support, or reaches terminal outside-row constancy.
+Trace-refinement failed-row acyclicity: the first dirty failed row of a minimal mixed-trace
+breaker is admissible, strictly decreases the active support, or reaches terminal outside-row
+constancy.
 -/
 def Q64TraceRefinementFailedRowAcyclicity
     (MixedTraceBreaker AdmissibleBreaker StrictSupportDecrease TerminalConstancy : Prop) : Prop :=
@@ -4082,6 +8104,17 @@ def Q64HostAtomsFromSquareBreakerRouting
       HostOrient115 : Prop) : Prop :=
   TraceRefinementAcyclicity →
     SquareBreakerRouting → HostSilentEdge128 ∧ HostOppPair123 ∧ HostOrient115
+
+/-- Projection of the three original host-frontier atoms from the square-breaker routing package. -/
+theorem q64_hostAtoms_of_squareBreakerRouting
+    {TraceRefinementAcyclicity SquareBreakerRouting HostSilentEdge128 HostOppPair123
+      HostOrient115 : Prop}
+    (h :
+      Q64HostAtomsFromSquareBreakerRouting TraceRefinementAcyclicity SquareBreakerRouting
+        HostSilentEdge128 HostOppPair123 HostOrient115)
+    (htrace : TraceRefinementAcyclicity) (hsquare : SquareBreakerRouting) :
+    HostSilentEdge128 ∧ HostOppPair123 ∧ HostOrient115 :=
+  h htrace hsquare
 
 /--
 Bit-by-bit dyadic tail propagation: vanishing of the aggregate `beta_m` class advances dropped-tail
@@ -4319,7 +8352,9 @@ def Q64FiniteCoreExactUpgrade
     (DroppedTailResidueConst BucketRegular ExactControlBlock FinalExactWitness : Prop) : Prop :=
   DroppedTailResidueConst → BucketRegular → ExactControlBlock → FinalExactWitness
 
-/-- Proof-block residue data is exactly strong enough to feed the finite-core exact-upgrade surface. -/
+/--
+Proof-block residue data is exactly strong enough to feed the finite-core exact-upgrade surface.
+-/
 theorem q64_finiteCoreExactUpgrade_of_proofBlockResidueData
     {Row Block : Type*} [DecidableEq Block] {q : ℕ}
     {blocks : Finset Block} {contribution : Row → Block → ZMod q}
@@ -4344,8 +8379,8 @@ def Q64PositiveCostExternalBlockBridgeFromTailResidue
     TerminalRegularQBucket → ControlBlockBookkeeping → PositiveCostExternalBlockBridge
 
 /--
-Propositional wrapper for the latest audit: dyadic beta vanishing plus the terminal bookkeeping yields
-the positive-cost external-block bridge.
+Propositional wrapper for the latest audit: dyadic beta vanishing plus the terminal bookkeeping
+yields the positive-cost external-block bridge.
 -/
 theorem q64_positiveCostExternalBlockBridge_of_dyadicTail
     {AllBetaBitsVanish InitialResidueConst FinalDroppedTailResidueConst TerminalRegularQBucket
