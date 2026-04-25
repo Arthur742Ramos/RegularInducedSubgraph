@@ -1,3 +1,6 @@
 import RegularInducedSubgraph.Modular.Finite
+import RegularInducedSubgraph.Modular.Frontier
+import RegularInducedSubgraph.Modular.Module
+import RegularInducedSubgraph.Modular.Substitution
 import RegularInducedSubgraph.Modular.Cascade
 import RegularInducedSubgraph.Modular.Asymptotic

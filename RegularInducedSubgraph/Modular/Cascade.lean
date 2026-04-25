@@ -1976,6 +1976,109 @@ lemma exists_subset_with_constant_hostDegree_of_constant_blockUnionDegree_and_ca
     ⟨u, hu, hcardu, _blocks', _hsame, _hsepU, _hextU, d, hconst⟩
   exact ⟨u, hu, hcardu, d, hconst⟩
 
+/--
+Pair bucketing against two disjoint control blocks can freeze both external degrees exactly while
+preserving a host-degree congruence modulo `q` on the selected bucket.
+-/
+lemma exists_large_subset_with_constant_twoExternalDegrees_and_modEq_hostDegree_of_modEq_twoBlockUnionDegree_and_card_bound
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s t₁ t₂ : Finset V} {q k : ℕ}
+    (hsize : (t₁.card + 1) * (t₂.card + 1) * k ≤ s.card)
+    (hst : Disjoint s (t₁ ∪ t₂)) (ht : Disjoint t₁ t₂)
+    (hdeg :
+      ∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ (t₁ ∪ t₂))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (s ∪ (t₁ ∪ t₂))).degree
+            ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q]) :
+    ∃ u : Finset V, ∃ hu : u ⊆ s, k ≤ u.card ∧
+      ∃ e₁ e₂ : ℕ,
+        (∀ x ∈ u,
+          (G.neighborFinset x ∩ t₁).card = e₁ ∧
+            (G.neighborFinset x ∩ t₂).card = e₂) ∧
+        ∀ v w : ↑(u : Set V),
+          (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+            (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q] := by
+  classical
+  rcases exists_large_subset_with_constant_twoExternalDegrees (G := G) s t₁ t₂ hsize with
+    ⟨u, hus, hku, e₁, e₂, hpair⟩
+  have hconstRaw :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+    have hut : Disjoint u (t₁ ∪ t₂) := by
+      refine Finset.disjoint_left.mpr ?_
+      intro x hxU hxT
+      exact (Finset.disjoint_left.mp hst) (hus hxU) hxT
+    have htu : Disjoint (t₁ ∪ t₂) (s \ u) := by
+      refine Finset.disjoint_left.mpr ?_
+      intro x hxT hxDrop
+      exact (Finset.disjoint_left.mp hst) (Finset.mem_sdiff.mp hxDrop).1 hxT
+    exact
+      modEq_unionDegree_of_modEq_extendedUnionDegree_and_two_externalDegrees
+        (G := G) (s := u) (t₁ := t₁) (t₂ := t₂) (u := s \ u) hut htu ht
+        (hdeg := by
+          intro v w
+          have hUnion : u ∪ ((t₁ ∪ t₂) ∪ (s \ u)) = s ∪ (t₁ ∪ t₂) := by
+            calc
+              u ∪ ((t₁ ∪ t₂) ∪ (s \ u)) = (u ∪ (s \ u)) ∪ (t₁ ∪ t₂) := by
+                  simp [Finset.union_assoc, Finset.union_left_comm, Finset.union_comm]
+              _ = s ∪ (t₁ ∪ t₂) := by
+                  rw [Finset.union_comm u, Finset.sdiff_union_of_subset hus]
+          have hcastv :
+              (inducedOn G (u ∪ ((t₁ ∪ t₂) ∪ (s \ u)))).degree
+                  ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+                (inducedOn G (s ∪ (t₁ ∪ t₂))).degree
+                  ⟨v.1, Finset.mem_union.mpr (Or.inl (hus v.2))⟩ := by
+            simpa using
+              (inducedOn_degree_congr (G := G)
+                (s := u ∪ ((t₁ ∪ t₂) ∪ (s \ u))) (t := s ∪ (t₁ ∪ t₂))
+                (h := hUnion)
+                (hs := Finset.mem_union.mpr (Or.inl v.2))
+                (ht := Finset.mem_union.mpr (Or.inl (hus v.2))))
+          have hcastw :
+              (inducedOn G (u ∪ ((t₁ ∪ t₂) ∪ (s \ u)))).degree
+                  ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+                (inducedOn G (s ∪ (t₁ ∪ t₂))).degree
+                  ⟨w.1, Finset.mem_union.mpr (Or.inl (hus w.2))⟩ := by
+            simpa using
+              (inducedOn_degree_congr (G := G)
+                (s := u ∪ ((t₁ ∪ t₂) ∪ (s \ u))) (t := s ∪ (t₁ ∪ t₂))
+                (h := hUnion)
+                (hs := Finset.mem_union.mpr (Or.inl w.2))
+                (ht := Finset.mem_union.mpr (Or.inl (hus w.2))))
+          simpa [hcastv, hcastw] using hdeg ⟨v.1, hus v.2⟩ ⟨w.1, hus w.2⟩)
+        (hext₁ := by
+          intro v w
+          simpa [(hpair v.1 v.2).1, (hpair w.1 w.2).1] using (Nat.ModEq.refl e₁))
+        (hext₂ := by
+          intro v w
+          simpa [(hpair v.1 v.2).2, (hpair w.1 w.2).2] using (Nat.ModEq.refl e₂))
+  have hconst :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hus v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hus w.2⟩ [MOD q] := by
+    intro v w
+    have hcastv :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G s).degree ⟨v.1, hus v.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hus])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := hus v.2))
+    have hcastw :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G s).degree ⟨w.1, hus w.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hus])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := hus w.2))
+    simpa [hcastv, hcastw] using hconstRaw v w
+  exact ⟨u, hus, hku, e₁, e₂, hpair, hconst⟩
+
 lemma exists_large_subset_with_constant_modExternalDegree
     (G : SimpleGraph V) [DecidableRel G.Adj] (s t : Finset V) {q k : ℕ}
     (hq : 0 < q) (hsize : q * k ≤ s.card) :
@@ -3573,6 +3676,64 @@ lemma hasBoundedSingleControlExactWitnessOfCard_of_large_constant_externalDegree
         (inducedOn G w').degree v + (G.neighborFinset v ∩ t).card := by
           exact degree_union_eq_degree_add_external (G := G) (s := w') (t := t) hwt v
     _ = d + e := by simp [hwd' v, hext' v]
+
+/--
+Concrete q = 4 finite exact witness: once the ambient graph has at least `14` vertices, one
+singleton control already forces a bounded exact witness of size `4`.
+
+Proof: delete one vertex `t`; among the remaining `n - 1 >= 13` vertices, one adjacency bucket to
+`t` has size at least `7`; every graph on `7` vertices contains a regular induced `4`-vertex
+subgraph because `4 ∈ admissibleBounds 7`.
+-/
+theorem hasBoundedSingleControlExactWitnessOfCard_four_of_fourteen_le_card
+    (hbase : SevenVertexFourRegularBaseCase)
+    {n r : ℕ} (G : SimpleGraph (Fin n)) (hr : 1 ≤ r) (hn : 14 ≤ n) :
+    HasBoundedSingleControlExactWitnessOfCard G 4 r := by
+  classical
+  let v : Fin n := ⟨0, lt_of_lt_of_le (by decide : 0 < 14) hn⟩
+  let t : Finset (Fin n) := {v}
+  let s : Finset (Fin n) := Finset.univ \ t
+  have htSubset : t ⊆ (Finset.univ : Finset (Fin n)) := by
+    intro x hx
+    simp
+  have hsCard : s.card = n - 1 := by
+    have hsdiff :
+        s.card = (Finset.univ : Finset (Fin n)).card - t.card := by
+      simpa [s] using
+        (Finset.card_sdiff_of_subset htSubset :
+          ((Finset.univ : Finset (Fin n)) \ t).card =
+            (Finset.univ : Finset (Fin n)).card - t.card)
+    simpa [t] using hsdiff
+  have hsize : (t.card + 1) * (7 - 1) < s.card := by
+    rw [hsCard]
+    simp [t]
+    omega
+  have ht : 0 < t.card := by
+    simp [t]
+  have htr : t.card ≤ r := by
+    simpa [t] using hr
+  have hst : Disjoint s t := by
+    simpa [s] using
+      (Finset.sdiff_disjoint : Disjoint ((Finset.univ : Finset (Fin n)) \ t) t)
+  refine
+    hasBoundedSingleControlExactWitnessOfCard_of_large_constant_externalDegree_and_recursive_strict
+      (G := G) (s := s) (t := t) (n := 7) (k := 4) (r := r) hsize ht htr hst ?_
+  intro u _hu hcardu
+  exact
+    hasRegularInducedSubgraphOfCard_of_card_eq_and_le_F
+      (G := inducedOn G u) (n := 7) (by simpa using hcardu)
+      (four_le_F_seven hbase)
+
+/--
+Convenient 16-vertex specialization of the preceding q = 4 finite exact witness.
+-/
+theorem hasBoundedSingleControlExactWitnessOfCard_four_of_sixteen_le_card
+    (hbase : SevenVertexFourRegularBaseCase)
+    {n r : ℕ} (G : SimpleGraph (Fin n)) (hr : 1 ≤ r) (hn : 16 ≤ n) :
+    HasBoundedSingleControlExactWitnessOfCard G 4 r := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_four_of_fourteen_le_card
+      hbase (G := G) hr (le_trans (by decide : 14 ≤ 16) hn)
 
 lemma hasSingleControlExactWitnessOfCard_of_large_constant_externalDegree_and_recursive
     (G : SimpleGraph V) {s t : Finset V} {n k r : ℕ}

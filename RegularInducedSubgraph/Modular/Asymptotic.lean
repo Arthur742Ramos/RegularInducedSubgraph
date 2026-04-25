@@ -1,6 +1,7 @@
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Data.Nat.Sqrt
 import RegularInducedSubgraph.Modular.Cascade
+import RegularInducedSubgraph.Modular.Frontier
 
 open Filter
 
@@ -1852,6 +1853,55 @@ lemma hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusC
         G hsep hcascade hext⟩
 
 /--
+Small-ambient refinement data already suffice for the fixed-modulus control-block modular cascade
+package: take the selected bucket `w` as the terminal host and keep the inherited control blocks.
+-/
+lemma
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+    {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+    {k q r : ℕ} (hkq : k ≤ q) (hq : 1 < q)
+    (href :
+      HasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard G k q r) :
+    HasFixedModulusControlBlockModularCascadeWitnessOfCard G k q := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases href with ⟨w, s, t, hwk, hw, blocks, e, htcard, _hlen, hsep, hsmall, _hctrl, _hhost, hext⟩
+  have htpos : 0 < t.card := by
+    rw [htcard]
+    exact Nat.sub_pos_of_lt hq
+  have hnonempty : NonemptyControlBlockUnion ((t, e) :: blocks) := by
+    rcases Finset.card_pos.mp htpos with ⟨x, hx⟩
+    refine Finset.card_pos.mpr ?_
+    refine ⟨x, ?_⟩
+    simp [controlBlockUnion, hx]
+  have hsepW : ControlBlocksSeparated w ((t, e) :: blocks) := controlBlocksSeparated_mono hw hsep
+  have hwMod : InducesModEqDegree G w q := by
+    exact inducesModEqDegree_of_modEq_unionDegree_and_externalBlockDegrees G hsepW hsmall hext
+  have hfrom : HasFixedModulusCascadeFrom G q w [] := by
+    simpa [HasFixedModulusCascadeFrom, InducesModEqDegree] using hwMod
+  exact
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasFixedModulusCascadeFrom_and_modExternalBlockDegrees
+      (G := G) (s := w) (blocks := ((t, e) :: blocks)) (chain := [])
+      (by simpa [cascadeTerminal, hwk] using (le_rfl : k ≤ k))
+      (by simpa [cascadeTerminal, hwk] using hkq)
+      hnonempty hsepW hfrom hext
+
+lemma
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+    {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+    {k q r : ℕ} (hkq : k ≤ q) (hq : 1 < q)
+    (href :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G k q r) :
+    HasFixedModulusControlBlockModularCascadeWitnessOfCard G k q := by
+  exact
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+        (G := G) href)
+
+/--
 Gallai's theorem in the empty-control fixed-modulus cascade package suggested by the dyadic note.
 Unlike `DyadicParityBaseCase`, this package keeps the modulus fixed but does not require a nonempty
 control family or the terminal cap `|u| ≤ q`.
@@ -2001,6 +2051,28 @@ def HasBoundedFixedModulusControlBlockModularHostTerminalRegularization (r : ℕ
       HasRegularInducedSubgraphOfCard G (2 ^ j)
 
 /--
+Positive-dyadic graph-local form of Corollary 10.2: every completed host/control pair at size
+`q = 2^j` with `j > 0` contains a regular `q`-subset of the completed host.
+-/
+def HasPositiveDyadicCompletedHostRegularSelection : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasCompletedHostRegularSelection G (2 ^ j)
+
+/--
+Stronger graph-only sufficient theorem from the notes: every `q^2`-vertex induced subgraph with
+degrees constant modulo `q` already contains a regular induced `q`-subgraph.
+-/
+def HasPositiveDyadicModulusSquareRegularSelection : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasModulusSquareRegularSelection G (2 ^ j)
+
+theorem hasPositiveDyadicCompletedHostRegularSelection_of_hasPositiveDyadicModulusSquareRegularSelection
+    (hselect : HasPositiveDyadicModulusSquareRegularSelection) :
+    HasPositiveDyadicCompletedHostRegularSelection := by
+  intro n j hj G
+  exact hasCompletedHostRegularSelection_of_hasModulusSquareRegularSelection G (hselect hj G)
+
+/--
 Weaker positive-dyadic terminal target for the bounded host package: at terminal size `q = 2^j`
 with `j > 0`, it is enough to produce a control-block modular cascade witness rather than a regular
 induced subgraph.
@@ -2032,6 +2104,17 @@ def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBr
       HasFixedModulusControlBlockModularCascadeWitnessOfCard G (2 ^ j) (2 ^ j)
 
 /--
+Weaker positive-dyadic one-step self-target: at positive dyadic modulus `q = 2^j`, every bounded
+host witness of size `q * q` already collapses to the fixed-modulus control-block modular cascade
+package on `q` vertices.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G ((2 ^ j) * 2 ^ j) (2 ^ j) r →
+      HasFixedModulusControlBlockModularCascadeWitnessOfCard G (2 ^ j) (2 ^ j)
+
+/--
 Honest one-step finite Branch B self-target: at positive dyadic modulus `q = 2^j`, every bounded
 host witness of size `q * q` should already collapse to a bounded exact single-control witness of
 size `q` with control budget `q - 1`.
@@ -2056,6 +2139,20 @@ def HasExactCardFixedSingleControlHostMaximalControlUpgrade : Prop :=
       HasBoundedSingleControlExactWitnessOfCard G (2 ^ j) (2 ^ j - 1)
 
 /--
+Exact missing finite datum in the stripped `q - 1`-control route: keep the same structured modular
+host witness, but adjoin only the dropped-part residue on `s \ u`.
+
+At control size `q - 1`, the modular control-degree data already collapse automatically to exact
+equality, so this is the honest missing ingredient beneath the direct exact-upgrade target.
+-/
+def HasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+        G (2 ^ j) (2 ^ j) (2 ^ j - 1) →
+      HasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+        G (2 ^ j) (2 ^ j) (2 ^ j - 1)
+
+/--
 Stronger local residue-host route behind the structured self-step: the `q - 1`-control exact-card
 host output should upgrade to the corresponding dropped-part residue package before the existing
 exactness collapse is applied.
@@ -2072,6 +2169,136 @@ def HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade : Prop :=
         G (2 ^ j) (2 ^ j) (2 ^ j - 1)
 
 /--
+Exact finite obstruction inside the current refinement-data package: recover the smaller ambient
+congruence on `w ∪ controlBlockUnion ((t, e) :: blocks)`. Once this is available, the dropped-part
+residue on `s \ w` follows algebraically.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTailSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementTailDataOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/--
+Exact finite obstruction inside the current refinement-data package: recover a dyadic pairing tree
+for the dropped-part columns of `s \ w` relative to the current bucket `w`.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTailDataOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/--
+Exact finite obstruction inside the current refinement-data package: recover a first-bit packet
+decomposition for the dropped-part columns together with recursive divisibility data on the halved
+dropped-part degree function.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementFirstBitPacketDataOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/--
+Exact finite obstruction inside the current refinement-data package: recover a dyadic divisibility
+chain for the dropped-part degree function on the current bucket.
+
+This packages the obstruction-module viewpoint without insisting on literal equal/complementary
+column pairings.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/--
+Exact finite obstruction inside the current refinement-data package: once a full dyadic
+divisibility chain is available, isolate the terminal tail on which the last mod-2 step lives.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+      G (2 ^ j) (2 ^ j) r →
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard
+      G (2 ^ j) (2 ^ j) r
+
+/--
+Exact finite obstruction inside the current refinement-data package: recover an explicit terminal
+dyadic tail after the frozen lower bits, together with the mod-2 constancy of that terminal tail.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/--
+Beta-vanishing version of the dyadic refinement bridge.  This is the note-level bit-by-bit
+formulation: the refinement package supplies a dropped-tail row together with the terminal beta
+vanishing needed to promote it to a full dyadic divisibility chain.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaDataOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/--
+All-bits beta version of the dyadic refinement bridge.  This is closest to the note phrase
+"beta vanishes at every bit": Lean constructs the full dyadic divisibility chain from that package.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/--
+Exact finite obstruction inside the current refinement-data package: recover the smaller ambient
+congruence on `w ∪ controlBlockUnion ((t, e) :: blocks)`. Once this is available, the dropped-part
+residue on `s \ w` follows algebraically.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/--
+Exact finite obstruction singled out by the current host notes: from the refinement-data package,
+recover a genuine completed host of size `q^2` carrying the inherited exact control block.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementCompletedHostSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard
+        G (2 ^ j) (2 ^ j - 1)
+
+/--
+Honest live finite bridge above the current `Cascade.lean` host-step theorem: instead of forgetting
+the extra ambient/control-block data down to a bare structured modular-host witness, ask directly
+that the full refined host-step package already collapses to a bounded exact single-control witness.
+-/
+def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+    (r : ℕ) : Prop :=
+  ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
+    HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+        G (2 ^ j) (2 ^ j) r
+
+/--
 Honest live finite bridge above the current `Cascade.lean` host-step theorem: instead of forgetting
 the extra ambient/control-block data down to a bare structured modular-host witness, ask directly
 that the full refined host-step package already collapses to a bounded exact single-control witness.
@@ -2081,6 +2308,411 @@ def HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSe
   ∀ {n j : ℕ} (hj : 0 < j) (G : SimpleGraph (Fin n)),
     HasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard G (2 ^ j) (2 ^ j) r →
       HasBoundedSingleControlExactWitnessOfCard G (2 ^ j) (2 ^ j - 1)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTailSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTailSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementTailDataOfCard
+      (G := G) le_rfl hq (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTailSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTailSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTailSelfBridge
+      (r := r) hbridge hj G
+      (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) (q := 2 ^ j) (k := 2 ^ j) hq (Nat.pow_pos (by decide : 0 < 2)) hhost)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+        r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementFirstBitPacketDataOfCard
+      (G := G) (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTailDataOfCard
+      (G := G) (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard
+      (G := G) (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaDataOfCard
+      (G := G) (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+      (G := G) (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+      (G := G) (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge_iff_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+    {r : ℕ} :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge r ↔
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r :=
+  ⟨hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge,
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge⟩
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+    {r : ℕ}
+    (hdiv :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        r)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge r := by
+  intro n j hj G href
+  exact hbridge hj G (hdiv hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+      (G := G) rfl hq (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+        r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+      (r := r)
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+        hbridge)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+      (r := r)
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge
+        hbridge)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+      (r := r)
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+        hbridge)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+      (r := r)
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+        hbridge)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+      (r := r)
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        hbridge)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+    {r : ℕ}
+    (hdiv :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        r)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+      (r := r)
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (r := r) hdiv hbridge)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+      (r := r) hbridge hj G
+      (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) (q := 2 ^ j) (k := 2 ^ j) hq (Nat.pow_pos (by decide : 0 < 2)) hhost)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementTerminalSelfBridge
+      (r := r) hbridge hj G
+      (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) (q := 2 ^ j) (k := 2 ^ j) hq (Nat.pow_pos (by decide : 0 < 2)) hhost)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+        r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementFirstBitPacketSelfBridge
+      (r := r) hbridge hj G
+      (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) (q := 2 ^ j) (k := 2 ^ j) hq (Nat.pow_pos (by decide : 0 < 2)) hhost)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementPairingSelfBridge
+      (r := r) hbridge hj G
+      (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) (q := 2 ^ j) (k := 2 ^ j) hq (Nat.pow_pos (by decide : 0 < 2)) hhost)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+      (G := G)
+      (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  intro n j hj G href
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+      (G := G) le_rfl hq (hbridge hj G href)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+        hbridge)
 
 theorem
     hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
@@ -2107,16 +2739,82 @@ theorem
         (G := G) hq href)
 
 theorem
-    hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+    hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
     (hupgrade : HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade) :
-    HasExactCardFixedSingleControlHostMaximalControlUpgrade := by
+    HasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade := by
   intro n j hj G hhost
   classical
   letI : DecidableRel G.Adj := Classical.decRel G.Adj
   exact
-    hasBoundedSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
+    hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
       (G := G)
       (hupgrade hj G hhost)
+
+theorem
+    hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade) :
+    HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_lt_of_hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+      (G := G) (by simpa using Nat.sub_lt hq (by decide : 0 < 1))
+      (hupgrade hj G hhost)
+
+theorem
+    hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade_iff_hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade :
+    HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade ↔
+      HasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade := by
+  constructor
+  · exact
+      hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+  · exact
+      hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade
+
+theorem
+    hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade) :
+    HasExactCardFixedSingleControlHostMaximalControlUpgrade := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_lt_and_hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+      (G := G) le_rfl
+      (by simpa using Nat.sub_lt hq (by decide : 0 < 1))
+      (hupgrade hj G hhost)
+
+theorem
+    hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+    (hupgrade : HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade) :
+    HasExactCardFixedSingleControlHostMaximalControlUpgrade := by
+  exact
+    hasExactCardFixedSingleControlHostMaximalControlUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade
+      (hasExactCardFixedSingleControlHostMaximalControlDropResidueUpgrade_of_hasExactCardFixedSingleControlHostMaximalControlResidueUpgrade
+        hupgrade)
 
 theorem
     hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasExactCardFixedSingleControlHostMaximalControlUpgrade
@@ -2176,6 +2874,574 @@ theorem
     hbridge hj G
       (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
         (G := G) (q := 2 ^ j) (k := 2 ^ j) hq (Nat.pow_pos (by decide : 0 < 2)) hhost)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+        hbridge)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementCompletedHostSelfBridge_and_hasPositiveDyadicCompletedHostRegularSelection
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementCompletedHostSelfBridge
+        r)
+    (hselect : HasPositiveDyadicCompletedHostRegularSelection) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard_and_hasCompletedHostRegularSelection
+      (G := G)
+      (hbridge hj G
+        (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+          (G := G) (q := 2 ^ j) (k := 2 ^ j) hq (Nat.pow_pos (by decide : 0 < 2)) hhost))
+      (hselect hj G)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementCompletedHostSelfBridge_and_hasPositiveDyadicModulusSquareRegularSelection
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementCompletedHostSelfBridge
+        r)
+    (hselect : HasPositiveDyadicModulusSquareRegularSelection) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementCompletedHostSelfBridge_and_hasPositiveDyadicCompletedHostRegularSelection
+      (r := r) hbridge
+      (hasPositiveDyadicCompletedHostRegularSelection_of_hasPositiveDyadicModulusSquareRegularSelection
+        hselect)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+    {r : ℕ}
+    (hdiv :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        r)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (r := r) hdiv hbridge)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasFixedModulusControlBlockModularCascadeWitnessOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+      (G := G) le_rfl hq
+      (hbridge hj G
+        (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+          (G := G) (q := 2 ^ j) (k := 2 ^ j) hq (Nat.pow_pos (by decide : 0 < 2)) hhost))
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+      (fun hj G href => by
+        classical
+        letI : DecidableRel G.Adj := Classical.decRel G.Adj
+        exact
+          hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+            (G := G) (hbridge hj G href))
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+    {r : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+        hbridge)
+
+/--
+Weaker host-side frontier singled out by Corollary 10.2: from a bounded host witness at bucket
+`q * q`, first recover a completed host of size `q^2` together with the inherited exact control
+block of size `q - 1`.
+
+Once this completed-host package is available, the remaining graph-theoretic task is exactly the
+local regular-selection problem formalized by `HasCompletedHostRegularSelection`.
+-/
+def HasCompletedHostExtractionFromHostWitness (r : ℕ) : Prop :=
+  ∀ {n : ℕ} {q : ℕ} (_hq : 1 < q) (G : SimpleGraph (Fin n)) [DecidableRel G.Adj],
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * q) q r →
+      HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard G q (q - 1)
+
+/--
+Per-modulus slice of the completed-host extraction problem behind Corollary 10.2.
+-/
+def HasCompletedHostExtractionAtModulus (q r : ℕ) : Prop :=
+  ∀ {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj],
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * q) q r →
+      HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard G q (q - 1)
+
+/--
+The full completed-host extraction problem is exactly the conjunction of its per-modulus slices.
+-/
+theorem hasCompletedHostExtractionFromHostWitness_of_forall_modulus
+    {r : ℕ} (hmod : ∀ q : ℕ, 1 < q → HasCompletedHostExtractionAtModulus q r) :
+    HasCompletedHostExtractionFromHostWitness r := by
+  intro n q hq G _ hhost
+  exact hmod q hq G hhost
+
+/--
+Finite combinatorial obstruction isolated empirically in the throwaway investigation
+(`check_step_drop_residue.py`, `verify_reduction.py`): every bounded fixed-modulus control-block
+modular host witness at bucket `q * q` admits the missing dropped-part residue at bucket `q`.
+
+The reduction behind this target is:
+`drop(v) mod q` on a bucket subset `u*` of size `q` equals
+`D - deg_G[u*](v) mod q`, where `D` is the bucket-constant host degree modulo `q`.
+Since `|u*| = q`, `mod q` constancy of `deg_G[u*]` on `u*` is exact constancy, i.e. `G[u*]` is a
+regular induced subgraph of size `q`.  So the claim further reduces to
+
+  *every graph on `q * q` vertices contains a size-`q` induced regular subgraph*,
+
+an instance of the Erdős–Faudree–Sós regular induced subgraph conjecture at `n = q^2`,
+`size = q = √n`.  This is trivial for `q = 2`, follows from Ramsey `R(3, 3) = 6 ≤ 9` for `q = 3`,
+and was verified empirically for `q = 4` (0/500 random graphs on 16 vertices without a size-4 regular
+induced subgraph across a range of edge probabilities).
+-/
+def HasDropResidueExtractionFromHostWitness (r : ℕ) : Prop :=
+  ∀ {n : ℕ} {q : ℕ} (_hq : 1 < q) (G : SimpleGraph (Fin n)) [DecidableRel G.Adj],
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * q) q r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G q q r
+
+/--
+Per-modulus slice of the dropped-part extraction problem behind the positive-dyadic step-exact bridge.
+-/
+def HasDropResidueExtractionAtModulus (q r : ℕ) : Prop :=
+  ∀ {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj],
+    HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * q) q r →
+      HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G q q r
+
+/--
+The full obstruction `HasDropResidueExtractionFromHostWitness` is exactly the conjunction of its
+per-modulus slices.
+-/
+theorem hasDropResidueExtractionFromHostWitness_of_forall_modulus
+    {r : ℕ} (hmod : ∀ q : ℕ, 1 < q → HasDropResidueExtractionAtModulus q r) :
+    HasDropResidueExtractionFromHostWitness r := by
+  intro n q hq G _ hhost
+  exact hmod q hq G hhost
+
+/--
+Local induced-degree formula used below: inside an induced subgraph on `s`, the degree of `v` is the
+number of ambient neighbors of `v` that also lie in `s`.
+-/
+private lemma degree_inducedOn_eq_card_neighborFinset_inter_asymptotic
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    (s : Finset (Fin n)) (v : ↑(s : Set (Fin n))) :
+    (inducedOn G s).degree v = (G.neighborFinset v ∩ s).card := by
+  classical
+  rw [← SimpleGraph.card_neighborFinset_eq_degree]
+  have hmap :
+      ((inducedOn G s).neighborFinset v).map (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) =
+        G.neighborFinset v ∩ s := by
+    ext x
+    simp [inducedOn, and_assoc]
+  calc
+    ((inducedOn G s).neighborFinset v).card =
+        (((inducedOn G s).neighborFinset v).map
+          (Function.Embedding.subtype (· ∈ (s : Set (Fin n))))).card := by
+            rw [Finset.card_map]
+    _ = (G.neighborFinset v ∩ s).card := by rw [hmap]
+
+/--
+On a 2-vertex induced subgraph, the two degrees are equal: either the edge is present and both
+degrees are `1`, or it is absent and both are `0`.
+-/
+private lemma induced_pair_degree_eq
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {a b : Fin n} (hab : a ≠ b) :
+    (inducedOn G ({a, b} : Finset (Fin n))).degree ⟨a, by simp [hab]⟩ =
+      (inducedOn G ({a, b} : Finset (Fin n))).degree ⟨b, by simp [hab]⟩ := by
+  have haa : a ∉ G.neighborFinset a := by
+    simpa [SimpleGraph.mem_neighborFinset] using (G.irrefl a)
+  have hbb : b ∉ G.neighborFinset b := by
+    simpa [SimpleGraph.mem_neighborFinset] using (G.irrefl b)
+  have hsingle :
+      (G.neighborFinset a ∩ ({b} : Finset (Fin n))).card =
+        (G.neighborFinset b ∩ ({a} : Finset (Fin n))).card := by
+    by_cases habAdj : G.Adj a b
+    · have hbaAdj : G.Adj b a := G.symm habAdj
+      simp [SimpleGraph.mem_neighborFinset, habAdj, hbaAdj]
+    · have hbaAdj : ¬ G.Adj b a := by
+        intro h
+        exact habAdj (G.symm h)
+      simp [SimpleGraph.mem_neighborFinset, habAdj, hbaAdj]
+  calc
+    (inducedOn G ({a, b} : Finset (Fin n))).degree ⟨a, by simp [hab]⟩ =
+        (G.neighborFinset a ∩ ({a, b} : Finset (Fin n))).card := by
+          exact
+            degree_inducedOn_eq_card_neighborFinset_inter_asymptotic
+              (G := G) ({a, b} : Finset (Fin n)) ⟨a, by simp [hab]⟩
+    _ = (G.neighborFinset a ∩ ({b} : Finset (Fin n))).card := by
+          simp [Finset.inter_insert, haa, hab]
+    _ = (G.neighborFinset b ∩ ({a} : Finset (Fin n))).card := hsingle
+    _ = (G.neighborFinset b ∩ ({a, b} : Finset (Fin n))).card := by
+          simpa [Finset.pair_comm, Finset.inter_insert, hbb]
+    _ = (inducedOn G ({a, b} : Finset (Fin n))).degree ⟨b, by simp [hab]⟩ := by
+          symm
+          exact
+            degree_inducedOn_eq_card_neighborFinset_inter_asymptotic
+              (G := G) ({a, b} : Finset (Fin n)) ⟨b, by simp [hab]⟩
+
+/--
+At modulus `2`, the missing dropped-part residue can be recovered directly from the exact-card
+refinement data: on a 2-vertex bucket, the induced degrees inside the bucket are automatically equal.
+-/
+private lemma modEq_dropDegree_of_card_two
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {w s : Finset (Fin n)} (hwk : w.card = 2) (hw : w ⊆ s)
+    (hhost :
+      ∀ v w' : ↑(w : Set (Fin n)),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD 2]) :
+    ∀ v w' : ↑(w : Set (Fin n)),
+      (G.neighborFinset v ∩ (s \ w)).card ≡
+        (G.neighborFinset w' ∩ (s \ w)).card [MOD 2] := by
+  rcases Finset.card_eq_two.mp hwk with ⟨a, b, hab, hwab⟩
+  have hwa : a ∈ w := by simpa [hwab, hab]
+  have hwb : b ∈ w := by simpa [hwab, hab]
+  let va : ↑(w : Set (Fin n)) := ⟨a, hwa⟩
+  let vb : ↑(w : Set (Fin n)) := ⟨b, hwb⟩
+  have hdisj : Disjoint w (s \ w) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxW hxDrop
+    exact (Finset.mem_sdiff.mp hxDrop).2 hxW
+  have hdegwEq :
+      (inducedOn G w).degree va = (inducedOn G w).degree vb := by
+    have hcastA :
+        (inducedOn G w).degree va =
+          (inducedOn G ({a, b} : Finset (Fin n))).degree ⟨a, by simp [hab]⟩ := by
+      simpa [va, hwab] using
+        (inducedOn_degree_congr (G := G)
+          (s := w) (t := ({a, b} : Finset (Fin n)))
+          (h := hwab)
+          (hs := va.2)
+          (ht := by
+            have haPair : a ∈ ({a, b} : Finset (Fin n)) := by simp [hab]
+            simpa [va] using haPair))
+    have hcastB :
+        (inducedOn G w).degree vb =
+          (inducedOn G ({a, b} : Finset (Fin n))).degree ⟨b, by simp [hab]⟩ := by
+      simpa [vb, hwab] using
+        (inducedOn_degree_congr (G := G)
+          (s := w) (t := ({a, b} : Finset (Fin n)))
+          (h := hwab)
+          (hs := vb.2)
+          (ht := by
+            have hbPair : b ∈ ({a, b} : Finset (Fin n)) := by simp [hab]
+            simpa [vb] using hbPair))
+    simpa [hcastA, hcastB] using induced_pair_degree_eq (G := G) hab
+  have hbigAB :
+      (inducedOn G (w ∪ (s \ w))).degree
+          ⟨va.1, Finset.mem_union.mpr (Or.inl va.2)⟩ ≡
+        (inducedOn G (w ∪ (s \ w))).degree
+          ⟨vb.1, Finset.mem_union.mpr (Or.inl vb.2)⟩ [MOD 2] := by
+    have hcastA :
+        (inducedOn G (w ∪ (s \ w))).degree
+            ⟨va.1, Finset.mem_union.mpr (Or.inl va.2)⟩ =
+          (inducedOn G s).degree ⟨va.1, hw va.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := w ∪ (s \ w)) (t := s)
+          (h := by rw [Finset.union_comm w, Finset.sdiff_union_of_subset hw])
+          (hs := Finset.mem_union.mpr (Or.inl va.2))
+          (ht := hw va.2))
+    have hcastB :
+        (inducedOn G (w ∪ (s \ w))).degree
+            ⟨vb.1, Finset.mem_union.mpr (Or.inl vb.2)⟩ =
+          (inducedOn G s).degree ⟨vb.1, hw vb.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := w ∪ (s \ w)) (t := s)
+          (h := by rw [Finset.union_comm w, Finset.sdiff_union_of_subset hw])
+          (hs := Finset.mem_union.mpr (Or.inl vb.2))
+          (ht := hw vb.2))
+    simpa [hcastA, hcastB] using hhost va vb
+  have hsplitA :
+      (inducedOn G (w ∪ (s \ w))).degree
+          ⟨va.1, Finset.mem_union.mpr (Or.inl va.2)⟩ =
+        (inducedOn G w).degree va + (G.neighborFinset va ∩ (s \ w)).card := by
+    exact degree_union_eq_degree_add_external (G := G) (s := w) (t := s \ w) hdisj va
+  have hsplitB :
+      (inducedOn G (w ∪ (s \ w))).degree
+          ⟨vb.1, Finset.mem_union.mpr (Or.inl vb.2)⟩ =
+        (inducedOn G w).degree vb + (G.neighborFinset vb ∩ (s \ w)).card := by
+    exact degree_union_eq_degree_add_external (G := G) (s := w) (t := s \ w) hdisj vb
+  have hdropAB :
+      (G.neighborFinset va ∩ (s \ w)).card ≡
+        (G.neighborFinset vb ∩ (s \ w)).card [MOD 2] := by
+    have hsum :
+        (inducedOn G w).degree va + (G.neighborFinset va ∩ (s \ w)).card ≡
+          (inducedOn G w).degree vb + (G.neighborFinset vb ∩ (s \ w)).card [MOD 2] := by
+      simpa [hsplitA, hsplitB] using hbigAB
+    exact
+      Nat.ModEq.add_left_cancel' ((inducedOn G w).degree va) (by simpa [hdegwEq] using hsum)
+  intro v w'
+  by_cases hvw : v.1 = w'.1
+  · have hvw' : v = w' := Subtype.ext hvw
+    subst w'
+    exact Nat.ModEq.refl ((G.neighborFinset v ∩ (s \ w)).card)
+  · have hvCases : v.1 = a ∨ v.1 = b := by
+      have hvMem : v.1 ∈ ({a, b} : Finset (Fin n)) := by simpa [hwab] using v.2
+      simpa [Finset.mem_insert, Finset.mem_singleton] using hvMem
+    have hwCases : w'.1 = a ∨ w'.1 = b := by
+      have hwMem : w'.1 ∈ ({a, b} : Finset (Fin n)) := by simpa [hwab] using w'.2
+      simpa [Finset.mem_insert, Finset.mem_singleton] using hwMem
+    rcases hvCases with hva | hvb
+    · rcases hwCases with hwa' | hwb'
+      · exact False.elim (hvw (hva.trans hwa'.symm))
+      · have hvEq : v = va := Subtype.ext hva
+        have hwEq : w' = vb := Subtype.ext hwb'
+        subst v
+        subst w'
+        simpa [va, vb] using hdropAB
+    · rcases hwCases with hwa' | hwb'
+      · have hvEq : v = vb := Subtype.ext hvb
+        have hwEq : w' = va := Subtype.ext hwa'
+        subst v
+        subst w'
+        simpa [va, vb] using hdropAB.symm
+      · exact False.elim (hvw (hvb.trans hwb'.symm))
+
+/--
+The first dyadic obstruction slice (`q = 2`) is unconditional: any bounded fixed-modulus host witness
+at bucket `4` already yields the required dropped-part residue data at bucket `2`.
+-/
+theorem
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_two_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+    {n r : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G 4 2 r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G 2 2 r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  have href :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard G 2 2 r := by
+    exact
+      hasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard
+        (G := G)
+        (hasBoundedFixedModulusControlBlockModularHostRefinementDataOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+          (G := G) (q := 2) (k := 2) (by decide) (by decide) hhost)
+  rcases href with ⟨w, s, t, hwk, hw, blocks, e, htcard, hlen, hsep, hbig, hctrl, hhost', hext⟩
+  refine ⟨w, s, t, hwk, hw, blocks, e, htcard, hlen, hsep, hbig, ?_, hctrl, hhost', hext⟩
+  exact modEq_dropDegree_of_card_two (G := G) hwk hw hhost'
+
+/--
+The q = 2 dropped-part extraction theorem packaged as a per-modulus slice.
+-/
+theorem hasDropResidueExtractionAtModulusTwo (r : ℕ) :
+    HasDropResidueExtractionAtModulus 2 r := by
+  intro n G _ hhost
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_two_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+      (G := G) hhost
+
+/--
+The step-self-bridge at positive dyadic modulus reduces to the single combinatorial obstruction
+`HasDropResidueExtractionFromHostWitness`.
+
+Proof: given a host witness at bucket `q * q` with `q = 2 ^ j`, apply the obstruction to extract
+the drop-data package at bucket `q`, then close with the existing
+`hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard`
+bridge at `k = q = q` (so `k ≤ q` holds by `le_rfl`), yielding the bounded exact single-control
+witness of size `q` with control budget `q - 1`.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasDropResidueExtractionFromHostWitness
+    {r : ℕ}
+    (hext : HasDropResidueExtractionFromHostWitness r) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  have hdrop :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+        G (2 ^ j) (2 ^ j) r :=
+    hext (q := 2 ^ j) hq G hhost
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+      (G := G) (k := 2 ^ j) (q := 2 ^ j) (r := r) le_rfl hq hdrop
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+    {r : ℕ}
+    (hextract : HasCompletedHostExtractionFromHostWitness r)
+    (hselect : HasPositiveDyadicCompletedHostRegularSelection) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  intro n j hj G hhost
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        cases (Nat.lt_irrefl 0 hj)
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard_and_hasCompletedHostRegularSelection
+      (G := G)
+      (hextract (q := 2 ^ j) hq G hhost)
+      (hselect hj G)
+
+theorem
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicModulusSquareRegularSelection
+    {r : ℕ}
+    (hextract : HasCompletedHostExtractionFromHostWitness r)
+    (hselect : HasPositiveDyadicModulusSquareRegularSelection) :
+    HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge r := by
+  exact
+    hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+      (r := r) hextract
+      (hasPositiveDyadicCompletedHostRegularSelection_of_hasPositiveDyadicModulusSquareRegularSelection
+        hselect)
+
+/--
+First dyadic step-exact bridge (`q = 2`): any bounded host witness at bucket `4` already collapses
+to a bounded exact single-control witness of size `2`.
+-/
+theorem hasBoundedFixedModulusControlBlockModularHostStepExactSelfBridge_two
+    {n r : ℕ} (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G 4 2 r) :
+    HasBoundedSingleControlExactWitnessOfCard G 2 (2 - 1) := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+      (G := G) (k := 2) (q := 2) (r := r) le_rfl (by decide)
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_two_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard
+        (G := G) hhost)
+
+/--
+First nontrivial positive-dyadic step slice (`q = 4`): any bounded host witness at bucket `16`
+already forces the required exact single-control witness of size `4`.
+
+This uses the finite theorem `hasBoundedSingleControlExactWitnessOfCard_four_of_sixteen_le_card`,
+which in turn combines the exact-control recursion with the exhaustive base fact
+`4 ∈ admissibleBounds 7`.
+-/
+theorem hasBoundedFixedModulusControlBlockModularHostStepExactSelfBridge_four
+    (hbase : SevenVertexFourRegularBaseCase)
+    {n r : ℕ} (G : SimpleGraph (Fin n))
+    (hhost : HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G 16 4 r) :
+    HasBoundedSingleControlExactWitnessOfCard G 4 (4 - 1) := by
+  have hn : 16 ≤ n := by
+    rcases hhost with ⟨u, s, h16, hu, _blocks, _hlen, _hnonempty, _hsep, _hdeg, _hext⟩
+    exact
+      le_trans h16 <|
+        le_trans (Finset.card_le_card hu) <|
+          by simpa using (Finset.card_le_univ s)
+  simpa using
+    (hasBoundedSingleControlExactWitnessOfCard_four_of_sixteen_le_card
+      hbase (G := G) (r := 4 - 1) (by decide : 1 ≤ 4 - 1) hn)
+
+/--
+At `q = 4`, the stripped maximal-control exact-upgrade target is already settled outside the
+intermediate range `8 <= n <= 13`: the small-ambient collapse handles `n <= 7`, while the finite
+q = 4 exact-witness theorem handles `n >= 14`.
+-/
+theorem hasExactCardFixedSingleControlHostMaximalControlUpgrade_four_of_card_le_seven_or_fourteen_le
+    (hbase : SevenVertexFourRegularBaseCase)
+    {n : ℕ} (G : SimpleGraph (Fin n))
+    (hhost : HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+      G 4 4 (4 - 1))
+    (hcard : n ≤ 7 ∨ 14 ≤ n) :
+    HasBoundedSingleControlExactWitnessOfCard G 4 (4 - 1) := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases hcard with hsmall | hlarge
+  · exact
+      hasBoundedSingleControlExactWitnessOfCard_of_card_le_add_of_lt_and_hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+        (G := G) (k := 4) (q := 4) (r := 4 - 1)
+        le_rfl (by simpa using hsmall) (by decide) hhost
+  · simpa using
+      (hasBoundedSingleControlExactWitnessOfCard_four_of_fourteen_le_card
+        hbase (G := G) (r := 4 - 1) (by decide : 1 ≤ 4 - 1) hlarge)
+
+/--
+The corresponding q = 4 refinement-data exact self-bridge also reduces to the remaining orders
+`8 <= n <= 13`.
+-/
+theorem
+    hasBoundedFixedModulusControlBlockModularHostRefinementExactSelfBridge_four_of_card_le_seven_or_fourteen_le
+    (hbase : SevenVertexFourRegularBaseCase)
+    {n r : ℕ} (G : SimpleGraph (Fin n))
+    (href : HasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard G 4 4 r)
+    (hcard : n ≤ 7 ∨ 14 ≤ n) :
+    HasBoundedSingleControlExactWitnessOfCard G 4 (4 - 1) := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  exact
+    hasExactCardFixedSingleControlHostMaximalControlUpgrade_four_of_card_le_seven_or_fourteen_le
+      hbase
+      (G := G)
+      (hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard
+        (G := G) (by decide) href)
+      hcard
 
 theorem
     hasPolynomialCostFixedOneControlHostTerminalRegularization_iff_hasPolynomialCostFixedSingleControlHostTerminalRegularization
@@ -2684,6 +3950,48 @@ theorem
     hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge
       (hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge
         hterm)
+
+/--
+If the positive-dyadic host package can already be upgraded in one step to the fixed-modulus
+control-block modular cascade package, then one extra factor of `q` yields terminal regularization.
+-/
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+    {D : ℕ}
+    (hstep :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepTerminalCascadeSelfBridge
+        (D + 1)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 2) := by
+  intro n j G hfixed
+  by_cases hj : j = 0
+  · have hfixedOne : HasFixedModulusWitnessOfCard G 1 1 := by
+      simpa [hj] using hfixed
+    rcases hfixedOne with ⟨s, hs, _hmod⟩
+    have hsPos : 0 < s.card := lt_of_lt_of_le (by decide : 0 < 1) hs
+    rcases Finset.card_pos.mp hsPos with ⟨v, _hv⟩
+    letI : Nonempty (Fin n) := ⟨v⟩
+    simpa [hj] using hasRegularInducedSubgraphOfCard_one G
+  · rcases Nat.exists_eq_succ_of_ne_zero hj with ⟨r, rfl⟩
+    let q : ℕ := 2 ^ (r + 1)
+    have hq : 1 < q := by
+      have hpow : 1 ≤ 2 ^ r := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+      calc
+        1 < 2 := by decide
+        _ ≤ 2 * 2 ^ r := by
+          simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+        _ = q := by simp [q, Nat.pow_succ, Nat.mul_comm]
+    have hqpos : 0 < q := lt_trans (by decide : 0 < 1) hq
+    have hhost :
+        HasBoundedFixedModulusControlBlockModularHostWitnessOfCard G (q * q) q (D + 1) := by
+      exact
+        hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_of_hasFixedModulusWitnessOfCard_pow
+          (G := G) (q := q) (k := q * q) (D := D) hq (Nat.mul_pos hqpos hqpos)
+          (by
+            simpa [q, Nat.pow_succ, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hfixed)
+    have hterm : HasFixedModulusControlBlockModularCascadeWitnessOfCard G q q := by
+      exact hstep (j := r + 1) (Nat.succ_pos r) G hhost
+    simpa [q] using
+      hasRegularInducedSubgraphOfCard_of_hasFixedModulusControlBlockModularCascadeWitnessOfCard G hterm
 
 /--
 If the positive-dyadic host package can be upgraded in one step to a bounded exact single-control
@@ -3690,6 +4998,164 @@ theorem
         hstep)
 
 theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+    {D : ℕ}
+    (hextract : HasCompletedHostExtractionFromHostWitness (D + 1))
+    (hselect : HasPositiveDyadicCompletedHostRegularSelection) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 2) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+        (r := D + 1) hextract hselect)
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hextract : HasCompletedHostExtractionFromHostWitness (D + 1))
+    (hselect : HasPositiveDyadicCompletedHostRegularSelection) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 3) * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      hr hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+        (r := D + 1) hextract hselect)
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hextract : HasCompletedHostExtractionFromHostWitness (D + 1))
+    (hselect : HasPositiveDyadicCompletedHostRegularSelection) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+        (r := D + 1) hextract hselect)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hextract : HasCompletedHostExtractionFromHostWitness (D + 1))
+    (hselect : HasPositiveDyadicCompletedHostRegularSelection) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+        (r := D + 1) hextract hselect)
+
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicModulusSquareRegularSelection
+    {D : ℕ}
+    (hextract : HasCompletedHostExtractionFromHostWitness (D + 1))
+    (hselect : HasPositiveDyadicModulusSquareRegularSelection) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 2) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+      hextract
+      (hasPositiveDyadicCompletedHostRegularSelection_of_hasPositiveDyadicModulusSquareRegularSelection
+        hselect)
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicModulusSquareRegularSelection
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hextract : HasCompletedHostExtractionFromHostWitness (D + 1))
+    (hselect : HasPositiveDyadicModulusSquareRegularSelection) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 3) * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+      hr hlift hextract
+      (hasPositiveDyadicCompletedHostRegularSelection_of_hasPositiveDyadicModulusSquareRegularSelection
+        hselect)
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicModulusSquareRegularSelection
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hextract : HasCompletedHostExtractionFromHostWitness (D + 1))
+    (hselect : HasPositiveDyadicModulusSquareRegularSelection) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+      hlift hextract
+      (hasPositiveDyadicCompletedHostRegularSelection_of_hasPositiveDyadicModulusSquareRegularSelection
+        hselect)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicModulusSquareRegularSelection
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hextract : HasCompletedHostExtractionFromHostWitness (D + 1))
+    (hselect : HasPositiveDyadicModulusSquareRegularSelection) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasCompletedHostExtractionFromHostWitness_and_hasPositiveDyadicCompletedHostRegularSelection
+      hlift hextract
+      (hasPositiveDyadicCompletedHostRegularSelection_of_hasPositiveDyadicModulusSquareRegularSelection
+        hselect)
+
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+    {D : ℕ}
+    (hdiv :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        (D + 1))
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (D + 1)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 2) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (r := D + 1) hdiv hbridge)
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hdiv :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        (D + 1))
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (D + 1)) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 3) * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      hr hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (r := D + 1) hdiv hbridge)
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hdiv :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        (D + 1))
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (D + 1)) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (r := D + 1) hdiv hbridge)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hdiv :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        (D + 1))
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge_and_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilityToTerminalSelfBridge
+        (r := D + 1) hdiv hbridge)
+
+theorem
     hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
     {D : ℕ}
     (hbridge :
@@ -3734,6 +5200,125 @@ theorem
     targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge
       hlift
       (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+        hbridge)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+        hbridge)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        hbridge)
+
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+    {D : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge (D + 1)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 2) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+        hbridge)
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge (D + 1)) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 3) * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hr hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+        hbridge)
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge (D + 1)) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+        hbridge)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementSmallAmbientSelfBridge
+        hbridge)
+
+theorem
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+    {D : ℕ}
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge (D + 1)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization (D + 2) := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+        hbridge)
+
+theorem
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+    {C D r : ℕ} (hr : 0 < r) (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge (D + 1)) :
+    forcingThreshold (2 ^ r) ≤ 2 ^ (1 + C * r ^ 2 + (D + 3) * r) := by
+  exact
+    forcingThreshold_pow_two_le_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hr hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+        hbridge)
+
+theorem
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge (D + 1)) :
+    EventualNatPowerDomination 2 := by
+  exact
+    eventualNatPowerDomination_two_of_emptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+        hbridge)
+
+theorem
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
+    {C D : ℕ} (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge (D + 1)) :
+    TargetStatement := by
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDropSelfBridge
         hbridge)
 
 theorem
@@ -4044,6 +5629,869 @@ theorem targetStatement_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
     targetStatement_of_hasExactCardFixedSingleControlHostTerminalRegularization
       (hasExactCardFixedSingleControlHostTerminalRegularization_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
         hupgrade)
+
+/--
+Dyadic-tail residue route to the global target.  Once beta-vanishing propagates the dropped-tail
+residue, and the terminal bookkeeping turns that residue into an empty-control external-block bridge,
+the existing asymptotic pipeline yields the conjecture.
+-/
+theorem targetStatement_of_dyadicTailResidueExternalBlockBridge
+    {C D : ℕ}
+    {AllBetaBitsVanish InitialResidueConst FinalDroppedTailResidueConst TerminalRegularQBucket
+      ControlBlockBookkeeping : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hprop :
+      Q64DyadicDroppedTailResiduePropagation AllBetaBitsVanish InitialResidueConst
+        FinalDroppedTailResidueConst)
+    (hbridge :
+      Q64PositiveCostExternalBlockBridgeFromTailResidue FinalDroppedTailResidueConst
+        TerminalRegularQBucket ControlBlockBookkeeping
+        (HasPolynomialCostEmptyControlExternalBlockBridge D))
+    (hbeta : AllBetaBitsVanish) (hinit : InitialResidueConst)
+    (hterminal : TerminalRegularQBucket) (hbook : ControlBlockBookkeeping) :
+    TargetStatement := by
+  have hExternal : HasPolynomialCostEmptyControlExternalBlockBridge D :=
+    hbridge (hprop hbeta hinit) hterminal hbook
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlExternalBlockBridge
+      hlift hExternal
+
+/--
+Concrete bit-step version of the dyadic-tail route: beta vanishing at every bit below `j`, together
+with the one-bit residue propagation steps, supplies the abstract final residue-constancy input used
+by the positive-cost external-block bridge.
+-/
+theorem targetStatement_of_dyadicBetaBitStepsExternalBlockBridge
+    {C D j : ℕ} {BetaVanishesAtBit ResidueConstAtBit : ℕ → Prop}
+    {TerminalRegularQBucket ControlBlockBookkeeping : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hsteps : Q64DyadicBetaBitStepsUpTo j BetaVanishesAtBit ResidueConstAtBit)
+    (hbridge :
+      Q64PositiveCostExternalBlockBridgeFromTailResidue (ResidueConstAtBit j)
+        TerminalRegularQBucket ControlBlockBookkeeping
+        (HasPolynomialCostEmptyControlExternalBlockBridge D))
+    (hbeta : Q64AllBetaBitsVanishUpTo j BetaVanishesAtBit)
+    (hinit : ResidueConstAtBit 0)
+    (hterminal : TerminalRegularQBucket) (hbook : ControlBlockBookkeeping) :
+    TargetStatement := by
+  exact
+    targetStatement_of_dyadicTailResidueExternalBlockBridge
+      (C := C) (D := D)
+      (hlift := hlift)
+      (hprop :=
+        q64_dyadicDroppedTailResiduePropagation_of_betaBitStepsUpTo
+          (j := j) hsteps)
+      hbridge hbeta hinit hterminal hbook
+
+/-- Concrete row-function bit step underlying the note-level `beta_m = 0` propagation. -/
+theorem q64_dyadicBetaBitStep_of_dyadicTailBetaVanishesAt
+    {W : Type*} {m : ℕ} {row : W → ℕ} :
+    Q64DyadicBetaBitStep
+      (DyadicTailBetaVanishesAt m row)
+      (HasDyadicRowDivisibilityChain m row)
+      (HasDyadicRowDivisibilityChain (m + 1) row) := by
+  intro hbeta hchain
+  rcases exists_hasDyadicRowDivisibilityChainTo_of_hasDyadicRowDivisibilityChain hchain with
+    ⟨tail, htail⟩
+  exact htail.succ_of_dyadicTailBetaVanishesAt hbeta
+
+/--
+The concrete dyadic-tail row package supplies all bit steps needed by the abstract q64 propagation
+surface.
+-/
+theorem q64_dyadicBetaBitStepsUpTo_dyadicTail
+    {W : Type*} (j : ℕ) (row : W → ℕ) :
+    Q64DyadicBetaBitStepsUpTo j
+      (fun m => DyadicTailBetaVanishesAt m row)
+      (fun m => HasDyadicRowDivisibilityChain m row) := by
+  intro _m _hm
+  exact q64_dyadicBetaBitStep_of_dyadicTailBetaVanishesAt
+
+/--
+Corollary 3.2 in the existing row-divisibility language, routed through the q64 bit-step wrapper:
+all beta bits below `j` yield a dyadic divisibility chain of depth `j`.
+-/
+theorem q64_hasDyadicRowDivisibilityChain_of_dyadicTailBetaVanishesUpTo
+    {W : Type*} {j : ℕ} {row : W → ℕ}
+    (hbeta : DyadicTailBetaVanishesUpTo j row) :
+    HasDyadicRowDivisibilityChain j row := by
+  exact
+    q64_dyadicResidueConstAt_of_betaBitStepsUpTo
+      (j := j)
+      (BetaVanishesAtBit := fun m => DyadicTailBetaVanishesAt m row)
+      (ResidueConstAtBit := fun m => HasDyadicRowDivisibilityChain m row)
+      (q64_dyadicBetaBitStepsUpTo_dyadicTail (W := W) j row)
+      hbeta
+      (HasDyadicRowDivisibilityChain.zero row)
+
+/--
+Concrete beta-vanishing implies the final dropped-tail row is constant modulo `2^j`.
+-/
+theorem q64_dyadicDroppedTailResiduePropagation_of_dyadicTailBetaVanishesUpTo
+    {W : Type*} {j : ℕ} {row : W → ℕ} :
+    Q64DyadicDroppedTailResiduePropagation
+      (DyadicTailBetaVanishesUpTo j row) True
+      (∀ v w, row v ≡ row w [MOD 2 ^ j]) := by
+  intro hbeta _hinit
+  exact
+    modEq_of_hasDyadicRowDivisibilityChain
+      (q64_hasDyadicRowDivisibilityChain_of_dyadicTailBetaVanishesUpTo hbeta)
+
+/--
+Concrete beta-tail version of the dyadic external-block route: the final bridge may now consume the
+actual row congruence modulo `2^j`, rather than an uninterpreted final-residue proposition.
+-/
+theorem targetStatement_of_dyadicTailBetaExternalBlockBridge
+    {C D j : ℕ} {W : Type*} {row : W → ℕ}
+    {TerminalRegularQBucket ControlBlockBookkeeping : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hbridge :
+      Q64PositiveCostExternalBlockBridgeFromTailResidue
+        (∀ v w, row v ≡ row w [MOD 2 ^ j])
+        TerminalRegularQBucket ControlBlockBookkeeping
+        (HasPolynomialCostEmptyControlExternalBlockBridge D))
+    (hbeta : DyadicTailBetaVanishesUpTo j row)
+    (hterminal : TerminalRegularQBucket) (hbook : ControlBlockBookkeeping) :
+    TargetStatement := by
+  exact
+    targetStatement_of_dyadicTailResidueExternalBlockBridge
+      (C := C) (D := D)
+      (hlift := hlift)
+      (hprop :=
+        q64_dyadicDroppedTailResiduePropagation_of_dyadicTailBetaVanishesUpTo
+          (W := W) (j := j) (row := row))
+      hbridge hbeta True.intro hterminal hbook
+
+/--
+The frontier audit really terminates at the conjecture: if carrier/marker coupling feeds the final
+q=64 audit chain and that chain outputs the dropped-part host upgrade, the global target follows.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting BetaVanishes HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  exact targetStatement_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade
+    (hchain hcouple).2.2.2.2.2
+
+/--
+Dyadic-tail version of the q=64 audit: the notes' `BetaVanishes` output is interpreted as the
+refinement-data dyadic divisibility bridge.  Existing finite theorems turn that into the exact
+self-bridge, and the empty-control lift then gives the conjecture.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_dyadicDivisibility
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hdiv :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        hdiv)
+
+/--
+Beta-tail version of the q=64 audit: the final audit may output the note-level beta-vanishing
+refinement bridge, which Lean now converts to dyadic divisibility and then to the exact self-bridge.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBeta
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hbeta :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+      hlift hbeta
+
+/-- Final-audit route when the audit outputs beta-vanishing at every dyadic level. -/
+theorem targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo
+    {C D : ℕ}
+    {CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+      GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hcouple : CarrierMarkerCoupling) :
+    TargetStatement := by
+  have hbeta :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1) :=
+    (hchain hcouple).2.2.2.2.1
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+      hlift hbeta
+
+/--
+Global landing theorem for the claimed final obstruction proof: if the marker-splitting zero-sum
+atom, product-firewall routing, and weighted-quotient packaging produce carrier/marker coupling, then
+the already-audited q=64 endgame chain proves the conjecture.
+-/
+theorem targetStatement_of_q64LastObstructionLanding
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hlanding :
+      Q64LastObstructionLandingSurface MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting BetaVanishes HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging) :
+    TargetStatement :=
+  targetStatement_of_q64FinalAuditConditionalChain hchain
+    (hlanding hzero hfirewall hpack)
+
+/--
+Global landing theorem for the dyadic-tail reading of the final obstruction proof: once landing
+supplies carrier/marker coupling, beta-vanishing/divisibility gives the refinement exact self-bridge,
+which is the honest finite frontier identified in the notes.
+-/
+theorem targetStatement_of_q64LastObstructionLanding_via_dyadicDivisibility
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hlanding :
+      Q64LastObstructionLandingSurface MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging) :
+    TargetStatement :=
+  targetStatement_of_q64FinalAuditConditionalChain_via_dyadicDivisibility hlift hchain
+    (hlanding hzero hfirewall hpack)
+
+/--
+Landing theorem for the beta-tail reading of the final obstruction proof.  The landing supplies
+carrier/marker coupling; the final audit supplies the beta bridge; existing finite theorems finish.
+-/
+theorem targetStatement_of_q64LastObstructionLanding_via_dyadicBeta
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hlanding :
+      Q64LastObstructionLandingSurface MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging) :
+    TargetStatement :=
+  targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBeta hlift hchain
+    (hlanding hzero hfirewall hpack)
+
+/-- Landing theorem for the all-bits beta-tail reading of the final obstruction proof. -/
+theorem targetStatement_of_q64LastObstructionLanding_via_dyadicBetaUpTo
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hlanding :
+      Q64LastObstructionLandingSurface MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging) :
+    TargetStatement :=
+  targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo hlift hchain
+    (hlanding hzero hfirewall hpack)
+
+/--
+One-object version of the final-frontier audit: a claimed final-proof certificate whose global bridge
+is the dropped-part host upgrade immediately yields the conjecture.
+-/
+theorem targetStatement_of_q64ClaimedFinalProofCertificate
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hcert :
+      Q64ClaimedFinalProofCertificate MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade) :
+    TargetStatement := by
+  have hupgrade : HasExactCardFixedSingleControlHostDroppedPartUpgrade :=
+    q64_globalBridge_of_claimedFinalProofCertificate
+      (MarkerSplittingZeroSumAtom := MarkerSplittingZeroSumAtom)
+      (ProductFirewall := ProductFirewall)
+      (WeightedQuotientPackaging := WeightedQuotientPackaging)
+      (CarrierMarkerCoupling := CarrierMarkerCoupling)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (BetaVanishes := BetaVanishes)
+      (GlobalBridge := HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+      hcert
+  exact targetStatement_of_hasExactCardFixedSingleControlHostDroppedPartUpgrade hupgrade
+
+/--
+One-object dyadic-tail certificate-to-conjecture theorem.  This is the Lean translation of the note
+claim that beta-vanishing propagates the dropped-tail residue and therefore supplies the
+refinement-data exact self-bridge.
+-/
+theorem targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicDivisibility
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hcert :
+      Q64ClaimedFinalProofCertificate MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  have hdiv :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        (D + 1) :=
+    q64_betaVanishes_of_claimedFinalProofCertificate
+      (MarkerSplittingZeroSumAtom := MarkerSplittingZeroSumAtom)
+      (ProductFirewall := ProductFirewall)
+      (WeightedQuotientPackaging := WeightedQuotientPackaging)
+      (CarrierMarkerCoupling := CarrierMarkerCoupling)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (BetaVanishes :=
+        HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+          (D + 1))
+      (GlobalBridge := GlobalBridge)
+      hcert
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge
+      hlift
+      (hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+        hdiv)
+
+/-- One-object beta-tail certificate-to-conjecture theorem. -/
+theorem targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicBeta
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hcert :
+      Q64ClaimedFinalProofCertificate MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  have hbeta :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+        (D + 1) :=
+    q64_betaVanishes_of_claimedFinalProofCertificate
+      (MarkerSplittingZeroSumAtom := MarkerSplittingZeroSumAtom)
+      (ProductFirewall := ProductFirewall)
+      (WeightedQuotientPackaging := WeightedQuotientPackaging)
+      (CarrierMarkerCoupling := CarrierMarkerCoupling)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (BetaVanishes :=
+        HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+          (D + 1))
+      (GlobalBridge := GlobalBridge)
+      hcert
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+      hlift hbeta
+
+/-- One-object all-bits beta-tail certificate-to-conjecture theorem. -/
+theorem targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicBetaUpTo
+    {C D : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hcert :
+      Q64ClaimedFinalProofCertificate MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  have hbeta :
+      HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+        (D + 1) :=
+    q64_betaVanishes_of_claimedFinalProofCertificate
+      (MarkerSplittingZeroSumAtom := MarkerSplittingZeroSumAtom)
+      (ProductFirewall := ProductFirewall)
+      (WeightedQuotientPackaging := WeightedQuotientPackaging)
+      (CarrierMarkerCoupling := CarrierMarkerCoupling)
+      (PrimeCycleBreaker := PrimeCycleBreaker)
+      (SignLaw := SignLaw)
+      (OneCornerLift := OneCornerLift)
+      (CompensatorRouting := CompensatorRouting)
+      (BetaVanishes :=
+        HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+      (GlobalBridge := GlobalBridge)
+      hcert
+  exact
+    targetStatement_of_polynomialCostEmptyControlDyadicLift_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+      hlift hbeta
+
+/--
+Fully expanded product-firewall-transport route to the conjecture.  The sub-`q` trap removes the
+transport-failure branch; ordered-boundary and local-exit branches feed carrier/marker coupling; the
+final audit chain outputs the dropped-part host upgrade.
+-/
+theorem targetStatement_of_q64ProductFirewallTransportTrapCertificate
+    {q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging)
+    (hbreaker :
+      MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+        AmbientPacketBreaker)
+    (hreduce : AmbientPacketBreaker → OrderedBoundaryRow ∨ LocalExit ∨ TransportFailure)
+    (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize)
+    (hboundary : OrderedBoundaryRow → CarrierMarkerCoupling)
+    (hlocal : LocalExit → CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade) :
+    TargetStatement := by
+  exact targetStatement_of_q64ClaimedFinalProofCertificate
+    (q64_claimedFinalProofCertificate_of_productFirewallTransportTrap hzero hfirewall hpack
+      hbreaker hreduce htrap hboundary hlocal hchain)
+
+/--
+Fully expanded product-firewall transport route for the honest dyadic-tail/refinement-data target.
+The transport trap supplies the landing; the final audit supplies dyadic divisibility; existing finite
+theorems collapse the refinement data to the exact self-bridge and hence to the conjecture.
+-/
+theorem targetStatement_of_q64ProductFirewallTransportTrapCertificate_via_dyadicDivisibility
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging)
+    (hbreaker :
+      MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+        AmbientPacketBreaker)
+    (hreduce : AmbientPacketBreaker → OrderedBoundaryRow ∨ LocalExit ∨ TransportFailure)
+    (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize)
+    (hboundary : OrderedBoundaryRow → CarrierMarkerCoupling)
+    (hlocal : LocalExit → CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementDivisibilitySelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicDivisibility hlift
+    (q64_claimedFinalProofCertificate_of_productFirewallTransportTrap hzero hfirewall hpack
+      hbreaker hreduce htrap hboundary hlocal hchain)
+
+/--
+Fully expanded product-firewall transport route for the beta-tail bridge: the transport trap supplies
+landing, and the final audit supplies beta-vanishing in the concrete refinement-data form.
+-/
+theorem targetStatement_of_q64ProductFirewallTransportTrapCertificate_via_dyadicBeta
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging)
+    (hbreaker :
+      MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+        AmbientPacketBreaker)
+    (hreduce : AmbientPacketBreaker → OrderedBoundaryRow ∨ LocalExit ∨ TransportFailure)
+    (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize)
+    (hboundary : OrderedBoundaryRow → CarrierMarkerCoupling)
+    (hlocal : LocalExit → CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicBeta hlift
+    (q64_claimedFinalProofCertificate_of_productFirewallTransportTrap hzero hfirewall hpack
+      hbreaker hreduce htrap hboundary hlocal hchain)
+
+/-- Fully expanded product-firewall transport route for all-bits beta-vanishing. -/
+theorem targetStatement_of_q64ProductFirewallTransportTrapCertificate_via_dyadicBetaUpTo
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging)
+    (hbreaker :
+      MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+        AmbientPacketBreaker)
+    (hreduce : AmbientPacketBreaker → OrderedBoundaryRow ∨ LocalExit ∨ TransportFailure)
+    (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize)
+    (hboundary : OrderedBoundaryRow → CarrierMarkerCoupling)
+    (hlocal : LocalExit → CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicBetaUpTo hlift
+    (q64_claimedFinalProofCertificate_of_productFirewallTransportTrap hzero hfirewall hpack
+      hbreaker hreduce htrap hboundary hlocal hchain)
+
+/--
+Named transport-reduction version of the product-firewall route to the conjecture.  This uses the
+frontier certificate surface `Q64ProductFirewallTransportReduction` and the two-exit
+carrier/marker-coupling certificate instead of an anonymous reduction function.
+-/
+theorem targetStatement_of_q64TransportReductionCertificate_via_dyadicBetaUpTo
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hzero : MarkerSplittingZeroSumAtom) (hfirewall : ProductFirewall)
+    (hpack : WeightedQuotientPackaging)
+    (hbreaker :
+      MarkerSplittingZeroSumAtom → ProductFirewall → WeightedQuotientPackaging →
+        AmbientPacketBreaker)
+    (htransport :
+      ProductFirewall →
+        Q64ProductFirewallTransportReduction AmbientPacketBreaker OrderedBoundaryRow LocalExit
+          TransportFailure)
+    (htrap : Q64ProductFirewallTransportTrap q TransportFailure markerSize)
+    (hexits :
+      Q64BoundaryExitCarrierMarkerCoupling OrderedBoundaryRow LocalExit CarrierMarkerCoupling)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicBetaUpTo hlift
+    (q64_claimedFinalProofCertificate_of_transportReduction_and_subqTrap hzero hfirewall hpack
+      hbreaker htransport htrap hexits hchain)
+
+/--
+Global theorem from the named product-firewall proof certificate.  This is the tightest current Lean
+translation of the note route: product-firewall transport proves the landing/coupling certificate,
+the final audit emits all-bits beta vanishing, and the finite dyadic bridge collapses to the exact
+self-bridge and hence to the conjecture.
+-/
+theorem targetStatement_of_q64ProductFirewallProofCertificate_via_dyadicBetaUpTo
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hcert :
+      Q64ProductFirewallProofCertificate q MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling AmbientPacketBreaker OrderedBoundaryRow
+        LocalExit TransportFailure markerSize)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ClaimedFinalProofCertificate_via_dyadicBetaUpTo hlift
+    (q64_claimedFinalProofCertificate_of_productFirewallProofCertificate hcert hchain)
+
+/--
+Global theorem from the fully expanded failed-transport marker-data product-firewall certificate.
+This keeps the note's sub-`q` trap as data: each failed transport produces a positive marker contained
+in a packet of size `< q`, and low-set congruence gives marker size `0 [MOD q]`.
+-/
+theorem targetStatement_of_q64ProductFirewallProofDataCertificate_via_dyadicBetaUpTo
+    {C D q : ℕ}
+    {MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging CarrierMarkerCoupling
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hcert :
+      Q64ProductFirewallProofDataCertificate q MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging CarrierMarkerCoupling AmbientPacketBreaker OrderedBoundaryRow
+        LocalExit TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain CarrierMarkerCoupling PrimeCycleBreaker SignLaw OneCornerLift
+        CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ProductFirewallProofCertificate_via_dyadicBetaUpTo hlift
+    (q64_productFirewallProofCertificate_of_dataCertificate hcert) hchain
+
+/--
+End-to-end formalization of the strongest product-firewall claim in the notes: the fully skew
+q-marker branch is exhausted to the product firewall; any failed transport creates the forbidden
+nonempty sub-`q` congruent marker; the surviving branches give carrier/marker coupling; the final
+audit chain then reaches the dyadic beta-up-to handoff and the target statement.
+-/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingData_via_dyadicBetaUpTo
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (hdata :
+      Q64ProductFirewallQMarkerCouplingData q FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+        AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64FinalAuditConditionalChain_via_dyadicBetaUpTo hlift hchain
+    (q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingData hdata)
+
+/--
+End-to-end product-firewall route with the failed-transport contradiction split into its three
+note-level subclaims: dirty submarker production, proper-packet bound, and low-set congruence.
+-/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingComponents_via_dyadicBetaUpTo
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (h :
+      Q64ProductFirewallQMarkerCouplingComponents q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ProductFirewallQMarkerCouplingData_via_dyadicBetaUpTo hlift
+    (q64_productFirewallQMarkerCouplingData_of_components h) hchain
+
+/--
+Most expanded dyadic-beta product-firewall route currently present in Lean: static split-quotient
+exhaustion, failed-transport contradiction, and the final audit chain are all componentized.
+-/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingAudit_via_dyadicBetaUpTo
+    {C D q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting GlobalBridge : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hlift : HasPolynomialCostEmptyControlDyadicLift C)
+    (haudit :
+      Q64ProductFirewallQMarkerCouplingAudit q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting
+        (HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementBetaUpToSelfBridge
+          (D + 1))
+        GlobalBridge) :
+    TargetStatement := by
+  exact targetStatement_of_q64ProductFirewallQMarkerCouplingComponents_via_dyadicBetaUpTo hlift
+    (q64_productFirewallQMarkerCouplingComponents_of_audit haudit)
+    (q64_finalAuditConditionalChain_of_components hchain)
+
+/--
+Exact dropped-host-upgrade version of the product-firewall q-marker route.  This is the direct
+endgame when the final audit chain already emits the host upgrade used by the asymptotic bridge.
+-/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingData
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (hdata :
+      Q64ProductFirewallQMarkerCouplingData q FullySkewSplitter ProperSubmarker PrimeModuleExit
+        ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+        AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_productFirewallQMarkerCouplingData hdata)
+
+/--
+Component-level exact-route version: the failed-transport contradiction is supplied as the three
+note-level pieces, then assembled to the q-marker data certificate above.
+-/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingComponents
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (h :
+      Q64ProductFirewallQMarkerCouplingComponents q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade) :
+    TargetStatement := by
+  exact targetStatement_of_q64ProductFirewallQMarkerCouplingData
+    (q64_productFirewallQMarkerCouplingData_of_components h) hchain
+
+/--
+Most expanded exact-host-upgrade product-firewall route: both q-marker certificate layers and the
+post-coupling final audit chain are split into named components.
+-/
+theorem targetStatement_of_q64ProductFirewallQMarkerCouplingAudit
+    {q : ℕ}
+    {FullySkewSplitter ProperSubmarker PrimeModuleExit ClosedLocalExit
+      MarkerSplittingZeroSumAtom ProductFirewall WeightedQuotientPackaging
+      AmbientPacketBreaker OrderedBoundaryRow LocalExit TransportFailure PrimeCycleBreaker SignLaw
+      OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    {markerSize packetSize : TransportFailure → ℕ}
+    (haudit :
+      Q64ProductFirewallQMarkerCouplingAudit q FullySkewSplitter ProperSubmarker
+        PrimeModuleExit ClosedLocalExit MarkerSplittingZeroSumAtom ProductFirewall
+        WeightedQuotientPackaging AmbientPacketBreaker OrderedBoundaryRow LocalExit
+        TransportFailure markerSize packetSize)
+    (hchain :
+      Q64FinalAuditComponentChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade) :
+    TargetStatement := by
+  exact targetStatement_of_q64ProductFirewallQMarkerCouplingComponents
+    (q64_productFirewallQMarkerCouplingComponents_of_audit haudit)
+    (q64_finalAuditConditionalChain_of_components hchain)
+
+/--
+Fully expanded q-marker endpoint-to-conjecture bridge.  The only local q-marker input is the detailed
+provenance-routing chain; the rest is the already-audited final dependency chain ending in the
+dropped-part host upgrade.
+-/
+theorem targetStatement_of_q64FinalAuditConditionalChain_of_provenanceRouting
+    {FullySkewSplitter ProvenanceSelection OrderedFirstReturnRow ValidBreaker
+      ProvenanceSplitterAdmissible FirstFailedRow MarkerInternalFailure NonMarkerFailure
+      SmallerCompleteMarker LocalNonMarkerExit ProperSubmarker PrimeModuleExit ClosedLocalExit
+      PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes : Prop}
+    (hchain :
+      Q64FinalAuditConditionalChain
+        (Q64QMarkerCarrierMarkerCoupling FullySkewSplitter ProperSubmarker PrimeModuleExit
+          ClosedLocalExit)
+        PrimeCycleBreaker SignLaw OneCornerLift CompensatorRouting BetaVanishes
+        HasExactCardFixedSingleControlHostDroppedPartUpgrade)
+    (hroute :
+      Q64AmbientToProvenanceRouting FullySkewSplitter ProvenanceSelection LocalNonMarkerExit)
+    (hchoice : Q64OrderedFirstReturnChoice ProvenanceSelection OrderedFirstReturnRow)
+    (htransport :
+      Q64RowToBreakerTransport OrderedFirstReturnRow ValidBreaker LocalNonMarkerExit)
+    (hadm :
+      Q64IntervalAdmissibilityDichotomy ValidBreaker ProvenanceSplitterAdmissible FirstFailedRow)
+    (hclass :
+      Q64FirstFailureClassification FirstFailedRow MarkerInternalFailure NonMarkerFailure)
+    (hnonmarker : Q64LocalNonMarkerExitTheorem NonMarkerFailure LocalNonMarkerExit)
+    (hdescent : Q64MarkerCompleteDescentTheorem MarkerInternalFailure SmallerCompleteMarker)
+    (hadmissible : ProvenanceSplitterAdmissible → ClosedLocalExit)
+    (hsmaller : SmallerCompleteMarker → ProperSubmarker)
+    (hlocal : LocalNonMarkerExit → ClosedLocalExit) :
+    TargetStatement := by
+  exact
+    targetStatement_of_q64FinalAuditConditionalChain hchain
+      (q64_qMarkerCarrierMarkerCoupling_of_routing hroute hchoice htransport hadm hclass
+        hnonmarker hdescent hadmissible hsmaller hlocal)
 
 end DyadicLift
 

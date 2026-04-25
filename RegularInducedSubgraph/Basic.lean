@@ -114,6 +114,54 @@ lemma hasRegularInducedSubgraphOfCard_one (G : SimpleGraph V) [Nonempty V] :
   obtain ⟨v⟩ := ‹Nonempty V›
   refine ⟨{v}, by simp, 0, inducesRegularOfDegree_singleton G v⟩
 
+private lemma inducedOn_degree_lt_card
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s : Finset V} (v : ↑(s : Set V)) :
+    (inducedOn G s).degree v < s.card := by
+  classical
+  have hproper :
+      (inducedOn G s).neighborFinset v ⊂ (Finset.univ : Finset ↑(s : Set V)) := by
+    refine ⟨by intro x _; simp, ?_⟩
+    intro hsubset
+    have hv : v ∈ (inducedOn G s).neighborFinset v := hsubset (by simp)
+    exact
+      (SimpleGraph.irrefl (inducedOn G s))
+        ((SimpleGraph.mem_neighborFinset (inducedOn G s) v v).mp hv)
+  have hlt := Finset.card_lt_card hproper
+  rw [SimpleGraph.card_neighborFinset_eq_degree, Finset.card_univ] at hlt
+  have hcard : Fintype.card ↑(s : Set V) = s.card := by
+    exact Fintype.card_ofFinset s (by simp)
+  simpa [hcard] using hlt
+
+/--
+Exact-marker congruence closure: if `s` has size `q` and every internal degree in `G[s]` has the
+same residue `r` modulo `q`, then all internal degrees are exactly `r`, so `G[s]` is regular.
+-/
+lemma inducesRegularOfDegree_of_card_eq_and_degree_modEq
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s : Finset V} {q r : ℕ}
+    (hcard : s.card = q)
+    (hmod : ∀ v : ↑(s : Set V), (inducedOn G s).degree v % q = r) :
+    InducesRegularOfDegree G s r := by
+  classical
+  rw [InducesRegularOfDegree]
+  intro v
+  have hlt : (inducedOn G s).degree v < q := by
+    simpa [hcard] using inducedOn_degree_lt_card (G := G) (s := s) v
+  have hv := hmod v
+  rw [Nat.mod_eq_of_lt hlt] at hv
+  convert hv
+
+/--
+Exact-marker form of the previous lemma: a `q`-vertex set whose internal degrees are congruent
+modulo `q` already supplies a regular induced subgraph of cardinality `q`.
+-/
+lemma hasRegularInducedSubgraphOfCard_of_card_eq_and_degree_modEq
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s : Finset V} {q r : ℕ}
+    (hcard : s.card = q)
+    (hmod : ∀ v : ↑(s : Set V), (inducedOn G s).degree v % q = r) :
+    HasRegularInducedSubgraphOfCard G q := by
+  exact ⟨s, by omega, r,
+    inducesRegularOfDegree_of_card_eq_and_degree_modEq G hcard hmod⟩
+
 private lemma degree_inducedOn_eq_card_neighborFinset_inter
     (G : SimpleGraph V) [DecidableRel G.Adj] (s : Finset V) (v : ↑(s : Set V)) :
     (inducedOn G s).degree v = (G.neighborFinset v ∩ s).card := by

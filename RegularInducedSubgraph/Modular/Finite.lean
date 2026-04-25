@@ -447,6 +447,475 @@ lemma hasFixedModulusWitnessOfCard_two (G : SimpleGraph V) :
       simpa [two_mul] using (Nat.modEq_zero_iff_dvd.mpr (dvd_mul_right 2 b))
     exact h0a.trans h0b.symm
 
+/--
+A binary column over a row type `W`. In the dyadic-tail analysis, these model adjacency columns from
+the dropped part into the current bucket.
+-/
+abbrev BinaryColumn (W : Type*) := W → Bool
+
+private abbrev binaryColumnBit (b : Bool) : ℕ := cond b 1 0
+
+/--
+The row sum determined by a list of binary columns.
+-/
+def binaryColumnRowSum {W : Type*} : List (BinaryColumn W) → W → ℕ
+  | [], _ => 0
+  | c :: cs, w => binaryColumnBit (c w) + binaryColumnRowSum cs w
+
+lemma binaryColumnRowSum_append {W : Type*} (cols₁ cols₂ : List (BinaryColumn W)) :
+    ∀ w, binaryColumnRowSum (cols₁ ++ cols₂) w =
+      binaryColumnRowSum cols₁ w + binaryColumnRowSum cols₂ w := by
+  induction cols₁ with
+  | nil =>
+      intro w
+      simp [binaryColumnRowSum]
+  | cons c cs ih =>
+      intro w
+      simp [binaryColumnRowSum, ih, Nat.add_assoc]
+
+/--
+Row-sum version of a binary zero-sum packet: modulo `2`, the packet contributes the same value on
+every row.
+-/
+def IsBinaryZeroSumPacket {W : Type*} (packet : List (BinaryColumn W)) : Prop :=
+  ∀ v w, binaryColumnRowSum packet v ≡ binaryColumnRowSum packet w [MOD 2]
+
+/--
+A partition of columns into binary zero-sum packets.
+-/
+def HasBinaryZeroSumPacketPartition {W : Type*} (packets : List (List (BinaryColumn W))) : Prop :=
+  ∀ packet ∈ packets, IsBinaryZeroSumPacket packet
+
+/--
+Flatten a list of binary packets into a single column list.
+-/
+def flattenBinaryPackets {W : Type*} (packets : List (List (BinaryColumn W))) :
+    List (BinaryColumn W) :=
+  packets.foldr List.append []
+
+lemma modEq_rowSum_two_of_hasBinaryZeroSumPacketPartition
+    {W : Type*} {packets : List (List (BinaryColumn W))}
+    (hpackets : HasBinaryZeroSumPacketPartition packets) :
+    ∀ v w, binaryColumnRowSum (flattenBinaryPackets packets) v ≡
+      binaryColumnRowSum (flattenBinaryPackets packets) w [MOD 2] := by
+  induction packets with
+  | nil =>
+      intro v w
+      simpa [binaryColumnRowSum] using (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD 2])
+  | cons packet packets ih =>
+      intro v w
+      have hpacket : IsBinaryZeroSumPacket packet := hpackets packet (by simp)
+      have hrest : HasBinaryZeroSumPacketPartition packets := by
+        intro packet' hmem
+        exact hpackets packet' (by simp [hmem])
+      have hpacketsMod :
+          binaryColumnRowSum (flattenBinaryPackets packets) v ≡
+            binaryColumnRowSum (flattenBinaryPackets packets) w [MOD 2] :=
+        ih hrest v w
+      have hadd :
+          binaryColumnRowSum packet v + binaryColumnRowSum (flattenBinaryPackets packets) v ≡
+            binaryColumnRowSum packet w + binaryColumnRowSum (flattenBinaryPackets packets) w [MOD 2] := by
+        exact Nat.ModEq.add (hpacket v w) hpacketsMod
+      simpa [flattenBinaryPackets, binaryColumnRowSum_append] using hadd
+
+/--
+Two binary columns are complementary if their pointwise sum is the all-ones column.
+-/
+def ComplementaryBinaryColumns {W : Type*} (a b : BinaryColumn W) : Prop :=
+  ∀ w, a w = !(b w)
+
+/--
+One binary compression step: an equal pair compresses to itself, and a complementary pair compresses
+to the zero column after removing the constant parity bit.
+-/
+def DyadicPairCompression {W : Type*} (a b d : BinaryColumn W) : Prop :=
+  (a = b ∧ d = a) ∨ (ComplementaryBinaryColumns a b ∧ d = fun _ => false)
+
+/--
+One level of dyadic pairing on a list of binary columns.
+-/
+inductive DyadicPairingStep {W : Type*} :
+    List (BinaryColumn W) → List (BinaryColumn W) → Prop
+  | nil : DyadicPairingStep [] []
+  | cons {a b d cols next} :
+      DyadicPairCompression a b d →
+      DyadicPairingStep cols next →
+      DyadicPairingStep (a :: b :: cols) (d :: next)
+
+/--
+A dyadic pairing tree of depth `j`: after `j` successive pairing/compression levels, no columns
+remain.
+-/
+inductive HasDyadicPairingTree {W : Type*} : ℕ → List (BinaryColumn W) → Prop
+  | zero : HasDyadicPairingTree 0 []
+  | succ {j cols next} :
+      DyadicPairingStep cols next →
+      HasDyadicPairingTree j next →
+      HasDyadicPairingTree (j + 1) cols
+
+private lemma exists_constant_bit_decomposition_of_dyadicPairCompression
+    {W : Type*} {a b d : BinaryColumn W} (h : DyadicPairCompression a b d) :
+    ∃ ε : ℕ, ∀ w, binaryColumnBit (a w) + binaryColumnBit (b w) = ε + 2 * binaryColumnBit (d w) := by
+  rcases h with ⟨hab, hd⟩ | ⟨hcomp, hd⟩
+  · refine ⟨0, ?_⟩
+    intro w
+    rw [hd, ← hab]
+    cases hbw : a w <;> simp [binaryColumnBit, hbw]
+  · refine ⟨1, ?_⟩
+    intro w
+    rw [hd]
+    cases hbw : b w <;> simp [ComplementaryBinaryColumns, binaryColumnBit, hbw, hcomp w]
+
+private lemma exists_constant_rowSum_decomposition_of_dyadicPairingStep
+    {W : Type*} {cols next : List (BinaryColumn W)}
+    (h : DyadicPairingStep cols next) :
+    ∃ K : ℕ, ∀ w, binaryColumnRowSum cols w = K + 2 * binaryColumnRowSum next w := by
+  induction h with
+  | nil =>
+      refine ⟨0, ?_⟩
+      intro w
+      simp [binaryColumnRowSum]
+  | @cons a b d cols next hpair hstep ih =>
+      rcases exists_constant_bit_decomposition_of_dyadicPairCompression hpair with ⟨ε, hε⟩
+      rcases ih with ⟨K, hK⟩
+      refine ⟨ε + K, ?_⟩
+      intro w
+      calc
+        binaryColumnRowSum (a :: b :: cols) w
+            = (binaryColumnBit (a w) + binaryColumnBit (b w)) + binaryColumnRowSum cols w := by
+                simp [binaryColumnRowSum, Nat.add_assoc]
+        _ = (ε + 2 * binaryColumnBit (d w)) + (K + 2 * binaryColumnRowSum next w) := by
+              rw [hε w, hK w]
+        _ = (ε + K) + 2 * (binaryColumnBit (d w) + binaryColumnRowSum next w) := by
+              omega
+        _ = (ε + K) + 2 * binaryColumnRowSum (d :: next) w := by
+              rfl
+
+/--
+If a list of binary columns admits a dyadic pairing tree of depth `j`, then every row sum is
+constant modulo `2^j`.
+-/
+lemma modEq_rowSum_of_hasDyadicPairingTree
+    {W : Type*} {j : ℕ} {cols : List (BinaryColumn W)}
+    (h : HasDyadicPairingTree j cols) :
+    ∀ v w, binaryColumnRowSum cols v ≡ binaryColumnRowSum cols w [MOD 2 ^ j] := by
+  induction h with
+  | zero =>
+      intro v w
+      simpa [binaryColumnRowSum] using (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD 2 ^ 0])
+  | @succ j cols next hstep htree ih =>
+      rcases exists_constant_rowSum_decomposition_of_dyadicPairingStep hstep with ⟨K, hK⟩
+      intro v w
+      have hnext : binaryColumnRowSum next v ≡ binaryColumnRowSum next w [MOD 2 ^ j] := ih v w
+      have hdouble :
+          2 * binaryColumnRowSum next v ≡
+            2 * binaryColumnRowSum next w [MOD 2 ^ (j + 1)] := by
+        simpa [Nat.pow_succ, Nat.mul_comm] using Nat.ModEq.mul_left' 2 hnext
+      have hadd :
+          K + 2 * binaryColumnRowSum next v ≡
+            K + 2 * binaryColumnRowSum next w [MOD 2 ^ (j + 1)] := by
+        exact Nat.ModEq.add (Nat.ModEq.refl K) hdouble
+      simpa [hK v, hK w] using hadd
+
+/--
+A dyadic divisibility chain of depth `j` for a natural-valued row function.
+
+At each stage one removes a constant term and halves the remainder. This is the row-function analogue
+of successive divisibility of the tail obstruction class.
+-/
+inductive HasDyadicRowDivisibilityChain {W : Type*} : ℕ → (W → ℕ) → Prop
+  | zero (row : W → ℕ) : HasDyadicRowDivisibilityChain 0 row
+  | succ {j : ℕ} {row next : W → ℕ} (K : ℕ)
+      (hdecomp : ∀ w, row w = K + 2 * next w)
+      (hnext : HasDyadicRowDivisibilityChain j next) :
+      HasDyadicRowDivisibilityChain (j + 1) row
+
+lemma hasDyadicRowDivisibilityChain_one_of_modEq_two
+    {W : Type*} {row : W → ℕ} (hrow : ∀ v w, row v ≡ row w [MOD 2]) :
+    HasDyadicRowDivisibilityChain 1 row := by
+  by_cases hW : Nonempty W
+  · classical
+    let w₀ : W := Classical.choice hW
+    let ε := row w₀ % 2
+    refine
+      HasDyadicRowDivisibilityChain.succ ε
+        (next := fun w => row w / 2) ?_
+        (HasDyadicRowDivisibilityChain.zero (fun w => row w / 2))
+    intro w
+    have hmod : row w % 2 = ε := by
+      simpa [ε] using (hrow w w₀)
+    calc
+      row w = row w % 2 + 2 * (row w / 2) := by
+        simpa [Nat.mul_comm] using (Nat.mod_add_div (row w) 2).symm
+      _ = ε + 2 * (row w / 2) := by rw [hmod]
+  · refine
+      HasDyadicRowDivisibilityChain.succ 0
+        (next := fun _ => 0) ?_
+        (HasDyadicRowDivisibilityChain.zero (fun _ => 0))
+    intro w
+    exact (hW ⟨w⟩).elim
+
+lemma HasDyadicRowDivisibilityChain.congr
+    {W : Type*} {j : ℕ} {row row' : W → ℕ}
+    (h : HasDyadicRowDivisibilityChain j row)
+    (hrow : ∀ w, row w = row' w) :
+    HasDyadicRowDivisibilityChain j row' := by
+  induction h generalizing row' with
+  | zero row =>
+      exact HasDyadicRowDivisibilityChain.zero row'
+  | succ K hdecomp hnext _ih =>
+      exact HasDyadicRowDivisibilityChain.succ K (fun w => by rw [← hrow w, hdecomp w]) hnext
+
+/--
+A dyadic divisibility chain together with an explicit terminal residual row after `j` stages.
+-/
+inductive HasDyadicRowDivisibilityChainTo {W : Type*} : ℕ → (W → ℕ) → (W → ℕ) → Prop
+  | zero (row : W → ℕ) : HasDyadicRowDivisibilityChainTo 0 row row
+  | succ {j : ℕ} {row next tail : W → ℕ} (K : ℕ)
+      (hdecomp : ∀ w, row w = K + 2 * next w)
+      (hnext : HasDyadicRowDivisibilityChainTo j next tail) :
+      HasDyadicRowDivisibilityChainTo (j + 1) row tail
+
+lemma HasDyadicRowDivisibilityChainTo.forget
+    {W : Type*} {j : ℕ} {row tail : W → ℕ}
+    (h : HasDyadicRowDivisibilityChainTo j row tail) :
+    HasDyadicRowDivisibilityChain j row := by
+  induction h with
+  | zero row =>
+      exact HasDyadicRowDivisibilityChain.zero row
+  | succ K hdecomp hnext ih =>
+      exact HasDyadicRowDivisibilityChain.succ K hdecomp ih
+
+lemma exists_hasDyadicRowDivisibilityChainTo_of_hasDyadicRowDivisibilityChain
+    {W : Type*} {j : ℕ} {row : W → ℕ}
+    (h : HasDyadicRowDivisibilityChain j row) :
+    ∃ tail : W → ℕ, HasDyadicRowDivisibilityChainTo j row tail := by
+  induction h with
+  | zero row =>
+      exact ⟨row, HasDyadicRowDivisibilityChainTo.zero row⟩
+  | @succ j row next K hdecomp hnext ih =>
+      rcases ih with ⟨tail, htail⟩
+      exact ⟨tail, HasDyadicRowDivisibilityChainTo.succ K hdecomp htail⟩
+
+lemma HasDyadicRowDivisibilityChainTo.succ_of_terminalModEq_two
+    {W : Type*} {j : ℕ} {row tail : W → ℕ}
+    (hchain : HasDyadicRowDivisibilityChainTo j row tail)
+    (hterm : ∀ v w, tail v ≡ tail w [MOD 2]) :
+    HasDyadicRowDivisibilityChain (j + 1) row := by
+  induction hchain with
+  | zero row =>
+      simpa using hasDyadicRowDivisibilityChain_one_of_modEq_two hterm
+  | @succ j row next tail K hdecomp hnext ih =>
+      exact HasDyadicRowDivisibilityChain.succ K hdecomp (ih hterm)
+
+lemma HasDyadicRowDivisibilityChainTo.tail_modEq_two_iff_row_modEq_pow_succ
+    {W : Type*} {j : ℕ} {row tail : W → ℕ}
+    (hchain : HasDyadicRowDivisibilityChainTo j row tail) {v w : W} :
+    tail v ≡ tail w [MOD 2] ↔ row v ≡ row w [MOD 2 ^ (j + 1)] := by
+  induction hchain generalizing v w with
+  | zero row =>
+      simpa
+  | @succ j row next tail K hdecomp hnext ih =>
+      constructor
+      · intro htail
+        have hnextMod : next v ≡ next w [MOD 2 ^ (j + 1)] := (ih).1 htail
+        have hdouble :
+            2 * next v ≡ 2 * next w [MOD 2 * 2 ^ (j + 1)] := by
+          simpa [Nat.mul_comm] using Nat.ModEq.mul_left' 2 hnextMod
+        have hadd :
+            K + 2 * next v ≡ K + 2 * next w [MOD 2 * 2 ^ (j + 1)] := by
+          exact Nat.ModEq.add (Nat.ModEq.refl K) hdouble
+        simpa [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm, hdecomp v, hdecomp w]
+          using hadd
+      · intro hrow
+        have hdouble :
+            2 * next v ≡ 2 * next w [MOD 2 * 2 ^ (j + 1)] := by
+          have hadd :
+              K + 2 * next v ≡ K + 2 * next w [MOD 2 * 2 ^ (j + 1)] := by
+            simpa [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm, hdecomp v, hdecomp w]
+              using hrow
+          exact Nat.ModEq.add_left_cancel (Nat.ModEq.refl K) hadd
+        have hnextMod : next v ≡ next w [MOD 2 ^ (j + 1)] := by
+          exact
+            Nat.ModEq.mul_left_cancel' (a := next v) (b := next w) (c := 2)
+              (m := 2 ^ (j + 1)) (by decide : 2 ≠ 0) hdouble
+        exact (ih).2 hnextMod
+
+lemma HasDyadicRowDivisibilityChainTo.tail_modEq_two_iff_row_modEq_pow_succ_basepoint
+    {W : Type*} {j : ℕ} {row tail : W → ℕ}
+    (hchain : HasDyadicRowDivisibilityChainTo j row tail) (w₀ : W) :
+    (∀ w, tail w ≡ tail w₀ [MOD 2]) ↔
+      (∀ w, row w ≡ row w₀ [MOD 2 ^ (j + 1)]) := by
+  constructor
+  · intro htail w
+    exact (hchain.tail_modEq_two_iff_row_modEq_pow_succ (v := w) (w := w₀)).1 (htail w)
+  · intro hrow w
+    exact (hchain.tail_modEq_two_iff_row_modEq_pow_succ (v := w) (w := w₀)).2 (hrow w)
+
+/--
+Lean-facing form of the note's terminal beta-vanishing claim at bit `j`: every residual tail
+obtained after `j` dyadic row-divisibility steps has constant parity.
+-/
+def DyadicTailBetaVanishesAt {W : Type*} (j : ℕ) (row : W → ℕ) : Prop :=
+  ∀ tail : W → ℕ, HasDyadicRowDivisibilityChainTo j row tail →
+    ∀ v w, tail v ≡ tail w [MOD 2]
+
+/-- Beta-vanishing for every dyadic level strictly below `j`. -/
+def DyadicTailBetaVanishesUpTo {W : Type*} (j : ℕ) (row : W → ℕ) : Prop :=
+  ∀ m, m < j → DyadicTailBetaVanishesAt m row
+
+lemma HasDyadicRowDivisibilityChainTo.succ_of_dyadicTailBetaVanishesAt
+    {W : Type*} {j : ℕ} {row tail : W → ℕ}
+    (hchain : HasDyadicRowDivisibilityChainTo j row tail)
+    (hbeta : DyadicTailBetaVanishesAt j row) :
+    HasDyadicRowDivisibilityChain (j + 1) row :=
+  hchain.succ_of_terminalModEq_two (hbeta tail hchain)
+
+/--
+Successive dyadic divisibility of a row function forces constancy modulo `2^j`.
+-/
+lemma modEq_of_hasDyadicRowDivisibilityChain
+    {W : Type*} {j : ℕ} {row : W → ℕ}
+    (h : HasDyadicRowDivisibilityChain j row) :
+    ∀ v w, row v ≡ row w [MOD 2 ^ j] := by
+  induction h with
+  | zero row =>
+      intro v w
+      change row v % (2 ^ 0) = row w % (2 ^ 0)
+      rw [pow_zero, Nat.mod_one, Nat.mod_one]
+  | @succ j row next K hdecomp hnext ih =>
+      intro v w
+      have hnextMod : next v ≡ next w [MOD 2 ^ j] := ih v w
+      have hdouble :
+          2 * next v ≡ 2 * next w [MOD 2 ^ (j + 1)] := by
+        simpa [Nat.pow_succ, Nat.mul_comm] using Nat.ModEq.mul_left' 2 hnextMod
+      have hadd :
+          K + 2 * next v ≡ K + 2 * next w [MOD 2 ^ (j + 1)] := by
+        exact Nat.ModEq.add (Nat.ModEq.refl K) hdouble
+      simpa [hdecomp v, hdecomp w] using hadd
+
+/--
+The bit-by-bit dyadic-tail step from the notes: beta-vanishing for the terminal residual tail
+upgrades row constancy from the first `j` dyadic quotients to modulo `2^(j+1)`.
+-/
+lemma row_modEq_pow_succ_of_dyadicTailBetaVanishesAt
+    {W : Type*} {j : ℕ} {row tail : W → ℕ}
+    (hchain : HasDyadicRowDivisibilityChainTo j row tail)
+    (hbeta : DyadicTailBetaVanishesAt j row) :
+    ∀ v w, row v ≡ row w [MOD 2 ^ (j + 1)] :=
+  modEq_of_hasDyadicRowDivisibilityChain
+    (hchain.succ_of_dyadicTailBetaVanishesAt hbeta)
+
+/--
+Full bit-by-bit dyadic-tail iteration: if the beta class vanishes at every level below `j`, then
+the dropped-tail row admits a dyadic divisibility chain of depth `j`.
+-/
+lemma hasDyadicRowDivisibilityChain_of_dyadicTailBetaVanishesUpTo
+    {W : Type*} {j : ℕ} {row : W → ℕ}
+    (hbeta : DyadicTailBetaVanishesUpTo j row) :
+    HasDyadicRowDivisibilityChain j row := by
+  induction j with
+  | zero =>
+      exact HasDyadicRowDivisibilityChain.zero row
+  | succ j ih =>
+      have hprev :
+          HasDyadicRowDivisibilityChain j row := by
+        exact ih (fun m hm => hbeta m (Nat.lt_trans hm (Nat.lt_succ_self j)))
+      rcases exists_hasDyadicRowDivisibilityChainTo_of_hasDyadicRowDivisibilityChain hprev with
+        ⟨tail, htail⟩
+      exact htail.succ_of_dyadicTailBetaVanishesAt (hbeta j (Nat.lt_succ_self j))
+
+/-- The iterated beta-vanishing theorem as a row congruence modulo `2^j`. -/
+lemma row_modEq_pow_of_dyadicTailBetaVanishesUpTo
+    {W : Type*} {j : ℕ} {row : W → ℕ}
+    (hbeta : DyadicTailBetaVanishesUpTo j row) :
+    ∀ v w, row v ≡ row w [MOD 2 ^ j] :=
+  modEq_of_hasDyadicRowDivisibilityChain
+    (hasDyadicRowDivisibilityChain_of_dyadicTailBetaVanishesUpTo hbeta)
+
+/--
+Conversely, a full dyadic divisibility chain makes every lower terminal beta class vanish.
+-/
+lemma dyadicTailBetaVanishesUpTo_of_hasDyadicRowDivisibilityChain
+    {W : Type*} {j : ℕ} {row : W → ℕ}
+    (hchain : HasDyadicRowDivisibilityChain j row) :
+    DyadicTailBetaVanishesUpTo j row := by
+  intro m hm tail htail v w
+  have hrowJ : row v ≡ row w [MOD 2 ^ j] :=
+    modEq_of_hasDyadicRowDivisibilityChain hchain v w
+  have hpowdvd : 2 ^ (m + 1) ∣ 2 ^ j :=
+    Nat.pow_dvd_pow 2 (Nat.succ_le_of_lt hm)
+  exact (htail.tail_modEq_two_iff_row_modEq_pow_succ (v := v) (w := w)).2
+    (Nat.ModEq.of_dvd hpowdvd hrowJ)
+
+/--
+The note's all-bits beta-vanishing package is exactly the row-divisibility chain, at the
+row-function level.
+-/
+theorem dyadicTailBetaVanishesUpTo_iff_hasDyadicRowDivisibilityChain
+    {W : Type*} {j : ℕ} {row : W → ℕ} :
+    DyadicTailBetaVanishesUpTo j row ↔ HasDyadicRowDivisibilityChain j row :=
+  ⟨hasDyadicRowDivisibilityChain_of_dyadicTailBetaVanishesUpTo,
+    dyadicTailBetaVanishesUpTo_of_hasDyadicRowDivisibilityChain⟩
+
+lemma hasDyadicRowDivisibilityChain_binaryColumnRowSum_of_hasDyadicPairingTree
+    {W : Type*} {j : ℕ} {cols : List (BinaryColumn W)}
+    (h : HasDyadicPairingTree j cols) :
+    HasDyadicRowDivisibilityChain j (binaryColumnRowSum cols) := by
+  induction h with
+  | zero =>
+      simpa [binaryColumnRowSum] using
+        (HasDyadicRowDivisibilityChain.zero (fun _ : W => 0))
+  | @succ j cols next hstep htree ih =>
+      rcases exists_constant_rowSum_decomposition_of_dyadicPairingStep hstep with ⟨K, hK⟩
+      exact HasDyadicRowDivisibilityChain.succ K hK ih
+
+lemma hasDyadicRowDivisibilityChain_one_of_hasBinaryZeroSumPacketPartition
+    {W : Type*} {packets : List (List (BinaryColumn W))}
+    (hpackets : HasBinaryZeroSumPacketPartition packets) :
+    HasDyadicRowDivisibilityChain 1 (binaryColumnRowSum (flattenBinaryPackets packets)) := by
+  exact
+    hasDyadicRowDivisibilityChain_one_of_modEq_two
+      (modEq_rowSum_two_of_hasBinaryZeroSumPacketPartition hpackets)
+
+lemma hasDyadicRowDivisibilityChain_succ_of_modEq_two_and_halved
+    {W : Type*} {j : ℕ} {row : W → ℕ}
+    (hrow : ∀ v w, row v ≡ row w [MOD 2])
+    (hnext : HasDyadicRowDivisibilityChain j (fun w => row w / 2)) :
+    HasDyadicRowDivisibilityChain (j + 1) row := by
+  by_cases hW : Nonempty W
+  · classical
+    let w₀ : W := Classical.choice hW
+    let ε := row w₀ % 2
+    refine
+      HasDyadicRowDivisibilityChain.succ ε
+        (next := fun w => row w / 2) ?_ hnext
+    intro w
+    have hmod : row w % 2 = ε := by
+      simpa [ε] using (hrow w w₀)
+    calc
+      row w = row w % 2 + 2 * (row w / 2) := by
+        simpa [Nat.mul_comm] using (Nat.mod_add_div (row w) 2).symm
+      _ = ε + 2 * (row w / 2) := by rw [hmod]
+  · refine
+      HasDyadicRowDivisibilityChain.succ 0
+        (next := fun w => row w / 2) ?_ hnext
+    intro w
+    exact (hW ⟨w⟩).elim
+
+lemma hasDyadicRowDivisibilityChain_succ_of_hasBinaryZeroSumPacketPartition_and_halved
+    {W : Type*} {j : ℕ} {packets : List (List (BinaryColumn W))}
+    (hpackets : HasBinaryZeroSumPacketPartition packets)
+    (hnext :
+      HasDyadicRowDivisibilityChain j
+        (fun w => binaryColumnRowSum (flattenBinaryPackets packets) w / 2)) :
+    HasDyadicRowDivisibilityChain (j + 1)
+      (binaryColumnRowSum (flattenBinaryPackets packets)) := by
+  exact
+    hasDyadicRowDivisibilityChain_succ_of_modEq_two_and_halved
+      (modEq_rowSum_two_of_hasBinaryZeroSumPacketPartition hpackets)
+      hnext
+
 def SameControlBlockSupports : List (Finset V × ℕ) → List (Finset V × ℕ) → Prop
   | [], [] => True
   | b :: bs, b' :: bs' => b.1 = b'.1 ∧ SameControlBlockSupports bs bs'
@@ -858,6 +1327,52 @@ lemma modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalDegree
     (v := ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩),
     degree_inducedOn_eq_card_neighborFinset_inter_modular (G := G) (s := s ∪ u)
     (v := ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩)] using hsmall
+
+/--
+If the ambient degrees on `s ∪ t₁ ∪ t₂ ∪ u` are constant modulo `q` on `s`, and the external
+degrees into each disjoint block `t₁, t₂` are constant modulo `q` on `s`, then the ambient degrees
+on `s ∪ u` are constant modulo `q` on `s`.
+-/
+lemma modEq_unionDegree_of_modEq_extendedUnionDegree_and_two_externalDegrees
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s t₁ t₂ u : Finset V}
+    (hst : Disjoint s (t₁ ∪ t₂)) (htu : Disjoint (t₁ ∪ t₂) u) (ht : Disjoint t₁ t₂) {q : ℕ}
+    (hdeg :
+      ∀ v w : ↑(s : Set V),
+        (inducedOn G (s ∪ ((t₁ ∪ t₂) ∪ u))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (s ∪ ((t₁ ∪ t₂) ∪ u))).degree
+            ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q])
+    (hext₁ :
+      ∀ v w : ↑(s : Set V),
+        (G.neighborFinset v ∩ t₁).card ≡ (G.neighborFinset w ∩ t₁).card [MOD q])
+    (hext₂ :
+      ∀ v w : ↑(s : Set V),
+        (G.neighborFinset v ∩ t₂).card ≡ (G.neighborFinset w ∩ t₂).card [MOD q]) :
+    ∀ v w : ↑(s : Set V),
+      (inducedOn G (s ∪ u)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+        (inducedOn G (s ∪ u)).degree ⟨w, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+  have hext :
+      ∀ v w : ↑(s : Set V),
+        (G.neighborFinset v ∩ (t₁ ∪ t₂)).card ≡
+          (G.neighborFinset w ∩ (t₁ ∪ t₂)).card [MOD q] := by
+    intro v w
+    have hv :
+        (G.neighborFinset v ∩ (t₁ ∪ t₂)).card =
+          (G.neighborFinset v ∩ t₁).card + (G.neighborFinset v ∩ t₂).card := by
+      simpa [Finset.union_assoc, Finset.union_left_comm, Finset.union_comm] using
+        (card_neighborFinset_inter_union (G := G) (s := t₁) (t := t₂) ht v)
+    have hw :
+        (G.neighborFinset w ∩ (t₁ ∪ t₂)).card =
+          (G.neighborFinset w ∩ t₁).card + (G.neighborFinset w ∩ t₂).card := by
+      simpa [Finset.union_assoc, Finset.union_left_comm, Finset.union_comm] using
+        (card_neighborFinset_inter_union (G := G) (s := t₁) (t := t₂) ht w)
+    simpa [hv, hw] using Nat.ModEq.add (hext₁ v w) (hext₂ v w)
+  exact
+    modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalDegree
+      (G := G) (s := s) (t := t₁ ∪ t₂) (u := u) hst htu
+      (hdeg := by
+        simpa [Finset.union_assoc, Finset.union_left_comm, Finset.union_comm] using hdeg)
+      (hext := hext)
 
 /--
 If the ambient degrees on `s ∪ u` are constant modulo `q` on `s`, and the external degrees into the
@@ -1326,6 +1841,64 @@ lemma hasRegularInducedSubgraphOfCard_of_degreeInterval_of_modEq_unionDegree_and
     HasRegularInducedSubgraphOfCard G k := by
   exact hasRegularInducedSubgraphOfCard_of_degreeInterval_of_inducesModEqDegree G hks hinterval
     (inducesModEqDegree_of_modEq_unionDegree_and_externalBlockDegrees G hsep hdeg hext)
+
+/--
+If the dropped tail `s \ u` is partitioned into separated control blocks whose external degrees are
+constant modulo `q` on `u`, then host-degree congruence on `G[s]` already forces modular regularity
+on `u`.
+-/
+lemma inducesModEqDegree_of_modEq_hostDegree_and_internalTailBlocks
+    (G : SimpleGraph V) [DecidableRel G.Adj] {u s : Finset V} (hu : u ⊆ s) {q : ℕ}
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    {blocks : List (Finset V × ℕ)} (hcover : controlBlockUnion blocks = s \ u)
+    (hsep : ControlBlocksSeparated u blocks)
+    (hext : HasConstantModExternalBlockDegrees G u q blocks) :
+    InducesModEqDegree G u q := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  have hdeg :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G (u ∪ controlBlockUnion blocks)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (u ∪ controlBlockUnion blocks)).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+    intro v w
+    have hAmbientEq : u ∪ controlBlockUnion blocks = s := by
+      ext x
+      by_cases hxu : x ∈ u
+      · have hxs : x ∈ s := hu hxu
+        simp [hcover, hxu, hxs, or_assoc, or_left_comm, or_comm]
+      · simp [hcover, hxu, or_assoc, or_left_comm, or_comm]
+    have hcastv :
+        (inducedOn G (u ∪ controlBlockUnion blocks)).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G s).degree ⟨v.1, hu v.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ controlBlockUnion blocks)
+          (t := s)
+          (h := hAmbientEq)
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := hu v.2))
+    have hcastw :
+        (inducedOn G (u ∪ controlBlockUnion blocks)).degree
+            ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ controlBlockUnion blocks)
+          (t := s)
+          (h := hAmbientEq)
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := hu w.2))
+    simpa [hcastv, hcastw] using hhost v w
+  exact
+    inducesModEqDegree_of_modEq_unionDegree_and_externalBlockDegrees G hsep hdeg hext
 
 /--
 A nonempty control-block union, ruling out the vacuous empty-block case.
@@ -1845,6 +2418,2251 @@ def HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
     ∃ e : ℕ, ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card ≡ e [MOD q]
 
 /--
+Literal host-side frontier package from Corollary 10.2: a completed host set `s` of size `q^2`
+whose internal degrees are constant modulo `q`, together with one disjoint control set `t` on which
+the external degree is already frozen exactly.
+-/
+def HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard
+    (G : SimpleGraph V) (q : ℕ) : Prop := by
+  classical
+  exact ∃ s t : Finset V, s.card = q * q ∧ 0 < t.card ∧ Disjoint s t ∧
+    InducesModEqDegree G s q ∧
+    ∃ e : ℕ, ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e
+
+/--
+Completed-host version of the exact single-control package with prescribed inherited control size
+`r`.
+-/
+def HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard
+    (G : SimpleGraph V) (q r : ℕ) : Prop := by
+  classical
+  exact ∃ s t : Finset V, s.card = q * q ∧ 0 < t.card ∧ t.card = r ∧ Disjoint s t ∧
+    InducesModEqDegree G s q ∧
+    ∃ e : ℕ, ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e
+
+/--
+Inside a peeled host set `T` with chosen low set `L ⊆ T`, the vertex `x` has the exact low
+neighborhood if it sees precisely `L` inside `T`.
+-/
+def HasExactLowNeighborhoodOnFinset
+    (G : SimpleGraph V) (x : V) (T L : Finset V) : Prop := by
+  classical
+  exact G.neighborFinset x ∩ T = L
+
+/--
+Number of defects of the neighborhood of `x` inside `T` relative to the target low set `L`.
+
+This counts both extra neighbors in `T \\ L` and missing neighbors in `L`.
+-/
+noncomputable def lowNeighborhoodError
+    (G : SimpleGraph V) (x : V) (T L : Finset V) : ℕ := by
+  classical
+  exact (G.neighborFinset x ∩ (T \ L)).card + (L \ G.neighborFinset x).card
+
+lemma hasExactLowNeighborhoodOnFinset_iff_lowNeighborhoodError_eq_zero
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T) :
+    HasExactLowNeighborhoodOnFinset G x T L ↔
+      lowNeighborhoodError G x T L = 0 := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  unfold HasExactLowNeighborhoodOnFinset lowNeighborhoodError
+  constructor
+  · intro hExact
+    have hextra : G.neighborFinset x ∩ (T \ L) = ∅ := by
+      apply Finset.ext
+      intro y
+      constructor
+      · intro hy
+        rcases Finset.mem_inter.mp hy with ⟨hyN, hyTL⟩
+        rcases Finset.mem_sdiff.mp hyTL with ⟨hyT, hyNotL⟩
+        have hyInL : y ∈ L := by
+          have hyIn : y ∈ G.neighborFinset x ∩ T := Finset.mem_inter.mpr ⟨hyN, hyT⟩
+          rw [hExact] at hyIn
+          exact hyIn
+        exact (hyNotL hyInL).elim
+      · intro hy
+        simpa using hy
+    have hmiss : L \ G.neighborFinset x = ∅ := by
+      apply Finset.ext
+      intro y
+      constructor
+      · intro hy
+        rcases Finset.mem_sdiff.mp hy with ⟨hyL, hyNotN⟩
+        have hyInN : y ∈ G.neighborFinset x := by
+          have hyIn : y ∈ G.neighborFinset x ∩ T := by
+            have hyInL : y ∈ L := hyL
+            rw [← hExact] at hyInL
+            exact hyInL
+          exact (Finset.mem_inter.mp hyIn).1
+        exact (hyNotN hyInN).elim
+      · intro hy
+        simpa using hy
+    have hextraCard : (G.neighborFinset x ∩ (T \ L)).card = 0 := by
+      simp [hextra]
+    have hmissCard : (L \ G.neighborFinset x).card = 0 := by
+      simp [hmiss]
+    rw [hextraCard, hmissCard]
+  · intro herr
+    have ⟨hextra0, hmiss0⟩ := Nat.add_eq_zero_iff.mp herr
+    have hextra : G.neighborFinset x ∩ (T \ L) = ∅ := Finset.card_eq_zero.mp hextra0
+    have hmiss : L \ G.neighborFinset x = ∅ := Finset.card_eq_zero.mp hmiss0
+    apply Finset.ext
+    intro y
+    constructor
+    · intro hy
+      rcases Finset.mem_inter.mp hy with ⟨hyN, hyT⟩
+      by_contra hyNotL
+      have hyExtra : y ∈ G.neighborFinset x ∩ (T \ L) := by
+        exact Finset.mem_inter.mpr ⟨hyN, Finset.mem_sdiff.mpr ⟨hyT, hyNotL⟩⟩
+      have : y ∈ (∅ : Finset V) := by simpa [hextra] using hyExtra
+      simpa using this
+    · intro hyL
+      have hyN : y ∈ G.neighborFinset x := by
+        by_contra hyNotN
+        have hyMiss : y ∈ L \ G.neighborFinset x := Finset.mem_sdiff.mpr ⟨hyL, hyNotN⟩
+        have : y ∈ (∅ : Finset V) := by simpa [hmiss] using hyMiss
+        simpa using this
+      exact Finset.mem_inter.mpr ⟨hyN, hLT hyL⟩
+
+lemma hasExactLowNeighborhoodOnFinset_of_card_lt_and_coordinate_balance
+    (G : SimpleGraph V) [DecidableRel G.Adj] {P T L : Finset V} {q : ℕ}
+    (hLT : L ⊆ T) (hPq : P.card < q)
+    (hOut : ∀ y ∈ T \ L, (P.filter fun x => y ∈ G.neighborFinset x).card ≡ 0 [MOD q])
+    (hIn : ∀ y ∈ L, (P.filter fun x => y ∈ G.neighborFinset x).card ≡ P.card [MOD q]) :
+    ∀ x ∈ P, HasExactLowNeighborhoodOnFinset G x T L := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  have hq0 : 0 < q := lt_of_le_of_lt (Nat.zero_le _) hPq
+  intro x hxP
+  unfold HasExactLowNeighborhoodOnFinset
+  apply Finset.ext
+  intro y
+  constructor
+  · intro hy
+    rcases Finset.mem_inter.mp hy with ⟨hyN, hyT⟩
+    by_contra hyNotL
+    have hyTL : y ∈ T \ L := Finset.mem_sdiff.mpr ⟨hyT, hyNotL⟩
+    have hmod : (P.filter fun z => y ∈ G.neighborFinset z).card % q = 0 := by
+      simpa [Nat.mod_eq_of_lt hq0] using hOut y hyTL
+    have hcountLt : (P.filter fun z => y ∈ G.neighborFinset z).card < q := by
+      exact lt_of_le_of_lt (Finset.card_filter_le _ _) hPq
+    have hcount0 : (P.filter fun z => y ∈ G.neighborFinset z).card = 0 := by
+      rw [Nat.mod_eq_of_lt hcountLt] at hmod
+      exact hmod
+    have hempty : (P.filter fun z => y ∈ G.neighborFinset z) = ∅ := Finset.card_eq_zero.mp hcount0
+    have hxFilter : x ∈ P.filter fun z => y ∈ G.neighborFinset z := by
+      exact Finset.mem_filter.mpr ⟨hxP, hyN⟩
+    rw [hempty] at hxFilter
+    have : False := by simpa using hxFilter
+    simpa using this
+  · intro hyL
+    have hmod :
+        (P.filter fun z => y ∈ G.neighborFinset z).card % q = P.card % q := by
+      simpa using hIn y hyL
+    have hcountLt : (P.filter fun z => y ∈ G.neighborFinset z).card < q := by
+      exact lt_of_le_of_lt (Finset.card_filter_le _ _) hPq
+    have hcountFull : (P.filter fun z => y ∈ G.neighborFinset z).card = P.card := by
+      rw [Nat.mod_eq_of_lt hcountLt, Nat.mod_eq_of_lt hPq] at hmod
+      exact hmod
+    have hfilterEq : (P.filter fun z => y ∈ G.neighborFinset z) = P := by
+      apply Finset.eq_of_subset_of_card_le (Finset.filter_subset _ _)
+      rw [hcountFull]
+    have hxFilter : x ∈ P.filter fun z => y ∈ G.neighborFinset z := by
+      rw [hfilterEq]
+      exact hxP
+    have hyN : y ∈ G.neighborFinset x := by
+      simpa using (Finset.mem_filter.mp hxFilter).2
+    exact Finset.mem_inter.mpr ⟨hyN, hLT hyL⟩
+
+lemma hasExactLowNeighborhoodOnFinset_of_weighted_sum_lt_and_coordinate_balance
+    (G : SimpleGraph V) [DecidableRel G.Adj] {P T L : Finset V} {q : ℕ} {m : V → ℕ}
+    (hLT : L ⊆ T) (hMq : P.sum m < q)
+    (hOut :
+      ∀ y ∈ T \ L, (P.filter fun z => y ∈ G.neighborFinset z).sum m ≡ 0 [MOD q])
+    (hIn :
+      ∀ y ∈ L,
+        (P.filter fun z => y ∈ G.neighborFinset z).sum m ≡ P.sum m [MOD q]) :
+    ∀ x ∈ P, 0 < m x → HasExactLowNeighborhoodOnFinset G x T L := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  intro x hxP hxPos
+  unfold HasExactLowNeighborhoodOnFinset
+  apply Finset.ext
+  intro y
+  constructor
+  · intro hy
+    rcases Finset.mem_inter.mp hy with ⟨hyN, hyT⟩
+    by_contra hyNotL
+    have hyTL : y ∈ T \ L := Finset.mem_sdiff.mpr ⟨hyT, hyNotL⟩
+    have hsumLe :
+        (P.filter fun z => y ∈ G.neighborFinset z).sum m ≤ P.sum m := by
+      exact Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+    have hsumLtq : (P.filter fun z => y ∈ G.neighborFinset z).sum m < q := by
+      exact lt_of_le_of_lt hsumLe hMq
+    have hsum0 : (P.filter fun z => y ∈ G.neighborFinset z).sum m = 0 := by
+      have hmod :
+          ((P.filter fun z => y ∈ G.neighborFinset z).sum m) % q = 0 := by
+        simpa [Nat.mod_eq_of_lt hsumLtq] using hOut y hyTL
+      rw [Nat.mod_eq_of_lt hsumLtq] at hmod
+      exact hmod
+    have hxFilter : x ∈ P.filter (fun z => y ∈ G.neighborFinset z) := by
+      exact Finset.mem_filter.mpr ⟨hxP, hyN⟩
+    have hxLe :
+        m x ≤ (P.filter fun z => y ∈ G.neighborFinset z).sum m := by
+      exact Finset.single_le_sum (fun z hz => Nat.zero_le _) hxFilter
+    have hxLe0 : m x ≤ 0 := by
+      rw [hsum0] at hxLe
+      exact hxLe
+    have hxZero : m x = 0 := by
+      exact Nat.le_zero.mp hxLe0
+    exact (Nat.ne_of_gt hxPos) hxZero
+  · intro hyL
+    have hsumLe :
+        (P.filter fun z => y ∈ G.neighborFinset z).sum m ≤ P.sum m := by
+      exact Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+    have hsumLtq : (P.filter fun z => y ∈ G.neighborFinset z).sum m < q := by
+      exact lt_of_le_of_lt hsumLe hMq
+    have hsumFull :
+        (P.filter fun z => y ∈ G.neighborFinset z).sum m = P.sum m := by
+      have hmod : ((P.filter fun z => y ∈ G.neighborFinset z).sum m) % q = (P.sum m) % q := by
+        exact hIn y hyL
+      rw [Nat.mod_eq_of_lt hsumLtq, Nat.mod_eq_of_lt hMq] at hmod
+      exact hmod
+    have hyN : y ∈ G.neighborFinset x := by
+      by_contra hyNotN
+      have hxComp : x ∈ P.filter (fun z => y ∉ G.neighborFinset z) := by
+        exact Finset.mem_filter.mpr ⟨hxP, hyNotN⟩
+      have hcompLe :
+          m x ≤ (P.filter fun z => y ∉ G.neighborFinset z).sum m := by
+        exact Finset.single_le_sum (fun z hz => Nat.zero_le _) hxComp
+      have hcompPos : 0 < (P.filter fun z => y ∉ G.neighborFinset z).sum m := by
+        exact lt_of_lt_of_le hxPos hcompLe
+      have hlt :
+          (P.filter fun z => y ∈ G.neighborFinset z).sum m < P.sum m := by
+        rw [← Finset.sum_filter_add_sum_filter_not P (fun z => y ∈ G.neighborFinset z) m]
+        exact Nat.lt_add_of_pos_right hcompPos
+      exact (Nat.ne_of_lt hlt) hsumFull
+    exact Finset.mem_inter.mpr ⟨hyN, hLT hyL⟩
+
+lemma sum_card_neighborFinset_inter_eq_sum_card_filter_mem_neighborFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P S : Finset V) :
+    P.sum (fun x => (G.neighborFinset x ∩ S).card) =
+      S.sum (fun y => (P.filter fun x => y ∈ G.neighborFinset x).card) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  simpa [Finset.bipartiteAbove, Finset.bipartiteBelow, Finset.filter_mem_eq_inter, Finset.inter_comm,
+    ← SimpleGraph.mem_neighborFinset] using
+    (Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow
+      (s := P) (t := S) (r := G.Adj))
+
+lemma sum_card_sdiff_neighborFinset_eq_sum_card_filter_not_mem_neighborFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P S : Finset V) :
+    P.sum (fun x => (S \ G.neighborFinset x).card) =
+      S.sum (fun y => (P.filter fun x => y ∉ G.neighborFinset x).card) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  simpa [Finset.bipartiteAbove, Finset.bipartiteBelow, Finset.sdiff_eq_filter] using
+    (Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow
+      (s := P) (t := S) (r := fun x y => y ∉ G.neighborFinset x))
+
+lemma sum_lowNeighborhoodError_eq_sum_card_filter_mem_neighborFinset_add_sum_card_filter_not_mem_neighborFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V) :
+    P.sum (fun x => lowNeighborhoodError G x T L) =
+      (T \ L).sum (fun y => (P.filter fun x => y ∈ G.neighborFinset x).card) +
+        L.sum (fun y => (P.filter fun x => y ∉ G.neighborFinset x).card) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  unfold lowNeighborhoodError
+  rw [sum_add_distrib]
+  rw [sum_card_neighborFinset_inter_eq_sum_card_filter_mem_neighborFinset (G := G) (P := P)
+      (S := T \ L)]
+  rw [sum_card_sdiff_neighborFinset_eq_sum_card_filter_not_mem_neighborFinset (G := G) (P := P)
+      (S := L)]
+
+lemma exists_hasExactLowNeighborhoodOnFinset_of_sum_lowNeighborhoodError_lt_card
+    (G : SimpleGraph V) [DecidableRel G.Adj] {P T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : P.sum (fun x => lowNeighborhoodError G x T L) < P.card) :
+    ∃ x ∈ P, HasExactLowNeighborhoodOnFinset G x T L := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  by_contra hnone
+  have hnone' : ∀ x, x ∈ P → ¬ HasExactLowNeighborhoodOnFinset G x T L := by
+    intro x hxP hxExact
+    exact hnone ⟨x, hxP, hxExact⟩
+  have hpos : ∀ x ∈ P, 1 ≤ lowNeighborhoodError G x T L := by
+    intro x hxP
+    have hne : lowNeighborhoodError G x T L ≠ 0 := by
+      intro hzero
+      exact
+        hnone' x hxP
+          ((hasExactLowNeighborhoodOnFinset_iff_lowNeighborhoodError_eq_zero (G := G) hLT).2 hzero)
+    exact Nat.succ_le_of_lt (Nat.pos_of_ne_zero hne)
+  have hcardLe : P.card ≤ P.sum (fun x => lowNeighborhoodError G x T L) := by
+    simpa using Finset.card_nsmul_le_sum P (fun x => lowNeighborhoodError G x T L) 1 hpos
+  exact (Nat.not_le_of_lt herr) hcardLe
+
+lemma card_filter_hasExactLowNeighborhoodOnFinset_ge_card_sub_sum_lowNeighborhoodError
+    (G : SimpleGraph V) [DecidableRel G.Adj] {P T L : Finset V}
+    (hLT : L ⊆ T) : by
+      classical
+      exact
+        P.card - P.sum (fun x => lowNeighborhoodError G x T L) ≤
+          (P.filter fun x => HasExactLowNeighborhoodOnFinset G x T L).card := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  let good := P.filter fun x => HasExactLowNeighborhoodOnFinset G x T L
+  have hgoodSub : good ⊆ P := Finset.filter_subset _ _
+  have hbadLe :
+      (P \ good).card ≤ P.sum (fun x => lowNeighborhoodError G x T L) := by
+    have hbadPos : ∀ x ∈ P \ good, 1 ≤ lowNeighborhoodError G x T L := by
+      intro x hxBad
+      rcases Finset.mem_sdiff.mp hxBad with ⟨hxP, hxNotGood⟩
+      have hxNot : ¬ HasExactLowNeighborhoodOnFinset G x T L := by
+        exact fun hxExact => hxNotGood (by simp [good, hxP, hxExact])
+      have hne : lowNeighborhoodError G x T L ≠ 0 := by
+        intro hzero
+        exact
+          hxNot
+            ((hasExactLowNeighborhoodOnFinset_iff_lowNeighborhoodError_eq_zero (G := G) hLT).2 hzero)
+      exact Nat.succ_le_of_lt (Nat.pos_of_ne_zero hne)
+    have hbadCardLeBadSum :
+        (P \ good).card ≤ (P \ good).sum (fun x => lowNeighborhoodError G x T L) := by
+      simpa using
+        Finset.card_nsmul_le_sum (P \ good) (fun x => lowNeighborhoodError G x T L) 1 hbadPos
+    have hbadSumLe :
+        (P \ good).sum (fun x => lowNeighborhoodError G x T L) ≤
+          P.sum (fun x => lowNeighborhoodError G x T L) := by
+      exact Finset.sum_le_sum_of_subset Finset.sdiff_subset
+    exact le_trans hbadCardLeBadSum hbadSumLe
+  have hsplit : (P \ good).card + good.card = P.card := by
+    calc
+      (P \ good).card + good.card = (P \ good).card + (P ∩ good).card := by
+        rw [Finset.inter_eq_right.mpr hgoodSub]
+      _ = P.card := Finset.card_sdiff_add_card_inter P good
+  have hle : P.card ≤ good.card + P.sum (fun x => lowNeighborhoodError G x T L) := by
+    rw [← hsplit]
+    simpa [Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using
+      Nat.add_le_add_left hbadLe good.card
+  have hresult :
+      P.card - P.sum (fun x => lowNeighborhoodError G x T L) ≤ good.card := by
+    exact Nat.sub_le_iff_le_add.mpr hle
+  simpa [good] using hresult
+
+lemma exists_lowNeighborhoodError_le_one_of_sum_lowNeighborhoodError_lt_two_mul_card
+    (G : SimpleGraph V) [DecidableRel G.Adj] {P T L : Finset V}
+    (herr : P.sum (fun x => lowNeighborhoodError G x T L) < 2 * P.card) :
+    ∃ x ∈ P, lowNeighborhoodError G x T L ≤ 1 := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  by_contra hnone
+  have hnone' : ∀ x, x ∈ P → ¬ lowNeighborhoodError G x T L ≤ 1 := by
+    intro x hxP hxle
+    exact hnone ⟨x, hxP, hxle⟩
+  have htwoLe : P.card + P.card ≤ P.sum (fun x => lowNeighborhoodError G x T L) := by
+    have hge : ∀ x ∈ P, 2 ≤ lowNeighborhoodError G x T L := by
+      intro x hxP
+      exact Nat.succ_le_of_lt (Nat.lt_of_not_ge (hnone' x hxP))
+    have htwoMul : P.card * 2 ≤ P.sum (fun x => lowNeighborhoodError G x T L) := by
+      simpa using
+        Finset.card_nsmul_le_sum P (fun x => lowNeighborhoodError G x T L) 2 hge
+    calc
+      P.card + P.card = P.card * 2 := by rw [← two_mul, Nat.mul_comm]
+      _ ≤ P.sum (fun x => lowNeighborhoodError G x T L) := htwoMul
+  have herr' : P.sum (fun x => lowNeighborhoodError G x T L) < P.card + P.card := by
+    simpa [two_mul] using herr
+  exact (Nat.not_le_of_lt herr') htwoLe
+
+/--
+One-defect miss type inside a peeled host set `T`: the low neighborhood is exactly `L \ {z}` for some
+unique missing low vertex `z ∈ L`.
+-/
+def HasLowNeighborhoodMissTypeOnFinset
+    (G : SimpleGraph V) (x : V) (T L : Finset V) (z : V) : Prop := by
+  classical
+  exact z ∈ L ∧ HasExactLowNeighborhoodOnFinset G x T (L \ {z})
+
+/--
+One-defect add type inside a peeled host set `T`: the low neighborhood is exactly `insert y L` for some
+unique added high vertex `y ∈ T \ L`.
+-/
+def HasLowNeighborhoodAddTypeOnFinset
+    (G : SimpleGraph V) (x : V) (T L : Finset V) (y : V) : Prop := by
+  classical
+  exact y ∈ T \ L ∧ HasExactLowNeighborhoodOnFinset G x T (insert y L)
+
+lemma hasLowNeighborhoodMissTypeOnFinset_or_hasLowNeighborhoodAddTypeOnFinset_of_lowNeighborhoodError_eq_one
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1) :
+    (∃ z, HasLowNeighborhoodMissTypeOnFinset G x T L z) ∨
+      (∃ y, HasLowNeighborhoodAddTypeOnFinset G x T L y) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  let extra := G.neighborFinset x ∩ (T \ L)
+  let miss := L \ G.neighborFinset x
+  have hsum : extra.card + miss.card = 1 := by
+    simpa [lowNeighborhoodError, extra, miss] using herr
+  by_cases hextra0 : extra.card = 0
+  · have hmiss1 : miss.card = 1 := by
+      simpa [hextra0] using hsum
+    have hextraEmpty : extra = ∅ := Finset.card_eq_zero.mp hextra0
+    obtain ⟨z, hzmiss⟩ := Finset.card_eq_one.mp hmiss1
+    have hzInMiss : z ∈ miss := by
+      rw [hzmiss]
+      simp
+    have hzL : z ∈ L := (Finset.mem_sdiff.mp hzInMiss).1
+    have hzNotN : z ∉ G.neighborFinset x := (Finset.mem_sdiff.mp hzInMiss).2
+    left
+    refine ⟨z, ?_⟩
+    unfold HasLowNeighborhoodMissTypeOnFinset
+    refine ⟨hzL, ?_⟩
+    unfold HasExactLowNeighborhoodOnFinset
+    apply Finset.ext
+    intro y
+    constructor
+    · intro hy
+      rcases Finset.mem_inter.mp hy with ⟨hyN, hyT⟩
+      have hyL : y ∈ L := by
+        by_contra hyNotL
+        have hyExtra : y ∈ extra := by
+          exact Finset.mem_inter.mpr ⟨hyN, Finset.mem_sdiff.mpr ⟨hyT, hyNotL⟩⟩
+        have : y ∈ (∅ : Finset V) := by
+          simpa [hextraEmpty] using hyExtra
+        simpa using this
+      have hyNeZ : y ≠ z := by
+        intro hyEq
+        subst hyEq
+        exact hzNotN hyN
+      exact Finset.mem_sdiff.mpr ⟨hyL, by simpa [Finset.mem_singleton] using hyNeZ⟩
+    · intro hy
+      rcases Finset.mem_sdiff.mp hy with ⟨hyL, hyNotZ⟩
+      have hyT : y ∈ T := hLT hyL
+      have hyN : y ∈ G.neighborFinset x := by
+        by_contra hyNotN
+        have hyMiss : y ∈ miss := Finset.mem_sdiff.mpr ⟨hyL, hyNotN⟩
+        rw [hzmiss] at hyMiss
+        exact hyNotZ (by simpa using hyMiss)
+      exact Finset.mem_inter.mpr ⟨hyN, hyT⟩
+  · have hextraLe : extra.card ≤ 1 := by
+      calc
+        extra.card ≤ extra.card + miss.card := Nat.le_add_right _ _
+        _ = 1 := hsum
+    have hextraOneLe : 1 ≤ extra.card := Nat.succ_le_of_lt (Nat.pos_of_ne_zero hextra0)
+    have hextra1 : extra.card = 1 := le_antisymm hextraLe hextraOneLe
+    have hmiss0 : miss.card = 0 := by
+      simpa [hextra1] using hsum
+    have hmissEmpty : miss = ∅ := Finset.card_eq_zero.mp hmiss0
+    obtain ⟨y, hyextra⟩ := Finset.card_eq_one.mp hextra1
+    have hyInExtra : y ∈ extra := by
+      rw [hyextra]
+      simp
+    have hyN : y ∈ G.neighborFinset x := (Finset.mem_inter.mp hyInExtra).1
+    have hyTL : y ∈ T \ L := (Finset.mem_inter.mp hyInExtra).2
+    right
+    refine ⟨y, ?_⟩
+    unfold HasLowNeighborhoodAddTypeOnFinset
+    refine ⟨hyTL, ?_⟩
+    unfold HasExactLowNeighborhoodOnFinset
+    apply Finset.ext
+    intro v
+    constructor
+    · intro hv
+      rcases Finset.mem_inter.mp hv with ⟨hvN, hvT⟩
+      by_cases hvL : v ∈ L
+      · exact Finset.mem_insert.mpr (Or.inr hvL)
+      · have hvExtra : v ∈ extra := by
+          exact Finset.mem_inter.mpr ⟨hvN, Finset.mem_sdiff.mpr ⟨hvT, hvL⟩⟩
+        rw [hyextra] at hvExtra
+        exact Finset.mem_insert.mpr (Or.inl (by simpa using hvExtra))
+    · intro hv
+      rcases Finset.mem_insert.mp hv with rfl | hvL
+      · exact Finset.mem_inter.mpr ⟨hyN, (Finset.mem_sdiff.mp hyTL).1⟩
+      · have hvT : v ∈ T := hLT hvL
+        have hvN : v ∈ G.neighborFinset x := by
+          by_contra hvNotN
+          have hvMiss : v ∈ miss := Finset.mem_sdiff.mpr ⟨hvL, hvNotN⟩
+          have : v ∈ (∅ : Finset V) := by
+            simpa [hmissEmpty] using hvMiss
+          simpa using this
+        exact Finset.mem_inter.mpr ⟨hvN, hvT⟩
+
+/--
+Existence of a chosen defect site in `T` for a one-defect low neighborhood.
+-/
+lemma exists_lowNeighborhoodDefectSite
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1) :
+    ∃ u, u ∈ T ∧
+      (HasLowNeighborhoodMissTypeOnFinset G x T L u ∨
+        HasLowNeighborhoodAddTypeOnFinset G x T L u) := by
+  classical
+  rcases
+      hasLowNeighborhoodMissTypeOnFinset_or_hasLowNeighborhoodAddTypeOnFinset_of_lowNeighborhoodError_eq_one
+        (G := G) (x := x) (T := T) (L := L) hLT herr with
+    hmiss | hadd
+  · refine ⟨Classical.choose hmiss, hLT (Classical.choose_spec hmiss).1, ?_⟩
+    exact Or.inl (Classical.choose_spec hmiss)
+  · refine ⟨Classical.choose hadd, (Finset.mem_sdiff.mp (Classical.choose_spec hadd).1).1, ?_⟩
+    exact Or.inr (Classical.choose_spec hadd)
+
+/--
+Chosen defect site in `T` for a one-defect low neighborhood. This is the finite peeled-set version of the
+defect map on the one-defect strip.
+-/
+noncomputable def lowNeighborhoodDefectSite
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) (T L : Finset V)
+    (hLT : L ⊆ T) (herr : lowNeighborhoodError G x T L = 1) : ↑(T : Set V) := by
+  classical
+  refine ⟨Classical.choose (exists_lowNeighborhoodDefectSite (G := G) (x := x) (T := T) (L := L) hLT herr), ?_⟩
+  exact
+    (Classical.choose_spec
+      (exists_lowNeighborhoodDefectSite (G := G) (x := x) (T := T) (L := L) hLT herr)).1
+
+lemma hasLowNeighborhoodMissTypeOnFinset_or_hasLowNeighborhoodAddTypeOnFinset_at_lowNeighborhoodDefectSite
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1) :
+    HasLowNeighborhoodMissTypeOnFinset G x T L (lowNeighborhoodDefectSite G x T L hLT herr).1 ∨
+      HasLowNeighborhoodAddTypeOnFinset G x T L (lowNeighborhoodDefectSite G x T L hLT herr).1 := by
+  classical
+  exact
+    (Classical.choose_spec
+      (exists_lowNeighborhoodDefectSite (G := G) (x := x) (T := T) (L := L) hLT herr)).2
+
+lemma hasExactLowNeighborhoodOnFinset_on_erase_of_hasLowNeighborhoodMissTypeOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x z : V} {T L : Finset V}
+    (hmiss : HasLowNeighborhoodMissTypeOnFinset G x T L z) :
+    HasExactLowNeighborhoodOnFinset G x (T.erase z) (L.erase z) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hmiss with ⟨_, hExact⟩
+  unfold HasExactLowNeighborhoodOnFinset at hExact ⊢
+  apply Finset.ext
+  intro y
+  constructor
+  · intro hy
+    rcases Finset.mem_inter.mp hy with ⟨hyN, hyTerase⟩
+    have hyT : y ∈ T := (Finset.mem_erase.mp hyTerase).2
+    have hyNeZ : y ≠ z := (Finset.mem_erase.mp hyTerase).1
+    have hyIn : y ∈ L \ ({z} : Finset V) := by
+      rw [← hExact]
+      exact Finset.mem_inter.mpr ⟨hyN, hyT⟩
+    rcases Finset.mem_sdiff.mp hyIn with ⟨hyL, hyNotSingleton⟩
+    exact Finset.mem_erase.mpr ⟨by simpa [Finset.mem_singleton] using hyNotSingleton, hyL⟩
+  · intro hy
+    rcases Finset.mem_erase.mp hy with ⟨hyNeZ, hyL⟩
+    have hyIn : y ∈ L \ ({z} : Finset V) := by
+      exact Finset.mem_sdiff.mpr ⟨hyL, by simpa [Finset.mem_singleton] using hyNeZ⟩
+    have hyNT : y ∈ G.neighborFinset x ∩ T := hExact.symm ▸ hyIn
+    rcases Finset.mem_inter.mp hyNT with ⟨hyN, hyT⟩
+    exact Finset.mem_inter.mpr ⟨hyN, Finset.mem_erase.mpr ⟨hyNeZ, hyT⟩⟩
+
+lemma hasExactLowNeighborhoodOnFinset_on_erase_of_hasLowNeighborhoodAddTypeOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x y : V} {T L : Finset V}
+    (hadd : HasLowNeighborhoodAddTypeOnFinset G x T L y) :
+    HasExactLowNeighborhoodOnFinset G x (T.erase y) L := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hadd with ⟨hyTL, hExact⟩
+  have hyNotL : y ∉ L := (Finset.mem_sdiff.mp hyTL).2
+  unfold HasExactLowNeighborhoodOnFinset at hExact ⊢
+  apply Finset.ext
+  intro v
+  constructor
+  · intro hv
+    rcases Finset.mem_inter.mp hv with ⟨hvN, hvTerase⟩
+    have hvIn : v ∈ insert y L := by
+      rw [← hExact]
+      exact Finset.mem_inter.mpr ⟨hvN, (Finset.mem_erase.mp hvTerase).2⟩
+    rcases Finset.mem_insert.mp hvIn with hEq | hvL
+    · subst hEq
+      exact False.elim <| (Finset.mem_erase.mp hvTerase).1 rfl
+    · exact hvL
+  · intro hvL
+    have hvIn : v ∈ insert y L := Finset.mem_insert.mpr (Or.inr hvL)
+    have hvNT : v ∈ G.neighborFinset x ∩ T := hExact.symm ▸ hvIn
+    have hvNeY : v ≠ y := by
+      intro hEq
+      subst hEq
+      exact hyNotL hvL
+    rcases Finset.mem_inter.mp hvNT with ⟨hvN, hvT⟩
+    exact Finset.mem_inter.mpr ⟨hvN, Finset.mem_erase.mpr ⟨hvNeY, hvT⟩⟩
+
+lemma hasExactLowNeighborhoodOnFinset_on_erase
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x z : V} {T L : Finset V}
+    (hExact : HasExactLowNeighborhoodOnFinset G x T L) :
+    HasExactLowNeighborhoodOnFinset G x (T.erase z) (L.erase z) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  unfold HasExactLowNeighborhoodOnFinset at hExact ⊢
+  apply Finset.ext
+  intro y
+  constructor
+  · intro hy
+    rcases Finset.mem_inter.mp hy with ⟨hyN, hyTerase⟩
+    have hyT : y ∈ T := (Finset.mem_erase.mp hyTerase).2
+    have hyNeZ : y ≠ z := (Finset.mem_erase.mp hyTerase).1
+    have hyNT : y ∈ G.neighborFinset x ∩ T := Finset.mem_inter.mpr ⟨hyN, hyT⟩
+    rw [hExact] at hyNT
+    exact Finset.mem_erase.mpr ⟨hyNeZ, hyNT⟩
+  · intro hy
+    rcases Finset.mem_erase.mp hy with ⟨hyNeZ, hyL⟩
+    have hyNT : y ∈ G.neighborFinset x ∩ T := by
+      rw [hExact]
+      exact hyL
+    rcases Finset.mem_inter.mp hyNT with ⟨hyN, hyT⟩
+    exact Finset.mem_inter.mpr ⟨hyN, Finset.mem_erase.mpr ⟨hyNeZ, hyT⟩⟩
+
+/--
+Delete the chosen defect site from `T` for a one-defect outside vertex.
+-/
+noncomputable def lowNeighborhoodDeletedDefectHostOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) (T L : Finset V)
+    (hLT : L ⊆ T) (herr : lowNeighborhoodError G x T L = 1) : Finset V := by
+  exact T.erase (lowNeighborhoodDefectSite G x T L hLT herr).1
+
+/--
+Canonical low set on the deleted-defect host: delete the defect vertex from `L` in the miss case,
+and keep `L` unchanged in the add case.
+-/
+noncomputable def lowNeighborhoodDeletedDefectLowSetOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) (T L : Finset V)
+    (hLT : L ⊆ T) (herr : lowNeighborhoodError G x T L = 1) : Finset V := by
+  classical
+  let u := (lowNeighborhoodDefectSite G x T L hLT herr).1
+  exact if HasLowNeighborhoodMissTypeOnFinset G x T L u then L.erase u else L
+
+lemma hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectData
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1) :
+    HasExactLowNeighborhoodOnFinset G x
+      (lowNeighborhoodDeletedDefectHostOnFinset G x T L hLT herr)
+      (lowNeighborhoodDeletedDefectLowSetOnFinset G x T L hLT herr) := by
+  classical
+  let u := (lowNeighborhoodDefectSite G x T L hLT herr).1
+  have hsite :
+      HasLowNeighborhoodMissTypeOnFinset G x T L u ∨
+        HasLowNeighborhoodAddTypeOnFinset G x T L u := by
+    simpa [u] using
+      hasLowNeighborhoodMissTypeOnFinset_or_hasLowNeighborhoodAddTypeOnFinset_at_lowNeighborhoodDefectSite
+        (G := G) (x := x) (T := T) (L := L) hLT herr
+  by_cases hmiss : HasLowNeighborhoodMissTypeOnFinset G x T L u
+  · simp [lowNeighborhoodDeletedDefectHostOnFinset, lowNeighborhoodDeletedDefectLowSetOnFinset, u, hmiss]
+    exact hasExactLowNeighborhoodOnFinset_on_erase_of_hasLowNeighborhoodMissTypeOnFinset (G := G) hmiss
+  · have hadd : HasLowNeighborhoodAddTypeOnFinset G x T L u := by
+      rcases hsite with hmiss' | hadd
+      · exact (hmiss hmiss').elim
+      · exact hadd
+    simp [lowNeighborhoodDeletedDefectHostOnFinset, lowNeighborhoodDeletedDefectLowSetOnFinset, u, hmiss]
+    exact hasExactLowNeighborhoodOnFinset_on_erase_of_hasLowNeighborhoodAddTypeOnFinset (G := G) hadd
+
+lemma lowNeighborhoodDeletedDefectLowSetOnFinset_subset_deletedDefectHostOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1) :
+    lowNeighborhoodDeletedDefectLowSetOnFinset G x T L hLT herr ⊆
+      lowNeighborhoodDeletedDefectHostOnFinset G x T L hLT herr := by
+  classical
+  intro y hy
+  have hExact :=
+    hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectData
+      (G := G) (x := x) (T := T) (L := L) hLT herr
+  unfold HasExactLowNeighborhoodOnFinset at hExact
+  rw [← hExact] at hy
+  exact (Finset.mem_inter.mp hy).2
+
+lemma exists_erase_vertex_hasExactLowNeighborhoodOnFinset_of_lowNeighborhoodError_eq_one
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1) :
+    ∃ u ∈ T, ∃ L',
+      L' ⊆ T.erase u ∧
+      HasExactLowNeighborhoodOnFinset G x (T.erase u) L' ∧
+      (L' = L.erase u ∨ L' = L) := by
+  classical
+  let u := (lowNeighborhoodDefectSite G x T L hLT herr).1
+  let L' := lowNeighborhoodDeletedDefectLowSetOnFinset G x T L hLT herr
+  refine ⟨u, ?_, L', ?_, ?_, ?_⟩
+  · simpa [u] using (lowNeighborhoodDefectSite G x T L hLT herr).2
+  · simpa [L'] using
+      lowNeighborhoodDeletedDefectLowSetOnFinset_subset_deletedDefectHostOnFinset
+        (G := G) (x := x) (T := T) (L := L) hLT herr
+  · simpa [u, L'] using
+      hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectData
+        (G := G) (x := x) (T := T) (L := L) hLT herr
+  · by_cases hmiss : HasLowNeighborhoodMissTypeOnFinset G x T L u
+    · left
+      simp [u, L', lowNeighborhoodDeletedDefectLowSetOnFinset, hmiss]
+    · right
+      simp [u, L', lowNeighborhoodDeletedDefectLowSetOnFinset, hmiss]
+
+lemma hasExactLowNeighborhoodOnFinset_on_erase_defectSite_of_lowNeighborhoodError_eq_one_of_mem
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1)
+    (hmem :
+      (lowNeighborhoodDefectSite G x T L hLT herr).1 ∈ L) :
+    HasExactLowNeighborhoodOnFinset G x
+      (T.erase (lowNeighborhoodDefectSite G x T L hLT herr).1)
+      (L.erase (lowNeighborhoodDefectSite G x T L hLT herr).1) := by
+  classical
+  let u := (lowNeighborhoodDefectSite G x T L hLT herr).1
+  have hsite :
+      HasLowNeighborhoodMissTypeOnFinset G x T L u ∨
+        HasLowNeighborhoodAddTypeOnFinset G x T L u := by
+    simpa [u] using
+      hasLowNeighborhoodMissTypeOnFinset_or_hasLowNeighborhoodAddTypeOnFinset_at_lowNeighborhoodDefectSite
+        (G := G) (x := x) (T := T) (L := L) hLT herr
+  have hmiss : HasLowNeighborhoodMissTypeOnFinset G x T L u := by
+    rcases hsite with hmiss | hadd
+    · exact hmiss
+    · exact ((Finset.mem_sdiff.mp hadd.1).2 (by simpa [u] using hmem)).elim
+  simpa [u] using
+    hasExactLowNeighborhoodOnFinset_on_erase_of_hasLowNeighborhoodMissTypeOnFinset
+      (G := G) hmiss
+
+lemma hasExactLowNeighborhoodOnFinset_on_erase_defectSite_of_lowNeighborhoodError_eq_one_of_not_mem
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1)
+    (hnotmem :
+      (lowNeighborhoodDefectSite G x T L hLT herr).1 ∉ L) :
+    HasExactLowNeighborhoodOnFinset G x
+      (T.erase (lowNeighborhoodDefectSite G x T L hLT herr).1)
+      L := by
+  classical
+  let u := (lowNeighborhoodDefectSite G x T L hLT herr).1
+  have hsite :
+      HasLowNeighborhoodMissTypeOnFinset G x T L u ∨
+        HasLowNeighborhoodAddTypeOnFinset G x T L u := by
+    simpa [u] using
+      hasLowNeighborhoodMissTypeOnFinset_or_hasLowNeighborhoodAddTypeOnFinset_at_lowNeighborhoodDefectSite
+        (G := G) (x := x) (T := T) (L := L) hLT herr
+  have hadd : HasLowNeighborhoodAddTypeOnFinset G x T L u := by
+    rcases hsite with hmiss | hadd
+    · exact (hnotmem (by simpa [u] using hmiss.1)).elim
+    · exact hadd
+  simpa [u] using
+    hasExactLowNeighborhoodOnFinset_on_erase_of_hasLowNeighborhoodAddTypeOnFinset
+      (G := G) hadd
+
+lemma hasExactLowNeighborhoodOnFinset_on_erase_defectSite_of_lowNeighborhoodError_eq_one
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1) :
+    HasExactLowNeighborhoodOnFinset G x
+      (T.erase (lowNeighborhoodDefectSite G x T L hLT herr).1)
+      (L.erase (lowNeighborhoodDefectSite G x T L hLT herr).1) := by
+  classical
+  let u := (lowNeighborhoodDefectSite G x T L hLT herr).1
+  by_cases hmem : u ∈ L
+  · simpa [u] using
+      hasExactLowNeighborhoodOnFinset_on_erase_defectSite_of_lowNeighborhoodError_eq_one_of_mem
+        (G := G) (x := x) (T := T) (L := L) hLT herr hmem
+  · have h :=
+      hasExactLowNeighborhoodOnFinset_on_erase_defectSite_of_lowNeighborhoodError_eq_one_of_not_mem
+        (G := G) (x := x) (T := T) (L := L) hLT herr hmem
+    have hErase : L.erase u = L := (Finset.erase_eq_self).2 hmem
+    simpa [u, hErase] using h
+
+lemma lowNeighborhoodDeletedDefectLowSetOnFinset_eq_erase_defectSite
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herr : lowNeighborhoodError G x T L = 1) :
+    lowNeighborhoodDeletedDefectLowSetOnFinset G x T L hLT herr =
+      L.erase (lowNeighborhoodDefectSite G x T L hLT herr).1 := by
+  classical
+  let u := (lowNeighborhoodDefectSite G x T L hLT herr).1
+  have hsite :
+      HasLowNeighborhoodMissTypeOnFinset G x T L u ∨
+        HasLowNeighborhoodAddTypeOnFinset G x T L u := by
+    simpa [u] using
+      hasLowNeighborhoodMissTypeOnFinset_or_hasLowNeighborhoodAddTypeOnFinset_at_lowNeighborhoodDefectSite
+        (G := G) (x := x) (T := T) (L := L) hLT herr
+  by_cases hmiss : HasLowNeighborhoodMissTypeOnFinset G x T L u
+  · simp [lowNeighborhoodDeletedDefectLowSetOnFinset, u, hmiss]
+  · rcases hsite with hmiss' | hadd
+    · exact (hmiss hmiss').elim
+    · have huNotL : u ∉ L := (Finset.mem_sdiff.mp hadd.1).2
+      have hErase : L.erase u = L := (Finset.erase_eq_self).2 huNotL
+      simpa [lowNeighborhoodDeletedDefectLowSetOnFinset, u, hmiss, hErase]
+
+lemma erase_comm_finset (s : Finset V) (u v : V) :
+    (s.erase u).erase v = (s.erase v).erase u := by
+  ext x
+  simp [and_left_comm, and_assoc]
+
+/--
+Delete the two chosen defect sites from `T`.
+-/
+noncomputable def lowNeighborhoodDeletedDefectPairHostOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x y : V) (T L : Finset V)
+    (hLT : L ⊆ T)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) : Finset V := by
+  exact
+    (T.erase (lowNeighborhoodDefectSite G x T L hLT herrx).1).erase
+      (lowNeighborhoodDefectSite G y T L hLT herry).1
+
+/--
+Canonical low set on the common two-defect deleted host.
+-/
+noncomputable def lowNeighborhoodDeletedDefectPairLowSetOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x y : V) (T L : Finset V)
+    (hLT : L ⊆ T)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) : Finset V := by
+  exact
+    (L.erase (lowNeighborhoodDefectSite G x T L hLT herrx).1).erase
+      (lowNeighborhoodDefectSite G y T L hLT herry).1
+
+lemma hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectPairData_left
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x y : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) :
+    HasExactLowNeighborhoodOnFinset G x
+      (lowNeighborhoodDeletedDefectPairHostOnFinset G x y T L hLT herrx herry)
+      (lowNeighborhoodDeletedDefectPairLowSetOnFinset G x y T L hLT herrx herry) := by
+  classical
+  let u := (lowNeighborhoodDefectSite G x T L hLT herrx).1
+  let v := (lowNeighborhoodDefectSite G y T L hLT herry).1
+  have hx :
+      HasExactLowNeighborhoodOnFinset G x (T.erase u) (L.erase u) := by
+    simpa [u] using
+      hasExactLowNeighborhoodOnFinset_on_erase_defectSite_of_lowNeighborhoodError_eq_one
+        (G := G) (x := x) (T := T) (L := L) hLT herrx
+  have hx' :
+      HasExactLowNeighborhoodOnFinset G x ((T.erase u).erase v) ((L.erase u).erase v) :=
+    hasExactLowNeighborhoodOnFinset_on_erase (G := G) (x := x) (z := v) hx
+  simpa [lowNeighborhoodDeletedDefectPairHostOnFinset, lowNeighborhoodDeletedDefectPairLowSetOnFinset, u, v] using hx'
+
+lemma hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectPairData_right
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x y : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) :
+    HasExactLowNeighborhoodOnFinset G y
+      (lowNeighborhoodDeletedDefectPairHostOnFinset G x y T L hLT herrx herry)
+      (lowNeighborhoodDeletedDefectPairLowSetOnFinset G x y T L hLT herrx herry) := by
+  classical
+  let u := (lowNeighborhoodDefectSite G x T L hLT herrx).1
+  let v := (lowNeighborhoodDefectSite G y T L hLT herry).1
+  have hy :
+      HasExactLowNeighborhoodOnFinset G y (T.erase v) (L.erase v) := by
+    simpa [v] using
+      hasExactLowNeighborhoodOnFinset_on_erase_defectSite_of_lowNeighborhoodError_eq_one
+        (G := G) (x := y) (T := T) (L := L) hLT herry
+  have hy' :
+      HasExactLowNeighborhoodOnFinset G y ((T.erase v).erase u) ((L.erase v).erase u) :=
+    hasExactLowNeighborhoodOnFinset_on_erase (G := G) (x := y) (z := u) hy
+  simpa [lowNeighborhoodDeletedDefectPairHostOnFinset, lowNeighborhoodDeletedDefectPairLowSetOnFinset,
+    u, v, erase_comm_finset] using hy'
+
+lemma hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectPairData
+    (G : SimpleGraph V) [DecidableRel G.Adj] {x y : V} {T L : Finset V}
+    (hLT : L ⊆ T)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) :
+    HasExactLowNeighborhoodOnFinset G x
+        (lowNeighborhoodDeletedDefectPairHostOnFinset G x y T L hLT herrx herry)
+        (lowNeighborhoodDeletedDefectPairLowSetOnFinset G x y T L hLT herrx herry) ∧
+      HasExactLowNeighborhoodOnFinset G y
+        (lowNeighborhoodDeletedDefectPairHostOnFinset G x y T L hLT herrx herry)
+        (lowNeighborhoodDeletedDefectPairLowSetOnFinset G x y T L hLT herrx herry) := by
+  exact ⟨
+    hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectPairData_left
+      (G := G) (x := x) (y := y) (T := T) (L := L) hLT herrx herry,
+    hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectPairData_right
+      (G := G) (x := x) (y := y) (T := T) (L := L) hLT herrx herry
+  ⟩
+
+/--
+Finite candidate set for a deleted defect site `u`: vertices of `P` that complete `T \ {u}`.
+-/
+noncomputable def lowNeighborhoodDeletedDefectCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u : V) : Finset V := by
+  classical
+  exact P.filter fun x => HasExactLowNeighborhoodOnFinset G x (T.erase u) (L.erase u)
+
+lemma mem_lowNeighborhoodDeletedDefectCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u : V) {x : V} :
+    x ∈ lowNeighborhoodDeletedDefectCandidateSetOnFinset G P T L u ↔
+      x ∈ P ∧ HasExactLowNeighborhoodOnFinset G x (T.erase u) (L.erase u) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectCandidateSetOnFinset
+  simp
+
+/--
+Finite candidate set for a deleted defect pair `{u,v}`: vertices of `P` that complete the
+common deleted host.
+-/
+noncomputable def lowNeighborhoodDeletedDefectPairCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v : V) : Finset V := by
+  classical
+  exact P.filter fun x => HasExactLowNeighborhoodOnFinset G x ((T.erase u).erase v) ((L.erase u).erase v)
+
+lemma mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v : V) {x : V} :
+    x ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ↔
+      x ∈ P ∧ HasExactLowNeighborhoodOnFinset G x ((T.erase u).erase v) ((L.erase u).erase v) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairCandidateSetOnFinset
+  simp
+
+/--
+Adjacency trace of a root `z` on a swap pair `{x,y}`.
+-/
+noncomputable def lowNeighborhoodDeletedDefectPairRootTraceOnFinset
+    (G : SimpleGraph V) (x y z : V) : Finset V := by
+  classical
+  exact ({x, y} : Finset V).filter fun w => w ∈ G.neighborFinset z
+
+lemma neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_rootTrace
+    (G : SimpleGraph V) [DecidableRel G.Adj] {P T L : Finset V} {u v x y z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      ((L.erase u).erase v) ∪ lowNeighborhoodDeletedDefectPairRootTraceOnFinset G x y z := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  have hExact :
+      HasExactLowNeighborhoodOnFinset G z ((T.erase u).erase v) ((L.erase u).erase v) :=
+    (mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset (G := G) (P := P) (T := T) (L := L)
+      u v (x := z)).1 hz |>.2
+  unfold HasExactLowNeighborhoodOnFinset at hExact
+  have hMemEq {w : V} :
+      w ∈ G.neighborFinset z ∩ ((T.erase u).erase v) ↔ w ∈ ((L.erase u).erase v) := by
+    simpa using congrArg (fun s : Finset V => w ∈ s) hExact
+  apply Finset.ext
+  intro w
+  constructor
+  · intro hw
+    rcases Finset.mem_inter.mp hw with ⟨hwN, hwBig⟩
+    rcases Finset.mem_insert.mp hwBig with rfl | hwBig
+    · exact Finset.mem_union.mpr <| Or.inr <| by
+        unfold lowNeighborhoodDeletedDefectPairRootTraceOnFinset
+        exact Finset.mem_filter.mpr ⟨by simp, hwN⟩
+    · rcases Finset.mem_insert.mp hwBig with rfl | hwHost
+      · exact Finset.mem_union.mpr <| Or.inr <| by
+          unfold lowNeighborhoodDeletedDefectPairRootTraceOnFinset
+          exact Finset.mem_filter.mpr ⟨by simp, hwN⟩
+      · have hwBase : w ∈ ((L.erase u).erase v) := by
+          exact hMemEq.mp (Finset.mem_inter.mpr ⟨hwN, hwHost⟩)
+        exact Finset.mem_union.mpr <| Or.inl hwBase
+  · intro hw
+    rcases Finset.mem_union.mp hw with hwBase | hwRoot
+    · have hwPair : w ∈ G.neighborFinset z ∩ ((T.erase u).erase v) := by
+        exact hMemEq.mpr hwBase
+      rcases Finset.mem_inter.mp hwPair with ⟨hwN, hwHost⟩
+      exact Finset.mem_inter.mpr ⟨hwN, by
+        exact Finset.mem_insert.mpr <| Or.inr <| Finset.mem_insert.mpr <| Or.inr hwHost⟩
+    · have hwPair : w ∈ ({x, y} : Finset V) := (Finset.mem_filter.mp hwRoot).1
+      have hwN : w ∈ G.neighborFinset z := (Finset.mem_filter.mp hwRoot).2
+      have hwBig : w ∈ insert x (insert y ((T.erase u).erase v)) := by
+        rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl <;> simp
+      exact Finset.mem_inter.mpr ⟨hwN, hwBig⟩
+
+lemma lowNeighborhoodDeletedDefectPairRootTraceOnFinset_self_left
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x y : V) :
+    lowNeighborhoodDeletedDefectPairRootTraceOnFinset G x y x =
+      if G.Adj x y then ({y} : Finset V) else ∅ := by
+  classical
+  by_cases hxy : G.Adj x y
+  · ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · exact False.elim (by simpa using hwAdj)
+      · simpa [hxy]
+    · intro hw
+      have hwY : w ∈ ({y} : Finset V) := by
+        simpa [hxy] using hw
+      have hw' : w = y := by simpa using hwY
+      subst hw'
+      exact Finset.mem_filter.mpr ⟨by simp, by simpa using hxy⟩
+  · ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · exact False.elim (by simpa using hwAdj)
+      · exact (hxy (by simpa using hwAdj)).elim
+    · intro hw
+      exact False.elim (by simpa [hxy] using hw)
+
+lemma lowNeighborhoodDeletedDefectPairRootTraceOnFinset_self_right
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x y : V) :
+    lowNeighborhoodDeletedDefectPairRootTraceOnFinset G x y y =
+      if G.Adj x y then ({x} : Finset V) else ∅ := by
+  classical
+  by_cases hxy : G.Adj x y
+  · have hyx : G.Adj y x := hxy.symm
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · simpa [hxy]
+      · exact False.elim (by simpa using hwAdj)
+    · intro hw
+      have hwX : w ∈ ({x} : Finset V) := by
+        simpa [hxy] using hw
+      have hw' : w = x := by simpa using hwX
+      subst hw'
+      exact Finset.mem_filter.mpr ⟨by simp, by simpa using hyx⟩
+  · have hyx : ¬ G.Adj y x := by
+      intro hyx
+      exact hxy hyx.symm
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · exact (hyx (by simpa using hwAdj)).elim
+      · exact False.elim (by simpa using hwAdj)
+    · intro hw
+      exact False.elim (by simpa [hxy] using hw)
+
+def lowNeighborhoodDeletedDefectPairLeftStatusBit
+    (G : SimpleGraph V) (x y z : V) : Prop :=
+  y ∈ lowNeighborhoodDeletedDefectPairRootTraceOnFinset G x y z
+
+def lowNeighborhoodDeletedDefectPairRightStatusBit
+    (G : SimpleGraph V) (x y z : V) : Prop :=
+  x ∈ lowNeighborhoodDeletedDefectPairRootTraceOnFinset G x y z
+
+lemma lowNeighborhoodDeletedDefectPairLeftStatusBit_iff_adj
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x y z : V) :
+    lowNeighborhoodDeletedDefectPairLeftStatusBit G x y z ↔ G.Adj z y := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairLeftStatusBit lowNeighborhoodDeletedDefectPairRootTraceOnFinset
+  simp
+
+lemma lowNeighborhoodDeletedDefectPairRightStatusBit_iff_adj
+    (G : SimpleGraph V) [DecidableRel G.Adj] (x y z : V) :
+    lowNeighborhoodDeletedDefectPairRightStatusBit G x y z ↔ G.Adj z x := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairRightStatusBit lowNeighborhoodDeletedDefectPairRootTraceOnFinset
+  simp
+
+noncomputable def lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) : Finset V := by
+  classical
+  exact
+    (lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v).filter
+      fun z => lowNeighborhoodDeletedDefectPairLeftStatusBit G x y z ↔ G.Adj x y
+
+noncomputable def lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) : Finset V := by
+  classical
+  exact
+    (lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v).filter
+      fun z => lowNeighborhoodDeletedDefectPairRightStatusBit G x y z ↔ G.Adj x y
+
+noncomputable def lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) : Finset V := by
+  classical
+  exact
+    (lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v).filter
+      fun z => lowNeighborhoodDeletedDefectPairLeftStatusBit G x y z ↔ ¬ G.Adj x y
+
+noncomputable def lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) : Finset V := by
+  classical
+  exact
+    (lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v).filter
+      fun z => lowNeighborhoodDeletedDefectPairRightStatusBit G x y z ↔ ¬ G.Adj x y
+
+lemma mem_lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) {z : V} :
+    z ∈ lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset G P T L u v x y ↔
+      z ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ∧
+        (lowNeighborhoodDeletedDefectPairLeftStatusBit G x y z ↔ G.Adj x y) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset
+  simp
+
+lemma mem_lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) {z : V} :
+    z ∈ lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset G P T L u v x y ↔
+      z ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ∧
+        (lowNeighborhoodDeletedDefectPairRightStatusBit G x y z ↔ G.Adj x y) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset
+  simp
+
+lemma mem_lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) {z : V} :
+    z ∈ lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset G P T L u v x y ↔
+      z ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ∧
+        (lowNeighborhoodDeletedDefectPairLeftStatusBit G x y z ↔ ¬ G.Adj x y) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset
+  simp
+
+lemma mem_lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) {z : V} :
+    z ∈ lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset G P T L u v x y ↔
+      z ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ∧
+        (lowNeighborhoodDeletedDefectPairRightStatusBit G x y z ↔ ¬ G.Adj x y) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset
+  simp
+
+noncomputable def lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) : Finset V := by
+  classical
+  exact
+    lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset G P T L u v x y ∩
+      lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset G P T L u v x y
+
+noncomputable def lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) : Finset V := by
+  classical
+  exact
+    lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset G P T L u v x y ∩
+      lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset G P T L u v x y
+
+noncomputable def lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) : Finset V := by
+  classical
+  exact
+    lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset G P T L u v x y ∩
+      lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset G P T L u v x y
+
+noncomputable def lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) : Finset V := by
+  classical
+  exact
+    lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset G P T L u v x y ∩
+      lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset G P T L u v x y
+
+lemma mem_lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) {z : V} :
+    z ∈ lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset G P T L u v x y ↔
+      z ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ∧
+        (lowNeighborhoodDeletedDefectPairLeftStatusBit G x y z ↔ G.Adj x y) ∧
+        (lowNeighborhoodDeletedDefectPairRightStatusBit G x y z ↔ G.Adj x y) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset
+  rw [Finset.mem_inter]
+  constructor
+  · rintro ⟨hzLeft, hzRight⟩
+    rcases
+      (mem_lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hzLeft with
+      ⟨hzCand, hzLeftBit⟩
+    rcases
+      (mem_lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hzRight with
+      ⟨_, hzRightBit⟩
+    exact ⟨hzCand, hzLeftBit, hzRightBit⟩
+  · rintro ⟨hzCand, hzLeftBit, hzRightBit⟩
+    exact ⟨
+      (mem_lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).2 ⟨hzCand, hzLeftBit⟩,
+      (mem_lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).2 ⟨hzCand, hzRightBit⟩
+    ⟩
+
+lemma mem_lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) {z : V} :
+    z ∈ lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+        G P T L u v x y ↔
+      z ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ∧
+        (lowNeighborhoodDeletedDefectPairLeftStatusBit G x y z ↔ G.Adj x y) ∧
+        (lowNeighborhoodDeletedDefectPairRightStatusBit G x y z ↔ ¬ G.Adj x y) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+  rw [Finset.mem_inter]
+  constructor
+  · rintro ⟨hzLeft, hzRight⟩
+    rcases
+      (mem_lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hzLeft with
+      ⟨hzCand, hzLeftBit⟩
+    rcases
+      (mem_lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hzRight with
+      ⟨_, hzRightBit⟩
+    exact ⟨hzCand, hzLeftBit, hzRightBit⟩
+  · rintro ⟨hzCand, hzLeftBit, hzRightBit⟩
+    exact ⟨
+      (mem_lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).2 ⟨hzCand, hzLeftBit⟩,
+      (mem_lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).2 ⟨hzCand, hzRightBit⟩
+    ⟩
+
+lemma mem_lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) {z : V} :
+    z ∈ lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+        G P T L u v x y ↔
+      z ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ∧
+        (lowNeighborhoodDeletedDefectPairLeftStatusBit G x y z ↔ ¬ G.Adj x y) ∧
+        (lowNeighborhoodDeletedDefectPairRightStatusBit G x y z ↔ G.Adj x y) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+  rw [Finset.mem_inter]
+  constructor
+  · rintro ⟨hzLeft, hzRight⟩
+    rcases
+      (mem_lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hzLeft with
+      ⟨hzCand, hzLeftBit⟩
+    rcases
+      (mem_lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hzRight with
+      ⟨_, hzRightBit⟩
+    exact ⟨hzCand, hzLeftBit, hzRightBit⟩
+  · rintro ⟨hzCand, hzLeftBit, hzRightBit⟩
+    exact ⟨
+      (mem_lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).2 ⟨hzCand, hzLeftBit⟩,
+      (mem_lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).2 ⟨hzCand, hzRightBit⟩
+    ⟩
+
+lemma mem_lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) {z : V} :
+    z ∈ lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset G P T L u v x y ↔
+      z ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ∧
+        (lowNeighborhoodDeletedDefectPairLeftStatusBit G x y z ↔ ¬ G.Adj x y) ∧
+        (lowNeighborhoodDeletedDefectPairRightStatusBit G x y z ↔ ¬ G.Adj x y) := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset
+  rw [Finset.mem_inter]
+  constructor
+  · rintro ⟨hzLeft, hzRight⟩
+    rcases
+      (mem_lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hzLeft with
+      ⟨hzCand, hzLeftBit⟩
+    rcases
+      (mem_lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hzRight with
+      ⟨_, hzRightBit⟩
+    exact ⟨hzCand, hzLeftBit, hzRightBit⟩
+  · rintro ⟨hzCand, hzLeftBit, hzRightBit⟩
+    exact ⟨
+      (mem_lowNeighborhoodDeletedDefectPairLeftFlippedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).2 ⟨hzCand, hzLeftBit⟩,
+      (mem_lowNeighborhoodDeletedDefectPairRightFlippedStatusCandidateSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).2 ⟨hzCand, hzRightBit⟩
+    ⟩
+
+inductive DeletedDefectPairChamberKind
+  | fixed
+  | leftFixedRightFlipped
+  | leftFlippedRightFixed
+  | flipped
+  deriving DecidableEq
+
+noncomputable def lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset
+    (kind : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) (P T L : Finset V) (u v x y : V) : Finset V := by
+  classical
+  exact
+    match kind with
+    | .fixed =>
+        lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset G P T L u v x y
+    | .leftFixedRightFlipped =>
+        lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+          G P T L u v x y
+    | .leftFlippedRightFixed =>
+        lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+          G P T L u v x y
+    | .flipped =>
+        lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset G P T L u v x y
+
+noncomputable def lowNeighborhoodDeletedDefectPairChamberTraceOnFinset
+    (kind : DeletedDefectPairChamberKind) (G : SimpleGraph V) (x y : V) : Finset V := by
+  classical
+  exact
+    match kind with
+    | .fixed => if G.Adj x y then ({x, y} : Finset V) else ∅
+    | .leftFixedRightFlipped => if G.Adj x y then ({y} : Finset V) else ({x} : Finset V)
+    | .leftFlippedRightFixed => if G.Adj x y then ({x} : Finset V) else ({y} : Finset V)
+    | .flipped => if G.Adj x y then ∅ else ({x, y} : Finset V)
+
+noncomputable def lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+    (kind₁ kind₂ : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) (P T L : Finset V) (u v : V)
+    (x₁ y₁ x₂ y₂ : V) : Finset V := by
+  classical
+  exact
+    lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset kind₁ G P T L u v x₁ y₁ ∩
+      lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset kind₂ G P T L u v x₂ y₂
+
+lemma mem_lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+    (kind₁ kind₂ : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) (P T L : Finset V) (u v : V)
+    (x₁ y₁ x₂ y₂ : V) {z : V} :
+    z ∈ lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+        kind₁ kind₂ G P T L u v x₁ y₁ x₂ y₂ ↔
+      z ∈ lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset kind₁ G P T L u v x₁ y₁ ∧
+        z ∈ lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset kind₂ G P T L u v x₂ y₂ := by
+  classical
+  unfold lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+  rw [Finset.mem_inter]
+
+/--
+One-defect strip inside a packet `P`: the vertices whose low-neighborhood error relative to `(T, L)`
+is exactly `1`.
+-/
+noncomputable def lowNeighborhoodOneDefectSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) : Finset V := by
+  classical
+  exact P.filter fun x => lowNeighborhoodError G x T L = 1
+
+lemma mem_lowNeighborhoodOneDefectSetOnFinset
+    (G : SimpleGraph V) (P T L : Finset V) {x : V} :
+    x ∈ lowNeighborhoodOneDefectSetOnFinset G P T L ↔
+      x ∈ P ∧ lowNeighborhoodError G x T L = 1 := by
+  classical
+  unfold lowNeighborhoodOneDefectSetOnFinset
+  simp
+
+noncomputable def lowNeighborhoodDefectSiteOfMem
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) {x : V}
+    (hx : x ∈ lowNeighborhoodOneDefectSetOnFinset G P T L) : ↑(T : Set V) := by
+  classical
+  exact
+    lowNeighborhoodDefectSite G x T L hLT
+      ((mem_lowNeighborhoodOneDefectSetOnFinset
+        (G := G) (P := P) (T := T) (L := L) (x := x)).1 hx).2
+
+/--
+Defect fiber `d⁻¹(u)` inside the one-defect strip over `P`.
+-/
+noncomputable def lowNeighborhoodDefectFiberOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (u : V) :
+    Finset ↑(lowNeighborhoodOneDefectSetOnFinset G P T L) := by
+  classical
+  exact
+    (lowNeighborhoodOneDefectSetOnFinset G P T L).attach.filter fun x =>
+      (lowNeighborhoodDefectSiteOfMem G P T L hLT x.2).1 = u
+
+lemma mem_lowNeighborhoodDefectFiberOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (u : V) {x : ↑(lowNeighborhoodOneDefectSetOnFinset G P T L)} :
+    x ∈ lowNeighborhoodDefectFiberOnFinset G P T L hLT u ↔
+      (lowNeighborhoodDefectSiteOfMem G P T L hLT x.2).1 = u := by
+  classical
+  unfold lowNeighborhoodDefectFiberOnFinset
+  simp
+
+lemma val_mem_lowNeighborhoodDeletedDefectCandidateSetOnFinset_of_mem_lowNeighborhoodDefectFiberOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (u : V) {x : ↑(lowNeighborhoodOneDefectSetOnFinset G P T L)}
+    (hx : x ∈ lowNeighborhoodDefectFiberOnFinset G P T L hLT u) :
+    x.1 ∈ lowNeighborhoodDeletedDefectCandidateSetOnFinset G P T L u := by
+  classical
+  have hxP : x.1 ∈ P :=
+    (mem_lowNeighborhoodOneDefectSetOnFinset (G := G) (P := P) (T := T) (L := L) (x := x.1)).1 x.2 |>.1
+  have herr :
+      lowNeighborhoodError G x.1 T L = 1 :=
+    (mem_lowNeighborhoodOneDefectSetOnFinset (G := G) (P := P) (T := T) (L := L) (x := x.1)).1 x.2 |>.2
+  have hsite :
+      (lowNeighborhoodDefectSite G x.1 T L hLT herr).1 = u := by
+    simpa using (mem_lowNeighborhoodDefectFiberOnFinset (G := G) (P := P) (T := T) (L := L)
+      hLT u (x := x)).1 hx
+  have hExact :
+      HasExactLowNeighborhoodOnFinset G x.1 (T.erase u) (L.erase u) := by
+    simpa [hsite] using
+      hasExactLowNeighborhoodOnFinset_on_erase_defectSite_of_lowNeighborhoodError_eq_one
+        (G := G) (x := x.1) (T := T) (L := L) hLT herr
+  exact (mem_lowNeighborhoodDeletedDefectCandidateSetOnFinset (G := G) (P := P) (T := T) (L := L)
+    u (x := x.1)).2 ⟨hxP, hExact⟩
+
+lemma val_mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset_of_mem_lowNeighborhoodDefectFiberOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (u v : V) {x : ↑(lowNeighborhoodOneDefectSetOnFinset G P T L)}
+    (hx : x ∈ lowNeighborhoodDefectFiberOnFinset G P T L hLT u) :
+    x.1 ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v := by
+  classical
+  have hxP : x.1 ∈ P :=
+    (mem_lowNeighborhoodOneDefectSetOnFinset (G := G) (P := P) (T := T) (L := L) (x := x.1)).1 x.2 |>.1
+  have hxSingle :
+      x.1 ∈ lowNeighborhoodDeletedDefectCandidateSetOnFinset G P T L u :=
+    val_mem_lowNeighborhoodDeletedDefectCandidateSetOnFinset_of_mem_lowNeighborhoodDefectFiberOnFinset
+      (G := G) (P := P) (T := T) (L := L) hLT u hx
+  have hExactSingle :
+      HasExactLowNeighborhoodOnFinset G x.1 (T.erase u) (L.erase u) :=
+    (mem_lowNeighborhoodDeletedDefectCandidateSetOnFinset (G := G) (P := P) (T := T) (L := L)
+      u (x := x.1)).1 hxSingle |>.2
+  have hExactPair :
+      HasExactLowNeighborhoodOnFinset G x.1 ((T.erase u).erase v) ((L.erase u).erase v) :=
+    hasExactLowNeighborhoodOnFinset_on_erase (G := G) (x := x.1) (z := v) hExactSingle
+  exact
+    (mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset (G := G) (P := P) (T := T) (L := L)
+      u v (x := x.1)).2 ⟨hxP, hExactPair⟩
+
+lemma val_mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset_of_mem_lowNeighborhoodDefectFibers
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (u v : V)
+    {x : ↑(lowNeighborhoodOneDefectSetOnFinset G P T L)}
+    {y : ↑(lowNeighborhoodOneDefectSetOnFinset G P T L)}
+    (hx : x ∈ lowNeighborhoodDefectFiberOnFinset G P T L hLT u)
+    (hy : y ∈ lowNeighborhoodDefectFiberOnFinset G P T L hLT v) :
+    x.1 ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v ∧
+      y.1 ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L u v := by
+  classical
+  refine ⟨
+    val_mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset_of_mem_lowNeighborhoodDefectFiberOnFinset
+      (G := G) (P := P) (T := T) (L := L) hLT u v hx,
+    ?_⟩
+  have hyP : y.1 ∈ P :=
+    (mem_lowNeighborhoodOneDefectSetOnFinset (G := G) (P := P) (T := T) (L := L) (x := y.1)).1 y.2 |>.1
+  have hySingle :
+      y.1 ∈ lowNeighborhoodDeletedDefectCandidateSetOnFinset G P T L v :=
+    val_mem_lowNeighborhoodDeletedDefectCandidateSetOnFinset_of_mem_lowNeighborhoodDefectFiberOnFinset
+      (G := G) (P := P) (T := T) (L := L) hLT v hy
+  have hExactSingle :
+      HasExactLowNeighborhoodOnFinset G y.1 (T.erase v) (L.erase v) :=
+    (mem_lowNeighborhoodDeletedDefectCandidateSetOnFinset (G := G) (P := P) (T := T) (L := L)
+      v (x := y.1)).1 hySingle |>.2
+  have hExactPair :
+      HasExactLowNeighborhoodOnFinset G y.1 ((T.erase v).erase u) ((L.erase v).erase u) :=
+    hasExactLowNeighborhoodOnFinset_on_erase (G := G) (x := y.1) (z := u) hExactSingle
+  have hExactPair' :
+      HasExactLowNeighborhoodOnFinset G y.1 ((T.erase u).erase v) ((L.erase u).erase v) := by
+    simpa [erase_comm_finset] using hExactPair
+  exact
+    (mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset (G := G) (P := P) (T := T) (L := L)
+      u v (x := y.1)).2 ⟨hyP, hExactPair'⟩
+
+lemma mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset_left_of_lowNeighborhoodError_eq_one
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) {x y : V}
+    (hxP : x ∈ P)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) :
+    x ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L
+      (lowNeighborhoodDefectSite G x T L hLT herrx).1
+      (lowNeighborhoodDefectSite G y T L hLT herry).1 := by
+  classical
+  have hExact :
+      HasExactLowNeighborhoodOnFinset G x
+        (lowNeighborhoodDeletedDefectPairHostOnFinset G x y T L hLT herrx herry)
+        (lowNeighborhoodDeletedDefectPairLowSetOnFinset G x y T L hLT herrx herry) :=
+    (hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectPairData
+      (G := G) (x := x) (y := y) (T := T) (L := L) hLT herrx herry).1
+  exact
+    (mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset (G := G) (P := P) (T := T) (L := L)
+      (lowNeighborhoodDefectSite G x T L hLT herrx).1
+      (lowNeighborhoodDefectSite G y T L hLT herry).1
+      (x := x)).2 ⟨by simpa using hxP, by simpa [lowNeighborhoodDeletedDefectPairHostOnFinset,
+        lowNeighborhoodDeletedDefectPairLowSetOnFinset] using hExact⟩
+
+lemma mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset_right_of_lowNeighborhoodError_eq_one
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) {x y : V}
+    (hyP : y ∈ P)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) :
+    y ∈ lowNeighborhoodDeletedDefectPairCandidateSetOnFinset G P T L
+      (lowNeighborhoodDefectSite G x T L hLT herrx).1
+      (lowNeighborhoodDefectSite G y T L hLT herry).1 := by
+  classical
+  have hExact :
+      HasExactLowNeighborhoodOnFinset G y
+        (lowNeighborhoodDeletedDefectPairHostOnFinset G x y T L hLT herrx herry)
+        (lowNeighborhoodDeletedDefectPairLowSetOnFinset G x y T L hLT herrx herry) :=
+    (hasExactLowNeighborhoodOnFinset_on_lowNeighborhoodDeletedDefectPairData
+      (G := G) (x := x) (y := y) (T := T) (L := L) hLT herrx herry).2
+  exact
+    (mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset (G := G) (P := P) (T := T) (L := L)
+      (lowNeighborhoodDefectSite G x T L hLT herrx).1
+      (lowNeighborhoodDefectSite G y T L hLT herry).1
+      (x := y)).2 ⟨by simpa using hyP, by simpa [lowNeighborhoodDeletedDefectPairHostOnFinset,
+        lowNeighborhoodDeletedDefectPairLowSetOnFinset] using hExact⟩
+
+lemma mem_lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset_left_of_lowNeighborhoodError_eq_one
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) {x y : V}
+    (hxP : x ∈ P)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) :
+    x ∈ lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset G P T L
+      (lowNeighborhoodDefectSite G x T L hLT herrx).1
+      (lowNeighborhoodDefectSite G y T L hLT herry).1
+      x y := by
+  classical
+  have hxCand :=
+    mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset_left_of_lowNeighborhoodError_eq_one
+      (G := G) (P := P) (T := T) (L := L) hLT hxP herrx herry
+  exact
+    (mem_lowNeighborhoodDeletedDefectPairLeftFixedStatusCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L)
+      (lowNeighborhoodDefectSite G x T L hLT herrx).1
+      (lowNeighborhoodDefectSite G y T L hLT herry).1
+      x y (z := x)).2
+      ⟨hxCand, by simpa [lowNeighborhoodDeletedDefectPairLeftStatusBit_iff_adj]⟩
+
+lemma mem_lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset_right_of_lowNeighborhoodError_eq_one
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) {x y : V}
+    (hyP : y ∈ P)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) :
+    y ∈ lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset G P T L
+      (lowNeighborhoodDefectSite G x T L hLT herrx).1
+      (lowNeighborhoodDefectSite G y T L hLT herry).1
+      x y := by
+  classical
+  have hyCand :=
+    mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset_right_of_lowNeighborhoodError_eq_one
+      (G := G) (P := P) (T := T) (L := L) hLT hyP herrx herry
+  have hstatus : lowNeighborhoodDeletedDefectPairRightStatusBit G x y y ↔ G.Adj x y := by
+    rw [lowNeighborhoodDeletedDefectPairRightStatusBit_iff_adj]
+    constructor <;> intro h <;> exact h.symm
+  exact
+    (mem_lowNeighborhoodDeletedDefectPairRightFixedStatusCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L)
+      (lowNeighborhoodDefectSite G x T L hLT herrx).1
+      (lowNeighborhoodDefectSite G y T L hLT herry).1
+      x y (z := y)).2
+      ⟨hyCand, hstatus⟩
+
+lemma neighborFinset_inter_insert_insert_lowNeighborhoodDeletedDefectPairHostOnFinset_eq_pairLow_union_if_adj_left
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) {x y : V}
+    (hxP : x ∈ P)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) :
+    G.neighborFinset x ∩
+        insert x
+          (insert y (lowNeighborhoodDeletedDefectPairHostOnFinset G x y T L hLT herrx herry)) =
+      lowNeighborhoodDeletedDefectPairLowSetOnFinset G x y T L hLT herrx herry ∪
+        (if G.Adj x y then ({y} : Finset V) else ∅) := by
+  classical
+  have hxCand :=
+    mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset_left_of_lowNeighborhoodError_eq_one
+      (G := G) (P := P) (T := T) (L := L) hLT hxP herrx herry
+  have h :=
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_rootTrace
+      (G := G) (P := P) (T := T) (L := L)
+      (u := (lowNeighborhoodDefectSite G x T L hLT herrx).1)
+      (v := (lowNeighborhoodDefectSite G y T L hLT herry).1)
+      (x := x) (y := y) (z := x) hxCand
+  simpa [lowNeighborhoodDeletedDefectPairHostOnFinset, lowNeighborhoodDeletedDefectPairLowSetOnFinset,
+    lowNeighborhoodDeletedDefectPairRootTraceOnFinset_self_left] using h
+
+lemma neighborFinset_inter_insert_insert_lowNeighborhoodDeletedDefectPairHostOnFinset_eq_pairLow_union_if_adj_right
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) {x y : V}
+    (hyP : y ∈ P)
+    (herrx : lowNeighborhoodError G x T L = 1)
+    (herry : lowNeighborhoodError G y T L = 1) :
+    G.neighborFinset y ∩
+        insert x
+          (insert y (lowNeighborhoodDeletedDefectPairHostOnFinset G x y T L hLT herrx herry)) =
+      lowNeighborhoodDeletedDefectPairLowSetOnFinset G x y T L hLT herrx herry ∪
+        (if G.Adj x y then ({x} : Finset V) else ∅) := by
+  classical
+  have hyCand :=
+    mem_lowNeighborhoodDeletedDefectPairCandidateSetOnFinset_right_of_lowNeighborhoodError_eq_one
+      (G := G) (P := P) (T := T) (L := L) hLT hyP herrx herry
+  have h :=
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_rootTrace
+      (G := G) (P := P) (T := T) (L := L)
+      (u := (lowNeighborhoodDefectSite G x T L hLT herrx).1)
+      (v := (lowNeighborhoodDefectSite G y T L hLT herry).1)
+      (x := x) (y := y) (z := y) hyCand
+  simpa [lowNeighborhoodDeletedDefectPairHostOnFinset, lowNeighborhoodDeletedDefectPairLowSetOnFinset,
+    lowNeighborhoodDeletedDefectPairRootTraceOnFinset_self_right] using h
+
+lemma lowNeighborhoodDeletedDefectPairRootTraceOnFinset_fixedStatusChamber
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    lowNeighborhoodDeletedDefectPairRootTraceOnFinset G x y z =
+      if G.Adj x y then ({x, y} : Finset V) else ∅ := by
+  classical
+  rcases
+    (mem_lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hz with
+    ⟨_, hzLeft, hzRight⟩
+  rw [lowNeighborhoodDeletedDefectPairLeftStatusBit_iff_adj] at hzLeft
+  rw [lowNeighborhoodDeletedDefectPairRightStatusBit_iff_adj] at hzRight
+  by_cases hxy : G.Adj x y
+  · have hzx : G.Adj z x := hzRight.mpr hxy
+    have hzy : G.Adj z y := hzLeft.mpr hxy
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, _⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl <;> simp [hxy]
+    · intro hw
+      have hwXY : w = x ∨ w = y := by simpa [hxy] using hw
+      rcases hwXY with rfl | rfl
+      · exact Finset.mem_filter.mpr ⟨by simp, by simpa using hzx⟩
+      · exact Finset.mem_filter.mpr ⟨by simp, by simpa using hzy⟩
+  · have hzx : ¬ G.Adj z x := by
+      intro hzx
+      exact hxy (hzRight.mp hzx)
+    have hzy : ¬ G.Adj z y := by
+      intro hzy
+      exact hxy (hzLeft.mp hzy)
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · exact (hzx (by simpa using hwAdj)).elim
+      · exact (hzy (by simpa using hwAdj)).elim
+    · intro hw
+      exact False.elim (by simpa [hxy] using hw)
+
+lemma lowNeighborhoodDeletedDefectPairRootTraceOnFinset_leftFixedRightFlippedStatusChamber
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    lowNeighborhoodDeletedDefectPairRootTraceOnFinset G x y z =
+      if G.Adj x y then ({y} : Finset V) else ({x} : Finset V) := by
+  classical
+  rcases
+    (mem_lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hz with
+    ⟨_, hzLeft, hzRight⟩
+  rw [lowNeighborhoodDeletedDefectPairLeftStatusBit_iff_adj] at hzLeft
+  rw [lowNeighborhoodDeletedDefectPairRightStatusBit_iff_adj] at hzRight
+  by_cases hxy : G.Adj x y
+  · have hzy : G.Adj z y := hzLeft.mpr hxy
+    have hzx : ¬ G.Adj z x := by
+      intro hzx
+      exact (hzRight.mp hzx) hxy
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · exact (hzx (by simpa using hwAdj)).elim
+      · simpa [hxy]
+    · intro hw
+      have hwY : w ∈ ({y} : Finset V) := by simpa [hxy] using hw
+      have hw' : w = y := by simpa using hwY
+      subst hw'
+      exact Finset.mem_filter.mpr ⟨by simp, by simpa using hzy⟩
+  · have hzy : ¬ G.Adj z y := by
+      intro hzy
+      exact hxy (hzLeft.mp hzy)
+    have hzx : G.Adj z x := hzRight.mpr hxy
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · simpa [hxy]
+      · exact (hzy (by simpa using hwAdj)).elim
+    · intro hw
+      have hwX : w ∈ ({x} : Finset V) := by simpa [hxy] using hw
+      have hw' : w = x := by simpa using hwX
+      subst hw'
+      exact Finset.mem_filter.mpr ⟨by simp, by simpa using hzx⟩
+
+lemma lowNeighborhoodDeletedDefectPairRootTraceOnFinset_leftFlippedRightFixedStatusChamber
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    lowNeighborhoodDeletedDefectPairRootTraceOnFinset G x y z =
+      if G.Adj x y then ({x} : Finset V) else ({y} : Finset V) := by
+  classical
+  rcases
+    (mem_lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hz with
+    ⟨_, hzLeft, hzRight⟩
+  rw [lowNeighborhoodDeletedDefectPairLeftStatusBit_iff_adj] at hzLeft
+  rw [lowNeighborhoodDeletedDefectPairRightStatusBit_iff_adj] at hzRight
+  by_cases hxy : G.Adj x y
+  · have hzy : ¬ G.Adj z y := by
+      intro hzy
+      exact (hzLeft.mp hzy) hxy
+    have hzx : G.Adj z x := hzRight.mpr hxy
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · simpa [hxy]
+      · exact (hzy (by simpa using hwAdj)).elim
+    · intro hw
+      have hwX : w ∈ ({x} : Finset V) := by simpa [hxy] using hw
+      have hw' : w = x := by simpa using hwX
+      subst hw'
+      exact Finset.mem_filter.mpr ⟨by simp, by simpa using hzx⟩
+  · have hzy : G.Adj z y := hzLeft.mpr hxy
+    have hzx : ¬ G.Adj z x := by
+      intro hzx
+      exact hxy (hzRight.mp hzx)
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · exact (hzx (by simpa using hwAdj)).elim
+      · simpa [hxy]
+    · intro hw
+      have hwY : w ∈ ({y} : Finset V) := by simpa [hxy] using hw
+      have hw' : w = y := by simpa using hwY
+      subst hw'
+      exact Finset.mem_filter.mpr ⟨by simp, by simpa using hzy⟩
+
+lemma lowNeighborhoodDeletedDefectPairRootTraceOnFinset_flippedStatusChamber
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    lowNeighborhoodDeletedDefectPairRootTraceOnFinset G x y z =
+      if G.Adj x y then ∅ else ({x, y} : Finset V) := by
+  classical
+  rcases
+    (mem_lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hz with
+    ⟨_, hzLeft, hzRight⟩
+  rw [lowNeighborhoodDeletedDefectPairLeftStatusBit_iff_adj] at hzLeft
+  rw [lowNeighborhoodDeletedDefectPairRightStatusBit_iff_adj] at hzRight
+  by_cases hxy : G.Adj x y
+  · have hzx : ¬ G.Adj z x := by
+      intro hzx
+      exact (hzRight.mp hzx) hxy
+    have hzy : ¬ G.Adj z y := by
+      intro hzy
+      exact (hzLeft.mp hzy) hxy
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, hwAdj⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl
+      · exact (hzx (by simpa using hwAdj)).elim
+      · exact (hzy (by simpa using hwAdj)).elim
+    · intro hw
+      exact False.elim (by simpa [hxy] using hw)
+  · have hzx : G.Adj z x := hzRight.mpr hxy
+    have hzy : G.Adj z y := hzLeft.mpr hxy
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwPair, _⟩
+      rcases (by simpa using hwPair : w = x ∨ w = y) with rfl | rfl <;> simp [hxy]
+    · intro hw
+      have hwXY : w = x ∨ w = y := by simpa [hxy] using hw
+      rcases hwXY with rfl | rfl
+      · exact Finset.mem_filter.mpr ⟨by simp, by simpa using hzx⟩
+      · exact Finset.mem_filter.mpr ⟨by simp, by simpa using hzy⟩
+
+lemma neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_fixedStatusChamberTrace
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      ((L.erase u).erase v) ∪ if G.Adj x y then ({x, y} : Finset V) else ∅ := by
+  have hzCand :=
+    (mem_lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hz |>.1
+  have h :=
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_rootTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y)
+      (z := z) hzCand
+  simpa [lowNeighborhoodDeletedDefectPairRootTraceOnFinset_fixedStatusChamber
+    (G := G) (P := P) (T := T) (L := L) u v x y hz] using h
+
+lemma
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_leftFixedRightFlippedStatusChamberTrace
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      ((L.erase u).erase v) ∪ if G.Adj x y then ({y} : Finset V) else ({x} : Finset V) := by
+  have hzCand :=
+    (mem_lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hz |>.1
+  have h :=
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_rootTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y)
+      (z := z) hzCand
+  simpa [lowNeighborhoodDeletedDefectPairRootTraceOnFinset_leftFixedRightFlippedStatusChamber
+    (G := G) (P := P) (T := T) (L := L) u v x y hz] using h
+
+lemma
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_leftFlippedRightFixedStatusChamberTrace
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      ((L.erase u).erase v) ∪ if G.Adj x y then ({x} : Finset V) else ({y} : Finset V) := by
+  have hzCand :=
+    (mem_lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hz |>.1
+  have h :=
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_rootTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y)
+      (z := z) hzCand
+  simpa [lowNeighborhoodDeletedDefectPairRootTraceOnFinset_leftFlippedRightFixedStatusChamber
+    (G := G) (P := P) (T := T) (L := L) u v x y hz] using h
+
+lemma neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_flippedStatusChamberTrace
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      ((L.erase u).erase v) ∪ if G.Adj x y then ∅ else ({x, y} : Finset V) := by
+  have hzCand :=
+    (mem_lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset
+      (G := G) (P := P) (T := T) (L := L) u v x y (z := z)).1 hz |>.1
+  have h :=
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_rootTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y)
+      (z := z) hzCand
+  simpa [lowNeighborhoodDeletedDefectPairRootTraceOnFinset_flippedStatusChamber
+    (G := G) (P := P) (T := T) (L := L) u v x y hz] using h
+
+lemma neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_fixedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z z' : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset
+      G P T L u v x y)
+    (hz' : z' ∈ lowNeighborhoodDeletedDefectPairFixedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      G.neighborFinset z' ∩ insert x (insert y ((T.erase u).erase v)) := by
+  rw [neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_fixedStatusChamberTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz,
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_fixedStatusChamberTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz']
+
+lemma
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_leftFixedRightFlippedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z z' : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+      G P T L u v x y)
+    (hz' : z' ∈ lowNeighborhoodDeletedDefectPairLeftFixedRightFlippedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      G.neighborFinset z' ∩ insert x (insert y ((T.erase u).erase v)) := by
+  rw [neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_leftFixedRightFlippedStatusChamberTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz,
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_leftFixedRightFlippedStatusChamberTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz']
+
+lemma
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_leftFlippedRightFixedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z z' : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+      G P T L u v x y)
+    (hz' : z' ∈ lowNeighborhoodDeletedDefectPairLeftFlippedRightFixedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      G.neighborFinset z' ∩ insert x (insert y ((T.erase u).erase v)) := by
+  rw [neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_leftFlippedRightFixedStatusChamberTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz,
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_leftFlippedRightFixedStatusChamberTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz']
+
+lemma neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_flippedStatusChamberCandidateSetOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z z' : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset
+      G P T L u v x y)
+    (hz' : z' ∈ lowNeighborhoodDeletedDefectPairFlippedStatusChamberCandidateSetOnFinset
+      G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      G.neighborFinset z' ∩ insert x (insert y ((T.erase u).erase v)) := by
+  rw [neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_flippedStatusChamberTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz,
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_flippedStatusChamberTrace
+      (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz']
+
+lemma neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_chamberTrace
+    (kind : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset kind G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      ((L.erase u).erase v) ∪ lowNeighborhoodDeletedDefectPairChamberTraceOnFinset kind G x y := by
+  classical
+  cases kind with
+  | fixed =>
+      cases
+        Subsingleton.elim (‹DecidableRel G.Adj›)
+          (fun a b => Classical.propDecidable (G.Adj a b))
+      simpa [lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset,
+        lowNeighborhoodDeletedDefectPairChamberTraceOnFinset] using
+        neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_fixedStatusChamberTrace
+          (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz
+  | leftFixedRightFlipped =>
+      cases
+        Subsingleton.elim (‹DecidableRel G.Adj›)
+          (fun a b => Classical.propDecidable (G.Adj a b))
+      simpa [lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset,
+        lowNeighborhoodDeletedDefectPairChamberTraceOnFinset] using
+        neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_leftFixedRightFlippedStatusChamberTrace
+          (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz
+  | leftFlippedRightFixed =>
+      cases
+        Subsingleton.elim (‹DecidableRel G.Adj›)
+          (fun a b => Classical.propDecidable (G.Adj a b))
+      simpa [lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset,
+        lowNeighborhoodDeletedDefectPairChamberTraceOnFinset] using
+        neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_leftFlippedRightFixedStatusChamberTrace
+          (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz
+  | flipped =>
+      cases
+        Subsingleton.elim (‹DecidableRel G.Adj›)
+          (fun a b => Classical.propDecidable (G.Adj a b))
+      simpa [lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset,
+        lowNeighborhoodDeletedDefectPairChamberTraceOnFinset] using
+        neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_flippedStatusChamberTrace
+          (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz
+
+lemma neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_chamberCandidateSetOnFinset
+    (kind : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v x y : V) {z z' : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset kind G P T L u v x y)
+    (hz' : z' ∈ lowNeighborhoodDeletedDefectPairChamberCandidateSetOnFinset kind G P T L u v x y) :
+    G.neighborFinset z ∩ insert x (insert y ((T.erase u).erase v)) =
+      G.neighborFinset z' ∩ insert x (insert y ((T.erase u).erase v)) := by
+  rw [neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_chamberTrace
+      (kind := kind) (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz,
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_chamberTrace
+      (kind := kind) (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x) (y := y) hz']
+
+lemma neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_chamberCylinderCandidateSetOnFinset_left
+    (kind₁ kind₂ : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v : V) (x₁ y₁ x₂ y₂ : V) {z z' : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ G P T L u v x₁ y₁ x₂ y₂)
+    (hz' : z' ∈ lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ G P T L u v x₁ y₁ x₂ y₂) :
+    G.neighborFinset z ∩ insert x₁ (insert y₁ ((T.erase u).erase v)) =
+      G.neighborFinset z' ∩ insert x₁ (insert y₁ ((T.erase u).erase v)) := by
+  have hz₁ :=
+    (mem_lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ (G := G) (P := P) (T := T) (L := L) u v x₁ y₁ x₂ y₂ (z := z)).1 hz |>.1
+  have hz₁' :=
+    (mem_lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ (G := G) (P := P) (T := T) (L := L) u v x₁ y₁ x₂ y₂ (z := z')).1 hz' |>.1
+  exact
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_chamberCandidateSetOnFinset
+      (kind := kind₁) (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x₁) (y := y₁)
+      hz₁ hz₁'
+
+lemma neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_chamberCylinderCandidateSetOnFinset_right
+    (kind₁ kind₂ : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v : V) (x₁ y₁ x₂ y₂ : V) {z z' : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ G P T L u v x₁ y₁ x₂ y₂)
+    (hz' : z' ∈ lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ G P T L u v x₁ y₁ x₂ y₂) :
+    G.neighborFinset z ∩ insert x₂ (insert y₂ ((T.erase u).erase v)) =
+      G.neighborFinset z' ∩ insert x₂ (insert y₂ ((T.erase u).erase v)) := by
+  have hz₂ :=
+    (mem_lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ (G := G) (P := P) (T := T) (L := L) u v x₁ y₁ x₂ y₂ (z := z)).1 hz |>.2
+  have hz₂' :=
+    (mem_lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ (G := G) (P := P) (T := T) (L := L) u v x₁ y₁ x₂ y₂ (z := z')).1 hz' |>.2
+  exact
+    neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_chamberCandidateSetOnFinset
+      (kind := kind₂) (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) (x := x₂) (y := y₂)
+      hz₂ hz₂'
+
+/--
+The repaired packet-state on a common edge, read through the two incident repaired pair hosts.
+-/
+noncomputable def lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (T L : Finset V)
+    (u v x₁ y₁ x₂ y₂ z : V) : Finset V × Finset V := by
+  exact
+    ( G.neighborFinset z ∩ insert x₁ (insert y₁ ((T.erase u).erase v)),
+      G.neighborFinset z ∩ insert x₂ (insert y₂ ((T.erase u).erase v)) )
+
+/--
+Packet-state profile forced by a fixed pair-chamber cylinder.
+-/
+noncomputable def lowNeighborhoodDeletedDefectPairChamberCylinderPacketStateProfileOnFinset
+    (kind₁ kind₂ : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) [DecidableRel G.Adj] (L : Finset V)
+    (u v x₁ y₁ x₂ y₂ : V) : Finset V × Finset V := by
+  classical
+  exact
+    ( ((L.erase u).erase v) ∪ lowNeighborhoodDeletedDefectPairChamberTraceOnFinset kind₁ G x₁ y₁,
+      ((L.erase u).erase v) ∪ lowNeighborhoodDeletedDefectPairChamberTraceOnFinset kind₂ G x₂ y₂ )
+
+lemma
+    lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset_eq_profile_of_mem_chamberCylinderCandidateSetOnFinset
+    (kind₁ kind₂ : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v : V) (x₁ y₁ x₂ y₂ : V) {z : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ G P T L u v x₁ y₁ x₂ y₂) :
+    lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset
+        G T L u v x₁ y₁ x₂ y₂ z =
+      lowNeighborhoodDeletedDefectPairChamberCylinderPacketStateProfileOnFinset
+        kind₁ kind₂ G L u v x₁ y₁ x₂ y₂ := by
+  apply Prod.ext
+  · simpa [lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset,
+      lowNeighborhoodDeletedDefectPairChamberCylinderPacketStateProfileOnFinset] using
+      neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_chamberTrace
+        (kind := kind₁) (G := G) (P := P) (T := T) (L := L) (u := u) (v := v)
+        (x := x₁) (y := y₁)
+        ((mem_lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+          kind₁ kind₂ (G := G) (P := P) (T := T) (L := L) u v x₁ y₁ x₂ y₂ (z := z)).1 hz).1
+  · simpa [lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset,
+      lowNeighborhoodDeletedDefectPairChamberCylinderPacketStateProfileOnFinset] using
+      neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_deletedDefectPairLowSet_union_chamberTrace
+        (kind := kind₂) (G := G) (P := P) (T := T) (L := L) (u := u) (v := v)
+        (x := x₂) (y := y₂)
+        ((mem_lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+          kind₁ kind₂ (G := G) (P := P) (T := T) (L := L) u v x₁ y₁ x₂ y₂ (z := z)).1 hz).2
+
+lemma lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset_eq_of_mem_chamberCylinderCandidateSetOnFinset
+    (kind₁ kind₂ : DeletedDefectPairChamberKind)
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (u v : V) (x₁ y₁ x₂ y₂ : V) {z z' : V}
+    (hz : z ∈ lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ G P T L u v x₁ y₁ x₂ y₂)
+    (hz' : z' ∈ lowNeighborhoodDeletedDefectPairChamberCylinderCandidateSetOnFinset
+      kind₁ kind₂ G P T L u v x₁ y₁ x₂ y₂) :
+    lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset
+        G T L u v x₁ y₁ x₂ y₂ z =
+      lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset
+        G T L u v x₁ y₁ x₂ y₂ z' := by
+  apply Prod.ext
+  · simpa [lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset] using
+      neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_chamberCylinderCandidateSetOnFinset_left
+        kind₁ kind₂ (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) x₁ y₁ x₂ y₂ hz hz'
+  · simpa [lowNeighborhoodDeletedDefectPairCommonEdgePacketStateOnFinset] using
+      neighborFinset_inter_insert_insert_deletedDefectPairHost_eq_of_mem_chamberCylinderCandidateSetOnFinset_right
+        kind₁ kind₂ (G := G) (P := P) (T := T) (L := L) (u := u) (v := v) x₁ y₁ x₂ y₂ hz hz'
+
+/--
+Multiplicity of a defect site `u ∈ T` inside the one-defect strip over `P`.
+-/
+noncomputable def lowNeighborhoodDefectMultiplicityOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (u : V) : ℕ := by
+  classical
+  exact
+    ((lowNeighborhoodOneDefectSetOnFinset G P T L).attach.filter fun x =>
+      (lowNeighborhoodDefectSiteOfMem G P T L hLT x.2).1 = u).card
+
+lemma lowNeighborhoodDefectMultiplicityOnFinset_eq_card_lowNeighborhoodDefectFiberOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (u : V) :
+    lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u =
+      (lowNeighborhoodDefectFiberOnFinset G P T L hLT u).card := by
+  unfold lowNeighborhoodDefectMultiplicityOnFinset lowNeighborhoodDefectFiberOnFinset
+  rfl
+
+/--
+Number of one-defect vertices in `P` whose chosen defect site lies in `Y ⊆ T`.
+-/
+noncomputable def lowNeighborhoodDefectCountOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (Y : Finset V) : ℕ := by
+  classical
+  exact
+    ((lowNeighborhoodOneDefectSetOnFinset G P T L).attach.filter fun x =>
+      (lowNeighborhoodDefectSiteOfMem G P T L hLT x.2).1 ∈ Y).card
+
+lemma lowNeighborhoodDefectCountOnFinset_eq_sum_lowNeighborhoodDefectMultiplicityOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (Y : Finset V) :
+    lowNeighborhoodDefectCountOnFinset G P T L hLT Y =
+      Y.sum (fun u => lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u) := by
+  classical
+  unfold lowNeighborhoodDefectCountOnFinset lowNeighborhoodDefectMultiplicityOnFinset
+  simp_rw [Finset.card_eq_sum_ones, Finset.sum_filter]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl ?_
+  intro x hx
+  simp
+
+lemma lowNeighborhoodDefectCountOnFinset_le_capacity_of_forall_lowNeighborhoodDefectMultiplicityOnFinset_le
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (Y : Finset V) (q : ℕ)
+    (hmu : ∀ u ∈ Y, lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u ≤ q - 1) :
+    lowNeighborhoodDefectCountOnFinset G P T L hLT Y ≤ (q - 1) * Y.card := by
+  rw [lowNeighborhoodDefectCountOnFinset_eq_sum_lowNeighborhoodDefectMultiplicityOnFinset]
+  calc
+    Y.sum (fun u => lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u) ≤
+        Y.sum (fun _ => q - 1) := by
+      exact Finset.sum_le_sum fun u hu => hmu u hu
+    _ = (q - 1) * Y.card := by
+      simp [Nat.mul_comm]
+
+lemma lowNeighborhoodDefectCountOnFinset_le_capacity_iff_forall_lowNeighborhoodDefectMultiplicityOnFinset_le
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L w : Finset V)
+    (hLT : L ⊆ T) (q : ℕ) :
+    (∀ Y, Y ⊆ w →
+      lowNeighborhoodDefectCountOnFinset G P T L hLT Y ≤ (q - 1) * Y.card) ↔
+      ∀ u ∈ w, lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u ≤ q - 1 := by
+  constructor
+  · intro hY u hu
+    have hsingle :
+        lowNeighborhoodDefectCountOnFinset G P T L hLT ({u} : Finset V) ≤
+          (q - 1) * ({u} : Finset V).card := by
+      exact hY {u} (by
+        intro v hv
+        have hv' : v = u := by simpa using hv
+        simpa [hv'] using hu)
+    rw [lowNeighborhoodDefectCountOnFinset_eq_sum_lowNeighborhoodDefectMultiplicityOnFinset] at hsingle
+    simpa [Nat.mul_comm] using hsingle
+  · intro hmu Y hY
+    exact
+      lowNeighborhoodDefectCountOnFinset_le_capacity_of_forall_lowNeighborhoodDefectMultiplicityOnFinset_le
+        (G := G) (P := P) (T := T) (L := L) (hLT := hLT) (Y := Y) (q := q)
+        (fun u hu => hmu u (hY hu))
+
+lemma lowNeighborhoodDefectCountOnFinset_eq_card_lowNeighborhoodOneDefectSetOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L w : Finset V)
+    (hLT : L ⊆ T)
+    (hsupport :
+      ∀ x (hx : x ∈ lowNeighborhoodOneDefectSetOnFinset G P T L),
+        (lowNeighborhoodDefectSiteOfMem G P T L hLT hx).1 ∈ w) :
+    lowNeighborhoodDefectCountOnFinset G P T L hLT w =
+      (lowNeighborhoodOneDefectSetOnFinset G P T L).card := by
+  classical
+  set O₁ := lowNeighborhoodOneDefectSetOnFinset G P T L
+  unfold lowNeighborhoodDefectCountOnFinset
+  have hfilterEq :
+      (O₁.attach.filter fun x => (lowNeighborhoodDefectSiteOfMem G P T L hLT x.2).1 ∈ w) =
+        O₁.attach := by
+    apply Finset.ext
+    intro x
+    constructor
+    · intro hx
+      exact (Finset.mem_filter.mp hx).1
+    · intro hx
+      exact Finset.mem_filter.mpr ⟨hx, hsupport x.1 (by simpa [O₁] using x.2)⟩
+  rw [hfilterEq]
+  simp [O₁]
+
+lemma exists_lowNeighborhoodDefectMultiplicityOnFinset_ge_q_of_card_lowNeighborhoodOneDefectSetOnFinset_gt_capacity
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L w : Finset V)
+    (hLT : L ⊆ T) {q : ℕ} (hq : 0 < q)
+    (hsupport :
+      ∀ x (hx : x ∈ lowNeighborhoodOneDefectSetOnFinset G P T L),
+        (lowNeighborhoodDefectSiteOfMem G P T L hLT hx).1 ∈ w)
+    (hover :
+      (lowNeighborhoodOneDefectSetOnFinset G P T L).card > (q - 1) * w.card) :
+    ∃ u ∈ w, q ≤ lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u := by
+  classical
+  by_contra hnone
+  have hmu : ∀ u ∈ w, lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u ≤ q - 1 := by
+    intro u hu
+    have hnot : ¬ q ≤ lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u := by
+      intro hqu
+      exact hnone ⟨u, hu, hqu⟩
+    exact Nat.le_pred_of_lt (Nat.lt_of_not_ge hnot)
+  have hcap :
+      lowNeighborhoodDefectCountOnFinset G P T L hLT w ≤ (q - 1) * w.card := by
+    exact
+      lowNeighborhoodDefectCountOnFinset_le_capacity_of_forall_lowNeighborhoodDefectMultiplicityOnFinset_le
+        (G := G) (P := P) (T := T) (L := L) (hLT := hLT) (Y := w) (q := q) hmu
+  rw [lowNeighborhoodDefectCountOnFinset_eq_card_lowNeighborhoodOneDefectSetOnFinset
+      (G := G) (P := P) (T := T) (L := L) (w := w) hLT hsupport] at hcap
+  exact (Nat.not_le_of_lt hover) hcap
+
+/--
+Hall quantity on the one-defect strip over `P`, measured against anchor capacity `q - 1` on a test
+set `Y ⊆ T`.
+-/
+noncomputable def lowNeighborhoodHallQuantityOnFinset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (q : ℕ) (Y : Finset V) : Int := by
+  exact
+    (lowNeighborhoodDefectCountOnFinset G P T L hLT Y : Int) -
+      ((((q - 1) * Y.card : ℕ) : Int))
+
+lemma lowNeighborhoodHallQuantityOnFinset_eq_sum_lowNeighborhoodDefectMultiplicityOnFinset_sub_capacity
+    (G : SimpleGraph V) [DecidableRel G.Adj] (P T L : Finset V)
+    (hLT : L ⊆ T) (q : ℕ) (Y : Finset V) :
+    lowNeighborhoodHallQuantityOnFinset G P T L hLT q Y =
+      Y.sum (fun u =>
+        ((lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u : Int) -
+          (((q - 1 : ℕ) : Int)))) := by
+  classical
+  unfold lowNeighborhoodHallQuantityOnFinset
+  rw [lowNeighborhoodDefectCountOnFinset_eq_sum_lowNeighborhoodDefectMultiplicityOnFinset]
+  have hsumCast :
+      ((Y.sum fun u => lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u : ℕ) : Int) =
+        Y.sum (fun u => (lowNeighborhoodDefectMultiplicityOnFinset G P T L hLT u : Int)) := by
+    simp
+  have hconst :
+      ((((q - 1) * Y.card : ℕ) : Int)) = Y.sum (fun _ => (((q - 1 : ℕ) : Int))) := by
+    simp [Finset.sum_const, Nat.mul_comm]
+  rw [hsumCast, hconst, ← Finset.sum_sub_distrib]
+
+/--
+Exact-cardinality fixed-modulus single-control modular host witness with prescribed control-set size
+`r`, together with the missing dropped-part residue on `s \ u`.
+
+This is the honest extra finite datum behind the stripped direct exact-upgrade route: once `r < q`,
+the modular control-degree data below collapse automatically to exact equality.
+-/
+def HasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ u s t : Finset V, u.card = k ∧ ∃ hu : u ⊆ s, 0 < t.card ∧ t.card = r ∧ Disjoint s t ∧
+    (∀ v w : ↑(u : Set V),
+      (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+        (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) ∧
+    (∀ v w : ↑(u : Set V),
+      (G.neighborFinset v ∩ (s \ u)).card ≡
+        (G.neighborFinset w ∩ (s \ u)).card [MOD q]) ∧
+    ∃ e : ℕ, ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card ≡ e [MOD q]
+
+/--
 Exact-cardinality terminal bridge package for the one-control host problem.
 
 Besides the host residue in `G[s]`, this packages the dropped-part residue on `s \ u` and freezes the
@@ -1969,6 +4787,225 @@ def HasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard
     HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks)
 
 /--
+Exact-cardinality refinement-data package together with a residue-controlled partition of the
+internal tail `s \ w`.
+-/
+def HasExactCardFixedModulusControlBlockModularHostRefinementTailDataOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ w s t : Finset V, w.card = k ∧ ∃ hw : w ⊆ s,
+    ∃ blocks tailBlocks : List (Finset V × ℕ), ∃ e : ℕ,
+      t.card = q - 1 ∧
+      blocks.length ≤ r ∧
+      ControlBlocksSeparated s ((t, e) :: blocks) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q]) ∧
+      (∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks) ∧
+      controlBlockUnion tailBlocks = s \ w ∧
+      ControlBlocksSeparated w tailBlocks ∧
+      HasConstantModExternalBlockDegrees G w q tailBlocks
+
+/--
+Exact-cardinality refinement-data package together with a dyadic pairing tree for the dropped-part
+columns of `s \ w` relative to the current bucket `w`.
+-/
+def HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTailDataOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ w s t : Finset V, w.card = k ∧ ∃ hw : w ⊆ s,
+    ∃ blocks : List (Finset V × ℕ), ∃ e : ℕ, ∃ j : ℕ,
+      q = 2 ^ j ∧
+      t.card = q - 1 ∧
+      blocks.length ≤ r ∧
+      ControlBlocksSeparated s ((t, e) :: blocks) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q]) ∧
+      (∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks) ∧
+      ∃ cols : List (BinaryColumn ↑(w : Set V)),
+        (∀ v : ↑(w : Set V),
+          binaryColumnRowSum cols v = (G.neighborFinset v.1 ∩ (s \ w)).card) ∧
+        HasDyadicPairingTree j cols
+
+/--
+Exact-cardinality refinement-data package together with a first-bit binary packet decomposition of the
+dropped-part columns and a recursive dyadic divisibility chain on the halved dropped-part degree
+function.
+-/
+def HasExactCardFixedModulusControlBlockModularHostRefinementFirstBitPacketDataOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ w s t : Finset V, w.card = k ∧ ∃ hw : w ⊆ s,
+    ∃ blocks : List (Finset V × ℕ), ∃ e : ℕ, ∃ j : ℕ,
+      q = 2 ^ (j + 1) ∧
+      t.card = q - 1 ∧
+      blocks.length ≤ r ∧
+      ControlBlocksSeparated s ((t, e) :: blocks) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q]) ∧
+      (∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks) ∧
+      ∃ packets : List (List (BinaryColumn ↑(w : Set V))),
+        (∀ v : ↑(w : Set V),
+          binaryColumnRowSum (flattenBinaryPackets packets) v =
+            (G.neighborFinset v.1 ∩ (s \ w)).card) ∧
+        HasBinaryZeroSumPacketPartition packets ∧
+        HasDyadicRowDivisibilityChain j
+          (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card / 2)
+
+/--
+Exact-cardinality refinement-data package together with a dyadic divisibility chain for the dropped
+part degree function on the current bucket `w`.
+-/
+def HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ w s t : Finset V, w.card = k ∧ ∃ hw : w ⊆ s,
+    ∃ blocks : List (Finset V × ℕ), ∃ e : ℕ, ∃ j : ℕ,
+      q = 2 ^ j ∧
+      t.card = q - 1 ∧
+      blocks.length ≤ r ∧
+      ControlBlocksSeparated s ((t, e) :: blocks) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q]) ∧
+      (∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks) ∧
+      HasDyadicRowDivisibilityChain j
+        (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card)
+
+/--
+Exact-cardinality refinement-data package together with an explicit terminal dyadic tail after `j`
+halving steps on the dropped-part degree function, plus mod-2 constancy of that terminal tail.
+-/
+def HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ w s t : Finset V, w.card = k ∧ ∃ hw : w ⊆ s,
+    ∃ blocks : List (Finset V × ℕ), ∃ e : ℕ, ∃ j : ℕ,
+      q = 2 ^ (j + 1) ∧
+      t.card = q - 1 ∧
+      blocks.length ≤ r ∧
+      ControlBlocksSeparated s ((t, e) :: blocks) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q]) ∧
+      (∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks) ∧
+      ∃ tail : ↑(w : Set V) → ℕ,
+        HasDyadicRowDivisibilityChainTo j
+          (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card) tail ∧
+        (∀ v w' : ↑(w : Set V), tail v ≡ tail w' [MOD 2])
+
+/--
+Exact-cardinality refinement-data package with the dyadic tail expressed in the note's beta
+language.  After `j` halving steps, beta-vanishing says every residual terminal tail has constant
+parity; the concrete row is the dropped-part degree `|N(v) ∩ (s \ w)|`.
+-/
+def HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaDataOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ w s t : Finset V, w.card = k ∧ ∃ hw : w ⊆ s,
+    ∃ blocks : List (Finset V × ℕ), ∃ e : ℕ, ∃ j : ℕ,
+      ∃ row tail : ↑(w : Set V) → ℕ,
+      q = 2 ^ (j + 1) ∧
+      t.card = q - 1 ∧
+      blocks.length ≤ r ∧
+      ControlBlocksSeparated s ((t, e) :: blocks) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q]) ∧
+      (∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks) ∧
+      (∀ v, row v = (G.neighborFinset v.1 ∩ (s \ w)).card) ∧
+      HasDyadicRowDivisibilityChainTo j row tail ∧
+      DyadicTailBetaVanishesAt j row
+
+/--
+Exact-cardinality refinement-data package with beta-vanishing at every dyadic level below `j`.
+Unlike `HasExact...DyadicBetaDataOfCard`, this package does not assume a pre-existing terminal
+chain: the chain is constructed by `hasDyadicRowDivisibilityChain_of_dyadicTailBetaVanishesUpTo`.
+-/
+def HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ w s t : Finset V, w.card = k ∧ ∃ hw : w ⊆ s,
+    ∃ blocks : List (Finset V × ℕ), ∃ e j : ℕ, ∃ row : ↑(w : Set V) → ℕ,
+      q = 2 ^ j ∧
+      t.card = q - 1 ∧
+      blocks.length ≤ r ∧
+      ControlBlocksSeparated s ((t, e) :: blocks) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q]) ∧
+      (∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e) ∧
+      (∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q]) ∧
+      HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks) ∧
+      (∀ v, row v = (G.neighborFinset v.1 ∩ (s \ w)).card) ∧
+      DyadicTailBetaVanishesUpTo j row
+
+/--
+Exact-cardinality refinement-data package together with the smaller ambient congruence on
+`w ∪ controlBlockUnion ((t, e) :: blocks)` that is sufficient to recover the dropped-part residue
+on `s \ w`.
+-/
+def HasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+    (G : SimpleGraph V) (k q r : ℕ) : Prop := by
+  classical
+  exact ∃ w s t : Finset V, w.card = k ∧ ∃ hw : w ⊆ s, ∃ blocks : List (Finset V × ℕ), ∃ e : ℕ,
+    t.card = q - 1 ∧
+    blocks.length ≤ r ∧
+    ControlBlocksSeparated s ((t, e) :: blocks) ∧
+    (∀ v w' : ↑(w : Set V),
+      (inducedOn G (w ∪ controlBlockUnion ((t, e) :: blocks))).degree
+          ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+        (inducedOn G (w ∪ controlBlockUnion ((t, e) :: blocks))).degree
+          ⟨w', Finset.mem_union.mpr (Or.inl w'.2)⟩ [MOD q]) ∧
+    (∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e) ∧
+    (∀ v w' : ↑(w : Set V),
+      (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+        (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q]) ∧
+    HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks)
+
+/--
 Exact-cardinality refinement-data package together with the missing dropped-part residue on `s \ w`.
 -/
 def HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
@@ -2061,12 +5098,41 @@ lemma hasExactCardFixedModulusSingleControlModularHostWitnessOfCard_of_hasExactC
   exact ⟨u, s, t, hku, hu, ht, hst, hdeg, e, hext⟩
 
 lemma
+    hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard
+    (G : SimpleGraph V) {q r : ℕ}
+    (hhost :
+      HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard G q r) :
+    HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard G q := by
+  rcases hhost with ⟨s, t, hsq, ht, _htr, hst, hdeg, e, hext⟩
+  exact ⟨s, t, hsq, ht, hst, hdeg, e, hext⟩
+
+lemma
+    hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_of_hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+    (G : SimpleGraph V) {k q r : ℕ}
+    (hhost :
+      HasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard G k q r) :
+    HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard G k q r := by
+  rcases hhost with ⟨u, s, t, hku, hu, ht, htr, hst, hdeg, _hdrop, e, hext⟩
+  exact ⟨u, s, t, hku, hu, ht, htr, hst, hdeg, e, hext⟩
+
+lemma
     hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
     (G : SimpleGraph V) {k q r : ℕ}
     (hhost : HasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard G k q r) :
     HasExactCardFixedModulusSingleControlResidueHostWitnessOfCard G k q := by
   rcases hhost with ⟨u, s, t, hku, hu, ht, _htr, hst, hdeg, hdrop, e, hext⟩
   exact ⟨u, s, t, hku, hu, ht, hst, hdeg, hdrop, e, hext⟩
+
+lemma
+    hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
+    (G : SimpleGraph V) {k q r : ℕ}
+    (hhost :
+      HasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard G k q r) :
+    HasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard G k q r := by
+  rcases hhost with ⟨u, s, t, hku, hu, ht, htr, hst, hdeg, hdrop, e, hext⟩
+  refine ⟨u, s, t, hku, hu, ht, htr, hst, hdeg, hdrop, e, ?_⟩
+  intro v
+  simpa [hext v] using (Nat.ModEq.refl e : e ≡ e [MOD q])
 
 lemma hasExactCardFixedModulusSingleControlModularHostWitnessOfCard_of_hasFixedModulusSingleControlModularHostWitnessOfCard
     (G : SimpleGraph V) {k q : ℕ}
@@ -2558,6 +5624,16 @@ lemma hasBoundedNonemptyControlBlockModularWitnessOfCard_of_hasBoundedExactContr
     hasConstantModExternalBlockDegrees_of_hasConstantExternalBlockDegrees G s s.card hext⟩
   intro v w
   simpa [hdeg v, hdeg w] using (Nat.ModEq.refl D : D ≡ D [MOD s.card])
+
+lemma inducesModEqDegree_of_inducesRegularOfDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s : Finset V} {d q : ℕ}
+    (hreg : InducesRegularOfDegree G s d) :
+    InducesModEqDegree G s q := by
+  classical
+  unfold InducesModEqDegree
+  rw [InducesRegularOfDegree] at hreg
+  intro v w
+  simpa [hreg v, hreg w] using (Nat.ModEq.refl d : d ≡ d [MOD q])
 
 lemma hasExactControlBlockWitnessOfCard_of_inducesRegularOfDegree_and_externalBlockDegrees
     (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -3155,6 +6231,33 @@ lemma hasBoundedSingleControlExactWitnessOfCard_mono
   rcases hsingle with ⟨s, t, hls, ht, htr, hst, D, e, hdeg, hext⟩
   exact ⟨s, t, le_trans hkl hls, ht, htr, hst, D, e, hdeg, hext⟩
 
+lemma exists_constant_externalDegree_of_card_lt_modulus_of_modEq_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s t : Finset V} {q : ℕ}
+    (htq : t.card < q)
+    (hext :
+      ∀ v w : ↑(s : Set V),
+        (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset w ∩ t).card [MOD q]) :
+    ∃ e : ℕ, ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e := by
+  classical
+  by_cases hs : s.Nonempty
+  · obtain ⟨v0, hv0⟩ := hs
+    refine ⟨(G.neighborFinset v0 ∩ t).card, ?_⟩
+    intro v
+    have hv_lt : (G.neighborFinset v ∩ t).card < q := by
+      exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
+    have h0_lt : (G.neighborFinset v0 ∩ t).card < q := by
+      exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
+    have hmod :
+        (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset v0 ∩ t).card [MOD q] := by
+      exact hext v ⟨v0, hv0⟩
+    rw [Nat.ModEq, Nat.mod_eq_of_lt hv_lt, Nat.mod_eq_of_lt h0_lt] at hmod
+    exact hmod
+  · refine ⟨0, ?_⟩
+    have hs' : s = ∅ := Finset.not_nonempty_iff_eq_empty.mp hs
+    subst hs'
+    intro v
+    exact False.elim (by simpa using v.2)
+
 lemma hasBoundedSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_modEq_unionDegree_and_externalDegree
     (G : SimpleGraph V) [DecidableRel G.Adj]
     {k r : ℕ} {s t : Finset V} (hks : k ≤ s.card) (ht : 0 < t.card) (htr : t.card ≤ r)
@@ -3176,38 +6279,19 @@ lemma hasBoundedSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_mo
       (G := G) hst hdeg hext
   rcases inducesRegularOfDegree_of_card_le_modulus_of_inducesModEqDegree G hq hsmod with
     ⟨d, hd⟩
-  by_cases hs : s.Nonempty
-  · obtain ⟨v0, hv0⟩ := hs
-    set e : ℕ := (G.neighborFinset v0 ∩ t).card with he
-    have he_lt : e < q := by
-      rw [he]
-      exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
-    have hext_exact : ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e := by
-      intro v
-      have hv_lt : (G.neighborFinset v ∩ t).card < q := by
-        exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
-      have hmod : (G.neighborFinset v ∩ t).card ≡ e [MOD q] := by
-        rw [he]
-        exact hext v ⟨v0, hv0⟩
-      rw [Nat.ModEq, Nat.mod_eq_of_lt hv_lt, Nat.mod_eq_of_lt he_lt] at hmod
-      exact hmod
-    refine hasBoundedSingleControlExactWitnessOfCard_of_constant_unionDegree_and_externalDegree
-      (G := G) (hks := hks) (ht := ht) (htr := htr) (hst := hst) (D := d + e) (e := e) ?_
-      hext_exact
-    intro v
-    calc
-      (inducedOn G (s ∪ t)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ =
-          (inducedOn G s).degree v + (G.neighborFinset v ∩ t).card := by
-            exact degree_union_eq_degree_add_external (G := G) (s := s) (t := t) hst v
-      _ = d + e := by simp [hd v, hext_exact v]
-  · have hs' : s = ∅ := Finset.not_nonempty_iff_eq_empty.mp hs
-    subst hs'
-    refine hasBoundedSingleControlExactWitnessOfCard_of_constant_unionDegree_and_externalDegree
-      (G := G) (hks := hks) (ht := ht) (htr := htr) (hst := hst) (D := 0) (e := 0) ?_ ?_
-    · intro v
-      exact False.elim (by simpa using v.2)
-    · intro v
-      exact False.elim (by simpa using v.2)
+  rcases
+      exists_constant_externalDegree_of_card_lt_modulus_of_modEq_externalDegree
+        (G := G) (s := s) (t := t) htq hext with
+    ⟨e, hext_exact⟩
+  refine hasBoundedSingleControlExactWitnessOfCard_of_constant_unionDegree_and_externalDegree
+    (G := G) (hks := hks) (ht := ht) (htr := htr) (hst := hst) (D := d + e) (e := e) ?_
+    hext_exact
+  intro v
+  calc
+    (inducedOn G (s ∪ t)).degree ⟨v, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+        (inducedOn G s).degree v + (G.neighborFinset v ∩ t).card := by
+          exact degree_union_eq_degree_add_external (G := G) (s := s) (t := t) hst v
+    _ = d + e := by simp [hd v, hext_exact v]
 
 lemma hasBoundedSingleControlExactWitnessOfCard_of_lt_of_hasBoundedSingleControlModularWitnessOfCard
     (G : SimpleGraph V) {k r : ℕ}
@@ -3762,31 +6846,13 @@ lemma
   cases
     Subsingleton.elim (‹DecidableRel G.Adj›)
       (fun a b => Classical.propDecidable (G.Adj a b))
-  by_cases huNonempty : u.Nonempty
-  · obtain ⟨v0, hv0⟩ := huNonempty
-    set e : ℕ := (G.neighborFinset v0 ∩ t).card with he
-    have he_lt : e < q := by
-      rw [he]
-      exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
-    have hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e := by
-      intro v
-      have hv_lt : (G.neighborFinset v ∩ t).card < q := by
-        exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
-      have hmod : (G.neighborFinset v ∩ t).card ≡ e [MOD q] := by
-        rw [he]
-        exact hctrl v ⟨v0, hv0⟩
-      rw [Nat.ModEq, Nat.mod_eq_of_lt hv_lt, Nat.mod_eq_of_lt he_lt] at hmod
-      exact hmod
-    exact
-      hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_extendedUnionDegree_and_dropDegree_and_externalDegree
-        (G := G) hku hu ht htr hst hq hdeg hdrop hext
-  · have hu' : u = ∅ := Finset.not_nonempty_iff_eq_empty.mp huNonempty
-    subst hu'
-    refine
-      hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_extendedUnionDegree_and_dropDegree_and_externalDegree
-        (G := G) (e := 0) hku hu ht htr hst hq hdeg hdrop ?_
-    intro v
-    exact False.elim (by simpa using v.2)
+  rcases
+      exists_constant_externalDegree_of_card_lt_modulus_of_modEq_externalDegree
+        (G := G) (s := u) (t := t) htq hctrl with
+    ⟨e, hext⟩
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_extendedUnionDegree_and_dropDegree_and_externalDegree
+      (G := G) hku hu ht htr hst hq hdeg hdrop hext
 
 lemma hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
     (G : SimpleGraph V) [DecidableRel G.Adj] {k : ℕ} {u s t : Finset V}
@@ -3922,6 +6988,58 @@ lemma hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_host
           exact degree_union_eq_degree_add_external (G := G) (s := u) (t := t) huT v
     _ = d + e := by rw [hvd, hext v]
 
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_pow_two_and_dyadicRowDivisibilityChain_of_modEq_hostDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k r j e : ℕ} {u s t : Finset V}
+    (hku : k ≤ u.card) (hu : u ⊆ s) (ht : 0 < t.card) (htr : t.card ≤ r) (hst : Disjoint s t)
+    (hcard : u.card = 2 ^ j)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD 2 ^ j])
+    {row : ↑(u : Set V) → ℕ}
+    (hrow :
+      ∀ v : ↑(u : Set V),
+        row v = (G.neighborFinset v.1 ∩ (s \ u)).card)
+    (hchain : HasDyadicRowDivisibilityChain j row)
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasBoundedSingleControlExactWitnessOfCard G k r := by
+  have hq : u.card ≤ 2 ^ j := by
+    simpa [hcard]
+  have hdrop :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v.1 ∩ (s \ u)).card ≡
+          (G.neighborFinset w.1 ∩ (s \ u)).card [MOD 2 ^ j] := by
+    intro v w
+    simpa [hrow v, hrow w] using modEq_of_hasDyadicRowDivisibilityChain hchain v w
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+      (G := G) hku hu ht htr hst hq hhost hdrop hext
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_pow_two_and_dyadicPairingTree_of_modEq_hostDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k r j e : ℕ} {u s t : Finset V}
+    (hku : k ≤ u.card) (hu : u ⊆ s) (ht : 0 < t.card) (htr : t.card ≤ r) (hst : Disjoint s t)
+    (hcard : u.card = 2 ^ j)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD 2 ^ j])
+    {cols : List (BinaryColumn ↑(u : Set V))}
+    (hrow :
+      ∀ v : ↑(u : Set V),
+        binaryColumnRowSum cols v = (G.neighborFinset v.1 ∩ (s \ u)).card)
+    (htree : HasDyadicPairingTree j cols)
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasBoundedSingleControlExactWitnessOfCard G k r := by
+  have hchain :
+      HasDyadicRowDivisibilityChain j (binaryColumnRowSum cols) :=
+    hasDyadicRowDivisibilityChain_binaryColumnRowSum_of_hasDyadicPairingTree htree
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_pow_two_and_dyadicRowDivisibilityChain_of_modEq_hostDegree_and_externalDegree
+      (G := G) (u := u) (s := s) (t := t) (k := k) (r := r) hku hu ht htr hst hcard hhost
+      (row := binaryColumnRowSum cols) hrow hchain hext
+
 lemma hasSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
     (G : SimpleGraph V) [DecidableRel G.Adj] {k : ℕ} {u s t : Finset V}
     (hku : k ≤ u.card) (hu : u ⊆ s) (ht : 0 < t.card) (hst : Disjoint s t)
@@ -3939,31 +7057,13 @@ lemma hasSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_modEq_hos
         (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset w ∩ t).card [MOD q]) :
     HasSingleControlExactWitnessOfCard G k := by
   classical
-  by_cases huNonempty : u.Nonempty
-  · obtain ⟨v0, hv0⟩ := huNonempty
-    set e : ℕ := (G.neighborFinset v0 ∩ t).card with he
-    have he_lt : e < q := by
-      rw [he]
-      exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
-    have hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e := by
-      intro v
-      have hv_lt : (G.neighborFinset v ∩ t).card < q := by
-        exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
-      have hmod : (G.neighborFinset v ∩ t).card ≡ e [MOD q] := by
-        rw [he]
-        exact hctrl v ⟨v0, hv0⟩
-      rw [Nat.ModEq, Nat.mod_eq_of_lt hv_lt, Nat.mod_eq_of_lt he_lt] at hmod
-      exact hmod
-    exact
-      hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
-        (G := G) hku hu ht hst hq hhost hdrop hext
-  · have hu' : u = ∅ := Finset.not_nonempty_iff_eq_empty.mp huNonempty
-    subst hu'
-    refine
-      hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
-        (G := G) (e := 0) hku hu ht hst hq hhost hdrop ?_
-    intro v
-    exact False.elim (by simpa using v.2)
+  rcases
+      exists_constant_externalDegree_of_card_lt_modulus_of_modEq_externalDegree
+        (G := G) (s := u) (t := t) htq hctrl with
+    ⟨e, hext⟩
+  exact
+    hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+      (G := G) hku hu ht hst hq hhost hdrop hext
 
 lemma hasBoundedSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
     (G : SimpleGraph V) [DecidableRel G.Adj] {k r : ℕ} {u s t : Finset V}
@@ -3982,31 +7082,348 @@ lemma hasBoundedSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_mo
         (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset w ∩ t).card [MOD q]) :
     HasBoundedSingleControlExactWitnessOfCard G k r := by
   classical
-  by_cases huNonempty : u.Nonempty
-  · obtain ⟨v0, hv0⟩ := huNonempty
-    set e : ℕ := (G.neighborFinset v0 ∩ t).card with he
-    have he_lt : e < q := by
-      rw [he]
-      exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
-    have hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e := by
-      intro v
-      have hv_lt : (G.neighborFinset v ∩ t).card < q := by
-        exact lt_of_le_of_lt (Finset.card_le_card (Finset.inter_subset_right)) htq
-      have hmod : (G.neighborFinset v ∩ t).card ≡ e [MOD q] := by
-        rw [he]
-        exact hctrl v ⟨v0, hv0⟩
-      rw [Nat.ModEq, Nat.mod_eq_of_lt hv_lt, Nat.mod_eq_of_lt he_lt] at hmod
-      exact hmod
+  rcases
+      exists_constant_externalDegree_of_card_lt_modulus_of_modEq_externalDegree
+        (G := G) (s := u) (t := t) htq hctrl with
+    ⟨e, hext⟩
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+      (G := G) hku hu ht htr hst hq hhost hdrop hext
+
+lemma
+    hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_control_card_lt_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} {u s t : Finset V}
+    (hku : u.card = k) (hu : u ⊆ s) (ht : 0 < t.card) (htr : t.card = r) (hst : Disjoint s t)
+    (htq : t.card < q)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hdrop :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ (s \ u)).card ≡
+          (G.neighborFinset w ∩ (s \ u)).card [MOD q])
+    (hctrl :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ t).card ≡ (G.neighborFinset w ∩ t).card [MOD q]) :
+    HasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases
+      exists_constant_externalDegree_of_card_lt_modulus_of_modEq_externalDegree
+        (G := G) (s := u) (t := t) htq hctrl with
+    ⟨e, hext⟩
+  let hres :
+      ∃ u' s' t' : Finset V,
+        u'.card = k ∧ ∃ hu' : u' ⊆ s',
+          0 < t'.card ∧
+          t'.card = r ∧
+          Disjoint s' t' ∧
+          (∀ v w : ↑(u' : Set V),
+            (inducedOn G s').degree ⟨v.1, hu' v.2⟩ ≡
+              (inducedOn G s').degree ⟨w.1, hu' w.2⟩ [MOD q]) ∧
+          (∀ v w : ↑(u' : Set V),
+            (G.neighborFinset v ∩ (s' \ u')).card ≡
+              (G.neighborFinset w ∩ (s' \ u')).card [MOD q]) ∧
+          ∃ e' : ℕ, ∀ v : ↑(u' : Set V), (G.neighborFinset v ∩ t').card = e' :=
+      ⟨u, s, t, hku, hu, ht, htr, hst, hhost, hdrop, e, hext⟩
+  simpa [HasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard] using hres
+
+lemma
+    hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_lt_of_hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (hrq : r < q)
+    (hhost :
+      HasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard G k q r) :
+    HasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hhost with ⟨u, s, t, hku, hu, ht, htr, hst, hdeg, hdrop, e, hext⟩
+  have htq : t.card < q := by
+    simpa [htr] using hrq
+  exact
+    hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_control_card_lt_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+      (G := G) (k := k) (q := q) (r := r) (u := u) (s := s) (t := t)
+      (hku := hku) (hu := hu) (ht := ht) (htr := htr) (hst := hst) (htq := htq)
+      (hhost := hdeg) (hdrop := hdrop) (hctrl := by
+        intro v w
+        exact (hext v).trans (hext w).symm)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_lt_and_hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (hkq : k ≤ q) (hrq : r < q)
+    (hhost :
+      HasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases
+      hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_lt_of_hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+        (G := G) hrq hhost with
+    ⟨u, s, t, hku, hu, ht, htr, hst, hdeg, hdrop, e, hext⟩
+  have hku' : k ≤ u.card := by simpa [hku]
+  have huq : u.card ≤ q := by simpa [hku] using hkq
+  have htr' : t.card ≤ r := by simpa [htr]
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+      (G := G) (k := k) (r := r) (u := u) (s := s) (t := t) (q := q) (e := e)
+      (hku := hku') (hu := hu) (ht := ht) (htr := htr') (hst := hst) (hq := huq)
+      (hhost := hdeg) (hdrop := hdrop) (hext := hext)
+
+/--
+If an exact-card fixed-modulus single-control host witness already occupies all available vertices
+outside its control set, then there is no dropped part `s \ u`: the host set must equal the bucket
+`u`, so the modular host data collapse directly to a bounded exact witness.
+
+Concretely, this happens whenever the ambient graph has at most `k + r` vertices, where `k = |u|`
+and `r = |t|`.
+-/
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_add_of_lt_and_hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (hkq : k ≤ q) (hV : Fintype.card V ≤ k + r) (hrq : r < q)
+    (hhost : HasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hhost with ⟨u, s, t, hku, hu, ht, htr, hst, hdeg, e, hext⟩
+  have hsum : s.card + t.card ≤ Fintype.card V := by
+    have hunion :
+        (s ∪ t).card ≤ (Finset.univ : Finset V).card := by
+      exact Finset.card_le_card (by
+        intro x hx
+        simp)
+    rw [Finset.card_union_of_disjoint hst] at hunion
+    simpa using hunion
+  have hsCard : s.card ≤ k := by
+    omega
+  have husEq : u = s := by
+    exact Finset.eq_of_subset_of_card_le hu (by simpa [hku] using hsCard)
+  subst s
+  have htr' : t.card ≤ r := by
+    simpa [htr]
+  have huq : u.card ≤ q := by
+    simpa [hku] using hkq
+  have htq : t.card < q := by
+    simpa [htr] using hrq
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
+      (G := G) (k := k) (r := r) (u := u) (s := u) (t := t)
+      (hku := by simpa [hku])
+      (hu := subset_rfl)
+      (ht := ht) (htr := htr') (hst := hst) (hq := huq) (htq := htq)
+      (hhost := by
+        intro v w
+        convert hdeg v w using 1 <;> rfl)
+      (hdrop := by
+        intro v w
+        simpa using (Nat.ModEq.refl 0 : 0 ≡ 0 [MOD q]))
+      (hctrl := by
+        intro v w
+        simpa using (hext v).trans (hext w).symm)
+
+/--
+Small-ambient collapse for the live refinement-data package: when `|V| ≤ 2q - 1`, a refinement
+datum at bucket size `q` already leaves no room for a dropped part, so it yields a bounded exact
+single-control witness of size `q`.
+-/
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_two_mul_sub_one_of_hasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q r : ℕ}
+    (hq : 1 < q) (hV : Fintype.card V ≤ 2 * q - 1)
+    (href : HasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard G q q r) :
+    HasBoundedSingleControlExactWitnessOfCard G q (q - 1) := by
+  have hrq : q - 1 < q := by
+    omega
+  have hV' : Fintype.card V ≤ q + (q - 1) := by
+    omega
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_add_of_lt_and_hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard
+      (G := G) (k := q) (q := q) (r := q - 1) le_rfl hV' hrq
+      (hasExactCardFixedModulusSingleControlModularHostWitnessOfCardWithControlCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDataOfCard
+        (G := G) hq href)
+
+/--
+If the host degrees on `u` are constant modulo `q` inside `G[s]`, and the induced degrees on the
+bucket `u` are themselves constant modulo `q`, then the dropped-part degrees into `s \ u` are
+constant modulo `q` on `u`.
+-/
+lemma modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {u s : Finset V} (hu : u ⊆ s) {q : ℕ}
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hmod : InducesModEqDegree G u q) :
+    ∀ v w : ↑(u : Set V),
+      (G.neighborFinset v ∩ (s \ u)).card ≡
+        (G.neighborFinset w ∩ (s \ u)).card [MOD q] := by
+  have huDrop : Disjoint u (s \ u) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxDrop
+    exact (Finset.mem_sdiff.mp hxDrop).2 hxU
+  have hhost' :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+    intro v w
+    have hcastv :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G s).degree ⟨v.1, hu v.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := hu v.2))
+    have hcastw :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := hu w.2))
+    simpa [hcastv, hcastw] using hhost v w
+  exact
+    modEq_externalDegree_of_modEq_unionDegree_and_inducesModEqDegree
+      (G := G) (s := u) (t := s \ u) huDrop hhost' hmod
+
+lemma inducesModEqDegree_of_modEq_hostDegree_and_dropDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {u s : Finset V} (hu : u ⊆ s) {q : ℕ}
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hdrop :
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ (s \ u)).card ≡
+          (G.neighborFinset w ∩ (s \ u)).card [MOD q]) :
+    InducesModEqDegree G u q := by
+  have huDrop : Disjoint u (s \ u) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxDrop
+    exact (Finset.mem_sdiff.mp hxDrop).2 hxU
+  have hhost' :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
+    intro v w
+    have hcastv :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G s).degree ⟨v.1, hu v.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := hu v.2))
+    have hcastw :
+        (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := u ∪ (s \ u)) (t := s)
+          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
+          (hs := Finset.mem_union.mpr (Or.inl w.2))
+          (ht := hu w.2))
+    simpa [hcastv, hcastw] using hhost v w
+  exact
+    inducesModEqDegree_of_modEq_unionDegree_and_externalDegree
+      (G := G) (s := u) (t := s \ u) huDrop hhost' hdrop
+
+lemma exists_inducesRegularOfDegree_iff_modEq_dropDegree_of_card_le_modulus_and_modEq_hostDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {u s : Finset V} (hu : u ⊆ s) {q : ℕ}
+    (hq : u.card ≤ q)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q]) :
+    (∃ d : ℕ, InducesRegularOfDegree G u d) ↔
+      ∀ v w : ↑(u : Set V),
+        (G.neighborFinset v ∩ (s \ u)).card ≡
+          (G.neighborFinset w ∩ (s \ u)).card [MOD q] := by
+  constructor
+  · rintro ⟨d, hreg⟩
     exact
-      hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
-        (G := G) hku hu ht htr hst hq hhost hdrop hext
-  · have hu' : u = ∅ := Finset.not_nonempty_iff_eq_empty.mp huNonempty
-    subst hu'
-    refine
-      hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree
-        (G := G) (e := 0) hku hu ht htr hst hq hhost hdrop ?_
-    intro v
-    exact False.elim (by simpa using v.2)
+      modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+        (G := G) hu hhost
+        (inducesModEqDegree_of_inducesRegularOfDegree (G := G) (q := q) hreg)
+  · intro hdrop
+    exact
+      inducesRegularOfDegree_of_card_le_modulus_of_inducesModEqDegree G hq
+        (inducesModEqDegree_of_modEq_hostDegree_and_dropDegree (G := G) hu hhost hdrop)
+
+lemma
+    hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r d e : ℕ} {u s t : Finset V}
+    (hku : u.card = k) (hu : u ⊆ s) (ht : 0 < t.card) (htr : t.card = r) (hst : Disjoint s t)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hreg : InducesRegularOfDegree G u d)
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  have hmod : InducesModEqDegree G u q :=
+    inducesModEqDegree_of_inducesRegularOfDegree (G := G) (q := q) hreg
+  refine ⟨u, s, t, hku, hu, ht, htr, hst, hhost, ?_, e, ?_⟩
+  · exact modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree (G := G) hu hhost hmod
+  · intro v
+    simpa [hext v] using (Nat.ModEq.refl e : e ≡ e [MOD q])
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_lt_and_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r d e : ℕ} {u s t : Finset V}
+    (hkq : k ≤ q) (hrq : r < q)
+    (hku : u.card = k) (hu : u ⊆ s) (ht : 0 < t.card) (htr : t.card = r) (hst : Disjoint s t)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hreg : InducesRegularOfDegree G u d)
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasBoundedSingleControlExactWitnessOfCard G k r := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_lt_and_hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard
+      (G := G) hkq hrq
+      (hasExactCardFixedModulusSingleControlModularHostDropDataOfCardWithControlCard_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+        (G := G) hku hu ht htr hst hhost hreg hext)
+
+lemma
+    hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r d e : ℕ} {u s t : Finset V}
+    (hku : u.card = k) (hu : u ⊆ s) (ht : 0 < t.card) (htr : t.card = r) (hst : Disjoint s t)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hreg : InducesRegularOfDegree G u d)
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  refine ⟨u, s, t, hku, hu, ht, htr, hst, hhost, ?_, e, hext⟩
+  exact
+    modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+      (G := G) hu hhost
+      (inducesModEqDegree_of_inducesRegularOfDegree (G := G) (q := q) hreg)
 
 lemma hasBoundedSingleControlExactWitnessOfCard_of_lt_of_modEq_hostDegree_and_modEq_unionDegree_and_externalDegree
     (G : SimpleGraph V) [DecidableRel G.Adj] {k r : ℕ} {u s t : Finset V}
@@ -4039,37 +7456,11 @@ lemma hasBoundedSingleControlExactWitnessOfCard_of_lt_of_modEq_hostDegree_and_mo
   have huMod : InducesModEqDegree G u q := by
     exact inducesModEqDegree_of_modEq_unionDegree_and_externalDegree
       (G := G) huT hsmall hctrl
-  have hhost' :
-      ∀ v w : ↑(u : Set V),
-        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
-          (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ [MOD q] := by
-    intro v w
-    have hcastv :
-        (inducedOn G (u ∪ (s \ u))).degree ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
-          (inducedOn G s).degree ⟨v.1, hu v.2⟩ := by
-      simpa using
-        (inducedOn_degree_congr (G := G)
-          (s := u ∪ (s \ u)) (t := s)
-          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
-          (hs := Finset.mem_union.mpr (Or.inl v.2))
-          (ht := hu v.2))
-    have hcastw :
-        (inducedOn G (u ∪ (s \ u))).degree ⟨w.1, Finset.mem_union.mpr (Or.inl w.2)⟩ =
-          (inducedOn G s).degree ⟨w.1, hu w.2⟩ := by
-      simpa using
-        (inducedOn_degree_congr (G := G)
-          (s := u ∪ (s \ u)) (t := s)
-          (h := by rw [Finset.union_comm u, Finset.sdiff_union_of_subset hu])
-          (hs := Finset.mem_union.mpr (Or.inl w.2))
-          (ht := hu w.2))
-    simpa [hcastv, hcastw] using hhost v w
   have hdrop :
       ∀ v w : ↑(u : Set V),
         (G.neighborFinset v ∩ (s \ u)).card ≡
           (G.neighborFinset w ∩ (s \ u)).card [MOD q] := by
-    exact
-      modEq_externalDegree_of_modEq_unionDegree_and_inducesModEqDegree
-        (G := G) (s := u) (t := s \ u) huDrop hhost' huMod
+    exact modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree (G := G) hu hhost huMod
   have hbig :
       ∀ v w : ↑(u : Set V),
         (inducedOn G (u ∪ ((s \ u) ∪ t))).degree
@@ -4143,6 +7534,59 @@ lemma
       (G := G) (q := k) le_rfl hhost
 
 lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r d e : ℕ} {u s t : Finset V}
+    (hkq : k ≤ q)
+    (hku : u.card = k) (hu : u ⊆ s) (ht : 0 < t.card) (htr : t.card = r) (hst : Disjoint s t)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hreg : InducesRegularOfDegree G u d)
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasBoundedSingleControlExactWitnessOfCard G k r := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
+      (G := G) hkq
+      (hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+        (G := G) hku hu ht htr hst hhost hreg hext)
+
+lemma
+    hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q d e : ℕ} {u s t : Finset V}
+    (hkq : k ≤ q)
+    (hku : u.card = k) (hu : u ⊆ s) (ht : 0 < t.card) (hst : Disjoint s t)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q])
+    (hreg : InducesRegularOfDegree G u d)
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasSingleControlExactWitnessOfCard G k := by
+  exact
+    hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard
+      (G := G) hkq
+      (hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
+        (G := G)
+        (hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+          (G := G) (r := t.card) hku hu ht rfl hst hhost hreg hext))
+
+lemma
+    hasSingleControlExactWitnessOfCard_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k d e : ℕ} {u s t : Finset V}
+    (hku : u.card = k) (hu : u ⊆ s) (ht : 0 < t.card) (hst : Disjoint s t)
+    (hhost :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD k])
+    (hreg : InducesRegularOfDegree G u d)
+    (hext : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e) :
+    HasSingleControlExactWitnessOfCard G k := by
+  exact
+    hasSingleControlExactWitnessOfCard_of_card_le_modulus_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+      (G := G) (q := k) le_rfl hku hu ht hst hhost hreg hext
+
+lemma
     hasRegularInducedSubgraphOfCard_of_card_le_modulus_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard
     (G : SimpleGraph V) [DecidableRel G.Adj] {k q : ℕ} (hq : k ≤ q)
     (hhost : HasExactCardFixedModulusSingleControlResidueHostWitnessOfCard G k q) :
@@ -4159,6 +7603,277 @@ lemma hasRegularInducedSubgraphOfCard_of_hasExactCardFixedModulusSingleControlRe
   exact
     hasRegularInducedSubgraphOfCard_of_card_le_modulus_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard
       (G := G) (q := k) le_rfl hhost
+
+/--
+Named graph-level form of the surviving host frontier: every `q^2`-vertex induced subgraph whose
+degrees are constant modulo `q` contains a regular induced subgraph on `q` vertices.
+-/
+def HasModulusSquareRegularSelection (G : SimpleGraph V) (q : ℕ) : Prop :=
+  ∀ ⦃s : Finset V⦄, s.card = q * q → InducesModEqDegree G s q →
+    ∃ u : Finset V, u ⊆ s ∧ u.card = q ∧ ∃ d : ℕ, InducesRegularOfDegree G u d
+
+/--
+Host-local form of Corollary 10.2: whenever a completed host set `s` of size `q^2` carries one
+disjoint control set `t` with exact external degree on all of `s`, some `q`-subset of `s` is
+already regular.
+-/
+def HasCompletedHostRegularSelection (G : SimpleGraph V) (q : ℕ) : Prop := by
+  classical
+  exact
+    ∀ ⦃s t : Finset V⦄, s.card = q * q → 0 < t.card → Disjoint s t →
+      InducesModEqDegree G s q →
+      (∃ e : ℕ, ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e) →
+        ∃ u : Finset V, u ⊆ s ∧ u.card = q ∧ ∃ d : ℕ, InducesRegularOfDegree G u d
+
+lemma hasCompletedHostRegularSelection_of_hasModulusSquareRegularSelection
+    (G : SimpleGraph V) {q : ℕ}
+    (hselect : HasModulusSquareRegularSelection G q) :
+    HasCompletedHostRegularSelection G q := by
+  intro s t hsq _ht _hst hhost _hext
+  exact hselect hsq hhost
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_regularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q e : ℕ} {s t : Finset V}
+    (hsq : s.card = q * q) (ht : 0 < t.card) (hst : Disjoint s t)
+    (hhost : InducesModEqDegree G s q)
+    (hext : ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e)
+    (hselect :
+      ∀ ⦃s' : Finset V⦄, s'.card = q * q → InducesModEqDegree G s' q →
+        ∃ u : Finset V, u ⊆ s' ∧ u.card = q ∧ ∃ d : ℕ, InducesRegularOfDegree G u d) :
+    HasBoundedSingleControlExactWitnessOfCard G q t.card := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hselect hsq hhost with ⟨u, hu, huq, d, hreg⟩
+  have hhostU :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q] := by
+    intro v w
+    exact hhost ⟨v.1, hu v.2⟩ ⟨w.1, hu w.2⟩
+  have hextU : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e := by
+    intro v
+    exact hext ⟨v.1, hu v.2⟩
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+      (G := G) (k := q) (q := q) (r := t.card) le_rfl huq hu ht rfl hst hhostU hreg hextU
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasModulusSquareRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q e : ℕ} {s t : Finset V}
+    (hsq : s.card = q * q) (ht : 0 < t.card) (hst : Disjoint s t)
+    (hhost : InducesModEqDegree G s q)
+    (hext : ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e)
+    (hselect : HasModulusSquareRegularSelection G q) :
+    HasBoundedSingleControlExactWitnessOfCard G q t.card := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_regularSelection
+      (G := G) hsq ht hst hhost hext hselect
+
+lemma
+    hasSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_regularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q e : ℕ} {s t : Finset V}
+    (hsq : s.card = q * q) (ht : 0 < t.card) (hst : Disjoint s t)
+    (hhost : InducesModEqDegree G s q)
+    (hext : ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e)
+    (hselect :
+      ∀ ⦃s' : Finset V⦄, s'.card = q * q → InducesModEqDegree G s' q →
+        ∃ u : Finset V, u ⊆ s' ∧ u.card = q ∧ ∃ d : ℕ, InducesRegularOfDegree G u d) :
+    HasSingleControlExactWitnessOfCard G q := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hselect hsq hhost with ⟨u, hu, huq, d, hreg⟩
+  have hhostU :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q] := by
+    intro v w
+    exact hhost ⟨v.1, hu v.2⟩ ⟨w.1, hu w.2⟩
+  have hextU : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e := by
+    intro v
+    exact hext ⟨v.1, hu v.2⟩
+  have hres :
+      HasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard G q q t.card := by
+    exact
+      hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+        (G := G) (u := u) (s := s) (t := t) huq hu ht rfl hst hhostU hreg hextU
+  exact
+    hasSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard
+      (G := G)
+      (hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
+        (G := G) hres)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasCompletedHostRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q e : ℕ} {s t : Finset V}
+    (hsq : s.card = q * q) (ht : 0 < t.card) (hst : Disjoint s t)
+    (hhost : InducesModEqDegree G s q)
+    (hext : ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e)
+    (hselect : HasCompletedHostRegularSelection G q) :
+    HasBoundedSingleControlExactWitnessOfCard G q t.card := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hselect hsq ht hst hhost ⟨e, hext⟩ with ⟨u, hu, huq, d, hreg⟩
+  have hhostU :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q] := by
+    intro v w
+    exact hhost ⟨v.1, hu v.2⟩ ⟨w.1, hu w.2⟩
+  have hextU : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e := by
+    intro v
+    exact hext ⟨v.1, hu v.2⟩
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+      (G := G) (k := q) (q := q) (r := t.card) le_rfl huq hu ht rfl hst hhostU hreg hextU
+
+lemma
+    hasSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasCompletedHostRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q e : ℕ} {s t : Finset V}
+    (hsq : s.card = q * q) (ht : 0 < t.card) (hst : Disjoint s t)
+    (hhost : InducesModEqDegree G s q)
+    (hext : ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e)
+    (hselect : HasCompletedHostRegularSelection G q) :
+    HasSingleControlExactWitnessOfCard G q := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hselect hsq ht hst hhost ⟨e, hext⟩ with ⟨u, hu, huq, d, hreg⟩
+  have hhostU :
+      ∀ v w : ↑(u : Set V),
+        (inducedOn G s).degree ⟨v.1, hu v.2⟩ ≡
+          (inducedOn G s).degree ⟨w.1, hu w.2⟩ [MOD q] := by
+    intro v w
+    exact hhost ⟨v.1, hu v.2⟩ ⟨w.1, hu w.2⟩
+  have hextU : ∀ v : ↑(u : Set V), (G.neighborFinset v ∩ t).card = e := by
+    intro v
+    exact hext ⟨v.1, hu v.2⟩
+  have hres :
+      HasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard G q q t.card := by
+    exact
+      hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard_of_inducesRegularOfDegree_and_modEq_hostDegree_and_externalDegree
+        (G := G) (u := u) (s := s) (t := t) huq hu ht rfl hst hhostU hreg hextU
+  exact
+    hasSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard
+      (G := G)
+      (hasExactCardFixedModulusSingleControlResidueHostWitnessOfCard_of_hasExactCardFixedModulusSingleControlResidueHostWitnessOfCardWithControlCard
+        (G := G) hres)
+
+lemma
+    hasSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasModulusSquareRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q e : ℕ} {s t : Finset V}
+    (hsq : s.card = q * q) (ht : 0 < t.card) (hst : Disjoint s t)
+    (hhost : InducesModEqDegree G s q)
+    (hext : ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e)
+    (hselect : HasModulusSquareRegularSelection G q) :
+    HasSingleControlExactWitnessOfCard G q := by
+  exact
+    hasSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_regularSelection
+      (G := G) hsq ht hst hhost hext hselect
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard_and_hasModulusSquareRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q r : ℕ}
+    (hhost :
+      HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard G q r)
+    (hselect : HasModulusSquareRegularSelection G q) :
+    HasBoundedSingleControlExactWitnessOfCard G q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hhost with ⟨s, t, hsq, ht, htr, hst, hdeg, e, hext⟩
+  simpa [htr] using
+    (hasBoundedSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasModulusSquareRegularSelection
+      (G := G) (s := s) (t := t) hsq ht hst hdeg hext hselect)
+
+lemma
+    hasSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard_and_hasModulusSquareRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q : ℕ}
+    (hhost : HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard G q)
+    (hselect : HasModulusSquareRegularSelection G q) :
+    HasSingleControlExactWitnessOfCard G q := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hhost with ⟨s, t, hsq, ht, hst, hdeg, e, hext⟩
+  exact
+    hasSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasModulusSquareRegularSelection
+      (G := G) (s := s) (t := t) hsq ht hst hdeg hext hselect
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard_and_hasCompletedHostRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q r : ℕ}
+    (hhost :
+      HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCardWithControlCard G q r)
+    (hselect : HasCompletedHostRegularSelection G q) :
+    HasBoundedSingleControlExactWitnessOfCard G q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hhost with ⟨s, t, hsq, ht, htr, hst, hdeg, e, hext⟩
+  simpa [htr] using
+    (hasBoundedSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasCompletedHostRegularSelection
+      (G := G) (s := s) (t := t) hsq ht hst hdeg hext hselect)
+
+lemma
+    hasSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard_and_hasCompletedHostRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q : ℕ}
+    (hhost : HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard G q)
+    (hselect : HasCompletedHostRegularSelection G q) :
+    HasSingleControlExactWitnessOfCard G q := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hhost with ⟨s, t, hsq, ht, hst, hdeg, e, hext⟩
+  exact
+    hasSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasCompletedHostRegularSelection
+      (G := G) (s := s) (t := t) hsq ht hst hdeg hext hselect
+
+lemma
+    hasRegularInducedSubgraphOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard_and_hasCompletedHostRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q : ℕ}
+    (hhost : HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard G q)
+    (hselect : HasCompletedHostRegularSelection G q) :
+    HasRegularInducedSubgraphOfCard G q := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasSingleControlExactWitnessOfCard G
+      (hasSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard_and_hasCompletedHostRegularSelection
+        (G := G) hhost hselect)
+
+lemma
+    hasRegularInducedSubgraphOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasModulusSquareRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q e : ℕ} {s t : Finset V}
+    (hsq : s.card = q * q) (ht : 0 < t.card) (hst : Disjoint s t)
+    (hhost : InducesModEqDegree G s q)
+    (hext : ∀ v : ↑(s : Set V), (G.neighborFinset v ∩ t).card = e)
+    (hselect : HasModulusSquareRegularSelection G q) :
+    HasRegularInducedSubgraphOfCard G q := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasSingleControlExactWitnessOfCard G
+      (hasSingleControlExactWitnessOfCard_of_card_eq_sq_of_inducesModEqDegree_and_externalDegree_and_hasModulusSquareRegularSelection
+        (G := G) hsq ht hst hhost hext hselect)
+
+lemma
+    hasRegularInducedSubgraphOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard_and_hasModulusSquareRegularSelection
+    (G : SimpleGraph V) [DecidableRel G.Adj] {q : ℕ}
+    (hhost : HasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard G q)
+    (hselect : HasModulusSquareRegularSelection G q) :
+    HasRegularInducedSubgraphOfCard G q := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasSingleControlExactWitnessOfCard G
+      (hasSingleControlExactWitnessOfCard_of_hasExactCardFixedModulusSingleControlCompletedHostWitnessOfCard_and_hasModulusSquareRegularSelection
+        (G := G) hhost hselect)
 
 theorem hasSingleControlModularWitnessOfCard_iff_hasSingleControlModularBucketingWitnessOfCard
     (G : SimpleGraph V) (k : ℕ) :
@@ -4562,6 +8277,185 @@ private lemma modEq_dropDegree_and_extendedUnionDegree_of_modEq_hostDegree_and_m
     simpa [hcastv, hcastw] using hbigRaw v w
   exact ⟨hdrop, hbig⟩
 
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (href :
+      HasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard G k q r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases href with ⟨w, s, t, hwk, hw, blocks, e, htcard, hlen, hsep, hsmall, hctrl, hhost, hext⟩
+  rcases
+      modEq_dropDegree_and_extendedUnionDegree_of_modEq_hostDegree_and_modEq_unionDegree_and_externalBlockDegrees
+        (G := G) (u := w) (s := s) hw (blocks := ((t, e) :: blocks)) hsep hhost hsmall hext with
+    ⟨hdrop, hbigRaw⟩
+  have hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q] := by
+    intro v w'
+    have hAmbientEq :
+        w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)) =
+          s ∪ controlBlockUnion ((t, e) :: blocks) := by
+      ext x
+      by_cases hxw : x ∈ w
+      · simp [hxw, hw hxw, or_assoc, or_left_comm, or_comm]
+      · simp [hxw, or_assoc, or_left_comm, or_comm]
+    have hcastv :
+        (inducedOn G (w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))
+          (t := s ∪ controlBlockUnion ((t, e) :: blocks))
+          (h := hAmbientEq)
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl (hw v.2))))
+    have hcastw :
+        (inducedOn G (w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl w'.2)⟩ =
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))
+          (t := s ∪ controlBlockUnion ((t, e) :: blocks))
+          (h := hAmbientEq)
+          (hs := Finset.mem_union.mpr (Or.inl w'.2))
+          (ht := Finset.mem_union.mpr (Or.inl (hw w'.2))))
+    simpa [hcastv, hcastw] using hbigRaw v w'
+  exact ⟨w, s, t, hwk, hw, blocks, e, htcard, hlen, hsep, hbig, hdrop, hctrl, hhost, hext⟩
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (href :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G k q r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases href with ⟨w, s, t, hwk, hw, blocks, e, htcard, hlen, hsep, hbig, hdrop, hctrl, hhost, hext⟩
+  have hwDrop : Disjoint w (s \ w) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxW hxDrop
+    exact (Finset.mem_sdiff.mp hxDrop).2 hxW
+  have hdropBlocks : Disjoint (s \ w) (controlBlockUnion ((t, e) :: blocks)) := by
+    have hsBlocks : Disjoint s (controlBlockUnion ((t, e) :: blocks)) :=
+      disjoint_controlBlockUnion_of_controlBlocksSeparated hsep
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxDrop hxBlock
+    exact (Finset.disjoint_left.mp hsBlocks) (Finset.mem_sdiff.mp hxDrop).1 hxBlock
+  have hbigAmbient :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl w'.2)⟩ [MOD q] := by
+    intro v w'
+    have hAmbientEq :
+        w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)) =
+          s ∪ controlBlockUnion ((t, e) :: blocks) := by
+      rw [← Finset.union_assoc, Finset.union_comm w (s \ w), Finset.sdiff_union_of_subset hw]
+    have hcastv :
+        (inducedOn G (w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ =
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))
+          (t := s ∪ controlBlockUnion ((t, e) :: blocks))
+          (h := hAmbientEq)
+          (hs := Finset.mem_union.mpr (Or.inl v.2))
+          (ht := Finset.mem_union.mpr (Or.inl (hw v.2))))
+    have hcastw :
+        (inducedOn G (w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl w'.2)⟩ =
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ := by
+      simpa using
+        (inducedOn_degree_congr (G := G)
+          (s := w ∪ ((s \ w) ∪ controlBlockUnion ((t, e) :: blocks)))
+          (t := s ∪ controlBlockUnion ((t, e) :: blocks))
+          (h := hAmbientEq)
+          (hs := Finset.mem_union.mpr (Or.inl w'.2))
+          (ht := Finset.mem_union.mpr (Or.inl (hw w'.2))))
+    simpa [hcastv, hcastw] using hbig v w'
+  have hsmall :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (w ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v.1, Finset.mem_union.mpr (Or.inl v.2)⟩ ≡
+          (inducedOn G (w ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w'.1, Finset.mem_union.mpr (Or.inl w'.2)⟩ [MOD q] := by
+    exact
+      modEq_unionDegree_of_modEq_extendedUnionDegree_and_externalDegree
+        (G := G) (s := w) (t := s \ w) (u := controlBlockUnion ((t, e) :: blocks))
+        hwDrop hdropBlocks hbigAmbient hdrop
+  exact ⟨w, s, t, hwk, hw, blocks, e, htcard, hlen, hsep, hsmall, hctrl, hhost, hext⟩
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_inducesModEqDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s) {blocks : List (Finset V × ℕ)} {e : ℕ}
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hmod : InducesModEqDegree G w q)
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks)) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  refine ⟨w, s, t, hwk, hw, blocks, e, htcard, hlen, hsep, hbig, ?_, hctrl, hhost, hext⟩
+  exact modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree (G := G) hw hhost hmod
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_inducesRegularOfDegree
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r d : ℕ}
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s) {blocks : List (Finset V × ℕ)} {e : ℕ}
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hreg : InducesRegularOfDegree G w d)
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks)) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G k q r := by
+  rw [InducesRegularOfDegree] at hreg
+  apply
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_inducesModEqDegree
+      (G := G) hwk hw htcard hlen hsep hbig ?_ hctrl hhost hext
+  intro v w'
+  simpa [hreg v, hreg w'] using (Nat.ModEq.refl d : d ≡ d [MOD q])
+
 lemma hasBoundedControlBlockModularBucketingWitnessOfCard_of_modEq_hostDegree_and_modEq_unionDegree_and_externalBlockDegrees
     (G : SimpleGraph V) [DecidableRel G.Adj] {k r : ℕ} {u s : Finset V}
     (hku : k ≤ u.card) (hu : u ⊆ s) {q : ℕ} (hq : u.card ≤ q)
@@ -4925,6 +8819,699 @@ lemma
       (hku := by simpa [hwk]) hw htpos htr hst hwq hhost hdrop hctrl
 
 lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_inducesModEqDegree_and_exactCardFixedModulusControlBlockModularHostRefinementData
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k ≤ q) (hq : 1 < q)
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s) {blocks : List (Finset V × ℕ)} {e : ℕ}
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hmod : InducesModEqDegree G w q)
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks)) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_inducesModEqDegree
+        (G := G) hwk hw htcard hlen hsep hbig hmod hctrl hhost hext)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_inducesRegularOfDegree_and_exactCardFixedModulusControlBlockModularHostRefinementData
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r d : ℕ} (hkq : k ≤ q) (hq : 1 < q)
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s) {blocks : List (Finset V × ℕ)} {e : ℕ}
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hreg : InducesRegularOfDegree G w d)
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks)) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_inducesModEqDegree_and_exactCardFixedModulusControlBlockModularHostRefinementData
+      (G := G) hkq hq hwk hw htcard hlen hsep hbig
+      (by
+        rw [InducesRegularOfDegree] at hreg
+        intro v w'
+        simpa [hreg v, hreg w'] using (Nat.ModEq.refl d : d ≡ d [MOD q]))
+      hctrl hhost hext
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_internalTailBlocks_and_exactCardFixedModulusControlBlockModularHostRefinementData
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks tailBlocks : List (Finset V × ℕ)} {e : ℕ}
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (htailUnion : controlBlockUnion tailBlocks = s \ w)
+    (htailSep : ControlBlocksSeparated w tailBlocks)
+    (htailExt : HasConstantModExternalBlockDegrees G w q tailBlocks)
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks)) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G k q r := by
+  have hmod : InducesModEqDegree G w q := by
+    exact
+      inducesModEqDegree_of_modEq_hostDegree_and_internalTailBlocks
+        (G := G) hw hhost htailUnion htailSep htailExt
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_inducesModEqDegree
+      (G := G) hwk hw htcard hlen hsep hbig hmod hctrl hhost hext
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_of_internalTailBlocks_and_exactCardFixedModulusControlBlockModularHostRefinementData
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k ≤ q) (hq : 1 < q)
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks tailBlocks : List (Finset V × ℕ)} {e : ℕ}
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (htailUnion : controlBlockUnion tailBlocks = s \ w)
+    (htailSep : ControlBlocksSeparated w tailBlocks)
+    (htailExt : HasConstantModExternalBlockDegrees G w q tailBlocks)
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks)) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_internalTailBlocks_and_exactCardFixedModulusControlBlockModularHostRefinementData
+        (G := G) hwk hw htcard hlen hsep hbig htailUnion htailSep htailExt hctrl hhost hext)
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementTailDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (htail :
+      HasExactCardFixedModulusControlBlockModularHostRefinementTailDataOfCard G k q r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases htail with
+    ⟨w, s, t, hwk, hw, blocks, tailBlocks, e, htcard, hlen, hsep, hbig, hctrl, hhost, hext,
+      htailUnion, htailSep, htailExt⟩
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_internalTailBlocks_and_exactCardFixedModulusControlBlockModularHostRefinementData
+      (G := G) hwk hw htcard hlen hsep hbig htailUnion htailSep htailExt hctrl hhost hext
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementTailDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k ≤ q) (hq : 1 < q)
+    (htail :
+      HasExactCardFixedModulusControlBlockModularHostRefinementTailDataOfCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementTailDataOfCard
+        (G := G) htail)
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard_of_rowModEq_pow_succ
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks : List (Finset V × ℕ)} {e j : ℕ}
+    (hqpow : q = 2 ^ (j + 1))
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks))
+    {tail : ↑(w : Set V) → ℕ}
+    (hchain :
+      HasDyadicRowDivisibilityChainTo j
+        (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card) tail)
+    (hrow :
+      ∀ v w' : ↑(w : Set V),
+        (G.neighborFinset v.1 ∩ (s \ w)).card ≡
+          (G.neighborFinset w'.1 ∩ (s \ w)).card [MOD 2 ^ (j + 1)]) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  refine ⟨w, s, t, hwk, hw, blocks, e, j, hqpow, htcard, hlen, hsep, hbig, hctrl, hhost, hext,
+    tail, hchain, ?_⟩
+  intro v w'
+  exact (hchain.tail_modEq_two_iff_row_modEq_pow_succ (v := v) (w := w')).2 (hrow v w')
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard_of_rowModEq_pow_succ_basepoint
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks : List (Finset V × ℕ)} {e j : ℕ}
+    (hqpow : q = 2 ^ (j + 1))
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks))
+    {tail : ↑(w : Set V) → ℕ}
+    (hchain :
+      HasDyadicRowDivisibilityChainTo j
+        (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card) tail)
+    (w₀ : ↑(w : Set V))
+    (hrow :
+      ∀ v : ↑(w : Set V),
+        (G.neighborFinset v.1 ∩ (s \ w)).card ≡
+          (G.neighborFinset w₀.1 ∩ (s \ w)).card [MOD 2 ^ (j + 1)]) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard G k q r := by
+  refine
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard_of_rowModEq_pow_succ
+      (G := G) hwk hw hqpow htcard hlen hsep hbig hctrl hhost hext hchain ?_
+  intro v w'
+  exact (hrow v).trans (hrow w').symm
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_terminalModEq_two
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks : List (Finset V × ℕ)} {e j : ℕ}
+    (hqpow : q = 2 ^ (j + 1))
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks))
+    {row tail : ↑(w : Set V) → ℕ}
+    (hrow : ∀ v, row v = (G.neighborFinset v.1 ∩ (s \ w)).card)
+    (hchain : HasDyadicRowDivisibilityChainTo j row tail)
+    (hterm : ∀ v w' : ↑(w : Set V), tail v ≡ tail w' [MOD 2]) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  refine ⟨w, s, t, hwk, hw, blocks, e, j + 1, hqpow, htcard, hlen, hsep, hbig, hctrl, hhost,
+    hext, ?_⟩
+  exact
+    HasDyadicRowDivisibilityChain.congr
+      (hchain.succ_of_terminalModEq_two hterm)
+      hrow
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_dyadicTailBetaVanishesAt
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks : List (Finset V × ℕ)} {e j : ℕ}
+    (hqpow : q = 2 ^ (j + 1))
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks))
+    {row tail : ↑(w : Set V) → ℕ}
+    (hrow : ∀ v, row v = (G.neighborFinset v.1 ∩ (s \ w)).card)
+    (hchain : HasDyadicRowDivisibilityChainTo j row tail)
+    (hbeta : DyadicTailBetaVanishesAt j row) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r := by
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_terminalModEq_two
+      (G := G) (w := w) (s := s) (t := t) hwk hw (blocks := blocks) (e := e)
+      (j := j) hqpow htcard hlen hsep hbig hctrl hhost hext hrow hchain
+      (hbeta tail hchain)
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (hbeta :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaDataOfCard G k q r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hbeta with
+    ⟨w, s, t, hwk, hw, blocks, e, j, row, tail, hqpow, htcard, hlen, hsep, hbig, hctrl,
+      hhost, hext, hrow, hchain, hbetaVanishes⟩
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_dyadicTailBetaVanishesAt
+      (G := G) (w := w) (s := s) (t := t) hwk hw (blocks := blocks) (e := e)
+      (j := j) hqpow htcard hlen hsep hbig hctrl hhost hext
+      (row := row) (tail := tail) hrow hchain hbetaVanishes
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (hbeta :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard G k q r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hbeta with
+    ⟨w, s, t, hwk, hw, blocks, e, j, row, hqpow, htcard, hlen, hsep, hbig, hctrl,
+      hhost, hext, hrow, hbetaUpTo⟩
+  refine ⟨w, s, t, hwk, hw, blocks, e, j, hqpow, htcard, hlen, hsep, hbig, hctrl, hhost,
+    hext, ?_⟩
+  exact
+    HasDyadicRowDivisibilityChain.congr
+      (hasDyadicRowDivisibilityChain_of_dyadicTailBetaVanishesUpTo hbetaUpTo)
+      hrow
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (hdiv :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hdiv with
+    ⟨w, s, t, hwk, hw, blocks, e, j, hqpow, htcard, hlen, hsep, hbig, hctrl, hhost, hext,
+      hchain⟩
+  refine ⟨w, s, t, hwk, hw, blocks, e, j,
+    (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card),
+    hqpow, htcard, hlen, hsep, hbig, hctrl, hhost, hext, ?_, ?_⟩
+  · intro v
+    rfl
+  · exact dyadicTailBetaVanishesUpTo_of_hasDyadicRowDivisibilityChain hchain
+
+theorem
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard_iff_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard G k q r ↔
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+        G k q r :=
+  ⟨hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+      G,
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+      G⟩
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_modEq_two_and_halved
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks : List (Finset V × ℕ)} {e j : ℕ}
+    (hqpow : q = 2 ^ (j + 1))
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks))
+    {row : ↑(w : Set V) → ℕ}
+    (hrow : ∀ v, row v = (G.neighborFinset v.1 ∩ (s \ w)).card)
+    (hmodTwo : ∀ v w' : ↑(w : Set V), row v ≡ row w' [MOD 2])
+    (hhalf : HasDyadicRowDivisibilityChain j (fun v : ↑(w : Set V) => row v / 2)) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  refine ⟨w, s, t, hwk, hw, blocks, e, j + 1, hqpow, htcard, hlen, hsep, hbig, hctrl, hhost,
+    hext, ?_⟩
+  exact
+    HasDyadicRowDivisibilityChain.congr
+      (hasDyadicRowDivisibilityChain_succ_of_modEq_two_and_halved hmodTwo hhalf)
+      hrow
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (hterm :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard G k q r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hterm with
+    ⟨w, s, t, hwk, hw, blocks, e, j, hqpow, htcard, hlen, hsep, hbig, hctrl, hhost, hext,
+      tail, hchain, hmodTwo⟩
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_terminalModEq_two
+      (G := G) (w := w) (s := s) (t := t) hwk hw (blocks := blocks) (e := e) (j := j)
+      hqpow htcard hlen hsep hbig hctrl hhost hext
+      (row := fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card)
+      (tail := tail) (hrow := by intro v; rfl) hchain hmodTwo
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementFirstBitPacketDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (hpacket :
+      HasExactCardFixedModulusControlBlockModularHostRefinementFirstBitPacketDataOfCard G k q r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hpacket with
+    ⟨w, s, t, hwk, hw, blocks, e, j, hqpow, htcard, hlen, hsep, hbig, hctrl, hhost, hext,
+      packets, hrow, hpackets, hhalf⟩
+  have hhalfPackets :
+      HasDyadicRowDivisibilityChain j
+        (fun v : ↑(w : Set V) =>
+          binaryColumnRowSum (flattenBinaryPackets packets) v / 2) := by
+    exact
+      HasDyadicRowDivisibilityChain.congr hhalf
+        (fun v => by rw [← hrow v])
+  exact
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_modEq_two_and_halved
+      (G := G) hwk hw hqpow htcard hlen hsep hbig hctrl hhost hext hrow
+      (modEq_rowSum_two_of_hasBinaryZeroSumPacketPartition hpackets) hhalfPackets
+
+lemma
+    hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTailDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ}
+    (hpair :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTailDataOfCard G k q r) :
+    HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hpair with
+    ⟨w, s, t, hwk, hw, blocks, e, j, hqpow, htcard, hlen, hsep, hbig, hctrl, hhost, hext,
+      cols, hrow, htree⟩
+  refine ⟨w, s, t, hwk, hw, blocks, e, j, hqpow, htcard, hlen, hsep, hbig, hctrl, hhost, hext, ?_⟩
+  exact
+    HasDyadicRowDivisibilityChain.congr
+      (hasDyadicRowDivisibilityChain_binaryColumnRowSum_of_hasDyadicPairingTree htree)
+      hrow
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    (hdiv :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hdiv with
+    ⟨w, s, t, hwk, hw, blocks, e, j, hqpow, htcard, hlen, hsep, _hbig, hctrl, hhost, _hext,
+      hchain⟩
+  have hst : Disjoint s t := by
+    rcases hsep with ⟨hst, _htail, _hsepTail⟩
+    exact hst
+  have htpos : 0 < t.card := by
+    rw [htcard]
+    exact Nat.sub_pos_of_lt hq
+  have htr : t.card ≤ q - 1 := by
+    rw [htcard]
+  have hwpow : w.card = 2 ^ j := by
+    calc
+      w.card = k := hwk
+      _ = q := hkq
+      _ = 2 ^ j := hqpow
+  have hhostPow :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD 2 ^ j] := by
+    simpa [hqpow] using hhost
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_pow_two_and_dyadicRowDivisibilityChain_of_modEq_hostDegree_and_externalDegree
+      (G := G) (u := w) (s := s) (t := t) (k := k) (r := q - 1)
+      (hku := by simpa [hwk]) hw htpos htr hst hwpow hhostPow
+      (row := fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card)
+      (hrow := by intro v; rfl) hchain hctrl
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    (hbeta :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaDataOfCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaDataOfCard
+        (G := G) hbeta)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    (hbeta :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicBetaUpToDataOfCard
+        (G := G) hbeta)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    (hterm :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard
+        (G := G) hterm)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_rowModEq_pow_succ
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks : List (Finset V × ℕ)} {e j : ℕ}
+    (hqpow : q = 2 ^ (j + 1))
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks))
+    {tail : ↑(w : Set V) → ℕ}
+    (hchain :
+      HasDyadicRowDivisibilityChainTo j
+        (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card) tail)
+    (hrow :
+      ∀ v w' : ↑(w : Set V),
+        (G.neighborFinset v.1 ∩ (s \ w)).card ≡
+          (G.neighborFinset w'.1 ∩ (s \ w)).card [MOD 2 ^ (j + 1)]) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard_of_rowModEq_pow_succ
+        (G := G) hwk hw hqpow htcard hlen hsep hbig hctrl hhost hext hchain hrow)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_rowModEq_pow_succ_basepoint
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks : List (Finset V × ℕ)} {e j : ℕ}
+    (hqpow : q = 2 ^ (j + 1))
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks))
+    {tail : ↑(w : Set V) → ℕ}
+    (hchain :
+      HasDyadicRowDivisibilityChainTo j
+        (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card) tail)
+    (w₀ : ↑(w : Set V))
+    (hrow :
+      ∀ v : ↑(w : Set V),
+        (G.neighborFinset v.1 ∩ (s \ w)).card ≡
+          (G.neighborFinset w₀.1 ∩ (s \ w)).card [MOD 2 ^ (j + 1)]) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTerminalDataOfCard_of_rowModEq_pow_succ_basepoint
+        (G := G) hwk hw hqpow htcard hlen hsep hbig hctrl hhost hext hchain w₀ hrow)
+
+lemma
+    hasRegularInducedSubgraphOfCard_of_card_eq_modulus_and_one_lt_modulus_and_rowModEq_pow_succ
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks : List (Finset V × ℕ)} {e j : ℕ}
+    (hqpow : q = 2 ^ (j + 1))
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks))
+    {tail : ↑(w : Set V) → ℕ}
+    (hchain :
+      HasDyadicRowDivisibilityChainTo j
+        (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card) tail)
+    (hrow :
+      ∀ v w' : ↑(w : Set V),
+        (G.neighborFinset v.1 ∩ (s \ w)).card ≡
+          (G.neighborFinset w'.1 ∩ (s \ w)).card [MOD 2 ^ (j + 1)]) :
+    HasRegularInducedSubgraphOfCard G k := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasBoundedSingleControlExactWitnessOfCard G
+      (hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_rowModEq_pow_succ
+        (G := G) hkq hq hwk hw hqpow htcard hlen hsep hbig hctrl hhost hext hchain hrow)
+
+lemma
+    hasRegularInducedSubgraphOfCard_of_card_eq_modulus_and_one_lt_modulus_and_rowModEq_pow_succ_basepoint
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    {w s t : Finset V} (hwk : w.card = k) (hw : w ⊆ s)
+    {blocks : List (Finset V × ℕ)} {e j : ℕ}
+    (hqpow : q = 2 ^ (j + 1))
+    (htcard : t.card = q - 1) (hlen : blocks.length ≤ r)
+    (hsep : ControlBlocksSeparated s ((t, e) :: blocks))
+    (hbig :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨v, Finset.mem_union.mpr (Or.inl (hw v.2))⟩ ≡
+          (inducedOn G (s ∪ controlBlockUnion ((t, e) :: blocks))).degree
+            ⟨w', Finset.mem_union.mpr (Or.inl (hw w'.2))⟩ [MOD q])
+    (hctrl : ∀ v : ↑(w : Set V), (G.neighborFinset v.1 ∩ t).card = e)
+    (hhost :
+      ∀ v w' : ↑(w : Set V),
+        (inducedOn G s).degree ⟨v.1, hw v.2⟩ ≡
+          (inducedOn G s).degree ⟨w'.1, hw w'.2⟩ [MOD q])
+    (hext : HasConstantModExternalBlockDegrees G w q ((t, e) :: blocks))
+    {tail : ↑(w : Set V) → ℕ}
+    (hchain :
+      HasDyadicRowDivisibilityChainTo j
+        (fun v : ↑(w : Set V) => (G.neighborFinset v.1 ∩ (s \ w)).card) tail)
+    (w₀ : ↑(w : Set V))
+    (hrow :
+      ∀ v : ↑(w : Set V),
+        (G.neighborFinset v.1 ∩ (s \ w)).card ≡
+          (G.neighborFinset w₀.1 ∩ (s \ w)).card [MOD 2 ^ (j + 1)]) :
+    HasRegularInducedSubgraphOfCard G k := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasBoundedSingleControlExactWitnessOfCard G
+      (hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_rowModEq_pow_succ_basepoint
+        (G := G) hkq hq hwk hw hqpow htcard hlen hsep hbig hctrl hhost hext hchain w₀ hrow)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementFirstBitPacketDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    (hpacket :
+      HasExactCardFixedModulusControlBlockModularHostRefinementFirstBitPacketDataOfCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementFirstBitPacketDataOfCard
+        (G := G) hpacket)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTailDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k = q) (hq : 1 < q)
+    (hpair :
+      HasExactCardFixedModulusControlBlockModularHostRefinementDyadicTailDataOfCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_eq_modulus_and_one_lt_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDyadicDivisibilityDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementDyadicTailDataOfCard
+        (G := G) hpair)
+
+lemma
     hasRegularInducedSubgraphOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
     (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k ≤ q) (hq : 1 < q)
     (href : HasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard G k q r) :
@@ -4932,6 +9519,29 @@ lemma
   exact
     hasRegularInducedSubgraphOfCard_of_hasBoundedSingleControlExactWitnessOfCard G
       (hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+        (G := G) hkq hq href)
+
+lemma
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k ≤ q) (hq : 1 < q)
+    (href :
+      HasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard G k q r) :
+    HasBoundedSingleControlExactWitnessOfCard G k (q - 1) := by
+  exact
+    hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard
+      (G := G) hkq hq
+      (hasExactCardFixedModulusControlBlockModularHostRefinementDropDataOfCard_of_hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+        (G := G) href)
+
+lemma
+    hasRegularInducedSubgraphOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
+    (G : SimpleGraph V) [DecidableRel G.Adj] {k q r : ℕ} (hkq : k ≤ q) (hq : 1 < q)
+    (href :
+      HasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard G k q r) :
+    HasRegularInducedSubgraphOfCard G k := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_hasBoundedSingleControlExactWitnessOfCard G
+      (hasBoundedSingleControlExactWitnessOfCard_of_card_le_modulus_and_hasExactCardFixedModulusControlBlockModularHostRefinementSmallAmbientDataOfCard
         (G := G) hkq hq href)
 
 lemma hasExactControlBlockWitnessOfCard_of_hasControlBlockBucketingWitnessOfCard

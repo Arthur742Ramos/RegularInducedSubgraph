@@ -69,6 +69,28 @@ lemma F_monotone : Monotone F := by
   rw [le_F_iff]
   exact admissibleBounds_mono hnm (F_mem_admissibleBounds n)
 
+/--
+Finite base case used by the q = 4 shortcut.
+
+The script
+
+`python search_structured_q4.py --min-n 7 --max-n 7 --progress-step 500000`
+
+exhaustively checks all `2^21` labelled graphs on `7` vertices and reports that
+`regular-induced-4-free graphs: 0`, so every graph on `7` vertices contains a regular induced
+subgraph on at least `4` vertices.  We keep this as an explicit hypothesis until the finite proof is
+formalized in Lean.
+-/
+def SevenVertexFourRegularBaseCase : Prop :=
+  4 ∈ admissibleBounds 7
+
+theorem four_le_F_seven (hbase : SevenVertexFourRegularBaseCase) : 4 ≤ F 7 := by
+  exact le_F_iff.mpr hbase
+
+theorem four_le_F_of_seven_le (hbase : SevenVertexFourRegularBaseCase)
+    {n : ℕ} (hn : 7 ≤ n) : 4 ≤ F n := by
+  exact le_trans (four_le_F_seven hbase) (F_monotone hn)
+
 lemma hasRegularInducedSubgraphOfCard_of_le_F_fintypeCard
     {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) {k : ℕ}
     (hk : k ≤ F (Fintype.card V)) :

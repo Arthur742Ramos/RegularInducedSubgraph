@@ -280,14 +280,70 @@ If you want a quick way into the artifact, the following declarations are the be
   The same Gallai theorem repackaged in the empty-control fixed-modulus cascade language
   `HasFixedModulusCascadeWitnessOfCard`, together with the asymptotic bookkeeping proposition
   `RegularInducedSubgraph.emptyControlDyadicParityBaseCase`.
-- `RegularInducedSubgraph.not_dyadicParityBaseCase`  
+- `RegularInducedSubgraph.not_dyadicParityBaseCase`
   Formal obstruction showing that the naive terminal-capped parity base case is actually false:
   the terminal bucket in `HasFixedModulusControlBlockModularCascadeWitnessOfCard G k q` always has
   size at most `q`, so the modulus-`2` version cannot force `n / 2` vertices.
-- `RegularInducedSubgraph.targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge`  
+- `RegularInducedSubgraph.targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlTerminalBridge`
   Corrected dyadic reduction: the true empty-control parity base case, together with a
   polynomial-cost empty-control dyadic lift and a polynomial-cost bridge into the terminal-capped
   control-block modular cascade package, already implies `TargetStatement`.
+- `RegularInducedSubgraph.targetStatement_of_polynomialCostEmptyControlDyadicLift_of_polynomialCostEmptyControlExternalBlockBridge`
+  Sharpened Branch B surface: it is enough to produce, at polynomial cost, the missing separated
+  control-block family with constant external degree modulo `q` on top of the empty-control
+  fixed-modulus cascade package. The existing finite cascade bridge then handles the passage to the
+  terminal control-block modular cascade witness automatically. The new reduction theorem
+  `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostEmptyControlExternalBlockBridge`
+  also feeds this package directly into the fixed-witness regularization pipeline.
+- `RegularInducedSubgraph.hasPolynomialCostEmptyControlTerminalBridge_iff_hasPolynomialCostEmptyControlExternalBlockBridge`
+  The external-block bridge is not a genuinely weaker theorem target: it is equivalent to the
+  terminal control-block modular cascade bridge, but makes the missing finite data explicit.
+- `RegularInducedSubgraph.HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge`
+  Weaker surviving Branch B self-target: only positive dyadic moduli `q = 2^j` with `j > 0` and the
+  terminal case `m = q` are requested.
+- `RegularInducedSubgraph.hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge`
+  The positive-dyadic external-block self-target already yields the positive-dyadic terminal cascade
+  witness, and
+  `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge`
+  feeds it directly into the full regularization pipeline.
+- `RegularInducedSubgraph.hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_iff_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge`
+  Likewise in the terminal self-case, the external-block formulation is equivalent to the terminal
+  cascade formulation; it is a data-explicit repackaging, not a weaker target.
+- `RegularInducedSubgraph.HasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge`
+  New honest finite Branch B self-target: from a bounded host witness of size `q * q` at positive
+  dyadic modulus `q = 2^j`, produce a bounded exact single-control witness of size `q` with control
+  budget `q - 1`. This is the surviving direct exact self-target in the positive-dyadic route.
+- `RegularInducedSubgraph.HasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge`
+  Richer finite Branch B self-target matching the current `Cascade.lean` output exactly: from the full
+  refinement-data package of the `q * q -> q` host step, produce a bounded exact single-control
+  witness of size `q`. The theorem
+  `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicRefinementExactSelfBridge`
+  shows that this honest refinement-data bridge already feeds the same exponent-`D + 2`
+  regularization / forcing / `TargetStatement` pipeline.
+- `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge`
+  If that one-step exact bridge exists at budget `D + 1`, then one extra factor of `q` already gives
+  full fixed-witness terminal regularization at exponent `D + 2`.
+- `RegularInducedSubgraph.hasExactCardFixedModulusSingleControlModularHostWitnessOfCard_of_hasBoundedFixedModulusControlBlockModularHostWitnessOfCard_self`
+  What the current finite host-step theorem already proves in the self-case: from a bounded host
+  witness of size `q * q`, one can extract an exact-card fixed single-control modular host witness of
+  size `q` whose control set has size exactly `q - 1`.
+- `RegularInducedSubgraph.HasExactCardFixedSingleControlHostMaximalControlResidueUpgrade` and
+  `RegularInducedSubgraph.HasExactCardFixedSingleControlHostMaximalControlUpgrade`
+  The two sharpened finite upgrade surfaces now exposed in `Asymptotic.lean`: the stronger
+  residue-host route from the structured `q - 1`-control modular-host output, and the weaker direct
+  exact-upgrade route that is still sufficient for the regularization pipeline. These remain useful
+  stripped interfaces, but the refinement-data bridge above is now the honest theorem surface closest
+  to the current finite proof output.
+- `RegularInducedSubgraph.HasDropResidueExtractionFromHostWitness` and
+  `RegularInducedSubgraph.hasBoundedFixedModulusControlBlockModularHostPositiveDyadicStepExactSelfBridge_of_hasDropResidueExtractionFromHostWitness`
+  Alternative conditional route to the step-self-bridge that factors the remaining obstruction
+  through a single combinatorial claim: at `q = 2^j`, every bounded fixed-modulus control-block
+  modular host witness of size `q * q` admits the missing dropped-part residue at bucket `q`.
+  Algebraically the claim reduces to the existence of a size-`q` regular induced subgraph on `q^2`
+  vertices (the EFS conjecture at `size = √n`): trivial for `q = 2`, from `R(3,3) = 6 ≤ 9` for
+  `q = 3`, and empirically validated at `q = 4` (0/500 counterexamples across random graph
+  densities). This isolates the finite bottleneck more tightly than the previous refuted
+  maximal-control upgrades, which are known to admit counterexamples.
 - `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_succ_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization`  
   Finite host-iteration reduction: if terminal-size bounded fixed-modulus control-block modular host
   witnesses already regularize on `q = 2^j` vertices, then the older one-control host bottleneck,
@@ -296,6 +352,8 @@ If you want a quick way into the artifact, the following declarations are the be
   Stronger shortcut: a budget-`1` terminal bounded-host collapse already forces `TargetStatement`
   directly, via the cubic forcing-threshold bound
   `RegularInducedSubgraph.forcingThreshold_pow_two_le_of_hasBoundedFixedModulusControlBlockModularHostTerminalRegularization_one`.
+  The implication is correct, but the hypothesis itself is now known to be false in general: the
+  script `verify_q8_terminal_host_counterexample.py` gives an explicit `q = 8` counterexample.
 - `RegularInducedSubgraph.hasPolynomialCostFixedOneControlHostTerminalRegularization_iff_hasPolynomialCostFixedSingleControlHostTerminalRegularization`  
   The remaining one-control host bottleneck can now be stated with one explicit control set, rather
   than a bounded control-block host witness of budget `1`; the zero-cost case is exposed by
@@ -304,11 +362,47 @@ If you want a quick way into the artifact, the following declarations are the be
   The zero-cost single-control host bottleneck reduces further to the exact-cardinality case
   `|u| = q`, exposed by
   `RegularInducedSubgraph.targetStatement_of_hasExactCardFixedSingleControlHostTerminalRegularization`.
+  Again, this is only a reduction identity. The terminal exact-card statement itself fails at
+  `q = 8`, as verified by `verify_q8_terminal_host_counterexample.py`.
+- `RegularInducedSubgraph.hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge_succ_of_hasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalCascadeBridge`
+  Corrected Branch B reduction: if terminal bounded-host witnesses at positive dyadic moduli
+  `q = 2^j` with `j > 0` can be bridged to the weaker control-block modular cascade package, then
+  the viable positive-dyadic fixed-witness self-bridge follows one exponent later.
+- `RegularInducedSubgraph.hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessTerminalSelfBridge`
+  The positive-dyadic self-bridge is already enough for the full regularization pipeline, because the
+  only omitted modulus is `q = 1`, where the target is the trivial one-vertex regular induced
+  subgraph.
+- `verify_q8_terminal_host_counterexample.py`
+  The same explicit `q = 8` graph also has **no** fixed-modulus control-block modular cascade witness
+  of size `8`, so the budget-`1` terminal bounded-host-to-cascade shortcut is false as well. The new
+  positive-dyadic reductions are therefore structural reductions, not evidence that the terminal
+  bounded-host bottleneck itself is now live again. The external-block formulations now proved in
+  Lean are equivalent data-explicit repackagings of these terminal cascade bridges. The new finite
+  self-theorem now shows that the `q * q -> q` step already yields a structured exact-card
+  single-control modular host witness with control size `q - 1`, and the code now also packages the
+  richer refinement data surrounding that witness. Since the old unrestricted exact-card host
+  regularization route is itself refuted by the same `q = 8` graph, any surviving theorem must
+  exploit this extra `q - 1`-control structure and/or its surrounding refinement data rather than
+  factor through an arbitrary exact-card host witness.
+- `verify_q4_structured_residue_upgrade_counterexample.py`
+  A new 8-vertex counterexample showing that the strongest local refinement of that structured output is
+  false: the graph has a structured exact-card fixed-modulus single-control modular host witness with
+  control size `q - 1 = 3` at `q = 4`, but it has **no** structured residue-host witness of the same
+  size/control-card anywhere. At the same time, bounded exact single-control witnesses of size `4` and
+  budget `3` still exist on the graph, so the weaker direct exact-upgrade route remains alive.
+- `verify_d0_empty_control_external_block_bridge_counterexample.py`
+  The zero-cost external-block bridge is false already on `K_2`: the whole graph is a fixed-modulus
+  cascade witness of size `2` at modulus `2`, but there is no room for any nonempty separated
+  control-block family. So the live Branch B target is not the literal `D = 0` case, but a
+  positive-cost / one-more-exponent external-block bridge. In Lean, the external-block formulations
+  are now explicit equivalent repackagings of the corresponding terminal cascade bridges.
 - `RegularInducedSubgraph.hasSingleControlExactWitnessOfCard_of_control_card_lt_modulus_of_modEq_hostDegree_and_dropDegree_and_externalDegree`  
   Sharp finite bridge for the host bottleneck: once the missing dropped-part residue on `s \ u` is
   also frozen modulo `q`, and the control set is smaller than the modulus, the exact-card
   single-control host package collapses to an exact single-control witness and hence to a regular
-  induced subgraph.
+  induced subgraph. The new q = 4 counterexample shows that this residue route is not automatic even
+  for the structured `q - 1`-control self-step output, so it is now only one possible strengthening,
+  not the main finite target.
 
 ## Candidate approaches to try
 
@@ -341,7 +435,9 @@ If you want a quick way into the artifact, the following declarations are the be
    `exists_large_subset_with_modEq_hostDegree_of_unionDegree_and_externalDegree_card_bound`, and its
    separated-block extension
    `exists_large_subset_with_modEq_hostDegree_of_blockUnionDegree_and_externalBlockDegrees_card_bound`,
-   formalize the basic residue-class extraction step for this program.
+   formalize the basic residue-class extraction step for this program. The next concrete theorem target
+   is to turn this bookkeeping into a positive-cost form of
+   `HasPolynomialCostEmptyControlExternalBlockBridge`.
 
 5. **Density-increment split**  
    Either a large piece is already close to regular, or there is a structural imbalance that lets us pass to a denser or sparser induced piece while keeping a quantitative lower bound on size. Iterating the increment should eventually terminate in a regular configuration.
@@ -371,6 +467,9 @@ dependencies (`Batteries`, `mathlib`, `ProofWidgets`) before reaching this repos
 files.
 
 ## Suggested next formal steps
+
+For a focused status snapshot and proof-critical roadmap, see
+[notes/current-roadmap.md](notes/current-roadmap.md).
 
 1. Attack one of the equivalent discrete targets:
    - inverse form: for every real `a > 1`, eventually

@@ -333,10 +333,10 @@ than on a chain of shrinking ambient halves.
 
 ## 11. Bottom line
 
-The strongest honest summary I currently trust is:
+The strongest honest summary at this earlier checkpoint was:
 
 - `q = 2, 4` are proved;
-- the general dyadic theorem is open;
+- the general dyadic theorem was open;
 - the live target is to force some `q`-set `U` with `Omega_{V \ U}(U) = 0`.
 
 The two routes worth keeping are:
@@ -1063,7 +1063,7 @@ So a successful supported reseating cannot be built from vague extra mass in `W`
 compensate the anti-completer block **pointwise**, and in particular must supply many `A`-over-`B`
 separator vertices.
 
-What is still missing is therefore no longer arbitrary large support, but a genuine
+What remained missing at this stage was therefore no longer arbitrary large support, but a genuine
 **support-extraction theorem** forcing such separators from global minimality:
 
 1. seed-anti-completer incidences `N(u) ∩ P`, `N(v) ∩ P`;

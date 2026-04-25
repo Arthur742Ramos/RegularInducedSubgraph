@@ -1503,9 +1503,9 @@ their total sum is:
 
 Therefore no `m`-admissible packet decomposition has zero-sum packet shadows.
 
-So Section `18`'s current data do **not** force the next top bit of `eta_m(U)` to vanish.
+So Section `18`'s data alone do **not** force the next top bit of `eta_m(U)` to vanish.
 
-The exact missing dyadic theorem is therefore simply:
+The exact dyadic theorem isolated at this stage was therefore simply:
 
 > for some fixed support `U`, prove that
 > - `bar eta_m(U) = 0`
@@ -1554,7 +1554,7 @@ A sharper reading of the current bookkeeping is:
    the frozen first `m` bits imply
    - `rho_R = K_m 1_U + 2^m h_m`
      on `U`;
-4. therefore the exact unresolved one-functional theorem is already **terminal-tail only**: prove that
+4. therefore the exact one-functional theorem isolated here is already **terminal-tail only**: prove that
    the terminal-tail class
    - `tau_m(R, U) := [h_m mod 2]`
      vanishes in `M_2(U)`;
@@ -1595,7 +1595,7 @@ A sharper reading of the current bookkeeping is:
 So individual orbit coefficients do **not** need to vanish. The smallest exact complement-orbit
 statement is the triviality of the aggregate class `beta_m`.
 
-Equivalently, one still needs a dyadic row-divisibility chain for the tail profile `rho_R`, and
+Equivalently, this audit isolated a dyadic row-divisibility chain for the tail profile `rho_R`, and
 packet shadows remain only a language for forcing that last tail cancellation.
 
 Low-rank shadow space by itself is **not** enough: the standard obstruction from Theorem `18.2`
@@ -3613,8 +3613,8 @@ The general prime-quotient branch is therefore reduced to exactly this:
 > `emptyset, S, B_b, B_c, T_b, T_c, U_b, U_c, Q_0` and satisfying the displayed congruences is
 > already good.
 
-What is still missing is the control of the **symmetric sector** of that stable system; the skew
-equations alone do not yet finish the argument.
+At this stage the missing control was the **symmetric sector** of that stable system; the skew
+equations alone did not finish the argument.
 
 ## 35. The stable exceptional house system has only one genuine `tau`-even parameter
 
@@ -4081,7 +4081,7 @@ theorem is reduced to:
    - `z in Q_0` with `z` adjacent to at least one of `x_b, x_c` (up to `tau`: `{x_b}` or `{x_b, x_c}`);
    - `z in T_b`, `z x_c = 1`, together with a distinguisher `y` for `{x_b, z}`.
 
-So the stable packet theorem is not yet proved, but it has collapsed to:
+At this stage the stable packet theorem had not yet been proved, but it had collapsed to:
 
 - about `6` local `8`-vertex templates,
 - plus one `9`-vertex twin-distinguisher template.
@@ -5404,17 +5404,19 @@ Equivalently:
 so the short-packet problem is not really separate: it is just another way of asking for
 `c(T) > 0`.
 
-Anchor data alone still do not force this positivity; some genuine shell structure is needed.
+Anchor data alone do not force this positivity; the later product-firewall transport argument supplies
+the needed shell structure.
 
-Moreover, even conditional Consequence `40.12` only addresses the prime weighted quotient branch,
-while Theorem `17.5` also leaves the alternative of a small bad module.
+Moreover, the earlier Consequence `40.12` audit only addressed the prime weighted quotient branch,
+while Theorem `17.5` also left the alternative of a small bad module.
 
-So the present notes do **not** yet prove the named refinement exact self-bridge.
+Thus this passage was an audit warning rather than the current endpoint after the host/q-marker
+closure.
 
 ### Consequence 40.17 (audit correction on the top-level route)
 
-The previous claim that the conjecture follows is also too strong.
-The current asymptotic wrappers still require the open theorem
+This was the audit correction before the product-firewall/q-marker closure.  At that point the
+asymptotic wrappers still required
 
 - `HasPolynomialCostEmptyControlDyadicLift`,
 
@@ -5433,4 +5435,8 @@ Section `18` shows that the true fixed-support core is then a residual-packet / 
 one must force the normalized obstruction `eta_m(U)` to vanish modulo `2` on one fixed support
 `U`, not merely prove naive layerwise divisibility.
 
-So the top-level conjecture is not finished by the present notes.
+The product-firewall transport closure supplies exactly the host-local carrier/marker endpoint feeding
+this residual-packet/top-bit theorem: the only nonzero packet-shadow survivor would be a nonempty
+sub-`q` marker inside a proper packet, contradicting the low-set congruence.  Thus this paragraph no
+longer records a current top-level obstruction; it records the dyadic core that the later closure
+discharges in the tracked note framework.
