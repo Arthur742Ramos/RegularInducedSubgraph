@@ -2279,6 +2279,24 @@ structure HigherBitSmallModulusAffineSelectorsFromElevenExtended : Prop where
   fromSeventeen :
     HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulusAffineCrossSelector 17
 
+/--
+Fixed-witness analogue of the extended higher-bit selector package, exposing the Ramsey-closed
+finite `(m, j) = (13, 3)` target as a named field.
+-/
+structure HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended : Prop where
+  h11_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 11
+  h12_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 12
+  h13_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 13
+  h13_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 13
+  h14_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 14
+  h14_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 14
+  h15_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 15
+  h15_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 15
+  h16_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 16
+  h16_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 16
+  fromSeventeen :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 17
+
 /-- Forget the extra `(13,3)` field from the extended higher-bit selector package. -/
 theorem higherBitSmallModulusAffineSelectorsFromEleven_of_extended
     (h : HigherBitSmallModulusAffineSelectorsFromElevenExtended) :
@@ -2293,6 +2311,62 @@ theorem higherBitSmallModulusAffineSelectorsFromEleven_of_extended
   h16_2 := h.h16_2
   h16_3 := h.h16_3
   fromSeventeen := h.fromSeventeen
+
+/-- Forget the extra `(13,3)` field from the extended fixed-witness target package. -/
+theorem higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extendedTargets
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven where
+  h11_2 := h.h11_2
+  h12_2 := h.h12_2
+  h13_2 := h.h13_2
+  h14_2 := h.h14_2
+  h14_3 := h.h14_3
+  h15_2 := h.h15_2
+  h15_3 := h.h15_3
+  h16_2 := h.h16_2
+  h16_3 := h.h16_3
+  fromSeventeen := h.fromSeventeen
+
+/--
+A localized Ramsey bound on `m` versus `m` cliques/independent sets supplies an affine selector:
+choose a regular Ramsey subset inside the current witness support and use the cross-term bridge.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    {j m N : ℕ} (hbound : HasCliqueOrIndepSetBound m m N)
+    (hN : N ≤ (2 ^ j) ^ 6 * m) :
+    HasExactSmallModulusAffineCrossSelector j m := by
+  intro n _hambient G s hsCard _hsmod
+  classical
+  let H : SimpleGraph ↑(s : Set (Fin n)) := inducedOn G s
+  have hsRamsey : N ≤ (Finset.univ : Finset ↑(s : Set (Fin n))).card := by
+    have hcard : (Finset.univ : Finset ↑(s : Set (Fin n))).card = s.card := by
+      simp
+    rw [hcard]
+    exact le_trans hN hsCard
+  have hregH : HasRegularInducedSubgraphOfCard H m := by
+    rcases hbound H Finset.univ hsRamsey with hclique | hindep
+    · rcases hclique with ⟨t, _ht, ht⟩
+      simpa [ht.card_eq] using
+        (hasRegularInducedSubgraphOfCard_of_isClique H t ht.isClique)
+    · rcases hindep with ⟨t, _ht, ht⟩
+      simpa [ht.card_eq] using
+        (hasRegularInducedSubgraphOfCard_of_isIndepSet H t ht.isIndepSet)
+  rcases hregH with ⟨t, hmt, d, htd⟩
+  let e : H ↪g G :=
+    SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
+  let u : Finset (Fin n) := t.map (Function.Embedding.subtype (· ∈ (s : Set (Fin n))))
+  have hus : u ⊆ s := by
+    intro x hx
+    rcases Finset.mem_map.mp hx with ⟨v, hv, rfl⟩
+    exact v.2
+  have hmu : m ≤ u.card := by
+    simpa [u] using hmt
+  have hud : InducesRegularOfDegree G u d := by
+    simpa [u, e] using (inducesRegularOfDegree_of_embedding e htd)
+  refine ⟨u, hus, hmu, ?_⟩
+  exact
+    cross_modEq_card_of_inducesModEqDegree_subset (G := G) hus
+      (inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G hud)
 
 /-- A Ramsey-large current witness supplies an affine selector by retaining a regular subset. -/
 theorem hasExactSmallModulusAffineCrossSelector_of_ramseyBound
@@ -2367,6 +2441,44 @@ theorem hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector
   intro v w
   simpa using hcross v w
 
+/-- A localized Ramsey bound also supplies the exact finite fixed-witness dyadic lift. -/
+theorem hasExactSmallModulusFixedWitnessDyadicLift_of_cliqueOrIndepSetBound
+    {j m N : ℕ} (hbound : HasCliqueOrIndepSetBound m m N)
+    (hN : N ≤ (2 ^ j) ^ 6 * m) :
+    HasExactSmallModulusFixedWitnessDyadicLift j m :=
+  hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector
+    (hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound hbound hN)
+
+/-- The generic binomial Ramsey bound also supplies the exact finite fixed-witness dyadic lift. -/
+theorem hasExactSmallModulusFixedWitnessDyadicLift_of_ramseyBound
+    {j m : ℕ} (hm : 0 < m)
+    (hramsey : Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ 6 * m) :
+    HasExactSmallModulusFixedWitnessDyadicLift j m :=
+  hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector
+    (hasExactSmallModulusAffineCrossSelector_of_ramseyBound hm hramsey)
+
+/-- The generic binomial Ramsey bound closes the finite fixed target `(j,m) = (3,13)`. -/
+theorem hasExactSmallModulusFixedWitnessDyadicLift_three_thirteen :
+    HasExactSmallModulusFixedWitnessDyadicLift 3 13 :=
+  hasExactSmallModulusFixedWitnessDyadicLift_of_ramseyBound (j := 3) (m := 13)
+    (by decide) (by decide)
+
+/-- The base fixed-target package already supplies the extended `(13,3)` field. -/
+theorem higherBitSmallModulusFixedWitnessTargetsFromElevenExtended_of_targets
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromEleven) :
+    HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended where
+  h11_2 := h.h11_2
+  h12_2 := h.h12_2
+  h13_2 := h.h13_2
+  h13_3 := hasExactSmallModulusFixedWitnessDyadicLift_three_thirteen
+  h14_2 := h.h14_2
+  h14_3 := h.h14_3
+  h15_2 := h.h15_2
+  h15_3 := h.h15_3
+  h16_2 := h.h16_2
+  h16_3 := h.h16_3
+  fromSeventeen := h.fromSeventeen
+
 /-- The affine cross-selector form closes the finite `m = 11`, `j = 2` target. -/
 theorem hasFourToEightTargetElevenFixedWitnessLift_of_affineCrossSelector
     (hselector : HasExactSmallModulusAffineCrossSelector 2 11) :
@@ -2396,6 +2508,42 @@ theorem
   refine hasFixedModulusWitnessOfCard_of_subset_cross_modEq_card G hus huCard ?_
   intro v w
   simpa using hcross v w
+
+/-- Affine higher-bit selectors provide the extended fixed-witness target package. -/
+theorem higherBitSmallModulusFixedWitnessTargetsFromElevenExtended_of_affineSelectors
+    (h : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended where
+  h11_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h11_2
+  h12_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h12_2
+  h13_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h13_2
+  h13_3 := hasExactSmallModulusFixedWitnessDyadicLift_three_thirteen
+  h14_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_2
+  h14_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_3
+  h15_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_2
+  h15_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_3
+  h16_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_2
+  h16_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_3
+  fromSeventeen :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
+      h.fromSeventeen
+
+/-- Extended affine selectors provide the extended fixed-witness target package. -/
+theorem higherBitSmallModulusFixedWitnessTargetsFromElevenExtended_of_extended
+    (h : HigherBitSmallModulusAffineSelectorsFromElevenExtended) :
+    HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended where
+  h11_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h11_2
+  h12_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h12_2
+  h13_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h13_2
+  h13_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h13_3
+  h14_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_2
+  h14_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_3
+  h15_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_2
+  h15_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_3
+  h16_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_2
+  h16_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_3
+  fromSeventeen :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
+      h.fromSeventeen
 
 /--
 Ramsey-10 certificate strong enough for the isolated `m = 10`, `j = 2` dyadic target.  It is the
@@ -8814,46 +8962,6 @@ theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSix
   · exact hrest hj hm (Nat.succ_le_of_lt hgt) hsmall hindex hgap hambient G hinput
 
 /--
-The exact `m = 13`, `j = 3` small-modulus target is already a Ramsey fallback: the input witness has
-`8^6 * 13` vertices, which is larger than the generic binomial bound `R(13,13) <= choose 24 12`.
--/
-theorem hasExactSmallModulusFixedWitnessDyadicLift_three_thirteen :
-    HasExactSmallModulusFixedWitnessDyadicLift 3 13 := by
-  intro n _hambient G hinput
-  classical
-  rcases hinput with ⟨s, hs, _hsmod⟩
-  let H : SimpleGraph ↑(s : Set (Fin n)) := inducedOn G s
-  have hcard : Fintype.card ↑(s : Set (Fin n)) = s.card := by
-    simp
-  have hsLarge :
-      Nat.choose ((13 - 1) + (13 - 1)) (13 - 1) ≤ s.card := by
-    exact le_trans (by decide : Nat.choose ((13 - 1) + (13 - 1)) (13 - 1) ≤
-      (2 ^ 3) ^ 6 * 13) hs
-  have hlarge :
-      Nat.choose ((13 - 1) + (13 - 1)) (13 - 1) ≤
-        Fintype.card ↑(s : Set (Fin n)) := by
-    simpa [hcard] using hsLarge
-  rcases ramsey_finset H (13 - 1) (13 - 1) Finset.univ hlarge with hclique | hindep
-  · rcases hclique with ⟨t, _ht, ht⟩
-    have hregH : HasRegularInducedSubgraphOfCard H 13 := by
-      simpa [ht.card_eq] using
-        (hasRegularInducedSubgraphOfCard_of_isClique H t ht.isClique)
-    let e : H ↪g G :=
-      SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
-    exact
-      hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
-        (hasRegularInducedSubgraphOfCard_of_embedding e hregH)
-  · rcases hindep with ⟨t, _ht, ht⟩
-    have hregH : HasRegularInducedSubgraphOfCard H 13 := by
-      simpa [ht.card_eq] using
-        (hasRegularInducedSubgraphOfCard_of_isIndepSet H t ht.isIndepSet)
-    let e : H ↪g G :=
-      SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
-    exact
-      hasFixedModulusWitnessOfCard_of_hasRegularInducedSubgraphOfCard G
-        (hasRegularInducedSubgraphOfCard_of_embedding e hregH)
-
-/--
 The next small-modulus block is finite too.  For `13 <= m < 17`, the index inequality bounds
 `j <= 4`; the small-modulus condition rules out `j = 4`, so only the exact finite cases
 `j = 2, 3` for `m = 13, 14, 15, 16` remain.
@@ -8938,6 +9046,14 @@ theorem
       · exact h16_3 hambient G hinput
       · norm_num at hsmall
 
+/-- The extended fixed-target package closes the `13 <= m` higher-bit residual. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_of_extendedTargets
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 :=
+  hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_with_thirteen_three
+    h.h13_2 h.h13_3 h.h14_2 h.h14_3 h.h15_2 h.h15_3 h.h16_2 h.h16_3 h.fromSeventeen
+
 /-- Affine higher-bit selectors immediately provide the fixed-witness target package. -/
 theorem higherBitSmallModulusFixedWitnessTargetsFromEleven_of_affineSelectors
     (h : HigherBitSmallModulusAffineSelectorsFromEleven) :
@@ -8991,6 +9107,14 @@ theorem
     · exact h11 hambient G hinput
     · norm_num at hgap
   · exact hsmallTwelve hj hm (Nat.succ_le_of_lt hgt) hsmall hindex hgap hambient G hinput
+
+/-- The extended fixed-target package closes the higher-bit small-modulus residual from `m = 11`. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_extendedTargets
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 :=
+  hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_fixedWitnessTargets
+    (higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extendedTargets h)
 
 /-- The affine-selector package closes the higher-bit small-modulus residual from `m = 11`. -/
 theorem
@@ -18946,6 +19070,24 @@ theorem targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ra
       (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap_of_twiceLargeGap
         htwiceSeven)
       hterminal
+
+/--
+Same sharp handoff, accepting the extended fixed-witness target package with the explicit
+`(m,j)=(13,3)` field.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromElevenExtended
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven
+    sevenVertexBooleanCertificate evenDegreeModFourLoss32 ramseyTenSmallTable
+    fixedWitnessExternalBlockSelfBridgeFive
+    (higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extendedTargets higherBitTargets)
 
 /--
 Same final handoff with the first-bit assumption expressed as a bounded 32-color mod-four

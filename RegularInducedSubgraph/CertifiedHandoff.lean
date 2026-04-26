@@ -366,6 +366,34 @@ theorem
     sevenVertexFourOrFiveBoolCertificate h.evenDegreeModFourLoss32 ramseyTenSmallTable
     h.fixedWitnessExternalBlockSelfBridgeFive h.higherBitTargets
 
+/--
+Rest-only certificate with the extended fixed-witness higher-bit package, including the explicit
+`(m,j)=(13,3)` field.
+-/
+structure CertifiedProofMdExternalBlockNonRamseyExtendedFixedTargetsRestCertificate : Type where
+  evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph
+  fixedWitnessExternalBlockSelfBridgeFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5
+  higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended
+
+/-- The extended fixed-target rest package plus the Ramsey-10 table closes the target statement. -/
+theorem
+    targetStatement_of_certifiedProofMdExternalBlockNonRamseyExtendedFixedTargetsRestCertificate_and_ramseyTenSmallTable
+    (h : CertifiedProofMdExternalBlockNonRamseyExtendedFixedTargetsRestCertificate)
+    (ramseyTenSmallTable : RamseyTenSmallTable) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromElevenExtended
+    sevenVertexFourOrFiveBoolCertificate h.evenDegreeModFourLoss32 ramseyTenSmallTable
+    h.fixedWitnessExternalBlockSelfBridgeFive h.higherBitTargets
+
+/-- Forget the explicit `(13,3)` field from the extended fixed-target rest package. -/
+def certifiedProofMdExternalBlockNonRamseyFixedTargetsRestCertificate_of_extendedFixedTargetsRest
+    (h : CertifiedProofMdExternalBlockNonRamseyExtendedFixedTargetsRestCertificate) :
+    CertifiedProofMdExternalBlockNonRamseyFixedTargetsRestCertificate where
+  evenDegreeModFourLoss32 := h.evenDegreeModFourLoss32
+  fixedWitnessExternalBlockSelfBridgeFive := h.fixedWitnessExternalBlockSelfBridgeFive
+  higherBitTargets := higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extendedTargets h.higherBitTargets
+
 /-- The affine-selector rest package implies the fixed-target rest package. -/
 def certifiedProofMdExternalBlockNonRamseyFixedTargetsRestCertificate_of_nonRamseyRest
     (h : CertifiedProofMdExternalBlockNonRamseyRestCertificate) :
@@ -418,6 +446,15 @@ def certifiedProofMdExternalBlockNonRamseyFixedTargetsRestCertificate_of_extende
   evenDegreeModFourLoss32 := h.evenDegreeModFourLoss32
   fixedWitnessExternalBlockSelfBridgeFive := h.fixedWitnessExternalBlockSelfBridgeFive
   higherBitTargets := higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extended h.higherBitSelectors
+
+/-- The extended-selector rest package implies the extended fixed-target rest package. -/
+def certifiedProofMdExternalBlockNonRamseyExtendedFixedTargetsRestCertificate_of_extendedRest
+    (h : CertifiedProofMdExternalBlockNonRamseyExtendedRestCertificate) :
+    CertifiedProofMdExternalBlockNonRamseyExtendedFixedTargetsRestCertificate where
+  evenDegreeModFourLoss32 := h.evenDegreeModFourLoss32
+  fixedWitnessExternalBlockSelfBridgeFive := h.fixedWitnessExternalBlockSelfBridgeFive
+  higherBitTargets := higherBitSmallModulusFixedWitnessTargetsFromElevenExtended_of_extended
+    h.higherBitSelectors
 
 /-- The extended-selector non-Ramsey rest package plus the Ramsey-10 table closes the target. -/
 theorem
