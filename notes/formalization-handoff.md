@@ -2343,7 +2343,8 @@ Recommended attack:
     Add the four-step Gallai normal form for the first-bit selector: in a critical counterexample
     `n>=32m+1`, an even core `J` of size `>2m` has a larger internal `0/2 mod 4` degree class `R` of size
     `>m`; since `deg_R(v)=deg_J(v)-deg_C(v) mod 4`, terminality forces `deg_C mod 4` nonconstant on `R`.
-    Add the labeled deletion-core equivalence: with `b(v)=deg_C(v) mod 4`, a subset `T=R\D` is a selector
+    Add the labeled deletion-core equivalence: with signed label `b(v)=-deg_C(v) mod 4`, a subset
+    `T=R\D` is a selector
     iff `deg_D(v)=b(v)-lambda mod 4` for all `v in T`.  The residual has all four labeled cores of size
     at most `m`.
     Add the hereditary elimination equivalent: for each `lambda`, every `U` of size `>m` has a bad vertex
@@ -2351,7 +2352,7 @@ Recommended attack:
     twin/module exits and the rank bound `4*2^r>|R|/m` for graph and complement row ranks.
     Add hereditary relabeling: for `U subset R`, selectors lift with `b_U(v)=b(v)-deg_{R\U}(v)`.  Record
     that the size-`m+1` full-set condition is only nonconstancy of `b_U`, so one must use the parent co-cut
-    origin `b=deg_C mod 4`.
+    origin `b=-deg_C mod 4`.
     Add the `(m+1)`-set swap calculus: `psi_T(v)=b(v)-deg_{R\T}(v)`, selector iff `psi_T` is constant; for
     `T'=(T\{x}) union {y}`, old vertices change by `1_{vy}-1_{vx}` and the new vertex has
     `b(y)-deg_{R\T}(y)-1_{xy}`.
@@ -2373,9 +2374,19 @@ Recommended attack:
     Add the ternary/near-threshold split: for `r=3` every residue is representable, so the large-outside
     branch is ternary target realization plus shifted self-layer; if `|R\T|<3` for all `|T|=m+1`, then
     `|R|<=m+3` and, since `|J|>2m`, `m-2<=|C|<=|R|<=m+3`.
+    Add ternary obstruction certificates: target failure has a coordinate-minimal old-vertex set `P` with
+    every coordinate essential; otherwise the target-realization 3-graph is nonempty but its scalar-good
+    subgraph is empty.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).
+    Add the full two-residue deletion equation: with `epsilon=0` on `R` and `epsilon=2` on `C`, a mixed
+    selector `J\D` is exactly a set on which `epsilon(v)-deg_D(v)` is constant; restricting to `R` recovers
+    the signed label `b=-deg_C`.
+    Add the mirrored near-threshold templates on `C`: when `|C|=m+t>m`, the signed label
+    `b_C(v)=2-deg_R(v)` has no deletion core `C\E` with `|E|<=t-1`.
+    Add the mixed deletion target form: for `W=(R\D_R) union (C\D_C)`, selectorhood is equivalent to
+    `deg_D=alpha` on retained `R` and `deg_D=alpha+2` on retained `C`.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

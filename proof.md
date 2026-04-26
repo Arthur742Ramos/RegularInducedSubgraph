@@ -10894,16 +10894,16 @@ an even core `J=R disjoint_union C`, with `|R|>m`, constant `deg_J mod 4` on `R`
 bit is synchronized inside `J`, and the only unsynchronized datum is the co-cut carry from the opposite
 residue class.
 
-The co-cut obstruction is a labeled deletion-core problem on `R`.  Let
+The co-cut obstruction is a labeled deletion-core problem on `R`.  Use the signed co-cut label
 
 ```text
-b(v)=deg_C(v)        [MOD 4]        (v in R).
+b(v)=-deg_C(v)        [MOD 4]        (v in R).
 ```
 
 For `T subset R` and `D=R\T`, since `deg_J` is constant modulo `4` on `R`,
 
 ```text
-deg_T(v) == const - b(v) - deg_D(v)        [MOD 4]        (v in T).
+deg_T(v) == const + b(v) - deg_D(v)        [MOD 4]        (v in T).
 ```
 
 Hence `T` is a mod-`4` selector iff there is a residue `lambda` such that
@@ -10962,8 +10962,8 @@ Thus every induced subbucket `(U,b_U)` is again terminal at the same threshold. 
 `U` with `|U|=m+1`, the full-set test `D=emptyset` says `b_U` is nonconstant.  This explains why the
 labeled residual cannot be closed by merely shrinking to one-over-threshold size: any graph on `m+1`
 vertices with a nonconstant label survives the full-set test.  The remaining information is in the parent
-coupling, namely that the label is not arbitrary but is the co-cut degree `deg_C mod 4` from the opposite
-Gallai residue class, and that every subbucket inherits the correction `-deg_{R\U}`.
+coupling, namely that the label is not arbitrary but the signed co-cut degree `-deg_C mod 4` from the
+opposite Gallai residue class, and that every subbucket inherits the correction `-deg_{R\U}`.
 
 For a retained set `T subset R` of size `m+1`, write its current labeled residue as
 
@@ -11121,6 +11121,29 @@ m-2 <= |C| <= |R| <= m+3.
 Consequently the first-bit selector splits into a large-outside ternary target/self-layer branch and a
 near-threshold two-residue branch with only bounded surplus over the critical size.
 
+The large-outside ternary branch has a finite obstruction certificate.  Fix `T`, `X={x_1,x_2,x_3}`,
+`S=T\X`, and `kappa`, and let
+
+```text
+h(v)=kappa-psi_T(v)+deg_X(v)        [MOD 4],
+```
+
+represented in `{0,1,2,3}`.  On the outside set `O=R\T`, form the realization 3-graph `H_h` whose edges
+are triples `Y` satisfying
+
+```text
+deg_Y(v)=h(v)        for every v in S.
+```
+
+The scalar-good subgraph consists of those `Y in H_h` for which the three shifted self-layer equations
+hold.  Terminality says this scalar-good subgraph is empty for every `T,X,kappa`.  If already `H_h` is
+empty, choose a coordinate-minimal `P subset S` on which no outside triple realizes `h|_P`; then every
+`p in P` is essential, meaning some outside triple realizes `h` on `P\{p}` and fails only at `p` inside
+`P`.  If `H_h` is nonempty, terminality is purely a scalar obstruction: every target-realizing triple is
+covered by at least one of the three failed shifted self-layer equations.  Thus the ternary branch reduces
+to either an essential-coordinate 3-trace avoidance certificate or a scalar-killed target-realization
+hypergraph.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff
@@ -11140,6 +11163,55 @@ s=3:  for every {x1,x2} subset R, b(v)-1_{vx1}-1_{vx2} is nonconstant on R\{x1,x
 These are the deletion-side versions of the one- and two-swap templates.  Thus the first-bit residual now
 has only two forms: a large-outside ternary packet problem, or a bounded near-threshold deletion-template
 problem on a residue class of size `m+1`, `m+2`, or `m+3`.
+
+The whole Gallai core has an equally useful symmetric deletion form, which keeps mixed selectors visible.
+Let `rho` be the residue of `deg_J` on `R` and put
+
+```text
+epsilon(v)=0  for v in R,
+epsilon(v)=2  for v in C.
+```
+
+Thus `deg_J(v)=rho+epsilon(v) mod 4` for every `v in J`.  For any `W=J\D` and `v in W`,
+
+```text
+deg_W(v)=rho+epsilon(v)-deg_D(v)        [MOD 4].
+```
+
+Consequently `W` is a selector iff `epsilon(v)-deg_D(v)` is constant on `W`.  The signed one-class label
+above is exactly the restriction of this full equation to `W subset R`: then `D=C union D_R`, and
+`epsilon(v)-deg_D(v)=-deg_C(v)-deg_{D_R}(v)=b(v)-deg_{D_R}(v)`.  Hence the near-threshold branch is not an
+arbitrary labeled graph on `R`; it is the one-class shadow of a two-level deletion equation on
+`J=R disjoint_union C`.
+
+The same restriction applies on the smaller residue class whenever it is also above threshold.  If
+`|C|=m+t` with `t>0`, define
+
+```text
+b_C(v)=2-deg_R(v)        [MOD 4]        (v in C).
+```
+
+Then a selector contained in `C` and larger than `m` is `C\E` with `|E|<=t-1`, and it exists iff
+`b_C(v)-deg_E(v)` is constant on `C\E`.  Thus in the near-threshold branch terminality is two-sided:
+both residue classes that exceed `m` obey the same finite deletion-template list, with surplus at most
+three on each side.
+
+For a genuinely mixed selector, write
+
+```text
+W=(R\D_R) union (C\D_C),        D=D_R union D_C.
+```
+
+The full equation says that, for some residue `alpha`,
+
+```text
+deg_D(v)=alpha      [MOD 4]        (v in R\D_R),
+deg_D(v)=alpha+2    [MOD 4]        (v in C\D_C).
+```
+
+Thus mixed repair is a two-level deletion target: the retained vertices must see the deleted set in two
+constant residues separated by exactly `2`, according to their Gallai residue class.  The pure `R` and
+pure `C` deletion templates are just the boundary cases `D_C=C` and `D_R=R`.
 
 The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
 theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with

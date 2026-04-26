@@ -1915,6 +1915,12 @@ What remains justified after audit is:
       `m-2<=|C|<=|R|<=m+3`;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
+      the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on
+      `J\D`, where `epsilon` is `0` on `R` and `2` on `C`;
+      if `C` is also above threshold, the mirrored signed label `2-deg_R` obeys the same bounded deletion
+      templates on `C`;
+      mixed selectors are exactly deletion sets whose degrees into retained `R` and retained `C` are
+      constant residues separated by `2`;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

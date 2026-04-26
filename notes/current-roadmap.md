@@ -5242,7 +5242,7 @@ For the first-bit selector itself, four Gallai even-child steps in a critical co
 `n>=32m+1` give an even core `J` with `|J|>2m`; the larger of the two `deg_J=0/2 mod 4` classes has
 size `>m`, so terminality forces its co-cut degree into the opposite residue class to be nonconstant.  The
 residual first-bit obstruction is this large two-residue co-cut defect.
-Writing `b(v)=deg_C(v) mod 4` on the large class `R`, a subset `T=R\D` is a selector iff
+Writing the signed label `b(v)=-deg_C(v) mod 4` on the large class `R`, a subset `T=R\D` is a selector iff
 `deg_D(v)=b(v)-lambda mod 4` on `T`; thus the residual is a labeled deletion-core problem whose four cores
 all have size at most `m`.
 Equivalently, for each `lambda`, every `U` with `|U|>m` contains a currently bad vertex
@@ -5252,7 +5252,7 @@ independent/clique labeled selectors, giving the label-refined rank bound `4*2^r
 complement.
 The residual is hereditary with relabeling `b_U(v)=b(v)-deg_{R\U}(v)`.  Hence every `m+1` subbucket has
 nonconstant `b_U`; this one-over-threshold condition is vacuous by itself, so the remaining content is the
-parent coupling `b=deg_C mod 4` plus the inherited correction.
+parent coupling `b=-deg_C mod 4` plus the inherited correction.
 For an `(m+1)` retained set `T`, put `psi_T(v)=b(v)-deg_{R\T}(v)`.  Then `T` is a selector iff `psi_T` is
 constant, and swapping `x in T` with `y outside T` changes old vertices by `1_{vy}-1_{vx}` and gives
 `psi(y)=b(y)-deg_{R\T}(y)-1_{xy}`.  A terminal residual is a local optimum for this swap-flattening system.
@@ -5274,9 +5274,18 @@ For `r=3`, every residue has a representative in `{0,1,2,3}`, so the large-outsi
 target/self-layer problem: no outside triple realizes the prescribed hit counts, or every realizing triple
 fails a shifted scalar equation.  If no retained `(m+1)`-set has three outside vertices in `R`, then
 `|R|<=m+3` and the Gallai split is near-threshold: `m-2<=|C|<=|R|<=m+3`.
+The target-failure side has a coordinate-minimal certificate: a minimal set `P` of old vertices on which no
+outside triple realizes the prescribed 0/1/2/3 counts, with every coordinate of `P` essential.  If target
+triples exist, the obstruction is exactly that all such triples are killed by shifted self-layer equations.
 Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
 Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
 `R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.
+The full Gallai core has the symmetric equation `epsilon(v)-deg_D(v)=const` on `J\D`, with
+`epsilon=0` on `R` and `epsilon=2` on `C`; the signed one-class label is its restriction to `R`.
+If `C` is also larger than `m`, the mirrored signed label `b_C=2-deg_R` satisfies the same finite
+deletion-template list on `C`.
+For mixed selectors `(R\D_R) union (C\D_C)`, the deleted set must be seen in two constant residues
+`alpha` and `alpha+2` on the retained parts of `R` and `C`.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

@@ -1908,7 +1908,7 @@ promotion/no-split/one-corner tests.
 For the first-bit selector, four Gallai even-child steps give an even core `J` of size `>2m`; the larger
 `deg_J=0/2 mod 4` class `R` has `|R|>m`, so terminality forces nonconstant co-cut degree from `R` into
 `J\R`.
-With `b(v)=deg_C(v) mod 4`, selecting `T=R\D` is equivalent to the labeled deletion equation
+With signed label `b(v)=-deg_C(v) mod 4`, selecting `T=R\D` is equivalent to the labeled deletion equation
 `deg_D(v)=b(v)-lambda`; all four labeled cores are small in a terminal counterexample.
 For each `lambda`, this is equivalent to a bad-vertex elimination down to `m`; label-refined modules and
 constant-label twin/cotwin classes larger than `m` close, giving `4*2^r>|R|/m`.
@@ -1928,8 +1928,16 @@ template, terminality is shifted self-layer failure.
 At `r=3` the target is always arithmetically legal, so the large-outside branch is ternary realization or
 ternary self-layer failure; otherwise the Gallai residue split is near-threshold with
 `m-2<=|C|<=|R|<=m+3`.
+Target failure has a coordinate-minimal essential set; if target triples exist, every one is killed by a
+shifted scalar equation.
 If `|R|=m+s`, `s<=3`, terminality inside `R` is the finite list that `b-deg_D` is nonconstant on `R\D`
 for every `|D|<=s-1`.
+The full two-residue core is equivalently `epsilon(v)-deg_D(v)=const` on `J\D`, with `epsilon=0` on `R`
+and `epsilon=2` on `C`; the one-class signed label is the restriction of this equation to `R`.
+If `C` is also above threshold, the mirrored signed label `2-deg_R` satisfies the same finite deletion
+templates on `C`.
+For a mixed selector, the deleted set has constant degree `alpha` into retained `R` and `alpha+2` into
+retained `C`.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

@@ -978,7 +978,7 @@ would extend `S`; terminality forbids these singleton/pair/ternary extension equ
 At the raw first-bit level, a critical counterexample with maximum selector size `m` has an even Gallai
 core `J` of size `>2m`; the larger `0/2 mod 4` degree class inside `J` is blocked only by a nonconstant
 co-cut degree into the opposite class.
-With label `b=deg_C mod 4` on that large class `R`, the selector equation for `T=R\D` is
+With signed label `b=-deg_C mod 4` on that large class `R`, the selector equation for `T=R\D` is
 `deg_D(v)=b(v)-lambda`; the residual is a labeled deletion-core obstruction.
 This has a hereditary bad-vertex elimination form for each `lambda`, and label-refined twin/module exits:
 large constant-label row or complement-row classes close, and modules lift after a residue shift.
@@ -1000,8 +1000,16 @@ residual is finite target-packet realization plus shifted self-layer.
 At `r=3` the multiplicity target is always arithmetically legal, giving a ternary target/self-layer branch;
 if there are never three outside vertices, the `0/2` Gallai residue classes are both within bounded
 distance of `m`.
+Ternary target failure can be made coordinate-minimal: each coordinate in the minimal old-vertex certificate
+is essential, while the nonempty target-realization case is exactly scalar-good hypergraph emptiness.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
+Mixed selectors in the full Gallai core are governed by the symmetric deletion equation
+`epsilon(v)-deg_D(v)=const` on `J\D`, where `epsilon` is `0` on the large residue class and `2` on the
+other one.
+If the smaller class also exceeds `m`, its signed label `2-deg_R` must satisfy the same deletion templates.
+The remaining mixed case asks for a deletion set whose degrees into retained `R` and retained `C` are
+constant residues separated by `2`.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard
