@@ -34942,6 +34942,937 @@ theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerTypedFGra
     TargetStatement :=
   h.toTargetStatement
 
+/-!
+## Four-exception residual/binary normalization final-consumer handoff
+
+This layer sits beyond the typed `F`-graph branch handoff.  It records the final consumer
+surface for the four-exception residual/binary normalization without duplicating the existing
+parity/Latin scalar endpoint or typed `F`-graph branch packets.
+-/
+
+/-- Local-host discharge packet for the two- and three-exception residual cases. -/
+structure CertifiedProofMdCurrentFrontierTerminalFourExceptionLocalHostDischargeCertificate
+    (terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons : Prop) :
+    Type where
+  localHostTwoExceptionPacketDischarge :
+    terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+  localHostThreeExceptionPacketDischarge :
+    terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+  remainingTwoTwoSkeletons : terminalFourExceptionRemainingTwoTwoSkeletons
+
+/-- Boolean-square and affine row/column normalization packet for four-exception residues. -/
+structure CertifiedProofMdCurrentFrontierTerminalFourExceptionBooleanAffineNormalizationCertificate
+    (terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator : Prop) :
+    Type where
+  booleanSecondDifferenceOneCornerSquare :
+    terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+  affineTableRowColumnSwitchNormalization :
+    terminalFourExceptionAffineTableRowColumnSwitchNormalization
+  balancedZeroOneZeroOneZeroZeroOneOneCompensator :
+    terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+
+/-- Signed-degree quotient closure and shortened-pair-hit `q = 2`/`q = 3` foldback packet. -/
+structure CertifiedProofMdCurrentFrontierTerminalFourExceptionSignedDegreeFoldbackCertificate
+    (terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop) :
+    Type where
+  signedDegreeQuotientClosureFoldback :
+    terminalFourExceptionSignedDegreeQuotientClosureFoldback
+  shortenedPairHitQTwoFoldback : terminalFourExceptionShortenedPairHitQTwoFoldback
+  shortenedPairHitQThreeExtraRebateBranch :
+    terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+
+/-- Terminal packet for the four-exception residual/binary normalization frontier. -/
+structure CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+    (terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop) :
+    Type where
+  localHostDischarge :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionLocalHostDischargeCertificate
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+  booleanAffineNormalization :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionBooleanAffineNormalizationCertificate
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+  signedDegreeFoldback :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionSignedDegreeFoldbackCertificate
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+
+/-- Build the four-exception residual/binary normalization packet from raw terminal facts. -/
+def certifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate_of_assumptions
+    {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop}
+    (localHostTwoExceptionPacketDischarge :
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge)
+    (localHostThreeExceptionPacketDischarge :
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge)
+    (remainingTwoTwoSkeletons : terminalFourExceptionRemainingTwoTwoSkeletons)
+    (booleanSecondDifferenceOneCornerSquare :
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare)
+    (affineTableRowColumnSwitchNormalization :
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization)
+    (balancedZeroOneZeroOneZeroZeroOneOneCompensator :
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator)
+    (signedDegreeQuotientClosureFoldback :
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback)
+    (shortenedPairHitQTwoFoldback : terminalFourExceptionShortenedPairHitQTwoFoldback)
+    (shortenedPairHitQThreeExtraRebateBranch :
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch where
+  localHostDischarge :=
+    { localHostTwoExceptionPacketDischarge := localHostTwoExceptionPacketDischarge
+      localHostThreeExceptionPacketDischarge := localHostThreeExceptionPacketDischarge
+      remainingTwoTwoSkeletons := remainingTwoTwoSkeletons }
+  booleanAffineNormalization :=
+    { booleanSecondDifferenceOneCornerSquare := booleanSecondDifferenceOneCornerSquare
+      affineTableRowColumnSwitchNormalization := affineTableRowColumnSwitchNormalization
+      balancedZeroOneZeroOneZeroZeroOneOneCompensator :=
+        balancedZeroOneZeroOneZeroZeroOneOneCompensator }
+  signedDegreeFoldback :=
+    { signedDegreeQuotientClosureFoldback := signedDegreeQuotientClosureFoldback
+      shortenedPairHitQTwoFoldback := shortenedPairHitQTwoFoldback
+      shortenedPairHitQThreeExtraRebateBranch :=
+        shortenedPairHitQThreeExtraRebateBranch }
+
+/-- Facade alias for terminal four-exception residual/binary normalization consumers. -/
+abbrev CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationFacade
+    (terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop) : Type :=
+  CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+    terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+    terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+    terminalFourExceptionRemainingTwoTwoSkeletons
+    terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+    terminalFourExceptionAffineTableRowColumnSwitchNormalization
+    terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+    terminalFourExceptionSignedDegreeQuotientClosureFoldback
+    terminalFourExceptionShortenedPairHitQTwoFoldback
+    terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+
+variable {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+  terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+  terminalFourExceptionRemainingTwoTwoSkeletons
+  terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+  terminalFourExceptionAffineTableRowColumnSwitchNormalization
+  terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+  terminalFourExceptionSignedDegreeQuotientClosureFoldback
+  terminalFourExceptionShortenedPairHitQTwoFoldback
+  terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop}
+
+section FourExceptionResidualBinaryNormalizationTerminalApi
+
+/-- Project local-host discharge of two-exception packets. -/
+def CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.toLocalHostTwoExceptionPacketDischarge
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionLocalHostTwoExceptionPacketDischarge :=
+  h.localHostDischarge.localHostTwoExceptionPacketDischarge
+
+/-- Project local-host discharge of three-exception packets. -/
+def CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.toLocalHostThreeExceptionPacketDischarge
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionLocalHostThreeExceptionPacketDischarge :=
+  h.localHostDischarge.localHostThreeExceptionPacketDischarge
+
+/-- Project the remaining four-exception `2/2` skeleton packet. -/
+def CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.toRemainingTwoTwoSkeletons
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionRemainingTwoTwoSkeletons :=
+  h.localHostDischarge.remainingTwoTwoSkeletons
+
+/-- Project the Boolean second-difference one-corner square normalization. -/
+def CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.toBooleanSecondDifferenceOneCornerSquare
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionBooleanSecondDifferenceOneCornerSquare :=
+  h.booleanAffineNormalization.booleanSecondDifferenceOneCornerSquare
+
+/-- Project affine table/row-column switch normalization. -/
+def CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.toAffineTableRowColumnSwitchNormalization
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionAffineTableRowColumnSwitchNormalization :=
+  h.booleanAffineNormalization.affineTableRowColumnSwitchNormalization
+
+/-- Project the balanced `0101/0011` compensator. -/
+def CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.toBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator :=
+  h.booleanAffineNormalization.balancedZeroOneZeroOneZeroZeroOneOneCompensator
+
+/-- Project foldback into signed-degree quotient closure. -/
+def CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.toSignedDegreeQuotientClosureFoldback
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionSignedDegreeQuotientClosureFoldback :=
+  h.signedDegreeFoldback.signedDegreeQuotientClosureFoldback
+
+/-- Project the shortened-pair-hit `q = 2` foldback branch. -/
+def CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.toShortenedPairHitQTwoFoldback
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionShortenedPairHitQTwoFoldback :=
+  h.signedDegreeFoldback.shortenedPairHitQTwoFoldback
+
+/-- Project the shortened-pair-hit `q = 3` extra-rebate branch. -/
+def CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.toShortenedPairHitQThreeExtraRebateBranch
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch :=
+  h.signedDegreeFoldback.shortenedPairHitQThreeExtraRebateBranch
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.of_assumptions_toLocalHostTwoExceptionPacketDischarge
+    (localHostTwoExceptionPacketDischarge :
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge)
+    (localHostThreeExceptionPacketDischarge :
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge)
+    (remainingTwoTwoSkeletons : terminalFourExceptionRemainingTwoTwoSkeletons)
+    (booleanSecondDifferenceOneCornerSquare :
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare)
+    (affineTableRowColumnSwitchNormalization :
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization)
+    (balancedZeroOneZeroOneZeroZeroOneOneCompensator :
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator)
+    (signedDegreeQuotientClosureFoldback :
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback)
+    (shortenedPairHitQTwoFoldback : terminalFourExceptionShortenedPairHitQTwoFoldback)
+    (shortenedPairHitQThreeExtraRebateBranch :
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    (certifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate_of_assumptions
+      localHostTwoExceptionPacketDischarge
+      localHostThreeExceptionPacketDischarge
+      remainingTwoTwoSkeletons
+      booleanSecondDifferenceOneCornerSquare
+      affineTableRowColumnSwitchNormalization
+      balancedZeroOneZeroOneZeroZeroOneOneCompensator
+      signedDegreeQuotientClosureFoldback
+      shortenedPairHitQTwoFoldback
+      shortenedPairHitQThreeExtraRebateBranch).toLocalHostTwoExceptionPacketDischarge =
+      localHostTwoExceptionPacketDischarge :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.of_assumptions_toAffineTableRowColumnSwitchNormalization
+    (localHostTwoExceptionPacketDischarge :
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge)
+    (localHostThreeExceptionPacketDischarge :
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge)
+    (remainingTwoTwoSkeletons : terminalFourExceptionRemainingTwoTwoSkeletons)
+    (booleanSecondDifferenceOneCornerSquare :
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare)
+    (affineTableRowColumnSwitchNormalization :
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization)
+    (balancedZeroOneZeroOneZeroZeroOneOneCompensator :
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator)
+    (signedDegreeQuotientClosureFoldback :
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback)
+    (shortenedPairHitQTwoFoldback : terminalFourExceptionShortenedPairHitQTwoFoldback)
+    (shortenedPairHitQThreeExtraRebateBranch :
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    (certifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate_of_assumptions
+      localHostTwoExceptionPacketDischarge
+      localHostThreeExceptionPacketDischarge
+      remainingTwoTwoSkeletons
+      booleanSecondDifferenceOneCornerSquare
+      affineTableRowColumnSwitchNormalization
+      balancedZeroOneZeroOneZeroZeroOneOneCompensator
+      signedDegreeQuotientClosureFoldback
+      shortenedPairHitQTwoFoldback
+      shortenedPairHitQThreeExtraRebateBranch).toAffineTableRowColumnSwitchNormalization =
+      affineTableRowColumnSwitchNormalization :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate.of_assumptions_toShortenedPairHitQThreeExtraRebateBranch
+    (localHostTwoExceptionPacketDischarge :
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge)
+    (localHostThreeExceptionPacketDischarge :
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge)
+    (remainingTwoTwoSkeletons : terminalFourExceptionRemainingTwoTwoSkeletons)
+    (booleanSecondDifferenceOneCornerSquare :
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare)
+    (affineTableRowColumnSwitchNormalization :
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization)
+    (balancedZeroOneZeroOneZeroZeroOneOneCompensator :
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator)
+    (signedDegreeQuotientClosureFoldback :
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback)
+    (shortenedPairHitQTwoFoldback : terminalFourExceptionShortenedPairHitQTwoFoldback)
+    (shortenedPairHitQThreeExtraRebateBranch :
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    (certifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate_of_assumptions
+      localHostTwoExceptionPacketDischarge
+      localHostThreeExceptionPacketDischarge
+      remainingTwoTwoSkeletons
+      booleanSecondDifferenceOneCornerSquare
+      affineTableRowColumnSwitchNormalization
+      balancedZeroOneZeroOneZeroZeroOneOneCompensator
+      signedDegreeQuotientClosureFoldback
+      shortenedPairHitQTwoFoldback
+      shortenedPairHitQThreeExtraRebateBranch).toShortenedPairHitQThreeExtraRebateBranch =
+      shortenedPairHitQThreeExtraRebateBranch :=
+  rfl
+
+end FourExceptionResidualBinaryNormalizationTerminalApi
+
+/--
+Extension bundle adjoining the four-exception residual/binary normalization packet to an existing
+typed `F`-graph branch extension bundle.
+-/
+structure CertifiedProofMdCurrentFrontierFourExceptionResidualBinaryNormalizationExtensionBundle
+    (TypedFGraphBranchExtensionBundle : Type)
+    (terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop) :
+    Type where
+  typedFGraphBranchExtensionBundle : TypedFGraphBranchExtensionBundle
+  fourExceptionResidualBinaryNormalization :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+
+/-- Build the four-exception extension bundle from a typed `F` extension and residual packet. -/
+def certifiedProofMdCurrentFrontierFourExceptionResidualBinaryNormalizationExtensionBundle_of_packets
+    {TypedFGraphBranchExtensionBundle : Type}
+    {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop}
+    (typedFGraphBranchExtensionBundle : TypedFGraphBranchExtensionBundle)
+    (fourExceptionResidualBinaryNormalization :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    CertifiedProofMdCurrentFrontierFourExceptionResidualBinaryNormalizationExtensionBundle
+      TypedFGraphBranchExtensionBundle
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch where
+  typedFGraphBranchExtensionBundle := typedFGraphBranchExtensionBundle
+  fourExceptionResidualBinaryNormalization := fourExceptionResidualBinaryNormalization
+
+section FourExceptionResidualBinaryNormalizationExtensionBundleApi
+
+variable {TypedFGraphBranchExtensionBundle : Type}
+
+/-- Project the underlying typed `F`-graph branch extension bundle. -/
+def CertifiedProofMdCurrentFrontierFourExceptionResidualBinaryNormalizationExtensionBundle.toTypedFGraphBranchExtensionBundle
+    (h :
+      CertifiedProofMdCurrentFrontierFourExceptionResidualBinaryNormalizationExtensionBundle
+        TypedFGraphBranchExtensionBundle
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    TypedFGraphBranchExtensionBundle :=
+  h.typedFGraphBranchExtensionBundle
+
+/-- Project the four-exception residual/binary normalization packet. -/
+def CertifiedProofMdCurrentFrontierFourExceptionResidualBinaryNormalizationExtensionBundle.toFourExceptionResidualBinaryNormalization
+    (h :
+      CertifiedProofMdCurrentFrontierFourExceptionResidualBinaryNormalizationExtensionBundle
+        TypedFGraphBranchExtensionBundle
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch :=
+  h.fourExceptionResidualBinaryNormalization
+
+end FourExceptionResidualBinaryNormalizationExtensionBundleApi
+
+/--
+Final-consumer handoff packaging typed `F`-graph, parity/Latin scalar, and four-exception
+residual/binary normalization surfaces.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type)
+    (terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop) :
+    Type where
+  typedFGraphBranchHandoff : TypedFGraphBranchHandoff
+  parityTetrahedronAllEdgeLatinScalarEndpointHandoff :
+    ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+  fourExceptionResidualBinaryNormalization :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+  targetStatement : TargetStatement
+
+/-- Build the final four-exception handoff from explicit final-consumer packets. -/
+def certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff_of_packets
+    {TypedFGraphBranchHandoff ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type}
+    {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop}
+    (typedFGraphBranchHandoff : TypedFGraphBranchHandoff)
+    (parityTetrahedronAllEdgeLatinScalarEndpointHandoff :
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff)
+    (fourExceptionResidualBinaryNormalization :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch)
+    (targetStatement : TargetStatement) :
+    CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch where
+  typedFGraphBranchHandoff := typedFGraphBranchHandoff
+  parityTetrahedronAllEdgeLatinScalarEndpointHandoff :=
+    parityTetrahedronAllEdgeLatinScalarEndpointHandoff
+  fourExceptionResidualBinaryNormalization := fourExceptionResidualBinaryNormalization
+  targetStatement := targetStatement
+
+/--
+Build the final handoff by projecting the parity/Latin scalar handoff and target statement from an
+existing typed `F`-graph final handoff.
+-/
+def certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff_of_typedFGraphBranchHandoff
+    {TypedFGraphBranchHandoff ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type}
+    {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop}
+    (toParityTetrahedronAllEdgeLatinScalarEndpointHandoff :
+      TypedFGraphBranchHandoff → ParityTetrahedronAllEdgeLatinScalarEndpointHandoff)
+    (toTargetStatement : TypedFGraphBranchHandoff → TargetStatement)
+    (typedFGraphBranchHandoff : TypedFGraphBranchHandoff)
+    (fourExceptionResidualBinaryNormalization :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch :=
+  certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff_of_packets
+    typedFGraphBranchHandoff
+    (toParityTetrahedronAllEdgeLatinScalarEndpointHandoff typedFGraphBranchHandoff)
+    fourExceptionResidualBinaryNormalization
+    (toTargetStatement typedFGraphBranchHandoff)
+
+/-- Facade alias for final consumers that import the four-exception normalization handoff. -/
+abbrev CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationFacade
+    (TypedFGraphBranchHandoff ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type)
+    (terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch : Prop) : Type :=
+  CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    TypedFGraphBranchHandoff
+    ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+    terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+    terminalFourExceptionRemainingTwoTwoSkeletons
+    terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+    terminalFourExceptionAffineTableRowColumnSwitchNormalization
+    terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+    terminalFourExceptionSignedDegreeQuotientClosureFoldback
+    terminalFourExceptionShortenedPairHitQTwoFoldback
+    terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+
+section FinalConsumerFourExceptionResidualBinaryNormalizationApi
+
+variable {TypedFGraphBranchHandoff ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type}
+
+/-- Project the typed `F`-graph branch handoff from the four-exception final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff.toTypedFGraphBranchHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    TypedFGraphBranchHandoff :=
+  h.typedFGraphBranchHandoff
+
+/-- Project the parity/Latin scalar endpoint handoff from the four-exception final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff.toParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    ParityTetrahedronAllEdgeLatinScalarEndpointHandoff :=
+  h.parityTetrahedronAllEdgeLatinScalarEndpointHandoff
+
+/-- Project the four-exception residual/binary normalization terminal packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff.toFourExceptionResidualBinaryNormalization
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch :=
+  h.fourExceptionResidualBinaryNormalization
+
+/-- Project the target statement through the four-exception residual/binary normalization handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff.toTargetStatement
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- The four-exception residual/binary normalization handoff exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    TargetStatement :=
+  h.toTargetStatement
+
+/-- Wrapper theorem exposing two-exception local-host discharge from the final handoff. -/
+theorem localHostTwoExceptionPacketDischarge_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionLocalHostTwoExceptionPacketDischarge :=
+  h.toFourExceptionResidualBinaryNormalization.toLocalHostTwoExceptionPacketDischarge
+
+/-- Wrapper theorem exposing three-exception local-host discharge from the final handoff. -/
+theorem localHostThreeExceptionPacketDischarge_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionLocalHostThreeExceptionPacketDischarge :=
+  h.toFourExceptionResidualBinaryNormalization.toLocalHostThreeExceptionPacketDischarge
+
+/-- Wrapper theorem exposing remaining four-exception `2/2` skeletons from the final handoff. -/
+theorem remainingTwoTwoSkeletons_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionRemainingTwoTwoSkeletons :=
+  h.toFourExceptionResidualBinaryNormalization.toRemainingTwoTwoSkeletons
+
+/-- Wrapper theorem exposing the Boolean one-corner square normalization from the final handoff. -/
+theorem booleanSecondDifferenceOneCornerSquare_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionBooleanSecondDifferenceOneCornerSquare :=
+  h.toFourExceptionResidualBinaryNormalization.toBooleanSecondDifferenceOneCornerSquare
+
+/-- Wrapper theorem exposing affine table/row-column switch normalization from the final handoff. -/
+theorem affineTableRowColumnSwitchNormalization_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionAffineTableRowColumnSwitchNormalization :=
+  h.toFourExceptionResidualBinaryNormalization.toAffineTableRowColumnSwitchNormalization
+
+/-- Wrapper theorem exposing the balanced `0101/0011` compensator from the final handoff. -/
+theorem balancedZeroOneZeroOneZeroZeroOneOneCompensator_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator :=
+  h.toFourExceptionResidualBinaryNormalization.toBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+
+/-- Wrapper theorem exposing signed-degree quotient closure foldback from the final handoff. -/
+theorem signedDegreeQuotientClosureFoldback_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionSignedDegreeQuotientClosureFoldback :=
+  h.toFourExceptionResidualBinaryNormalization.toSignedDegreeQuotientClosureFoldback
+
+/-- Wrapper theorem exposing the shortened-pair-hit `q = 2` foldback branch. -/
+theorem shortenedPairHitQTwoFoldback_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionShortenedPairHitQTwoFoldback :=
+  h.toFourExceptionResidualBinaryNormalization.toShortenedPairHitQTwoFoldback
+
+/-- Wrapper theorem exposing the shortened-pair-hit `q = 3` extra-rebate branch. -/
+theorem shortenedPairHitQThreeExtraRebateBranch_of_certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch) :
+    terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch :=
+  h.toFourExceptionResidualBinaryNormalization.toShortenedPairHitQThreeExtraRebateBranch
+
+end FinalConsumerFourExceptionResidualBinaryNormalizationApi
 end FinalConsumerTypedFGraphBranchApi
 
 end FinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointApi
