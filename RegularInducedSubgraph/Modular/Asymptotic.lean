@@ -41340,7 +41340,321 @@ theorem FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade.markerBundle :
       h.currentFrontier.to_allLargeAbsorptionCollisionFoldbackEndpoint
       h.currentFrontier.to_protectedCoreAllLargeFoldbackEndpoint⟩
 
+
 end FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade
+
+/--
+Terminal no-leftover release certificate facade.  It packages the current-frontier certificate and
+final closure facade with explicit projections for the residual/binary normalization endpoint,
+signed-quotient and shortened-pair foldbacks, typed-`F` branch endpoint, protected-core large-target
+frontier, all-large foldbacks, the current checkpoint, foldback normalization, and the release
+endpoint.  Everything remains assumption-backed: the final release endpoint is only obtained from the
+supplied checkpoint, normalization, and closure handoff rules.
+-/
+structure FirstBitTerminalNoLeftoverReleaseCertificateFacade
+    (currentFrontierCertificate finalClosureFacade
+      fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+      shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+      protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+      currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+      terminalNoLeftoverReleaseEndpoint : Prop) : Prop where
+  currentFrontierCertificateCert : currentFrontierCertificate
+  finalClosureFacadeCert : finalClosureFacade
+  fourExceptionResidualBinaryNormalizationEndpointCert :
+    currentFrontierCertificate → fourExceptionResidualBinaryNormalizationEndpoint
+  signedDegreeQuotientFoldbackCert : currentFrontierCertificate → signedDegreeQuotientFoldback
+  shortenedPairHitQ2FoldbackCert : currentFrontierCertificate → shortenedPairHitQ2Foldback
+  shortenedPairHitQ3ExtraRebateCert : currentFrontierCertificate → shortenedPairHitQ3ExtraRebate
+  signedQuotientScalarClosureEndpointCert :
+    currentFrontierCertificate → signedQuotientScalarClosureEndpoint
+  typedFGraphBranchEndpointCert : currentFrontierCertificate → typedFGraphBranchEndpoint
+  currentNoLeftoverFrontierEndpointCert :
+    currentFrontierCertificate → currentNoLeftoverFrontierEndpoint
+  noLeftoverAllLargeCurrentFrontierEndpointCert :
+    currentFrontierCertificate → noLeftoverAllLargeCurrentFrontierEndpoint
+  allLargeAbsorptionCollisionFoldbackEndpointCert :
+    currentFrontierCertificate → allLargeAbsorptionCollisionFoldbackEndpoint
+  protectedCoreAllLargeFoldbackEndpointCert :
+    currentFrontierCertificate → protectedCoreAllLargeFoldbackEndpoint
+  largeTargetProtectedCoreEndpointCert : finalClosureFacade → largeTargetProtectedCoreEndpoint
+  largeTargetReductionEndpointCert : finalClosureFacade → largeTargetReductionEndpoint
+  terminalNoLeftoverClosureEndpointCert : finalClosureFacade → terminalNoLeftoverClosureEndpoint
+  currentFrontierTerminalCheckpointEndpointCert :
+    fourExceptionResidualBinaryNormalizationEndpoint → signedDegreeQuotientFoldback →
+      shortenedPairHitQ2Foldback → shortenedPairHitQ3ExtraRebate →
+        signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+          currentNoLeftoverFrontierEndpoint → noLeftoverAllLargeCurrentFrontierEndpoint →
+            allLargeAbsorptionCollisionFoldbackEndpoint →
+              protectedCoreAllLargeFoldbackEndpoint → terminalNoLeftoverClosureEndpoint →
+                currentFrontierTerminalCheckpointEndpoint
+  terminalNoLeftoverFoldbackNormalizationEndpointCert :
+    fourExceptionResidualBinaryNormalizationEndpoint → signedDegreeQuotientFoldback →
+      shortenedPairHitQ2Foldback → shortenedPairHitQ3ExtraRebate →
+        signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+          largeTargetProtectedCoreEndpoint → largeTargetReductionEndpoint →
+            allLargeAbsorptionCollisionFoldbackEndpoint →
+              protectedCoreAllLargeFoldbackEndpoint → terminalNoLeftoverClosureEndpoint →
+                terminalNoLeftoverFoldbackNormalizationEndpoint
+  terminalNoLeftoverReleaseEndpointCert :
+    currentFrontierTerminalCheckpointEndpoint →
+      terminalNoLeftoverFoldbackNormalizationEndpoint →
+        terminalNoLeftoverClosureEndpoint → terminalNoLeftoverReleaseEndpoint
+
+/-- Build the terminal no-leftover release certificate facade from explicit endpoint handoffs. -/
+theorem firstBitTerminalNoLeftoverReleaseCertificateFacade_of_parts
+    {currentFrontierCertificate finalClosureFacade
+      fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+      shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+      protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+      currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+      terminalNoLeftoverReleaseEndpoint : Prop}
+    (hcurrent : currentFrontierCertificate) (hfinal : finalClosureFacade)
+    (hresidual : currentFrontierCertificate → fourExceptionResidualBinaryNormalizationEndpoint)
+    (hsigned : currentFrontierCertificate → signedDegreeQuotientFoldback)
+    (hq2 : currentFrontierCertificate → shortenedPairHitQ2Foldback)
+    (hq3 : currentFrontierCertificate → shortenedPairHitQ3ExtraRebate)
+    (hscalar : currentFrontierCertificate → signedQuotientScalarClosureEndpoint)
+    (htyped : currentFrontierCertificate → typedFGraphBranchEndpoint)
+    (hcurrentEndpoint : currentFrontierCertificate → currentNoLeftoverFrontierEndpoint)
+    (hallLargeCurrent : currentFrontierCertificate → noLeftoverAllLargeCurrentFrontierEndpoint)
+    (habsorption : currentFrontierCertificate → allLargeAbsorptionCollisionFoldbackEndpoint)
+    (hprotectedFoldback : currentFrontierCertificate → protectedCoreAllLargeFoldbackEndpoint)
+    (hprotectedCore : finalClosureFacade → largeTargetProtectedCoreEndpoint)
+    (hreduction : finalClosureFacade → largeTargetReductionEndpoint)
+    (hterminal : finalClosureFacade → terminalNoLeftoverClosureEndpoint)
+    (hcheckpoint :
+      fourExceptionResidualBinaryNormalizationEndpoint → signedDegreeQuotientFoldback →
+        shortenedPairHitQ2Foldback → shortenedPairHitQ3ExtraRebate →
+          signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+            currentNoLeftoverFrontierEndpoint → noLeftoverAllLargeCurrentFrontierEndpoint →
+              allLargeAbsorptionCollisionFoldbackEndpoint →
+                protectedCoreAllLargeFoldbackEndpoint → terminalNoLeftoverClosureEndpoint →
+                  currentFrontierTerminalCheckpointEndpoint)
+    (hnormalize :
+      fourExceptionResidualBinaryNormalizationEndpoint → signedDegreeQuotientFoldback →
+        shortenedPairHitQ2Foldback → shortenedPairHitQ3ExtraRebate →
+          signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+            largeTargetProtectedCoreEndpoint → largeTargetReductionEndpoint →
+              allLargeAbsorptionCollisionFoldbackEndpoint →
+                protectedCoreAllLargeFoldbackEndpoint → terminalNoLeftoverClosureEndpoint →
+                  terminalNoLeftoverFoldbackNormalizationEndpoint)
+    (hrelease :
+      currentFrontierTerminalCheckpointEndpoint →
+        terminalNoLeftoverFoldbackNormalizationEndpoint →
+          terminalNoLeftoverClosureEndpoint → terminalNoLeftoverReleaseEndpoint) :
+    FirstBitTerminalNoLeftoverReleaseCertificateFacade currentFrontierCertificate finalClosureFacade
+      fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+      shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+      protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+      currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+      terminalNoLeftoverReleaseEndpoint where
+  currentFrontierCertificateCert := hcurrent
+  finalClosureFacadeCert := hfinal
+  fourExceptionResidualBinaryNormalizationEndpointCert := hresidual
+  signedDegreeQuotientFoldbackCert := hsigned
+  shortenedPairHitQ2FoldbackCert := hq2
+  shortenedPairHitQ3ExtraRebateCert := hq3
+  signedQuotientScalarClosureEndpointCert := hscalar
+  typedFGraphBranchEndpointCert := htyped
+  currentNoLeftoverFrontierEndpointCert := hcurrentEndpoint
+  noLeftoverAllLargeCurrentFrontierEndpointCert := hallLargeCurrent
+  allLargeAbsorptionCollisionFoldbackEndpointCert := habsorption
+  protectedCoreAllLargeFoldbackEndpointCert := hprotectedFoldback
+  largeTargetProtectedCoreEndpointCert := hprotectedCore
+  largeTargetReductionEndpointCert := hreduction
+  terminalNoLeftoverClosureEndpointCert := hterminal
+  currentFrontierTerminalCheckpointEndpointCert := hcheckpoint
+  terminalNoLeftoverFoldbackNormalizationEndpointCert := hnormalize
+  terminalNoLeftoverReleaseEndpointCert := hrelease
+
+section FirstBitTerminalNoLeftoverReleaseCertificateFacade
+
+variable {currentFrontierCertificate finalClosureFacade
+  fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+  shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+  signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+  largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+  noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+  protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+  currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+  terminalNoLeftoverReleaseEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalNoLeftoverReleaseCertificateFacade currentFrontierCertificate finalClosureFacade
+    fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+    shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+    signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+    largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+    noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+    protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+    currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+    terminalNoLeftoverReleaseEndpoint)
+
+/-- Project the current no-leftover/all-large frontier certificate marker. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_currentFrontierCertificate :
+    currentFrontierCertificate :=
+  h.currentFrontierCertificateCert
+
+/-- Project the final terminal no-leftover closure facade marker. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_finalClosureFacade :
+    finalClosureFacade :=
+  h.finalClosureFacadeCert
+
+/-- Project the four-exception residual/binary normalization endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_fourExceptionResidualBinaryNormalizationEndpoint :
+    fourExceptionResidualBinaryNormalizationEndpoint :=
+  h.fourExceptionResidualBinaryNormalizationEndpointCert h.currentFrontierCertificateCert
+
+/-- Project the signed-degree quotient foldback marker. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_signedDegreeQuotientFoldback :
+    signedDegreeQuotientFoldback :=
+  h.signedDegreeQuotientFoldbackCert h.currentFrontierCertificateCert
+
+/-- Project the q=2 shortened-pair foldback marker. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_shortenedPairHitQ2Foldback :
+    shortenedPairHitQ2Foldback :=
+  h.shortenedPairHitQ2FoldbackCert h.currentFrontierCertificateCert
+
+/-- Project the q=3 shortened-pair extra-rebate marker. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_shortenedPairHitQ3ExtraRebate :
+    shortenedPairHitQ3ExtraRebate :=
+  h.shortenedPairHitQ3ExtraRebateCert h.currentFrontierCertificateCert
+
+/-- Project the signed-quotient scalar closure endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.signedQuotientScalarClosureEndpointCert h.currentFrontierCertificateCert
+
+/-- Project the typed `F`-graph branch endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_typedFGraphBranchEndpoint :
+    typedFGraphBranchEndpoint :=
+  h.typedFGraphBranchEndpointCert h.currentFrontierCertificateCert
+
+/-- Project the protected-core large-target frontier marker. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_largeTargetProtectedCoreEndpoint :
+    largeTargetProtectedCoreEndpoint :=
+  h.largeTargetProtectedCoreEndpointCert h.finalClosureFacadeCert
+
+/-- Project the large-target reduction endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_largeTargetReductionEndpoint :
+    largeTargetReductionEndpoint :=
+  h.largeTargetReductionEndpointCert h.finalClosureFacadeCert
+
+/-- Project the pre-all-large current no-leftover frontier endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_currentNoLeftoverFrontierEndpoint :
+    currentNoLeftoverFrontierEndpoint :=
+  h.currentNoLeftoverFrontierEndpointCert h.currentFrontierCertificateCert
+
+/-- Project the certified no-leftover/all-large current frontier endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_noLeftoverAllLargeCurrentFrontierEndpoint :
+    noLeftoverAllLargeCurrentFrontierEndpoint :=
+  h.noLeftoverAllLargeCurrentFrontierEndpointCert h.currentFrontierCertificateCert
+
+/-- Project the all-large absorption/collision foldback endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_allLargeAbsorptionCollisionFoldbackEndpoint :
+    allLargeAbsorptionCollisionFoldbackEndpoint :=
+  h.allLargeAbsorptionCollisionFoldbackEndpointCert h.currentFrontierCertificateCert
+
+/-- Project the protected-core/all-large foldback endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_protectedCoreAllLargeFoldbackEndpoint :
+    protectedCoreAllLargeFoldbackEndpoint :=
+  h.protectedCoreAllLargeFoldbackEndpointCert h.currentFrontierCertificateCert
+
+/-- Project the terminal no-leftover closure endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_terminalNoLeftoverClosureEndpoint :
+    terminalNoLeftoverClosureEndpoint :=
+  h.terminalNoLeftoverClosureEndpointCert h.finalClosureFacadeCert
+
+/-- Project the current-frontier terminal checkpoint endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_currentFrontierTerminalCheckpointEndpoint :
+    currentFrontierTerminalCheckpointEndpoint :=
+  h.currentFrontierTerminalCheckpointEndpointCert
+    h.to_fourExceptionResidualBinaryNormalizationEndpoint h.to_signedDegreeQuotientFoldback
+    h.to_shortenedPairHitQ2Foldback h.to_shortenedPairHitQ3ExtraRebate
+    h.to_signedQuotientScalarClosureEndpoint h.to_typedFGraphBranchEndpoint
+    h.to_currentNoLeftoverFrontierEndpoint h.to_noLeftoverAllLargeCurrentFrontierEndpoint
+    h.to_allLargeAbsorptionCollisionFoldbackEndpoint h.to_protectedCoreAllLargeFoldbackEndpoint
+    h.to_terminalNoLeftoverClosureEndpoint
+
+/-- Project the foldback normalization endpoint tying closure back to the residual and all-large layers. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_terminalNoLeftoverFoldbackNormalizationEndpoint :
+    terminalNoLeftoverFoldbackNormalizationEndpoint :=
+  h.terminalNoLeftoverFoldbackNormalizationEndpointCert
+    h.to_fourExceptionResidualBinaryNormalizationEndpoint h.to_signedDegreeQuotientFoldback
+    h.to_shortenedPairHitQ2Foldback h.to_shortenedPairHitQ3ExtraRebate
+    h.to_signedQuotientScalarClosureEndpoint h.to_typedFGraphBranchEndpoint
+    h.to_largeTargetProtectedCoreEndpoint h.to_largeTargetReductionEndpoint
+    h.to_allLargeAbsorptionCollisionFoldbackEndpoint h.to_protectedCoreAllLargeFoldbackEndpoint
+    h.to_terminalNoLeftoverClosureEndpoint
+
+/-- Project the terminal no-leftover release endpoint. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.to_terminalNoLeftoverReleaseEndpoint :
+    terminalNoLeftoverReleaseEndpoint :=
+  h.terminalNoLeftoverReleaseEndpointCert h.to_currentFrontierTerminalCheckpointEndpoint
+    h.to_terminalNoLeftoverFoldbackNormalizationEndpoint h.to_terminalNoLeftoverClosureEndpoint
+
+/-- Compact checkpoint bundle for current-frontier downstream users. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.currentFrontierCheckpointBundle :
+    fourExceptionResidualBinaryNormalizationEndpoint ∧ signedDegreeQuotientFoldback ∧
+      shortenedPairHitQ2Foldback ∧ shortenedPairHitQ3ExtraRebate ∧
+        signedQuotientScalarClosureEndpoint ∧ typedFGraphBranchEndpoint ∧
+          currentNoLeftoverFrontierEndpoint ∧ noLeftoverAllLargeCurrentFrontierEndpoint ∧
+            allLargeAbsorptionCollisionFoldbackEndpoint ∧
+              protectedCoreAllLargeFoldbackEndpoint ∧ terminalNoLeftoverClosureEndpoint ∧
+                currentFrontierTerminalCheckpointEndpoint :=
+  ⟨h.to_fourExceptionResidualBinaryNormalizationEndpoint,
+    h.to_signedDegreeQuotientFoldback,
+    h.to_shortenedPairHitQ2Foldback,
+    h.to_shortenedPairHitQ3ExtraRebate,
+    h.to_signedQuotientScalarClosureEndpoint,
+    h.to_typedFGraphBranchEndpoint,
+    h.to_currentNoLeftoverFrontierEndpoint,
+    h.to_noLeftoverAllLargeCurrentFrontierEndpoint,
+    h.to_allLargeAbsorptionCollisionFoldbackEndpoint,
+    h.to_protectedCoreAllLargeFoldbackEndpoint,
+    h.to_terminalNoLeftoverClosureEndpoint,
+    h.to_currentFrontierTerminalCheckpointEndpoint⟩
+
+/-- Compact foldback-normalization bundle for closure-to-release downstream users. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.foldbackNormalizationBundle :
+    fourExceptionResidualBinaryNormalizationEndpoint ∧ signedDegreeQuotientFoldback ∧
+      shortenedPairHitQ2Foldback ∧ shortenedPairHitQ3ExtraRebate ∧
+        signedQuotientScalarClosureEndpoint ∧ typedFGraphBranchEndpoint ∧
+          largeTargetProtectedCoreEndpoint ∧ largeTargetReductionEndpoint ∧
+            allLargeAbsorptionCollisionFoldbackEndpoint ∧ protectedCoreAllLargeFoldbackEndpoint ∧
+              terminalNoLeftoverClosureEndpoint ∧ terminalNoLeftoverFoldbackNormalizationEndpoint :=
+  ⟨h.to_fourExceptionResidualBinaryNormalizationEndpoint,
+    h.to_signedDegreeQuotientFoldback,
+    h.to_shortenedPairHitQ2Foldback,
+    h.to_shortenedPairHitQ3ExtraRebate,
+    h.to_signedQuotientScalarClosureEndpoint,
+    h.to_typedFGraphBranchEndpoint,
+    h.to_largeTargetProtectedCoreEndpoint,
+    h.to_largeTargetReductionEndpoint,
+    h.to_allLargeAbsorptionCollisionFoldbackEndpoint,
+    h.to_protectedCoreAllLargeFoldbackEndpoint,
+    h.to_terminalNoLeftoverClosureEndpoint,
+    h.to_terminalNoLeftoverFoldbackNormalizationEndpoint⟩
+
+/-- Compact release marker bundle exported by the terminal no-leftover release facade. -/
+theorem FirstBitTerminalNoLeftoverReleaseCertificateFacade.markerBundle :
+    currentFrontierTerminalCheckpointEndpoint ∧ terminalNoLeftoverFoldbackNormalizationEndpoint ∧
+      terminalNoLeftoverClosureEndpoint ∧ terminalNoLeftoverReleaseEndpoint :=
+  ⟨h.to_currentFrontierTerminalCheckpointEndpoint,
+    h.to_terminalNoLeftoverFoldbackNormalizationEndpoint,
+    h.to_terminalNoLeftoverClosureEndpoint,
+    h.to_terminalNoLeftoverReleaseEndpoint⟩
+
+end FirstBitTerminalNoLeftoverReleaseCertificateFacade
 
 /--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
