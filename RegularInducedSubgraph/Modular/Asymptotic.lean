@@ -35290,6 +35290,1394 @@ theorem
 end FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI
 
 /--
+Trace-side alternatives used by the fully split transpose layer: either the trace is obtained by
+permuting the `F` rows, or it is obtained by passing to the complementary row system.
+-/
+inductive FirstBitTerminalPermutationComplementTraceAlternative : Type
+  | permutation
+  | complement
+
+/-- Exhaust the permutation/complement trace alternative table. -/
+theorem firstBitTerminalPermutationComplementTraceAlternative_cases
+    (alternative : FirstBitTerminalPermutationComplementTraceAlternative) :
+    alternative = .permutation ∨ alternative = .complement := by
+  cases alternative with
+  | permutation => exact Or.inl rfl
+  | complement => exact Or.inr rfl
+
+/--
+Explicit signed-`K4` closure classes, indexed by the number of triangular atoms in the signed
+tetrahedron frame.
+-/
+inductive FirstBitTerminalSignedK4TriangularAtomCountClass : Type
+  | zeroTriangles
+  | oneTriangle
+  | twoTriangles
+  | threeTriangles
+  | fourTriangles
+
+/-- Exhaust the signed-`K4` triangular-atom count classification. -/
+theorem firstBitTerminalSignedK4TriangularAtomCountClass_cases
+    (closureClass : FirstBitTerminalSignedK4TriangularAtomCountClass) :
+    closureClass = .zeroTriangles ∨ closureClass = .oneTriangle ∨
+      closureClass = .twoTriangles ∨ closureClass = .threeTriangles ∨
+        closureClass = .fourTriangles := by
+  cases closureClass with
+  | zeroTriangles => exact Or.inl rfl
+  | oneTriangle => exact Or.inr (Or.inl rfl)
+  | twoTriangles => exact Or.inr (Or.inr (Or.inl rfl))
+  | threeTriangles => exact Or.inr (Or.inr (Or.inr (Or.inl rfl)))
+  | fourTriangles => exact Or.inr (Or.inr (Or.inr (Or.inr rfl)))
+
+/--
+Finite omission kinds for shortened-pair hits at the terminal signed-quotient frontier.
+-/
+inductive FirstBitTerminalShortenedPairHitFiniteOmissionKind : Type
+  | noOmission
+  | sourcePetal
+  | partnerPetal
+  | complementBridge
+  | transposePair
+  | signedK4Closure
+
+/-- Exhaust the finite shortened-pair omission table. -/
+theorem firstBitTerminalShortenedPairHitFiniteOmissionKind_cases
+    (kind : FirstBitTerminalShortenedPairHitFiniteOmissionKind) :
+    kind = .noOmission ∨ kind = .sourcePetal ∨ kind = .partnerPetal ∨
+      kind = .complementBridge ∨ kind = .transposePair ∨ kind = .signedK4Closure := by
+  cases kind with
+  | noOmission => exact Or.inl rfl
+  | sourcePetal => exact Or.inr (Or.inl rfl)
+  | partnerPetal => exact Or.inr (Or.inr (Or.inl rfl))
+  | complementBridge => exact Or.inr (Or.inr (Or.inr (Or.inl rfl)))
+  | transposePair => exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))
+  | signedK4Closure => exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))
+
+/-- All-edge Latin scalar equation, recorded as the signed residue `r_G - S_G`. -/
+def FirstBitTerminalAllEdgeLatinScalarEquation (rG SG scalar : ℕ) : Prop :=
+  firstBitIntModFourEq ((rG : ℤ) - (SG : ℤ)) (scalar : ℤ)
+
+/-- Exact signed equality implies the all-edge Latin scalar congruence. -/
+theorem firstBitTerminalAllEdgeLatinScalarEquation_of_eq
+    {rG SG scalar : ℕ}
+    (h : (rG : ℤ) - (SG : ℤ) = (scalar : ℤ)) :
+    FirstBitTerminalAllEdgeLatinScalarEquation rG SG scalar :=
+  firstBitIntModFourEq_of_eq h
+
+/-- Signed-quotient scalar closure equation after adding the quotient scalar correction. -/
+def FirstBitTerminalSignedQuotientScalarClosureEquation
+    (rG SG quotientScalar closureScalar : ℕ) : Prop :=
+  firstBitIntModFourEq
+    (((rG : ℤ) - (SG : ℤ)) + (quotientScalar : ℤ))
+    (closureScalar : ℤ)
+
+/-- Exact signed equality implies the signed-quotient scalar-closure congruence. -/
+theorem firstBitTerminalSignedQuotientScalarClosureEquation_of_eq
+    {rG SG quotientScalar closureScalar : ℕ}
+    (h : ((rG : ℤ) - (SG : ℤ)) + (quotientScalar : ℤ) = (closureScalar : ℤ)) :
+    FirstBitTerminalSignedQuotientScalarClosureEquation rG SG quotientScalar closureScalar :=
+  firstBitIntModFourEq_of_eq h
+
+/--
+Import bundle for the existing parity-tetrahedron symmetric star-phase public API.  The signed
+frontier consumes only the marker surface exported by that API.
+-/
+structure FirstBitTerminalParityTetrahedronStarPhaseEndpointImports
+    (ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint : Prop) : Prop where
+  ternarySourceCollisionRefinementEndpointCert : ternarySourceCollisionRefinementEndpoint
+  pairCollisionPartnerSplitEndpointCert : pairCollisionPartnerSplitEndpoint
+  remainingSmallAtomCollisionCoreAssumptionsCert : remainingSmallAtomCollisionCoreAssumptions
+  parityTetrahedronRigidityCert : parityTetrahedronRigidity
+  targetTypeTableCert : targetTypeTable
+  parityTargetIncidenceCert : parityTargetIncidence
+  highOutdegreeTargetIncidenceCert : highOutdegreeTargetIncidence
+  allTernary3333IncidenceProfilesCert : allTernary3333IncidenceProfiles
+  pairIncidenceProfilesCert : pairIncidenceProfiles
+  allEdgeStarTrianglePhaseSplitCert : allEdgeStarTrianglePhaseSplit
+  trianglePhaseExcludedCert : trianglePhaseExcluded
+  symmetricAllTernaryStarPhaseEndpointCert : symmetricAllTernaryStarPhaseEndpoint
+
+/-- Build parity-tetrahedron star-phase endpoint imports from the exposed marker certificates. -/
+theorem firstBitTerminalParityTetrahedronStarPhaseEndpointImports_of_parts
+    {ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint : Prop}
+    (hsource : ternarySourceCollisionRefinementEndpoint)
+    (hpartner : pairCollisionPartnerSplitEndpoint)
+    (hsmall : remainingSmallAtomCollisionCoreAssumptions)
+    (hrigidity : parityTetrahedronRigidity)
+    (htable : targetTypeTable)
+    (hincidence : parityTargetIncidence)
+    (hhigh : highOutdegreeTargetIncidence)
+    (hall : allTernary3333IncidenceProfiles)
+    (hpair : pairIncidenceProfiles)
+    (hphase : allEdgeStarTrianglePhaseSplit)
+    (hexcluded : trianglePhaseExcluded)
+    (hstar : symmetricAllTernaryStarPhaseEndpoint) :
+    FirstBitTerminalParityTetrahedronStarPhaseEndpointImports
+      ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint where
+  ternarySourceCollisionRefinementEndpointCert := hsource
+  pairCollisionPartnerSplitEndpointCert := hpartner
+  remainingSmallAtomCollisionCoreAssumptionsCert := hsmall
+  parityTetrahedronRigidityCert := hrigidity
+  targetTypeTableCert := htable
+  parityTargetIncidenceCert := hincidence
+  highOutdegreeTargetIncidenceCert := hhigh
+  allTernary3333IncidenceProfilesCert := hall
+  pairIncidenceProfilesCert := hpair
+  allEdgeStarTrianglePhaseSplitCert := hphase
+  trianglePhaseExcludedCert := hexcluded
+  symmetricAllTernaryStarPhaseEndpointCert := hstar
+
+/-- Reuse the parity-tetrahedron symmetric star-phase public API as signed-frontier imports. -/
+theorem firstBitTerminalParityTetrahedronStarPhaseEndpointImports_of_publicAPI
+    {Core Tetrahedron Vertex SourceAtom Target Collision : Type*}
+    {tetrahedra : Core → Finset Tetrahedron}
+    {verticesOf : Core → Tetrahedron → Finset Vertex}
+    {targets : Core → Finset Target}
+    {targetsOfTetrahedron : Core → Tetrahedron → Finset Target}
+    {targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType}
+    {tetrahedronIncident : Core → Tetrahedron → Vertex → Target → Prop}
+    {rigidTarget : Core → Tetrahedron → Target → Prop}
+    {sourceAtoms : Core → Finset SourceAtom}
+    {sourceIncident : Core → SourceAtom → Target → Prop}
+    {sourceOutdegree : Core → SourceAtom → ℕ}
+    {profileOf : Core → SourceAtom → FirstBitTerminalParityTetrahedronHighOutdegreeProfile}
+    {allEdgeTargets : Core → SourceAtom → Collision → Finset Target}
+    {allEdgeCollision : Core → SourceAtom → Collision → Prop}
+    {starCenter : Core → SourceAtom → Collision → Target}
+    {triangleTargets : Core → SourceAtom → Collision → Finset Target}
+    {starPhase trianglePhase : Core → SourceAtom → Collision → Prop}
+    {symmetricAllTernary : Core → SourceAtom → Prop}
+    {ternarySourceCollision : Core → SourceAtom → Collision → Prop}
+    {ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint : Prop}
+    (h :
+      FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI tetrahedra verticesOf targets
+        targetsOfTetrahedron targetType tetrahedronIncident rigidTarget sourceAtoms
+        sourceIncident sourceOutdegree profileOf allEdgeTargets allEdgeCollision starCenter
+        triangleTargets starPhase trianglePhase symmetricAllTernary ternarySourceCollision
+        ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+        remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+        parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+        pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+        symmetricAllTernaryStarPhaseEndpoint) :
+    FirstBitTerminalParityTetrahedronStarPhaseEndpointImports
+      ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint :=
+  firstBitTerminalParityTetrahedronStarPhaseEndpointImports_of_parts
+    h.to_ternarySourceCollisionRefinementEndpoint
+    h.to_pairCollisionPartnerSplitEndpoint
+    h.to_remainingSmallAtomCollisionCoreAssumptions
+    h.to_parityTetrahedronRigidity
+    h.rigidityFacade.to_targetTypeTable
+    h.to_parityTargetIncidence
+    h.to_highOutdegreeTargetIncidence
+    h.to_allTernary3333IncidenceProfiles
+    h.to_pairIncidenceProfiles
+    h.to_allEdgeStarTrianglePhaseSplit
+    h.to_trianglePhaseExcluded
+    h.to_symmetricAllTernaryStarPhaseEndpoint
+
+/--
+Mutual fully split `F` trace facade.  It records forward and transposed `F` traces, their target
+supports, and the transpose-rigidity consequence for atoms carrying both traces.
+-/
+structure FirstBitTerminalMutualFullySplitFTraceFacade
+    {Core Atom Trace Target : Type*}
+    (activeAtoms : Core → Finset Atom)
+    (fTargets : Core → Atom → Finset Target)
+    (forwardFTrace transposeFTrace : Core → Atom → Trace → Prop)
+    (traceSupport : Core → Trace → Finset Target)
+    (fullySplitAtom transposeRigidAtom : Core → Atom → Prop)
+    (mutualFullySplitFTrace fullySplitTransposeRigidity : Prop) : Prop where
+  forward_trace_atom_memCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      forwardFTrace core atom trace → atom ∈ activeAtoms core
+  transpose_trace_atom_memCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      transposeFTrace core atom trace → atom ∈ activeAtoms core
+  forward_trace_support_subsetCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      forwardFTrace core atom trace → traceSupport core trace ⊆ fTargets core atom
+  transpose_trace_support_subsetCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      transposeFTrace core atom trace → traceSupport core trace ⊆ fTargets core atom
+  forward_fullySplitCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      forwardFTrace core atom trace → fullySplitAtom core atom
+  transpose_fullySplitCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      transposeFTrace core atom trace → fullySplitAtom core atom
+  transposeRigid_of_mutualTraceCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ forwardTrace transposeTrace : Trace,
+      forwardFTrace core atom forwardTrace → transposeFTrace core atom transposeTrace →
+        transposeRigidAtom core atom
+  mutualFullySplitFTraceCert : mutualFullySplitFTrace
+  fullySplitTransposeRigidityCert : fullySplitTransposeRigidity
+
+/-- Build the mutual fully split `F` trace facade from explicit certificates. -/
+theorem firstBitTerminalMutualFullySplitFTraceFacade_of_parts
+    {Core Atom Trace Target : Type*}
+    {activeAtoms : Core → Finset Atom}
+    {fTargets : Core → Atom → Finset Target}
+    {forwardFTrace transposeFTrace : Core → Atom → Trace → Prop}
+    {traceSupport : Core → Trace → Finset Target}
+    {fullySplitAtom transposeRigidAtom : Core → Atom → Prop}
+    {mutualFullySplitFTrace fullySplitTransposeRigidity : Prop}
+    (hforwardMem :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        forwardFTrace core atom trace → atom ∈ activeAtoms core)
+    (htransposeMem :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        transposeFTrace core atom trace → atom ∈ activeAtoms core)
+    (hforwardSupport :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        forwardFTrace core atom trace → traceSupport core trace ⊆ fTargets core atom)
+    (htransposeSupport :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        transposeFTrace core atom trace → traceSupport core trace ⊆ fTargets core atom)
+    (hforwardSplit :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        forwardFTrace core atom trace → fullySplitAtom core atom)
+    (htransposeSplit :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        transposeFTrace core atom trace → fullySplitAtom core atom)
+    (hrigid :
+      ∀ core : Core, ∀ atom : Atom, ∀ forwardTrace transposeTrace : Trace,
+        forwardFTrace core atom forwardTrace → transposeFTrace core atom transposeTrace →
+          transposeRigidAtom core atom)
+    (hmutual : mutualFullySplitFTrace)
+    (htranspose : fullySplitTransposeRigidity) :
+    FirstBitTerminalMutualFullySplitFTraceFacade activeAtoms fTargets forwardFTrace
+      transposeFTrace traceSupport fullySplitAtom transposeRigidAtom mutualFullySplitFTrace
+      fullySplitTransposeRigidity where
+  forward_trace_atom_memCert := hforwardMem
+  transpose_trace_atom_memCert := htransposeMem
+  forward_trace_support_subsetCert := hforwardSupport
+  transpose_trace_support_subsetCert := htransposeSupport
+  forward_fullySplitCert := hforwardSplit
+  transpose_fullySplitCert := htransposeSplit
+  transposeRigid_of_mutualTraceCert := hrigid
+  mutualFullySplitFTraceCert := hmutual
+  fullySplitTransposeRigidityCert := htranspose
+
+section FirstBitTerminalMutualFullySplitFTraceFacade
+
+variable {Core Atom Trace Target : Type*}
+variable {activeAtoms : Core → Finset Atom}
+variable {fTargets : Core → Atom → Finset Target}
+variable {forwardFTrace transposeFTrace : Core → Atom → Trace → Prop}
+variable {traceSupport : Core → Trace → Finset Target}
+variable {fullySplitAtom transposeRigidAtom : Core → Atom → Prop}
+variable {mutualFullySplitFTrace fullySplitTransposeRigidity : Prop}
+
+variable (h :
+  FirstBitTerminalMutualFullySplitFTraceFacade activeAtoms fTargets forwardFTrace
+    transposeFTrace traceSupport fullySplitAtom transposeRigidAtom mutualFullySplitFTrace
+    fullySplitTransposeRigidity)
+
+/-- Project active-atom membership for a forward `F` trace. -/
+theorem FirstBitTerminalMutualFullySplitFTraceFacade.forward_trace_atom_mem
+    {core : Core} {atom : Atom} {trace : Trace}
+    (htrace : forwardFTrace core atom trace) :
+    atom ∈ activeAtoms core :=
+  h.forward_trace_atom_memCert core atom trace htrace
+
+/-- Project active-atom membership for a transposed `F` trace. -/
+theorem FirstBitTerminalMutualFullySplitFTraceFacade.transpose_trace_atom_mem
+    {core : Core} {atom : Atom} {trace : Trace}
+    (htrace : transposeFTrace core atom trace) :
+    atom ∈ activeAtoms core :=
+  h.transpose_trace_atom_memCert core atom trace htrace
+
+/-- Project the target support inclusion for a forward `F` trace. -/
+theorem FirstBitTerminalMutualFullySplitFTraceFacade.forward_trace_support_subset
+    {core : Core} {atom : Atom} {trace : Trace}
+    (htrace : forwardFTrace core atom trace) :
+    traceSupport core trace ⊆ fTargets core atom :=
+  h.forward_trace_support_subsetCert core atom trace htrace
+
+/-- Project the target support inclusion for a transposed `F` trace. -/
+theorem FirstBitTerminalMutualFullySplitFTraceFacade.transpose_trace_support_subset
+    {core : Core} {atom : Atom} {trace : Trace}
+    (htrace : transposeFTrace core atom trace) :
+    traceSupport core trace ⊆ fTargets core atom :=
+  h.transpose_trace_support_subsetCert core atom trace htrace
+
+/-- Forward traces certify that the atom is fully split. -/
+theorem FirstBitTerminalMutualFullySplitFTraceFacade.fullySplit_of_forward_trace
+    {core : Core} {atom : Atom} {trace : Trace}
+    (htrace : forwardFTrace core atom trace) :
+    fullySplitAtom core atom :=
+  h.forward_fullySplitCert core atom trace htrace
+
+/-- Transposed traces certify that the atom is fully split. -/
+theorem FirstBitTerminalMutualFullySplitFTraceFacade.fullySplit_of_transpose_trace
+    {core : Core} {atom : Atom} {trace : Trace}
+    (htrace : transposeFTrace core atom trace) :
+    fullySplitAtom core atom :=
+  h.transpose_fullySplitCert core atom trace htrace
+
+/-- Mutual forward/transposed `F` traces certify transpose rigidity. -/
+theorem FirstBitTerminalMutualFullySplitFTraceFacade.transposeRigid_of_mutual_trace
+    {core : Core} {atom : Atom} {forwardTrace transposeTrace : Trace}
+    (hforward : forwardFTrace core atom forwardTrace)
+    (htranspose : transposeFTrace core atom transposeTrace) :
+    transposeRigidAtom core atom :=
+  h.transposeRigid_of_mutualTraceCert core atom forwardTrace transposeTrace hforward htranspose
+
+/-- Project the mutual fully split `F` trace marker. -/
+theorem FirstBitTerminalMutualFullySplitFTraceFacade.to_mutualFullySplitFTrace :
+    mutualFullySplitFTrace :=
+  h.mutualFullySplitFTraceCert
+
+/-- Project the fully split transpose-rigidity marker. -/
+theorem FirstBitTerminalMutualFullySplitFTraceFacade.to_fullySplitTransposeRigidity :
+    fullySplitTransposeRigidity :=
+  h.fullySplitTransposeRigidityCert
+
+end FirstBitTerminalMutualFullySplitFTraceFacade
+
+/--
+Permutation/complement trace-alternative facade for the fully split transpose layer.
+-/
+structure FirstBitTerminalPermutationComplementTraceAlternativesFacade
+    {Core Trace : Type*}
+    (traces : Core → Finset Trace)
+    (alternativeOf : Core → Trace → FirstBitTerminalPermutationComplementTraceAlternative)
+    (permutationTrace complementTrace : Core → Trace → Prop)
+    (permutationTraceFrontier complementTraceFrontier : Prop) : Prop where
+  alternative_casesCert :
+    ∀ core : Core, ∀ trace : Trace, trace ∈ traces core →
+      alternativeOf core trace = .permutation ∨ alternativeOf core trace = .complement
+  permutation_of_alternativeCert :
+    ∀ core : Core, ∀ trace : Trace, trace ∈ traces core →
+      alternativeOf core trace = .permutation → permutationTrace core trace
+  complement_of_alternativeCert :
+    ∀ core : Core, ∀ trace : Trace, trace ∈ traces core →
+      alternativeOf core trace = .complement → complementTrace core trace
+  trace_mem_of_permutationCert :
+    ∀ core : Core, ∀ trace : Trace, permutationTrace core trace → trace ∈ traces core
+  trace_mem_of_complementCert :
+    ∀ core : Core, ∀ trace : Trace, complementTrace core trace → trace ∈ traces core
+  permutationTraceFrontierCert : permutationTraceFrontier
+  complementTraceFrontierCert : complementTraceFrontier
+
+/-- Build the permutation/complement trace-alternative facade from explicit certificates. -/
+theorem firstBitTerminalPermutationComplementTraceAlternativesFacade_of_parts
+    {Core Trace : Type*}
+    {traces : Core → Finset Trace}
+    {alternativeOf : Core → Trace → FirstBitTerminalPermutationComplementTraceAlternative}
+    {permutationTrace complementTrace : Core → Trace → Prop}
+    {permutationTraceFrontier complementTraceFrontier : Prop}
+    (hcases :
+      ∀ core : Core, ∀ trace : Trace, trace ∈ traces core →
+        alternativeOf core trace = .permutation ∨ alternativeOf core trace = .complement)
+    (hpermutation :
+      ∀ core : Core, ∀ trace : Trace, trace ∈ traces core →
+        alternativeOf core trace = .permutation → permutationTrace core trace)
+    (hcomplement :
+      ∀ core : Core, ∀ trace : Trace, trace ∈ traces core →
+        alternativeOf core trace = .complement → complementTrace core trace)
+    (hpermutationMem :
+      ∀ core : Core, ∀ trace : Trace, permutationTrace core trace → trace ∈ traces core)
+    (hcomplementMem :
+      ∀ core : Core, ∀ trace : Trace, complementTrace core trace → trace ∈ traces core)
+    (hpermutationMarker : permutationTraceFrontier)
+    (hcomplementMarker : complementTraceFrontier) :
+    FirstBitTerminalPermutationComplementTraceAlternativesFacade traces alternativeOf
+      permutationTrace complementTrace permutationTraceFrontier complementTraceFrontier where
+  alternative_casesCert := hcases
+  permutation_of_alternativeCert := hpermutation
+  complement_of_alternativeCert := hcomplement
+  trace_mem_of_permutationCert := hpermutationMem
+  trace_mem_of_complementCert := hcomplementMem
+  permutationTraceFrontierCert := hpermutationMarker
+  complementTraceFrontierCert := hcomplementMarker
+
+section FirstBitTerminalPermutationComplementTraceAlternativesFacade
+
+variable {Core Trace : Type*}
+variable {traces : Core → Finset Trace}
+variable {alternativeOf : Core → Trace → FirstBitTerminalPermutationComplementTraceAlternative}
+variable {permutationTrace complementTrace : Core → Trace → Prop}
+variable {permutationTraceFrontier complementTraceFrontier : Prop}
+
+variable (h :
+  FirstBitTerminalPermutationComplementTraceAlternativesFacade traces alternativeOf
+    permutationTrace complementTrace permutationTraceFrontier complementTraceFrontier)
+
+/-- Project the permutation/complement alternative for a trace. -/
+theorem FirstBitTerminalPermutationComplementTraceAlternativesFacade.alternative_cases
+    {core : Core} {trace : Trace} (htrace : trace ∈ traces core) :
+    alternativeOf core trace = .permutation ∨ alternativeOf core trace = .complement :=
+  h.alternative_casesCert core trace htrace
+
+/-- A trace marked by the permutation alternative is a permutation trace. -/
+theorem FirstBitTerminalPermutationComplementTraceAlternativesFacade.permutation_of_alternative
+    {core : Core} {trace : Trace} (htrace : trace ∈ traces core)
+    (halternative : alternativeOf core trace = .permutation) :
+    permutationTrace core trace :=
+  h.permutation_of_alternativeCert core trace htrace halternative
+
+/-- A trace marked by the complement alternative is a complement trace. -/
+theorem FirstBitTerminalPermutationComplementTraceAlternativesFacade.complement_of_alternative
+    {core : Core} {trace : Trace} (htrace : trace ∈ traces core)
+    (halternative : alternativeOf core trace = .complement) :
+    complementTrace core trace :=
+  h.complement_of_alternativeCert core trace htrace halternative
+
+/-- Permutation traces lie in the trace table. -/
+theorem FirstBitTerminalPermutationComplementTraceAlternativesFacade.mem_of_permutation
+    {core : Core} {trace : Trace}
+    (hpermutation : permutationTrace core trace) :
+    trace ∈ traces core :=
+  h.trace_mem_of_permutationCert core trace hpermutation
+
+/-- Complement traces lie in the trace table. -/
+theorem FirstBitTerminalPermutationComplementTraceAlternativesFacade.mem_of_complement
+    {core : Core} {trace : Trace}
+    (hcomplement : complementTrace core trace) :
+    trace ∈ traces core :=
+  h.trace_mem_of_complementCert core trace hcomplement
+
+/-- Project the permutation-trace frontier marker. -/
+theorem FirstBitTerminalPermutationComplementTraceAlternativesFacade.to_permutationTraceFrontier :
+    permutationTraceFrontier :=
+  h.permutationTraceFrontierCert
+
+/-- Project the complement-trace frontier marker. -/
+theorem FirstBitTerminalPermutationComplementTraceAlternativesFacade.to_complementTraceFrontier :
+    complementTraceFrontier :=
+  h.complementTraceFrontierCert
+
+end FirstBitTerminalPermutationComplementTraceAlternativesFacade
+
+/-- Cross-regular atom-pair facade for the signed quotient scalar closure. -/
+structure FirstBitTerminalCrossRegularAtomPairFacade
+    {Core Atom : Type*}
+    (atoms : Core → Finset Atom)
+    (crossAtomPair crossRegularPair pairTraceAligned : Core → Atom → Atom → Prop)
+    (crossRegularAtomPairs crossRegularTraceAlignment : Prop) : Prop where
+  pair_memCert :
+    ∀ core : Core, ∀ left right : Atom, crossAtomPair core left right →
+      left ∈ atoms core ∧ right ∈ atoms core
+  pair_symmCert :
+    ∀ core : Core, ∀ left right : Atom,
+      crossAtomPair core left right → crossAtomPair core right left
+  pair_distinctCert :
+    ∀ core : Core, ∀ left right : Atom, crossAtomPair core left right → left ≠ right
+  crossRegular_of_pairCert :
+    ∀ core : Core, ∀ left right : Atom,
+      crossAtomPair core left right → crossRegularPair core left right
+  traceAligned_of_pairCert :
+    ∀ core : Core, ∀ left right : Atom,
+      crossAtomPair core left right → pairTraceAligned core left right
+  crossRegularAtomPairsCert : crossRegularAtomPairs
+  crossRegularTraceAlignmentCert : crossRegularTraceAlignment
+
+/-- Build the cross-regular atom-pair facade from explicit certificates. -/
+theorem firstBitTerminalCrossRegularAtomPairFacade_of_parts
+    {Core Atom : Type*}
+    {atoms : Core → Finset Atom}
+    {crossAtomPair crossRegularPair pairTraceAligned : Core → Atom → Atom → Prop}
+    {crossRegularAtomPairs crossRegularTraceAlignment : Prop}
+    (hmem :
+      ∀ core : Core, ∀ left right : Atom, crossAtomPair core left right →
+        left ∈ atoms core ∧ right ∈ atoms core)
+    (hsymm :
+      ∀ core : Core, ∀ left right : Atom,
+        crossAtomPair core left right → crossAtomPair core right left)
+    (hdistinct :
+      ∀ core : Core, ∀ left right : Atom, crossAtomPair core left right → left ≠ right)
+    (hregular :
+      ∀ core : Core, ∀ left right : Atom,
+        crossAtomPair core left right → crossRegularPair core left right)
+    (haligned :
+      ∀ core : Core, ∀ left right : Atom,
+        crossAtomPair core left right → pairTraceAligned core left right)
+    (hpairMarker : crossRegularAtomPairs)
+    (halignmentMarker : crossRegularTraceAlignment) :
+    FirstBitTerminalCrossRegularAtomPairFacade atoms crossAtomPair crossRegularPair
+      pairTraceAligned crossRegularAtomPairs crossRegularTraceAlignment where
+  pair_memCert := hmem
+  pair_symmCert := hsymm
+  pair_distinctCert := hdistinct
+  crossRegular_of_pairCert := hregular
+  traceAligned_of_pairCert := haligned
+  crossRegularAtomPairsCert := hpairMarker
+  crossRegularTraceAlignmentCert := halignmentMarker
+
+section FirstBitTerminalCrossRegularAtomPairFacade
+
+variable {Core Atom : Type*}
+variable {atoms : Core → Finset Atom}
+variable {crossAtomPair crossRegularPair pairTraceAligned : Core → Atom → Atom → Prop}
+variable {crossRegularAtomPairs crossRegularTraceAlignment : Prop}
+
+variable (h :
+  FirstBitTerminalCrossRegularAtomPairFacade atoms crossAtomPair crossRegularPair
+    pairTraceAligned crossRegularAtomPairs crossRegularTraceAlignment)
+
+/-- Project atom membership for a cross-regular atom pair. -/
+theorem FirstBitTerminalCrossRegularAtomPairFacade.pair_mem
+    {core : Core} {left right : Atom}
+    (hpair : crossAtomPair core left right) :
+    left ∈ atoms core ∧ right ∈ atoms core :=
+  h.pair_memCert core left right hpair
+
+/-- Cross-regular atom pairs are symmetric. -/
+theorem FirstBitTerminalCrossRegularAtomPairFacade.symm
+    {core : Core} {left right : Atom}
+    (hpair : crossAtomPair core left right) :
+    crossAtomPair core right left :=
+  h.pair_symmCert core left right hpair
+
+/-- Cross-regular atom pairs have distinct endpoints. -/
+theorem FirstBitTerminalCrossRegularAtomPairFacade.distinct
+    {core : Core} {left right : Atom}
+    (hpair : crossAtomPair core left right) :
+    left ≠ right :=
+  h.pair_distinctCert core left right hpair
+
+/-- Project cross regularity from an atom-pair certificate. -/
+theorem FirstBitTerminalCrossRegularAtomPairFacade.crossRegular_of_pair
+    {core : Core} {left right : Atom}
+    (hpair : crossAtomPair core left right) :
+    crossRegularPair core left right :=
+  h.crossRegular_of_pairCert core left right hpair
+
+/-- Project trace alignment from an atom-pair certificate. -/
+theorem FirstBitTerminalCrossRegularAtomPairFacade.traceAligned_of_pair
+    {core : Core} {left right : Atom}
+    (hpair : crossAtomPair core left right) :
+    pairTraceAligned core left right :=
+  h.traceAligned_of_pairCert core left right hpair
+
+/-- Project the cross-regular atom-pairs marker. -/
+theorem FirstBitTerminalCrossRegularAtomPairFacade.to_crossRegularAtomPairs :
+    crossRegularAtomPairs :=
+  h.crossRegularAtomPairsCert
+
+/-- Project the cross-regular trace-alignment marker. -/
+theorem FirstBitTerminalCrossRegularAtomPairFacade.to_crossRegularTraceAlignment :
+    crossRegularTraceAlignment :=
+  h.crossRegularTraceAlignmentCert
+
+end FirstBitTerminalCrossRegularAtomPairFacade
+
+/-- All-edge Latin and signed-quotient scalar-closure facade. -/
+structure FirstBitTerminalAllEdgeLatinScalarClosureFacade
+    {Core SourceAtom Collision : Type*}
+    (allEdgeCollision starPhase : Core → SourceAtom → Collision → Prop)
+    (rG SG latinScalar quotientScalar closureScalar :
+      Core → SourceAtom → Collision → ℕ)
+    (latinClosed signedQuotientClosed : Core → SourceAtom → Collision → Prop)
+    (allEdgeLatinScalarFrontier signedQuotientScalarClosure : Prop) : Prop where
+  allEdge_latin_scalarCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      allEdgeCollision core source collision →
+        FirstBitTerminalAllEdgeLatinScalarEquation
+          (rG core source collision) (SG core source collision)
+          (latinScalar core source collision)
+  star_signedQuotient_scalarCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      starPhase core source collision →
+        FirstBitTerminalSignedQuotientScalarClosureEquation
+          (rG core source collision) (SG core source collision)
+          (quotientScalar core source collision) (closureScalar core source collision)
+  latinClosed_of_allEdgeCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      allEdgeCollision core source collision → latinClosed core source collision
+  signedQuotientClosed_of_starCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      starPhase core source collision → signedQuotientClosed core source collision
+  allEdgeLatinScalarFrontierCert : allEdgeLatinScalarFrontier
+  signedQuotientScalarClosureCert : signedQuotientScalarClosure
+
+/-- Build the all-edge Latin scalar-closure facade from explicit certificates. -/
+theorem firstBitTerminalAllEdgeLatinScalarClosureFacade_of_parts
+    {Core SourceAtom Collision : Type*}
+    {allEdgeCollision starPhase : Core → SourceAtom → Collision → Prop}
+    {rG SG latinScalar quotientScalar closureScalar :
+      Core → SourceAtom → Collision → ℕ}
+    {latinClosed signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+    {allEdgeLatinScalarFrontier signedQuotientScalarClosure : Prop}
+    (hlatinScalar :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        allEdgeCollision core source collision →
+          FirstBitTerminalAllEdgeLatinScalarEquation
+            (rG core source collision) (SG core source collision)
+            (latinScalar core source collision))
+    (hsignedScalar :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        starPhase core source collision →
+          FirstBitTerminalSignedQuotientScalarClosureEquation
+            (rG core source collision) (SG core source collision)
+            (quotientScalar core source collision) (closureScalar core source collision))
+    (hlatinClosed :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        allEdgeCollision core source collision → latinClosed core source collision)
+    (hsignedClosed :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        starPhase core source collision → signedQuotientClosed core source collision)
+    (hlatinMarker : allEdgeLatinScalarFrontier)
+    (hsignedMarker : signedQuotientScalarClosure) :
+    FirstBitTerminalAllEdgeLatinScalarClosureFacade allEdgeCollision starPhase
+      rG SG latinScalar quotientScalar closureScalar latinClosed signedQuotientClosed
+      allEdgeLatinScalarFrontier signedQuotientScalarClosure where
+  allEdge_latin_scalarCert := hlatinScalar
+  star_signedQuotient_scalarCert := hsignedScalar
+  latinClosed_of_allEdgeCert := hlatinClosed
+  signedQuotientClosed_of_starCert := hsignedClosed
+  allEdgeLatinScalarFrontierCert := hlatinMarker
+  signedQuotientScalarClosureCert := hsignedMarker
+
+section FirstBitTerminalAllEdgeLatinScalarClosureFacade
+
+variable {Core SourceAtom Collision : Type*}
+variable {allEdgeCollision starPhase : Core → SourceAtom → Collision → Prop}
+variable {rG SG latinScalar quotientScalar closureScalar :
+  Core → SourceAtom → Collision → ℕ}
+variable {latinClosed signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+variable {allEdgeLatinScalarFrontier signedQuotientScalarClosure : Prop}
+
+variable (h :
+  FirstBitTerminalAllEdgeLatinScalarClosureFacade allEdgeCollision starPhase
+    rG SG latinScalar quotientScalar closureScalar latinClosed signedQuotientClosed
+    allEdgeLatinScalarFrontier signedQuotientScalarClosure)
+
+/-- Project the all-edge Latin scalar equation `r_G - S_G`. -/
+theorem FirstBitTerminalAllEdgeLatinScalarClosureFacade.allEdge_latin_scalar
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hall : allEdgeCollision core source collision) :
+    FirstBitTerminalAllEdgeLatinScalarEquation
+      (rG core source collision) (SG core source collision)
+      (latinScalar core source collision) :=
+  h.allEdge_latin_scalarCert core source collision hall
+
+/-- Project the signed-quotient scalar equation in the star phase. -/
+theorem FirstBitTerminalAllEdgeLatinScalarClosureFacade.star_signedQuotient_scalar
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hstar : starPhase core source collision) :
+    FirstBitTerminalSignedQuotientScalarClosureEquation
+      (rG core source collision) (SG core source collision)
+      (quotientScalar core source collision) (closureScalar core source collision) :=
+  h.star_signedQuotient_scalarCert core source collision hstar
+
+/-- All-edge collisions are Latin-closed. -/
+theorem FirstBitTerminalAllEdgeLatinScalarClosureFacade.latinClosed_of_allEdge
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hall : allEdgeCollision core source collision) :
+    latinClosed core source collision :=
+  h.latinClosed_of_allEdgeCert core source collision hall
+
+/-- Star-phase collisions are signed-quotient closed. -/
+theorem FirstBitTerminalAllEdgeLatinScalarClosureFacade.signedQuotientClosed_of_star
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hstar : starPhase core source collision) :
+    signedQuotientClosed core source collision :=
+  h.signedQuotientClosed_of_starCert core source collision hstar
+
+/-- Project the all-edge Latin scalar marker. -/
+theorem FirstBitTerminalAllEdgeLatinScalarClosureFacade.to_allEdgeLatinScalarFrontier :
+    allEdgeLatinScalarFrontier :=
+  h.allEdgeLatinScalarFrontierCert
+
+/-- Project the signed-quotient scalar-closure marker. -/
+theorem FirstBitTerminalAllEdgeLatinScalarClosureFacade.to_signedQuotientScalarClosure :
+    signedQuotientScalarClosure :=
+  h.signedQuotientScalarClosureCert
+
+end FirstBitTerminalAllEdgeLatinScalarClosureFacade
+
+/-- Signed-`K4` closure facade classified by the triangular atom count. -/
+structure FirstBitTerminalSignedK4TriangularAtomClosureFacade
+    {Core K4 Atom : Type*}
+    (signedK4s : Core → Finset K4)
+    (atomsOfK4 triangularAtomsOfK4 : Core → K4 → Finset Atom)
+    (closureClass : Core → K4 → FirstBitTerminalSignedK4TriangularAtomCountClass)
+    (signedK4Closed : Core → K4 → Prop)
+    (signedK4ClosureClassification signedK4TriangularAtomClosure : Prop) : Prop where
+  k4_atoms_card_fourCert :
+    ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core → (atomsOfK4 core k4).card = 4
+  triangular_atoms_subsetCert :
+    ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+      triangularAtomsOfK4 core k4 ⊆ atomsOfK4 core k4
+  closure_class_casesCert :
+    ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+      closureClass core k4 = .zeroTriangles ∨ closureClass core k4 = .oneTriangle ∨
+        closureClass core k4 = .twoTriangles ∨ closureClass core k4 = .threeTriangles ∨
+          closureClass core k4 = .fourTriangles
+  zero_triangular_countCert :
+    ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+      closureClass core k4 = .zeroTriangles → (triangularAtomsOfK4 core k4).card = 0
+  one_triangular_countCert :
+    ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+      closureClass core k4 = .oneTriangle → (triangularAtomsOfK4 core k4).card = 1
+  two_triangular_countCert :
+    ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+      closureClass core k4 = .twoTriangles → (triangularAtomsOfK4 core k4).card = 2
+  three_triangular_countCert :
+    ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+      closureClass core k4 = .threeTriangles → (triangularAtomsOfK4 core k4).card = 3
+  four_triangular_countCert :
+    ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+      closureClass core k4 = .fourTriangles → (triangularAtomsOfK4 core k4).card = 4
+  signedK4ClosedCert :
+    ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core → signedK4Closed core k4
+  signedK4ClosureClassificationCert : signedK4ClosureClassification
+  signedK4TriangularAtomClosureCert : signedK4TriangularAtomClosure
+
+/-- Build the signed-`K4` triangular-atom closure facade from explicit certificates. -/
+theorem firstBitTerminalSignedK4TriangularAtomClosureFacade_of_parts
+    {Core K4 Atom : Type*}
+    {signedK4s : Core → Finset K4}
+    {atomsOfK4 triangularAtomsOfK4 : Core → K4 → Finset Atom}
+    {closureClass : Core → K4 → FirstBitTerminalSignedK4TriangularAtomCountClass}
+    {signedK4Closed : Core → K4 → Prop}
+    {signedK4ClosureClassification signedK4TriangularAtomClosure : Prop}
+    (hcard :
+      ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core → (atomsOfK4 core k4).card = 4)
+    (hsubset :
+      ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+        triangularAtomsOfK4 core k4 ⊆ atomsOfK4 core k4)
+    (hcases :
+      ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+        closureClass core k4 = .zeroTriangles ∨ closureClass core k4 = .oneTriangle ∨
+          closureClass core k4 = .twoTriangles ∨ closureClass core k4 = .threeTriangles ∨
+            closureClass core k4 = .fourTriangles)
+    (hzero :
+      ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+        closureClass core k4 = .zeroTriangles → (triangularAtomsOfK4 core k4).card = 0)
+    (hone :
+      ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+        closureClass core k4 = .oneTriangle → (triangularAtomsOfK4 core k4).card = 1)
+    (htwo :
+      ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+        closureClass core k4 = .twoTriangles → (triangularAtomsOfK4 core k4).card = 2)
+    (hthree :
+      ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+        closureClass core k4 = .threeTriangles → (triangularAtomsOfK4 core k4).card = 3)
+    (hfour :
+      ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core →
+        closureClass core k4 = .fourTriangles → (triangularAtomsOfK4 core k4).card = 4)
+    (hclosed :
+      ∀ core : Core, ∀ k4 : K4, k4 ∈ signedK4s core → signedK4Closed core k4)
+    (hclassification : signedK4ClosureClassification)
+    (hclosure : signedK4TriangularAtomClosure) :
+    FirstBitTerminalSignedK4TriangularAtomClosureFacade signedK4s atomsOfK4
+      triangularAtomsOfK4 closureClass signedK4Closed signedK4ClosureClassification
+      signedK4TriangularAtomClosure where
+  k4_atoms_card_fourCert := hcard
+  triangular_atoms_subsetCert := hsubset
+  closure_class_casesCert := hcases
+  zero_triangular_countCert := hzero
+  one_triangular_countCert := hone
+  two_triangular_countCert := htwo
+  three_triangular_countCert := hthree
+  four_triangular_countCert := hfour
+  signedK4ClosedCert := hclosed
+  signedK4ClosureClassificationCert := hclassification
+  signedK4TriangularAtomClosureCert := hclosure
+
+section FirstBitTerminalSignedK4TriangularAtomClosureFacade
+
+variable {Core K4 Atom : Type*}
+variable {signedK4s : Core → Finset K4}
+variable {atomsOfK4 triangularAtomsOfK4 : Core → K4 → Finset Atom}
+variable {closureClass : Core → K4 → FirstBitTerminalSignedK4TriangularAtomCountClass}
+variable {signedK4Closed : Core → K4 → Prop}
+variable {signedK4ClosureClassification signedK4TriangularAtomClosure : Prop}
+
+variable (h :
+  FirstBitTerminalSignedK4TriangularAtomClosureFacade signedK4s atomsOfK4
+    triangularAtomsOfK4 closureClass signedK4Closed signedK4ClosureClassification
+    signedK4TriangularAtomClosure)
+
+/-- Project the four-atom signed-`K4` support certificate. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.k4_atoms_card_four
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core) :
+    (atomsOfK4 core k4).card = 4 :=
+  h.k4_atoms_card_fourCert core k4 hk4
+
+/-- Project triangular-atom support containment. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.triangular_atoms_subset
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core) :
+    triangularAtomsOfK4 core k4 ⊆ atomsOfK4 core k4 :=
+  h.triangular_atoms_subsetCert core k4 hk4
+
+/-- Project the signed-`K4` closure class alternatives. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.closure_class_cases
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core) :
+    closureClass core k4 = .zeroTriangles ∨ closureClass core k4 = .oneTriangle ∨
+      closureClass core k4 = .twoTriangles ∨ closureClass core k4 = .threeTriangles ∨
+        closureClass core k4 = .fourTriangles :=
+  h.closure_class_casesCert core k4 hk4
+
+/-- Project the zero-triangle count branch. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.zero_triangular_count
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core)
+    (hclass : closureClass core k4 = .zeroTriangles) :
+    (triangularAtomsOfK4 core k4).card = 0 :=
+  h.zero_triangular_countCert core k4 hk4 hclass
+
+/-- Project the one-triangle count branch. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.one_triangular_count
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core)
+    (hclass : closureClass core k4 = .oneTriangle) :
+    (triangularAtomsOfK4 core k4).card = 1 :=
+  h.one_triangular_countCert core k4 hk4 hclass
+
+/-- Project the two-triangle count branch. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.two_triangular_count
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core)
+    (hclass : closureClass core k4 = .twoTriangles) :
+    (triangularAtomsOfK4 core k4).card = 2 :=
+  h.two_triangular_countCert core k4 hk4 hclass
+
+/-- Project the three-triangle count branch. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.three_triangular_count
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core)
+    (hclass : closureClass core k4 = .threeTriangles) :
+    (triangularAtomsOfK4 core k4).card = 3 :=
+  h.three_triangular_countCert core k4 hk4 hclass
+
+/-- Project the four-triangle count branch. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.four_triangular_count
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core)
+    (hclass : closureClass core k4 = .fourTriangles) :
+    (triangularAtomsOfK4 core k4).card = 4 :=
+  h.four_triangular_countCert core k4 hk4 hclass
+
+/-- Project signed-`K4` closure. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.signedK4Closed
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core) :
+    signedK4Closed core k4 :=
+  h.signedK4ClosedCert core k4 hk4
+
+/-- Project the signed-`K4` closure-classification marker. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.to_signedK4ClosureClassification :
+    signedK4ClosureClassification :=
+  h.signedK4ClosureClassificationCert
+
+/-- Project the signed-`K4` triangular-atom closure marker. -/
+theorem FirstBitTerminalSignedK4TriangularAtomClosureFacade.to_signedK4TriangularAtomClosure :
+    signedK4TriangularAtomClosure :=
+  h.signedK4TriangularAtomClosureCert
+
+end FirstBitTerminalSignedK4TriangularAtomClosureFacade
+
+/-- Shortened-pair-hit finite omission table facade. -/
+structure FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade
+    {Core SourceAtom Collision Atom : Type*}
+    (shortenedPairHit : Core → SourceAtom → Collision → Prop)
+    (omissionKind :
+      Core → SourceAtom → Collision → FirstBitTerminalShortenedPairHitFiniteOmissionKind)
+    (omittedAtoms compensatingAtoms : Core → SourceAtom → Collision → Finset Atom)
+    (omissionResolved : Core → SourceAtom → Collision → Prop)
+    (shortenedPairHitFiniteOmissionTable shortenedPairHitFiniteOmissionsResolved : Prop) :
+    Prop where
+  omission_casesCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision →
+        omissionKind core source collision = .noOmission ∨
+          omissionKind core source collision = .sourcePetal ∨
+            omissionKind core source collision = .partnerPetal ∨
+              omissionKind core source collision = .complementBridge ∨
+                omissionKind core source collision = .transposePair ∨
+                  omissionKind core source collision = .signedK4Closure
+  omitted_atoms_card_leCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision → (omittedAtoms core source collision).card ≤ 5
+  omitted_atoms_compensatedCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision →
+        omittedAtoms core source collision ⊆ compensatingAtoms core source collision
+  noOmission_resolvedCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision →
+        omissionKind core source collision = .noOmission → omissionResolved core source collision
+  finiteOmission_resolvedCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision → omissionResolved core source collision
+  shortenedPairHitFiniteOmissionTableCert : shortenedPairHitFiniteOmissionTable
+  shortenedPairHitFiniteOmissionsResolvedCert : shortenedPairHitFiniteOmissionsResolved
+
+/-- Build the shortened-pair-hit finite omission table facade from explicit certificates. -/
+theorem firstBitTerminalShortenedPairHitFiniteOmissionTableFacade_of_parts
+    {Core SourceAtom Collision Atom : Type*}
+    {shortenedPairHit : Core → SourceAtom → Collision → Prop}
+    {omissionKind :
+      Core → SourceAtom → Collision → FirstBitTerminalShortenedPairHitFiniteOmissionKind}
+    {omittedAtoms compensatingAtoms : Core → SourceAtom → Collision → Finset Atom}
+    {omissionResolved : Core → SourceAtom → Collision → Prop}
+    {shortenedPairHitFiniteOmissionTable shortenedPairHitFiniteOmissionsResolved : Prop}
+    (hcases :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        shortenedPairHit core source collision →
+          omissionKind core source collision = .noOmission ∨
+            omissionKind core source collision = .sourcePetal ∨
+              omissionKind core source collision = .partnerPetal ∨
+                omissionKind core source collision = .complementBridge ∨
+                  omissionKind core source collision = .transposePair ∨
+                    omissionKind core source collision = .signedK4Closure)
+    (hcard :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        shortenedPairHit core source collision → (omittedAtoms core source collision).card ≤ 5)
+    (hcompensated :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        shortenedPairHit core source collision →
+          omittedAtoms core source collision ⊆ compensatingAtoms core source collision)
+    (hno :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        shortenedPairHit core source collision →
+          omissionKind core source collision = .noOmission → omissionResolved core source collision)
+    (hresolved :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        shortenedPairHit core source collision → omissionResolved core source collision)
+    (htable : shortenedPairHitFiniteOmissionTable)
+    (hresolvedMarker : shortenedPairHitFiniteOmissionsResolved) :
+    FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade shortenedPairHit omissionKind
+      omittedAtoms compensatingAtoms omissionResolved shortenedPairHitFiniteOmissionTable
+      shortenedPairHitFiniteOmissionsResolved where
+  omission_casesCert := hcases
+  omitted_atoms_card_leCert := hcard
+  omitted_atoms_compensatedCert := hcompensated
+  noOmission_resolvedCert := hno
+  finiteOmission_resolvedCert := hresolved
+  shortenedPairHitFiniteOmissionTableCert := htable
+  shortenedPairHitFiniteOmissionsResolvedCert := hresolvedMarker
+
+section FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade
+
+variable {Core SourceAtom Collision Atom : Type*}
+variable {shortenedPairHit : Core → SourceAtom → Collision → Prop}
+variable {omissionKind :
+  Core → SourceAtom → Collision → FirstBitTerminalShortenedPairHitFiniteOmissionKind}
+variable {omittedAtoms compensatingAtoms : Core → SourceAtom → Collision → Finset Atom}
+variable {omissionResolved : Core → SourceAtom → Collision → Prop}
+variable {shortenedPairHitFiniteOmissionTable shortenedPairHitFiniteOmissionsResolved : Prop}
+
+variable (h :
+  FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade shortenedPairHit omissionKind
+    omittedAtoms compensatingAtoms omissionResolved shortenedPairHitFiniteOmissionTable
+    shortenedPairHitFiniteOmissionsResolved)
+
+/-- Project the finite omission alternatives for a shortened-pair hit. -/
+theorem FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade.omission_cases
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision) :
+    omissionKind core source collision = .noOmission ∨
+      omissionKind core source collision = .sourcePetal ∨
+        omissionKind core source collision = .partnerPetal ∨
+          omissionKind core source collision = .complementBridge ∨
+            omissionKind core source collision = .transposePair ∨
+              omissionKind core source collision = .signedK4Closure :=
+  h.omission_casesCert core source collision hhit
+
+/-- The finite omission table omits at most five atoms. -/
+theorem FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade.omitted_atoms_card_le
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision) :
+    (omittedAtoms core source collision).card ≤ 5 :=
+  h.omitted_atoms_card_leCert core source collision hhit
+
+/-- Omitted atoms are covered by the compensating atom table. -/
+theorem FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade.omitted_atoms_compensated
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision) :
+    omittedAtoms core source collision ⊆ compensatingAtoms core source collision :=
+  h.omitted_atoms_compensatedCert core source collision hhit
+
+/-- The no-omission row resolves immediately. -/
+theorem FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade.noOmission_resolved
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision)
+    (hkind : omissionKind core source collision = .noOmission) :
+    omissionResolved core source collision :=
+  h.noOmission_resolvedCert core source collision hhit hkind
+
+/-- Every row of the finite omission table resolves the shortened-pair hit. -/
+theorem FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade.finiteOmission_resolved
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision) :
+    omissionResolved core source collision :=
+  h.finiteOmission_resolvedCert core source collision hhit
+
+/-- Project the shortened-pair-hit finite omission table marker. -/
+theorem
+    FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade.to_shortenedPairHitFiniteOmissionTable :
+    shortenedPairHitFiniteOmissionTable :=
+  h.shortenedPairHitFiniteOmissionTableCert
+
+/-- Project the shortened-pair-hit finite omission resolution marker. -/
+theorem
+    FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade.to_shortenedPairHitFiniteOmissionsResolved :
+    shortenedPairHitFiniteOmissionsResolved :=
+  h.shortenedPairHitFiniteOmissionsResolvedCert
+
+end FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade
+
+/--
+Public facade for the fully split transpose-rigidity and signed-quotient scalar-closure frontier.
+It layers the new trace, atom-pair, scalar, signed-`K4`, and shortened-pair omission facades on top
+of the parity-tetrahedron/star-phase endpoint imports.
+-/
+structure FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI
+    {Core Atom Trace Target SourceAtom Collision K4 : Type*}
+    (ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint : Prop)
+    (activeAtoms : Core → Finset Atom)
+    (fTargets : Core → Atom → Finset Target)
+    (forwardFTrace transposeFTrace : Core → Atom → Trace → Prop)
+    (traceSupport : Core → Trace → Finset Target)
+    (fullySplitAtom transposeRigidAtom : Core → Atom → Prop)
+    (traces : Core → Finset Trace)
+    (alternativeOf : Core → Trace → FirstBitTerminalPermutationComplementTraceAlternative)
+    (permutationTrace complementTrace : Core → Trace → Prop)
+    (atoms : Core → Finset Atom)
+    (crossAtomPair crossRegularPair pairTraceAligned : Core → Atom → Atom → Prop)
+    (allEdgeCollision starPhase : Core → SourceAtom → Collision → Prop)
+    (rG SG latinScalar quotientScalar closureScalar :
+      Core → SourceAtom → Collision → ℕ)
+    (latinClosed signedQuotientClosed : Core → SourceAtom → Collision → Prop)
+    (signedK4s : Core → Finset K4)
+    (atomsOfK4 triangularAtomsOfK4 : Core → K4 → Finset Atom)
+    (closureClass : Core → K4 → FirstBitTerminalSignedK4TriangularAtomCountClass)
+    (signedK4Closed : Core → K4 → Prop)
+    (shortenedPairHit : Core → SourceAtom → Collision → Prop)
+    (omissionKind :
+      Core → SourceAtom → Collision → FirstBitTerminalShortenedPairHitFiniteOmissionKind)
+    (omittedAtoms compensatingAtoms : Core → SourceAtom → Collision → Finset Atom)
+    (omissionResolved : Core → SourceAtom → Collision → Prop)
+    (mutualFullySplitFTrace fullySplitTransposeRigidity permutationTraceFrontier
+      complementTraceFrontier crossRegularAtomPairs crossRegularTraceAlignment
+      allEdgeLatinScalarFrontier signedQuotientScalarClosure signedK4ClosureClassification
+      signedK4TriangularAtomClosure shortenedPairHitFiniteOmissionTable
+      shortenedPairHitFiniteOmissionsResolved signedQuotientScalarClosureEndpoint : Prop) :
+    Prop where
+  parityStarPhaseImports :
+    FirstBitTerminalParityTetrahedronStarPhaseEndpointImports
+      ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint
+  fullySplitTraceFacade :
+    FirstBitTerminalMutualFullySplitFTraceFacade activeAtoms fTargets forwardFTrace
+      transposeFTrace traceSupport fullySplitAtom transposeRigidAtom mutualFullySplitFTrace
+      fullySplitTransposeRigidity
+  traceAlternativeFacade :
+    FirstBitTerminalPermutationComplementTraceAlternativesFacade traces alternativeOf
+      permutationTrace complementTrace permutationTraceFrontier complementTraceFrontier
+  crossRegularAtomPairFacade :
+    FirstBitTerminalCrossRegularAtomPairFacade atoms crossAtomPair crossRegularPair
+      pairTraceAligned crossRegularAtomPairs crossRegularTraceAlignment
+  scalarClosureFacade :
+    FirstBitTerminalAllEdgeLatinScalarClosureFacade allEdgeCollision starPhase
+      rG SG latinScalar quotientScalar closureScalar latinClosed signedQuotientClosed
+      allEdgeLatinScalarFrontier signedQuotientScalarClosure
+  signedK4ClosureFacade :
+    FirstBitTerminalSignedK4TriangularAtomClosureFacade signedK4s atomsOfK4
+      triangularAtomsOfK4 closureClass signedK4Closed signedK4ClosureClassification
+      signedK4TriangularAtomClosure
+  finiteOmissionTableFacade :
+    FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade shortenedPairHit omissionKind
+      omittedAtoms compensatingAtoms omissionResolved shortenedPairHitFiniteOmissionTable
+      shortenedPairHitFiniteOmissionsResolved
+  signedQuotientScalarClosureEndpointCert : signedQuotientScalarClosureEndpoint
+
+/-- Build the fully split transpose/signed-quotient public API from component facades. -/
+theorem firstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI_of_parts
+    {Core Atom Trace Target SourceAtom Collision K4 : Type*}
+    {ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint : Prop}
+    {activeAtoms : Core → Finset Atom}
+    {fTargets : Core → Atom → Finset Target}
+    {forwardFTrace transposeFTrace : Core → Atom → Trace → Prop}
+    {traceSupport : Core → Trace → Finset Target}
+    {fullySplitAtom transposeRigidAtom : Core → Atom → Prop}
+    {traces : Core → Finset Trace}
+    {alternativeOf : Core → Trace → FirstBitTerminalPermutationComplementTraceAlternative}
+    {permutationTrace complementTrace : Core → Trace → Prop}
+    {atoms : Core → Finset Atom}
+    {crossAtomPair crossRegularPair pairTraceAligned : Core → Atom → Atom → Prop}
+    {allEdgeCollision starPhase : Core → SourceAtom → Collision → Prop}
+    {rG SG latinScalar quotientScalar closureScalar :
+      Core → SourceAtom → Collision → ℕ}
+    {latinClosed signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+    {signedK4s : Core → Finset K4}
+    {atomsOfK4 triangularAtomsOfK4 : Core → K4 → Finset Atom}
+    {closureClass : Core → K4 → FirstBitTerminalSignedK4TriangularAtomCountClass}
+    {signedK4Closed : Core → K4 → Prop}
+    {shortenedPairHit : Core → SourceAtom → Collision → Prop}
+    {omissionKind :
+      Core → SourceAtom → Collision → FirstBitTerminalShortenedPairHitFiniteOmissionKind}
+    {omittedAtoms compensatingAtoms : Core → SourceAtom → Collision → Finset Atom}
+    {omissionResolved : Core → SourceAtom → Collision → Prop}
+    {mutualFullySplitFTrace fullySplitTransposeRigidity permutationTraceFrontier
+      complementTraceFrontier crossRegularAtomPairs crossRegularTraceAlignment
+      allEdgeLatinScalarFrontier signedQuotientScalarClosure signedK4ClosureClassification
+      signedK4TriangularAtomClosure shortenedPairHitFiniteOmissionTable
+      shortenedPairHitFiniteOmissionsResolved signedQuotientScalarClosureEndpoint : Prop}
+    (hparity :
+      FirstBitTerminalParityTetrahedronStarPhaseEndpointImports
+        ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+        remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+        parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+        pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+        symmetricAllTernaryStarPhaseEndpoint)
+    (htrace :
+      FirstBitTerminalMutualFullySplitFTraceFacade activeAtoms fTargets forwardFTrace
+        transposeFTrace traceSupport fullySplitAtom transposeRigidAtom mutualFullySplitFTrace
+        fullySplitTransposeRigidity)
+    (halternative :
+      FirstBitTerminalPermutationComplementTraceAlternativesFacade traces alternativeOf
+        permutationTrace complementTrace permutationTraceFrontier complementTraceFrontier)
+    (hpair :
+      FirstBitTerminalCrossRegularAtomPairFacade atoms crossAtomPair crossRegularPair
+        pairTraceAligned crossRegularAtomPairs crossRegularTraceAlignment)
+    (hscalar :
+      FirstBitTerminalAllEdgeLatinScalarClosureFacade allEdgeCollision starPhase
+        rG SG latinScalar quotientScalar closureScalar latinClosed signedQuotientClosed
+        allEdgeLatinScalarFrontier signedQuotientScalarClosure)
+    (hk4 :
+      FirstBitTerminalSignedK4TriangularAtomClosureFacade signedK4s atomsOfK4
+        triangularAtomsOfK4 closureClass signedK4Closed signedK4ClosureClassification
+        signedK4TriangularAtomClosure)
+    (homission :
+      FirstBitTerminalShortenedPairHitFiniteOmissionTableFacade shortenedPairHit omissionKind
+        omittedAtoms compensatingAtoms omissionResolved shortenedPairHitFiniteOmissionTable
+        shortenedPairHitFiniteOmissionsResolved)
+    (hendpoint : signedQuotientScalarClosureEndpoint) :
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI
+      ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint
+      activeAtoms fTargets forwardFTrace transposeFTrace traceSupport fullySplitAtom
+      transposeRigidAtom traces alternativeOf permutationTrace complementTrace atoms
+      crossAtomPair crossRegularPair pairTraceAligned allEdgeCollision starPhase
+      rG SG latinScalar quotientScalar closureScalar latinClosed signedQuotientClosed
+      signedK4s atomsOfK4 triangularAtomsOfK4 closureClass signedK4Closed shortenedPairHit
+      omissionKind omittedAtoms compensatingAtoms omissionResolved mutualFullySplitFTrace
+      fullySplitTransposeRigidity permutationTraceFrontier complementTraceFrontier
+      crossRegularAtomPairs crossRegularTraceAlignment allEdgeLatinScalarFrontier
+      signedQuotientScalarClosure signedK4ClosureClassification signedK4TriangularAtomClosure
+      shortenedPairHitFiniteOmissionTable shortenedPairHitFiniteOmissionsResolved
+      signedQuotientScalarClosureEndpoint where
+  parityStarPhaseImports := hparity
+  fullySplitTraceFacade := htrace
+  traceAlternativeFacade := halternative
+  crossRegularAtomPairFacade := hpair
+  scalarClosureFacade := hscalar
+  signedK4ClosureFacade := hk4
+  finiteOmissionTableFacade := homission
+  signedQuotientScalarClosureEndpointCert := hendpoint
+
+section FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI
+
+variable {Core Atom Trace Target SourceAtom Collision K4 : Type*}
+variable {ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+  remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+  parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+  pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+  symmetricAllTernaryStarPhaseEndpoint : Prop}
+variable {activeAtoms : Core → Finset Atom}
+variable {fTargets : Core → Atom → Finset Target}
+variable {forwardFTrace transposeFTrace : Core → Atom → Trace → Prop}
+variable {traceSupport : Core → Trace → Finset Target}
+variable {fullySplitAtom transposeRigidAtom : Core → Atom → Prop}
+variable {traces : Core → Finset Trace}
+variable {alternativeOf : Core → Trace → FirstBitTerminalPermutationComplementTraceAlternative}
+variable {permutationTrace complementTrace : Core → Trace → Prop}
+variable {atoms : Core → Finset Atom}
+variable {crossAtomPair crossRegularPair pairTraceAligned : Core → Atom → Atom → Prop}
+variable {allEdgeCollision starPhase : Core → SourceAtom → Collision → Prop}
+variable {rG SG latinScalar quotientScalar closureScalar :
+  Core → SourceAtom → Collision → ℕ}
+variable {latinClosed signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+variable {signedK4s : Core → Finset K4}
+variable {atomsOfK4 triangularAtomsOfK4 : Core → K4 → Finset Atom}
+variable {closureClass : Core → K4 → FirstBitTerminalSignedK4TriangularAtomCountClass}
+variable {signedK4Closed : Core → K4 → Prop}
+variable {shortenedPairHit : Core → SourceAtom → Collision → Prop}
+variable {omissionKind :
+  Core → SourceAtom → Collision → FirstBitTerminalShortenedPairHitFiniteOmissionKind}
+variable {omittedAtoms compensatingAtoms : Core → SourceAtom → Collision → Finset Atom}
+variable {omissionResolved : Core → SourceAtom → Collision → Prop}
+variable {mutualFullySplitFTrace fullySplitTransposeRigidity permutationTraceFrontier
+  complementTraceFrontier crossRegularAtomPairs crossRegularTraceAlignment
+  allEdgeLatinScalarFrontier signedQuotientScalarClosure signedK4ClosureClassification
+  signedK4TriangularAtomClosure shortenedPairHitFiniteOmissionTable
+  shortenedPairHitFiniteOmissionsResolved signedQuotientScalarClosureEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI
+    ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+    remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+    parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+    pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+    symmetricAllTernaryStarPhaseEndpoint
+    activeAtoms fTargets forwardFTrace transposeFTrace traceSupport fullySplitAtom
+    transposeRigidAtom traces alternativeOf permutationTrace complementTrace atoms
+    crossAtomPair crossRegularPair pairTraceAligned allEdgeCollision starPhase
+    rG SG latinScalar quotientScalar closureScalar latinClosed signedQuotientClosed
+    signedK4s atomsOfK4 triangularAtomsOfK4 closureClass signedK4Closed shortenedPairHit
+    omissionKind omittedAtoms compensatingAtoms omissionResolved mutualFullySplitFTrace
+    fullySplitTransposeRigidity permutationTraceFrontier complementTraceFrontier
+    crossRegularAtomPairs crossRegularTraceAlignment allEdgeLatinScalarFrontier
+    signedQuotientScalarClosure signedK4ClosureClassification signedK4TriangularAtomClosure
+    shortenedPairHitFiniteOmissionTable shortenedPairHitFiniteOmissionsResolved
+    signedQuotientScalarClosureEndpoint)
+
+/-- Project the imported symmetric all-ternary star-phase endpoint. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.to_symmetricAllTernaryStarPhaseEndpoint :
+    symmetricAllTernaryStarPhaseEndpoint :=
+  h.parityStarPhaseImports.symmetricAllTernaryStarPhaseEndpointCert
+
+/-- Project the mutual fully split `F` trace marker. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.to_mutualFullySplitFTrace :
+    mutualFullySplitFTrace :=
+  h.fullySplitTraceFacade.to_mutualFullySplitFTrace
+
+/-- Project the fully split transpose-rigidity marker. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.to_fullySplitTransposeRigidity :
+    fullySplitTransposeRigidity :=
+  h.fullySplitTraceFacade.to_fullySplitTransposeRigidity
+
+/-- Project the trace-alternative cases. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.trace_alternative_cases
+    {core : Core} {trace : Trace} (htrace : trace ∈ traces core) :
+    alternativeOf core trace = .permutation ∨ alternativeOf core trace = .complement :=
+  h.traceAlternativeFacade.alternative_cases htrace
+
+/-- Project cross regularity for a terminal atom pair. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.crossRegular_of_pair
+    {core : Core} {left right : Atom} (hpair : crossAtomPair core left right) :
+    crossRegularPair core left right :=
+  h.crossRegularAtomPairFacade.crossRegular_of_pair hpair
+
+/-- Project transpose rigidity from mutual forward/transposed `F` traces. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.transposeRigid_of_mutual_trace
+    {core : Core} {atom : Atom} {forwardTrace transposeTrace : Trace}
+    (hforward : forwardFTrace core atom forwardTrace)
+    (htranspose : transposeFTrace core atom transposeTrace) :
+    transposeRigidAtom core atom :=
+  h.fullySplitTraceFacade.transposeRigid_of_mutual_trace hforward htranspose
+
+/-- Project the all-edge Latin scalar equation through the public API. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.allEdge_latin_scalar
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hall : allEdgeCollision core source collision) :
+    FirstBitTerminalAllEdgeLatinScalarEquation
+      (rG core source collision) (SG core source collision)
+      (latinScalar core source collision) :=
+  h.scalarClosureFacade.allEdge_latin_scalar hall
+
+/-- Project signed-quotient closure in the star phase through the public API. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.signedQuotientClosed_of_star
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hstar : starPhase core source collision) :
+    signedQuotientClosed core source collision :=
+  h.scalarClosureFacade.signedQuotientClosed_of_star hstar
+
+/-- Project signed-`K4` triangular-atom closure class alternatives through the public API. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.signedK4_closure_class_cases
+    {core : Core} {k4 : K4} (hk4 : k4 ∈ signedK4s core) :
+    closureClass core k4 = .zeroTriangles ∨ closureClass core k4 = .oneTriangle ∨
+      closureClass core k4 = .twoTriangles ∨ closureClass core k4 = .threeTriangles ∨
+        closureClass core k4 = .fourTriangles :=
+  h.signedK4ClosureFacade.closure_class_cases hk4
+
+/-- Project the shortened-pair-hit finite omission cases through the public API. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.shortenedPairHit_omission_cases
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision) :
+    omissionKind core source collision = .noOmission ∨
+      omissionKind core source collision = .sourcePetal ∨
+        omissionKind core source collision = .partnerPetal ∨
+          omissionKind core source collision = .complementBridge ∨
+            omissionKind core source collision = .transposePair ∨
+              omissionKind core source collision = .signedK4Closure :=
+  h.finiteOmissionTableFacade.omission_cases hhit
+
+/-- Project finite-omission resolution for shortened-pair hits through the public API. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.shortenedPairHit_resolved
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision) :
+    omissionResolved core source collision :=
+  h.finiteOmissionTableFacade.finiteOmission_resolved hhit
+
+/-- Project the terminal signed-quotient scalar-closure endpoint marker. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.signedQuotientScalarClosureEndpointCert
+
+/-- Compact marker bundle for downstream terminal/dyadic signed-quotient wrappers. -/
+theorem
+    FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI.signedQuotientFrontierMarkerBundle :
+    symmetricAllTernaryStarPhaseEndpoint ∧ mutualFullySplitFTrace ∧
+      fullySplitTransposeRigidity ∧ permutationTraceFrontier ∧ complementTraceFrontier ∧
+        crossRegularAtomPairs ∧ crossRegularTraceAlignment ∧ allEdgeLatinScalarFrontier ∧
+          signedQuotientScalarClosure ∧ signedK4ClosureClassification ∧
+            signedK4TriangularAtomClosure ∧ shortenedPairHitFiniteOmissionTable ∧
+              shortenedPairHitFiniteOmissionsResolved ∧ signedQuotientScalarClosureEndpoint :=
+  ⟨h.parityStarPhaseImports.symmetricAllTernaryStarPhaseEndpointCert,
+    h.fullySplitTraceFacade.to_mutualFullySplitFTrace,
+    h.fullySplitTraceFacade.to_fullySplitTransposeRigidity,
+    h.traceAlternativeFacade.to_permutationTraceFrontier,
+    h.traceAlternativeFacade.to_complementTraceFrontier,
+    h.crossRegularAtomPairFacade.to_crossRegularAtomPairs,
+    h.crossRegularAtomPairFacade.to_crossRegularTraceAlignment,
+    h.scalarClosureFacade.to_allEdgeLatinScalarFrontier,
+    h.scalarClosureFacade.to_signedQuotientScalarClosure,
+    h.signedK4ClosureFacade.to_signedK4ClosureClassification,
+    h.signedK4ClosureFacade.to_signedK4TriangularAtomClosure,
+    h.finiteOmissionTableFacade.to_shortenedPairHitFiniteOmissionTable,
+    h.finiteOmissionTableFacade.to_shortenedPairHitFiniteOmissionsResolved,
+    h.signedQuotientScalarClosureEndpointCert⟩
+
+end FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
