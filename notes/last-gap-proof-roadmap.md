@@ -1953,7 +1953,8 @@ What remains justified after audit is:
       all one-unit lifts blocked; singleton closure only applies to projected partitions with at most two
       blocks, so one-block shadows are impossible and two-block shadows are double-collision only;
       the support graph has independence number at most three, so pair-only endpoints stop at `|A|=7` and
-      rank-three projected supports are forced from `|A|>=8`;
+      rank-three projected supports are forced from `|A|>=8`; the pair-only table is triangle at `|A|=5`,
+      matching-number-2 deletion-critical at `|A|=6`, and factor-critical at `|A|=7`;
       zero-filter criticality is a private excess bridge across `Delta=|A|-3-mu_Z`;
       in the mixed two-level core, every `(m+1)`-set has a large outside reservoir in `J\T`, so the ternary
       target/scalar packet obstruction applies for `m>=3` even when a pure residue class is near-threshold;
@@ -1961,6 +1962,10 @@ What remains justified after audit is:
       `R_4(3)=51`;
       scalar-killed target triples must shield every discrepant edge/nonedge from all one-/two-vertex
       partial swaps by omitted-trace or retained-scalar failure;
+      for fixed `T,X`, the four `kappa` target covers are coherent under the rotation
+      `h_k=k+deg_X-psi_T`, with opposite residues swapping active/filter roles and complementing traces;
+      opposite high-active target endpoints force an antipodal trace core of repeated complementary centers
+      plus singleton flips around both centers, or else one opposite residue is scalar-killed;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       every zero-relaxed cover must use at least one such private column;

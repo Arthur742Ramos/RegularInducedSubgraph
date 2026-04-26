@@ -2435,7 +2435,8 @@ Recommended attack:
     projected partitions with at most two blocks, giving no one-block shadows and double-collision-only
     two-block shadows.
     Add the support graph consequence: every four-set contains a co-supported pair, so the support graph has
-    independence number at most three; pair-only endpoints occur only for `|A|<=7`.
+    independence number at most three; pair-only endpoints occur only for `|A|=5,6,7` with the exact
+    triangle / matching-critical / factor-critical table.
     Define `mu_Z` as maximum disjoint-support excess and `Delta=|A|-3-mu_Z`; formalize zero relaxation as a
     private excess bridge of size at least `Delta`.
     For the mixed two-level core, formalize that every `(m+1)`-set `T` has `|J\T|>=m`, hence for `m>=3` the
@@ -2444,6 +2445,11 @@ Recommended attack:
     and hence a 3-selector for the `m=2` counterexample range.
     Formalize the scalar lower-swap shadow: a target-realizing ternary mismatch is terminal only if every
     one- and two-vertex partial swap is blocked by omitted-trace inequality or retained-scalar failure.
+    Formalize four-residue target coherence for fixed `T,X`: `h_k=k+deg_X-psi_T`, active set
+    `{h_k in {1,2}}`, zero set `{h_k in {0,3}}`, and `k` versus `k+2` swaps active/zero while complementing
+    outside traces.
+    Formalize the antipodal trace core forced when both opposite residues are high-active target endpoints:
+    repeated centers `sigma`, `1-sigma`, and singleton flips around the two centers.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

@@ -1975,8 +1975,9 @@ sum to at least `|A|-3`; the endpoint is full-minor-critical excess-packing fail
 Thus supports have size at most `|A|-3`; active deletions have projected saving-`|A|-4` packings with all
 one-unit lifts blocked.  Singleton closure only applies to projected partitions with at most two blocks, so
 one-block active shadows are impossible and two-block shadows are double-collision only.
-The support graph has independence number at most three.  Pair-only endpoints are limited to `|A|=5,6,7`;
-for `|A|>=8` some projected support of size at least three is forced.
+The support graph has independence number at most three.  Pair-only endpoints are limited to `|A|=5,6,7`:
+triangle, matching-number-2 deletion-critical, and factor-critical respectively.  For `|A|>=8` some
+projected support of size at least three is forced.
 Writing `mu_Z` for maximum full-family excess, every zero relaxation supplies private support saving that
 bridges the defect `|A|-3-mu_Z`.
 The full two-level near-threshold core has no pure outside-size escape: every mixed `(m+1)`-set has at
@@ -1986,6 +1987,12 @@ The remaining `m<=2` bases are closed by the trivial pair selector and `R_4(3)=5
 monochromatic residue triangle and therefore a 3-selector.
 Scalar-killed target triples now have a lower-swap shadow: each discrepant edge/nonedge must be shielded
 from every one-/two-vertex partial swap by omitted-trace inequality or retained-scalar failure.
+For fixed `T,X`, target avoidance across the four residues is coherent: `h_k=k+deg_X-psi_T`, opposite
+`kappa` values swap active/filter coordinates and complement traces.  Thus high-active filtered covers are
+not independent across residues.
+If both opposite residues are high-active target endpoints, the outside trace multiset contains the
+antipodal core: repeated complementary centers and all singleton flips around the appropriate active side
+of each center.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.
