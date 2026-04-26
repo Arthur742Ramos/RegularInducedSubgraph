@@ -41150,6 +41150,400 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint.toProofM
       h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
   exact Subsingleton.elim _ _
 
+/--
+Downstream target checkpoint for the current proof-md frontier.  This is a release-facing wrapper
+around the final public citation checkpoint that keeps the localized `R(4,5) <= 27` input paired
+with the explicit remaining-obligation rows, target-row view, endpoint residual certificates, and
+final public artifacts.  It is intentionally structural: the R45 row remains assumption-backed and
+is exposed through the same checklist and row wrappers instead of being promoted to an unconditional
+Ramsey theorem.
+-/
+structure RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  finalPublicCitationCheckpoint :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v
+  publicReleaseCitation : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v
+  explicitR45ObligationRows :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v
+  finalConsumerCitationBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v
+  finalConsumerAuditPackage :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v
+  checkpointReleaseBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v
+  publicDistributionBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v
+  remainingObligations : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  consumerSurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  finalManifest : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v
+  finalLedger : RamseyTenR45CurrentFrontierProofMdFinalLedger G s v
+  publicAuditSummary : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v
+  coverageCertificate : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  endpointResidualCertificate : RamseyTenR45EndpointResidualCertificate
+  middleDegreeEndpointCertificate : RamseyTenR45MiddleDegreeEndpointCertificate
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  publicLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  obligationLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  targetLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  remainingAssumptionLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final public citation checkpoints materialize the downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint.toProofMdDownstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v := by
+  let he := h.toProofMdExplicitR45ObligationRows
+  exact
+    { finalPublicCitationCheckpoint := h
+      publicReleaseCitation := h.toProofMdPublicReleaseCitation
+      explicitR45ObligationRows := he
+      finalConsumerCitationBundle := h.toProofMdFinalConsumerCitationBundle
+      finalConsumerAuditPackage := h.toProofMdFinalConsumerAuditPackage
+      checkpointReleaseBundle := h.toProofMdFinalCheckpointReleaseBundle
+      publicDistributionBundle := h.toProofMdFinalPublicDistributionBundle
+      remainingObligations := h.toProofMdR45RemainingObligationChecklist
+      consumerSurface := h.toCurrentFrontierConsumerSurface
+      finalDownstreamImport := h.toFinalDownstreamImport
+      finalManifest := h.toProofMdFinalManifest
+      finalLedger := h.toProofMdFinalLedger
+      publicAuditSummary := h.toProofMdPublicAuditSummary
+      coverageCertificate := h.toProofMdCoverageCertificate
+      proofMdImport := h.toProofMdImport
+      proofMdNormalizationChecklist := h.toProofMdNormalizationChecklist
+      targetRows := h.toCurrentFrontierTargetRows
+      remainingAssumptionRows := h.toRemainingAssumptionRows
+      numericalConsequences := h.toFinalNumericalConsequences
+      endpointResiduals := h.toEndpointResiduals
+      r45TwentySevenTable := h.toR45TwentySevenTable
+      endpointResidualCertificate := he.toEndpointResidualCertificate
+      middleDegreeEndpointCertificate := he.toMiddleDegreeEndpointCertificate
+      degreeTenSplits := he.toDegreeTenSplits
+      degreeElevenSplits := he.toDegreeElevenSplits
+      degreeTwelveSplits := he.toDegreeTwelveSplits
+      middleDegreeSplits := he.toMiddleDegreeSplits
+      topRowProfile := he.toTopRowProfile
+      topRowCommonSum := he.toCommonSum
+      topRowCountProfile := he.toCountProfile
+      exact42Row := h.toThreeTenFortyTwo
+      publicLocalizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      obligationLocalizedR45Row := h.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven
+      targetLocalizedR45Row := he.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+      remainingAssumptionLocalizedR45Row :=
+        he.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven
+      propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+      admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+      extremalF40960Row := h.toTenLeF_40960
+      regularTenAt40960Row := fun H hcard =>
+        h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard }
+
+/-- Public-release citations materialize the downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdDownstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v :=
+  h.toProofMdFinalPublicCitationCheckpoint.toProofMdDownstreamTargetCheckpoint
+
+/-- Final-consumer citation bundles materialize the downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toProofMdDownstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v :=
+  h.toProofMdFinalPublicCitationCheckpoint.toProofMdDownstreamTargetCheckpoint
+
+/-- Final consumer audit packages materialize the downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toProofMdDownstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v :=
+  h.toProofMdFinalPublicCitationCheckpoint.toProofMdDownstreamTargetCheckpoint
+
+/-- Checkpoint/release bundles materialize the downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdDownstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v :=
+  h.toProofMdFinalPublicCitationCheckpoint.toProofMdDownstreamTargetCheckpoint
+
+/-- Select the final public citation checkpoint from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toProofMdFinalPublicCitationCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v :=
+  h.finalPublicCitationCheckpoint
+
+/-- Select the public-release citation from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.publicReleaseCitation
+
+/-- Select the explicit R45 obligation rows from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toProofMdExplicitR45ObligationRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v :=
+  h.explicitR45ObligationRows
+
+/-- Select the remaining-obligation checklist from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.remainingObligations
+
+/-- Select target rows from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select remaining-assumption rows from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Select endpoint residuals from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the endpoint residual certificate from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toEndpointResidualCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45EndpointResidualCertificate :=
+  h.endpointResidualCertificate
+
+/-- Select the middle-degree endpoint certificate from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toMiddleDegreeEndpointCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45MiddleDegreeEndpointCertificate :=
+  h.middleDegreeEndpointCertificate
+
+/-- Select the relaxed `27`-vertex table from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select the top-row profile obligation from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the top-row common-sum obligation from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the top-row count-profile obligation from a downstream target checkpoint. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Downstream target checkpoint route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Downstream target checkpoint route to the public localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.publicLocalizedR45Row
+
+/-- Downstream target checkpoint route to the checklist-localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.obligationLocalizedR45Row
+
+/-- Downstream target checkpoint route to the target-row localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.targetLocalizedR45Row
+
+/-- Downstream target checkpoint route to the remaining-assumption localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.remainingAssumptionLocalizedR45Row
+
+/-- Downstream target checkpoint route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Downstream target checkpoint route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Downstream target checkpoint route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Downstream target checkpoint route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Flat constructor exposing downstream target checkpoints from final public citation checkpoints. -/
+theorem ramseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint_of_finalPublicCitationCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v :=
+  h.toProofMdDownstreamTargetCheckpoint
+
+/-- Flat constructor exposing downstream target checkpoints from public-release citations. -/
+theorem ramseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint_of_publicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v :=
+  h.toProofMdDownstreamTargetCheckpoint
+
+/-- Downstream target checkpoints round-trip through final public citation checkpoints. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toProofMdFinalPublicCitationCheckpoint_toProofMdDownstreamTargetCheckpoint_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    h.toProofMdFinalPublicCitationCheckpoint.toProofMdDownstreamTargetCheckpoint = h := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream target checkpoints normalize their target rows with remaining assumptions. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toCurrentFrontierTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    h.toCurrentFrontierTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream target checkpoints normalize explicit rows with the public-release citation. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toProofMdExplicitR45ObligationRows_toProofMdPublicReleaseCitation_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    h.toProofMdExplicitR45ObligationRows.toProofMdPublicReleaseCitation =
+      h.toProofMdPublicReleaseCitation := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream target checkpoints normalize checklist R45 with the public carried R45 row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    h.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream target checkpoints normalize target-row R45 with the public carried R45 row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    h.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream target checkpoints normalize remaining-assumption R45 with the public carried R45 row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    h.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
