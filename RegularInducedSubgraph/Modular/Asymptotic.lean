@@ -4676,6 +4676,384 @@ theorem firstBitPacketScalarCongruenceSystem_fin_two_iff
     · simpa using h.1
     · simpa using h.2
 
+/-- Weighted chamber-size total `sum_j a_j |B_j|` used by the old-increment equation. -/
+def firstBitPacketWeightedChamberSum {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (a packetSize : ι → ℕ) : ℕ :=
+  ∑ j in active, a j * packetSize j
+
+/-- Total old-frame increment `sum_j δ_j`. -/
+def firstBitPacketOldIncrementSum {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (δ : ι → ℕ) : ℕ :=
+  ∑ j in active, δ j
+
+/-- Pointwise old-increment congruence `m * δ_j = a_j |B_j| [MOD 4]`. -/
+def FirstBitPacketOldIncrementCongruence {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (m : ℕ) (a δ packetSize : ι → ℕ) : Prop :=
+  ∀ j ∈ active, m * δ j ≡ a j * packetSize j [MOD 4]
+
+/-- Summed old-increment congruence `m * sum_j δ_j = sum_j a_j |B_j| [MOD 4]`. -/
+def FirstBitPacketOldIncrementTotalCongruence {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (m : ℕ) (a δ packetSize : ι → ℕ) : Prop :=
+  m * firstBitPacketOldIncrementSum active δ ≡
+    firstBitPacketWeightedChamberSum active a packetSize [MOD 4]
+
+/-- Certificate bundling the pointwise and total old-increment congruences. -/
+structure FirstBitPacketOldIncrementCertificate {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (m : ℕ) (a δ packetSize : ι → ℕ) : Prop where
+  pointwise : FirstBitPacketOldIncrementCongruence active m a δ packetSize
+  total : FirstBitPacketOldIncrementTotalCongruence active m a δ packetSize
+
+/-- Extract one packet row from an old-increment certificate. -/
+theorem FirstBitPacketOldIncrementCertificate.row
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {m : ℕ}
+    {a δ packetSize : ι → ℕ}
+    (h : FirstBitPacketOldIncrementCertificate active m a δ packetSize)
+    {j : ι} (hj : j ∈ active) :
+    m * δ j ≡ a j * packetSize j [MOD 4] :=
+  h.pointwise j hj
+
+/-- Extract the summed old-increment congruence from the certificate. -/
+theorem FirstBitPacketOldIncrementCertificate.total_congruence
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {m : ℕ}
+    {a δ packetSize : ι → ℕ}
+    (h : FirstBitPacketOldIncrementCertificate active m a δ packetSize) :
+    FirstBitPacketOldIncrementTotalCongruence active m a δ packetSize :=
+  h.total
+
+namespace FirstBitPacketSystemData
+
+/-- Weighted chamber-size total attached to packet-system data. -/
+def weightedChamberSum {ι : Type*} [DecidableEq ι]
+    (P : FirstBitPacketSystemData ι) : ℕ :=
+  firstBitPacketWeightedChamberSum P.active P.chamber P.packetSize
+
+/-- Total old increment attached to packet-system data. -/
+def oldIncrementSum {ι : Type*} [DecidableEq ι]
+    (P : FirstBitPacketSystemData ι) : ℕ :=
+  firstBitPacketOldIncrementSum P.active P.oldIncrement
+
+/-- Pointwise old-increment congruence through the fields of packet-system data. -/
+def OldIncrementCongruence {ι : Type*} [DecidableEq ι]
+    (P : FirstBitPacketSystemData ι) (m : ℕ) : Prop :=
+  FirstBitPacketOldIncrementCongruence P.active m P.chamber P.oldIncrement P.packetSize
+
+/-- Summed old-increment congruence through the fields of packet-system data. -/
+def OldIncrementTotalCongruence {ι : Type*} [DecidableEq ι]
+    (P : FirstBitPacketSystemData ι) (m : ℕ) : Prop :=
+  FirstBitPacketOldIncrementTotalCongruence P.active m P.chamber P.oldIncrement P.packetSize
+
+/-- Bundled old-increment certificate through the fields of packet-system data. -/
+def OldIncrementCertificate {ι : Type*} [DecidableEq ι]
+    (P : FirstBitPacketSystemData ι) (m : ℕ) : Prop :=
+  FirstBitPacketOldIncrementCertificate P.active m P.chamber P.oldIncrement P.packetSize
+
+theorem OldIncrementCongruence.row
+    {ι : Type*} [DecidableEq ι] {P : FirstBitPacketSystemData ι} {m : ℕ}
+    (h : P.OldIncrementCongruence m) {j : ι} (hj : j ∈ P.active) :
+    m * P.oldIncrement j ≡ P.chamber j * P.packetSize j [MOD 4] :=
+  h j hj
+
+theorem OldIncrementCertificate.row
+    {ι : Type*} [DecidableEq ι] {P : FirstBitPacketSystemData ι} {m : ℕ}
+    (h : P.OldIncrementCertificate m) {j : ι} (hj : j ∈ P.active) :
+    m * P.oldIncrement j ≡ P.chamber j * P.packetSize j [MOD 4] :=
+  FirstBitPacketOldIncrementCertificate.row h hj
+
+theorem OldIncrementCertificate.total_congruence
+    {ι : Type*} [DecidableEq ι] {P : FirstBitPacketSystemData ι} {m : ℕ}
+    (h : P.OldIncrementCertificate m) :
+    P.OldIncrementTotalCongruence m :=
+  FirstBitPacketOldIncrementCertificate.total_congruence h
+
+end FirstBitPacketSystemData
+
+/-- Odd-`m` eliminated target residue `r + m^{-1} * sum_j a_j |B_j|`. -/
+def firstBitPacketOddTargetResidue {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (a packetSize : ι → ℕ) (r inv : ℕ) : ℕ :=
+  r + inv * firstBitPacketWeightedChamberSum active a packetSize
+
+/--
+Odd-target elimination surface: the supplied `inv` is the inverse of `m` modulo four, and the target
+`r + sum_j δ_j` is rewritten using the weighted chamber-size sum.
+-/
+structure FirstBitPacketOddTargetElimination {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (m : ℕ) (a δ packetSize : ι → ℕ) (r inv : ℕ) :
+    Prop where
+  inverse : inv * m ≡ 1 [MOD 4]
+  targetResidue :
+    firstBitPacketTargetResidue active δ r ≡
+      firstBitPacketOddTargetResidue active a packetSize r inv [MOD 4]
+
+/-- Extract the odd-target residue rewrite. -/
+theorem FirstBitPacketOddTargetElimination.target
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {m r inv : ℕ}
+    {a δ packetSize : ι → ℕ}
+    (h : FirstBitPacketOddTargetElimination active m a δ packetSize r inv) :
+    firstBitPacketTargetResidue active δ r ≡
+      firstBitPacketOddTargetResidue active a packetSize r inv [MOD 4] :=
+  h.targetResidue
+
+/-- The `m = 0 [MOD 4]` elimination surface: every weighted chamber product must vanish mod four. -/
+def FirstBitPacketModZeroTargetElimination {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (a packetSize : ι → ℕ) : Prop :=
+  ∀ j ∈ active, a j * packetSize j ≡ 0 [MOD 4]
+
+/-- Half-product parity used when `m = 2 [MOD 4]`. -/
+def firstBitPacketHalfProductParity (a size : ℕ) : ℕ :=
+  (a * size / 2) % 2
+
+/--
+The `m = 2 [MOD 4]` elimination surface: each weighted chamber product is even and determines
+`δ_j` modulo two by its half-product parity.
+-/
+def FirstBitPacketModTwoTargetElimination {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (a δ packetSize : ι → ℕ) : Prop :=
+  ∀ j ∈ active,
+    a j * packetSize j ≡ 0 [MOD 2] ∧
+      δ j ≡ firstBitPacketHalfProductParity (a j) (packetSize j) [MOD 2]
+
+theorem FirstBitPacketModTwoTargetElimination.even_product
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {a δ packetSize : ι → ℕ}
+    (h : FirstBitPacketModTwoTargetElimination active a δ packetSize)
+    {j : ι} (hj : j ∈ active) :
+    a j * packetSize j ≡ 0 [MOD 2] :=
+  (h j hj).1
+
+theorem FirstBitPacketModTwoTargetElimination.delta_parity
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {a δ packetSize : ι → ℕ}
+    (h : FirstBitPacketModTwoTargetElimination active a δ packetSize)
+    {j : ι} (hj : j ∈ active) :
+    δ j ≡ firstBitPacketHalfProductParity (a j) (packetSize j) [MOD 2] :=
+  (h j hj).2
+
+/--
+Three-way target-elimination surface for old-increment packet systems modulo four: odd `m`, the
+`2 mod 4` parity case, or the `0 mod 4` vanishing case.
+-/
+def FirstBitPacketTargetEliminationSurface {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (m : ℕ) (a δ packetSize : ι → ℕ) (r : ℕ) : Prop :=
+  (∃ inv : ℕ, FirstBitPacketOddTargetElimination active m a δ packetSize r inv) ∨
+    (m ≡ 2 [MOD 4] ∧ FirstBitPacketModTwoTargetElimination active a δ packetSize) ∨
+      (m ≡ 0 [MOD 4] ∧ FirstBitPacketModZeroTargetElimination active a packetSize)
+
+theorem firstBitPacketTargetEliminationSurface_of_odd
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {m r inv : ℕ}
+    {a δ packetSize : ι → ℕ}
+    (h : FirstBitPacketOddTargetElimination active m a δ packetSize r inv) :
+    FirstBitPacketTargetEliminationSurface active m a δ packetSize r :=
+  Or.inl ⟨inv, h⟩
+
+theorem firstBitPacketTargetEliminationSurface_of_modTwo
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {m r : ℕ}
+    {a δ packetSize : ι → ℕ}
+    (hm : m ≡ 2 [MOD 4]) (h : FirstBitPacketModTwoTargetElimination active a δ packetSize) :
+    FirstBitPacketTargetEliminationSurface active m a δ packetSize r :=
+  Or.inr (Or.inl ⟨hm, h⟩)
+
+theorem firstBitPacketTargetEliminationSurface_of_modZero
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {m r : ℕ}
+    {a δ packetSize : ι → ℕ}
+    (hm : m ≡ 0 [MOD 4]) (h : FirstBitPacketModZeroTargetElimination active a packetSize) :
+    FirstBitPacketTargetEliminationSurface active m a δ packetSize r :=
+  Or.inr (Or.inr ⟨hm, h⟩)
+
+/-- A size stratum records a packet size modulo four as a `Fin 4` value. -/
+def PacketSizeModFourStratum (n : ℕ) (s : Fin 4) : Prop :=
+  n ≡ s.val [MOD 4]
+
+/-- Uniform cross edge count between packets of the given sizes. -/
+def firstBitPacketCrossEdgeCount (ε leftSize rightSize : ℕ) : ℕ :=
+  ε * leftSize * rightSize
+
+/-- Finite table for cross-edge residues modulo four, indexed by `ε ∈ {0,1}` and size strata. -/
+def firstBitPacketCrossResidueTable (ε : Fin 2) (left right : Fin 4) : Fin 4 :=
+  ⟨(ε.val * left.val * right.val) % 4, Nat.mod_lt _ (by decide : 0 < 4)⟩
+
+theorem firstBitPacketCrossResidueTable_symm (ε : Fin 2) (left right : Fin 4) :
+    firstBitPacketCrossResidueTable ε left right =
+      firstBitPacketCrossResidueTable ε right left := by
+  apply Fin.ext
+  simp [firstBitPacketCrossResidueTable, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
+
+theorem firstBitPacketCrossResidueTable_zero (left right : Fin 4) :
+    firstBitPacketCrossResidueTable (0 : Fin 2) left right = (0 : Fin 4) := by
+  apply Fin.ext
+  simp [firstBitPacketCrossResidueTable]
+
+theorem firstBitPacketCrossResidueTable_one_eq_zero_iff (left right : Fin 4) :
+    firstBitPacketCrossResidueTable (1 : Fin 2) left right = (0 : Fin 4) ↔
+      left = (0 : Fin 4) ∨ right = (0 : Fin 4) ∨
+        (left = (2 : Fin 4) ∧ right = (2 : Fin 4)) := by
+  fin_cases left <;> fin_cases right <;> decide
+
+theorem firstBitPacketCrossResidueTable_one_eq_one_iff (left right : Fin 4) :
+    firstBitPacketCrossResidueTable (1 : Fin 2) left right = (1 : Fin 4) ↔
+      (left = (1 : Fin 4) ∧ right = (1 : Fin 4)) ∨
+        (left = (3 : Fin 4) ∧ right = (3 : Fin 4)) := by
+  fin_cases left <;> fin_cases right <;> decide
+
+theorem firstBitPacketCrossResidueTable_one_eq_two_iff (left right : Fin 4) :
+    firstBitPacketCrossResidueTable (1 : Fin 2) left right = (2 : Fin 4) ↔
+      (left = (1 : Fin 4) ∧ right = (2 : Fin 4)) ∨
+        (left = (2 : Fin 4) ∧ right = (1 : Fin 4)) ∨
+          (left = (2 : Fin 4) ∧ right = (3 : Fin 4)) ∨
+            (left = (3 : Fin 4) ∧ right = (2 : Fin 4)) := by
+  fin_cases left <;> fin_cases right <;> decide
+
+theorem firstBitPacketCrossResidueTable_one_eq_three_iff (left right : Fin 4) :
+    firstBitPacketCrossResidueTable (1 : Fin 2) left right = (3 : Fin 4) ↔
+      (left = (1 : Fin 4) ∧ right = (3 : Fin 4)) ∨
+        (left = (3 : Fin 4) ∧ right = (1 : Fin 4)) := by
+  fin_cases left <;> fin_cases right <;> decide
+
+theorem firstBitPacketCrossEdgeCount_symm (ε leftSize rightSize : ℕ) :
+    firstBitPacketCrossEdgeCount ε leftSize rightSize =
+      firstBitPacketCrossEdgeCount ε rightSize leftSize := by
+  unfold firstBitPacketCrossEdgeCount
+  ring
+
+/-- A cross-edge count together with its two packet-size strata and residue-table row. -/
+structure FirstBitPacketCrossEdgeStrata
+    (ε : Fin 2) (left right : Fin 4) (leftSize rightSize edgeCount : ℕ) : Prop where
+  leftStratum : PacketSizeModFourStratum leftSize left
+  rightStratum : PacketSizeModFourStratum rightSize right
+  edgeResidue : edgeCount ≡ (firstBitPacketCrossResidueTable ε left right).val [MOD 4]
+
+/-- Swap the two packets in a cross-edge stratum certificate. -/
+theorem FirstBitPacketCrossEdgeStrata.symm
+    {ε : Fin 2} {left right : Fin 4} {leftSize rightSize edgeCount : ℕ}
+    (h : FirstBitPacketCrossEdgeStrata ε left right leftSize rightSize edgeCount) :
+    FirstBitPacketCrossEdgeStrata ε right left rightSize leftSize edgeCount := by
+  refine ⟨h.rightStratum, h.leftStratum, ?_⟩
+  simpa [firstBitPacketCrossResidueTable_symm ε left right] using h.edgeResidue
+
+/-- Mod-four profile of a packet row: chamber, internal residue, old increment, and size. -/
+def firstBitPacketModFourProfile {ι : Type*}
+    (a d δ packetSize : ι → ℕ) (j : ι) : ℕ × ℕ × ℕ × ℕ :=
+  (a j % 4, d j % 4, δ j % 4, packetSize j % 4)
+
+/-- No two active packets share the same mod-four packet profile. -/
+def FirstBitPacketProfileSimple {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (a d δ packetSize : ι → ℕ) : Prop :=
+  ∀ ⦃j : ι⦄, j ∈ active → ∀ ⦃k : ι⦄, k ∈ active →
+    firstBitPacketModFourProfile a d δ packetSize j =
+      firstBitPacketModFourProfile a d δ packetSize k → j = k
+
+/-- Equal-profile coalescence map for packet profiles. -/
+def FirstBitPacketProfileCoalesced {ι κ : Type*} [DecidableEq ι]
+    (active : Finset ι) (classOf : ι → κ) (a d δ packetSize : ι → ℕ) : Prop :=
+  ∀ ⦃j : ι⦄, j ∈ active → ∀ ⦃k : ι⦄, k ∈ active →
+    classOf j = classOf k ↔
+      firstBitPacketModFourProfile a d δ packetSize j =
+        firstBitPacketModFourProfile a d δ packetSize k
+
+theorem FirstBitPacketProfileSimple.ne_profile_of_ne
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {a d δ packetSize : ι → ℕ}
+    (hsimple : FirstBitPacketProfileSimple active a d δ packetSize)
+    {j k : ι} (hj : j ∈ active) (hk : k ∈ active) (hjk : j ≠ k) :
+    firstBitPacketModFourProfile a d δ packetSize j ≠
+      firstBitPacketModFourProfile a d δ packetSize k := by
+  intro hprofile
+  exact hjk (hsimple hj hk hprofile)
+
+/-- An injective coalescence key makes the packet profile simple. -/
+theorem firstBitPacketProfileSimple_of_coalesced_injective
+    {ι κ : Type*} [DecidableEq ι] {active : Finset ι} {classOf : ι → κ}
+    {a d δ packetSize : ι → ℕ}
+    (hcoalesced : FirstBitPacketProfileCoalesced active classOf a d δ packetSize)
+    (hinj :
+      ∀ ⦃j : ι⦄, j ∈ active → ∀ ⦃k : ι⦄, k ∈ active →
+        classOf j = classOf k → j = k) :
+    FirstBitPacketProfileSimple active a d δ packetSize := by
+  intro j hj k hk hprofile
+  exact hinj hj hk ((hcoalesced hj hk).2 hprofile)
+
+/--
+Graph-facing quotient residual: a first-bit packet normal form plus old-increment, target-elimination,
+and profile-simplicity data.
+-/
+structure FirstBitPacketGraphQuotientResidual
+    {ι V : Type*} [DecidableEq ι] [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) [DecidableRel G.Adj]
+    (active : Finset ι) (B : ι → Finset V)
+    (m : ℕ) (a d δ : ι → ℕ) (ε : ι → ι → ℕ) (r : ℕ) : Prop where
+  normalForm : FirstBitPacketGraphNormalForm G active B a d δ ε r
+  oldIncrement :
+    FirstBitPacketOldIncrementCertificate active m a δ (fun j => (B j).card)
+  targetElimination :
+    FirstBitPacketTargetEliminationSurface active m a δ (fun j => (B j).card) r
+  profileSimple : FirstBitPacketProfileSimple active a d δ (fun j => (B j).card)
+
+theorem FirstBitPacketGraphQuotientResidual.scalarRow
+    {ι V : Type*} [DecidableEq ι] [Fintype V] [DecidableEq V]
+    {G : SimpleGraph V} [DecidableRel G.Adj]
+    {active : Finset ι} {B : ι → Finset V}
+    {m r : ℕ} {a d δ : ι → ℕ} {ε : ι → ι → ℕ}
+    (h : FirstBitPacketGraphQuotientResidual G active B m a d δ ε r)
+    {j : ι} (hj : j ∈ active) :
+    FirstBitPacketScalarRow active a d δ ε r (fun k => (B k).card) j :=
+  h.normalForm.scalarRow hj
+
+theorem FirstBitPacketGraphQuotientResidual.oldIncrementRow
+    {ι V : Type*} [DecidableEq ι] [Fintype V] [DecidableEq V]
+    {G : SimpleGraph V} [DecidableRel G.Adj]
+    {active : Finset ι} {B : ι → Finset V}
+    {m r : ℕ} {a d δ : ι → ℕ} {ε : ι → ι → ℕ}
+    (h : FirstBitPacketGraphQuotientResidual G active B m a d δ ε r)
+    {j : ι} (hj : j ∈ active) :
+    m * δ j ≡ a j * (B j).card [MOD 4] :=
+  FirstBitPacketOldIncrementCertificate.row h.oldIncrement hj
+
+/-- Surface asserting that old-increment certificates can be converted to target elimination. -/
+def HasFirstBitPacketTargetEliminationReduction : Prop :=
+  ∀ {ι : Type*} [DecidableEq ι] (active : Finset ι)
+      (m r : ℕ) (a δ packetSize : ι → ℕ),
+    FirstBitPacketOldIncrementCertificate active m a δ packetSize →
+      FirstBitPacketTargetEliminationSurface active m a δ packetSize r
+
+/-- Surface asserting that coalesced packet profiles can be made profile-simple. -/
+def HasFirstBitPacketProfileCoalescenceReduction : Prop :=
+  ∀ {ι κ : Type*} [DecidableEq ι] (active : Finset ι) (classOf : ι → κ)
+      (a d δ packetSize : ι → ℕ),
+    FirstBitPacketProfileCoalesced active classOf a d δ packetSize →
+      (∀ ⦃j : ι⦄, j ∈ active → ∀ ⦃k : ι⦄, k ∈ active →
+        classOf j = classOf k → j = k) →
+        FirstBitPacketProfileSimple active a d δ packetSize
+
+/-- The coalescence-to-profile-simple wrapper is purely definitional. -/
+theorem hasFirstBitPacketProfileCoalescenceReduction :
+    HasFirstBitPacketProfileCoalescenceReduction := by
+  intro ι κ _ active classOf a d δ packetSize hcoalesced hinj
+  exact firstBitPacketProfileSimple_of_coalesced_injective hcoalesced hinj
+
+/-- First-bit packet quotient residual package used by the terminal aggregate frontier. -/
+structure FirstBitPacketQuotientFrontierSurfaces : Prop where
+  targetElimination : HasFirstBitPacketTargetEliminationReduction
+  profileCoalescence : HasFirstBitPacketProfileCoalescenceReduction
+
+/-- Build the packet quotient package once the target-elimination reduction is available. -/
+theorem firstBitPacketQuotientFrontierSurfaces_of_targetElimination
+    (htarget : HasFirstBitPacketTargetEliminationReduction) :
+    FirstBitPacketQuotientFrontierSurfaces where
+  targetElimination := htarget
+  profileCoalescence := hasFirstBitPacketProfileCoalescenceReduction
+
+/-- Uniform cross packets can be read in either direction with the same cross value. -/
+theorem firstBitPacketUniformCross_symm
+    {V : Type*} [DecidableEq V] {G : SimpleGraph V} [DecidableRel G.Adj]
+    {B C : Finset V} {ε : ℕ}
+    (hcross : FirstBitPacketUniformCross G B C ε) :
+    FirstBitPacketUniformCross G C B ε := by
+  rcases hcross with ⟨hεle, hrows⟩
+  refine ⟨hεle, ?_⟩
+  intro v hv w hw
+  have hrow := hrows w hw v hv
+  by_cases hvw : G.Adj v w
+  · have hwv : G.Adj w v := G.symm hvw
+    simpa [hvw, hwv] using hrow
+  · have hwv : ¬ G.Adj w v := fun h => hvw (G.symm h)
+    simpa [hvw, hwv] using hrow
+
 /--
 Equation form of a mixed `2+2` augmented-fiber atom: two boundary vertices with edge-status `e`
 and two retained vertices of types `τ, σ` with retained edge-status `ε` form a `d`-regular
@@ -8279,6 +8657,52 @@ theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSu
     TriangleFreeInducedC4FreeModFourLayerCap 14 :=
   triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithCompressedHomogeneousCarry
     h.compressed
+
+/--
+Compressed aggregate package with both retained-trace complement rows and first-bit packet quotient
+surfaces wired into the terminal frontier.
+-/
+structure
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient :
+    Prop where
+  retainedTrace : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace
+  packetQuotient : FirstBitPacketQuotientFrontierSurfaces
+
+/-- Forget the packet quotient fields and recover the retained-trace aggregate package. -/
+theorem
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient.to_retainedTrace
+    (h :
+      ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient) :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace :=
+  h.retainedTrace
+
+/-- Forget both retained-trace and packet quotient fields and recover the compressed aggregate package. -/
+theorem
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient.to_compressed
+    (h :
+      ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient) :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry :=
+  h.retainedTrace.compressed
+
+/-- The packet-quotient enriched aggregate package still gives the rounded mod-four layer cap. -/
+theorem
+    triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient
+    (h :
+      ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient) :
+    TriangleFreeInducedC4FreeModFourLayerCap 14 :=
+  triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace
+    h.retainedTrace
+
+/-- Build the enriched aggregate package from a compressed aggregate package and packet target reduction. -/
+theorem
+    modFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient_of_compressed_and_packetTargetElimination
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry)
+    (htarget : HasFirstBitPacketTargetEliminationReduction) :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient where
+  retainedTrace :=
+    modFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace_of_compressed h
+  packetQuotient :=
+    firstBitPacketQuotientFrontierSurfaces_of_targetElimination htarget
 
 /--
 Conditional selector for the corrected `{0,1}`/`{3,2}` complement surface.  A linearly large
