@@ -5835,6 +5835,17 @@ of `W` using vertices from one chamber has this form.  Hence a genuine counterex
 a chamber in which every profitable signed packet is blocked; the remaining theorem is to rule out
 that blocking when `N>31m/4`.
 
+Summing the two signed equations gives the replacement global scalar.  With `s=|B|`, `d=|D|`, and
+internal edge counts `e(B),e(D)`,
+
+```text
+(m-d-s)K = (s-d)r + 2e(D)-2e(B)        [MOD 4].
+```
+
+Equivalently the new set has size `m-d+s` and residue `r+K`, so if `m-d+s` is odd then `r+K` must be
+even.  Thus signed old-coordinate balance plus positive surplus is still not enough: the self-layer
+cleanup must also land on this scalar edge-count class.
+
 There is an even sharper labelled-packet version that does not first pigeonhole to one chamber.  Let
 `U=V(H)\W` and put `tau(b)=deg_W(b) [MOD 4]`.  If `m<n/32`, then `|U|>31m`.  It is enough to find
 a nonempty `B subset U` and a residue `delta` such that

@@ -1593,6 +1593,8 @@ For the replacement version, an old-balanced `B subset P_t` has self-error
 `eta_B(b)=t+deg_B(b)-r-delta`.  Deleting `D subset W` and writing `lambda=r+delta-R` requires
 `deg_D=lambda` on `W\D` and `deg_D(b)=eta_B(b)+lambda` on `B`, with scalar checks
 `sum_B(eta_B+lambda)=|D|delta` and `lambda(m-|D|)=|D|r-2e(D) [MOD 4]`.
+In fully signed form the additional global scalar is
+`(m-|D|-|B|)K=(|B|-|D|)r+2e(D)-2e(B) [MOD 4]`.
 
 ## 14. Pair-chamber orientation normal form
 

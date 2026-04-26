@@ -498,6 +498,9 @@ deg_B(b)-deg_D(b) == r+K-t      for b in B,
 |B|>|D|.
 ```
 
+Summing these equations gives the signed global scalar
+`(m-d-s)K=(s-d)r+2e(D)-2e(B) [MOD 4]`, where `s=|B|` and `d=|D|`; if the resulting size `m-d+s` is odd,
+then the new residue `r+K` is even.
 This signed packet form is still the cleanest loss-`32` obstruction.  Deletion lowers the zero-sum
 dimension only in the zero-target/congruent-`E` subcase, or after an additional theorem representing
 the affine old-coordinate target; it is not a standalone Olson dimension count.
