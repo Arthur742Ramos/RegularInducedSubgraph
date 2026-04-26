@@ -1595,6 +1595,19 @@ Recommended attack:
    `Rep={0,1}` mixed rules impose no extra same-type restriction beyond the retained-only
    `alpha<=3`, `2K_2`-free branch.  The remaining formal target is therefore a genuine mod-`4` selector
    for the induced-`C_4`-free, `K_4`-free complement class, or a separate global target-stability lemma.
+   Within that complement class, formalize the triangle-anchor trace lemma: for a triangle `abc`, no
+   outside vertex is adjacent to all three anchors; vertices with incomparable nonempty traces into
+   `{a,b,c}` are anti-complete; the two-neighbour trace classes are independent; singleton trace classes
+   are pairwise anti-complete and are themselves triangle-free induced-`C_4`-free graphs.  Also formalize
+   the immediate budgets `|P_ab|+|P_ac|+|P_bc|<=m` and
+   `alpha(S_a)+alpha(S_b)+alpha(S_c)<=m`.  If a singleton layer is non-bipartite, its shortest odd cycle
+   is induced; chosen odd-cycle cores in the pairwise anti-complete singleton layers have total length at
+   most `m`, by the induced degree-two terminal exclusion.  For such a shortest odd cycle `C` in a
+   triangle-free induced-`C_4`-free layer, formalize that every outside vertex has at most one neighbour
+   on `C`, and that pendant fibres over consecutive cycle vertices are anti-complete.  Strengthen this to
+   the distance-three quotient lemma: pendant fibres can be adjacent only when their core vertices are at
+   cyclic distance `3`; the quotient has fractional chromatic number at most `3`, giving first-core
+   pendant-fibre mass at most `3 alpha(layer)`.
 
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified

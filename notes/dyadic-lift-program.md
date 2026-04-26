@@ -940,6 +940,27 @@ beyond the retained-only conditions.  Thus an arbitrary induced-`C_4`-free, `K_4
 `alpha<=m` and the degree-two terminal exclusion can occupy one boundary type.  The final step must prove
 a mod-`4` selector for this hereditary class or use global target-stability/maximal-witness data beyond the
 local augmented-fiber tables.
+Useful structure remains inside that class.  If `abc` is a triangle in the complement `H`, trace every
+outside vertex by `N_H(v) cap {a,b,c}`.  No trace has size three; incomparable nonempty traces are
+anti-complete, since an edge between them and an anchor edge induce a `C_4`.  Thus two-neighbour trace
+classes are independent, singleton trace classes are pairwise anti-complete, and each singleton trace
+class is triangle-free and induced-`C_4`-free.  Quantitatively,
+`|P_ab|+|P_ac|+|P_bc|<=m` and `alpha(S_a)+alpha(S_b)+alpha(S_c)<=m`; if the singleton layers are
+bipartite they contribute at most `2m`.  After anchoring a triangle, the only unbounded pieces not
+already controlled by `3m+O(1)` are the zero-trace remainder and genuinely non-bipartite triangle-free
+`C_4`-free singleton layers.  Each non-bipartite singleton layer has an induced shortest odd cycle, and
+these cycle cores are pairwise anti-complete across the singleton layers, so terminality caps the total
+chosen odd-core length by `m`.  The triangle-anchored residual is therefore a bounded odd-core attachment
+problem plus the zero-trace remainder.  In a triangle-free induced-`C_4`-free layer with shortest odd
+cycle `C`, every outside vertex has at most one neighbour on `C`; two neighbours would create a shorter
+odd cycle, except for distances one and two, which are excluded by triangle-freeness and induced-`C_4`
+freeness.  The pendant fibres over consecutive cycle vertices are anti-complete, so the only potentially
+large attachments are edges between nonadjacent pendant fibres and the iterated zero-trace remainder.
+More sharply, an edge between pendant fibres over `c_i,c_j` is possible only when one cyclic distance
+between `i` and `j` is exactly `3`; otherwise the edge and the two cycle arcs create a shorter odd cycle
+or a forbidden triangle/`C_4`.  The pendant quotient therefore has maximum degree two and fractional
+chromatic number at most `3`, so the first-core pendant fibres in one singleton layer have total size at
+most `3 alpha(layer)`, and across the three singleton layers at most `3m`.
 For the C4 branch, the augmented boundary rules give a direct shape cap: if
 `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and all other seven
 boundary types are cliques, so `|C_i|<=7m`.  Complementarily, `{3,1}` with a triangle boundary also gives

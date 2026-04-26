@@ -6341,6 +6341,99 @@ closure cannot be another finite boundary-type compression of the existing table
 a mod-`4` congruent-degree selector for this induced-`C_4`-free, `K_4`-free class, or import genuinely
 global target-stability/maximal-witness information from the exact-basis construction.
 
+Inside that remaining complement class there is still a useful triangle-anchor decomposition.  Let
+`abc` be a triangle in `H`, and for every outside vertex `v` put
+
+```text
+tr(v)=N_H(v) cap {a,b,c}.
+```
+
+No outside trace has size three, since that would form a `K_4` with `abc`.  If two vertices have
+incomparable nonempty traces `A` and `B`, then they are nonadjacent: an edge between them, together with
+any `a in A\B` and `b in B\A`, induces the forbidden four-cycle
+`v-a-b-w-v`.  Thus edges between nonzero trace classes can occur only along inclusions in the Boolean
+poset on `{a,b,c}`.  In particular:
+
+```text
+P_ab, P_ac, P_bc  (the two-neighbour classes) are independent;
+S_a, S_b, S_c     (the singleton-neighbour classes) are pairwise anti-complete;
+S_a anti-joins P_bc, and cyclically.
+```
+
+Each singleton class `S_a` is itself triangle-free, because any triangle inside it would form a `K_4`
+with the anchor `a`; it is also induced-`C_4`-free by heredity.  Hence the non-bipartite part of the
+remaining residual can be peeled by anchored triangles into independent two-neighbour layers, three
+pairwise anti-complete triangle-free/`C_4`-free singleton layers, and the zero-trace remainder.
+
+The decomposition already carries two quantitative budgets.  The three two-neighbour classes are
+pairwise anti-complete and each is independent, so
+
+```text
+|P_ab|+|P_ac|+|P_bc| <= alpha(H) <= m.
+```
+
+Likewise, because `S_a,S_b,S_c` are pairwise anti-complete, independent sets chosen in the three
+singleton layers may be united; hence
+
+```text
+alpha(S_a)+alpha(S_b)+alpha(S_c) <= m.
+```
+
+If the singleton layers are bipartite, they contribute at most `2m` in total.  Thus after anchoring a
+triangle, the only unbounded pieces not already controlled by `3m+O(1)` are the zero-trace remainder and
+the genuinely non-bipartite triangle-free, `C_4`-free singleton layers.  This is the reduced selector
+target inside the `{0,1}`/`{3,2}` complement branch.
+
+There is one more terminal budget on those non-bipartite singleton layers.  In a triangle-free,
+induced-`C_4`-free layer, every shortest odd cycle is induced.  Since the three singleton layers are
+pairwise anti-complete, the union of one such odd cycle from each non-bipartite singleton layer is an
+induced `2`-regular subgraph of `H`.  Therefore terminality gives
+
+```text
+sum length(C_a) <= m
+```
+
+over the chosen odd-cycle cores of the non-bipartite singleton layers; otherwise the same vertex set
+complements back to a mod-`4` congruent outside-only set larger than `m`.  Thus the remaining
+triangle-anchored task is now a bounded odd-core attachment problem in triangle-free, `C_4`-free layers,
+plus the zero-trace remainder.
+
+The attachment problem has its own normal form.  Let `F` be one of the triangle-free, induced-`C_4`-free
+singleton layers, and let `C` be a shortest odd cycle of `F`.  Then `C` is induced, and every vertex
+outside `C` has at most one neighbour on `C`.  Indeed, if an outside vertex sees two cycle vertices whose
+shorter cyclic distance is `d`, then the two cycles through the outside vertex have lengths `d+2` and
+`|C|-d+2`; one is an odd cycle shorter than `C` unless `d=1` or `2`, which are excluded by
+triangle-freeness and induced-`C_4`-freeness.  Consequently the nonzero trace classes
+
+```text
+N_i={v outside C: N_C(v)={c_i}}
+```
+
+are independent, and adjacent trace classes `N_i,N_{i+1}` are anti-complete; otherwise
+`v-c_i-c_{i+1}-w-v` is an induced `C_4`.  The zero-trace remainder is again triangle-free and
+induced-`C_4`-free.  Thus every non-bipartite singleton layer peels to a shortest odd core of total
+length budget at most `m`, independent pendant fibres on the core, and a smaller zero-trace layer.  The
+only attachment edges still capable of carrying superlinear mass are between nonadjacent pendant fibres
+of such odd cores; adjacent fibres and the core itself are already controlled by degree-two selectors and
+independent-set bounds.
+
+In fact most nonadjacent fibre pairs are forbidden as well.  If `v in N_i` and `w in N_j` are adjacent,
+and the shorter cyclic distance between `c_i` and `c_j` is `d`, then the edge `vw` and the two arcs of
+`C` give cycles of lengths `d+3` and `|C|-d+3`.  Since `C` is a shortest odd cycle, this is possible only
+when one of the two cyclic distances is exactly `3` (for `|C|=5`, this is the same as distance `2` in
+the opposite direction).  Therefore pendant-fibre edges live on the quotient graph
+
+```text
+i ~ j        iff        j=i+3 or i-3  on the cycle C.
+```
+
+This quotient has maximum degree two and fractional chromatic number at most `3`.  Because every
+independent set of quotient positions gives an independent set in `F`, the total size of the nonzero
+pendant fibres around the first odd core of a singleton layer is at most `3 alpha(F)`.  Summed over the
+three pairwise anti-complete singleton layers of the triangle-anchor decomposition, these first-core
+pendant fibres contribute at most `3m`.  The residual after removing them is again the iterated
+zero-trace triangle-free, induced-`C_4`-free problem.
+
 Second, the augmented boundary rules already give a `7m` cap for one C4-branch boundary shape.  If
 `Rep(g_i)` contains `{0,2}` and the boundary triple `X_i` is independent, then type `000` is forbidden by
 the repaired residue `0` `3+1` atom.  For every other boundary type, either some boundary pair has type
