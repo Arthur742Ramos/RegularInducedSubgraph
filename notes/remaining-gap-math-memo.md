@@ -2141,6 +2141,9 @@ Its cross-degrees are constant modulo `4` inside each atom, since
 The full all-edge carrier closes iff `r_G-S_G` is constant over the four atoms, where `r_G` is the internal
 atom residue and `S_G` is the incident corner-sign sum; otherwise only a finite signed-`K_4` scalar
 obstruction remains.
+With `r_G=2t_G`, closure is the sign-graph degree equation `d_G==2t_G-lambda mod 4`: empty/C4/matching/K4
+when all atoms have the same type, majority K3 or minority-centered star when the split is `1/3`, and no
+full-carrier closure for a `2/2` type split.
 Shortened-pair-hit petals obey the same finite omission table: `q=2` is tight only with one omission per hit
 atom, and `q=3` needs a singleton hit in a size-three/larger target to supply the extra omission.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has

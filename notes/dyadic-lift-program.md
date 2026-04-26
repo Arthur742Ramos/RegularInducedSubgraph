@@ -1220,6 +1220,9 @@ The Latin design is cross-residue-flat modulo `4`: vertex-dependent omissions al
 multiple of `4`, leaving only atom-internal residues or four-atom quotient signs as scalar data.
 With internal atom residue `r_G` and incident sign sum `S_G`, the twelve-vertex carrier closes exactly when
 `r_G-S_G` is constant; otherwise the all-edge branch is a finite signed-`K_4` scalar obstruction.
+Equivalently, with `r_G=2t_G`, the sign graph must have degrees `d_G==2t_G-lambda mod 4`.  The closing
+degree patterns are empty/C4/matching/K4 for `k=0,4`, majority-type K3 or minority-centered star for
+`k=1,3`, and no full-carrier closure for `k=2`.
 Shortened-pair-hit petals obey strict cross-defect: if the lift uses `q=2,3` source vertices and hits `r`
 other atoms, then `delta_other>=r` or `r+1`, respectively.
 Consequently `q=2` is tight only with one omission per hit atom, while `q=3` forces a singleton hit in a

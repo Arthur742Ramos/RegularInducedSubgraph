@@ -2632,6 +2632,9 @@ Recommended attack:
     Add the quotient scalar equation for the full all-edge carrier: with internal residue `r_G` and incident
     sign sum `S_G`, atom `G` has total residue `r_G-S_G`; if these four residues are constant the carrier is
     a selector, otherwise the residual is a finite signed-`K_4` scalar obstruction.
+    Formalize the signed-`K_4` closure classification: writing `r_G=2t_G`, closure with residue `lambda`
+    is exactly `d_G==2t_G-lambda mod 4`; this yields empty/C4/matching/K4 for `k=0,4`, majority K3 or
+    minority-centered star for `k=1,3`, and no full-carrier closure for `k=2`.
     Add shortened-pair-hit strict defect: a forced petal using `q=2,3` source vertices and hitting `r` other
     atoms has `delta_other>=r` or `r+1`, respectively; remaining petals compensate those omissions.
     Record the small-profile hit table: `q=2` tight means exactly one omission in every hit atom; `q=3`

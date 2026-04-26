@@ -5582,6 +5582,10 @@ the size-three atoms or their four-atom quotient signs.
 Writing `r_G` for the internal residue of atom `G` and `S_G=sum_{H!=G}s_{GH}` for incident corner signs, the
 full twelve-vertex carrier is a selector iff `r_G-S_G` is constant on the four atoms.  Otherwise the endpoint
 is a finite signed-`K_4` scalar obstruction.
+With `r_G=2t_G`, this closure condition is the exact degree-sequence equation
+`d_G==2t_G-lambda mod 4` for the sign graph.  Thus the closing sign graphs are explicitly:
+for `k=0,4` triangular atoms, empty/C4/matching/K4; for `k=1,3`, the K3 on the majority type or the star
+centered at the minority type; for `k=2`, none.
 If a forced petal hits the shortened pair and lifts with `q=2` or `3` source vertices while hitting `r` other
 atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+1` for `q=3`; the remaining
 petals must compensate those omissions.

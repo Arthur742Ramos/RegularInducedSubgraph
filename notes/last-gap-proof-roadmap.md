@@ -2092,7 +2092,9 @@ What remains justified after audit is:
       transpose test excludes triangle phase in a genuine all-ternary cycle; after unit-edge discharge, this
       becomes a half-edge Latin `K_{2,2}` design with one omitted row and column on each atom-pair, whose
       cross-degrees are constant modulo `4` inside each atom; the full carrier closes exactly when
-      `r_G-S_G` is constant, otherwise leaving only a finite signed-`K_4` scalar obstruction;
+      `r_G-S_G` is constant, otherwise leaving only a finite signed-`K_4` scalar obstruction; its closing
+      sign graphs are empty/C4/matching/K4 in uniform type, majority K3 or minority star in `1/3` type, and
+      none in `2/2` type;
       shortened-pair-hit petals have a finite omission table: `q=2` is one-omission-per-hit tight, while
       `q=3` forces a singleton hit in a size-three/larger target;
       shortened-pair-hit petals satisfy strict cross-defect `delta_other>=r` or `r+1` according as they use

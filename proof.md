@@ -12865,6 +12865,42 @@ r_G - S_G is nonconstant on the four atoms
 
 holds.  This is now a scalar signed-`K_4` obstruction, not a ternary collision-code obstruction.
 
+The signed quotient is itself completely explicit.  A size-three selector atom is either empty or a triangle;
+write
+
+```text
+r_G=2t_G,        t_G in {0,1},
+```
+
+and let `d_G=S_G` be the degree of `G` in the sign graph whose edges are the pairs with `s_{GH}=1`.
+The full carrier has residue `lambda` precisely when
+
+```text
+d_G == 2t_G-lambda        [MOD 4]        for every G.
+```
+
+Since `0<=d_G<=3`, this means that the sign graph degree sequence is one of the following finite closure
+patterns:
+
+```text
+lambda=0:  d_G=0 on empty atoms,      d_G=2 on triangle atoms;
+lambda=1:  d_G=3 on empty atoms,      d_G=1 on triangle atoms;
+lambda=2:  d_G=2 on empty atoms,      d_G=0 on triangle atoms;
+lambda=3:  d_G=1 on empty atoms,      d_G=3 on triangle atoms.
+```
+
+Equivalently, by the number `k` of triangular atoms, the closing sign graphs are:
+
+```text
+k=0:  empty graph, 2-regular graph, perfect matching, or K4;
+k=1:  K3 on the empty atoms, or the star centered at the triangular atom;
+k=2:  none;
+k=3:  K3 on the triangular atoms, or the star centered at the empty atom;
+k=4:  empty graph, 2-regular graph, perfect matching, or K4.
+```
+
+All other signed quotients are exactly the nonconstant `r_G-S_G` scalar obstruction.
+
 If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
 cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
 source atom `G` (`q=2` or `3`) and hitting `r` other packed atoms.  Since this full lift crosses atoms,
