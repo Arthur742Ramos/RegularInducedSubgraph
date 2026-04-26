@@ -26316,6 +26316,563 @@ theorem RamseyTenR45UnifiedFinalConsumerImport.toCurrentFrontierPublicFacade_toF
       h.toFinalNumericalConsequences := by
   exact Subsingleton.elim _ _
 
+/--
+Proof-md-facing public import facade for the current Ramsey/R45 frontier.  This is a compact
+downstream handoff collecting the public facade, theorem-only summaries, target rows, exact-`42`
+normalization route, and local-ledger/top-row witnesses in one graph-indexed object.  The
+`R(4,5) <= 27` row is just the localized endpoint-certificate input already exported by the
+current-frontier facade.
+-/
+structure RamseyTenR45CurrentFrontierProofMdImport
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  publicFacade : RamseyTenR45CurrentFrontierPublicFacade G s v
+  normalizationRoute : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  currentFrontier : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  unifiedFinalConsumerImport : RamseyTenR45UnifiedFinalConsumerImport G s v
+  unifiedFinalConsequenceSurface : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  finalConsumerSurface : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  topRowReady : RamseyThreeTenExact42TopRowReadyCertificate G s v
+  topRowDownstreamImport : RamseyTenR45TopRowDownstreamImport G s v
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960Row :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+
+/-- Public facades materialize the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierPublicFacade.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierPublicFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v where
+  publicFacade := h
+  normalizationRoute := h.toCurrentFrontierNormalizationRoute
+  currentFrontier := h.toCurrentFrontierConsumerSurface
+  theoremChecklist := h.toCurrentFrontierTheoremChecklist
+  targetRows := h.toCurrentFrontierTargetRows
+  numericalConsequences := h.toFinalNumericalConsequences
+  unifiedFinalConsumerImport := h.toUnifiedFinalConsumerImport
+  unifiedFinalConsequenceSurface := h.toUnifiedFinalConsequenceSurface
+  finalDownstreamImport := h.toFinalDownstreamImport
+  finalConsumerSurface := h.toFinalConsumerSurface
+  consumerNormalization := h.toConsumerNormalization
+  topRowFinalImport := h.toTopRowFinalImport
+  topRowReady := h.topRowReady
+  topRowDownstreamImport := h.topRowDownstreamImport
+  endpointResiduals := h.toEndpointResiduals
+  exact42Status := h.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile := h.toExact42ProfileSurface
+  exact42WithMiddleSplits := h.exact42WithMiddleSplits
+  localLedgers := h.toLocalLedgerBundle
+  topRowProfile := h.topRowProfile
+  topRowCommonSum := h.topRowCommonSum
+  topRowCountProfile := h.topRowCountProfile
+  exact42Row := h.toThreeTenFortyTwo
+  localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960Row := fun H hcard =>
+    h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+  admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Row := h.toTenLeF_40960
+
+/-- Normalization routes materialize the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierNormalizationRoute.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierNormalizationRoute G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toCurrentFrontierPublicFacade.toProofMdImport
+
+/-- Current-frontier consumer surfaces materialize the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toCurrentFrontierPublicFacade.toProofMdImport
+
+/-- Final-consumer imports materialize the proof-md import surface. -/
+theorem RamseyTenR45UnifiedFinalConsumerImport.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toCurrentFrontierPublicFacade.toProofMdImport
+
+/-- Unified final consequence surfaces materialize the proof-md import surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toCurrentFrontierPublicFacade.toProofMdImport
+
+/-- Final downstream imports materialize the proof-md import surface. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toCurrentFrontierPublicFacade.toProofMdImport
+
+/-- Compact final consumers materialize the proof-md import surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toCurrentFrontierPublicFacade.toProofMdImport
+
+/-- Consumer-normalized routes materialize the proof-md import surface. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toCurrentFrontierPublicFacade.toProofMdImport
+
+/-- Exact-`42` top-row final imports materialize the proof-md import surface. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toCurrentFrontierPublicFacade.toProofMdImport
+
+/-- Select the public facade from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toCurrentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierPublicFacade G s v :=
+  h.publicFacade
+
+/-- Select the normalization route from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.normalizationRoute
+
+/-- Select the current-frontier consumer surface from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.currentFrontier
+
+/-- Select the theorem checklist from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.theoremChecklist
+
+/-- Select target-facing rows from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select compact numerical consequences from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select the final-consumer import from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toUnifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.unifiedFinalConsumerImport
+
+/-- Select the unified final consequence surface from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.unifiedFinalConsequenceSurface
+
+/-- Select the exact-`42` top-row final import from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalImport
+
+/-- Select the final downstream import from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the compact final consumer surface from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  h.finalConsumerSurface
+
+/-- Select the consumer-normalized route from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.consumerNormalization
+
+/-- Select the ready top-row certificate from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.topRowReady
+
+/-- Select the top-row downstream import from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toTopRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.topRowDownstreamImport
+
+/-- Select endpoint residuals from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select profiled exact-`42` status from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the profiled exact-`42` surface from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toExact42ProfileSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select the exact-`42` profile with middle-degree split ledgers. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toExact42WithMiddleSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the local ledger bundle from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the top-row profile obligation from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the common-sum top-row obligation from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the count-profile top-row obligation from the proof-md import surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Proof-md route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Proof-md route to the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Proof-md route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Proof-md route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Proof-md route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Proof-md route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Flat constructor exposing the proof-md import from the public facade. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_currentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierPublicFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat constructor exposing the proof-md import from a normalization route. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_currentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierNormalizationRoute G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat constructor exposing the proof-md import from a current-frontier consumer surface. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat constructor exposing the proof-md import from a final-consumer import. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_unifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat constructor exposing the proof-md import from a unified final consequence surface. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat constructor exposing the proof-md import from a final downstream import. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_finalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat constructor exposing the proof-md import from a compact final consumer. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat constructor exposing the proof-md import from a consumer-normalized route. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat constructor exposing the proof-md import from an exact-`42` top-row final import. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat projection to the public facade from the proof-md import. -/
+theorem ramseyTenR45CurrentFrontierPublicFacade_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierPublicFacade G s v :=
+  h.toCurrentFrontierPublicFacade
+
+/-- Flat projection to normalization routes from the proof-md import. -/
+theorem ramseyTenR45CurrentFrontierNormalizationRoute_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.toCurrentFrontierNormalizationRoute
+
+/-- Flat projection to theorem checklists from the proof-md import. -/
+theorem ramseyTenR45CurrentFrontierTheoremChecklist_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.toCurrentFrontierTheoremChecklist
+
+/-- Flat projection to target rows from the proof-md import. -/
+theorem ramseyTenR45CurrentFrontierTargetRows_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.toCurrentFrontierTargetRows
+
+/-- Flat projection to compact numerical consequences from the proof-md import. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Proof-md route to the low-row exact-`42` theorem. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toThreeTenFortyTwo
+
+/-- Proof-md route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Proof-md route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Proof-md route to the regular induced `10`-subgraph theorem. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Proof-md route to the admissible-bound conclusion. -/
+theorem ten_mem_admissibleBounds_40960_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.toTenMemAdmissibleBounds_40960
+
+/-- Proof-md route to the extremal-function lower bound. -/
+theorem ten_le_F_40960_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    10 ≤ F 40960 :=
+  h.toTenLeF_40960
+
+/-- Public facades round-trip through the proof-md import on target rows. -/
+theorem RamseyTenR45CurrentFrontierPublicFacade.toProofMdImport_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierPublicFacade G s v) :
+    h.toProofMdImport.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Normalization routes round-trip through the proof-md import on the normalization route. -/
+theorem
+    RamseyTenR45CurrentFrontierNormalizationRoute.toProofMdImport_toCurrentFrontierNormalizationRoute_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierNormalizationRoute G s v) :
+    h.toProofMdImport.toCurrentFrontierNormalizationRoute = h := by
+  exact Subsingleton.elim _ _
+
+/-- Proof-md imports round-trip through the public facade on numerical consequences. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toCurrentFrontierPublicFacade_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    h.toCurrentFrontierPublicFacade.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
