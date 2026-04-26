@@ -4810,6 +4810,48 @@ theorem boundaryTripleType_large_fiber_forces_type_or_large_other
   omega
 
 /--
+Finite-color cap: if every color fiber inside `S` has size at most `m`, then `S` has size at
+most the number of colors times `m`.
+-/
+theorem finset_card_le_fintype_card_mul_of_fiber_bound
+    {α β : Type*} [Fintype β] [DecidableEq β]
+    (S : Finset α) (color : α → β) {m : ℕ}
+    (hsmall : ∀ c : β, (S.filter fun x => color x = c).card ≤ m) :
+    S.card ≤ Fintype.card β * m := by
+  classical
+  have hmaps : (S : Set α).MapsTo color (Finset.univ : Finset β) := by
+    intro x hx
+    simp
+  have hcard :
+      S.card = ∑ c in (Finset.univ : Finset β), (S.filter fun x => color x = c).card := by
+    simpa using
+      (Finset.card_eq_sum_card_fiberwise (f := color) (s := S)
+        (t := (Finset.univ : Finset β)) hmaps)
+  have hsum_le :
+      (∑ c in (Finset.univ : Finset β), (S.filter fun x => color x = c).card) ≤
+        ∑ _c in (Finset.univ : Finset β), m := by
+    exact Finset.sum_le_sum (fun c _hc => hsmall c)
+  have hconst :
+      (∑ _c in (Finset.univ : Finset β), m) =
+        (Finset.univ : Finset β).card * m := by
+    simpa using
+      (Finset.sum_const_nat (s := (Finset.univ : Finset β)) (m := m)
+        (f := fun _ : β => m) (by intro c hc; rfl))
+  calc
+    S.card = ∑ c in (Finset.univ : Finset β), (S.filter fun x => color x = c).card := hcard
+    _ ≤ ∑ _c in (Finset.univ : Finset β), m := hsum_le
+    _ = (Finset.univ : Finset β).card * m := hconst
+    _ = Fintype.card β * m := by rw [Finset.card_univ]
+
+/-- Six-color specialization of the finite-color cap. -/
+theorem finset_card_le_six_mul_of_fin_six_fiber_bound
+    {α : Type*} (S : Finset α) (color : α → Fin 6) {m : ℕ}
+    (hsmall : ∀ c : Fin 6, (S.filter fun x => color x = c).card ≤ m) :
+    S.card ≤ 6 * m := by
+  simpa using
+    (finset_card_le_fintype_card_mul_of_fiber_bound (β := Fin 6) S color hsmall)
+
+/--
 General finite support cap for boundary-type decompositions: if only `k` boundary types are
 realized and every realized type fiber has size at most `m`, then the whole packet has size at
 most `k * m`.
@@ -5082,6 +5124,18 @@ theorem droppedTailSubbucket_of_large_independent_boundary_type_fiber
       modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
         (G := G) huS hhost huMod⟩
 
+/-- A realized boundary-type fiber is complete inside the host packet. -/
+def BoundaryTypeFiberComplete
+    {n : ℕ} (G : SimpleGraph (Fin n)) (S : Finset (Fin n)) (τ : Fin n → Fin 8)
+    (t : Fin 8) : Prop :=
+  ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → G.Adj x y
+
+/-- A realized boundary-type fiber is independent inside the host packet. -/
+def BoundaryTypeFiberIndependent
+    {n : ℕ} (G : SimpleGraph (Fin n)) (S : Finset (Fin n)) (τ : Fin n → Fin 8)
+    (t : Fin 8) : Prop :=
+  ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → ¬ G.Adj x y
+
 /--
 Selector-facing support-size-six parity-compression branch: if one even and one odd boundary type are
 missing and every realized type fiber is already homogeneous, the large packet closes through the
@@ -5112,6 +5166,40 @@ theorem boundaryTripleType_missing_each_parity_fromSeven_droppedTail_closed_of_h
   · exact
       droppedTailSubbucket_of_large_independent_boundary_type_fiber
         (G := G) (j := j) (S := S) τ hmod hlarge hindependent
+
+/--
+Nonhomogeneous residual form of the parity-compression branch.  Without the homogeneous-fiber
+hypothesis, the same six-type pigeonhole either closes the dropped-tail selector or isolates one
+large realized type fiber which is neither complete nor independent.
+-/
+theorem boundaryTripleType_missing_each_parity_fromSeven_droppedTail_closed_or_large_nonhomogeneous_fiber
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card)
+    (hmod : InducesModEqDegree G S (2 ^ j))
+    (heven : ∃ e : Fin 8, e ∉ S.image τ ∧ boundaryTripleParity e = 0)
+    (hodd : ∃ o : Fin 8, o ∉ S.image τ ∧ boundaryTripleParity o = 1) :
+    (∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j]) ∨
+      ∃ t : Fin 8, t ∈ S.image τ ∧
+        2 ^ j < (S.filter fun x => τ x = t).card ∧
+          ¬ BoundaryTypeFiberComplete G S τ t ∧
+            ¬ BoundaryTypeFiberIndependent G S τ t := by
+  classical
+  rcases
+    boundaryTripleType_missing_each_parity_fromSeven_forces_large_realized_type
+      S τ hj hS heven hodd with
+    ⟨t, ht, hlarge⟩
+  by_cases hcomplete : BoundaryTypeFiberComplete G S τ t
+  · exact Or.inl
+      (droppedTailSubbucket_of_large_complete_boundary_type_fiber
+        (G := G) (j := j) (S := S) τ hmod hlarge hcomplete)
+  · by_cases hindependent : BoundaryTypeFiberIndependent G S τ t
+    · exact Or.inl
+        (droppedTailSubbucket_of_large_independent_boundary_type_fiber
+          (G := G) (j := j) (S := S) τ hmod hlarge hindependent)
+    · exact Or.inr ⟨t, ht, hlarge, hcomplete, hindependent⟩
 
 /--
 Independent-boundary `{0,2}` branch closure at the `j ≥ 7` modular-selector scale: if the
@@ -5362,6 +5450,109 @@ theorem sparseOneThreeTriangleBoundary_fromSeven_droppedTail_closed_of_forbidden
   exact
     sparseOneThreeTriangleBoundary_fromSeven_droppedTail_closed_of_no_sevenType_and_independent_fibers
       G τ hj hS hmod hsevenType hindependent
+
+/-- Clique-size bound for all finite subsets of a host packet. -/
+def HasCliqueBoundOn {V : Type*} (G : SimpleGraph V) (S : Finset V) (m : ℕ) : Prop :=
+  ∀ C : Finset V, C ⊆ S → G.IsClique (C : Set V) → C.card ≤ m
+
+/-- Independence-size bound for all finite subsets of a host packet. -/
+def HasIndependenceBoundOn {V : Type*} (G : SimpleGraph V) (S : Finset V) (m : ℕ) : Prop :=
+  ∀ I : Finset V, I ⊆ S → G.IsIndepSet (I : Set V) → I.card ≤ m
+
+/-- No induced `2K₂` occurs inside the host packet. -/
+def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
+    a ≠ b → a ≠ c → a ≠ d → b ≠ c → b ≠ d → c ≠ d →
+      G.Adj a b → G.Adj c d →
+        ¬ G.Adj a c → ¬ G.Adj a d → ¬ G.Adj b c → ¬ G.Adj b d → False
+
+/--
+External import surface for Wagon's chromatic theorem on `2K₂`-free graphs, localized to the finite
+host packet used by the terminal top-edge residual.  It gives a proper coloring of the induced packet
+using `choose (ω + 1) 2` colors under an `ω`-clique bound.
+-/
+def HasWagonTwoKTwoFreeChromaticBound : Prop :=
+  ∀ {n ω : ℕ} (H : SimpleGraph (Fin n)) {B : Finset (Fin n)},
+    IsTwoKTwoFreeOn H B →
+      HasCliqueBoundOn H B ω →
+        ∃ color : Fin n → Fin (Nat.choose (ω + 1) 2),
+          ∀ r : Fin (Nat.choose (ω + 1) 2),
+            H.IsIndepSet ((B.filter fun v => color v = r) : Set (Fin n))
+
+/--
+Top-edge all-hit residual cap under a Wagon-style `2K₂`-free chromatic import.  In the documented
+`111`--`110` branch, this is the complemented all-hit side: `ω ≤ 3` gives six colors, and the
+independence bound `m` bounds each color class.
+-/
+theorem topEdge_allHit_card_le_six_mul_of_wagon_twoKTwoFree_chromatic_bound
+    (hWagon : HasWagonTwoKTwoFreeChromaticBound)
+    {n m : ℕ} (H : SimpleGraph (Fin n)) {B : Finset (Fin n)}
+    (h2K2 : IsTwoKTwoFreeOn H B)
+    (homega : HasCliqueBoundOn H B 3)
+    (halpha : HasIndependenceBoundOn H B m) :
+    B.card ≤ 6 * m := by
+  rcases hWagon (ω := 3) H h2K2 homega with ⟨color, hcolorIndep⟩
+  have hsmall :
+      ∀ r : Fin (Nat.choose (3 + 1) 2), (B.filter fun v => color v = r).card ≤ m := by
+    intro r
+    exact
+      halpha (B.filter fun v => color v = r)
+        (by intro v hv; exact (Finset.mem_filter.mp hv).1)
+        (hcolorIndep r)
+  simpa using
+    (finset_card_le_fintype_card_mul_of_fiber_bound B color hsmall)
+
+/--
+Top-edge incidence cap when the lower type supplies an independent pair.  If the two neighbourhoods
+in the all-hit side and their common non-neighbour remainder are each `m`-bounded, then the all-hit
+side is `3m`-bounded.
+-/
+theorem topEdge_allHit_card_le_three_mul_of_lower_independent_pair_cover
+    {n m : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    (a₁ a₂ : Fin n) (B : Finset (Fin n))
+    (hN₁ : (B.filter fun b => G.Adj a₁ b).card ≤ m)
+    (hN₂ : (B.filter fun b => G.Adj a₂ b).card ≤ m)
+    (hRest : (B.filter fun b => ¬ G.Adj a₁ b ∧ ¬ G.Adj a₂ b).card ≤ m) :
+    B.card ≤ 3 * m := by
+  classical
+  let color : Fin n → Fin 3 := fun b =>
+    if G.Adj a₁ b then (0 : Fin 3) else if G.Adj a₂ b then (1 : Fin 3) else (2 : Fin 3)
+  have hsmall : ∀ c : Fin 3, (B.filter fun b => color b = c).card ≤ m := by
+    intro c
+    fin_cases c
+    · exact le_trans (Finset.card_le_card (by
+        intro b hb
+        have hbB : b ∈ B := (Finset.mem_filter.mp hb).1
+        have hcolor : color b = (0 : Fin 3) := (Finset.mem_filter.mp hb).2
+        have ha₁ : G.Adj a₁ b := by
+          by_contra hnot₁
+          by_cases h₂ : G.Adj a₂ b
+          · simp [color, hnot₁, h₂] at hcolor
+          · simp [color, hnot₁, h₂] at hcolor
+        exact Finset.mem_filter.mpr ⟨hbB, ha₁⟩)) hN₁
+    · exact le_trans (Finset.card_le_card (by
+        intro b hb
+        have hbB : b ∈ B := (Finset.mem_filter.mp hb).1
+        have hcolor : color b = (1 : Fin 3) := (Finset.mem_filter.mp hb).2
+        have ha₂ : G.Adj a₂ b := by
+          by_contra hnot₂
+          by_cases h₁ : G.Adj a₁ b
+          · simp [color, h₁] at hcolor
+          · simp [color, h₁, hnot₂] at hcolor
+        exact Finset.mem_filter.mpr ⟨hbB, ha₂⟩)) hN₂
+    · exact le_trans (Finset.card_le_card (by
+        intro b hb
+        have hbB : b ∈ B := (Finset.mem_filter.mp hb).1
+        have hcolor : color b = (2 : Fin 3) := (Finset.mem_filter.mp hb).2
+        have hnot₁ : ¬ G.Adj a₁ b := by
+          by_contra h₁
+          simp [color, h₁] at hcolor
+        have hnot₂ : ¬ G.Adj a₂ b := by
+          by_contra h₂
+          simp [color, hnot₁, h₂] at hcolor
+        exact Finset.mem_filter.mpr ⟨hbB, hnot₁, hnot₂⟩)) hRest
+  simpa using
+    (finset_card_le_fintype_card_mul_of_fiber_bound (β := Fin 3) B color hsmall)
 
 /-- Full-spectrum corollary of the same-type `2+2` rule. -/
 theorem augmentedTwoTwoSameType_forces_opposite_of_fullSpectrum_forbidden
