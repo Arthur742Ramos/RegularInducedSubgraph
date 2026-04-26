@@ -26873,6 +26873,399 @@ theorem RamseyTenR45CurrentFrontierProofMdImport.toCurrentFrontierPublicFacade_t
       h.toFinalNumericalConsequences := by
   exact Subsingleton.elim _ _
 
+/--
+Proof-md normalization checklist for downstream imports that want one object carrying both
+the proof-md public facade and the normalized exact-`42`/top-row/local-ledger routes.  The
+`R(4,5) <= 27` row is the localized endpoint-certificate field already exported by the
+proof-md surface; this checklist adds no new global Ramsey assumption.
+-/
+structure RamseyTenR45CurrentFrontierProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  publicFacade : RamseyTenR45CurrentFrontierPublicFacade G s v
+  normalizationRoute : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  currentFrontier : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  unifiedFinalConsumerImport : RamseyTenR45UnifiedFinalConsumerImport G s v
+  unifiedFinalConsequenceSurface : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  finalConsumerSurface : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  topRowReady : RamseyThreeTenExact42TopRowReadyCertificate G s v
+  topRowDownstreamImport : RamseyTenR45TopRowDownstreamImport G s v
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960Row :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+
+/-- Proof-md imports materialize the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v where
+  proofMdImport := h
+  publicFacade := h.toCurrentFrontierPublicFacade
+  normalizationRoute := h.toCurrentFrontierNormalizationRoute
+  currentFrontier := h.toCurrentFrontierConsumerSurface
+  theoremChecklist := h.toCurrentFrontierTheoremChecklist
+  targetRows := h.toCurrentFrontierTargetRows
+  numericalConsequences := h.toFinalNumericalConsequences
+  unifiedFinalConsumerImport := h.toUnifiedFinalConsumerImport
+  unifiedFinalConsequenceSurface := h.toUnifiedFinalConsequenceSurface
+  finalDownstreamImport := h.toFinalDownstreamImport
+  finalConsumerSurface := h.toFinalConsumerSurface
+  consumerNormalization := h.toConsumerNormalization
+  topRowFinalImport := h.toTopRowFinalImport
+  topRowReady := h.toTopRowReadyCertificate
+  topRowDownstreamImport := h.toTopRowDownstreamImport
+  endpointResiduals := h.toEndpointResiduals
+  exact42Status := h.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile := h.toExact42ProfileSurface
+  exact42WithMiddleSplits := h.toExact42WithMiddleSplits
+  localLedgers := h.toLocalLedgerBundle
+  topRowProfile := h.toTopRowProfile
+  topRowCommonSum := h.toCommonSum
+  topRowCountProfile := h.toCountProfile
+  exact42Row := h.toThreeTenFortyTwo
+  localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960Row := fun H hcard =>
+    h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+  admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Row := h.toTenLeF_40960
+
+/-- Public facades materialize the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierPublicFacade.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierPublicFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.toProofMdImport.toProofMdNormalizationChecklist
+
+/-- Normalization routes materialize the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierNormalizationRoute.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierNormalizationRoute G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.toProofMdImport.toProofMdNormalizationChecklist
+
+/-- Current-frontier consumer surfaces materialize the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.toProofMdImport.toProofMdNormalizationChecklist
+
+/-- Select the proof-md import from the normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.proofMdImport
+
+/-- Select the public facade from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toCurrentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45CurrentFrontierPublicFacade G s v :=
+  h.publicFacade
+
+/-- Select the normalization route from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.normalizationRoute
+
+/-- Select the theorem checklist from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.theoremChecklist
+
+/-- Select target-facing rows from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select compact numerical consequences from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select the final-consumer import from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toUnifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.unifiedFinalConsumerImport
+
+/-- Select the final downstream import from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the consumer-normalized route from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.consumerNormalization
+
+/-- Select the exact-`42` top-row final import from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalImport
+
+/-- Select the ready top-row certificate from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.topRowReady
+
+/-- Select the top-row downstream import from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toTopRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.topRowDownstreamImport
+
+/-- Select endpoint residuals from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select profiled exact-`42` status from the proof-md normalization checklist. -/
+theorem
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the exact-`42` profile with middle-degree split ledgers. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toExact42WithMiddleSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the local ledger bundle from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the top-row profile obligation from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the common-sum top-row obligation from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the count-profile top-row obligation from the proof-md normalization checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Proof-md normalization-checklist route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Proof-md normalization-checklist route to the localized `R(4,5) <= 27` input. -/
+theorem
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Proof-md normalization-checklist route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Proof-md normalization-checklist route to the regular induced `10`-subgraph theorem. -/
+theorem
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Proof-md normalization-checklist route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Proof-md normalization-checklist route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Flat constructor exposing the proof-md normalization checklist from a proof-md import. -/
+theorem ramseyTenR45CurrentFrontierProofMdNormalizationChecklist_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.toProofMdNormalizationChecklist
+
+/-- Flat projection to the proof-md import from its normalization checklist. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_proofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat projection to target rows from the proof-md normalization checklist. -/
+theorem ramseyTenR45CurrentFrontierTargetRows_of_proofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.toCurrentFrontierTargetRows
+
+/-- Flat projection to local ledgers from the proof-md normalization checklist. -/
+theorem ramseyTenR45MiddleDegreeLocalLedgerBundle_of_proofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.toLocalLedgerBundle
+
+/-- Proof-md normalization-checklist route to the low-row exact-`42` theorem. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_proofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toThreeTenFortyTwo
+
+/-- Proof-md normalization-checklist route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_proofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Proof-md normalization-checklist route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_proofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Proof-md imports round-trip through the normalization checklist on target rows. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toProofMdNormalizationChecklist_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    h.toProofMdNormalizationChecklist.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Proof-md normalization checklists round-trip through the proof-md import on local ledgers. -/
+theorem
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toProofMdImport_toLocalLedgerBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    h.toProofMdImport.toLocalLedgerBundle = h.toLocalLedgerBundle := by
+  exact Subsingleton.elim _ _
+
+/-- Proof-md normalization checklists round-trip through target rows on numerical consequences. -/
+theorem
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toCurrentFrontierTargetRows_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    h.toCurrentFrontierTargetRows.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
