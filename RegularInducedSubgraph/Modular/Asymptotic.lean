@@ -17475,6 +17475,885 @@ theorem
     h.packetAtomImports.to_packetAtomFrontier h.atomPacketRepairFrontierCert
     h.packetAtomImports.to_shadowFrontier
 
+/--
+An affine profile subset-sum target: some retained subprofile has total residue equal to the target
+modulo four.
+-/
+def FirstBitTerminalAffineProfileSubsetSumTarget
+    {Profile : Type*} (profiles : Finset Profile) (profileResidue : Profile → ℕ)
+    (targetResidue : ℕ) : Prop :=
+  ∃ chosen : Finset Profile, chosen ⊆ profiles ∧
+    (∑ profile in chosen, profileResidue profile) ≡ targetResidue [MOD 4]
+
+/-- A family of target residues is avoided by all affine profile subset sums. -/
+def FirstBitTerminalAffineProfileTargetsAvoided
+    {Profile Target : Type*} (profiles : Finset Profile) (profileResidue : Profile → ℕ)
+    (forbiddenTargets : Finset Target) (targetResidue : Target → ℕ) : Prop :=
+  ∀ target : Target, target ∈ forbiddenTargets →
+    ¬ FirstBitTerminalAffineProfileSubsetSumTarget profiles profileResidue
+      (targetResidue target)
+
+/--
+Compatibility between profile residues and the repaired pure quotient residuals coming from the
+atom-packet repair API.
+-/
+def FirstBitTerminalAffineProfileRepairCompatibility
+    {Profile Quot : Type*} (profiles : Finset Profile) (pureQuotients : Finset Quot)
+    (profileQuotient : Profile → Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot)
+    (profileResidue affineProfileShift : Profile → ℕ) : Prop :=
+  ∀ profile : Profile, profile ∈ profiles →
+    profileQuotient profile ∈ pureQuotients ∧
+      profileResidue profile ≡
+        residualVector.repairedResidual (profileQuotient profile) +
+          affineProfileShift profile [MOD 4]
+
+/--
+Certificate for affine profile target avoidance.  It records only imported facts: repaired quotient
+compatibility and the target-avoidance statement itself.
+-/
+structure FirstBitTerminalAffineProfileTargetAvoidanceCertificate
+    {Profile Quot Target : Type*} (profiles : Finset Profile) (pureQuotients : Finset Quot)
+    (profileQuotient : Profile → Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot)
+    (profileResidue affineProfileShift : Profile → ℕ)
+    (forbiddenTargets : Finset Target) (targetResidue : Target → ℕ) : Prop where
+  repairCompatibility :
+    FirstBitTerminalAffineProfileRepairCompatibility profiles pureQuotients profileQuotient
+      residualVector profileResidue affineProfileShift
+  targetAvoidance :
+    FirstBitTerminalAffineProfileTargetsAvoided profiles profileResidue forbiddenTargets
+      targetResidue
+
+/-- Build an affine profile target-avoidance certificate from its named imports. -/
+theorem firstBitTerminalAffineProfileTargetAvoidanceCertificate_of_assumptions
+    {Profile Quot Target : Type*} {profiles : Finset Profile} {pureQuotients : Finset Quot}
+    {profileQuotient : Profile → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {profileResidue affineProfileShift : Profile → ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue : Target → ℕ}
+    (hcompat :
+      FirstBitTerminalAffineProfileRepairCompatibility profiles pureQuotients profileQuotient
+        residualVector profileResidue affineProfileShift)
+    (havoid :
+      FirstBitTerminalAffineProfileTargetsAvoided profiles profileResidue forbiddenTargets
+        targetResidue) :
+    FirstBitTerminalAffineProfileTargetAvoidanceCertificate profiles pureQuotients
+      profileQuotient residualVector profileResidue affineProfileShift forbiddenTargets
+      targetResidue where
+  repairCompatibility := hcompat
+  targetAvoidance := havoid
+
+/-- Project quotient support for a profile from an affine target-avoidance certificate. -/
+theorem FirstBitTerminalAffineProfileTargetAvoidanceCertificate.profileQuotient_mem
+    {Profile Quot Target : Type*} {profiles : Finset Profile} {pureQuotients : Finset Quot}
+    {profileQuotient : Profile → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {profileResidue affineProfileShift : Profile → ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalAffineProfileTargetAvoidanceCertificate profiles pureQuotients
+        profileQuotient residualVector profileResidue affineProfileShift forbiddenTargets
+        targetResidue)
+    {profile : Profile} (hprofile : profile ∈ profiles) :
+    profileQuotient profile ∈ pureQuotients :=
+  (h.repairCompatibility profile hprofile).1
+
+/-- Project the repaired-residual affine profile equation. -/
+theorem FirstBitTerminalAffineProfileTargetAvoidanceCertificate.profileResidue_modEq
+    {Profile Quot Target : Type*} {profiles : Finset Profile} {pureQuotients : Finset Quot}
+    {profileQuotient : Profile → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {profileResidue affineProfileShift : Profile → ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalAffineProfileTargetAvoidanceCertificate profiles pureQuotients
+        profileQuotient residualVector profileResidue affineProfileShift forbiddenTargets
+        targetResidue)
+    {profile : Profile} (hprofile : profile ∈ profiles) :
+    profileResidue profile ≡
+      residualVector.repairedResidual (profileQuotient profile) + affineProfileShift profile
+        [MOD 4] :=
+  (h.repairCompatibility profile hprofile).2
+
+/-- Apply target avoidance from an affine profile certificate. -/
+theorem FirstBitTerminalAffineProfileTargetAvoidanceCertificate.not_subsetSum_target
+    {Profile Quot Target : Type*} {profiles : Finset Profile} {pureQuotients : Finset Quot}
+    {profileQuotient : Profile → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {profileResidue affineProfileShift : Profile → ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalAffineProfileTargetAvoidanceCertificate profiles pureQuotients
+        profileQuotient residualVector profileResidue affineProfileShift forbiddenTargets
+        targetResidue)
+    {target : Target} (htarget : target ∈ forbiddenTargets) :
+    ¬ FirstBitTerminalAffineProfileSubsetSumTarget profiles profileResidue
+      (targetResidue target) :=
+  h.targetAvoidance target htarget
+
+/-- Period support for an inverse-Kneser normal form of affine profiles. -/
+def FirstBitTerminalAffineProfileInverseKneserPeriodSupport
+    {Profile Period : Type*} (profiles : Finset Profile) (periods : Finset Period)
+    (periodOf : Profile → Period) : Prop :=
+  ∀ profile : Profile, profile ∈ profiles → periodOf profile ∈ periods
+
+/-- Closure of the profile packet under the imported period translations. -/
+def FirstBitTerminalAffineProfileInverseKneserPeriodClosure
+    {Profile Period : Type*} (profiles : Finset Profile) (periods : Finset Period)
+    (periodTranslate : Period → Profile → Profile) : Prop :=
+  ∀ profile : Profile, profile ∈ profiles → ∀ period : Period, period ∈ periods →
+    periodTranslate period profile ∈ profiles
+
+/-- Residue normal form of each affine profile modulo its inverse-Kneser period. -/
+def FirstBitTerminalAffineProfileInverseKneserPeriodUniform
+    {Profile Period : Type*} (profiles : Finset Profile) (periodOf : Profile → Period)
+    (profileResidue : Profile → ℕ) (periodResidue : Period → ℕ) (baseResidue : ℕ) :
+    Prop :=
+  ∀ profile : Profile, profile ∈ profiles →
+    profileResidue profile ≡ baseResidue + periodResidue (periodOf profile) [MOD 4]
+
+/-- Target residues written in the same inverse-Kneser normal form coordinates. -/
+def FirstBitTerminalAffineProfileInverseKneserTargetNormalForm
+    {Target : Type*} (forbiddenTargets : Finset Target)
+    (targetResidue normalizedTargetResidue : Target → ℕ) (baseResidue : ℕ) : Prop :=
+  ∀ target : Target, target ∈ forbiddenTargets →
+    targetResidue target ≡ baseResidue + normalizedTargetResidue target [MOD 4]
+
+/--
+Imported inverse-Kneser normal form certificate for affine profile target avoidance.  The period data
+is abstract: downstream selectors may instantiate it with a genuine stabilizer/period theorem.
+-/
+structure FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate
+    {Profile Period Target : Type*} (profiles : Finset Profile) (periods : Finset Period)
+    (periodOf : Profile → Period) (periodTranslate : Period → Profile → Profile)
+    (profileResidue : Profile → ℕ) (periodResidue : Period → ℕ) (baseResidue : ℕ)
+    (forbiddenTargets : Finset Target) (targetResidue normalizedTargetResidue : Target → ℕ) :
+    Prop where
+  periodSupport :
+    FirstBitTerminalAffineProfileInverseKneserPeriodSupport profiles periods periodOf
+  periodClosure :
+    FirstBitTerminalAffineProfileInverseKneserPeriodClosure profiles periods periodTranslate
+  periodUniform :
+    FirstBitTerminalAffineProfileInverseKneserPeriodUniform profiles periodOf profileResidue
+      periodResidue baseResidue
+  targetNormalForm :
+    FirstBitTerminalAffineProfileInverseKneserTargetNormalForm forbiddenTargets targetResidue
+      normalizedTargetResidue baseResidue
+  targetAvoidance :
+    FirstBitTerminalAffineProfileTargetsAvoided profiles profileResidue forbiddenTargets
+      targetResidue
+
+/-- Build an inverse-Kneser normal form certificate from imported fields. -/
+theorem firstBitTerminalAffineProfileInverseKneserNormalFormCertificate_of_assumptions
+    {Profile Period Target : Type*} {profiles : Finset Profile} {periods : Finset Period}
+    {periodOf : Profile → Period} {periodTranslate : Period → Profile → Profile}
+    {profileResidue : Profile → ℕ} {periodResidue : Period → ℕ} {baseResidue : ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue normalizedTargetResidue : Target → ℕ}
+    (hsupport :
+      FirstBitTerminalAffineProfileInverseKneserPeriodSupport profiles periods periodOf)
+    (hclosure :
+      FirstBitTerminalAffineProfileInverseKneserPeriodClosure profiles periods periodTranslate)
+    (huniform :
+      FirstBitTerminalAffineProfileInverseKneserPeriodUniform profiles periodOf profileResidue
+        periodResidue baseResidue)
+    (htarget :
+      FirstBitTerminalAffineProfileInverseKneserTargetNormalForm forbiddenTargets
+        targetResidue normalizedTargetResidue baseResidue)
+    (havoid :
+      FirstBitTerminalAffineProfileTargetsAvoided profiles profileResidue forbiddenTargets
+        targetResidue) :
+    FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate profiles periods
+      periodOf periodTranslate profileResidue periodResidue baseResidue forbiddenTargets
+      targetResidue normalizedTargetResidue where
+  periodSupport := hsupport
+  periodClosure := hclosure
+  periodUniform := huniform
+  targetNormalForm := htarget
+  targetAvoidance := havoid
+
+/-- Project the period class of a profile. -/
+theorem FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate.period_mem
+    {Profile Period Target : Type*} {profiles : Finset Profile} {periods : Finset Period}
+    {periodOf : Profile → Period} {periodTranslate : Period → Profile → Profile}
+    {profileResidue : Profile → ℕ} {periodResidue : Period → ℕ} {baseResidue : ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue normalizedTargetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate profiles periods
+        periodOf periodTranslate profileResidue periodResidue baseResidue forbiddenTargets
+        targetResidue normalizedTargetResidue)
+    {profile : Profile} (hprofile : profile ∈ profiles) :
+    periodOf profile ∈ periods :=
+  h.periodSupport profile hprofile
+
+/-- Project period-translation closure. -/
+theorem FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate.periodTranslate_mem
+    {Profile Period Target : Type*} {profiles : Finset Profile} {periods : Finset Period}
+    {periodOf : Profile → Period} {periodTranslate : Period → Profile → Profile}
+    {profileResidue : Profile → ℕ} {periodResidue : Period → ℕ} {baseResidue : ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue normalizedTargetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate profiles periods
+        periodOf periodTranslate profileResidue periodResidue baseResidue forbiddenTargets
+        targetResidue normalizedTargetResidue)
+    {profile : Profile} (hprofile : profile ∈ profiles)
+    {period : Period} (hperiod : period ∈ periods) :
+    periodTranslate period profile ∈ profiles :=
+  h.periodClosure profile hprofile period hperiod
+
+/-- Project profile residue normal form. -/
+theorem FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate.profileResidue_modEq
+    {Profile Period Target : Type*} {profiles : Finset Profile} {periods : Finset Period}
+    {periodOf : Profile → Period} {periodTranslate : Period → Profile → Profile}
+    {profileResidue : Profile → ℕ} {periodResidue : Period → ℕ} {baseResidue : ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue normalizedTargetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate profiles periods
+        periodOf periodTranslate profileResidue periodResidue baseResidue forbiddenTargets
+        targetResidue normalizedTargetResidue)
+    {profile : Profile} (hprofile : profile ∈ profiles) :
+    profileResidue profile ≡ baseResidue + periodResidue (periodOf profile) [MOD 4] :=
+  h.periodUniform profile hprofile
+
+/-- Project target residue normal form. -/
+theorem FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate.targetResidue_modEq
+    {Profile Period Target : Type*} {profiles : Finset Profile} {periods : Finset Period}
+    {periodOf : Profile → Period} {periodTranslate : Period → Profile → Profile}
+    {profileResidue : Profile → ℕ} {periodResidue : Period → ℕ} {baseResidue : ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue normalizedTargetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate profiles periods
+        periodOf periodTranslate profileResidue periodResidue baseResidue forbiddenTargets
+        targetResidue normalizedTargetResidue)
+    {target : Target} (htarget : target ∈ forbiddenTargets) :
+    targetResidue target ≡ baseResidue + normalizedTargetResidue target [MOD 4] :=
+  h.targetNormalForm target htarget
+
+/-- Apply target avoidance from an inverse-Kneser normal form certificate. -/
+theorem FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate.not_subsetSum_target
+    {Profile Period Target : Type*} {profiles : Finset Profile} {periods : Finset Period}
+    {periodOf : Profile → Period} {periodTranslate : Period → Profile → Profile}
+    {profileResidue : Profile → ℕ} {periodResidue : Period → ℕ} {baseResidue : ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue normalizedTargetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalAffineProfileInverseKneserNormalFormCertificate profiles periods
+        periodOf periodTranslate profileResidue periodResidue baseResidue forbiddenTargets
+        targetResidue normalizedTargetResidue)
+    {target : Target} (htarget : target ∈ forbiddenTargets) :
+    ¬ FirstBitTerminalAffineProfileSubsetSumTarget profiles profileResidue
+      (targetResidue target) :=
+  h.targetAvoidance target htarget
+
+/--
+An index-two flag step: the next zero-prefix packets are exactly the current zero-prefix packets
+with parity character zero.
+-/
+def FirstBitTerminalDyadicIndexTwoFlagStep
+    {Level Packet : Type*} (levels : Finset Level) (level : Level)
+    (nextLevel : Level → Level) (zeroPrefix nextZeroPrefix : Level → Packet → Prop)
+    (parityCharacter : Level → Packet → Fin 2) : Prop :=
+  level ∈ levels ∧ nextLevel level ∈ levels ∧
+    ∀ packet : Packet,
+      nextZeroPrefix level packet ↔
+        zeroPrefix level packet ∧ parityCharacter level packet = 0
+
+/-- Odd-seed branch: an atom at this level moves the residual target into the next subgroup. -/
+def FirstBitTerminalDyadicFlagOddSeedStep
+    {Level Atom : Type*} (atoms : Finset Atom) (level : Level)
+    (oddSeed movesResidualTargetToNext : Level → Atom → Prop) : Prop :=
+  ∃ atom : Atom, atom ∈ atoms ∧ oddSeed level atom ∧ movesResidualTargetToNext level atom
+
+/-- Parity-character branch: zero-prefix packets are separated from the residual target parity. -/
+def FirstBitTerminalDyadicFlagParityCharacterSeparation
+    {Level Packet : Type*} (packets : Finset Packet) (level : Level)
+    (zeroPrefix : Level → Packet → Prop)
+    (parityCharacter : Level → Packet → Fin 2) (residualTargetParity : Level → Fin 2) :
+    Prop :=
+  ∀ packet : Packet, packet ∈ packets → zeroPrefix level packet →
+    parityCharacter level packet ≠ residualTargetParity level
+
+/-- One dyadic flag step is certified by an index-two step and one of the two descent branches. -/
+structure FirstBitTerminalDyadicFlagStepSplitCertificate
+    {Level Atom Packet : Type*} (levels : Finset Level) (level : Level)
+    (nextLevel : Level → Level) (atoms : Finset Atom) (packets : Finset Packet)
+    (zeroPrefix nextZeroPrefix : Level → Packet → Prop)
+    (parityCharacter : Level → Packet → Fin 2) (residualTargetParity : Level → Fin 2)
+    (oddSeed movesResidualTargetToNext : Level → Atom → Prop) : Prop where
+  indexTwoStep :
+    FirstBitTerminalDyadicIndexTwoFlagStep levels level nextLevel zeroPrefix
+      nextZeroPrefix parityCharacter
+  split :
+    FirstBitTerminalDyadicFlagOddSeedStep atoms level oddSeed movesResidualTargetToNext ∨
+      FirstBitTerminalDyadicFlagParityCharacterSeparation packets level zeroPrefix
+        parityCharacter residualTargetParity
+
+/-- Build a dyadic flag step split certificate from imported index-two and branch data. -/
+theorem firstBitTerminalDyadicFlagStepSplitCertificate_of_assumptions
+    {Level Atom Packet : Type*} {levels : Finset Level} {level : Level}
+    {nextLevel : Level → Level} {atoms : Finset Atom} {packets : Finset Packet}
+    {zeroPrefix nextZeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {residualTargetParity : Level → Fin 2}
+    {oddSeed movesResidualTargetToNext : Level → Atom → Prop}
+    (hindex :
+      FirstBitTerminalDyadicIndexTwoFlagStep levels level nextLevel zeroPrefix
+        nextZeroPrefix parityCharacter)
+    (hsplit :
+      FirstBitTerminalDyadicFlagOddSeedStep atoms level oddSeed movesResidualTargetToNext ∨
+        FirstBitTerminalDyadicFlagParityCharacterSeparation packets level zeroPrefix
+          parityCharacter residualTargetParity) :
+    FirstBitTerminalDyadicFlagStepSplitCertificate levels level nextLevel atoms packets
+      zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+      movesResidualTargetToNext where
+  indexTwoStep := hindex
+  split := hsplit
+
+/-- The level of a dyadic split certificate lies in the flag. -/
+theorem FirstBitTerminalDyadicFlagStepSplitCertificate.level_mem
+    {Level Atom Packet : Type*} {levels : Finset Level} {level : Level}
+    {nextLevel : Level → Level} {atoms : Finset Atom} {packets : Finset Packet}
+    {zeroPrefix nextZeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {residualTargetParity : Level → Fin 2}
+    {oddSeed movesResidualTargetToNext : Level → Atom → Prop}
+    (h :
+      FirstBitTerminalDyadicFlagStepSplitCertificate levels level nextLevel atoms packets
+        zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+        movesResidualTargetToNext) :
+    level ∈ levels :=
+  h.indexTwoStep.1
+
+/-- The next level of a dyadic split certificate lies in the flag. -/
+theorem FirstBitTerminalDyadicFlagStepSplitCertificate.nextLevel_mem
+    {Level Atom Packet : Type*} {levels : Finset Level} {level : Level}
+    {nextLevel : Level → Level} {atoms : Finset Atom} {packets : Finset Packet}
+    {zeroPrefix nextZeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {residualTargetParity : Level → Fin 2}
+    {oddSeed movesResidualTargetToNext : Level → Atom → Prop}
+    (h :
+      FirstBitTerminalDyadicFlagStepSplitCertificate levels level nextLevel atoms packets
+        zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+        movesResidualTargetToNext) :
+    nextLevel level ∈ levels :=
+  h.indexTwoStep.2.1
+
+/-- Project the index-two zero-prefix equivalence. -/
+theorem FirstBitTerminalDyadicFlagStepSplitCertificate.nextZeroPrefix_iff
+    {Level Atom Packet : Type*} {levels : Finset Level} {level : Level}
+    {nextLevel : Level → Level} {atoms : Finset Atom} {packets : Finset Packet}
+    {zeroPrefix nextZeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {residualTargetParity : Level → Fin 2}
+    {oddSeed movesResidualTargetToNext : Level → Atom → Prop}
+    (h :
+      FirstBitTerminalDyadicFlagStepSplitCertificate levels level nextLevel atoms packets
+        zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+        movesResidualTargetToNext)
+    (packet : Packet) :
+    nextZeroPrefix level packet ↔
+      zeroPrefix level packet ∧ parityCharacter level packet = 0 :=
+  h.indexTwoStep.2.2 packet
+
+/-- Project the odd-seed/parity-character alternative at a certified flag step. -/
+theorem FirstBitTerminalDyadicFlagStepSplitCertificate.oddSeed_or_paritySeparation
+    {Level Atom Packet : Type*} {levels : Finset Level} {level : Level}
+    {nextLevel : Level → Level} {atoms : Finset Atom} {packets : Finset Packet}
+    {zeroPrefix nextZeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {residualTargetParity : Level → Fin 2}
+    {oddSeed movesResidualTargetToNext : Level → Atom → Prop}
+    (h :
+      FirstBitTerminalDyadicFlagStepSplitCertificate levels level nextLevel atoms packets
+        zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+        movesResidualTargetToNext) :
+    FirstBitTerminalDyadicFlagOddSeedStep atoms level oddSeed movesResidualTargetToNext ∨
+      FirstBitTerminalDyadicFlagParityCharacterSeparation packets level zeroPrefix
+        parityCharacter residualTargetParity :=
+  h.split
+
+/-- Every active dyadic flag level carries the imported odd-seed/parity split. -/
+def FirstBitTerminalDyadicFlagStepSplitsOnLevels
+    {Level Atom Packet : Type*} (levels : Finset Level) (nextLevel : Level → Level)
+    (atoms : Finset Atom) (packets : Finset Packet)
+    (zeroPrefix nextZeroPrefix : Level → Packet → Prop)
+    (parityCharacter : Level → Packet → Fin 2) (residualTargetParity : Level → Fin 2)
+    (oddSeed movesResidualTargetToNext : Level → Atom → Prop) : Prop :=
+  ∀ level : Level, level ∈ levels →
+    FirstBitTerminalDyadicFlagStepSplitCertificate levels level nextLevel atoms packets
+      zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+      movesResidualTargetToNext
+
+/--
+Dyadic flag descent plus target avoidance.  Each level either has an odd seed moving the residual
+target down the flag or a parity character separating the target from zero-prefix packets.
+-/
+structure FirstBitTerminalDyadicFlagTargetAvoidanceDescentCertificate
+    {Level Atom Packet Profile Target : Type*} (levels : Finset Level)
+    (nextLevel : Level → Level) (atoms : Finset Atom) (packets : Finset Packet)
+    (zeroPrefix nextZeroPrefix : Level → Packet → Prop)
+    (parityCharacter : Level → Packet → Fin 2) (residualTargetParity : Level → Fin 2)
+    (oddSeed movesResidualTargetToNext : Level → Atom → Prop)
+    (terminalLevel : Level) (profiles : Finset Profile) (profileResidue : Profile → ℕ)
+    (forbiddenTargets : Finset Target) (targetResidue : Target → ℕ) : Prop where
+  stepSplits :
+    FirstBitTerminalDyadicFlagStepSplitsOnLevels levels nextLevel atoms packets
+      zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+      movesResidualTargetToNext
+  terminalLevel_mem : terminalLevel ∈ levels
+  terminalTargetAvoidance :
+    FirstBitTerminalAffineProfileTargetsAvoided profiles profileResidue forbiddenTargets
+      targetResidue
+
+/-- Build a dyadic flag target-avoidance descent certificate from named imports. -/
+theorem firstBitTerminalDyadicFlagTargetAvoidanceDescentCertificate_of_assumptions
+    {Level Atom Packet Profile Target : Type*} {levels : Finset Level}
+    {nextLevel : Level → Level} {atoms : Finset Atom} {packets : Finset Packet}
+    {zeroPrefix nextZeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {residualTargetParity : Level → Fin 2}
+    {oddSeed movesResidualTargetToNext : Level → Atom → Prop}
+    {terminalLevel : Level} {profiles : Finset Profile} {profileResidue : Profile → ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue : Target → ℕ}
+    (hsplits :
+      FirstBitTerminalDyadicFlagStepSplitsOnLevels levels nextLevel atoms packets
+        zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+        movesResidualTargetToNext)
+    (hterminal : terminalLevel ∈ levels)
+    (havoid :
+      FirstBitTerminalAffineProfileTargetsAvoided profiles profileResidue forbiddenTargets
+        targetResidue) :
+    FirstBitTerminalDyadicFlagTargetAvoidanceDescentCertificate levels nextLevel atoms
+      packets zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+      movesResidualTargetToNext terminalLevel profiles profileResidue forbiddenTargets
+      targetResidue where
+  stepSplits := hsplits
+  terminalLevel_mem := hterminal
+  terminalTargetAvoidance := havoid
+
+/-- Project the split certificate at a chosen dyadic flag level. -/
+theorem FirstBitTerminalDyadicFlagTargetAvoidanceDescentCertificate.stepSplit
+    {Level Atom Packet Profile Target : Type*} {levels : Finset Level}
+    {nextLevel : Level → Level} {atoms : Finset Atom} {packets : Finset Packet}
+    {zeroPrefix nextZeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {residualTargetParity : Level → Fin 2}
+    {oddSeed movesResidualTargetToNext : Level → Atom → Prop}
+    {terminalLevel : Level} {profiles : Finset Profile} {profileResidue : Profile → ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalDyadicFlagTargetAvoidanceDescentCertificate levels nextLevel atoms
+        packets zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+        movesResidualTargetToNext terminalLevel profiles profileResidue forbiddenTargets
+        targetResidue)
+    {level : Level} (hlevel : level ∈ levels) :
+    FirstBitTerminalDyadicFlagStepSplitCertificate levels level nextLevel atoms packets
+      zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+      movesResidualTargetToNext :=
+  h.stepSplits level hlevel
+
+/-- Project terminal-level membership from a dyadic flag descent certificate. -/
+theorem FirstBitTerminalDyadicFlagTargetAvoidanceDescentCertificate.terminal_mem
+    {Level Atom Packet Profile Target : Type*} {levels : Finset Level}
+    {nextLevel : Level → Level} {atoms : Finset Atom} {packets : Finset Packet}
+    {zeroPrefix nextZeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {residualTargetParity : Level → Fin 2}
+    {oddSeed movesResidualTargetToNext : Level → Atom → Prop}
+    {terminalLevel : Level} {profiles : Finset Profile} {profileResidue : Profile → ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalDyadicFlagTargetAvoidanceDescentCertificate levels nextLevel atoms
+        packets zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+        movesResidualTargetToNext terminalLevel profiles profileResidue forbiddenTargets
+        targetResidue) :
+    terminalLevel ∈ levels :=
+  h.terminalLevel_mem
+
+/-- Apply terminal target avoidance from a dyadic flag descent certificate. -/
+theorem FirstBitTerminalDyadicFlagTargetAvoidanceDescentCertificate.not_subsetSum_target
+    {Level Atom Packet Profile Target : Type*} {levels : Finset Level}
+    {nextLevel : Level → Level} {atoms : Finset Atom} {packets : Finset Packet}
+    {zeroPrefix nextZeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {residualTargetParity : Level → Fin 2}
+    {oddSeed movesResidualTargetToNext : Level → Atom → Prop}
+    {terminalLevel : Level} {profiles : Finset Profile} {profileResidue : Profile → ℕ}
+    {forbiddenTargets : Finset Target} {targetResidue : Target → ℕ}
+    (h :
+      FirstBitTerminalDyadicFlagTargetAvoidanceDescentCertificate levels nextLevel atoms
+        packets zeroPrefix nextZeroPrefix parityCharacter residualTargetParity oddSeed
+        movesResidualTargetToNext terminalLevel profiles profileResidue forbiddenTargets
+        targetResidue)
+    {target : Target} (htarget : target ∈ forbiddenTargets) :
+    ¬ FirstBitTerminalAffineProfileSubsetSumTarget profiles profileResidue
+      (targetResidue target) :=
+  h.terminalTargetAvoidance target htarget
+
+/-- Selectors for the affine profile target-avoidance frontier. -/
+inductive FirstBitTerminalAffineProfileTargetAvoidanceFrontierSelector : Type
+  | affineProfileAvoidance
+  | inverseKneserNormalForm
+  | dyadicFlagDescent
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalAffineProfileTargetAvoidanceFrontierSelector
+
+/-- The proof obligation attached to each affine target-avoidance frontier selector. -/
+def obligation
+    (affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop) :
+    FirstBitTerminalAffineProfileTargetAvoidanceFrontierSelector → Prop
+  | affineProfileAvoidance => affineProfileAvoidance
+  | inverseKneserNormalForm => inverseKneserNormalForm
+  | dyadicFlagDescent => dyadicFlagDescent
+
+end FirstBitTerminalAffineProfileTargetAvoidanceFrontierSelector
+
+/-- Combined imports for affine profile avoidance, inverse-Kneser normal form, and dyadic descent. -/
+structure FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports
+    (affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop) : Prop where
+  affineProfileAvoidanceCert : affineProfileAvoidance
+  inverseKneserNormalFormCert : inverseKneserNormalForm
+  dyadicFlagDescentCert : dyadicFlagDescent
+
+/-- Build the affine target-avoidance frontier imports from independent parts. -/
+theorem firstBitTerminalAffineProfileTargetAvoidanceFrontierImports_of_parts
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (hprofile : affineProfileAvoidance) (hkneser : inverseKneserNormalForm)
+    (hflag : dyadicFlagDescent) :
+    FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent where
+  affineProfileAvoidanceCert := hprofile
+  inverseKneserNormalFormCert := hkneser
+  dyadicFlagDescentCert := hflag
+
+/-- Project affine profile avoidance from the frontier imports. -/
+theorem FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports.to_affineProfileAvoidance
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    affineProfileAvoidance :=
+  h.affineProfileAvoidanceCert
+
+/-- Project inverse-Kneser normal form from the frontier imports. -/
+theorem FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports.to_inverseKneserNormalForm
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    inverseKneserNormalForm :=
+  h.inverseKneserNormalFormCert
+
+/-- Project dyadic flag descent from the frontier imports. -/
+theorem FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports.to_dyadicFlagDescent
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    dyadicFlagDescent :=
+  h.dyadicFlagDescentCert
+
+/-- Project the obligation named by an affine target-avoidance frontier selector. -/
+theorem FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports.obligation
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent)
+    (selector : FirstBitTerminalAffineProfileTargetAvoidanceFrontierSelector) :
+    FirstBitTerminalAffineProfileTargetAvoidanceFrontierSelector.obligation
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent selector := by
+  cases selector
+  · exact h.affineProfileAvoidanceCert
+  · exact h.inverseKneserNormalFormCert
+  · exact h.dyadicFlagDescentCert
+
+/-- Selectors for the repair/shadow imports enriched by affine target-avoidance descent. -/
+inductive FirstBitTerminalAtomPacketRepairAffineProfileFlagSelector : Type
+  | packetAtomFrontier
+  | atomPacketRepairFrontier
+  | principalBucketShadowFrontier
+  | affineProfileAvoidance
+  | inverseKneserNormalForm
+  | dyadicFlagDescent
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalAtomPacketRepairAffineProfileFlagSelector
+
+/-- The proof obligation attached to each repair/affine-profile flag selector. -/
+def obligation
+    (packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop) :
+    FirstBitTerminalAtomPacketRepairAffineProfileFlagSelector → Prop
+  | packetAtomFrontier => packetAtomFrontier
+  | atomPacketRepairFrontier => atomPacketRepairFrontier
+  | principalBucketShadowFrontier => principalBucketShadowFrontier
+  | affineProfileAvoidance => affineProfileAvoidance
+  | inverseKneserNormalForm => inverseKneserNormalForm
+  | dyadicFlagDescent => dyadicFlagDescent
+
+end FirstBitTerminalAtomPacketRepairAffineProfileFlagSelector
+
+/--
+Atom-packet repair/principal-bucket shadow imports bundled with affine profile target avoidance and
+dyadic flag descent.
+-/
+structure FirstBitTerminalAtomPacketRepairAffineProfileFlagImports
+    (packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop) : Prop where
+  repairShadowImports :
+    FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier
+  targetAvoidanceFrontier :
+    FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent
+
+/-- Build the repair/shadow plus affine flag bundle from independent imports. -/
+theorem firstBitTerminalAtomPacketRepairAffineProfileFlagImports_of_parts
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (hpacket : packetAtomFrontier) (hrepair : atomPacketRepairFrontier)
+    (hshadow : principalBucketShadowFrontier) (hprofile : affineProfileAvoidance)
+    (hkneser : inverseKneserNormalForm) (hflag : dyadicFlagDescent) :
+    FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent where
+  repairShadowImports :=
+    firstBitTerminalPacketAtomRepairPrincipalBucketShadowImports_of_parts
+      hpacket hrepair hshadow
+  targetAvoidanceFrontier :=
+    firstBitTerminalAffineProfileTargetAvoidanceFrontierImports_of_parts
+      hprofile hkneser hflag
+
+/-- Project the existing packet-atom/repair/principal-bucket shadow bundle. -/
+theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.to_repairShadowImports
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier :=
+  h.repairShadowImports
+
+/-- Project the affine target-avoidance frontier bundle. -/
+theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.to_targetAvoidanceFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent :=
+  h.targetAvoidanceFrontier
+
+/-- Project packet-atom frontier imports from the enriched bundle. -/
+theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.to_packetAtomFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    packetAtomFrontier :=
+  h.repairShadowImports.to_packetAtomFrontier
+
+/-- Project atom-packet repair frontier imports from the enriched bundle. -/
+theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.to_atomPacketRepairFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    atomPacketRepairFrontier :=
+  h.repairShadowImports.to_atomPacketRepairFrontier
+
+/-- Project principal-bucket shadow frontier imports from the enriched bundle. -/
+theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.to_principalBucketShadowFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    principalBucketShadowFrontier :=
+  h.repairShadowImports.to_principalBucketShadowFrontier
+
+/-- Project affine profile avoidance imports from the enriched bundle. -/
+theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.to_affineProfileAvoidance
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    affineProfileAvoidance :=
+  h.targetAvoidanceFrontier.to_affineProfileAvoidance
+
+/-- Project inverse-Kneser normal form imports from the enriched bundle. -/
+theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.to_inverseKneserNormalForm
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    inverseKneserNormalForm :=
+  h.targetAvoidanceFrontier.to_inverseKneserNormalForm
+
+/-- Project dyadic flag descent imports from the enriched bundle. -/
+theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.to_dyadicFlagDescent
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent) :
+    dyadicFlagDescent :=
+  h.targetAvoidanceFrontier.to_dyadicFlagDescent
+
+/-- Project the obligation named by a repair/affine-profile flag selector. -/
+theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.obligation
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent)
+    (selector : FirstBitTerminalAtomPacketRepairAffineProfileFlagSelector) :
+    FirstBitTerminalAtomPacketRepairAffineProfileFlagSelector.obligation packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent selector := by
+  cases selector
+  · exact h.to_packetAtomFrontier
+  · exact h.to_atomPacketRepairFrontier
+  · exact h.to_principalBucketShadowFrontier
+  · exact h.to_affineProfileAvoidance
+  · exact h.to_inverseKneserNormalForm
+  · exact h.to_dyadicFlagDescent
+
+/--
+Full co-cut/principal-bucket shadow/packet-atom repair imports enriched with the affine profile
+target-avoidance frontier.
+-/
+structure
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports
+    (coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+      dyadicFlagDescent : Prop) : Prop where
+  repairImports :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier
+  targetAvoidanceFrontier :
+    FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent
+
+/-- Build the full co-cut/repair/affine target-avoidance bundle from independent imports. -/
+theorem
+    firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports_of_parts
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+      dyadicFlagDescent : Prop}
+    (hbase : coCutMixedPrincipalImports) (hshadow : principalBucketShadowFrontier)
+    (hpacket : packetAtomFrontier) (hrepair : atomPacketRepairFrontier)
+    (hprofile : affineProfileAvoidance) (hkneser : inverseKneserNormalForm)
+    (hflag : dyadicFlagDescent) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+      dyadicFlagDescent where
+  repairImports :=
+    firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports_of_parts
+      hbase hshadow hpacket hrepair
+  targetAvoidanceFrontier :=
+    firstBitTerminalAffineProfileTargetAvoidanceFrontierImports_of_parts
+      hprofile hkneser hflag
+
+/-- Forget affine target-avoidance fields and recover the repair-enriched co-cut bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports.to_repairImports
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+      dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports
+        coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+        atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+        dyadicFlagDescent) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier :=
+  h.repairImports
+
+/-- Project the affine target-avoidance frontier from the full co-cut bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports.to_targetAvoidanceFrontier
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+      dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports
+        coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+        atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+        dyadicFlagDescent) :
+    FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent :=
+  h.targetAvoidanceFrontier
+
+/-- Export the repair/shadow plus affine flag bundle from the full co-cut bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports.to_atomPacketRepairAffineProfileFlagImports
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+      dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports
+        coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+        atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+        dyadicFlagDescent) :
+    FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent where
+  repairShadowImports := h.repairImports.to_packetAtomRepairPrincipalBucketShadowImports
+  targetAvoidanceFrontier := h.targetAvoidanceFrontier
+
+/-- Project base co-cut/mixed-core/principal-bucket imports from the full co-cut bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports.to_baseImports
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+      dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports
+        coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+        atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+        dyadicFlagDescent) :
+    coCutMixedPrincipalImports :=
+  h.repairImports.to_baseImports
+
+/-- Project atom-packet repair imports from the full co-cut/affine bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports.to_atomPacketRepairFrontier
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+      dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports
+        coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+        atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+        dyadicFlagDescent) :
+    atomPacketRepairFrontier :=
+  h.repairImports.to_atomPacketRepairFrontier
+
+/-- Project dyadic flag descent imports from the full co-cut/affine bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports.to_dyadicFlagDescent
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+      dyadicFlagDescent : Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairAffineProfileFlagImports
+        coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+        atomPacketRepairFrontier affineProfileAvoidance inverseKneserNormalForm
+        dyadicFlagDescent) :
+    dyadicFlagDescent :=
+  h.targetAvoidanceFrontier.to_dyadicFlagDescent
+
 /-- Co-cut/self-layer plus mixed target-core imports bundled with principal-bucket frontier imports. -/
 structure FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
     {Old Shadow Target Bucket RowSig CoRowSig : Type*}
