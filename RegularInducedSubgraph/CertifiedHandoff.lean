@@ -29586,6 +29586,690 @@ theorem CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSize
       h.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toTargetStatement :=
   rfl
 
+/-!
+## Final consumer ternary source collision refinement handoff
+
+The small-collision size cutoff leaves the ternary source-collision refinements as the next
+assumption-backed proof-md frontier.  This layer names the size-three source-atom label cleanup,
+the rainbow/joint-blocker exclusions, the shortened-pair-hit strict cross-defect branches for
+`q = 2` and `q = 3` with `delta_other` bounds, and the compensation supplied by the other petals.
+-/
+
+/-- Label cleanup for ternary source collisions coming from size-three source atoms. -/
+structure CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionLabelRefinementsCertificate
+    (terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels : Prop) :
+    Type where
+  shortenedPairFreeLabelsFromSizeThreeAtoms :
+    terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+  distinctSourceLabels : terminalTernarySourceDistinctSourceLabels
+
+/-- Exclusion packet for rainbow partitions and joint blockers in ternary source collisions. -/
+structure CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionObstructionExclusionCertificate
+    (terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker : Prop) :
+    Type where
+  noRainbowPartition : terminalTernarySourceNoRainbowPartition
+  noJointBlocker : terminalTernarySourceNoJointBlocker
+
+/-- Strict cross-defect packet for shortened-pair-hit ternary source collisions. -/
+structure CertifiedProofMdCurrentFrontierTerminalTernarySourceShortenedPairHitCrossDefectCertificate
+    (terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds : Prop) :
+    Type where
+  shortenedPairHitStrictCrossDefectQTwo :
+    terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+  shortenedPairHitStrictCrossDefectQThree :
+    terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+  shortenedPairHitDeltaOtherBounds : terminalTernarySourceShortenedPairHitDeltaOtherBounds
+
+/-- Terminal certificate for the ternary source-collision refinement frontier. -/
+structure CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+    (terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals : Prop) :
+    Type where
+  labelRefinements :
+    CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionLabelRefinementsCertificate
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+  obstructionExclusion :
+    CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionObstructionExclusionCertificate
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+  shortenedPairHitCrossDefect :
+    CertifiedProofMdCurrentFrontierTerminalTernarySourceShortenedPairHitCrossDefectCertificate
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+  collisionCompensatedByOtherPetals :
+    terminalTernarySourceCollisionCompensatedByOtherPetals
+
+/-- Build the ternary source-collision refinement certificate from raw terminal assumptions. -/
+def certifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate_of_assumptions
+    {terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals : Prop}
+    (shortenedPairFreeLabelsFromSizeThreeAtoms :
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms)
+    (distinctSourceLabels : terminalTernarySourceDistinctSourceLabels)
+    (noRainbowPartition : terminalTernarySourceNoRainbowPartition)
+    (noJointBlocker : terminalTernarySourceNoJointBlocker)
+    (shortenedPairHitStrictCrossDefectQTwo :
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo)
+    (shortenedPairHitStrictCrossDefectQThree :
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree)
+    (shortenedPairHitDeltaOtherBounds :
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds)
+    (collisionCompensatedByOtherPetals :
+      terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals where
+  labelRefinements :=
+    { shortenedPairFreeLabelsFromSizeThreeAtoms := shortenedPairFreeLabelsFromSizeThreeAtoms
+      distinctSourceLabels := distinctSourceLabels }
+  obstructionExclusion :=
+    { noRainbowPartition := noRainbowPartition
+      noJointBlocker := noJointBlocker }
+  shortenedPairHitCrossDefect :=
+    { shortenedPairHitStrictCrossDefectQTwo := shortenedPairHitStrictCrossDefectQTwo
+      shortenedPairHitStrictCrossDefectQThree := shortenedPairHitStrictCrossDefectQThree
+      shortenedPairHitDeltaOtherBounds := shortenedPairHitDeltaOtherBounds }
+  collisionCompensatedByOtherPetals := collisionCompensatedByOtherPetals
+
+section TernarySourceCollisionRefinementTerminalApi
+
+variable {terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+  terminalTernarySourceDistinctSourceLabels
+  terminalTernarySourceNoRainbowPartition
+  terminalTernarySourceNoJointBlocker
+  terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+  terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+  terminalTernarySourceShortenedPairHitDeltaOtherBounds
+  terminalTernarySourceCollisionCompensatedByOtherPetals : Prop}
+
+/-- Project shortened-pair-free labels from size-three source atoms. -/
+def CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate.toShortenedPairFreeLabelsFromSizeThreeAtoms
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms :=
+  h.labelRefinements.shortenedPairFreeLabelsFromSizeThreeAtoms
+
+/-- Project distinct source labels. -/
+def CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate.toDistinctSourceLabels
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    terminalTernarySourceDistinctSourceLabels :=
+  h.labelRefinements.distinctSourceLabels
+
+/-- Project no-rainbow-partition exclusion. -/
+def CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate.toNoRainbowPartition
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    terminalTernarySourceNoRainbowPartition :=
+  h.obstructionExclusion.noRainbowPartition
+
+/-- Project no-joint-blocker exclusion. -/
+def CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate.toNoJointBlocker
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    terminalTernarySourceNoJointBlocker :=
+  h.obstructionExclusion.noJointBlocker
+
+/-- Project the shortened-pair-hit strict cross-defect branch for `q = 2`. -/
+def CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate.toShortenedPairHitStrictCrossDefectQTwo
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo :=
+  h.shortenedPairHitCrossDefect.shortenedPairHitStrictCrossDefectQTwo
+
+/-- Project the shortened-pair-hit strict cross-defect branch for `q = 3`. -/
+def CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate.toShortenedPairHitStrictCrossDefectQThree
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    terminalTernarySourceShortenedPairHitStrictCrossDefectQThree :=
+  h.shortenedPairHitCrossDefect.shortenedPairHitStrictCrossDefectQThree
+
+/-- Project the shortened-pair-hit `delta_other` bounds. -/
+def CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate.toShortenedPairHitDeltaOtherBounds
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    terminalTernarySourceShortenedPairHitDeltaOtherBounds :=
+  h.shortenedPairHitCrossDefect.shortenedPairHitDeltaOtherBounds
+
+/-- Project the compensation supplied by the other petals. -/
+def CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate.toCollisionCompensatedByOtherPetals
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    terminalTernarySourceCollisionCompensatedByOtherPetals :=
+  h.collisionCompensatedByOtherPetals
+
+end TernarySourceCollisionRefinementTerminalApi
+
+/-- Bundle adjoining ternary source-collision refinements to the small-collision size cutoff. -/
+structure CertifiedProofMdCurrentFrontierTernarySourceCollisionRefinementExtensionBundle
+    (terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals : Prop) :
+    Type where
+  smallCollisionSizeCutoffExtensionBundle :
+    CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+  ternarySourceCollisionRefinement :
+    CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+
+/-- Final consumer handoff after adjoining the ternary source-collision refinement frontier. -/
+structure CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop)
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop)
+    (terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop)
+    (terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop)
+    (terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode : Prop)
+    (terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore : Prop)
+    (terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop)
+    (terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop)
+    (terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals : Prop) :
+    Type where
+  noLeftoverSmallCollisionSizeCutoffHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+  ternarySourceCollisionRefinement :
+    CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+
+section FinalConsumerTernarySourceCollisionRefinementApi
+
+variable {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+variable {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+variable {packingSize : AnchoredPacking → ℕ}
+variable {WitnessCountAtLeast : ℕ → ℕ → Prop}
+variable {TwoDisjointTemplatesNeedTwo : Prop}
+variable {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+variable {v : ↑(s : Set α)}
+variable {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+variable {terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop}
+variable {terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop}
+variable {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+  terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+variable {terminalSharedPackedAtomPenaltyRebate
+  terminalForcedSplitPackedAtomBetweenPetals
+  terminalPairCollisionTwoPetalOverpayBranch
+  terminalPairCollisionGenuineThreePetalBranch
+  terminalPairCollisionProperSubfamilyNonpositive
+  terminalPairCollisionNoDiffuseLargerCollisionMode : Prop}
+variable {terminalPairForcedPetalStrictDeficit
+  terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+  terminalFourFourCollisionFreeCutoff
+  terminalFourPairComplementaryTransversalBooleanOrientationCore : Prop}
+variable {terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+  terminalPartnerFreeHiddenBipartitionDeletionSupports
+  terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+  terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+  terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+  terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTemplatesIncludePartnerSingleton : Prop}
+variable {terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+  terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+  terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+  terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+  terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop}
+variable {terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+  terminalTernarySourceDistinctSourceLabels
+  terminalTernarySourceNoRainbowPartition
+  terminalTernarySourceNoJointBlocker
+  terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+  terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+  terminalTernarySourceShortenedPairHitDeltaOtherBounds
+  terminalTernarySourceCollisionCompensatedByOtherPetals : Prop}
+
+/-- Promote the size-cutoff handoff by adjoining the ternary source refinement certificate. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff.toFinalConsumerTernarySourceCollisionRefinementHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo)
+    (ternarySourceCollisionRefinement :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals where
+  noLeftoverSmallCollisionSizeCutoffHandoff := h
+  ternarySourceCollisionRefinement := ternarySourceCollisionRefinement
+
+/-- Promote the pair-collision rebate handoff through the ternary refinement extension bundle. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalConsumerTernarySourceCollisionRefinementHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode)
+    (extensionBundle :
+      CertifiedProofMdCurrentFrontierTernarySourceCollisionRefinementExtensionBundle
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals :=
+  (h.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+    extensionBundle.smallCollisionSizeCutoffExtensionBundle).toFinalConsumerTernarySourceCollisionRefinementHandoff
+      extensionBundle.ternarySourceCollisionRefinement
+
+/-- Project the target statement through the integrated size-cutoff handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff.toTargetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    TargetStatement :=
+  h.noLeftoverSmallCollisionSizeCutoffHandoff.toTargetStatement
+
+/-- The ternary source-collision refinement handoff exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals) :
+    TargetStatement :=
+  h.toTargetStatement
+
+end FinalConsumerTernarySourceCollisionRefinementApi
+
 end FinalConsumerNoLeftoverSmallCollisionSizeCutoffApi
 
 end FinalConsumerPartnerFreePartnerHitPairCollisionSplitApi
