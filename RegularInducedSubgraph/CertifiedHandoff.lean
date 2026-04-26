@@ -820,4 +820,515 @@ theorem targetStatement_of_certifiedProofMdCurrentFrontierModFourColoringCertifi
     h.modFourColoringBound32 h.ramseyTenSmallTable h.cliqueOrIndepSetBound16
     h.cliqueOrIndepSetBoundTail h.higherBitSelectors
 
+/-!
+## Integrated final-facing handoff surfaces
+
+The declarations below are packaging-only: they do not strengthen any mathematical assumption.  They
+collect the current Ramsey, exact-`42`, terminal, and first-bit/co-cut frontier surfaces behind
+projection aliases that downstream orchestration can consume without opening the lower-level files.
+-/
+
+/-- The unified Ramsey consequence bundle supplies exactly the isolated dyadic regular-10 target. -/
+theorem hasRamseyTenRegularAtDyadicTarget_of_ramseyTenR45GlobalConsequenceBundle
+    (h : RamseyTenR45GlobalConsequenceBundle) : HasRamseyTenRegularAtDyadicTarget := by
+  intro V _ _ G hcard
+  exact h.toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/--
+Normalized exact-`42` Ramsey consumer surface.  It keeps the profiled `R(3,10) <= 42` row paired
+with the local degree-`9` endpoint ledgers, and separately carries the global Ramsey-10 consequences
+needed by the proof-md handoff.
+-/
+structure CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate : Prop where
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  ramseyConsequences : RamseyTenR45GlobalConsequenceBundle
+
+/-- Build the normalized exact-`42` consumer surface from the combined Ramsey handoff. -/
+theorem certifiedProofMdExact42ConsumerNormalizedRamseyCertificate_of_middleDegreeEndpointProfile
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate where
+  exact42WithMiddleSplits := h.toExact42WithMiddleSplits
+  ramseyConsequences := h.toGlobalConsequenceBundle
+
+/-- Project the exact-`42` profile with middle-degree ledgers. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toExact42WithMiddleSplits
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Project the profiled exact-`42` surface. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toExact42ProfileSurface
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42WithMiddleSplits.toExact42ProfileSurface
+
+/-- Project the local endpoint ledger bundle paired with the exact-`42` profile. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toLocalLedgerBundle
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.exact42WithMiddleSplits.toLocalLedgerBundle
+
+/-- Project the low-row `R(3,10) <= 42` consequence. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toThreeTenFortyTwo
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42WithMiddleSplits.toThreeTenFortyTwo
+
+/-- Project the unified Ramsey global consequence bundle. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toGlobalConsequenceBundle
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.ramseyConsequences
+
+/-- Project the relaxed `R(4,5) <= 27` consequence. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toR45TwentySeven
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.ramseyConsequences.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Project the propagated `R(10,10)` consequence. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toR10Ten39246
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.ramseyConsequences.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Project the regular induced `10`-set consequence at the dyadic target. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toRamseyTenRegular
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    HasRamseyTenRegularAtDyadicTarget :=
+  hasRamseyTenRegularAtDyadicTarget_of_ramseyTenR45GlobalConsequenceBundle
+    h.ramseyConsequences
+
+/-- Project the admissible-bound consequence at `40960`. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toTenMemAdmissibleBounds_40960
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    10 ∈ admissibleBounds 40960 :=
+  h.ramseyConsequences.toTenMemAdmissibleBounds_40960
+
+/-- Project the extremal-function lower bound at `40960`. -/
+theorem CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate.toTenLeF_40960
+    (h : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate) :
+    10 ≤ F 40960 :=
+  h.ramseyConsequences.toTenLeF_40960
+
+/--
+Final-facing terminal mixed-target core imports.  This is just the concrete homogeneous-carry import
+triple re-exposed under the proof-md handoff namespace.
+-/
+structure CertifiedProofMdTerminalMixedTargetCoreImports : Prop where
+  terminalTrichotomy : HasHomogeneousMixedCarryTerminalTrichotomyReduction
+  supportCompression : HasHomogeneousMixedCarrySupportCompressionReduction
+  affineArf : HasHomogeneousMixedCarryAffineArfCertificateReduction
+
+/-- Build the terminal mixed-target core imports from the two genuine residual reductions. -/
+theorem certifiedProofMdTerminalMixedTargetCoreImports_of_reductions
+    (hsupport : HasHomogeneousMixedCarrySupportCompressionReduction)
+    (harf : HasHomogeneousMixedCarryAffineArfCertificateReduction) :
+    CertifiedProofMdTerminalMixedTargetCoreImports where
+  terminalTrichotomy := homogeneousMixedCarryTerminalTrichotomyReduction
+  supportCompression := hsupport
+  affineArf := harf
+
+/-- Repackage the handoff imports as the existing homogeneous-carry import bundle. -/
+theorem CertifiedProofMdTerminalMixedTargetCoreImports.toHomogeneousCarryImports
+    (h : CertifiedProofMdTerminalMixedTargetCoreImports) :
+    FirstBitTerminalMixedTypeHomogeneousCarryImports where
+  terminalTrichotomy := h.terminalTrichotomy
+  supportCompression := h.supportCompression
+  affineArf := h.affineArf
+
+/-- Apply the mixed-target trichotomy from the handoff import surface. -/
+theorem CertifiedProofMdTerminalMixedTargetCoreImports.trichotomy
+    (h : CertifiedProofMdTerminalMixedTargetCoreImports)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) :
+    HomogeneousMixedCarryTerminalTrichotomy Q U tau m :=
+  h.toHomogeneousCarryImports.trichotomy Q U tau m
+
+/-- Apply support compression from the terminal mixed-target import surface. -/
+theorem CertifiedProofMdTerminalMixedTargetCoreImports.smallCoreResidual
+    (h : CertifiedProofMdTerminalMixedTargetCoreImports)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ} {m : ℕ}
+    (hres : HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m) :
+    ∃ J T : Finset ι, ∃ c : ℕ, HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c :=
+  h.toHomogeneousCarryImports.smallCoreResidual hres
+
+/-- Apply the affine-Arf residual extraction from the terminal mixed-target import surface. -/
+theorem CertifiedProofMdTerminalMixedTargetCoreImports.arfCertificate
+    (h : CertifiedProofMdTerminalMixedTargetCoreImports)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ}
+    (hinc : HomogeneousMixedCarryAffineInconsistency Q U tau) :
+    HomogeneousMixedCarryArfCertificateResidual Q U tau :=
+  h.toHomogeneousCarryImports.arfCertificate hinc
+
+/--
+Current first-bit/co-cut obligation surface: final branch wrappers, available-coordinate cut imports,
+and post-quotient anchored-packing rows are presented as one reusable handoff object.
+-/
+structure CertifiedProofMdFirstBitCoCutObligationSurface
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Prop where
+  finalAvailableCut :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+
+/-- Build the first-bit/co-cut obligation surface from the available-cut and packing packages. -/
+theorem certifiedProofMdFirstBitCoCutObligationSurface_of_parts
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+        Basis WithHoles PositiveAtom)
+    (hpacking :
+      PositiveAtomPostQuotientAnchoredPackingImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  finalAvailableCut :=
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking_of_parts
+      hfinal hpacking
+
+/-- Recover the available-cut final wrapper from the co-cut obligation surface. -/
+theorem CertifiedProofMdFirstBitCoCutObligationSurface.toAvailableCutFinalWrapper
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom :=
+  h.finalAvailableCut.to_availableCutFinalWrapper
+
+/-- Project the ordinary final branch wrappers from the co-cut obligation surface. -/
+theorem CertifiedProofMdFirstBitCoCutObligationSurface.toFinalBranchWrappers
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappers :=
+  h.finalAvailableCut.to_finalBranches
+
+/-- Project the available-cut positive-atom import package from the co-cut obligation surface. -/
+theorem CertifiedProofMdFirstBitCoCutObligationSurface.toAvailableCutPositiveAtom
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom :=
+  h.finalAvailableCut.to_availableCutPositiveAtom
+
+/-- Project the raw available-cut collapse surface from the co-cut obligation package. -/
+theorem CertifiedProofMdFirstBitCoCutObligationSurface.toAvailableCutCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom :=
+  h.finalAvailableCut.to_availableCutCollapse
+
+/-- Project the full-coordinate collapse surface from the co-cut obligation package. -/
+theorem CertifiedProofMdFirstBitCoCutObligationSurface.toFullCoordinateCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse
+      WithHoles PositiveAtom :=
+  h.finalAvailableCut.to_fullCoordinateCollapse
+
+/-- Project the post-quotient anchored-packing imports from the co-cut obligation package. -/
+theorem CertifiedProofMdFirstBitCoCutObligationSurface.toPostQuotientAnchoredPacking
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.finalAvailableCut.to_postQuotientAnchoredPacking
+
+/--
+Certified-seven handoff using the unified Ramsey regular-10 consequence directly and higher-bit work
+in fixed-target form.
+-/
+theorem
+    targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenRegular_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenRegular : HasRamseyTenRegularAtDyadicTarget)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven) :
+    TargetStatement := by
+  have hsmallEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_fixedWitnessTargets
+      higherBitTargets
+  have hterminal :
+      HasPolynomialCostFixedWitnessTerminalRegularization 5 :=
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+      fixedWitnessExternalBlockSelfBridgeFive
+  have hrestEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_of_fixedWitnessTerminalRegularizationFive_and_smallModulus
+      hterminal hsmallEleven
+  have hrestTen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_ten
+      (hasFourToEightTargetTenFixedWitnessLift_of_ramseyTenRegularAtDyadicTarget
+        ramseyTenRegular)
+      hrestEleven
+  have htwiceSeven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap 7 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap_of_parityToModFourLoss64_and_jAtLeastTwo
+      (M := 7)
+      (hasParityToModFourLoss64FixedWitnessLift_of_evenDegreeModFourLoss32InducedSubgraph
+        evenDegreeModFourLoss32)
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_seven_of_ten
+        hrestTen)
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_fixedWitnessTerminalRegularization
+      sevenVertexFourOrFiveBoolCertificate
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap_of_twiceLargeGap
+        htwiceSeven)
+      hterminal
+
+/-- Certified-seven fixed-target handoff consuming the unified Ramsey consequence bundle. -/
+theorem
+    targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_unifiedRamseyConsequences_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyConsequences : RamseyTenR45GlobalConsequenceBundle)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenRegular_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    evenDegreeModFourLoss32
+    (hasRamseyTenRegularAtDyadicTarget_of_ramseyTenR45GlobalConsequenceBundle
+      ramseyConsequences)
+    fixedWitnessExternalBlockSelfBridgeFive higherBitTargets
+
+/-- Certified-seven fixed-target handoff consuming the normalized exact-`42` Ramsey surface. -/
+theorem
+    targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_exact42ConsumerNormalizedRamsey_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramsey : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_unifiedRamseyConsequences_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    evenDegreeModFourLoss32 ramsey.toGlobalConsequenceBundle
+    fixedWitnessExternalBlockSelfBridgeFive higherBitTargets
+
+/--
+Certified-seven fixed-target handoff with terminal work exposed as the q=16 slice plus the genuine
+`j >= 5` external-block tail.
+-/
+theorem
+    targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_unifiedRamseyConsequences_and_cliqueOrIndepSetBound16_and_terminalTail_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyConsequences : RamseyTenR45GlobalConsequenceBundle)
+    (cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (terminalTailFromFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive)
+    (higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_unifiedRamseyConsequences_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    evenDegreeModFourLoss32 ramseyConsequences
+    (hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_fromFive
+      cliqueOrIndepSetBound16 terminalTailFromFive)
+    higherBitTargets
+
+/-- Same split-terminal handoff with the first-bit input in the current bounded-coloring form. -/
+theorem
+    targetStatement_of_proofMdFinalHandoff_of_evenModFourColoringBound_le32_and_unifiedRamseyConsequences_and_cliqueOrIndepSetBound16_and_terminalTail_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    (evenModFourColoringBound : HasEvenDegreeModFourCongruentDegreeColoringBound C)
+    (ramseyConsequences : RamseyTenR45GlobalConsequenceBundle)
+    (cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (terminalTailFromFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive)
+    (higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_unifiedRamseyConsequences_and_cliqueOrIndepSetBound16_and_terminalTail_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
+      hCpos hC evenModFourColoringBound)
+    ramseyConsequences cliqueOrIndepSetBound16 terminalTailFromFive higherBitTargets
+
+/--
+Single integrated handoff certificate for the current final frontier.  Some fields are projected for
+downstream first-bit/terminal orchestration; the target-statement theorem below uses the mathematical
+fields that already feed the proof-md final route.
+-/
+structure CertifiedProofMdIntegratedFrontierHandoffCertificate
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Type where
+  firstBitColorCount : ℕ
+  firstBitColorCount_pos : 0 < firstBitColorCount
+  firstBitColorCount_le32 : firstBitColorCount ≤ 32
+  evenModFourColoringBound :
+    HasEvenDegreeModFourCongruentDegreeColoringBound firstBitColorCount
+  ramsey : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate
+  cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607
+  terminalTailFromFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive
+  higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven
+  terminalMixedCore : CertifiedProofMdTerminalMixedTargetCoreImports
+  firstBitCoCut :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+
+/-- Project unified Ramsey consequences from the integrated frontier certificate. -/
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toGlobalConsequenceBundle
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.ramsey.toGlobalConsequenceBundle
+
+/-- Project the Ramsey regular-10 target from the integrated frontier certificate. -/
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toRamseyTenRegular
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasRamseyTenRegularAtDyadicTarget :=
+  h.ramsey.toRamseyTenRegular
+
+/-- Project the D=5 external-block bridge assembled from the split terminal fields. -/
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toExternalBlockSelfBridgeFive
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_fromFive
+    h.cliqueOrIndepSetBound16 h.terminalTailFromFive
+
+/-- Project the loss-32 first-bit selector implied by the integrated bounded-coloring field. -/
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toEvenDegreeModFourLoss32
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
+    h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound
+
+/-- Project the terminal mixed-target core imports from the integrated frontier certificate. -/
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toTerminalMixedCore
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.terminalMixedCore
+
+/-- Project the first-bit/co-cut obligation surface from the integrated frontier certificate. -/
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toFirstBitCoCut
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut
+
+/-- The integrated final frontier handoff certificate closes the target statement. -/
+theorem targetStatement_of_certifiedProofMdIntegratedFrontierHandoffCertificate
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenModFourColoringBound_le32_and_unifiedRamseyConsequences_and_cliqueOrIndepSetBound16_and_terminalTail_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound
+    h.ramsey.toGlobalConsequenceBundle h.cliqueOrIndepSetBound16 h.terminalTailFromFive
+    h.higherBitTargets
+
 end RegularInducedSubgraph
