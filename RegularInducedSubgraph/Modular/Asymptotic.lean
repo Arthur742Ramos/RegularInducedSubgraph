@@ -2,6 +2,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Sqrt
+import RegularInducedSubgraph.Combinatorics.SplitGraph
 import RegularInducedSubgraph.Modular.Cascade
 import RegularInducedSubgraph.Modular.Frontier
 
@@ -5598,6 +5599,306 @@ theorem firstBitSmallDeletionShiftTerminalFrontierSurfaces_of_frontier
     FirstBitSmallDeletionShiftTerminalFrontierSurfaces Usable Δ σ where
   frontier := hfrontier
   branchSplit := firstBitLargeFiber_nonzeroShift_terminalBranchSplit hfrontier
+
+/-- The four repaired two-residue branches left by the exact-basis terminal frontier. -/
+inductive FirstBitExactBasisResidueBranch : Type
+  | zeroOne
+  | twoThree
+  | zeroTwo
+  | oneThree
+  deriving DecidableEq, Repr
+
+namespace FirstBitExactBasisResidueBranch
+
+/-- The concrete repaired-residue spectrum attached to each exact-basis branch. -/
+def residues : FirstBitExactBasisResidueBranch → Finset (Fin 4)
+  | zeroOne => {(0 : Fin 4), (1 : Fin 4)}
+  | twoThree => {(2 : Fin 4), (3 : Fin 4)}
+  | zeroTwo => {(0 : Fin 4), (2 : Fin 4)}
+  | oneThree => {(1 : Fin 4), (3 : Fin 4)}
+
+/-- Complementing a four-vertex regular pattern sends degree `d` to `3 - d`. -/
+def complementResidue (ρ : Fin 4) : Fin 4 :=
+  ⟨(3 + 4 - ρ.val) % 4, Nat.mod_lt _ (by decide : 0 < 4)⟩
+
+/-- Complement action on repaired-residue branches. -/
+def complement : FirstBitExactBasisResidueBranch → FirstBitExactBasisResidueBranch
+  | zeroOne => twoThree
+  | twoThree => zeroOne
+  | zeroTwo => oneThree
+  | oneThree => zeroTwo
+
+/-- Unit shifts leave the adjacent-residue branches. -/
+def IsUnitBranch : FirstBitExactBasisResidueBranch → Prop
+  | zeroOne => True
+  | twoThree => True
+  | zeroTwo => False
+  | oneThree => False
+
+/-- The `σ = 2` branch leaves the parity-residue branches. -/
+def IsSigmaTwoBranch : FirstBitExactBasisResidueBranch → Prop
+  | zeroOne => False
+  | twoThree => False
+  | zeroTwo => True
+  | oneThree => True
+
+@[simp] theorem complementResidue_zero :
+    complementResidue (0 : Fin 4) = (3 : Fin 4) := by
+  decide
+
+@[simp] theorem complementResidue_one :
+    complementResidue (1 : Fin 4) = (2 : Fin 4) := by
+  decide
+
+@[simp] theorem complementResidue_two :
+    complementResidue (2 : Fin 4) = (1 : Fin 4) := by
+  decide
+
+@[simp] theorem complementResidue_three :
+    complementResidue (3 : Fin 4) = (0 : Fin 4) := by
+  decide
+
+/-- Residue membership table for the exact-basis branches. -/
+theorem mem_residues_iff (b : FirstBitExactBasisResidueBranch) (ρ : Fin 4) :
+    ρ ∈ b.residues ↔
+      match b with
+      | zeroOne => ρ = (0 : Fin 4) ∨ ρ = (1 : Fin 4)
+      | twoThree => ρ = (2 : Fin 4) ∨ ρ = (3 : Fin 4)
+      | zeroTwo => ρ = (0 : Fin 4) ∨ ρ = (2 : Fin 4)
+      | oneThree => ρ = (1 : Fin 4) ∨ ρ = (3 : Fin 4) := by
+  cases b <;> fin_cases ρ <;> decide
+
+/-- Complementing residues carries exactly the complement branch. -/
+theorem complementResidue_mem_complement_iff
+    (b : FirstBitExactBasisResidueBranch) (ρ : Fin 4) :
+    complementResidue ρ ∈ b.complement.residues ↔ ρ ∈ b.residues := by
+  cases b <;> fin_cases ρ <;> decide
+
+@[simp] theorem complement_complement (b : FirstBitExactBasisResidueBranch) :
+    b.complement.complement = b := by
+  cases b <;> rfl
+
+end FirstBitExactBasisResidueBranch
+
+/--
+Exact-basis endpoint kinds for the four repaired-residue branches.  These are hereditary
+four-vertex exclusions only; they do not assert that the graph-facing terminal endpoint is closed.
+-/
+inductive FirstBitExactBasisHereditaryEndpointKind : Type
+  | alphaTwoKTwoFree
+  | omegaCycleFourFree
+  | alphaCycleFourFree
+  | omegaTwoKTwoFree
+  deriving DecidableEq, Repr
+
+namespace FirstBitExactBasisHereditaryEndpointKind
+
+/-- Complement action on the two endpoint families. -/
+def complement : FirstBitExactBasisHereditaryEndpointKind →
+    FirstBitExactBasisHereditaryEndpointKind
+  | alphaTwoKTwoFree => omegaCycleFourFree
+  | omegaCycleFourFree => alphaTwoKTwoFree
+  | alphaCycleFourFree => omegaTwoKTwoFree
+  | omegaTwoKTwoFree => alphaCycleFourFree
+
+@[simp] theorem complement_complement (k : FirstBitExactBasisHereditaryEndpointKind) :
+    k.complement.complement = k := by
+  cases k <;> rfl
+
+end FirstBitExactBasisHereditaryEndpointKind
+
+/-- Endpoint kind selected by a repaired-residue branch. -/
+def FirstBitExactBasisResidueBranch.endpointKind :
+    FirstBitExactBasisResidueBranch → FirstBitExactBasisHereditaryEndpointKind
+  | .zeroOne => .alphaTwoKTwoFree
+  | .twoThree => .omegaCycleFourFree
+  | .zeroTwo => .alphaCycleFourFree
+  | .oneThree => .omegaTwoKTwoFree
+
+/-- Complement symmetry table for repaired-residue branches and hereditary endpoint kinds. -/
+theorem firstBitExactBasis_endpointKind_complement
+    (b : FirstBitExactBasisResidueBranch) :
+    b.complement.endpointKind = b.endpointKind.complement := by
+  cases b <;> rfl
+
+/-- The `{0,1}` branch is the `α ≤ 3` plus induced-`2K₂`-free endpoint kind. -/
+theorem firstBitExactBasis_endpointKind_zeroOne :
+    FirstBitExactBasisResidueBranch.zeroOne.endpointKind =
+      FirstBitExactBasisHereditaryEndpointKind.alphaTwoKTwoFree := rfl
+
+/-- The `{2,3}` branch is the complement endpoint: `ω ≤ 3` plus induced-`C₄`-free. -/
+theorem firstBitExactBasis_endpointKind_twoThree :
+    FirstBitExactBasisResidueBranch.twoThree.endpointKind =
+      FirstBitExactBasisHereditaryEndpointKind.omegaCycleFourFree := rfl
+
+/-- The `{0,2}` branch is the `α ≤ 3` plus induced-`C₄`-free endpoint kind. -/
+theorem firstBitExactBasis_endpointKind_zeroTwo :
+    FirstBitExactBasisResidueBranch.zeroTwo.endpointKind =
+      FirstBitExactBasisHereditaryEndpointKind.alphaCycleFourFree := rfl
+
+/-- The `{1,3}` branch is the complement endpoint: `ω ≤ 3` plus induced-`2K₂`-free. -/
+theorem firstBitExactBasis_endpointKind_oneThree :
+    FirstBitExactBasisResidueBranch.oneThree.endpointKind =
+      FirstBitExactBasisHereditaryEndpointKind.omegaTwoKTwoFree := rfl
+
+/-- `α ≤ 3` on a terminal fiber, expressed as absence of independent four-sets. -/
+def FirstBitAlphaLeThreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  ∀ T : Finset V, T ⊆ S → T.card = 4 → ¬ G.IsIndepSet (T : Set V)
+
+/-- `ω ≤ 3` on a terminal fiber, expressed as absence of clique four-sets. -/
+def FirstBitOmegaLeThreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  ∀ T : Finset V, T ⊆ S → T.card = 4 → ¬ G.IsClique (T : Set V)
+
+/-- The induced graph on the terminal fiber has no induced `2K₂`. -/
+def FirstBitInducedTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  SimpleGraph.IsInducedCopyFree (G.induce (S : Set V)) twoK₂
+
+/-- The induced graph on the terminal fiber has no induced `C₄`. -/
+def FirstBitInducedCycleFourFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  SimpleGraph.IsInducedCopyFree (G.induce (S : Set V)) cycleFour
+
+/-- Hereditary endpoint for the `{0,1}` branch. -/
+structure FirstBitAlphaTwoKTwoFreeEndpoint {V : Type*} (G : SimpleGraph V)
+    (S : Finset V) : Prop where
+  alpha_le_three : FirstBitAlphaLeThreeOn G S
+  induced_twoKTwo_free : FirstBitInducedTwoKTwoFreeOn G S
+
+/-- Hereditary endpoint for the `{2,3}` branch. -/
+structure FirstBitOmegaCycleFourFreeEndpoint {V : Type*} (G : SimpleGraph V)
+    (S : Finset V) : Prop where
+  omega_le_three : FirstBitOmegaLeThreeOn G S
+  induced_cycleFour_free : FirstBitInducedCycleFourFreeOn G S
+
+/-- Hereditary endpoint for the `{0,2}` branch. -/
+structure FirstBitAlphaCycleFourFreeEndpoint {V : Type*} (G : SimpleGraph V)
+    (S : Finset V) : Prop where
+  alpha_le_three : FirstBitAlphaLeThreeOn G S
+  induced_cycleFour_free : FirstBitInducedCycleFourFreeOn G S
+
+/-- Hereditary endpoint for the `{1,3}` branch. -/
+structure FirstBitOmegaTwoKTwoFreeEndpoint {V : Type*} (G : SimpleGraph V)
+    (S : Finset V) : Prop where
+  omega_le_three : FirstBitOmegaLeThreeOn G S
+  induced_twoKTwo_free : FirstBitInducedTwoKTwoFreeOn G S
+
+/-- Interpret an exact-basis endpoint kind as its graph-local hereditary package. -/
+def FirstBitExactBasisHereditaryEndpoint
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) :
+    FirstBitExactBasisHereditaryEndpointKind → Prop
+  | .alphaTwoKTwoFree => FirstBitAlphaTwoKTwoFreeEndpoint G S
+  | .omegaCycleFourFree => FirstBitOmegaCycleFourFreeEndpoint G S
+  | .alphaCycleFourFree => FirstBitAlphaCycleFourFreeEndpoint G S
+  | .omegaTwoKTwoFree => FirstBitOmegaTwoKTwoFreeEndpoint G S
+
+/-- Branch-indexed hereditary endpoint certificate for exact-basis repaired residues. -/
+structure FirstBitExactBasisRepairedResidueEndpointCertificate
+    {V : Type*} (G : SimpleGraph V) (S : Finset V)
+    (branch : FirstBitExactBasisResidueBranch) : Prop where
+  endpoint :
+    FirstBitExactBasisHereditaryEndpoint G S branch.endpointKind
+
+/-- Build the `{0,1}` certificate from the `α ≤ 3`, induced-`2K₂`-free endpoint. -/
+theorem firstBitExactBasis_zeroOneEndpointCertificate
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitAlphaTwoKTwoFreeEndpoint G S) :
+    FirstBitExactBasisRepairedResidueEndpointCertificate G S
+      FirstBitExactBasisResidueBranch.zeroOne :=
+  ⟨h⟩
+
+/-- Build the `{2,3}` certificate from the `ω ≤ 3`, induced-`C₄`-free endpoint. -/
+theorem firstBitExactBasis_twoThreeEndpointCertificate
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitOmegaCycleFourFreeEndpoint G S) :
+    FirstBitExactBasisRepairedResidueEndpointCertificate G S
+      FirstBitExactBasisResidueBranch.twoThree :=
+  ⟨h⟩
+
+/-- Build the `{0,2}` certificate from the `α ≤ 3`, induced-`C₄`-free endpoint. -/
+theorem firstBitExactBasis_zeroTwoEndpointCertificate
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitAlphaCycleFourFreeEndpoint G S) :
+    FirstBitExactBasisRepairedResidueEndpointCertificate G S
+      FirstBitExactBasisResidueBranch.zeroTwo :=
+  ⟨h⟩
+
+/-- Build the `{1,3}` certificate from the `ω ≤ 3`, induced-`2K₂`-free endpoint. -/
+theorem firstBitExactBasis_oneThreeEndpointCertificate
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitOmegaTwoKTwoFreeEndpoint G S) :
+    FirstBitExactBasisRepairedResidueEndpointCertificate G S
+      FirstBitExactBasisResidueBranch.oneThree :=
+  ⟨h⟩
+
+/-- The two adjacent-residue endpoint alternatives produced by a unit-shift branch. -/
+def FirstBitExactBasisUnitShiftEndpointPackage
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  FirstBitExactBasisRepairedResidueEndpointCertificate G S
+      FirstBitExactBasisResidueBranch.zeroOne ∨
+    FirstBitExactBasisRepairedResidueEndpointCertificate G S
+      FirstBitExactBasisResidueBranch.twoThree
+
+/-- The two parity-residue endpoint alternatives produced by the `σ = 2` branch. -/
+def FirstBitExactBasisSigmaTwoEndpointPackage
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  FirstBitExactBasisRepairedResidueEndpointCertificate G S
+      FirstBitExactBasisResidueBranch.zeroTwo ∨
+    FirstBitExactBasisRepairedResidueEndpointCertificate G S
+      FirstBitExactBasisResidueBranch.oneThree
+
+/-- Combined exact-basis hereditary endpoint package exposed by the terminal branch split. -/
+def FirstBitExactBasisTerminalBranchEndpointPackage
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  FirstBitExactBasisUnitShiftEndpointPackage G S ∨
+    FirstBitExactBasisSigmaTwoEndpointPackage G S
+
+/--
+Conditional bridge from the branch-split terminal frontier to the exact-basis hereditary endpoint
+packages.  The graph-local endpoint maps are explicit hypotheses, so this wrapper records only the
+frontier plumbing and does not close the final graph-facing endpoint.
+-/
+structure FirstBitBranchSplitToExactBasisEndpointInputs
+    {α V : Type*} [DecidableEq α]
+    (Usable : Finset α → ℕ → Fin 4 → Prop) (Δ : Finset (Fin 4)) (σ : Fin 4)
+    (G : SimpleGraph V) (S : Finset V) : Prop where
+  terminalFrontier : FirstBitSmallDeletionShiftTerminalFrontierSurfaces Usable Δ σ
+  nonzeroShift : σ ≠ (0 : Fin 4)
+  unitEndpoint :
+    FirstBitLargeFiberUnitShiftIntersectingBranch Usable σ →
+      FirstBitExactBasisUnitShiftEndpointPackage G S
+  sigmaTwoEndpoint :
+    FirstBitLargeFiberSigmaTwoDisjointSurvivalBranch σ →
+      FirstBitExactBasisSigmaTwoEndpointPackage G S
+
+/-- Apply the terminal branch split and return the corresponding hereditary endpoint package. -/
+theorem firstBitExactBasisTerminalBranchEndpointPackage_of_branchSplit
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S) :
+    FirstBitExactBasisTerminalBranchEndpointPackage G S := by
+  rcases h.terminalFrontier.branchSplit h.nonzeroShift with hunit | hsigma
+  · exact Or.inl (h.unitEndpoint hunit)
+  · exact Or.inr (h.sigmaTwoEndpoint hsigma)
+
+/-- Unit-shift branches are exactly the endpoint package up to complement. -/
+theorem firstBitExactBasis_unitEndpointPackage_cases
+    {V : Type*} {G : SimpleGraph V} {S : Finset V} :
+    FirstBitExactBasisUnitShiftEndpointPackage G S ↔
+      FirstBitExactBasisRepairedResidueEndpointCertificate G S
+          FirstBitExactBasisResidueBranch.zeroOne ∨
+        FirstBitExactBasisRepairedResidueEndpointCertificate G S
+          FirstBitExactBasisResidueBranch.zeroOne.complement := by
+  rfl
+
+/-- The `σ = 2` branches are exactly the parity endpoint package up to complement. -/
+theorem firstBitExactBasis_sigmaTwoEndpointPackage_cases
+    {V : Type*} {G : SimpleGraph V} {S : Finset V} :
+    FirstBitExactBasisSigmaTwoEndpointPackage G S ↔
+      FirstBitExactBasisRepairedResidueEndpointCertificate G S
+          FirstBitExactBasisResidueBranch.zeroTwo ∨
+        FirstBitExactBasisRepairedResidueEndpointCertificate G S
+          FirstBitExactBasisResidueBranch.zeroTwo.complement := by
+  rfl
 
 /--
 Two-coordinate augmented atom normalization surface: the atom size and old increment vanish modulo
