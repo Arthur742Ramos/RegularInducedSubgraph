@@ -1546,6 +1546,7 @@ the independent-packet size is `0 [MOD 4]`.
 In the exact cross-regular version, writing `c_I` and `c_K` for the two cross-degree residues, the
 conditions are `c_I=kappa`, `|K|+c_K=kappa`, and `|I|c_I=|K|c_K [MOD 4]`.
 Old-frame counting also gives `r|I|=0` and `m kappa=(r+1)|K|`.
+With `kappa=|K|`, odd `r` forces `|I|=0`, and odd `m-r-1` forces `|K|=0`.
 Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`.
 
 The corresponding general scalar equation is exact: two internally regular cross-uniform packets

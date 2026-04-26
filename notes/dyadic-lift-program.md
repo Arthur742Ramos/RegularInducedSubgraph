@@ -362,6 +362,8 @@ the mixed packet appends iff `c_I=kappa` and `|K|+c_K=kappa [MOD 4]`, with
 `|I|c_I=|K|c_K`.
 Old-frame double counts add `r|I|=0` and `m kappa=(r+1)|K|`; for the dense Olson cap `kappa=|K|`, this
 is `(m-r-1)|K|=0`.
+So odd `r` forces `|I|=0`, `r=2` forces `|I|` even, odd `m-r-1` forces `|K|=0`, and
+`m-r-1=2` forces `|K|` even.
 Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`; equal size residues require `|K|` even, while odd size
 difference forces `kappa` uniquely.
 The general two-packet scalar equation is: for internally regular cross-uniform packets

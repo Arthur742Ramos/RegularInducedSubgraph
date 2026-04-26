@@ -5334,6 +5334,13 @@ r|I|=0,        m kappa=(r+1)|K|        [MOD 4],
 ```
 
 and in the Olson dense cap where `kappa=|K|`, this becomes `(m-r-1)|K|=0`.
+Thus:
+
+```text
+r odd => |I|=0,        r=2 => |I| even;
+m-r-1 odd => |K|=0,    m-r-1=2 => |K| even              [MOD 4].
+```
+
 Equivalently, eliminating the cross residues leaves
 
 ```text

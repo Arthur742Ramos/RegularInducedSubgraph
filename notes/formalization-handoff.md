@@ -1025,6 +1025,8 @@ Recommended attack:
    `c_I=kappa`, `|K|+c_K=kappa [MOD 4]`, and `|I|c_I=|K|c_K`.
    Add old-frame constraints `r|I|=0` and `m kappa=(r+1)|K|`; with `kappa=|K|`, this is
    `(m-r-1)|K|=0`.
+   Record the size table: odd `r` forces `|I|=0`, `r=2` forces `|I|` even; odd `m-r-1` forces `|K|=0`,
+   and `m-r-1=2` forces `|K|` even.
    Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`.
    Generalize this as the two-packet scalar equation: internally regular cross-uniform packets
    `B_a subset P_a`, `B_b subset P_b` append iff
