@@ -5303,9 +5303,9 @@ If opposite residues are both high-active target-avoidance endpoints on a shared
 singleton-shadow collapse forces an antipodal trace core: two copies of `sigma`, two of `1-sigma`, and all
 singleton flips around both centers on their active sides.  With different minimal certificates this holds
 on each certificate separately and complements on intersections.
-If all four residues are target-avoidance, the four `q=deg_X-psi_T` color classes satisfy adjacent-pair
-lower bounds `|N_i|+|N_{i+1}|>=4`; hence pure target-avoidance needs `m>=10`, and for `m<=9` some residue is
-scalar-killed.
+If all four residues are high-active target-avoidance, the four `q=deg_X-psi_T` color classes satisfy
+adjacent-pair lower bounds `|N_i|+|N_{i+1}|>=4`; hence pure high-active target-avoidance needs `m>=10`, and
+for `m<=9` some residue is scalar-killed or small-active zero-filter capacity.
 After coordinate switching, `h` is `{0,1}`-valued; realization is three outside columns vanishing on the
 zero coordinates and disjointly covering the one coordinates.
 Thus the target branch is a critical filtered three-cover: zero coordinates filter admissible columns, and
@@ -5359,6 +5359,9 @@ For `|A|<=3`, this is the explicit finite table: `empty` needs three empty-suppo
 coordinate needs one singleton plus two empty columns; two active coordinates need either the pair plus two
 empty columns or two singletons plus one empty column; three active coordinates need triple, pair+singleton,
 or three-singleton alternatives with the required empty columns.
+Equivalently, small-active target failure is a finite zero-filter blocker: every allowed support triple is
+hit by some zero coordinate, and each zero coordinate is essential through a triple whose only zero breach
+is that coordinate.
 Relaxing a zero coordinate adds only private columns `p_z(B)` whose zero-trace is exactly `{z}`; in the
 all-zero case, if only `q<=2` common-zero columns exist, every zero coordinate has at least `3-q` private
 columns.

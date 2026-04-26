@@ -2451,8 +2451,9 @@ Recommended attack:
     Formalize the antipodal trace core forced when both opposite residues are high-active target endpoints
     on a shared certificate: repeated centers `sigma`, `1-sigma`, and singleton flips around the two centers;
     for different certificates, record complementary restrictions on intersections.
-    Formalize the small-core cutoff: if all four residues are target-avoidance then
-    `|N_i|+|N_{i+1}|>=4` for the four `q=deg_X-psi_T` classes, so `m>=10`.
+    Formalize the small-core cutoff: if all four residues are high-active target-avoidance then
+    `|N_i|+|N_{i+1}|>=4` for the four `q=deg_X-psi_T` classes, so `m>=10`; otherwise some residue is
+    scalar-killed or small-active zero-filter capacity.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

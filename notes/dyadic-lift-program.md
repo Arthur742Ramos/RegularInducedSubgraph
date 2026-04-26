@@ -1064,8 +1064,9 @@ high-active filtered covers cannot be chosen independently.
 Two opposite high-active target endpoints on a shared certificate force an antipodal trace core: repeated
 complementary centers and singleton flips around both centers; different minimal certificates carry the
 same complementary restriction on their intersections.
-Pure target-avoidance for all four residues forces adjacent-pair lower bounds on the four
-`q=deg_X-psi_T` color classes, so it can occur only when `m>=10`; for `m<=9` some residue is scalar-killed.
+Pure high-active target-avoidance for all four residues forces adjacent-pair lower bounds on the four
+`q=deg_X-psi_T` color classes, so it can occur only when `m>=10`; for `m<=9` some residue is scalar-killed
+or small-active zero-filter capacity.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.
@@ -1073,6 +1074,8 @@ The cases `m<=2` are finite-Ramsey closed: any pair is a selector for `m=1`, and
 monochromatic residue triangle when `m=2` under the counterexample inequality.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
+Small-active target failure is equivalently a finite zero-filter blocker: every allowed support triple has
+a nonempty zero-hit union, while every zero coordinate is the unique hit for some repair triple.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.
 Every zero relaxation must use at least one private support or private empty class, otherwise it would
 already be a cover under `c_Z`.
