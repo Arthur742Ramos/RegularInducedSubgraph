@@ -1112,6 +1112,8 @@ lift-collision is the only nongain obstruction.
 For size-two atoms, projected gain at least two is therefore collision-forced, and unit gain survives only as
 a zero-gain shortened-block unlift; size-three atoms can purely absorb only unit gain.
 So two-atom deletion endpoints are exactly zero-gain pivots or forced collision stars.
+Zero-gain saturation removes pivots meeting another packed atom; pair pivots can only exchange with leftover
+singletons, so all-pair saturated packings have only collision-star deletions.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

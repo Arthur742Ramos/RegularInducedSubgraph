@@ -12083,6 +12083,21 @@ collision star:   at least two members are forced to lift through a.
 There is no absorption case at a two-atom.  Thus a deficit-one packing whose non-singleton atoms are all
 pairs reduces the deletion side to zero-gain pivots and forced collision stars only.
 
+Zero-gain saturation sharply restricts the pivot side.  Let `B_j={a,b}` be a pair atom in a saturated
+packing.  A zero-gain pivot after deleting `a` is an unlifted support `C` containing `b` with
+`gain_P(C)=0`.  If `C` meets any other packed atom, then `|C|>=3`; replacing the packed atoms hit by `C`
+with `C` is a zero-gain move whose sorted block-size profile is lexicographically larger.  This contradicts
+the saturated choice of `P`.  Hence every surviving zero-gain pivot at a pair atom is a same-size exchange
+
+```text
+C={b,l}
+```
+
+with a leftover singleton atom `l`.  Consequently, if a saturated deficit-one packing has no leftover
+singletons, every deletion from a pair atom is forced into the collision-star alternative.  If it has one
+leftover singleton, pair pivots can only swap the deleted vertex with that singleton; all other deletion
+repairs are collision-forced.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

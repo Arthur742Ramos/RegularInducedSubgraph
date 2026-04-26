@@ -5446,6 +5446,9 @@ survives only as a zero-gain shortened-block unlift; at a size-three atom pure a
 for `g^-=1`.
 Equivalently, a two-atom deletion endpoint is a zero-gain pivot or a forced collision star; there is no
 absorption case.
+In a zero-gain-saturated packing, a pair-atom pivot that meets another packed atom would create a larger
+block, so surviving pivots are only same-size exchanges with leftover singletons.  With no leftover
+singletons, every pair-atom deletion is collision-forced.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.
