@@ -9809,6 +9809,416 @@ theorem FirstBitTerminalPositiveAtomTraceAndRerootIntersectionImports.tracePacka
     FirstBitTerminalPositiveAtomTraceResidualImports :=
   h.trace
 
+/-- The finite internal candidate set `C_int` cut out by a reroot predicate. -/
+noncomputable def positiveAtomInternalCandidateSet
+    (Internal : Finset (Fin 7) → Prop) : Finset (Finset (Fin 7)) := by
+  classical
+  exact positiveAtomOmittedTriples.filter fun O => Internal O
+
+/-- Membership in the finite internal candidate set. -/
+theorem mem_positiveAtomInternalCandidateSet_iff
+    {Internal : Finset (Fin 7) → Prop} {O : Finset (Fin 7)} :
+    O ∈ positiveAtomInternalCandidateSet Internal ↔
+      PositiveAtomInternalCandidate Internal O := by
+  classical
+  simp [positiveAtomInternalCandidateSet, PositiveAtomInternalCandidate,
+    PositiveAtomOmittedTriple]
+
+/-- The finite reroot candidate set `C_ext ∩ C_int`. -/
+noncomputable def positiveAtomRerootIntersectionCandidateSet
+    (Internal : Finset (Fin 7) → Prop)
+    (classes : Finset PositiveAtomTraceClass) : Finset (Finset (Fin 7)) :=
+  positiveAtomExternalCandidateSet classes ∩ positiveAtomInternalCandidateSet Internal
+
+/-- Membership in the finite reroot candidate set is exactly the reroot candidate predicate. -/
+theorem mem_positiveAtomRerootIntersectionCandidateSet_iff
+    {Internal : Finset (Fin 7) → Prop} {classes : Finset PositiveAtomTraceClass}
+    {O : Finset (Fin 7)} :
+    O ∈ positiveAtomRerootIntersectionCandidateSet Internal classes ↔
+      PositiveAtomRerootIntersectionCandidate Internal classes O := by
+  classical
+  constructor
+  · intro hO
+    rcases Finset.mem_inter.mp hO with ⟨hext, hint⟩
+    exact ⟨mem_positiveAtomExternalCandidateSet_iff.mp hext,
+      (mem_positiveAtomInternalCandidateSet_iff.mp hint).2⟩
+  · intro hO
+    exact Finset.mem_inter.mpr
+      ⟨mem_positiveAtomExternalCandidateSet_iff.mpr hO.1,
+        mem_positiveAtomInternalCandidateSet_iff.mpr ⟨hO.1.1, hO.2⟩⟩
+
+/-- Read the reroot predicate from an intersection certificate. -/
+theorem PositiveAtomRerootIntersectionCertificate.to_candidate
+    {Internal : Finset (Fin 7) → Prop} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomRerootIntersectionCertificate Internal classes) :
+    PositiveAtomRerootIntersectionCandidate Internal classes h.omitted :=
+  ⟨h.external, h.internal⟩
+
+/-- Read the internal candidate predicate from an intersection certificate. -/
+theorem PositiveAtomRerootIntersectionCertificate.to_internalCandidate
+    {Internal : Finset (Fin 7) → Prop} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomRerootIntersectionCertificate Internal classes) :
+    PositiveAtomInternalCandidate Internal h.omitted :=
+  ⟨h.external.1, h.internal⟩
+
+/-- The certified omitted triple lies in `C_ext`. -/
+theorem PositiveAtomRerootIntersectionCertificate.mem_externalCandidateSet
+    {Internal : Finset (Fin 7) → Prop} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomRerootIntersectionCertificate Internal classes) :
+    h.omitted ∈ positiveAtomExternalCandidateSet classes :=
+  mem_positiveAtomExternalCandidateSet_iff.mpr h.external
+
+/-- The certified omitted triple lies in `C_int`. -/
+theorem PositiveAtomRerootIntersectionCertificate.mem_internalCandidateSet
+    {Internal : Finset (Fin 7) → Prop} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomRerootIntersectionCertificate Internal classes) :
+    h.omitted ∈ positiveAtomInternalCandidateSet Internal :=
+  mem_positiveAtomInternalCandidateSet_iff.mpr h.to_internalCandidate
+
+/-- The certified omitted triple lies in the finite intersection `C_ext ∩ C_int`. -/
+theorem PositiveAtomRerootIntersectionCertificate.mem_rerootIntersectionCandidateSet
+    {Internal : Finset (Fin 7) → Prop} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomRerootIntersectionCertificate Internal classes) :
+    h.omitted ∈ positiveAtomRerootIntersectionCandidateSet Internal classes :=
+  mem_positiveAtomRerootIntersectionCandidateSet_iff.mpr h.to_candidate
+
+/-- Build a reroot-intersection certificate from membership in `C_ext ∩ C_int`. -/
+theorem positiveAtomRerootIntersectionCertificate_of_mem_candidateSet
+    {Internal : Finset (Fin 7) → Prop} {classes : Finset PositiveAtomTraceClass}
+    {O : Finset (Fin 7)}
+    (hO : O ∈ positiveAtomRerootIntersectionCandidateSet Internal classes) :
+    PositiveAtomRerootIntersectionCertificate Internal classes where
+  omitted := O
+  external := (mem_positiveAtomRerootIntersectionCandidateSet_iff.mp hO).1
+  internal := (mem_positiveAtomRerootIntersectionCandidateSet_iff.mp hO).2
+
+/-- Apply the reroot residual import package to a concrete occupied trace alphabet. -/
+theorem FirstBitTerminalPositiveAtomRerootIntersectionResidualImports.finitePackage
+    {Internal : Finset (Fin 7) → Prop}
+    (h : FirstBitTerminalPositiveAtomRerootIntersectionResidualImports Internal)
+    (classes : Finset PositiveAtomTraceClass) :
+    PositiveAtomRerootIntersectionFinitePackage Internal classes :=
+  h.finiteIntersection classes
+
+/-- Project the exact-basis wrapper from a positive-atom reroot final package. -/
+theorem FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot.to_exactBasis
+    {Internal : Finset (Fin 7) → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot Internal) :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound :=
+  h.exactBasis
+
+/-- Project the near-basis exchange-budget imports from a positive-atom reroot final package. -/
+theorem FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot.to_nearBasis
+    {Internal : Finset (Fin 7) → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot Internal) :
+    FirstBitTerminalNearBasisBoundaryExchangeBudgetImports :=
+  h.nearBasis
+
+/-- Project the mixed-type homogeneous-carry imports from a positive-atom reroot final package. -/
+theorem FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot.to_mixedType
+    {Internal : Finset (Fin 7) → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot Internal) :
+    FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  h.mixedType
+
+/-- Project the reroot-intersection imports from a positive-atom reroot final package. -/
+theorem FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot.to_positiveAtomReroot
+    {Internal : Finset (Fin 7) → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot Internal) :
+    FirstBitTerminalPositiveAtomRerootIntersectionResidualImports Internal :=
+  h.positiveAtomReroot
+
+/-- Apply the positive-atom reroot residual package to an occupied trace alphabet. -/
+theorem FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot.rerootFinitePackage
+    {Internal : Finset (Fin 7) → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot Internal)
+    (classes : Finset PositiveAtomTraceClass) :
+    PositiveAtomRerootIntersectionFinitePackage Internal classes :=
+  h.positiveAtomReroot.finitePackage classes
+
+/-- Two-sided coordinate-subbox availability for a nonzero coefficient modulo four. -/
+def FirstBitCoordinateSubboxTwoSidedAvailable (capacity : ℕ) (coeff : Fin 4) : Prop :=
+  coeff ≠ (0 : Fin 4) ∧
+    (capacity = 3 ∨ (capacity = 2 ∧ coeff = (2 : Fin 4)))
+
+/-- At capacity `3`, exactly the three nonzero coefficients are two-sided available. -/
+theorem firstBitCoordinateSubboxTwoSidedAvailable_three_iff {coeff : Fin 4} :
+    FirstBitCoordinateSubboxTwoSidedAvailable 3 coeff ↔
+      coeff = (1 : Fin 4) ∨ coeff = (2 : Fin 4) ∨ coeff = (3 : Fin 4) := by
+  constructor
+  · intro hcoeff
+    fin_cases coeff <;> simp [FirstBitCoordinateSubboxTwoSidedAvailable] at hcoeff ⊢
+  · intro hcoeff
+    refine ⟨?_, Or.inl rfl⟩
+    rcases hcoeff with hcoeff | hcoeff | hcoeff <;> simp [hcoeff]
+
+/-- Capacity `3` admits every nonzero coefficient. -/
+theorem firstBitCoordinateSubboxTwoSidedAvailable_three
+    {coeff : Fin 4} (hcoeff : coeff ≠ (0 : Fin 4)) :
+    FirstBitCoordinateSubboxTwoSidedAvailable 3 coeff :=
+  ⟨hcoeff, Or.inl rfl⟩
+
+/-- At capacity `2`, two-sided availability is only the self-opposite coefficient `2`. -/
+theorem firstBitCoordinateSubboxTwoSidedAvailable_two_iff {coeff : Fin 4} :
+    FirstBitCoordinateSubboxTwoSidedAvailable 2 coeff ↔ coeff = (2 : Fin 4) := by
+  constructor
+  · intro hcoeff
+    rcases hcoeff with ⟨_hnonzero, hcap | hcap⟩
+    · norm_num at hcap
+    · exact hcap.2
+  · intro hcoeff
+    refine ⟨?_, Or.inr ⟨rfl, hcoeff⟩⟩
+    simp [hcoeff]
+
+/-- Capacity `2` admits the coefficient `2`. -/
+theorem firstBitCoordinateSubboxTwoSidedAvailable_two :
+    FirstBitCoordinateSubboxTwoSidedAvailable 2 (2 : Fin 4) :=
+  firstBitCoordinateSubboxTwoSidedAvailable_two_iff.mpr rfl
+
+/-- Capacity at most `1` admits no nonzero coefficient. -/
+theorem firstBitCoordinateSubboxTwoSidedAvailable_false_of_capacity_le_one
+    {capacity : ℕ} {coeff : Fin 4} (hcap : capacity ≤ 1) :
+    ¬ FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff := by
+  rintro ⟨_hnonzero, hthree | htwo⟩
+  · omega
+  · omega
+
+/-- A coordinate cut is label-compatible when it is zero or two-sided available. -/
+def FirstBitCoordinateSubboxCutCompatible (capacity : ℕ) (coeff : Fin 4) : Prop :=
+  coeff = (0 : Fin 4) ∨ FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff
+
+/-- Capacity `3` leaves every coefficient label-compatible. -/
+theorem firstBitCoordinateSubboxCutCompatible_three (coeff : Fin 4) :
+    FirstBitCoordinateSubboxCutCompatible 3 coeff := by
+  by_cases hzero : coeff = (0 : Fin 4)
+  · exact Or.inl hzero
+  · exact Or.inr (firstBitCoordinateSubboxTwoSidedAvailable_three hzero)
+
+/-- Capacity `2` leaves only zero and the self-opposite coefficient label-compatible. -/
+theorem firstBitCoordinateSubboxCutCompatible_two_iff {coeff : Fin 4} :
+    FirstBitCoordinateSubboxCutCompatible 2 coeff ↔
+      coeff = (0 : Fin 4) ∨ coeff = (2 : Fin 4) := by
+  constructor
+  · intro hcoeff
+    rcases hcoeff with hzero | havail
+    · exact Or.inl hzero
+    · exact Or.inr (firstBitCoordinateSubboxTwoSidedAvailable_two_iff.mp havail)
+  · intro hcoeff
+    rcases hcoeff with hzero | htwo
+    · exact Or.inl hzero
+    · exact Or.inr (firstBitCoordinateSubboxTwoSidedAvailable_two_iff.mpr htwo)
+
+/-- Capacity at most `1` makes label-compatibility force the zero coefficient. -/
+theorem firstBitCoordinateSubboxCutCompatible_eq_zero_of_capacity_le_one
+    {capacity : ℕ} {coeff : Fin 4} (hcap : capacity ≤ 1)
+    (hcompat : FirstBitCoordinateSubboxCutCompatible capacity coeff) :
+    coeff = (0 : Fin 4) := by
+  rcases hcompat with hzero | havail
+  · exact hzero
+  · exact False.elim
+      (firstBitCoordinateSubboxTwoSidedAvailable_false_of_capacity_le_one hcap havail)
+
+/-- Available coordinate cuts remember that the effective deficit is the original deficit `d`. -/
+structure FirstBitCoordinateSubboxAvailableCutCertificate
+    (capacity : ℕ) (coeff : Fin 4) (d effectiveDeficit : ℕ) : Prop where
+  available : FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff
+  keeps_deficit : effectiveDeficit = d
+
+/-- Build an available-cut certificate when no deficit has been changed. -/
+theorem firstBitCoordinateSubboxAvailableCutCertificate_of_available
+    {capacity d : ℕ} {coeff : Fin 4}
+    (havailable : FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff) :
+    FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d d where
+  available := havailable
+  keeps_deficit := rfl
+
+/-- Project the two-sided availability row from an available-cut certificate. -/
+theorem FirstBitCoordinateSubboxAvailableCutCertificate.to_available
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit) :
+    FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff :=
+  h.available
+
+/-- Project the fact that an available cut keeps the original deficit. -/
+theorem FirstBitCoordinateSubboxAvailableCutCertificate.effectiveDeficit_eq
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit) :
+    effectiveDeficit = d :=
+  h.keeps_deficit
+
+/-- No available-cut certificate exists at capacity at most `1`. -/
+theorem not_firstBitCoordinateSubboxAvailableCutCertificate_of_capacity_le_one
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4} (hcap : capacity ≤ 1) :
+    ¬ FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit := by
+  intro hcut
+  exact firstBitCoordinateSubboxTwoSidedAvailable_false_of_capacity_le_one hcap hcut.available
+
+/-- Available-cut positive-atom collapse keeps the original deficit and carries any residual index along. -/
+def FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse
+    (WithHoles PositiveAtom : ℕ → ℕ → Prop) : Prop :=
+  ∀ {capacity d effectiveDeficit rho : ℕ} {coeff : Fin 4},
+    FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit →
+      WithHoles effectiveDeficit rho → PositiveAtom d rho
+
+/-- If collapse is stated directly with the original deficit, it gives the available-cut surface. -/
+theorem firstBitCoordinateSubboxAvailableCutPositiveAtomCollapse_of_originalDeficit
+    {WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (hcollapse :
+      ∀ {capacity d rho : ℕ} {coeff : Fin 4},
+        FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff →
+          WithHoles d rho → PositiveAtom d rho) :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom := by
+  intro capacity d effectiveDeficit rho coeff hcut hholes
+  have hholes' : WithHoles d rho := by
+    simpa [hcut.keeps_deficit] using hholes
+  exact hcollapse hcut.available hholes'
+
+/-- Apply an available-cut collapse surface when the deficit is already the original one. -/
+theorem FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse.positiveAtom_of_available
+    {WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (hcollapse : FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom)
+    {capacity d rho : ℕ} {coeff : Fin 4}
+    (havailable : FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff)
+    (hholes : WithHoles d rho) :
+    PositiveAtom d rho :=
+  hcollapse
+    (firstBitCoordinateSubboxAvailableCutCertificate_of_available
+      (d := d) havailable) hholes
+
+/--
+Holed-boundary positive-atom wrapper on available coordinate cuts: the near-top basis transfers to
+the holed formulation, and the collapse uses the original deficit rather than a uniform hole deficit.
+-/
+structure FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop) : Prop where
+  basisWithHoles : FirstBitNearTopBasisWithHolesTransfer Basis WithHoles
+  availableCutCollapse :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom
+
+/-- Construct the available-cut wrapper from the two imported surfaces. -/
+theorem firstBitHoledBoundaryAvailableCutPositiveAtomWrappers_of_surfaces
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (htransfer : FirstBitNearTopBasisWithHolesTransfer Basis WithHoles)
+    (hcollapse :
+      FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom) :
+    FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom where
+  basisWithHoles := htransfer
+  availableCutCollapse := hcollapse
+
+/-- Use an available coordinate cut to pass from a basis certificate to the positive atom. -/
+theorem FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers.positiveAtom_of_basis
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom)
+    {capacity d effectiveDeficit rho : ℕ} {coeff : Fin 4}
+    (hcut : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit)
+    (hbasis : Basis effectiveDeficit rho) :
+    PositiveAtom d rho :=
+  h.availableCutCollapse hcut (h.basisWithHoles hbasis)
+
+/--
+Final-facing import bundle for the available-cut positive-atom route.  It keeps the exact-boundary
+exchange-budget import visible beside the holed-boundary collapse surface.
+-/
+structure FirstBitTerminalAvailableCutPositiveAtomBoundaryImports
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop) : Prop where
+  nearBoundary : FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+  availableCut :
+    FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom
+
+/-- Add the canonical exact-boundary exchange-budget imports to an available-cut collapse wrapper. -/
+theorem firstBitTerminalAvailableCutPositiveAtomBoundaryImports_of_availableCut
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (havailable :
+      FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom) :
+    FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom where
+  nearBoundary := firstBitTerminalNearBasisBoundaryExchangeBudgetImports
+  availableCut := havailable
+
+/-- Export the near-basis residual import package from the available-cut boundary imports. -/
+theorem FirstBitTerminalAvailableCutPositiveAtomBoundaryImports.to_nearBasisImportPackage
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom) :
+    FirstBitTerminalNearBasisBoundaryImportPackage
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports :=
+  FirstBitTerminalNearBasisBoundaryExchangeBudgetImports.to_importPackage h.nearBoundary
+
+/-- Apply the available-cut positive-atom route through the final-facing boundary imports. -/
+theorem FirstBitTerminalAvailableCutPositiveAtomBoundaryImports.positiveAtom_of_basis
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom)
+    {capacity d effectiveDeficit rho : ℕ} {coeff : Fin 4}
+    (hcut : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit)
+    (hbasis : Basis effectiveDeficit rho) :
+    PositiveAtom d rho :=
+  h.availableCut.positiveAtom_of_basis hcut hbasis
+
+/--
+Final packet wrapper enriched with the available-cut positive-atom import.  This is only a wiring
+surface: exact-basis, near-basis, mixed-type, and available-cut positive-atom inputs remain explicit.
+-/
+structure FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop) : Prop where
+  finalBranches : FirstBitTerminalPacketFinalBranchWrappers
+  availableCutPositiveAtom :
+    FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom
+
+/-- Build the available-cut enriched final wrapper from its final-branch and boundary-import parts. -/
+theorem firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom_of_parts
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (hfinal : FirstBitTerminalPacketFinalBranchWrappers)
+    (havailable :
+      FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom where
+  finalBranches := hfinal
+  availableCutPositiveAtom := havailable
+
+/-- Forget the available-cut enrichment and recover the ordinary final branch wrappers. -/
+theorem FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.to_finalBranches
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom) :
+    FirstBitTerminalPacketFinalBranchWrappers :=
+  h.finalBranches
+
+/-- Project the available-cut positive-atom imports from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.to_availableCutPositiveAtom
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom) :
+    FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom :=
+  h.availableCutPositiveAtom
+
+/-- Project the exact-basis endpoint package from the enriched final wrapper. -/
+theorem FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.to_exactBasis
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom) :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound :=
+  h.finalBranches.exactBasis
+
+/-- Project the visible near-basis exchange-budget imports from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.to_nearBasisExchangeBudget
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom) :
+    FirstBitTerminalNearBasisBoundaryExchangeBudgetImports :=
+  h.availableCutPositiveAtom.nearBoundary
+
+/-- Apply the available-cut positive-atom route from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.positiveAtom_of_available_basis
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom)
+    {capacity d effectiveDeficit rho : ℕ} {coeff : Fin 4}
+    (hcut : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit)
+    (hbasis : Basis effectiveDeficit rho) :
+    PositiveAtom d rho :=
+  h.availableCutPositiveAtom.positiveAtom_of_basis hcut hbasis
+
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
   ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
