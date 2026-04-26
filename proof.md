@@ -9761,6 +9761,24 @@ Thus `H[S]` has constant residue `c` modulo `4` if and only if the complement bu
 row-twin and co-twin exits, dense and codense exits, and residue-core degeneracy must hold on both sides
 with the same threshold `m`.
 
+For the loss-`32` theorem one may also pass to the critical minimal counterexample.  Suppose the theorem
+fails, and choose a counterexample `H` with minimum order.  Let `m` be the largest selector size in `H`.
+Then `|H|>32m`; if `|H|-1>32m`, every vertex deletion would contain, by minimality, a selector of size
+greater than `m`, still present in `H`, a contradiction.  Hence
+
+```text
+|H|=32m+1.
+```
+
+Moreover, for every vertex `z`, the graph `H-z` has order `32m` and therefore contains a selector of
+size at least `m`.  Since `H` has no selector of size `m+1`, each vertex is omitted by some maximum
+selector of size exactly `m`.  In residue-core language: for every `z` there is a residue `c(z)` and an
+induced starting chamber inside `H-z` whose stable residue-`c(z)` core has size exactly `m`.
+
+Thus the terminal residue-core obstruction is not diffuse in size.  It is a critical object of order
+`32m+1`, every one-vertex deletion has a maximum residue-core, but adding the deleted vertex to any such
+core is blocked by the one- and two-point anti-merge conditions below.
+
 A second exact reformulation is by merging smaller selectors.  Let `A` and `B` be disjoint induced
 selectors with internal residues `a` and `b`.  Suppose the cross-degrees are constant modulo `4` on both
 sides:

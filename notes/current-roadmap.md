@@ -5080,6 +5080,9 @@ Equivalently, every induced chamber has four elimination orders deleting all but
 where the order for residue `c` deletes only vertices whose current degree is not `c mod 4`.
 The selector condition is complement-self-dual because complementing shifts the residue on `S` by
 `|S|-1-c`; every terminal core/deletion assertion must therefore hold in both graph and complement.
+For the loss-`32` theorem, a minimum counterexample can be assumed critical: if its maximum selector size
+is `m`, then `|H|=32m+1`, and every vertex deletion `H-z` contains a maximum selector of size `m`.
+Equivalently, every deleted vertex is omitted by some stable residue-core of size exactly `m`.
 Two disjoint selector blocks `A,B` with internal residues `a,b` and constant cross-degree residues
 `p,q` merge exactly when `a+p==b+q mod 4`; terminal buckets are anti-merge for every cross-regular
 quotient solution of total lifted size greater than `m`.
