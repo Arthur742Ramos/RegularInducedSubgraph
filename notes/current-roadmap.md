@@ -4784,6 +4784,22 @@ The small dyadic cases are cleaner now as well:
   contains a regular induced `4`-set;
 - so the first genuinely new dyadic case is `q = 8`.
 
+The separate first-bit audit has also sharpened.  The parity-to-mod-`4` lift is equivalent to the
+loss-`32` even selector: every even induced graph should contain a `1/32`-large induced subgraph with
+degrees congruent modulo `4`.  In maximal-witness packet form, if `W` has residue `r` and `m=|W|`, then an
+outside packet `B` appends iff `deg_B` is constant on `W` and `deg_W(b)+deg_B(b)` hits the shifted
+residue on `B`.  Olson removes the old-frame balancing obstruction.  Two chamber caps are now exact:
+the zero-shift chamber `{b:deg_W(b)=r}` has independence number at most `3m`, and the `+1` chamber
+`{b:deg_W(b)=r+1}` has clique number at most `3m`; the dense cap uses Olson on
+`((1_{bw}-1_{bw0}),1-1_{bw0})`, forcing `|B|=deg_B(w0) [MOD 4]` inside a clique.  The remaining
+first-bit obstruction is therefore the nonzero affine target-subsum/self-layer problem, not old-frame
+zero-sum balancing.  There is one mixed zero-target rule between these two chambers: an old-zero
+independent packet in `{deg_W=r}` and a clique packet in `{deg_W=r+1}` with old degree `|K|` append
+together when their cross graph is empty with `|K|=0`, or complete with `|I|=0`, modulo `4`.
+In general, two internally regular cross-uniform chamber packets append exactly when
+`a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`; this scalar equation is now the
+packet analogue of the bounded-word augmentation table.
+
 ## Supporting work that is useful but not on the critical path
 
 - Keep external computational evidence separate from the formal proof line. The `q = 4` exhaustive

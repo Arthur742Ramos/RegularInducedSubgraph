@@ -1013,6 +1013,17 @@ Recommended attack:
    This is necessary and sufficient for `(W\D) union B` to contradict maximality of `W`.
 
    The safe formal replacement for the invalid arbitrary-target shortcut is a signed Olson packet.
+   Record two target-zero chamber caps first.  In a packet-maximal witness of residue `r`, the independent
+   number of `P_0={b:deg_W(b)=r}` is at most `3m`, and the clique number of
+   `P_+={b:deg_W(b)=r+1}` is at most `3m`.  The dense cap uses Olson on
+   `((1_{bw}-1_{bw0})_{w != w0},1-1_{bw0})`: zero sum gives constant old degree `delta` and
+   `|B|-delta=0`, so a clique packet in `P_+` has new degree `r+delta`.
+   Also formalize the mixed zero-target rule: an old-zero independent packet in `P_0` and a clique packet
+   in `P_+` with old degree `kappa=|K|` append together if their cross graph is empty and `|K|=0`, or
+   complete and `|I|=0`, modulo `4`.
+   Generalize this as the two-packet scalar equation: internally regular cross-uniform packets
+   `B_a subset P_a`, `B_b subset P_b` append iff
+   `a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`.
    Choose `w_0 in W`, work in `(Z/4Z)^(W\{w_0})`, and insert positive vectors
    `p_b(w)=1_{bw}-1_{bw_0}` for `b in P_t` together with negative vectors
    `-p_d(w)=-(1_{dw}-1_{dw_0})` for `d in W`.  Greedy Olson on the combined sequence leaves at most

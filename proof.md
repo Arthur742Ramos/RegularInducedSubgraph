@@ -5260,6 +5260,72 @@ Consequently, in any maximal counterexample,
 alpha(P_0) <= 3|W|.
 ```
 
+There is a dense zero-target companion.  Let
+
+```text
+P_+ = { b in U : deg_W(b) == r+1 [MOD 4] }.
+```
+
+If `P_+` contains a clique `K` with `|K|>3|W|`, apply Olson in `(Z/4Z)^|W|` to the vectors
+
+```text
+((1_{bw}-1_{bw_0})_{w != w_0}, 1-1_{bw_0}),        b in K.
+```
+
+For some nonempty `B subset K` the sum is zero, so `deg_B(w)=delta` is constant on `W` and
+`|B|-delta=0 [MOD 4]`.  Since `K` is a clique, every `b in B` has `deg_B(b)=|B|-1`; with
+`deg_W(b)=r+1` this gives
+
+```text
+deg_W(b)+deg_B(b)=r+|B|=r+delta        [MOD 4].
+```
+
+Thus `W union B` is larger.  Therefore every maximal counterexample also satisfies
+
+```text
+omega(P_+) <= 3|W|.
+```
+
+The two zero-target chambers also have an exact mixed packet rule.  Let `I subset P_0` be independent
+and `K subset P_+` be a clique.  Suppose
+
+```text
+deg_I(w)=0                         for every w in W,
+deg_K(w)=kappa                     for every w in W,
+|K|-kappa=0                        [MOD 4],
+```
+
+and suppose the cross graph between `I` and `K` is uniform with value `epsilon in {0,1}`.  Then
+`B=I union K` appends to `W` provided
+
+```text
+epsilon=0 => |K|=0                 [MOD 4],
+epsilon=1 => |I|=0                 [MOD 4].
+```
+
+Indeed the old increment is `delta=kappa=|K|`.  Vertices of `I` have new degree
+`r+epsilon|K|`, while vertices of `K` have new degree
+`r+1+(|K|-1)+epsilon|I|`; the two displayed size congruences make both equal to `r+delta`.
+Thus terminality forbids not only large independent packets in `P_0` and large cliques in `P_+`
+separately, but also any cross-empty or cross-complete pair of such old-balanced packets with the
+corresponding size congruence.  The extra size congruence can be forced by Olson at the cost of one
+additional `Z/4Z` coordinate when the relevant packet reservoir is larger than `3(m+1)`.
+
+More generally, the two-packet chamber equation is scalar once the packets are internally regular and
+cross-uniform.  Let `B_a subset P_a` and `B_b subset P_b` have old increments `delta_a,delta_b`, internal
+degree residues `d_a,d_b`, and cross value `epsilon in {0,1}`.  Then
+`B_a union B_b` appends to `W` iff
+
+```text
+a+d_a+epsilon|B_b| = r+delta_a+delta_b,
+b+d_b+epsilon|B_a| = r+delta_a+delta_b        [MOD 4].
+```
+
+The zero-target independent/clique rule is the case
+`a=r`, `d_a=0`, `delta_a=0`, `b=r+1`, `d_b=|B_b|-1`, and `delta_b=|B_b|`.
+Thus every remaining chamber-packet obstruction can be phrased as failure to realize one of these
+two scalar equations after the old-frame Olson balancing has been performed.
+
 For the other degree-to-`W` chambers the missing datum is exactly one affine target coordinate, not the
 old difference balancing.  If `P_t={b: deg_W(b)=t}` and `I subset P_t` is independent, then an
 independent packet `B subset I` extends `W` precisely when

@@ -347,7 +347,21 @@ maximality route, so the proof still needs the special old-coordinate structure.
 This kills the zero-shift sparse chamber: if `P_0={b: deg_W(b)=r}` contains an independent set larger
 than `3|W|`, Olson on the full adjacency vectors supplies a nonempty subset with zero old degree
 vector; its internal packet degree is zero, so it extends `W`.  Hence every maximal obstruction has
-`alpha(P_0)<=3|W|`.  The other sparse chambers and the dense counterpart are affine target-subsum
+`alpha(P_0)<=3|W|`.  There is also a zero-target dense companion: in the chamber
+`P_+={b:deg_W(b)=r+1}`, a clique larger than `3|W|` closes by Olson on the vectors
+`((1_{bw}-1_{bw0})_{w != w0},1-1_{bw0})`, because zero sum gives constant old degree `delta` and
+`|B|-delta=0`, while clique internal degree is `|B|-1`.  Thus terminality also gives
+`omega(P_+)<=3|W|`.
+The two zero-target chambers have an exact mixed rule: if `I subset P_r` is independent with
+`deg_I(W)=0`, `K subset P_{r+1}` is a clique with constant old degree `kappa=|K|`, and the cross graph
+between `I` and `K` is uniform `epsilon`, then `I union K` appends whenever `epsilon=0` forces
+`|K|=0 [MOD 4]` or `epsilon=1` forces `|I|=0 [MOD 4]`.  The needed size congruence is just one extra
+Olson coordinate.
+The general two-packet scalar equation is: for internally regular cross-uniform packets
+`B_a subset P_a`, `B_b subset P_b` with old increments `delta_a,delta_b`, internal residues `d_a,d_b`,
+and cross value `epsilon`, their union appends iff
+`a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`.
+The other sparse chambers and the remaining dense targets are affine target-subsum
 problems: an independent subset `B subset P_t` extends once
 `sum_B(1_{bw})=t-r` for every old `w`, while a clique subset `B subset P_t` extends once
 `sum_B(1-1_{bw0})=r-t+1`.  Thus the residual obstruction is target avoidance in `(Z/4Z)^{|W|}`, not

@@ -1523,6 +1523,32 @@ issue is supplied above by the product-firewall transport trap.  `O_10` is close
 dyadic `beta_m=0` follows through the weighted mixed-trace splitting route recorded here, and the
 refinement-data bridge uses the dropped-tail residue constancy established in that route.
 
+### First-bit selector audit addendum
+
+The separate parity-to-mod-`4` first-bit audit reduces to the loss-`32` even selector: an even induced
+graph should contain a `1/32`-large induced subgraph whose degrees are congruent modulo `4`.  In the
+maximal-witness packet form, a congruent witness `W` of residue `r` can be enlarged by an outside packet
+`B` exactly when `deg_B` is constant on `W` and `deg_W(b)+deg_B(b)` has the corresponding shifted
+constant value on `B`; Olson already supplies the old-frame balancing.
+
+Two zero-target chamber caps are now exact.  If `m=|W|`, then the chamber
+`{b:deg_W(b)=r}` has independence number at most `3m`, and the chamber `{b:deg_W(b)=r+1}` has clique
+number at most `3m`.  The clique cap uses Olson on
+`((1_{bw}-1_{bw0})_{w != w0},1-1_{bw0})`; a zero-sum clique packet has constant old degree `delta` and
+`|B|-delta=0 [MOD 4]`, so its internal clique degree `|B|-1` lands at residue `r+delta`.  Thus the
+remaining first-bit obstruction is the nonzero affine target-subsum/self-layer problem, not ordinary
+old-coordinate zero-sum balancing.
+
+The two zero-target chambers also have a mixed extension rule: an old-zero independent packet in
+`{deg_W=r}` and a clique packet in `{deg_W=r+1}` with old degree equal to its size append together if
+their cross graph is empty and the clique size is `0 [MOD 4]`, or if their cross graph is complete and
+the independent-packet size is `0 [MOD 4]`.
+
+The corresponding general scalar equation is exact: two internally regular cross-uniform packets
+`B_a subset P_a`, `B_b subset P_b`, with internal residues `d_a,d_b`, old increments
+`delta_a,delta_b`, and cross value `epsilon`, append iff
+`a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`.
+
 ## 14. Pair-chamber orientation normal form
 
 This is the cleanest direct consequence I can justify from the current pair-chamber formulation.
