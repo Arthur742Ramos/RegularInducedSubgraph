@@ -2499,6 +2499,9 @@ Recommended attack:
     Add the shared-atom absorption lemma: two unit pure-absorption witnesses through distinct vertices of the
     same four-atom with disjoint opposite traces combine to full gain `2+2-(4-1)=1`; therefore terminal
     all-large unit absorptions form pairwise-intersecting cover systems.
+    Add the trace-overlap table for the three unit-absorption types `A,B,C`: `A-A>=4`, `A-B>=7`, `A-C=8`,
+    `B-B>=10`, `B-C=11`, `C-C=12`, reducing the residual all-large absorption branch to finite
+    overlap-congestion inside common opposite atoms.
     Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
     short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
     total gain.

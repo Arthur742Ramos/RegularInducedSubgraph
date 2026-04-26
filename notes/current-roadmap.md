@@ -5441,6 +5441,9 @@ Two unit absorptions through distinct vertices of the same four-atom cannot have
 their projected gains add to `2`, the two lifted vertices add `2`, and the shared four-atom penalty is paid
 once, giving full gain `2+2-3=1`.  Thus all-large unit absorption is a finite pairwise-intersecting cover
 system on the three opposite atoms.
+For the three trace types `A` (two whole atoms), `B` (all but one vertex), and `C` (two supports covering all
+three atoms), intersections are large: `A-A>=4`, `A-B>=7`, `A-C=8`, `B-B>=10`, `B-C=11`, `C-C=12`.
+The residual all-large absorption blocker is therefore finite overlap-congestion inside common opposite atoms.
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
 vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
 positive-gain repair family whose every full lift has nonpositive total gain.

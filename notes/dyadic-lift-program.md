@@ -1109,6 +1109,8 @@ These templates are cap-tight maximum-size cross-defect events.
 Two unit absorptions through different vertices of the same four-atom must intersect in the opposite union:
 if their opposite traces were disjoint, their combined full gain would be `2+2-(4-1)=1`.  Hence the all-large
 unit-absorption branch is a finite pairwise-intersecting cover system.
+The three trace types have intersection lower bounds `A-A>=4`, `A-B>=7`, `A-C=8`, `B-B>=10`, `B-C=11`,
+`C-C=12`, so the residual all-large blocker is finite overlap-congestion, not separated cover geometry.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
 In the one-support case the exact lift accounting has two types: hitting the shortened block makes the

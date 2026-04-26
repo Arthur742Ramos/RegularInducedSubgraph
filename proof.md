@@ -12058,6 +12058,26 @@ or else the shared atom penalty turns two individually negative absorptions into
 the all-large unit-absorption branch is finite intersection data on the three cap-tight templates, not a
 diffuse large-cover phenomenon.
 
+The intersection data is itself rigid.  Write the three absorption trace types on the opposite union `M` as
+
+```text
+A: one support covering two whole four-atoms,                 |trace|=8;
+B: one support covering all but one vertex of three atoms,    |trace|=11;
+C: two supports disjointly covering all three atoms,          |trace|=12.
+```
+
+Their trace-union intersections have the lower bounds
+
+```text
+A-A: >=4,        A-B: >=7,        A-C: 8,
+B-B: >=10,       B-C: 11,         C-C: 12.
+```
+
+Thus the terminal obstruction is never caused by small overlap of the opposite traces.  Any failed
+two-absorption positive bridge must be blocked inside a large common overlap, i.e. by support-level collision
+or incompatibility within one of the opposite atoms.  The all-large unit-absorption branch is therefore a
+finite overlap-congestion packet attached to the three templates `A,B,C`.
+
 Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
 `P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
 `B_j\{a}` lowers the saving by exactly one, so the projected packing in `A\{a}` has saving `|A|-5`, one

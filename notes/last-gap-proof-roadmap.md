@@ -2006,6 +2006,8 @@ What remains justified after audit is:
       two unit absorptions through distinct vertices of the same four-atom must intersect in the opposite
       union, since disjoint traces would combine to gain `2+2-(4-1)=1`; hence the all-large absorption side is
       finite pairwise-intersecting cover data;
+      the three absorption trace types have intersections `A-A>=4`, `A-B>=7`, `A-C=8`, `B-B>=10`,
+      `B-C=11`, `C-C=12`, reducing the residual to finite overlap-congestion;
       deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
       are blocked;
       one-support deletion repair has exact lift accounting: shortened-block repairs have blocked positive
