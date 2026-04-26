@@ -77,15 +77,19 @@ theorem hasLargeEvenDegreeModFourCongruentDegreeColoringBound_mono {C D : ℕ} (
 
 /--
 A large-support even-degree coloring theorem with at most `32` colors supplies the large-support
-loss-`32` selector by taking the largest color class.
+loss-`32` selector by taking the largest color class.  The positivity of the color count is forced
+by the coloring returned on the nonempty large support, so it is not a separate hypothesis.
 -/
 theorem hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (hcolor : HasLargeEvenDegreeModFourCongruentDegreeColoringBound C) :
     HasLargeEvenDegreeModFourLoss32InducedSubgraph := by
   intro n G s hsLarge hsEven
   classical
   rcases hcolor G (s := s) hsLarge hsEven with ⟨color, hclasses⟩
+  have hsPos : 0 < s.card := lt_of_lt_of_le (by decide : 0 < 33) hsLarge
+  rcases Finset.card_pos.mp hsPos with ⟨x, _hx⟩
+  have hCpos : 0 < C := lt_of_le_of_lt (Nat.zero_le (color x).val) (color x).isLt
   rcases exists_mod_class_card_mul_ge_card (s := s) (q := C) hCpos color with
     ⟨r, hr⟩
   refine ⟨s.filter fun v => color v = r, ?_, ?_, hclasses r⟩
@@ -97,26 +101,26 @@ The large-support coloring surface is enough for the full loss-`32` selector: su
 most `32` are handled by the existing empty/singleton normal form.
 -/
 theorem hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (hcolor : HasLargeEvenDegreeModFourCongruentDegreeColoringBound C) :
     HasEvenDegreeModFourLoss32InducedSubgraph :=
   hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourLoss32InducedSubgraph
     (hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC hcolor)
+      hC hcolor)
 
 /-- The exact 32-color large-support even-degree partition form closes the large-support selector. -/
 theorem hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound32
     (hcolor : HasLargeEvenDegreeModFourCongruentDegreeColoringBound 32) :
     HasLargeEvenDegreeModFourLoss32InducedSubgraph :=
   hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-    (C := 32) (by decide) (by decide) hcolor
+    (C := 32) (by decide) hcolor
 
 /-- The exact 32-color large-support even-degree partition form closes the full loss-`32` selector. -/
 theorem hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound32
     (hcolor : HasLargeEvenDegreeModFourCongruentDegreeColoringBound 32) :
     HasEvenDegreeModFourLoss32InducedSubgraph :=
   hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-    (C := 32) (by decide) (by decide) hcolor
+    (C := 32) (by decide) hcolor
 
 /--
 Gallai plus a large-support bounded coloring theorem closes the loss-`64` parity-to-mod-`4` lift.
@@ -124,27 +128,25 @@ The first-bit coloring theorem is only used after the half-size even-degree cut 
 bucket; all smaller buckets are discharged by the selector's empty/singleton normal form.
 -/
 theorem hasParityToModFourLoss64FixedWitnessLift_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (hcolor : HasLargeEvenDegreeModFourCongruentDegreeColoringBound C) :
     HasParityToModFourLoss64FixedWitnessLift :=
   hasParityToModFourLoss64FixedWitnessLift_of_evenDegreeModFourLoss32InducedSubgraph
     (hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC hcolor)
+      hC hcolor)
 
 /-- Named first-bit import package for the large-support coloring frontier. -/
 structure FirstBitLargeSupportColoringCertificate : Type where
   colorCount : ℕ
-  colorCount_pos : 0 < colorCount
   colorCount_le32 : colorCount ≤ 32
   coloringBound : HasLargeEvenDegreeModFourCongruentDegreeColoringBound colorCount
 
 /-- Package the full even-degree coloring surface as a large-support first-bit certificate. -/
 def firstBitLargeSupportColoringCertificate_of_evenDegreeColoringBound
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (hcolor : HasEvenDegreeModFourCongruentDegreeColoringBound C) :
     FirstBitLargeSupportColoringCertificate where
   colorCount := C
-  colorCount_pos := hCpos
   colorCount_le32 := hC
   coloringBound :=
     hasLargeEvenDegreeModFourCongruentDegreeColoringBound_of_evenDegreeModFourCongruentDegreeColoringBound
@@ -152,11 +154,10 @@ def firstBitLargeSupportColoringCertificate_of_evenDegreeColoringBound
 
 /-- Package an arbitrary-set bounded coloring theorem as a large-support first-bit certificate. -/
 def firstBitLargeSupportColoringCertificate_of_modFourColoringBound
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (hcolor : HasModFourCongruentDegreeColoringBound C) :
     FirstBitLargeSupportColoringCertificate where
   colorCount := C
-  colorCount_pos := hCpos
   colorCount_le32 := hC
   coloringBound :=
     hasLargeEvenDegreeModFourCongruentDegreeColoringBound_of_modFourCongruentDegreeColoringBound
@@ -167,21 +168,21 @@ theorem FirstBitLargeSupportColoringCertificate.toLargeEvenDegreeModFourLoss32
     (h : FirstBitLargeSupportColoringCertificate) :
     HasLargeEvenDegreeModFourLoss32InducedSubgraph :=
   hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-    h.colorCount_pos h.colorCount_le32 h.coloringBound
+    h.colorCount_le32 h.coloringBound
 
 /-- Project the full loss-`32` selector from the named first-bit package. -/
 theorem FirstBitLargeSupportColoringCertificate.toEvenDegreeModFourLoss32
     (h : FirstBitLargeSupportColoringCertificate) :
     HasEvenDegreeModFourLoss32InducedSubgraph :=
   hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-    h.colorCount_pos h.colorCount_le32 h.coloringBound
+    h.colorCount_le32 h.coloringBound
 
 /-- Project the first-bit parity-to-mod-`4` lift from the named first-bit package. -/
 theorem FirstBitLargeSupportColoringCertificate.toParityToModFourLoss64FixedWitnessLift
     (h : FirstBitLargeSupportColoringCertificate) :
     HasParityToModFourLoss64FixedWitnessLift :=
   hasParityToModFourLoss64FixedWitnessLift_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-    h.colorCount_pos h.colorCount_le32 h.coloringBound
+    h.colorCount_le32 h.coloringBound
 
 /-- The current first-bit selector surfaces derived from the large-support coloring frontier. -/
 structure FirstBitCurrentSelectorAssumptions : Prop where
@@ -217,12 +218,12 @@ def ofEvenDegreeModFourLoss32
 
 /-- Package the selector assumptions directly from a large-support bounded coloring theorem. -/
 def ofLargeEvenDegreeModFourCongruentDegreeColoringBound
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (hcolor : HasLargeEvenDegreeModFourCongruentDegreeColoringBound C) :
     FirstBitCurrentSelectorAssumptions :=
   ofLargeEvenDegreeModFourLoss32
     (hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC hcolor)
+      hC hcolor)
 
 end FirstBitCurrentSelectorAssumptions
 
@@ -231,7 +232,7 @@ def FirstBitLargeSupportColoringCertificate.toCurrentSelectorAssumptions
     (h : FirstBitLargeSupportColoringCertificate) :
     FirstBitCurrentSelectorAssumptions :=
   FirstBitCurrentSelectorAssumptions.ofLargeEvenDegreeModFourCongruentDegreeColoringBound
-    h.colorCount_pos h.colorCount_le32 h.coloringBound
+    h.colorCount_le32 h.coloringBound
 
 /-- Package the selector assumptions from the named large-support certificate. -/
 def FirstBitCurrentSelectorAssumptions.ofLargeSupportColoringCertificate
@@ -345,10 +346,10 @@ def FirstBitLargeSupportColoringFacade.toParityToModFourLoss64FixedWitnessLift
 
 /--
 External-block terminal handoff with the first-bit coloring theorem required only on large even-degree
-supports, using any positive `C <= 32` colors.
+supports, using any `C <= 32` colors.
 -/
 theorem targetStatement_of_proofMdFinalHandoff_of_largeEvenModFourColoringBound_le32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (sevenVertexBooleanCertificate :
       ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
     (largeEvenModFourColoringBound : HasLargeEvenDegreeModFourCongruentDegreeColoringBound C)
@@ -360,7 +361,7 @@ theorem targetStatement_of_proofMdFinalHandoff_of_largeEvenModFourColoringBound_
   targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
     sevenVertexBooleanCertificate
     (hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC largeEvenModFourColoringBound)
+      hC largeEvenModFourColoringBound)
     ramseyTenSmallTable fixedWitnessExternalBlockSelfBridgeFive higherBitSelectors
 
 /--
@@ -368,7 +369,7 @@ Current finite-Ramsey handoff with the first-bit coloring theorem required only 
 supports.  The conversion lands directly in the large-support selector used by this frontier.
 -/
 theorem targetStatement_of_proofMdFinalHandoff_of_largeEvenModFourColoringBound_le32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (sevenVertexBooleanCertificate :
       ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
     (largeEvenModFourColoringBound : HasLargeEvenDegreeModFourCongruentDegreeColoringBound C)
@@ -383,7 +384,7 @@ theorem targetStatement_of_proofMdFinalHandoff_of_largeEvenModFourColoringBound_
   targetStatement_of_proofMdFinalHandoff_of_largeEvenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
     sevenVertexBooleanCertificate
     (hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC largeEvenModFourColoringBound)
+      hC largeEvenModFourColoringBound)
     ramseyTenSmallTable cliqueOrIndepSetBound16 cliqueOrIndepSetBoundTail higherBitSelectors
 
 /-- External-block frontier package using the large-support first-bit coloring certificate. -/
@@ -401,7 +402,7 @@ theorem targetStatement_of_proofMdLargeSupportColoringExternalBlockCertificate
     (h : ProofMdLargeSupportColoringExternalBlockCertificate) :
     TargetStatement :=
   targetStatement_of_proofMdFinalHandoff_of_largeEvenModFourColoringBound_le32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
-    h.firstBit.colorCount_pos h.firstBit.colorCount_le32 h.sevenVertexBooleanCertificate
+    h.firstBit.colorCount_le32 h.sevenVertexBooleanCertificate
     h.firstBit.coloringBound h.ramseyTenSmallTable h.fixedWitnessExternalBlockSelfBridgeFive
     h.higherBitSelectors
 
@@ -423,7 +424,7 @@ theorem targetStatement_of_proofMdLargeSupportColoringCurrentFrontierCertificate
     (h : ProofMdLargeSupportColoringCurrentFrontierCertificate) :
     TargetStatement :=
   targetStatement_of_proofMdFinalHandoff_of_largeEvenModFourColoringBound_le32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
-    h.firstBit.colorCount_pos h.firstBit.colorCount_le32 h.sevenVertexBooleanCertificate
+    h.firstBit.colorCount_le32 h.sevenVertexBooleanCertificate
     h.firstBit.coloringBound h.ramseyTenSmallTable h.cliqueOrIndepSetBound16
     h.cliqueOrIndepSetBoundTail h.higherBitSelectors
 
@@ -692,25 +693,25 @@ structure FirstBitLargeSupportColoringWrapperChecklist : Prop where
 
 /-- Build the wrapper checklist directly from a large-support bounded coloring theorem. -/
 def FirstBitLargeSupportColoringWrapperChecklist.ofLargeEvenDegreeModFourCongruentDegreeColoringBound
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (hcolor : HasLargeEvenDegreeModFourCongruentDegreeColoringBound C) :
     FirstBitLargeSupportColoringWrapperChecklist where
   largeEvenDegreeModFourLoss32 :=
     hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC hcolor
+      hC hcolor
   evenDegreeModFourLoss32 :=
     hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC hcolor
+      hC hcolor
   parityToModFourLoss64FixedWitnessLift :=
     hasParityToModFourLoss64FixedWitnessLift_of_largeEvenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC hcolor
+      hC hcolor
 
 /-- Build the wrapper checklist from the canonical large-support first-bit certificate. -/
 def FirstBitLargeSupportColoringWrapperChecklist.ofCertificate
     (h : FirstBitLargeSupportColoringCertificate) :
     FirstBitLargeSupportColoringWrapperChecklist :=
   FirstBitLargeSupportColoringWrapperChecklist.ofLargeEvenDegreeModFourCongruentDegreeColoringBound
-    h.colorCount_pos h.colorCount_le32 h.coloringBound
+    h.colorCount_le32 h.coloringBound
 
 /-- Build the wrapper checklist from current selector assumptions. -/
 def FirstBitCurrentSelectorAssumptions.toWrapperChecklist
