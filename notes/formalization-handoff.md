@@ -2580,6 +2580,10 @@ Recommended attack:
     four projected pair atoms and therefore the same one-corner square core.
     Derive the first-size cutoff: after square-breaker discharge, no no-leftover small-collision endpoint
     survives with `|A|<=9`; the first sorted profiles are `4,2,2,2` and `3,3,2,2`.
+    Normalize the first profiles: `4,2,2,2` is a one-large-atom cut system, while `3,3,2,2` is a coupled
+    two-three-atom split system whose three-atom deletions route to the other three-atom or to the square core.
+    Add the balanced-cut table for partner-free `4,2,2,2`: a side carrying `k` auxiliary pair atoms contains
+    exactly `3-k` vertices of the four-atom.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

@@ -1176,6 +1176,9 @@ The isolated no-leftover atom pattern `3,2,2,2` is discharged too: deleting from
 four projected pair atoms and the same one-corner square core.
 Thus no no-leftover small-collision endpoint survives below `|A|=10`; the first profiles are `4,2,2,2` and
 `3,3,2,2`.
+The former is a one-large-atom cut system; the latter is a coupled two-three-atom split system.
+For partner-free `4,2,2,2` cuts, a side carrying `k` auxiliary pair atoms contains `3-k` vertices of the
+four-atom.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

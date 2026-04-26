@@ -2064,6 +2064,9 @@ What remains justified after audit is:
       the isolated no-leftover pattern `3,2,2,2` is also square-routed by deleting from the size-three atom;
       hence no no-leftover small-collision endpoint survives with `|A|<=9`; first profiles are
       `4,2,2,2` and `3,3,2,2`;
+      these are respectively a one-large-atom cut system and a coupled two-three-atom split system;
+      partner-free `4,2,2,2` cuts are balanced: `k` auxiliary pair atoms on one side forces `3-k` vertices
+      of the four-atom;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

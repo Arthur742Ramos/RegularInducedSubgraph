@@ -5524,6 +5524,11 @@ The isolated pattern `3,2,2,2` also collapses: deleting from the size-three atom
 pair atoms, hence the same Boolean one-corner square core.
 Therefore after square-breaker discharge there is no no-leftover small-collision endpoint with `|A|<=9`; the
 first possible profiles are `4,2,2,2` and `3,3,2,2`.
+Profile `4,2,2,2` is a one-large-atom cut system: every pair collision splits the four-atom.  Profile
+`3,3,2,2` is a coupled two-three-atom split system: collisions split both three-atoms or one three-atom plus
+a pair, and three-atom deletion routes to the other three-atom or the square core.
+In the partner-free `4,2,2,2` table the cut is balanced: a side carrying `k` of the two auxiliary pair atoms
+contains exactly `3-k` vertices of the four-atom.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

@@ -12539,6 +12539,25 @@ together with an assignment of the two other pair atoms to the two sides; in the
 full-pair petal must hit the four-atom and omit at least two of its vertices, which are then compensated by
 the other petals.  Thus the profile `4,2,2,2` is a one-large-atom cut system.
 
+The partner-free labels in `4,2,2,2` are balanced.  Let `F` be the four-atom and let `P,Q` be the two other
+pair atoms opposite the deleted pair.  A partner-free label partitions `F union P union Q` into two petals.
+If one side carries `k` of the pair atoms `P,Q` as whole atoms and `t` vertices of `F`, then individual
+strict deficit and total rebate `|F|-1=3` force both petals to have deficit exactly one.  Equivalently
+
+```text
+t = 3-k        (k=0,1,2).
+```
+
+So the allowed sides are precisely:
+
+```text
+3 vertices of F and no pair atom;
+2 vertices of F and one pair atom;
+1 vertex  of F and two pair atoms.
+```
+
+This converts the first surviving profile into a finite balanced-cut table on the unique four-atom.
+
 In profile `3,3,2,2`, a partner-free collision has split-rebate at least three, so it must split either both
 three-atoms or one three-atom together with one pair atom.  A partner-hit collision must hit a three-atom and
 omit two of its vertices, again forcing compensation through the other petals.  Deleting from a three-atom

@@ -2100,6 +2100,9 @@ The no-leftover pattern `3,2,2,2` is also square-routed, because deleting from t
 projected pair atoms.
 So after square-breaker discharge no no-leftover small-collision endpoint survives with `|A|<=9`; the first
 profiles are `4,2,2,2` and `3,3,2,2`.
+The `4,2,2,2` profile is a one-large-atom cut system; `3,3,2,2` is a coupled two-three-atom split system.
+In the partner-free `4,2,2,2` cut table, a side with `k` auxiliary pair atoms has `3-k` vertices of the
+four-atom.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,
