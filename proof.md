@@ -11444,10 +11444,19 @@ B in F_Z  =>  |B| <= n-3        for every non-singleton B,
 
 because a support of size at least `n-2` has saving at least `n-3` and closes by itself.  Moreover, for
 each active coordinate `a`, full minor-criticality supplies a disjoint packing inside `A\{a}` with total
-saving at least `n-4`.  Terminality of `A` says that every one-unit lift of such a packing is blocked:
-thickening one support by `a`, or adding a new support involving `a`, would raise the saving to at least
-`n-3` and therefore must be absent or capacity-deficient.  This is the excess-packing version of the
-active thickening exclusions.
+saving at least `n-4` in the projected support family
+
+```text
+F_Z|_{A\{a}}={B cap (A\{a}) : B in F_Z, B cap (A\{a}) nonempty}.
+```
+
+Terminality of `A` says that every one-unit lift of such a projected packing is blocked: thickening one
+projected support by `a`, or adding the singleton `{a}`, would raise the saving to at least `n-3` whenever
+the number of projected blocks permits it.  Since `{a}` is present, a one-block active shadow is impossible,
+and a two-block active shadow can only be a double-collision witness: both lifted supports contain `a`, so
+the two full supports overlap at `a` and cannot be used together in the full partition.  Three-block active
+shadows are the remaining hole/double/triple-collision alternatives, with all multiplicity-one repairs
+blocked.  This is the excess-packing version of the active thickening exclusions.
 
 For `|A|<=3` this criterion is the following table:
 

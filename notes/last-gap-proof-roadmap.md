@@ -1949,8 +1949,9 @@ What remains justified after audit is:
       full-minor endpoint;
       with all singletons present, the endpoint is a full-minor-critical excess-packing failure for
       disjoint non-singleton supports saving at least `|A|-3`;
-      large supports of size at least `|A|-2` are excluded, and active-deletion near-packings have all
-      one-unit lifts blocked;
+      large supports of size at least `|A|-2` are excluded, and active-deletion projected near-packings have
+      all one-unit lifts blocked; one-block shadows are impossible and two-block shadows are double-collision
+      only;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       every zero-relaxed cover must use at least one such private column;

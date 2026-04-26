@@ -5331,8 +5331,9 @@ singletons `{a}` present.  Thus the surviving high-active branch is singleton-co
 partitionable into at most three supports, while every proper shadow is partitionable.
 Equivalently, non-singleton supports have saving `|B|-1`; the full active set has no disjoint support
 packing with total saving at least `|A|-3`, while every proper shadow does.
-Thus any support has size at most `|A|-3`; each active deletion has a packing with saving `|A|-4`, and every
-one-unit lift by the deleted coordinate is blocked.
+Thus any support has size at most `|A|-3`; each active deletion has a projected packing with saving
+`|A|-4`, and every one-unit lift by the deleted coordinate is blocked.  With singletons present, one-block
+active shadows are impossible and two-block active shadows are only double-collision witnesses.
 For `|A|<=3`, this is the explicit finite table: `empty` needs three empty-support columns; one active
 coordinate needs one singleton plus two empty columns; two active coordinates need either the pair plus two
 empty columns or two singletons plus one empty column; three active coordinates need triple, pair+singleton,

@@ -2430,8 +2430,9 @@ Recommended attack:
     Add the excess-packing form: with all singletons present, realization is equivalent to disjoint
     non-singleton supports with total saving `sum(|B|-1) >= |A|-3`; the endpoint is full-minor-critical
     failure of this packing.
-    Record large-support exclusions `|B|<=|A|-3` and active-deletion near-packings of saving `|A|-4` whose
-    one-unit lifts by the deleted coordinate are blocked.
+    Record large-support exclusions `|B|<=|A|-3` and active-deletion projected near-packings of saving
+    `|A|-4` whose one-unit lifts by the deleted coordinate are blocked; one-block active shadows are
+    impossible and two-block shadows are double-collision only.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

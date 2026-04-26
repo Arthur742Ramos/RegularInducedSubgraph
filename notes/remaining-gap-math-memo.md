@@ -1972,8 +1972,9 @@ Singleton shadows force `e_Z>=2` and all active singletons present in any genuin
 endpoint.
 With all singletons present, realization is equivalent to disjoint non-singleton supports whose savings
 sum to at least `|A|-3`; the endpoint is full-minor-critical excess-packing failure.
-Thus supports have size at most `|A|-3`; active deletions have saving-`|A|-4` packings with all one-unit
-lifts blocked.
+Thus supports have size at most `|A|-3`; active deletions have projected saving-`|A|-4` packings with all
+one-unit lifts blocked.  One-block active shadows are impossible; two-block shadows are double-collision
+only.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.
