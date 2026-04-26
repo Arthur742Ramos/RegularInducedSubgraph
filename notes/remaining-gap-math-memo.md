@@ -1891,6 +1891,8 @@ Transport is a prefix-insertion ladder: flat commutations keep the same fully-sk
 are local square exits, and a survivor is hidden path memory.
 Equivalently, the last path-only theorem is memory-free prefix fullness for same-carrier fully-skew rows;
 with it, the saturated Proposition 9.2 kills the endpoint.
+Graph-visible differences between transported copies reduce to same-trace/twin local exits or smaller
+provenance failures, so the residual memory is purely historical.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

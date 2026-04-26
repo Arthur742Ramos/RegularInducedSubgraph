@@ -2321,6 +2321,9 @@ Recommended attack:
     Add the exact memory-free prefix fullness equivalence: same-carrier, same-row-action, zero-residue
     prefix-local fully-skew rows should be identified as terminal boundary rows.  This axiom plus
     Proposition 9.2 closes the two-state transposition, and every path-only survivor violates it.
+    Add the visible/invisible split: if transported copies differ on any graph-visible row outside the
+    carrier, the first distinguisher gives a same-trace/twin local exit or a smaller provenance failure.
+    Therefore a minimal survivor is graph-invisible historical memory.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

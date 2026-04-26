@@ -5217,6 +5217,9 @@ minimal survivor is a same-carrier skew ladder with identical visible data but h
 The exact remaining axiom is memory-free prefix fullness: zero-residue prefix-local fully-skew rows with the
 same carrier and same row-action must be the same terminal boundary row.  It collapses the ladder to
 Proposition 9.2; any path-only survivor is exactly a violation of this axiom.
+If two transported copies differ in graph-visible trace outside the carrier, the first distinguishing row
+is a same-trace/twin local exit or a smaller provenance failure.  Thus a minimal survivor is graph-invisible
+history only; quotienting by graph-intrinsic equality is the memory-free axiom.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

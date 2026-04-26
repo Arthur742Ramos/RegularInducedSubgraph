@@ -10647,6 +10647,23 @@ which all visible data are identical but two transported copies are not identifi
 category.  Thus the remaining unsaturated theorem is neither additive, Kneser-theoretic, nor modular: it
 is precisely memory-free prefix fullness for same-carrier fully-skew rows.
 
+There is one last visible/invisible split.  If two transported copies in the skew ladder have different
+graph-visible trace outside the carrier `K`, let `z` be the first row or vertex detecting the difference.
+If `z` is already boundary-admitted, the pair of transported copies and `z` form the same-trace
+distinguished-pair configuration handled by the local same-trace/twin closures; if `z` is not admitted, it
+is a smaller boundary-provenance failure than the original sheet separator.  Hence a minimal hidden-memory
+survivor can be assumed graph-invisible:
+
+```text
+all transported fully-skew copies have the same trace to every graph row outside K
+and the same row-action on K.
+```
+
+Such a survivor is not a new graph-theoretic obstruction.  It is an artefact of remembering the historical
+path label after all graph-visible traces and residues have become equal.  Quotienting the boundary
+category by this graph-intrinsic equality is exactly the memory-free prefix fullness axiom above; in that
+quotient the final two-state transposition is killed by Proposition 9.2.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over
