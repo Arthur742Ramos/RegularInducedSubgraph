@@ -6373,6 +6373,32 @@ So the pair exchange against `P_lambda` is silent on that entire `T_2` pattern c
 `T_2` obstruction is therefore no longer arbitrary: it is encoded by a disjoint family of one-corner
 exception shadows `Q_g(a)` over the exact-basis directions.
 
+Combining this with the signed repair spectrum gives a quantitative endpoint for an exact-basis fiber.
+Let
+
+```text
+A_g^0={a in A_g : Q_g(a)=empty}.
+```
+
+Then `|A_g^0|>=|A_g|-|T_2|`.  Every four-set in `A_g^0` has no pure-`T_2` exception shadow, so terminality
+can only reject it by the internal four-block test: if its induced degree is a repairable residue
+`d' in Rep(g)`, the signed atom repair closes the counterexample.  Hence
+
+```text
+G[A_g^0] has no induced d'-regular four-set for any d' in Rep(g).
+```
+
+In particular, if the old-side repair spectrum contains both Ramsey extremes `{0,3}`, then `A_g^0`
+contains neither an independent four-set nor a clique four-set, and so
+
+```text
+|A_g| <= |T_2| + R(4,4)-1.
+```
+
+Thus any exact-basis direction exceeding this bound must have a repair spectrum missing at least one
+extreme residue.  The remaining exact-basis obstruction is consequently localized to directions whose
+small old subwitnesses cannot repair either the empty or the complete silent four-block.
+
 One must not overstate the fiber obstruction.  If `S subset B` is old-balanced and `eta_X` is
 constant on `S`, this does not by itself append `S` to `W`: the vertices in `B\S` have moved to the
 discard side and contribute the additional term `deg_{B\S}(s)` on `S`, and the old increment changes

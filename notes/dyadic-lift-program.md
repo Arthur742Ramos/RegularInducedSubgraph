@@ -790,6 +790,10 @@ Thus deleting at most one old-fiber vertex per unpaid `T_2` vertex leaves a core
 pure `2`-error layer.
 On each of the eight boundary-pattern cells, a matching majority pair from the boundary triple makes every
 nonexceptional old pair silent on that cell; this is the ternary one-corner lift.
+For the silent core `A_g^0`, terminality reduces to the signed repair spectrum: `G[A_g^0]` cannot contain
+an induced `d'`-regular four-set for any `d' in Rep(g)`.
+If `{0,3} subset Rep(g)`, then `|A_g|<=|T_2|+R(4,4)-1`; hence any larger exact-basis fiber must have an
+old-side repair spectrum missing one Ramsey extreme.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

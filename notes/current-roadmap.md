@@ -5013,6 +5013,8 @@ adjacency to the three boundary copies.
 Equivalently, with `M_g(u)=1_{deg_{Z_g}(u)>=2}`, each `u` marks at most one exceptional old-fiber vertex;
 the shadows `Q_g(a)` are disjoint, and on each of the eight boundary-pattern cells a majority boundary
 pair is matched by every nonexceptional old pair.
+The silent core `A_g^0` must then avoid every repairable regular four-block.  If the old-side repair
+spectrum contains both `{0,3}`, terminality gives the explicit cap `|A_g|<=|T_2|+R(4,4)-1`.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

@@ -2109,6 +2109,9 @@ Recommended attack:
     For each boundary pattern cell `U_lambda`, choose two zero boundary corners if `|lambda|<=1` and two
     one boundary corners if `|lambda|>=2`; every old pair avoiding the corresponding exception shadows has
     the same degree as that boundary pair on all of `U_lambda`.
+    Combine with the exact-basis repair spectrum: for `A_g^0={a:Q_g(a)=empty}`, terminality implies
+    `G[A_g^0]` has no induced `d'`-regular four-set for any `d' in Rep(g)`.  In particular, if
+    `{0,3} subset Rep(g)`, then `|A_g|<=|T_2|+R(4,4)-1`.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness
