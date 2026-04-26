@@ -1763,7 +1763,9 @@ What remains justified after audit is:
       Fano-minus-one-line traces are only the missing line, its complement, empty, and full, so both
       large anchored packings force trace twins and the irreducible anchored quotient has size at most
       five, where witness counts are at least `3,2,2` for sizes `5,4,3`; the six-cycle leave
-      five-packing also forces trace twins, leaving only the two-triangle leave at size five; Fano itself
+      five-packing also forces trace twins, and the two-triangle leave does too via the shared-point
+      adjacent/opposite equations, so the trace-twin-free anchored quotient has size at most four; Fano
+      itself
       needs four kept-pair witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual
       star forests (`K_{1,2}+2K_2`, the two five-edge star forests, or `K_{1,6}`), each dual star being

@@ -2061,6 +2061,9 @@ Recommended attack:
    Add the six-cycle leave collapse: the forced block system
    `{024},{135},{infty 03},{infty 14},{infty 25}` has anchored balanced traces only `empty` and full,
    by `3(t-x_infty)=2t`.  Therefore irreducible anchored five-packings must have two-triangle leave.
+   Add the two-triangle leave collapse: disjoint leave triangles are impossible; shared-point leave
+   triangles force block `056` and adjacent/opposite assignments on the four-cycle, and their balanced
+   trace equations force twin pairs.  Conclude trace-twin-free anchored packings have size at most four.
    In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
    iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

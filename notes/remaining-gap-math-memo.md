@@ -1718,6 +1718,8 @@ packing size at most five.
 Post-quotient, witness counts are bounded below by `3,2,2` for packing sizes `5,4,3`.
 The six-cycle leave five-packing has only empty/full anchored balanced traces; the irreducible
 five-template anchored case is therefore the two-triangle leave.
+The two-triangle leave also forces trace twins, so trace-twin-free anchored packings have size at most
+four.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,
