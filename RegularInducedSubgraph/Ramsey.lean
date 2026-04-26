@@ -18435,6 +18435,494 @@ theorem RamseyThreeTenExact42TopRowReadyCertificate.toTenLeF_40960
     10 ≤ F 40960 :=
   h.f40960
 
+
+/--
+Final import surface for downstream consumers of the exact-`42` top row.  It keeps the
+ready certificate, endpoint assumptions, final bundle, local top-row handoff, and global
+Ramsey-10 consequences in one projection-friendly object.
+-/
+structure RamseyThreeTenExact42TopRowFinalImport
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  topRowReady : RamseyThreeTenExact42TopRowReadyCertificate G s v
+  readyCertificate : RamseyTenR45ReadyCertificate
+  endpointReady : RamseyTenR45EndpointReadyCertificate
+  finalBundle : RamseyTenR45FinalCertificateBundle
+  finalBundleSelector : RamseyTenR45FinalBundleSelectorSurface
+  topRowFinalHandoff : RamseyThreeTenExact42TopRowFinalHandoff G s v
+  topRowSelector : RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v
+  topRowSelectorHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v)
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointCertificate : RamseyTenR45EndpointResidualCertificate
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  degreeEightEndpoint : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix
+  degreeNineEndpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven
+  degreeThirteenEndpoint : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Repackage a ready top-row certificate as the downstream final import surface. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  { topRowReady := h
+    readyCertificate := h.readyCertificate
+    endpointReady := h.endpointReady
+    finalBundle := h.finalBundle
+    finalBundleSelector := h.finalBundleSelector
+    topRowFinalHandoff := h.topRowFinalHandoff
+    topRowSelector := h.topRowSelector
+    topRowSelectorHandoff := h.topRowSelectorHandoff
+    endpointResiduals := h.readyCertificate.endpointResiduals
+    endpointCertificate := h.readyCertificate.endpointCertificate
+    localLedgers := h.localLedgers
+    exact42Status := h.exact42Status
+    exact42Profile := h.exact42Profile
+    exact42WithMiddleSplits := h.exact42WithMiddleSplits
+    topRowProfile := h.topRowProfile
+    topRowCommonSum := h.topRowCommonSum
+    topRowCountProfile := h.topRowCountProfile
+    degreeEightEndpoint := h.readyCertificate.degreeEightEndpoint
+    degreeNineEndpoint := h.readyCertificate.degreeNineEndpoint
+    degreeThirteenEndpoint := h.readyCertificate.degreeThirteenEndpoint
+    degreeTenSplits := h.readyCertificate.degreeTenSplits
+    degreeElevenSplits := h.readyCertificate.degreeElevenSplits
+    degreeTwelveSplits := h.readyCertificate.degreeTwelveSplits
+    middleDegreeSplits := h.readyCertificate.middleDegreeSplits
+    r45TwentySevenTable := h.readyCertificate.r45TwentySevenTable
+    finalStatus := h.finalStatus
+    globalConsequences := h.globalConsequences
+    finalConsequences := h.finalConsequences
+    threeTenFortyTwo := h.threeTenFortyTwo
+    r45TwentySeven := h.r45TwentySeven
+    r10Ten39246 := h.r10Ten39246
+    regularTenAt40960 := h.regularTenAt40960
+    admissibleTenAt40960 := h.admissibleTenAt40960
+    f40960 := h.f40960 }
+
+/-- Ready certificates plus a profiled top-row branch produce the downstream final import. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (h.toTopRowReadyCertificate htop).toTopRowFinalImport
+
+/-- Ready certificates plus common-sum/count-profile top-row data produce the final import. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowFinalImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (h.toTopRowReadyCertificate_ofCommonSumCountProfile hcommon hcount).toTopRowFinalImport
+
+/-- A final top-row handoff can be imported into the downstream final surface. -/
+theorem RamseyThreeTenExact42TopRowFinalHandoff.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalHandoff G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.toTopRowReadyCertificate.toTopRowFinalImport
+
+/-- Final certificate bundles produce downstream final imports from profiled top-row data. -/
+theorem RamseyTenR45FinalCertificateBundle.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (h.toTopRowReadyCertificate htop).toTopRowFinalImport
+
+/-- Final certificate bundles produce downstream final imports from common-sum/count-profile data. -/
+theorem RamseyTenR45FinalCertificateBundle.toTopRowFinalImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (h.toTopRowReadyCertificate_ofCommonSumCountProfile hcommon hcount).toTopRowFinalImport
+
+/-- Profiled middle-degree handoffs produce downstream final imports from profiled top-row data. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (h.toTopRowReadyCertificate htop).toTopRowFinalImport
+
+/-- Profiled middle-degree handoffs produce final imports from common-sum/count-profile data. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toTopRowFinalImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (h.toTopRowReadyCertificate_ofCommonSumCountProfile hcommon hcount).toTopRowFinalImport
+
+/-- Exact-`42` status plus endpoint residuals produce a downstream final import. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (h.toTopRowReadyCertificate hendpoints htop).toTopRowFinalImport
+
+/-- Exact-`42` status plus endpoints produce final imports from common-sum/count-profile data. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toTopRowFinalImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (h.toTopRowReadyCertificate_ofCommonSumCountProfile hendpoints hcommon hcount).toTopRowFinalImport
+
+/-- Assumption-explicit final import from exact-`42` status and endpoint assumptions. -/
+theorem ramseyThreeTenExact42TopRowFinalImport_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (ramseyThreeTenExact42TopRowReadyCertificate_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    hstatus h8 h9 h13 htop).toTopRowFinalImport
+
+/-- Assumption-explicit final import from common-sum/count-profile top-row data. -/
+theorem ramseyThreeTenExact42TopRowFinalImport_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  (ramseyThreeTenExact42TopRowReadyCertificate_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    hstatus h8 h9 h13 hcommon hcount).toTopRowFinalImport
+
+/-- Select the ready top-row certificate from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.topRowReady
+
+/-- Select the Ramsey ready certificate from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45ReadyCertificate :=
+  h.readyCertificate
+
+/-- Select endpoint residuals from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the expanded endpoint certificate from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toEndpointResidualCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45EndpointResidualCertificate :=
+  h.endpointCertificate
+
+/-- Select endpoint-ready data from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toEndpointReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45EndpointReadyCertificate :=
+  h.endpointReady
+
+/-- Select the final certificate bundle from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toFinalCertificateBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45FinalCertificateBundle :=
+  h.finalBundle
+
+/-- Select the final-bundle selector surface from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toFinalBundleSelectorSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45FinalBundleSelectorSurface :=
+  h.finalBundleSelector
+
+/-- Select the final-facing top-row handoff from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toTopRowFinalHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenExact42TopRowFinalHandoff G s v :=
+  h.topRowFinalHandoff
+
+/-- Select the local ready top-row selector surface from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toLocalReadySurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v :=
+  h.topRowSelector
+
+/-- Select the local/global handoff surface from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toLocalGlobalReadySurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v) :=
+  h.topRowSelectorHandoff
+
+/-- Select the top-row selector with local ledgers from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toTopRowSelectorWithLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v :=
+  h.topRowSelector
+
+/-- Select the top-row selector handoff from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toTopRowSelectorHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v) :=
+  h.topRowSelectorHandoff
+
+/-- Select the local middle-degree ledger bundle from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select exact-`42` status with local middle-degree ledgers from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the profiled exact-`42` surface from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toExact42ProfileSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select the exact-`42` profile with middle-degree split ledgers from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toExact42WithMiddleSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the profiled top-row branch from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the common-sum top-row obligation from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the count-profile top-row obligation from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Select the relaxed `R(4,5) <= 27` table from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select final status from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toFinalStatus
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select global Ramsey-10 consequences from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toGlobalConsequenceBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select the global ready consequence surface from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toGlobalReadySurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select final consequences from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume the final import as the low-row `R(3,10) <= 42` consequence. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Consume the final import as the localized `R(4,5) <= 27` input. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume the final import as the current `R(10,10)` frontier. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume the final import as the regular induced `10`-subgraph theorem. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960 H hcard
+
+/-- Consume the final import as the admissible-bound conclusion. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume the final import as the extremal-function lower bound. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    10 ≤ F 40960 :=
+  h.f40960
+
+/-- Profiled final-import route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Profiled final-import route to the current `R(10,10)` frontier. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Profiled final-import route to the regular induced `10`-subgraph theorem. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Profiled final-import route to the admissible-bound conclusion. -/
+theorem ten_mem_admissibleBounds_40960_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.toTenMemAdmissibleBounds_40960
+
+/-- Profiled final-import route to the extremal-function lower bound. -/
+theorem ten_le_F_40960_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    10 ≤ F 40960 :=
+  h.toTenLeF_40960
+
 /-- Common-sum/count-profile route to the localized `R(4,5) <= 27` input. -/
 theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
     {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
