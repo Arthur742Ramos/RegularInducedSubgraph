@@ -5023,6 +5023,18 @@ The shift-addition law makes the unit branch local: all nonzero singleton/pair r
 Thus off the kernel the direction type is invisible to co-regular one/two-witness tests; those tests
 either separate realized outgoing defects and invoke anchored persistence/no-split, or leave a
 chamber-flat silent edge for the one-corner lift.
+The complementary `sigma_g=2` spread branch is no longer an arbitrary old-side repair problem: its
+repair spectra are exactly `{0,2}` or `{1,3}` after complementing, and the augmented boundary cube/type
+analysis caps those directions by `7m+O(1)`.  The unit `{0,1}`/`{3,2}` branch is capped by
+target-stability through the endpoint-exclusive mod-`4` layer theorem.  Hence the exact-basis large-fiber
+residual has been pushed out of same-direction repair spectra; the live obstruction is the terminal
+co-cut/self-layer selector.
+For that final selector, old-vector restrictions disappear, so the pair-exchange inequality can be summed
+over all export pairs in `B` and all import pairs in `X`.  In a pure `T_2` branch this gives a
+biquadratic cut-domination term
+`binom(deg_B(u),2)binom(|X|-deg_X(u),2)+binom(|B|-deg_B(u),2)binom(deg_X(u),2)` for every unpaid
+`2`-error vertex `u`; hence such vertices must be globally almost constant across the cut unless the
+target layer pays the pair damage.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

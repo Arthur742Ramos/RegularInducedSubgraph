@@ -2120,6 +2120,16 @@ Recommended attack:
     nonzero-shift singleton/pair repair.  For every usable deletion `D` disjoint from `K_g`, one has
     `deg_D(b_g)=c`.  This is the formal bridge from missing repair spectra to anchored persistence/no-split:
     co-regular tests outside `K_g` either separate outgoing defects or leave a chamber-flat silent edge.
+    Record the already-reduced complementary branch: `sigma_g=2` gives the `{0,2}`/`{1,3}` hereditary
+    spectra, which are capped by the augmented boundary cube/type analysis; the unit `{0,1}`/`{3,2}`
+    branch is capped by target-stability and the endpoint-exclusive mod-`4` layer theorem.  The remaining
+    formal target is therefore the terminal co-cut/self-layer selector, not another same-direction
+    exact-basis spectrum case.
+    For the unconstrained self-layer selector, formalize the all-pairs averaged inequality: summing over
+    every `Y in binom(B,2)` and `Z in binom(X,2)` gives each unpaid `u in T_2` the contribution
+    `binom(deg_B(u),2)binom(|X|-deg_X(u),2)+binom(|B|-deg_B(u),2)binom(deg_X(u),2)`, bounded by total
+    target pair-damage and exported/imported target terms.  This is the biquadratic domination version of
+    the final co-cut endpoint.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

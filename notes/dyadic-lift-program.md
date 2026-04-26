@@ -803,6 +803,16 @@ shift, i.e. `deg_D(b_g)=c`.  Thus the direction type is invisible to all co-regu
 tests off the kernel; if those tests separate realized outgoing defects, anchored persistence plus
 componentwise no-split gives the singleton conclusion, and if they do not, the remaining pair is a
 chamber-flat silent edge for the one-corner lift.
+The opposite-shift branch `sigma_g=2` is handled by the augmented exact-basis cube analysis: it gives
+the `{0,2}`/`{1,3}` hereditary pairs, and the boundary-type/one-corner tables cap those directions by
+`7m+O(1)`.  The unit hereditary pair `{0,1}`/`{3,2}` is capped by target-stability via the
+endpoint-exclusive mod-`4` layer theorem.  Thus large same-direction repair spectra are no longer the
+main obstruction; what remains is the terminal co-cut self-layer selector.
+In that unconstrained selector every equal-size pair exchange is legal.  Summing over all export pairs
+and all import pairs gives, for each unpaid `u in T_2`, the biquadratic contribution
+`binom(deg_B(u),2)binom(|X|-deg_X(u),2)+binom(|B|-deg_B(u),2)binom(deg_X(u),2)`, bounded by total target
+pair-damage.  Therefore any unpaid pure `2`-error vertex must be almost constant on both sides of the
+cut, unless the target layer pays for many pair exchanges.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

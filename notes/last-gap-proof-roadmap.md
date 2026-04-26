@@ -1786,7 +1786,12 @@ What remains justified after audit is:
       to anti-Horn exclusions `deg_D(b_g) != rho-(r-omega(g))+c` for every usable small old deletion `D`;
       in the unit-shift case all nonzero singleton/pair repairs meet a kernel of size at most three, so
       outside that kernel the direction type is invisible to co-regular tests and the residual is exactly
-      anchored persistence/no-split versus a chamber-flat silent edge;
+      anchored persistence/no-split versus a chamber-flat silent edge; the complementary `sigma_g=2`
+      spectra are capped by the augmented boundary cube/type analysis, and the unit hereditary spectra by
+      target-stability plus the endpoint-exclusive mod-`4` layer theorem, leaving the terminal co-cut
+      self-layer selector as the live first-bit obstruction; in the unconstrained selector, averaging over
+      all export/import pairs gives a biquadratic domination inequality forcing unpaid pure `T_2` vertices
+      to be globally almost constant across the selected/discarded cut unless target damage pays;
       Fano itself needs four kept-pair
       witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual

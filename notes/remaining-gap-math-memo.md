@@ -1755,6 +1755,14 @@ In the very-large unit-shift branch, shift-addition gives a kernel `K_g` of size
 every nonzero singleton/pair repair.  Outside `K_g`, all usable small deletions have zero shift:
 `deg_D(b_g)=c`.  Hence the residual is exactly anchored persistence/no-split versus a chamber-flat silent
 edge.
+The `sigma_g=2` branch is capped by the augmented boundary cube/type analysis (`{0,2}`/`{1,3}`), and the
+unit `{0,1}`/`{3,2}` branch is capped by target-stability plus the endpoint-exclusive mod-`4` layer
+theorem.  Same-direction exact-basis repair spectra are therefore reduced; the remaining obstruction is
+the terminal co-cut/self-layer selector.
+In the unconstrained selector, all pair exchanges are legal.  Averaging over all export/import pairs gives
+a biquadratic domination term for each unpaid `T_2` vertex:
+`binom(deg_B(u),2)binom(|X|-deg_X(u),2)+binom(|B|-deg_B(u),2)binom(deg_X(u),2)`.
+Thus pure `2`-errors must be globally almost constant across the cut unless target damage pays.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,
