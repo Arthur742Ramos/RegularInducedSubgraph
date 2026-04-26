@@ -6522,9 +6522,33 @@ alpha_H(Y_a)+alpha_H(Y_b) <= alpha(H) <= m
 
 because the layers are anti-complete in `H`.  Hence if the exclusive layers are bipartite they have total
 size at most `2m`; if not, their shortest odd cores have total length at most `m` by the same
-degree-two terminal exclusion.  Thus a non-clique colour-`0` slice reduces the large colour-`1` mass to
-the zero-layer `Y_0` plus the same bounded odd-core attachment problem already isolated in the
-triangle-anchor analysis.
+degree-two terminal exclusion.  Around those odd cores, the same distance-three pendant quotient applies;
+because the exclusive layers have alpha-sum at most `m`, their first-core pendant fibres have total size
+at most `3m`.  Thus a non-clique colour-`0` slice reduces the large colour-`1` mass to the zero-layer
+`Y_0` plus iterated zero-trace remainders inside the exclusive layers.
+
+Consequently the target layer has a clean dichotomy.  If colour `0` is a clique, it contributes at most
+`m` and the only large target mass is the colour-`1` induced-`2K_2`-free slice, subject to the global
+triangle/odd-core zero-trace analysis below.  If colour `0` is not a clique, any nonedge in it supplies
+the edge-anchor decomposition above and again pushes colour `1` into controlled exclusive layers plus a
+zero-trace residual.  Thus every surviving large target-layer configuration is an iterated zero-trace
+configuration; no further unanchored colour pattern remains.
+
+This also identifies the exact irreducible local core.  All off-target layers may be empty, colour `0`
+may be empty or clique-bounded, and the target layer may lie entirely in colour `1`.  In that situation
+the singleton/pair/triple target-stability inequalities have no off-target side to constrain, and the
+pure-discard rule is exactly the retained-only `2K_2` exclusion.  Equivalently, in the complement one is
+left with an induced-`C_4`-free, `K_4`-free graph `H` with
+
+```text
+alpha(H)<=m,
+no induced Delta<=2 subgraph on more than 11m/5 vertices,
+```
+
+and no additional local boundary-table or target-stability inequality visible.  Thus the remaining proof
+must supply a genuine selector theorem for this complement class, or use a global feature not present in
+the single-fiber local model.  The previous reductions are complete up to this all-target colour-`1`
+core; they cannot honestly be pushed to a contradiction by more finite mixed-table case analysis alone.
 
 Inside that remaining complement class there is still a useful triangle-anchor decomposition.  Let
 `abc` be a triangle in `H`, and for every outside vertex `v` put

@@ -1618,7 +1618,10 @@ Recommended attack:
    Strengthen the last item in complement form: for a colour-`0` nonedge `ab` (an edge in `H`), the
    colour-`1` common neighbourhood of `ab` in `H` has size at most one; the exclusive layers
    `N_H(a)\N_H(b)` and `N_H(b)\N_H(a)` inside colour `1` are anti-complete, triangle-free,
-   induced-`C_4`-free, and have alpha-sum at most `m`.
+   induced-`C_4`-free, and have alpha-sum at most `m`; their first-core pendant fibres have total size at
+   most `3m` by the distance-three quotient lemma.  Record the dichotomy: either colour `0` is a clique
+   and `m`-bounded, or a colour-`0` nonedge gives this edge-anchor decomposition; in both cases the
+   remaining large target mass is zero-trace.
    Within that complement class, formalize the triangle-anchor trace lemma: for a triangle `abc`, no
    outside vertex is adjacent to all three anchors; vertices with incomparable nonempty traces into
    `{a,b,c}` are anti-complete; the two-neighbour trace classes are independent; singleton trace classes

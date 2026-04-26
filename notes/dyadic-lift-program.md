@@ -985,8 +985,12 @@ pair gives the forbidden `(0,0,1,1)` pure-discard atom.  The remaining colour-`1
 exclusive layers `Y_a=N_H(a)\N_H(b)`, `Y_b=N_H(b)\N_H(a)`, and zero layer `Y_0`.  The exclusive layers
 are anti-complete to each other in `H`, are triangle-free and induced-`C_4`-free, and satisfy
 `alpha_H(Y_a)+alpha_H(Y_b)<=m`.  Hence their bipartite part has total size at most `2m`, and their
-non-bipartite odd cores have total length at most `m`; the remaining colour-`1` mass is pushed into
-the zero layer plus bounded odd-core attachments.
+non-bipartite odd cores have total length at most `m`; the distance-three quotient bounds their
+first-core pendant fibres by `3m`.  The remaining colour-`1` mass is pushed into the zero layer plus
+iterated zero-trace remainders inside the exclusive layers.
+Thus the target-layer dichotomy is: colour `0` is a clique and hence `m`-bounded, leaving only the
+colour-`1` zero-trace analysis; or colour `0` has a nonedge and supplies the edge-anchor decomposition,
+again leaving only controlled layers plus zero-trace remainders.
 Useful structure remains inside that class.  If `abc` is a triangle in the complement `H`, trace every
 outside vertex by `N_H(v) cap {a,b,c}`.  No trace has size three; incomparable nonempty traces are
 anti-complete, since an edge between them and an anchor edge induce a `C_4`.  Thus two-neighbour trace
