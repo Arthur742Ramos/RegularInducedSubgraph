@@ -6221,6 +6221,22 @@ def HasNoNonemptyOddCoreResidueSubfamilyModFourZero
   ∀ sub : Finset ι, sub ⊆ cores → sub.Nonempty →
     ¬ ((∑ i in sub, residue i) ≡ 0 [MOD 4])
 
+/-- Singleton extraction from the nonempty-subfamily mod-four obstruction. -/
+theorem noNonemptyOddCoreResidueSubfamilyModFourZero_singleton
+    {ι : Type*} [DecidableEq ι] {cores : Finset ι} {residue : ι → ℕ}
+    (hno : HasNoNonemptyOddCoreResidueSubfamilyModFourZero cores residue)
+    {a : ι} (ha : a ∈ cores) :
+    ¬ (residue a ≡ 0 [MOD 4]) := by
+  intro hmod
+  have hsubset : ({a} : Finset ι) ⊆ cores := by
+    intro x hx
+    simp only [Finset.mem_singleton] at hx
+    simpa [hx] using ha
+  have hne : ({a} : Finset ι).Nonempty := ⟨a, by simp⟩
+  have hsum : (∑ x in ({a} : Finset ι), residue x) = residue a := by
+    simp
+  exact (hno ({a} : Finset ι) hsubset hne) (by simpa [hsum] using hmod)
+
 /-- Pair extraction from the nonempty-subfamily mod-four obstruction. -/
 theorem noNonemptyOddCoreResidueSubfamilyModFourZero_pair
     {ι : Type*} [DecidableEq ι] {cores : Finset ι} {residue : ι → ℕ}
@@ -6322,6 +6338,55 @@ theorem oddCoreResidueFamily_card_le_three_of_noNonemptySubfamilyModFourZero
         noNonemptyOddCoreResidueSubfamilyModFourZero_quad hno ha hb hc hd
           hab hac had hbc hbd hcd)
 
+/-- No-zero odd core residues cannot contain both residue classes `1` and `3`. -/
+theorem oddCoreResidueFamily_residue_eq_of_noNonemptySubfamilyModFourZero
+    {ι : Type*} [DecidableEq ι] {cores : Finset ι} {residue : ι → ℕ}
+    (hresidue : ∀ i ∈ cores, residue i = 1 ∨ residue i = 3)
+    (hno : HasNoNonemptyOddCoreResidueSubfamilyModFourZero cores residue)
+    {a b : ι} (ha : a ∈ cores) (hb : b ∈ cores) :
+    residue a = residue b := by
+  by_cases hab : a = b
+  · simpa [hab]
+  · have hpair :=
+      noNonemptyOddCoreResidueSubfamilyModFourZero_pair hno ha hb hab
+    rcases hresidue a ha with haResidue | haResidue <;>
+      rcases hresidue b hb with hbResidue | hbResidue
+    · simpa [haResidue, hbResidue]
+    · exfalso
+      have hzero : (1 + 3) ≡ 0 [MOD 4] := by decide
+      exact hpair (by simpa [haResidue, hbResidue] using hzero)
+    · exfalso
+      have hzero : (3 + 1) ≡ 0 [MOD 4] := by decide
+      exact hpair (by simpa [haResidue, hbResidue] using hzero)
+    · simpa [haResidue, hbResidue]
+
+/-- A nonempty no-zero odd core family has a single common residue, either `1` or `3`. -/
+theorem oddCoreResidueFamily_common_residue_of_noNonemptySubfamilyModFourZero
+    {ι : Type*} [DecidableEq ι] {cores : Finset ι} {residue : ι → ℕ}
+    (hresidue : ∀ i ∈ cores, residue i = 1 ∨ residue i = 3)
+    (hno : HasNoNonemptyOddCoreResidueSubfamilyModFourZero cores residue)
+    (hne : cores.Nonempty) :
+    ∃ r : ℕ, (r = 1 ∨ r = 3) ∧ ∀ i ∈ cores, residue i = r := by
+  rcases hne with ⟨a, ha⟩
+  refine ⟨residue a, hresidue a ha, ?_⟩
+  intro i hi
+  exact
+    oddCoreResidueFamily_residue_eq_of_noNonemptySubfamilyModFourZero
+      hresidue hno hi ha
+
+/--
+Aggregate `66m/5` terminal-layer accounting: total core length `≤ 11m/5`, all pendant
+fibres together cost at most `9m`, and the final bipartite layer costs at most `2m`.
+-/
+theorem modFourTerminalLayer_total_card_le_sixtySix_fifths_of_aggregate_pendant
+    {coreSize pendantSize bipartiteSize totalSize m : ℕ}
+    (hcoreSize : 5 * coreSize ≤ 11 * m)
+    (hpendant : pendantSize ≤ 9 * m)
+    (hbipartite : bipartiteSize ≤ 2 * m)
+    (htotal : totalSize ≤ coreSize + pendantSize + bipartiteSize) :
+    5 * totalSize ≤ 66 * m := by
+  nlinarith
+
 /--
 Crude `66m/5` terminal-layer accounting: total core length `≤ 11m/5`, at most three pendant
 families of size `≤ 3m`, and one final bipartite layer of size `≤ 2m`.
@@ -6339,7 +6404,9 @@ theorem modFourTerminalLayer_total_card_le_sixtySix_fifths_of_core_bounds
       pendantSize ≤ coreCount * (3 * m) := hpendant
       _ ≤ 3 * (3 * m) := Nat.mul_le_mul_right (3 * m) hcoreCount
       _ = 9 * m := by ring
-  nlinarith
+  exact
+    modFourTerminalLayer_total_card_le_sixtySix_fifths_of_aggregate_pendant
+      hcoreSize hpendantNine hbipartite htotal
 
 /--
 Residue form of the `66m/5` accounting: the no-zero-subfamily condition supplies the at-most-three
@@ -6471,6 +6538,42 @@ def HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace : Prop :=
                   (Finset.univ : Finset (Fin coreCount)) residue
 
 /--
+Counted trace surface: the residue obstruction from the shortest odd-core trace is exposed together
+with its immediate at-most-three core consequence.
+-/
+def HasTriangleFreeInducedC4FreeModFourShortestOddCoreTraceCountBound : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          HasNoNonemptyModFourDegreeTwoLayerOn G S →
+            ∃ coreCount : ℕ, ∃ residue : Fin coreCount → ℕ,
+              (∀ i : Fin coreCount, residue i = 1 ∨ residue i = 3) ∧
+                HasNoNonemptyOddCoreResidueSubfamilyModFourZero
+                  (Finset.univ : Finset (Fin coreCount)) residue ∧
+                    coreCount ≤ 3
+
+/-- The shortest odd-core trace automatically carries an at-most-three core count. -/
+theorem hasTriangleFreeInducedC4FreeModFourShortestOddCoreTraceCountBound_of_trace
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace) :
+    HasTriangleFreeInducedC4FreeModFourShortestOddCoreTraceCountBound := by
+  intro n m G S htriangle hC4 halpha hnoLayer
+  rcases htrace G htriangle hC4 halpha hnoLayer with
+    ⟨coreCount, residue, hresidue, hnoResidue⟩
+  have hresidueUniv :
+      ∀ i ∈ (Finset.univ : Finset (Fin coreCount)), residue i = 1 ∨ residue i = 3 := by
+    intro i _hi
+    exact hresidue i
+  have hcountUniv :
+      (Finset.univ : Finset (Fin coreCount)).card ≤ 3 :=
+    oddCoreResidueFamily_card_le_three_of_noNonemptySubfamilyModFourZero
+      (cores := (Finset.univ : Finset (Fin coreCount))) (residue := residue)
+      hresidueUniv hnoResidue
+  have hcount : coreCount ≤ 3 := by
+    simpa using hcountUniv
+  exact ⟨coreCount, residue, hresidue, hnoResidue, hcount⟩
+
+/--
 Core-length accounting surface for the mod-four terminal layer proof.  Once the shortest odd-core
 trace is fixed, the total length of the retained cores is bounded by `11m/5`.
 -/
@@ -6503,6 +6606,49 @@ def HasTriangleFreeInducedC4FreeModFourPendantFiberCharging : Prop :=
                   ∃ pendantSize : ℕ, pendantSize ≤ coreCount * (3 * m)
 
 /--
+Aggregate pendant-fibre charging surface: once the residue trace is fixed, it is enough for the
+frontier cap to charge all pendant fibres together by `9m`.
+-/
+def HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    {coreCount : ℕ} (residue : Fin coreCount → ℕ),
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          HasNoNonemptyModFourDegreeTwoLayerOn G S →
+            (∀ i : Fin coreCount, residue i = 1 ∨ residue i = 3) →
+              HasNoNonemptyOddCoreResidueSubfamilyModFourZero
+                (Finset.univ : Finset (Fin coreCount)) residue →
+                  ∃ pendantSize : ℕ, pendantSize ≤ 9 * m
+
+/--
+The original per-core pendant charging surface implies the aggregate `9m` form via the no-zero
+residue count bound.
+-/
+theorem hasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging_of_pendantFiberCharging
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberCharging) :
+    HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging := by
+  intro n m G S coreCount residue htriangle hC4 halpha hnoLayer hresidue hnoResidue
+  rcases hpendant G residue htriangle hC4 halpha hnoLayer hresidue hnoResidue with
+    ⟨pendantSize, hpendantBound⟩
+  have hresidueUniv :
+      ∀ i ∈ (Finset.univ : Finset (Fin coreCount)), residue i = 1 ∨ residue i = 3 := by
+    intro i _hi
+    exact hresidue i
+  have hcountUniv :
+      (Finset.univ : Finset (Fin coreCount)).card ≤ 3 :=
+    oddCoreResidueFamily_card_le_three_of_noNonemptySubfamilyModFourZero
+      (cores := (Finset.univ : Finset (Fin coreCount))) (residue := residue)
+      hresidueUniv hnoResidue
+  have hcoreCount : coreCount ≤ 3 := by
+    simpa using hcountUniv
+  refine ⟨pendantSize, ?_⟩
+  calc
+    pendantSize ≤ coreCount * (3 * m) := hpendantBound
+    _ ≤ 3 * (3 * m) := Nat.mul_le_mul_right (3 * m) hcoreCount
+    _ = 9 * m := by ring
+
+/--
 Zero-trace recursion surface for the mod-four terminal layer proof.  After the odd cores and their
 pendant fibres are charged, the remaining terminal packet is represented by one bipartite remainder.
 -/
@@ -6519,6 +6665,27 @@ def HasTriangleFreeInducedC4FreeModFourZeroTraceRecursion : Prop :=
                   ∀ {coreSize pendantSize : ℕ},
                     5 * coreSize ≤ 11 * m →
                       pendantSize ≤ coreCount * (3 * m) →
+                        ∃ bipartiteLayer : Finset (Fin n),
+                          S.card ≤ coreSize + pendantSize + bipartiteLayer.card ∧
+                            HasModFourBipartiteRemainderCertificate G S bipartiteLayer
+
+/--
+Aggregate zero-trace recursion surface.  This variant records the exact graph-theoretic remainder
+step needed by the rounded cap when pendant fibres have already been charged globally by `9m`.
+-/
+def HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    {coreCount : ℕ} (residue : Fin coreCount → ℕ),
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          HasNoNonemptyModFourDegreeTwoLayerOn G S →
+            (∀ i : Fin coreCount, residue i = 1 ∨ residue i = 3) →
+              HasNoNonemptyOddCoreResidueSubfamilyModFourZero
+                (Finset.univ : Finset (Fin coreCount)) residue →
+                  ∀ {coreSize pendantSize : ℕ},
+                    5 * coreSize ≤ 11 * m →
+                      pendantSize ≤ 9 * m →
                         ∃ bipartiteLayer : Finset (Fin n),
                           S.card ≤ coreSize + pendantSize + bipartiteLayer.card ∧
                             HasModFourBipartiteRemainderCertificate G S bipartiteLayer
@@ -6643,6 +6810,56 @@ theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_frontierSurfaces
       (hasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition_of_frontierSurfaces
         htrace hcoreLength hpendant hzeroTrace)
 
+/--
+Aggregate frontier-surface cap: the rounded `14m` estimate only needs the global `9m` pendant
+charge and the matching aggregate zero-trace recursion.
+-/
+theorem triangleFreeInducedC4FreeModFourLayer_card_le_fourteen_mul_of_aggregateFrontierSurfaces
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ 14 * m := by
+  rcases htrace G htriangle hC4 halpha hnoLayer with
+    ⟨coreCount, residue, hresidue, hnoResidue⟩
+  rcases hcoreLength G residue htriangle hC4 halpha hnoLayer hresidue hnoResidue with
+    ⟨coreSize, hcoreSize⟩
+  rcases hpendant G residue htriangle hC4 halpha hnoLayer hresidue hnoResidue with
+    ⟨pendantSize, hpendantBound⟩
+  rcases hzeroTrace G residue htriangle hC4 halpha hnoLayer hresidue hnoResidue
+      hcoreSize hpendantBound with
+    ⟨bipartiteLayer, hcover, hbipartiteCert⟩
+  have hbipartite : bipartiteLayer.card ≤ 2 * m :=
+    hasTriangleFreeInducedC4FreeModFourBipartiteRemainderCap G halpha hbipartiteCert
+  have h66 :
+      5 * S.card ≤ 66 * m :=
+    modFourTerminalLayer_total_card_le_sixtySix_fifths_of_aggregate_pendant
+      (coreSize := coreSize) (pendantSize := pendantSize)
+      (bipartiteSize := bipartiteLayer.card) (totalSize := S.card) (m := m)
+      hcoreSize hpendantBound hbipartite hcover
+  have hround : 66 * m ≤ 5 * (14 * m) := by
+    nlinarith
+  apply Nat.le_of_mul_le_mul_left (c := 5)
+  · exact le_trans h66 hround
+  · decide
+
+/-- Package the aggregate frontier-surface split as the rounded mod-four terminal-layer cap. -/
+theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfaces
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion) :
+    TriangleFreeInducedC4FreeModFourLayerCap 14 := by
+  intro n m G S htriangle hC4 halpha hnoLayer
+  exact
+    triangleFreeInducedC4FreeModFourLayer_card_le_fourteen_mul_of_aggregateFrontierSurfaces
+      htrace hcoreLength hpendant hzeroTrace G htriangle hC4 halpha hnoLayer
+
 /-- An exact induced `2`-regular set of `0 mod 4` cardinality is a mod-four degree-two layer. -/
 theorem isModFourDegreeTwoLayer_of_inducesRegularOfDegree_two
     {n : ℕ} (G : SimpleGraph (Fin n)) {u : Finset (Fin n)}
@@ -6744,6 +6961,27 @@ theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_front
   exact
     correctedZeroOneThreeTwoComplement_card_le_of_modFour_layerCap
       (triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_frontierSurfaces
+        htrace hcoreLength hpendant hzeroTrace)
+      G htriangle hC4 halpha hnoLayer
+
+/--
+Corrected-complement bridge using the aggregate pendant/zero-trace mod-four frontier, avoiding the
+per-core pendant accounting surface in the final cap route.
+-/
+theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_aggregateFrontierSurfaces
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ 14 * m := by
+  exact
+    correctedZeroOneThreeTwoComplement_card_le_of_modFour_layerCap
+      (triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfaces
         htrace hcoreLength hpendant hzeroTrace)
       G htriangle hC4 halpha hnoLayer
 
