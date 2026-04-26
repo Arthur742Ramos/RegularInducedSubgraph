@@ -1009,12 +1009,12 @@ neighbourhoods of at most `m/2` matching edges plus an independent residual.  Fo
 common neighbourhood has size at most two and the exclusive neighbourhoods have the edge-anchor
 triangle-free/`C_4`-free structure.  The final charging problem is to bound the total mass in these
 endpoint-exclusive neighbourhoods.
-Equivalently, after assigning every non-residual vertex to one incident matching edge, one needs the
+Equivalently, after assigning every non-residual vertex to one incident matching edge, the needed
 endpoint-exclusive charging lemma
 `sum_i(|E_i^a|+|E_i^b|)=O(m)`, where
 `E_i^a subset N(a_i)\N(b_i)` and `E_i^b subset N(b_i)\N(a_i)`.  The endpoints, common neighbours, and
-independent residual already contribute only `O(m)`; this charging lemma would linearly bound the
-all-target colour-`1` core and close the remaining `{0,1}`/`{3,2}` local branch.
+independent residual already contribute only `O(m)`; the layer theorem below supplies this charging and
+linearly bounds the all-target colour-`1` core.
 This charging lemma contains the true last selector problem: a single exclusive side can be an arbitrary
 triangle-free induced-`C_4`-free layer joined to one endpoint of a matching edge and missed by the other.
 The visible induced-`Delta<=2` bound is only a shadow.  In the all-target colour-`1` core, every
@@ -1023,6 +1023,13 @@ same-direction subset `S` with `|S|=0 [MOD 4]` is forbidden when the complement 
 induced-`C_4`-free mod-`2`-degree layer theorem: with `alpha<=m` and no nonempty size-`0 mod 4`
 induced subgraph all of whose degrees are `2 mod 4`, prove linear size.  The bipartite case is `<=2m`;
 the non-bipartite case is the shortest-odd-core/distance-three-pendant/zero-trace recursion.
+This layer theorem is linearly closed.  In each non-bipartite zero-trace layer choose a shortest odd
+cycle.  The nonzero pendant fibres over that cycle have quotient maximum degree two, hence total size at
+most `3m`; the residual is the zero-trace layer.  Chosen odd cores are pairwise anti-complete.  A
+nonempty subfamily with total length `0 mod 4` would be an induced all-degree-`2` subgraph of size
+`0 mod 4`, forbidden by terminality; hence at most three odd cores are chosen, all with the same residue
+mod `4`.  Their total length is at most `11m/5`, and the final bipartite zero layer has size at most
+`2m`.  Thus `|F|<=66m/5`.
 Useful structure remains inside that class.  If `abc` is a triangle in the complement `H`, trace every
 outside vertex by `N_H(v) cap {a,b,c}`.  No trace has size three; incomparable nonempty traces are
 anti-complete, since an edge between them and an anchor edge induce a `C_4`.  Thus two-neighbour trace
@@ -1047,8 +1054,8 @@ most `3 alpha(layer)`, and across the three singleton layers at most `3m`.
 The zero-trace recursion has a bounded skeleton: choose successive edge, triangle, or shortest-odd-cycle
 anchors only inside the current zero layer.  Later anchors are anti-complete to earlier anchors, so their
 union is an induced graph of maximum degree at most two; terminality gives total anchor size at most
-`11m/5`.  The last missing estimate is to charge all pendant/trace layers to the global independence
-budget across this bounded anchor skeleton.
+`11m/5`.  The mod-`4` layer theorem above supplies the needed pendant/trace charging across this bounded
+anchor skeleton.
 For the C4 branch, the augmented boundary rules give a direct shape cap: if
 `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and all other seven
 boundary types are cliques, so `|C_i|<=7m`.  Complementarily, `{3,1}` with a triangle boundary also gives

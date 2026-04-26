@@ -1593,8 +1593,8 @@ Recommended attack:
    Do not try to close the `{0,1}`/`{3,2}` residual by adding more local mixed-table cases alone.  There is
    a one-type local model: with triangle boundary and all retained vertices of type `110`, the signed
    `Rep={0,1}` mixed rules impose no extra same-type restriction beyond the retained-only
-   `alpha<=3`, `2K_2`-free branch.  The remaining formal target is therefore a genuine mod-`4` selector
-   for the induced-`C_4`-free, `K_4`-free complement class, or a separate global target-stability lemma.
+   `alpha<=3`, `2K_2`-free branch.  The branch is closed only after importing target-stability and the
+   mod-`4` endpoint-exclusive layer theorem below.
    Formalize the singleton-swap label-gradient lemma: with `A_j={theta=L+j}` and a same-old-vector
    boundary copy whose retained-type adjacency is the constant `epsilon`, target-stability gives
    `epsilon=0 => |N(y) cap A_{-1}|<=|N(y) cap A_0|+1` and
@@ -1632,11 +1632,15 @@ Recommended attack:
    Add the maximal induced-matching skeleton: a maximal induced matching has at most `m/2` edges; the
    vertices anti-complete to all matching endpoints are independent and have size at most `m`; all
    remaining vertices lie in endpoint neighbourhoods whose common/exclusive parts have the edge-anchor
-   structure.  The remaining formal target is the endpoint-exclusive charging lemma
+   structure.  Formalize the endpoint-exclusive charging lemma
    `sum_i(|E_i^a|+|E_i^b|)=O(m)` for assigned exclusive classes of the matching edges.
    Record that the true standalone layer theorem is stronger than the visible induced-`Delta<=2` shadow:
    triangle-free induced-`C_4`-free `F` with `alpha(F)<=m` and no nonempty induced
    `S` of size `0 mod 4` whose degrees are all `2 mod 4` must have `|F|=O(m)`.
+   Formalize the proof: recursively choose shortest odd cycles in zero-trace layers; pendant fibres over
+   each core have total size at most `3m`; the chosen cores are pairwise anti-complete, and no zero-sum
+   subfamily of their odd lengths is allowed, so at most three cores occur.  With total core length
+   `<=11m/5` and final bipartite layer `<=2m`, get `|F|<=66m/5`.
    Within that complement class, formalize the triangle-anchor trace lemma: for a triangle `abc`, no
    outside vertex is adjacent to all three anchors; vertices with incomparable nonempty traces into
    `{a,b,c}` are anti-complete; the two-neighbour trace classes are independent; singleton trace classes

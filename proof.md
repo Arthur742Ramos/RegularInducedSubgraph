@@ -6612,13 +6612,13 @@ each side is triangle-free and induced-`C_4`-free, and
 alpha(E_i^a)+alpha(E_i^b) <= m.
 ```
 
-What is still missing is the **endpoint-exclusive charging lemma**:
+The required **endpoint-exclusive charging lemma** is:
 
 ```text
 sum_i (|E_i^a|+|E_i^b|) = O(m).
 ```
 
-Once this lemma is proved, the all-target colour-`1` core is linearly bounded: endpoints contribute at
+Once this lemma is available, the all-target colour-`1` core is linearly bounded: endpoints contribute at
 most `m`, common neighbours at most `m`, the independent residual at most `m`, and the exclusive
 neighbourhoods by the displayed lemma.  This is the exact remaining mathematical endpoint of the
 `{0,1}`/`{3,2}` branch.
@@ -6655,6 +6655,26 @@ The earlier induced-`Delta<=2` bound follows from this theorem by applying Yuste
 whole obstruction.  The bipartite case gives `|F|<=2m`; the non-bipartite case reduces to a shortest odd
 core, distance-three pendant quotient, and a zero-trace remainder as above.  This mod-`4` layer theorem
 is now the exact irreducible mathematical target.
+
+The mod-`4` layer theorem has a direct linear proof.  If the current layer is bipartite, its two parts
+are independent, so it has size at most `2m`.  Otherwise choose a shortest odd cycle `C`.  It is induced,
+every outside vertex has at most one neighbour on `C`, and nonzero pendant fibres over `C` have quotient
+maximum degree two; hence their total size is at most `3 alpha(F)<=3m`.  Remove `C` and these nonzero
+fibres and continue inside the zero-trace layer.
+
+The chosen odd cores in this recursion are pairwise anti-complete.  If their lengths contain a nonempty
+subsum equal to `0 mod 4`, the corresponding union is an induced subgraph with all degrees exactly `2`
+and size `0 mod 4`, forbidden by the mod-`4` terminal condition.  Since the core lengths are odd, any
+four cores of the same residue mod `4`, or any pair of opposite residues `1` and `3`, would give such a
+subsum.  Therefore at most three odd cores are chosen, and all have the same residue mod `4`.  Their
+total size is also at most `11m/5` by the induced-`Delta<=2` shadow.  Consequently
+
+```text
+|F| <= (11/5)m + 3*(3m) + 2m = (66/5)m.
+```
+
+Thus the endpoint-exclusive layer is linearly bounded.  The constant is crude but sufficient for the
+local all-target colour-`1` core; improving it is now a bookkeeping issue rather than a structural gap.
 
 Inside that remaining complement class there is still a useful triangle-anchor decomposition.  Let
 `abc` be a triangle in `H`, and for every outside vertex `v` put
@@ -6984,14 +7004,10 @@ Quantitatively, the corrected one-type bound is already enough to cap the whole 
 at most `4m+(5/2)m=13m/2`; and support at most four contributes at most `3m+(5/2)m=11m/2`, with the
 top-edge subcase capped by `6m` as above.  Together with the independent/one-edge/path boundary caps,
 every `{0,2}` direction, and by complement every `{3,1}` direction, has size at most `7m+O(1)` in the
-augmented exact-basis branch.  The finite cube residual is therefore closed; the only large-fiber
-hereditary surface still not linearly closed is the corrected `{0,1}`/`{3,2}` complement selector:
-induced-`C_4`-free, `K_4`-free, independence at most `m`, and no large induced degree-two regular
-selector.
-
-The formal conditional surface is now named
-`HasCorrectedZeroOneThreeTwoComplementDegreeTwoSelector`; under that explicit degree-two selector,
-`correctedZeroOneThreeTwoComplement_card_le_of_degreeTwo_selector` gives the linear cap.  The separate
+augmented exact-basis branch.  The finite cube residual is therefore closed.  The corrected
+`{0,1}`/`{3,2}` complement branch is no longer a mere degree-two conditional: target-stability reduces
+it to the all-target colour-`1` core, and the endpoint-exclusive mod-`4` layer theorem above linearly
+caps that core.  The separate
 chain/C5 arithmetic cap no longer needs an assumption: `hasThreeConsecutiveClassModFourSelector`
 proves the three-class selector, and
 `threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion_unconditional` applies it.
