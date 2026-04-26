@@ -12129,8 +12129,8 @@ three-atom, collision is impossible by the same positive-member argument; a nonp
 unlift would be a zero-gain same-size exchange and needs a leftover singleton; and equality pure absorption
 would need two leftover singletons.  Therefore all four atoms have size at least four, and `|A|>=16`.
 Equivalently, in every saturated rank-three endpoint with `|A|<=15`, each deficit-one packing has at least
-one leftover singleton.  The all-pair four-atom packing at `|A|=8` is therefore only the first excluded case
-of a larger no-leftover exclusion.
+one leftover singleton.  The first no-leftover saturated bridge core can occur only at `|A|=16`, and then it
+is forced to be four atoms of size exactly four; all smaller active dimensions are leftover-budgeted.
 
 More generally the leftover count is a budget.  Let `L` be the number of leftover singleton atoms of the
 four-atom packing.  A zero-gain shortened-block lift at an atom `B_j` is a same-size exchange and therefore
@@ -12164,9 +12164,10 @@ L_b={l in L_0 : {a,l} in F_Z}.
 
 The original atom `{a,b}` together with these pivot pairs is the entire zero-gain orbit of `B`: every pivot
 exchanges one endpoint of the pair with a leftover singleton, and no pivot touches another packed atom.  If
-`L_a cap L_b` is nonempty, the pair atom lies in a support triangle `{a,b,l}`.  If the two sets are disjoint,
-the pivot orbit is a two-sided exchange fan from the pair to distinct leftover singletons.  Thus pair atoms
-are visible as local pair-exchange components attached to the leftover budget.
+`L_a cap L_b` is nonempty, the pair atom lies in a triangle of the **support graph** on `{a,b,l}`; the triple
+`{a,b,l}` itself is still forbidden as a positive-gain support.  If the two sets are disjoint, the pivot
+orbit is a two-sided exchange fan from the pair to distinct leftover singletons.  Thus pair atoms are visible
+as local pair-exchange components attached to the leftover budget.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

@@ -5453,13 +5453,14 @@ block, so surviving pivots are only same-size exchanges with leftover singletons
 singletons, no saturated packing can contain a pair atom.
 Lift-locality also excludes three-atoms when there are no leftover singletons: their only nonpositive
 boundary lifts would require leftover vertices.  Thus no-leftover saturated packings have four atoms of size
-at least four and `|A|>=16`; for `|A|<=15`, every deficit-one packing has a leftover singleton.
+at least four and `|A|>=16`; for `|A|<=15`, every deficit-one packing has a leftover singleton, while the
+first no-leftover core at `|A|=16` must be four four-atoms.
 More generally, leftover singletons are a budget: zero-gain shortened-block exchanges require `L>=1`, and
 equality pure absorption at atom `B_j` requires `L>=|B_j|-1`; otherwise deletion repair is strict absorption
 with positive slack or genuine lift-collision.
 Pair atoms are completely local in this budget: for `B={a,b}`, both deletion pivots must be pairs `{b,l}`
 and `{a,l'}` with leftover singletons, giving a local pair-exchange component; a common leftover forms a
-support triangle.
+triangle in the support graph, not a triple support.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

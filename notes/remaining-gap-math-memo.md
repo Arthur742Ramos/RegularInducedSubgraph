@@ -2045,11 +2045,11 @@ unit gain.
 By zero-gain saturation, a pair pivot cannot meet another packed atom; it can only exchange with a leftover
 singleton.  Saturated packings with no leftover singletons therefore have no pair atoms.
 Lift-locality also excludes three-atoms without leftover singletons, so no-leftover saturated packings have
-four atoms of size at least four and `|A|>=16`.
+four atoms of size at least four and `|A|>=16`; the first no-leftover core is four four-atoms.
 The leftover count is a budget: zero-gain exchanges need one leftover singleton, equality pure absorption at
 `B_j` needs `|B_j|-1`, and without that budget only strict absorption or lift-collision remains.
 Pair atoms are local pair-exchange components: both endpoint deletions pivot through leftover singletons, and
-a common leftover forms a support triangle.
+a common leftover forms a support-graph triangle, not a triple support.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

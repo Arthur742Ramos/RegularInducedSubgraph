@@ -2516,7 +2516,8 @@ Recommended attack:
     Record leftover-budget rules: zero-gain shortened-block exchanges require `L>=1`; equality pure
     absorption at atom `B_j` requires `L>=|B_j|-1`; otherwise repairs are strict absorption or lift-collision.
     Formalize pair-exchange components: for a pair atom `{a,b}`, endpoint deletions force pivot pairs
-    `{b,l}` and `{a,l'}` with leftover singletons; common leftovers form support triangles.
+    `{b,l}` and `{a,l'}` with leftover singletons; common leftovers form support-graph triangles, while the
+    triple itself remains forbidden by positive gain.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

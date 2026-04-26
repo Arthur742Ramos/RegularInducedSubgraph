@@ -2015,11 +2015,11 @@ What remains justified after audit is:
       zero-gain saturation leaves pair pivots only as same-size exchanges with leftover singletons, so
       saturated packings with no leftover singletons have no pair atoms;
       lift-locality also excludes three-atoms without leftover singletons, so no-leftover saturated packings
-      have `|A|>=16`;
+      have `|A|>=16`, with the first no-leftover core forced to be four four-atoms;
       leftover count is a budget: zero-gain exchanges need one leftover singleton, and equality pure
       absorption at `B_j` needs `|B_j|-1`;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
-      forming support triangles;
+      forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;
