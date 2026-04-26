@@ -1688,6 +1688,13 @@ Recommended attack:
    retained-only branch is therefore a dual-exit bounded-block selector: wrong-residue blocks must not
    repair to the append residue and must not synchronize to a large outside-only residue.
 
+   Also formalize the amplified version.  For every fixed `L == 0 [MOD 4]`, replacing four-blocks by
+   `L`-vertex clique or independent blocks gives the same append/outside-only equations with internal
+   residue `q_i in {0,3}` and surplus threshold `sum |P_i|>m`.  Thus a terminal configuration has no
+   no-cross same-residue family of such blocks of size greater than `m/L`.  This closes only the heavy
+   homogeneous reservoir toy models; the sparse-import regime remains and must use boundary triples
+   `X_i` via outside-only maximality or explicit coordinate exchange.
+
    Compressing four-blocks gives a bounded-block version of the original row-sum selector: each block
    has a four-coordinate defect vector, and each block pair has a `4 by 4` cross-adjacency matrix.  A
    selected block family must make selected cross-matrix row sums equal the defect vectors.  Thus this

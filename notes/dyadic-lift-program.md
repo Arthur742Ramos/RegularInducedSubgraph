@@ -1180,6 +1180,17 @@ many no-cross clique directions: four vertices from each of more than `m/4` cliq
 already form an outside-only residue-`3` witness.  Terminal exact-basis configurations must block both
 appendable repairs and outside-only block selections.
 
+This block obstruction amplifies with the block size.  For any fixed `L == 0 [MOD 4]`, a direction
+fiber of size at least `R(L,L)` that avoids its append residue contains an `L`-vertex regular block of
+wrong residue `q_i in {0,3}`.  The same append and outside-only equations hold with four replaced by
+`L`; only the outside-only surplus condition changes to `sum |P_i|>m`.  Hence a no-cross same-residue
+family of such blocks has size at most `m/L`, and any block-level selector is amplified by `L`.
+The obstruction that remains after this amplification is the sparse-import regime: the retained mass may
+be distributed as one or a few imports in many directions, where the only old-balanced local block is
+`X_i union {b}` of size four.  That regime cannot be closed by a finite same-direction Ramsey catalogue;
+it must use the boundary triples themselves through outside-only maximality or through explicit
+coordinate exchanges.
+
 The boundary `X` alone carries the same constraint at the critical density: since `|X|<=3(m-1)`, a
 terminal `X` has no mod-`4` congruent induced subset of size `>m`.  In the exact basis model this forbids
 any selection of subpatterns `P_i subset X_i` from the boundary triples with
