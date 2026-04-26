@@ -36677,6 +36677,1295 @@ theorem
 
 end FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI
 
+
+/-- Monochrome trace alternatives for the typed `F`-graph branch. -/
+inductive FirstBitTerminalTypedFMonochromeTraceKind : Type
+  | allZero
+  | allOne
+
+/-- Exhaust the two monochrome trace alternatives. -/
+theorem firstBitTerminalTypedFMonochromeTraceKind_cases
+    (kind : FirstBitTerminalTypedFMonochromeTraceKind) :
+    kind = .allZero ∨ kind = .allOne := by
+  cases kind with
+  | allZero => exact Or.inl rfl
+  | allOne => exact Or.inr rfl
+
+/-- Typed bipartite `F`-graph terminal cases used by the `F`-branch facade. -/
+inductive FirstBitTerminalTypedFBipartiteCase : Type
+  | uniformEmpty
+  | minoritySubstar
+  | k22Subgraph
+
+/-- Exhaust the typed bipartite `F`-graph case split. -/
+theorem firstBitTerminalTypedFBipartiteCase_cases
+    (caseTag : FirstBitTerminalTypedFBipartiteCase) :
+    caseTag = .uniformEmpty ∨ caseTag = .minoritySubstar ∨ caseTag = .k22Subgraph := by
+  cases caseTag with
+  | uniformEmpty => exact Or.inl rfl
+  | minoritySubstar => exact Or.inr (Or.inl rfl)
+  | k22Subgraph => exact Or.inr (Or.inr rfl)
+
+/--
+Signed-quotient scalar import used by the typed `F`-graph branch.  It is the part of the signed
+quotient scalar closure public API needed by the one-exception atom profile.
+-/
+structure FirstBitTerminalTypedFGraphSignedQuotientScalarImport
+    {Core SourceAtom Collision : Type*}
+    (starPhase : Core → SourceAtom → Collision → Prop)
+    (rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ)
+    (signedQuotientClosed : Core → SourceAtom → Collision → Prop)
+    (signedQuotientScalarClosure signedQuotientScalarClosureEndpoint : Prop) : Prop where
+  star_signedQuotient_scalarCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      starPhase core source collision →
+        FirstBitTerminalSignedQuotientScalarClosureEquation
+          (rG core source collision) (SG core source collision)
+          (quotientScalar core source collision) (closureScalar core source collision)
+  signedQuotientClosed_of_starCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      starPhase core source collision → signedQuotientClosed core source collision
+  signedQuotientScalarClosureCert : signedQuotientScalarClosure
+  signedQuotientScalarClosureEndpointCert : signedQuotientScalarClosureEndpoint
+
+/-- Build the typed `F`-graph signed-quotient scalar import from explicit pieces. -/
+theorem firstBitTerminalTypedFGraphSignedQuotientScalarImport_of_parts
+    {Core SourceAtom Collision : Type*}
+    {starPhase : Core → SourceAtom → Collision → Prop}
+    {rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ}
+    {signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+    {signedQuotientScalarClosure signedQuotientScalarClosureEndpoint : Prop}
+    (hscalar :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        starPhase core source collision →
+          FirstBitTerminalSignedQuotientScalarClosureEquation
+            (rG core source collision) (SG core source collision)
+            (quotientScalar core source collision) (closureScalar core source collision))
+    (hclosed :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        starPhase core source collision → signedQuotientClosed core source collision)
+    (hmarker : signedQuotientScalarClosure)
+    (hendpoint : signedQuotientScalarClosureEndpoint) :
+    FirstBitTerminalTypedFGraphSignedQuotientScalarImport starPhase rG SG quotientScalar
+      closureScalar signedQuotientClosed signedQuotientScalarClosure
+      signedQuotientScalarClosureEndpoint where
+  star_signedQuotient_scalarCert := hscalar
+  signedQuotientClosed_of_starCert := hclosed
+  signedQuotientScalarClosureCert := hmarker
+  signedQuotientScalarClosureEndpointCert := hendpoint
+
+/-- Reuse the signed-quotient scalar-closure facade as a typed `F`-graph scalar import. -/
+theorem firstBitTerminalTypedFGraphSignedQuotientScalarImport_of_scalarClosureFacade
+    {Core SourceAtom Collision : Type*}
+    {allEdgeCollision starPhase : Core → SourceAtom → Collision → Prop}
+    {rG SG latinScalar quotientScalar closureScalar :
+      Core → SourceAtom → Collision → ℕ}
+    {latinClosed signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+    {allEdgeLatinScalarFrontier signedQuotientScalarClosure
+      signedQuotientScalarClosureEndpoint : Prop}
+    (hscalar :
+      FirstBitTerminalAllEdgeLatinScalarClosureFacade allEdgeCollision starPhase
+        rG SG latinScalar quotientScalar closureScalar latinClosed signedQuotientClosed
+        allEdgeLatinScalarFrontier signedQuotientScalarClosure)
+    (hendpoint : signedQuotientScalarClosureEndpoint) :
+    FirstBitTerminalTypedFGraphSignedQuotientScalarImport starPhase rG SG quotientScalar
+      closureScalar signedQuotientClosed signedQuotientScalarClosure
+      signedQuotientScalarClosureEndpoint where
+  star_signedQuotient_scalarCert := by
+    intro core source collision hstar
+    exact hscalar.star_signedQuotient_scalar hstar
+  signedQuotientClosed_of_starCert := by
+    intro core source collision hstar
+    exact hscalar.signedQuotientClosed_of_star hstar
+  signedQuotientScalarClosureCert := hscalar.to_signedQuotientScalarClosure
+  signedQuotientScalarClosureEndpointCert := hendpoint
+
+section FirstBitTerminalTypedFGraphSignedQuotientScalarImport
+
+variable {Core SourceAtom Collision : Type*}
+variable {starPhase : Core → SourceAtom → Collision → Prop}
+variable {rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ}
+variable {signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+variable {signedQuotientScalarClosure signedQuotientScalarClosureEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalTypedFGraphSignedQuotientScalarImport starPhase rG SG quotientScalar
+    closureScalar signedQuotientClosed signedQuotientScalarClosure
+    signedQuotientScalarClosureEndpoint)
+
+/-- Project the signed-quotient scalar equation from the typed `F` import. -/
+theorem FirstBitTerminalTypedFGraphSignedQuotientScalarImport.star_signedQuotient_scalar
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hstar : starPhase core source collision) :
+    FirstBitTerminalSignedQuotientScalarClosureEquation
+      (rG core source collision) (SG core source collision)
+      (quotientScalar core source collision) (closureScalar core source collision) :=
+  h.star_signedQuotient_scalarCert core source collision hstar
+
+/-- Project signed-quotient closure for a star-phase row. -/
+theorem FirstBitTerminalTypedFGraphSignedQuotientScalarImport.signedQuotientClosed_of_star
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hstar : starPhase core source collision) :
+    signedQuotientClosed core source collision :=
+  h.signedQuotientClosed_of_starCert core source collision hstar
+
+/-- Project the signed-quotient scalar-closure marker. -/
+theorem FirstBitTerminalTypedFGraphSignedQuotientScalarImport.to_signedQuotientScalarClosure :
+    signedQuotientScalarClosure :=
+  h.signedQuotientScalarClosureCert
+
+/-- Project the signed-quotient scalar-closure endpoint marker. -/
+theorem FirstBitTerminalTypedFGraphSignedQuotientScalarImport.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.signedQuotientScalarClosureEndpointCert
+
+end FirstBitTerminalTypedFGraphSignedQuotientScalarImport
+
+/-- Typed `F`-edge terminality together with type crossing for the edge endpoints. -/
+structure FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade
+    {Core Atom FEdge FType : Type*}
+    (atoms : Core → Finset Atom)
+    (fEdges : Core → Finset FEdge)
+    (edgeLeft edgeRight : Core → FEdge → Atom)
+    (atomType : Core → Atom → FType)
+    (terminalFEdge typeCrossingFEdge typedFEdgeClosed : Core → FEdge → Prop)
+    (fEdgeTerminality typedFEdgeTypeCrossing : Prop) : Prop where
+  left_memCert :
+    ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → edgeLeft core edge ∈ atoms core
+  right_memCert :
+    ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → edgeRight core edge ∈ atoms core
+  endpoints_distinctCert :
+    ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → edgeLeft core edge ≠ edgeRight core edge
+  endpoint_types_crossCert :
+    ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core →
+      atomType core (edgeLeft core edge) ≠ atomType core (edgeRight core edge)
+  terminal_of_edgeCert :
+    ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → terminalFEdge core edge
+  typeCrossing_of_edgeCert :
+    ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → typeCrossingFEdge core edge
+  closed_of_terminal_typeCrossingCert :
+    ∀ core : Core, ∀ edge : FEdge,
+      terminalFEdge core edge → typeCrossingFEdge core edge → typedFEdgeClosed core edge
+  fEdgeTerminalityCert : fEdgeTerminality
+  typedFEdgeTypeCrossingCert : typedFEdgeTypeCrossing
+
+/-- Build the typed `F`-edge facade from explicit certificates. -/
+theorem firstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade_of_parts
+    {Core Atom FEdge FType : Type*}
+    {atoms : Core → Finset Atom}
+    {fEdges : Core → Finset FEdge}
+    {edgeLeft edgeRight : Core → FEdge → Atom}
+    {atomType : Core → Atom → FType}
+    {terminalFEdge typeCrossingFEdge typedFEdgeClosed : Core → FEdge → Prop}
+    {fEdgeTerminality typedFEdgeTypeCrossing : Prop}
+    (hleft :
+      ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → edgeLeft core edge ∈ atoms core)
+    (hright :
+      ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → edgeRight core edge ∈ atoms core)
+    (hdistinct :
+      ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → edgeLeft core edge ≠ edgeRight core edge)
+    (htypes :
+      ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core →
+        atomType core (edgeLeft core edge) ≠ atomType core (edgeRight core edge))
+    (hterminal :
+      ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → terminalFEdge core edge)
+    (hcrossing :
+      ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → typeCrossingFEdge core edge)
+    (hclosed :
+      ∀ core : Core, ∀ edge : FEdge,
+        terminalFEdge core edge → typeCrossingFEdge core edge → typedFEdgeClosed core edge)
+    (hterminalMarker : fEdgeTerminality)
+    (hcrossingMarker : typedFEdgeTypeCrossing) :
+    FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade atoms fEdges edgeLeft
+      edgeRight atomType terminalFEdge typeCrossingFEdge typedFEdgeClosed fEdgeTerminality
+      typedFEdgeTypeCrossing where
+  left_memCert := hleft
+  right_memCert := hright
+  endpoints_distinctCert := hdistinct
+  endpoint_types_crossCert := htypes
+  terminal_of_edgeCert := hterminal
+  typeCrossing_of_edgeCert := hcrossing
+  closed_of_terminal_typeCrossingCert := hclosed
+  fEdgeTerminalityCert := hterminalMarker
+  typedFEdgeTypeCrossingCert := hcrossingMarker
+
+section FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade
+
+variable {Core Atom FEdge FType : Type*}
+variable {atoms : Core → Finset Atom}
+variable {fEdges : Core → Finset FEdge}
+variable {edgeLeft edgeRight : Core → FEdge → Atom}
+variable {atomType : Core → Atom → FType}
+variable {terminalFEdge typeCrossingFEdge typedFEdgeClosed : Core → FEdge → Prop}
+variable {fEdgeTerminality typedFEdgeTypeCrossing : Prop}
+
+variable (h :
+  FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade atoms fEdges edgeLeft edgeRight
+    atomType terminalFEdge typeCrossingFEdge typedFEdgeClosed fEdgeTerminality
+    typedFEdgeTypeCrossing)
+
+/-- Project left endpoint membership for a typed `F` edge. -/
+theorem FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade.left_mem
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    edgeLeft core edge ∈ atoms core :=
+  h.left_memCert core edge hedge
+
+/-- Project right endpoint membership for a typed `F` edge. -/
+theorem FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade.right_mem
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    edgeRight core edge ∈ atoms core :=
+  h.right_memCert core edge hedge
+
+/-- Typed `F` edges have distinct endpoints. -/
+theorem FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade.endpoints_distinct
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    edgeLeft core edge ≠ edgeRight core edge :=
+  h.endpoints_distinctCert core edge hedge
+
+/-- Typed `F` edges cross endpoint types. -/
+theorem FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade.endpoint_types_cross
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    atomType core (edgeLeft core edge) ≠ atomType core (edgeRight core edge) :=
+  h.endpoint_types_crossCert core edge hedge
+
+/-- Project terminality for a typed `F` edge. -/
+theorem FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade.terminal_of_edge
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    terminalFEdge core edge :=
+  h.terminal_of_edgeCert core edge hedge
+
+/-- Project type crossing for a typed `F` edge. -/
+theorem FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade.typeCrossing_of_edge
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    typeCrossingFEdge core edge :=
+  h.typeCrossing_of_edgeCert core edge hedge
+
+/-- A typed `F` edge is closed once terminality and type crossing are projected. -/
+theorem FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade.closed_of_edge
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    typedFEdgeClosed core edge :=
+  h.closed_of_terminal_typeCrossingCert core edge
+    (h.terminal_of_edge hedge) (h.typeCrossing_of_edge hedge)
+
+/-- Project the `F`-edge terminality marker. -/
+theorem FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade.to_fEdgeTerminality :
+    fEdgeTerminality :=
+  h.fEdgeTerminalityCert
+
+/-- Project the typed `F`-edge crossing marker. -/
+theorem FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade.to_typedFEdgeTypeCrossing :
+    typedFEdgeTypeCrossing :=
+  h.typedFEdgeTypeCrossingCert
+
+end FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade
+
+/-- Monochrome all-zero/all-one trace rigidity for the typed `F` branch. -/
+structure FirstBitTerminalTypedFMonochromeTraceRigidityFacade
+    {Core Atom Trace : Type*}
+    (traces : Core → Finset Trace)
+    (traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind)
+    (monochromeTrace allZeroTrace allOneTrace traceRigidAtom : Core → Atom → Trace → Prop)
+    (allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity : Prop) : Prop where
+  trace_mem_of_monochromeCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      monochromeTrace core atom trace → trace ∈ traces core
+  kind_casesCert :
+    ∀ core : Core, ∀ trace : Trace, trace ∈ traces core →
+      traceKind core trace = .allZero ∨ traceKind core trace = .allOne
+  allZero_of_kindCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      monochromeTrace core atom trace → traceKind core trace = .allZero →
+        allZeroTrace core atom trace
+  allOne_of_kindCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      monochromeTrace core atom trace → traceKind core trace = .allOne →
+        allOneTrace core atom trace
+  rigid_of_allZeroCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      allZeroTrace core atom trace → traceRigidAtom core atom trace
+  rigid_of_allOneCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+      allOneTrace core atom trace → traceRigidAtom core atom trace
+  allZeroTraceRigidityCert : allZeroTraceRigidity
+  allOneTraceRigidityCert : allOneTraceRigidity
+  monochromeTraceRigidityCert : monochromeTraceRigidity
+
+/-- Build the monochrome trace-rigidity facade from explicit certificates. -/
+theorem firstBitTerminalTypedFMonochromeTraceRigidityFacade_of_parts
+    {Core Atom Trace : Type*}
+    {traces : Core → Finset Trace}
+    {traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind}
+    {monochromeTrace allZeroTrace allOneTrace traceRigidAtom : Core → Atom → Trace → Prop}
+    {allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity : Prop}
+    (hmem :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        monochromeTrace core atom trace → trace ∈ traces core)
+    (hcases :
+      ∀ core : Core, ∀ trace : Trace, trace ∈ traces core →
+        traceKind core trace = .allZero ∨ traceKind core trace = .allOne)
+    (hzero :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        monochromeTrace core atom trace → traceKind core trace = .allZero →
+          allZeroTrace core atom trace)
+    (hone :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        monochromeTrace core atom trace → traceKind core trace = .allOne →
+          allOneTrace core atom trace)
+    (hrigidZero :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        allZeroTrace core atom trace → traceRigidAtom core atom trace)
+    (hrigidOne :
+      ∀ core : Core, ∀ atom : Atom, ∀ trace : Trace,
+        allOneTrace core atom trace → traceRigidAtom core atom trace)
+    (hzeroMarker : allZeroTraceRigidity)
+    (honeMarker : allOneTraceRigidity)
+    (hmonoMarker : monochromeTraceRigidity) :
+    FirstBitTerminalTypedFMonochromeTraceRigidityFacade traces traceKind monochromeTrace
+      allZeroTrace allOneTrace traceRigidAtom allZeroTraceRigidity allOneTraceRigidity
+      monochromeTraceRigidity where
+  trace_mem_of_monochromeCert := hmem
+  kind_casesCert := hcases
+  allZero_of_kindCert := hzero
+  allOne_of_kindCert := hone
+  rigid_of_allZeroCert := hrigidZero
+  rigid_of_allOneCert := hrigidOne
+  allZeroTraceRigidityCert := hzeroMarker
+  allOneTraceRigidityCert := honeMarker
+  monochromeTraceRigidityCert := hmonoMarker
+
+section FirstBitTerminalTypedFMonochromeTraceRigidityFacade
+
+variable {Core Atom Trace : Type*}
+variable {traces : Core → Finset Trace}
+variable {traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind}
+variable {monochromeTrace allZeroTrace allOneTrace traceRigidAtom : Core → Atom → Trace → Prop}
+variable {allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity : Prop}
+
+variable (h :
+  FirstBitTerminalTypedFMonochromeTraceRigidityFacade traces traceKind monochromeTrace
+    allZeroTrace allOneTrace traceRigidAtom allZeroTraceRigidity allOneTraceRigidity
+    monochromeTraceRigidity)
+
+/-- Monochrome traces lie in the trace table. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.trace_mem_of_monochrome
+    {core : Core} {atom : Atom} {trace : Trace}
+    (hmono : monochromeTrace core atom trace) :
+    trace ∈ traces core :=
+  h.trace_mem_of_monochromeCert core atom trace hmono
+
+/-- Project the all-zero/all-one trace alternatives. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.kind_cases
+    {core : Core} {trace : Trace} (htrace : trace ∈ traces core) :
+    traceKind core trace = .allZero ∨ traceKind core trace = .allOne :=
+  h.kind_casesCert core trace htrace
+
+/-- A monochrome trace tagged all-zero is an all-zero trace. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.allZero_of_kind
+    {core : Core} {atom : Atom} {trace : Trace}
+    (hmono : monochromeTrace core atom trace)
+    (hkind : traceKind core trace = .allZero) :
+    allZeroTrace core atom trace :=
+  h.allZero_of_kindCert core atom trace hmono hkind
+
+/-- A monochrome trace tagged all-one is an all-one trace. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.allOne_of_kind
+    {core : Core} {atom : Atom} {trace : Trace}
+    (hmono : monochromeTrace core atom trace)
+    (hkind : traceKind core trace = .allOne) :
+    allOneTrace core atom trace :=
+  h.allOne_of_kindCert core atom trace hmono hkind
+
+/-- All-zero monochrome traces are rigid. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.rigid_of_allZero
+    {core : Core} {atom : Atom} {trace : Trace}
+    (hzero : allZeroTrace core atom trace) :
+    traceRigidAtom core atom trace :=
+  h.rigid_of_allZeroCert core atom trace hzero
+
+/-- All-one monochrome traces are rigid. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.rigid_of_allOne
+    {core : Core} {atom : Atom} {trace : Trace}
+    (hone : allOneTrace core atom trace) :
+    traceRigidAtom core atom trace :=
+  h.rigid_of_allOneCert core atom trace hone
+
+/-- Any monochrome trace is rigid after splitting into all-zero/all-one cases. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.rigid_of_monochrome
+    {core : Core} {atom : Atom} {trace : Trace}
+    (hmono : monochromeTrace core atom trace) :
+    traceRigidAtom core atom trace := by
+  rcases h.kind_cases (h.trace_mem_of_monochrome hmono) with hzero | hone
+  · exact h.rigid_of_allZero (h.allZero_of_kind hmono hzero)
+  · exact h.rigid_of_allOne (h.allOne_of_kind hmono hone)
+
+/-- Project the all-zero trace-rigidity marker. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.to_allZeroTraceRigidity :
+    allZeroTraceRigidity :=
+  h.allZeroTraceRigidityCert
+
+/-- Project the all-one trace-rigidity marker. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.to_allOneTraceRigidity :
+    allOneTraceRigidity :=
+  h.allOneTraceRigidityCert
+
+/-- Project the monochrome trace-rigidity marker. -/
+theorem FirstBitTerminalTypedFMonochromeTraceRigidityFacade.to_monochromeTraceRigidity :
+    monochromeTraceRigidity :=
+  h.monochromeTraceRigidityCert
+
+end FirstBitTerminalTypedFMonochromeTraceRigidityFacade
+
+/-- Terminal monochrome `F` edges are excluded. -/
+structure FirstBitTerminalTypedFMonochromeEdgeExclusionFacade
+    {Core FEdge Trace : Type*}
+    (fEdges : Core → Finset FEdge)
+    (edgeTrace : Core → FEdge → Trace)
+    (traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind)
+    (terminalFEdge monochromeFEdge excludedFEdge : Core → FEdge → Prop)
+    (monochromeFEdgeExclusion : Prop) : Prop where
+  monochrome_kind_casesCert :
+    ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → monochromeFEdge core edge →
+      traceKind core (edgeTrace core edge) = .allZero ∨
+        traceKind core (edgeTrace core edge) = .allOne
+  excluded_of_monochromeCert :
+    ∀ core : Core, ∀ edge : FEdge,
+      edge ∈ fEdges core → monochromeFEdge core edge → excludedFEdge core edge
+  terminal_monochrome_contradictionCert :
+    ∀ core : Core, ∀ edge : FEdge,
+      edge ∈ fEdges core → terminalFEdge core edge → monochromeFEdge core edge → False
+  monochromeFEdgeExclusionCert : monochromeFEdgeExclusion
+
+/-- Build the monochrome-edge exclusion facade from explicit certificates. -/
+theorem firstBitTerminalTypedFMonochromeEdgeExclusionFacade_of_parts
+    {Core FEdge Trace : Type*}
+    {fEdges : Core → Finset FEdge}
+    {edgeTrace : Core → FEdge → Trace}
+    {traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind}
+    {terminalFEdge monochromeFEdge excludedFEdge : Core → FEdge → Prop}
+    {monochromeFEdgeExclusion : Prop}
+    (hcases :
+      ∀ core : Core, ∀ edge : FEdge, edge ∈ fEdges core → monochromeFEdge core edge →
+        traceKind core (edgeTrace core edge) = .allZero ∨
+          traceKind core (edgeTrace core edge) = .allOne)
+    (hexcluded :
+      ∀ core : Core, ∀ edge : FEdge,
+        edge ∈ fEdges core → monochromeFEdge core edge → excludedFEdge core edge)
+    (hcontradiction :
+      ∀ core : Core, ∀ edge : FEdge,
+        edge ∈ fEdges core → terminalFEdge core edge → monochromeFEdge core edge → False)
+    (hmarker : monochromeFEdgeExclusion) :
+    FirstBitTerminalTypedFMonochromeEdgeExclusionFacade fEdges edgeTrace traceKind
+      terminalFEdge monochromeFEdge excludedFEdge monochromeFEdgeExclusion where
+  monochrome_kind_casesCert := hcases
+  excluded_of_monochromeCert := hexcluded
+  terminal_monochrome_contradictionCert := hcontradiction
+  monochromeFEdgeExclusionCert := hmarker
+
+section FirstBitTerminalTypedFMonochromeEdgeExclusionFacade
+
+variable {Core FEdge Trace : Type*}
+variable {fEdges : Core → Finset FEdge}
+variable {edgeTrace : Core → FEdge → Trace}
+variable {traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind}
+variable {terminalFEdge monochromeFEdge excludedFEdge : Core → FEdge → Prop}
+variable {monochromeFEdgeExclusion : Prop}
+
+variable (h :
+  FirstBitTerminalTypedFMonochromeEdgeExclusionFacade fEdges edgeTrace traceKind
+    terminalFEdge monochromeFEdge excludedFEdge monochromeFEdgeExclusion)
+
+/-- Project the monochrome kind cases for an `F` edge. -/
+theorem FirstBitTerminalTypedFMonochromeEdgeExclusionFacade.monochrome_kind_cases
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core)
+    (hmono : monochromeFEdge core edge) :
+    traceKind core (edgeTrace core edge) = .allZero ∨
+      traceKind core (edgeTrace core edge) = .allOne :=
+  h.monochrome_kind_casesCert core edge hedge hmono
+
+/-- Monochrome `F` edges are marked excluded. -/
+theorem FirstBitTerminalTypedFMonochromeEdgeExclusionFacade.excluded_of_monochrome
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core)
+    (hmono : monochromeFEdge core edge) :
+    excludedFEdge core edge :=
+  h.excluded_of_monochromeCert core edge hedge hmono
+
+/-- A terminal typed `F` edge cannot be monochrome. -/
+theorem FirstBitTerminalTypedFMonochromeEdgeExclusionFacade.not_monochrome_of_terminal
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core)
+    (hterminal : terminalFEdge core edge) :
+    ¬ monochromeFEdge core edge :=
+  h.terminal_monochrome_contradictionCert core edge hedge hterminal
+
+/-- Project the monochrome-edge exclusion marker. -/
+theorem FirstBitTerminalTypedFMonochromeEdgeExclusionFacade.to_monochromeFEdgeExclusion :
+    monochromeFEdgeExclusion :=
+  h.monochromeFEdgeExclusionCert
+
+end FirstBitTerminalTypedFMonochromeEdgeExclusionFacade
+
+/-- Case facade for typed bipartite `F` graphs. -/
+structure FirstBitTerminalTypedFBipartiteGraphCaseFacade
+    {Core Left Right : Type*}
+    (leftPart : Core → Finset Left)
+    (rightPart : Core → Finset Right)
+    (caseOf : Core → FirstBitTerminalTypedFBipartiteCase)
+    (uniformEmpty minoritySubstar k22Subgraph typedBipartiteResolved : Core → Prop)
+    (typedBipartiteUniformEmpty typedBipartiteMinoritySubstar typedBipartiteK22
+      typedBipartiteCaseSplit : Prop) : Prop where
+  case_casesCert :
+    ∀ core : Core,
+      caseOf core = .uniformEmpty ∨ caseOf core = .minoritySubstar ∨
+        caseOf core = .k22Subgraph
+  uniformEmpty_of_caseCert :
+    ∀ core : Core, caseOf core = .uniformEmpty → uniformEmpty core
+  minoritySubstar_of_caseCert :
+    ∀ core : Core, caseOf core = .minoritySubstar → minoritySubstar core
+  k22Subgraph_of_caseCert :
+    ∀ core : Core, caseOf core = .k22Subgraph → k22Subgraph core
+  resolved_of_uniformEmptyCert :
+    ∀ core : Core, uniformEmpty core → typedBipartiteResolved core
+  resolved_of_minoritySubstarCert :
+    ∀ core : Core, minoritySubstar core → typedBipartiteResolved core
+  resolved_of_k22SubgraphCert :
+    ∀ core : Core, k22Subgraph core → typedBipartiteResolved core
+  typedBipartiteUniformEmptyCert : typedBipartiteUniformEmpty
+  typedBipartiteMinoritySubstarCert : typedBipartiteMinoritySubstar
+  typedBipartiteK22Cert : typedBipartiteK22
+  typedBipartiteCaseSplitCert : typedBipartiteCaseSplit
+
+/-- Build the typed bipartite `F`-graph case facade from explicit certificates. -/
+theorem firstBitTerminalTypedFBipartiteGraphCaseFacade_of_parts
+    {Core Left Right : Type*}
+    {leftPart : Core → Finset Left}
+    {rightPart : Core → Finset Right}
+    {caseOf : Core → FirstBitTerminalTypedFBipartiteCase}
+    {uniformEmpty minoritySubstar k22Subgraph typedBipartiteResolved : Core → Prop}
+    {typedBipartiteUniformEmpty typedBipartiteMinoritySubstar typedBipartiteK22
+      typedBipartiteCaseSplit : Prop}
+    (hcases :
+      ∀ core : Core,
+        caseOf core = .uniformEmpty ∨ caseOf core = .minoritySubstar ∨
+          caseOf core = .k22Subgraph)
+    (hempty : ∀ core : Core, caseOf core = .uniformEmpty → uniformEmpty core)
+    (hsubstar : ∀ core : Core, caseOf core = .minoritySubstar → minoritySubstar core)
+    (hk22 : ∀ core : Core, caseOf core = .k22Subgraph → k22Subgraph core)
+    (hresolveEmpty : ∀ core : Core, uniformEmpty core → typedBipartiteResolved core)
+    (hresolveSubstar : ∀ core : Core, minoritySubstar core → typedBipartiteResolved core)
+    (hresolveK22 : ∀ core : Core, k22Subgraph core → typedBipartiteResolved core)
+    (hemptyMarker : typedBipartiteUniformEmpty)
+    (hsubstarMarker : typedBipartiteMinoritySubstar)
+    (hk22Marker : typedBipartiteK22)
+    (hsplitMarker : typedBipartiteCaseSplit) :
+    FirstBitTerminalTypedFBipartiteGraphCaseFacade leftPart rightPart caseOf uniformEmpty
+      minoritySubstar k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty
+      typedBipartiteMinoritySubstar typedBipartiteK22 typedBipartiteCaseSplit where
+  case_casesCert := hcases
+  uniformEmpty_of_caseCert := hempty
+  minoritySubstar_of_caseCert := hsubstar
+  k22Subgraph_of_caseCert := hk22
+  resolved_of_uniformEmptyCert := hresolveEmpty
+  resolved_of_minoritySubstarCert := hresolveSubstar
+  resolved_of_k22SubgraphCert := hresolveK22
+  typedBipartiteUniformEmptyCert := hemptyMarker
+  typedBipartiteMinoritySubstarCert := hsubstarMarker
+  typedBipartiteK22Cert := hk22Marker
+  typedBipartiteCaseSplitCert := hsplitMarker
+
+section FirstBitTerminalTypedFBipartiteGraphCaseFacade
+
+variable {Core Left Right : Type*}
+variable {leftPart : Core → Finset Left}
+variable {rightPart : Core → Finset Right}
+variable {caseOf : Core → FirstBitTerminalTypedFBipartiteCase}
+variable {uniformEmpty minoritySubstar k22Subgraph typedBipartiteResolved : Core → Prop}
+variable {typedBipartiteUniformEmpty typedBipartiteMinoritySubstar typedBipartiteK22
+  typedBipartiteCaseSplit : Prop}
+
+variable (h :
+  FirstBitTerminalTypedFBipartiteGraphCaseFacade leftPart rightPart caseOf uniformEmpty
+    minoritySubstar k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty
+    typedBipartiteMinoritySubstar typedBipartiteK22 typedBipartiteCaseSplit)
+
+/-- Project the typed bipartite case alternatives. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.case_cases
+    {core : Core} :
+    caseOf core = .uniformEmpty ∨ caseOf core = .minoritySubstar ∨
+      caseOf core = .k22Subgraph :=
+  h.case_casesCert core
+
+/-- Project the uniform-empty branch. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.uniformEmpty_of_case
+    {core : Core} (hcase : caseOf core = .uniformEmpty) :
+    uniformEmpty core :=
+  h.uniformEmpty_of_caseCert core hcase
+
+/-- Project the minority-substar branch. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.minoritySubstar_of_case
+    {core : Core} (hcase : caseOf core = .minoritySubstar) :
+    minoritySubstar core :=
+  h.minoritySubstar_of_caseCert core hcase
+
+/-- Project the `K_{2,2}` branch. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.k22Subgraph_of_case
+    {core : Core} (hcase : caseOf core = .k22Subgraph) :
+    k22Subgraph core :=
+  h.k22Subgraph_of_caseCert core hcase
+
+/-- The uniform-empty branch resolves the typed bipartite case. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.resolved_of_uniformEmpty
+    {core : Core} (hempty : uniformEmpty core) :
+    typedBipartiteResolved core :=
+  h.resolved_of_uniformEmptyCert core hempty
+
+/-- The minority-substar branch resolves the typed bipartite case. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.resolved_of_minoritySubstar
+    {core : Core} (hsubstar : minoritySubstar core) :
+    typedBipartiteResolved core :=
+  h.resolved_of_minoritySubstarCert core hsubstar
+
+/-- The `K_{2,2}` branch resolves the typed bipartite case. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.resolved_of_k22Subgraph
+    {core : Core} (hk22 : k22Subgraph core) :
+    typedBipartiteResolved core :=
+  h.resolved_of_k22SubgraphCert core hk22
+
+/-- Every typed bipartite case resolves after splitting into the three terminal branches. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.resolved_of_case
+    {core : Core} :
+    typedBipartiteResolved core := by
+  rcases h.case_cases (core := core) with hempty | htail
+  · exact h.resolved_of_uniformEmpty (h.uniformEmpty_of_case hempty)
+  · rcases htail with hsubstar | hk22
+    · exact h.resolved_of_minoritySubstar (h.minoritySubstar_of_case hsubstar)
+    · exact h.resolved_of_k22Subgraph (h.k22Subgraph_of_case hk22)
+
+/-- Project the uniform-empty typed bipartite marker. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.to_typedBipartiteUniformEmpty :
+    typedBipartiteUniformEmpty :=
+  h.typedBipartiteUniformEmptyCert
+
+/-- Project the minority-substar typed bipartite marker. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.to_typedBipartiteMinoritySubstar :
+    typedBipartiteMinoritySubstar :=
+  h.typedBipartiteMinoritySubstarCert
+
+/-- Project the `K_{2,2}` typed bipartite marker. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.to_typedBipartiteK22 :
+    typedBipartiteK22 :=
+  h.typedBipartiteK22Cert
+
+/-- Project the typed bipartite case-split marker. -/
+theorem FirstBitTerminalTypedFBipartiteGraphCaseFacade.to_typedBipartiteCaseSplit :
+    typedBipartiteCaseSplit :=
+  h.typedBipartiteCaseSplitCert
+
+end FirstBitTerminalTypedFBipartiteGraphCaseFacade
+
+/-- Local omitted-coordinate constraints for typed `F` atoms. -/
+structure FirstBitTerminalTypedFLocalOmittedCoordinateFacade
+    {Core Atom Coord : Type*}
+    (atoms : Core → Finset Atom)
+    (coordinates omittedCoordinates : Core → Atom → Finset Coord)
+    (omittedCoordinateAllowed omittedCoordinateResolved : Core → Atom → Coord → Prop)
+    (localOmittedCoordinateConstraints : Prop) : Prop where
+  omitted_subsetCert :
+    ∀ core : Core, ∀ atom : Atom, atom ∈ atoms core →
+      omittedCoordinates core atom ⊆ coordinates core atom
+  omitted_card_le_oneCert :
+    ∀ core : Core, ∀ atom : Atom, atom ∈ atoms core →
+      (omittedCoordinates core atom).card ≤ 1
+  allowed_of_omittedCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ coord : Coord,
+      atom ∈ atoms core → coord ∈ omittedCoordinates core atom →
+        omittedCoordinateAllowed core atom coord
+  resolved_of_omittedCert :
+    ∀ core : Core, ∀ atom : Atom, ∀ coord : Coord,
+      atom ∈ atoms core → coord ∈ omittedCoordinates core atom →
+        omittedCoordinateResolved core atom coord
+  localOmittedCoordinateConstraintsCert : localOmittedCoordinateConstraints
+
+/-- Build the local omitted-coordinate facade from explicit certificates. -/
+theorem firstBitTerminalTypedFLocalOmittedCoordinateFacade_of_parts
+    {Core Atom Coord : Type*}
+    {atoms : Core → Finset Atom}
+    {coordinates omittedCoordinates : Core → Atom → Finset Coord}
+    {omittedCoordinateAllowed omittedCoordinateResolved : Core → Atom → Coord → Prop}
+    {localOmittedCoordinateConstraints : Prop}
+    (hsubset :
+      ∀ core : Core, ∀ atom : Atom, atom ∈ atoms core →
+        omittedCoordinates core atom ⊆ coordinates core atom)
+    (hcard :
+      ∀ core : Core, ∀ atom : Atom, atom ∈ atoms core →
+        (omittedCoordinates core atom).card ≤ 1)
+    (hallowed :
+      ∀ core : Core, ∀ atom : Atom, ∀ coord : Coord,
+        atom ∈ atoms core → coord ∈ omittedCoordinates core atom →
+          omittedCoordinateAllowed core atom coord)
+    (hresolved :
+      ∀ core : Core, ∀ atom : Atom, ∀ coord : Coord,
+        atom ∈ atoms core → coord ∈ omittedCoordinates core atom →
+          omittedCoordinateResolved core atom coord)
+    (hmarker : localOmittedCoordinateConstraints) :
+    FirstBitTerminalTypedFLocalOmittedCoordinateFacade atoms coordinates omittedCoordinates
+      omittedCoordinateAllowed omittedCoordinateResolved localOmittedCoordinateConstraints where
+  omitted_subsetCert := hsubset
+  omitted_card_le_oneCert := hcard
+  allowed_of_omittedCert := hallowed
+  resolved_of_omittedCert := hresolved
+  localOmittedCoordinateConstraintsCert := hmarker
+
+section FirstBitTerminalTypedFLocalOmittedCoordinateFacade
+
+variable {Core Atom Coord : Type*}
+variable {atoms : Core → Finset Atom}
+variable {coordinates omittedCoordinates : Core → Atom → Finset Coord}
+variable {omittedCoordinateAllowed omittedCoordinateResolved : Core → Atom → Coord → Prop}
+variable {localOmittedCoordinateConstraints : Prop}
+
+variable (h :
+  FirstBitTerminalTypedFLocalOmittedCoordinateFacade atoms coordinates omittedCoordinates
+    omittedCoordinateAllowed omittedCoordinateResolved localOmittedCoordinateConstraints)
+
+/-- Omitted coordinates are local coordinates of the atom. -/
+theorem FirstBitTerminalTypedFLocalOmittedCoordinateFacade.omitted_subset
+    {core : Core} {atom : Atom} (hatom : atom ∈ atoms core) :
+    omittedCoordinates core atom ⊆ coordinates core atom :=
+  h.omitted_subsetCert core atom hatom
+
+/-- At most one local coordinate is omitted for a typed `F` atom. -/
+theorem FirstBitTerminalTypedFLocalOmittedCoordinateFacade.omitted_card_le_one
+    {core : Core} {atom : Atom} (hatom : atom ∈ atoms core) :
+    (omittedCoordinates core atom).card ≤ 1 :=
+  h.omitted_card_le_oneCert core atom hatom
+
+/-- Project the allowed-coordinate constraint for an omitted coordinate. -/
+theorem FirstBitTerminalTypedFLocalOmittedCoordinateFacade.allowed_of_omitted
+    {core : Core} {atom : Atom} {coord : Coord}
+    (hatom : atom ∈ atoms core) (hcoord : coord ∈ omittedCoordinates core atom) :
+    omittedCoordinateAllowed core atom coord :=
+  h.allowed_of_omittedCert core atom coord hatom hcoord
+
+/-- Project the local resolution constraint for an omitted coordinate. -/
+theorem FirstBitTerminalTypedFLocalOmittedCoordinateFacade.resolved_of_omitted
+    {core : Core} {atom : Atom} {coord : Coord}
+    (hatom : atom ∈ atoms core) (hcoord : coord ∈ omittedCoordinates core atom) :
+    omittedCoordinateResolved core atom coord :=
+  h.resolved_of_omittedCert core atom coord hatom hcoord
+
+/-- Project the local omitted-coordinate marker. -/
+theorem FirstBitTerminalTypedFLocalOmittedCoordinateFacade.to_localOmittedCoordinateConstraints :
+    localOmittedCoordinateConstraints :=
+  h.localOmittedCoordinateConstraintsCert
+
+end FirstBitTerminalTypedFLocalOmittedCoordinateFacade
+
+/-- One-exception scalar profile equation for typed `F` atoms, using the signed-quotient scalar closure. -/
+def FirstBitTerminalTypedFOneExceptionScalarProfileEquation
+    (rG SG exceptionScalar profileScalar : ℕ) : Prop :=
+  FirstBitTerminalSignedQuotientScalarClosureEquation rG SG exceptionScalar profileScalar
+
+/-- Exact signed equality gives the one-exception scalar profile equation. -/
+theorem firstBitTerminalTypedFOneExceptionScalarProfileEquation_of_eq
+    {rG SG exceptionScalar profileScalar : ℕ}
+    (h : ((rG : ℤ) - (SG : ℤ)) + (exceptionScalar : ℤ) = (profileScalar : ℤ)) :
+    FirstBitTerminalTypedFOneExceptionScalarProfileEquation rG SG exceptionScalar profileScalar :=
+  firstBitTerminalSignedQuotientScalarClosureEquation_of_eq h
+
+/-- One-exception scalar profile for typed `F` atoms of `F`-degree one or two. -/
+structure FirstBitTerminalTypedFOneExceptionScalarProfileFacade
+    {Core Atom : Type*}
+    (atoms : Core → Finset Atom)
+    (fDegree rG SG exceptionScalar profileScalar : Core → Atom → ℕ)
+    (degreeOneOrTwoAtom oneExceptionScalarProfile : Core → Atom → Prop)
+    (degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier : Prop) : Prop where
+  atom_mem_of_degreeOneOrTwoCert :
+    ∀ core : Core, ∀ atom : Atom, degreeOneOrTwoAtom core atom → atom ∈ atoms core
+  fDegree_eq_one_or_twoCert :
+    ∀ core : Core, ∀ atom : Atom, degreeOneOrTwoAtom core atom →
+      fDegree core atom = 1 ∨ fDegree core atom = 2
+  scalar_profile_equationCert :
+    ∀ core : Core, ∀ atom : Atom, degreeOneOrTwoAtom core atom →
+      FirstBitTerminalTypedFOneExceptionScalarProfileEquation
+        (rG core atom) (SG core atom) (exceptionScalar core atom) (profileScalar core atom)
+  oneException_of_degreeOneOrTwoCert :
+    ∀ core : Core, ∀ atom : Atom, degreeOneOrTwoAtom core atom →
+      oneExceptionScalarProfile core atom
+  degreeOneOrTwoScalarProfileCert : degreeOneOrTwoScalarProfile
+  oneExceptionScalarProfileFrontierCert : oneExceptionScalarProfileFrontier
+
+/-- Build the one-exception scalar profile facade from explicit certificates. -/
+theorem firstBitTerminalTypedFOneExceptionScalarProfileFacade_of_parts
+    {Core Atom : Type*}
+    {atoms : Core → Finset Atom}
+    {fDegree rG SG exceptionScalar profileScalar : Core → Atom → ℕ}
+    {degreeOneOrTwoAtom oneExceptionScalarProfile : Core → Atom → Prop}
+    {degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier : Prop}
+    (hmem :
+      ∀ core : Core, ∀ atom : Atom, degreeOneOrTwoAtom core atom → atom ∈ atoms core)
+    (hdegree :
+      ∀ core : Core, ∀ atom : Atom, degreeOneOrTwoAtom core atom →
+        fDegree core atom = 1 ∨ fDegree core atom = 2)
+    (hscalar :
+      ∀ core : Core, ∀ atom : Atom, degreeOneOrTwoAtom core atom →
+        FirstBitTerminalTypedFOneExceptionScalarProfileEquation
+          (rG core atom) (SG core atom) (exceptionScalar core atom) (profileScalar core atom))
+    (hprofile :
+      ∀ core : Core, ∀ atom : Atom, degreeOneOrTwoAtom core atom →
+        oneExceptionScalarProfile core atom)
+    (hdegreeMarker : degreeOneOrTwoScalarProfile)
+    (hfrontierMarker : oneExceptionScalarProfileFrontier) :
+    FirstBitTerminalTypedFOneExceptionScalarProfileFacade atoms fDegree rG SG
+      exceptionScalar profileScalar degreeOneOrTwoAtom oneExceptionScalarProfile
+      degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier where
+  atom_mem_of_degreeOneOrTwoCert := hmem
+  fDegree_eq_one_or_twoCert := hdegree
+  scalar_profile_equationCert := hscalar
+  oneException_of_degreeOneOrTwoCert := hprofile
+  degreeOneOrTwoScalarProfileCert := hdegreeMarker
+  oneExceptionScalarProfileFrontierCert := hfrontierMarker
+
+section FirstBitTerminalTypedFOneExceptionScalarProfileFacade
+
+variable {Core Atom : Type*}
+variable {atoms : Core → Finset Atom}
+variable {fDegree rG SG exceptionScalar profileScalar : Core → Atom → ℕ}
+variable {degreeOneOrTwoAtom oneExceptionScalarProfile : Core → Atom → Prop}
+variable {degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier : Prop}
+
+variable (h :
+  FirstBitTerminalTypedFOneExceptionScalarProfileFacade atoms fDegree rG SG exceptionScalar
+    profileScalar degreeOneOrTwoAtom oneExceptionScalarProfile degreeOneOrTwoScalarProfile
+    oneExceptionScalarProfileFrontier)
+
+/-- Atoms in the one-exception scalar profile are active typed `F` atoms. -/
+theorem FirstBitTerminalTypedFOneExceptionScalarProfileFacade.atom_mem_of_degreeOneOrTwo
+    {core : Core} {atom : Atom} (hdegree : degreeOneOrTwoAtom core atom) :
+    atom ∈ atoms core :=
+  h.atom_mem_of_degreeOneOrTwoCert core atom hdegree
+
+/-- Project that the typed `F` degree is either one or two. -/
+theorem FirstBitTerminalTypedFOneExceptionScalarProfileFacade.fDegree_eq_one_or_two
+    {core : Core} {atom : Atom} (hdegree : degreeOneOrTwoAtom core atom) :
+    fDegree core atom = 1 ∨ fDegree core atom = 2 :=
+  h.fDegree_eq_one_or_twoCert core atom hdegree
+
+/-- Project the one-exception scalar profile equation. -/
+theorem FirstBitTerminalTypedFOneExceptionScalarProfileFacade.scalar_profile_equation
+    {core : Core} {atom : Atom} (hdegree : degreeOneOrTwoAtom core atom) :
+    FirstBitTerminalTypedFOneExceptionScalarProfileEquation
+      (rG core atom) (SG core atom) (exceptionScalar core atom) (profileScalar core atom) :=
+  h.scalar_profile_equationCert core atom hdegree
+
+/-- Project the one-exception scalar profile marker for an atom of `F`-degree one or two. -/
+theorem FirstBitTerminalTypedFOneExceptionScalarProfileFacade.oneException_of_degreeOneOrTwo
+    {core : Core} {atom : Atom} (hdegree : degreeOneOrTwoAtom core atom) :
+    oneExceptionScalarProfile core atom :=
+  h.oneException_of_degreeOneOrTwoCert core atom hdegree
+
+/-- Project the degree-one-or-two scalar-profile marker. -/
+theorem FirstBitTerminalTypedFOneExceptionScalarProfileFacade.to_degreeOneOrTwoScalarProfile :
+    degreeOneOrTwoScalarProfile :=
+  h.degreeOneOrTwoScalarProfileCert
+
+/-- Project the one-exception scalar-profile frontier marker. -/
+theorem FirstBitTerminalTypedFOneExceptionScalarProfileFacade.to_oneExceptionScalarProfileFrontier :
+    oneExceptionScalarProfileFrontier :=
+  h.oneExceptionScalarProfileFrontierCert
+
+end FirstBitTerminalTypedFOneExceptionScalarProfileFacade
+
+/-- Bundle of all assumption-backed typed `F`-graph branch facades. -/
+structure FirstBitTerminalTypedFGraphBranchSurfaces
+    {Core Atom FEdge FType Trace Left Right Coord : Type*}
+    (atoms : Core → Finset Atom)
+    (fEdges : Core → Finset FEdge)
+    (edgeLeft edgeRight : Core → FEdge → Atom)
+    (atomType : Core → Atom → FType)
+    (terminalFEdge typeCrossingFEdge typedFEdgeClosed : Core → FEdge → Prop)
+    (fEdgeTerminality typedFEdgeTypeCrossing : Prop)
+    (traces : Core → Finset Trace)
+    (traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind)
+    (monochromeTrace allZeroTrace allOneTrace traceRigidAtom : Core → Atom → Trace → Prop)
+    (allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity : Prop)
+    (edgeTrace : Core → FEdge → Trace)
+    (monochromeFEdge excludedFEdge : Core → FEdge → Prop)
+    (monochromeFEdgeExclusion : Prop)
+    (leftPart : Core → Finset Left)
+    (rightPart : Core → Finset Right)
+    (caseOf : Core → FirstBitTerminalTypedFBipartiteCase)
+    (uniformEmpty minoritySubstar k22Subgraph typedBipartiteResolved : Core → Prop)
+    (typedBipartiteUniformEmpty typedBipartiteMinoritySubstar typedBipartiteK22
+      typedBipartiteCaseSplit : Prop)
+    (coordinates omittedCoordinates : Core → Atom → Finset Coord)
+    (omittedCoordinateAllowed omittedCoordinateResolved : Core → Atom → Coord → Prop)
+    (localOmittedCoordinateConstraints : Prop)
+    (fDegree atomRG atomSG atomExceptionScalar atomProfileScalar : Core → Atom → ℕ)
+    (degreeOneOrTwoAtom oneExceptionScalarProfile : Core → Atom → Prop)
+    (degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier : Prop) : Prop where
+  edgeFacade :
+    FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade atoms fEdges edgeLeft
+      edgeRight atomType terminalFEdge typeCrossingFEdge typedFEdgeClosed fEdgeTerminality
+      typedFEdgeTypeCrossing
+  traceRigidityFacade :
+    FirstBitTerminalTypedFMonochromeTraceRigidityFacade traces traceKind monochromeTrace
+      allZeroTrace allOneTrace traceRigidAtom allZeroTraceRigidity allOneTraceRigidity
+      monochromeTraceRigidity
+  monochromeEdgeFacade :
+    FirstBitTerminalTypedFMonochromeEdgeExclusionFacade fEdges edgeTrace traceKind
+      terminalFEdge monochromeFEdge excludedFEdge monochromeFEdgeExclusion
+  bipartiteFacade :
+    FirstBitTerminalTypedFBipartiteGraphCaseFacade leftPart rightPart caseOf uniformEmpty
+      minoritySubstar k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty
+      typedBipartiteMinoritySubstar typedBipartiteK22 typedBipartiteCaseSplit
+  omittedCoordinateFacade :
+    FirstBitTerminalTypedFLocalOmittedCoordinateFacade atoms coordinates omittedCoordinates
+      omittedCoordinateAllowed omittedCoordinateResolved localOmittedCoordinateConstraints
+  scalarProfileFacade :
+    FirstBitTerminalTypedFOneExceptionScalarProfileFacade atoms fDegree atomRG atomSG
+      atomExceptionScalar atomProfileScalar degreeOneOrTwoAtom oneExceptionScalarProfile
+      degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier
+
+/-- Build the typed `F`-graph branch surfaces from component facades. -/
+theorem firstBitTerminalTypedFGraphBranchSurfaces_of_parts
+    {Core Atom FEdge FType Trace Left Right Coord : Type*}
+    {atoms : Core → Finset Atom}
+    {fEdges : Core → Finset FEdge}
+    {edgeLeft edgeRight : Core → FEdge → Atom}
+    {atomType : Core → Atom → FType}
+    {terminalFEdge typeCrossingFEdge typedFEdgeClosed : Core → FEdge → Prop}
+    {fEdgeTerminality typedFEdgeTypeCrossing : Prop}
+    {traces : Core → Finset Trace}
+    {traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind}
+    {monochromeTrace allZeroTrace allOneTrace traceRigidAtom : Core → Atom → Trace → Prop}
+    {allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity : Prop}
+    {edgeTrace : Core → FEdge → Trace}
+    {monochromeFEdge excludedFEdge : Core → FEdge → Prop}
+    {monochromeFEdgeExclusion : Prop}
+    {leftPart : Core → Finset Left}
+    {rightPart : Core → Finset Right}
+    {caseOf : Core → FirstBitTerminalTypedFBipartiteCase}
+    {uniformEmpty minoritySubstar k22Subgraph typedBipartiteResolved : Core → Prop}
+    {typedBipartiteUniformEmpty typedBipartiteMinoritySubstar typedBipartiteK22
+      typedBipartiteCaseSplit : Prop}
+    {coordinates omittedCoordinates : Core → Atom → Finset Coord}
+    {omittedCoordinateAllowed omittedCoordinateResolved : Core → Atom → Coord → Prop}
+    {localOmittedCoordinateConstraints : Prop}
+    {fDegree atomRG atomSG atomExceptionScalar atomProfileScalar : Core → Atom → ℕ}
+    {degreeOneOrTwoAtom oneExceptionScalarProfile : Core → Atom → Prop}
+    {degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier : Prop}
+    (hedge :
+      FirstBitTerminalTypedFEdgeTerminalityTypeCrossingFacade atoms fEdges edgeLeft
+        edgeRight atomType terminalFEdge typeCrossingFEdge typedFEdgeClosed
+        fEdgeTerminality typedFEdgeTypeCrossing)
+    (htrace :
+      FirstBitTerminalTypedFMonochromeTraceRigidityFacade traces traceKind monochromeTrace
+        allZeroTrace allOneTrace traceRigidAtom allZeroTraceRigidity allOneTraceRigidity
+        monochromeTraceRigidity)
+    (hmonoEdge :
+      FirstBitTerminalTypedFMonochromeEdgeExclusionFacade fEdges edgeTrace traceKind
+        terminalFEdge monochromeFEdge excludedFEdge monochromeFEdgeExclusion)
+    (hbipartite :
+      FirstBitTerminalTypedFBipartiteGraphCaseFacade leftPart rightPart caseOf uniformEmpty
+        minoritySubstar k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty
+        typedBipartiteMinoritySubstar typedBipartiteK22 typedBipartiteCaseSplit)
+    (homitted :
+      FirstBitTerminalTypedFLocalOmittedCoordinateFacade atoms coordinates omittedCoordinates
+        omittedCoordinateAllowed omittedCoordinateResolved localOmittedCoordinateConstraints)
+    (hscalar :
+      FirstBitTerminalTypedFOneExceptionScalarProfileFacade atoms fDegree atomRG atomSG
+        atomExceptionScalar atomProfileScalar degreeOneOrTwoAtom oneExceptionScalarProfile
+        degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier) :
+    FirstBitTerminalTypedFGraphBranchSurfaces atoms fEdges edgeLeft edgeRight atomType
+      terminalFEdge typeCrossingFEdge typedFEdgeClosed fEdgeTerminality typedFEdgeTypeCrossing
+      traces traceKind monochromeTrace allZeroTrace allOneTrace traceRigidAtom
+      allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity edgeTrace monochromeFEdge
+      excludedFEdge monochromeFEdgeExclusion leftPart rightPart caseOf uniformEmpty minoritySubstar
+      k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty typedBipartiteMinoritySubstar
+      typedBipartiteK22 typedBipartiteCaseSplit coordinates omittedCoordinates
+      omittedCoordinateAllowed omittedCoordinateResolved localOmittedCoordinateConstraints fDegree
+      atomRG atomSG atomExceptionScalar atomProfileScalar degreeOneOrTwoAtom
+      oneExceptionScalarProfile degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier where
+  edgeFacade := hedge
+  traceRigidityFacade := htrace
+  monochromeEdgeFacade := hmonoEdge
+  bipartiteFacade := hbipartite
+  omittedCoordinateFacade := homitted
+  scalarProfileFacade := hscalar
+
+/-- Public typed `F`-graph branch API, importing the signed-quotient scalar closure endpoint. -/
+structure FirstBitTerminalTypedFGraphBranchPublicAPI
+    {Core Atom FEdge FType Trace Left Right Coord SourceAtom Collision : Type*}
+    (atoms : Core → Finset Atom)
+    (fEdges : Core → Finset FEdge)
+    (edgeLeft edgeRight : Core → FEdge → Atom)
+    (atomType : Core → Atom → FType)
+    (terminalFEdge typeCrossingFEdge typedFEdgeClosed : Core → FEdge → Prop)
+    (fEdgeTerminality typedFEdgeTypeCrossing : Prop)
+    (traces : Core → Finset Trace)
+    (traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind)
+    (monochromeTrace allZeroTrace allOneTrace traceRigidAtom : Core → Atom → Trace → Prop)
+    (allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity : Prop)
+    (edgeTrace : Core → FEdge → Trace)
+    (monochromeFEdge excludedFEdge : Core → FEdge → Prop)
+    (monochromeFEdgeExclusion : Prop)
+    (leftPart : Core → Finset Left)
+    (rightPart : Core → Finset Right)
+    (caseOf : Core → FirstBitTerminalTypedFBipartiteCase)
+    (uniformEmpty minoritySubstar k22Subgraph typedBipartiteResolved : Core → Prop)
+    (typedBipartiteUniformEmpty typedBipartiteMinoritySubstar typedBipartiteK22
+      typedBipartiteCaseSplit : Prop)
+    (coordinates omittedCoordinates : Core → Atom → Finset Coord)
+    (omittedCoordinateAllowed omittedCoordinateResolved : Core → Atom → Coord → Prop)
+    (localOmittedCoordinateConstraints : Prop)
+    (fDegree atomRG atomSG atomExceptionScalar atomProfileScalar : Core → Atom → ℕ)
+    (degreeOneOrTwoAtom oneExceptionScalarProfile : Core → Atom → Prop)
+    (degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier : Prop)
+    (starPhase : Core → SourceAtom → Collision → Prop)
+    (rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ)
+    (signedQuotientClosed : Core → SourceAtom → Collision → Prop)
+    (signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+      typedFGraphBranchEndpoint : Prop) : Prop where
+  signedQuotientImport :
+    FirstBitTerminalTypedFGraphSignedQuotientScalarImport starPhase rG SG quotientScalar
+      closureScalar signedQuotientClosed signedQuotientScalarClosure
+      signedQuotientScalarClosureEndpoint
+  typedFGraphSurfaces :
+    FirstBitTerminalTypedFGraphBranchSurfaces atoms fEdges edgeLeft edgeRight atomType
+      terminalFEdge typeCrossingFEdge typedFEdgeClosed fEdgeTerminality typedFEdgeTypeCrossing
+      traces traceKind monochromeTrace allZeroTrace allOneTrace traceRigidAtom
+      allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity edgeTrace monochromeFEdge
+      excludedFEdge monochromeFEdgeExclusion leftPart rightPart caseOf uniformEmpty minoritySubstar
+      k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty typedBipartiteMinoritySubstar
+      typedBipartiteK22 typedBipartiteCaseSplit coordinates omittedCoordinates
+      omittedCoordinateAllowed omittedCoordinateResolved localOmittedCoordinateConstraints fDegree
+      atomRG atomSG atomExceptionScalar atomProfileScalar degreeOneOrTwoAtom
+      oneExceptionScalarProfile degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier
+  typedFGraphBranchEndpointCert : typedFGraphBranchEndpoint
+
+/-- Build the public typed `F`-graph branch API from signed-quotient import and typed surfaces. -/
+theorem firstBitTerminalTypedFGraphBranchPublicAPI_of_parts
+    {Core Atom FEdge FType Trace Left Right Coord SourceAtom Collision : Type*}
+    {atoms : Core → Finset Atom}
+    {fEdges : Core → Finset FEdge}
+    {edgeLeft edgeRight : Core → FEdge → Atom}
+    {atomType : Core → Atom → FType}
+    {terminalFEdge typeCrossingFEdge typedFEdgeClosed : Core → FEdge → Prop}
+    {fEdgeTerminality typedFEdgeTypeCrossing : Prop}
+    {traces : Core → Finset Trace}
+    {traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind}
+    {monochromeTrace allZeroTrace allOneTrace traceRigidAtom : Core → Atom → Trace → Prop}
+    {allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity : Prop}
+    {edgeTrace : Core → FEdge → Trace}
+    {monochromeFEdge excludedFEdge : Core → FEdge → Prop}
+    {monochromeFEdgeExclusion : Prop}
+    {leftPart : Core → Finset Left}
+    {rightPart : Core → Finset Right}
+    {caseOf : Core → FirstBitTerminalTypedFBipartiteCase}
+    {uniformEmpty minoritySubstar k22Subgraph typedBipartiteResolved : Core → Prop}
+    {typedBipartiteUniformEmpty typedBipartiteMinoritySubstar typedBipartiteK22
+      typedBipartiteCaseSplit : Prop}
+    {coordinates omittedCoordinates : Core → Atom → Finset Coord}
+    {omittedCoordinateAllowed omittedCoordinateResolved : Core → Atom → Coord → Prop}
+    {localOmittedCoordinateConstraints : Prop}
+    {fDegree atomRG atomSG atomExceptionScalar atomProfileScalar : Core → Atom → ℕ}
+    {degreeOneOrTwoAtom oneExceptionScalarProfile : Core → Atom → Prop}
+    {degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier : Prop}
+    {starPhase : Core → SourceAtom → Collision → Prop}
+    {rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ}
+    {signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+    {signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+      typedFGraphBranchEndpoint : Prop}
+    (hsigned :
+      FirstBitTerminalTypedFGraphSignedQuotientScalarImport starPhase rG SG quotientScalar
+        closureScalar signedQuotientClosed signedQuotientScalarClosure
+        signedQuotientScalarClosureEndpoint)
+    (htyped :
+      FirstBitTerminalTypedFGraphBranchSurfaces atoms fEdges edgeLeft edgeRight atomType
+        terminalFEdge typeCrossingFEdge typedFEdgeClosed fEdgeTerminality typedFEdgeTypeCrossing
+        traces traceKind monochromeTrace allZeroTrace allOneTrace traceRigidAtom
+        allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity edgeTrace monochromeFEdge
+        excludedFEdge monochromeFEdgeExclusion leftPart rightPart caseOf uniformEmpty
+        minoritySubstar k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty
+        typedBipartiteMinoritySubstar typedBipartiteK22 typedBipartiteCaseSplit coordinates
+        omittedCoordinates omittedCoordinateAllowed omittedCoordinateResolved
+        localOmittedCoordinateConstraints fDegree atomRG atomSG atomExceptionScalar atomProfileScalar
+        degreeOneOrTwoAtom oneExceptionScalarProfile degreeOneOrTwoScalarProfile
+        oneExceptionScalarProfileFrontier)
+    (hendpoint : typedFGraphBranchEndpoint) :
+    FirstBitTerminalTypedFGraphBranchPublicAPI atoms fEdges edgeLeft edgeRight atomType
+      terminalFEdge typeCrossingFEdge typedFEdgeClosed fEdgeTerminality typedFEdgeTypeCrossing
+      traces traceKind monochromeTrace allZeroTrace allOneTrace traceRigidAtom
+      allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity edgeTrace monochromeFEdge
+      excludedFEdge monochromeFEdgeExclusion leftPart rightPart caseOf uniformEmpty minoritySubstar
+      k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty typedBipartiteMinoritySubstar
+      typedBipartiteK22 typedBipartiteCaseSplit coordinates omittedCoordinates
+      omittedCoordinateAllowed omittedCoordinateResolved localOmittedCoordinateConstraints fDegree
+      atomRG atomSG atomExceptionScalar atomProfileScalar degreeOneOrTwoAtom
+      oneExceptionScalarProfile degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier
+      starPhase rG SG quotientScalar closureScalar signedQuotientClosed signedQuotientScalarClosure
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint where
+  signedQuotientImport := hsigned
+  typedFGraphSurfaces := htyped
+  typedFGraphBranchEndpointCert := hendpoint
+
+section FirstBitTerminalTypedFGraphBranchPublicAPI
+
+variable {Core Atom FEdge FType Trace Left Right Coord SourceAtom Collision : Type*}
+variable {atoms : Core → Finset Atom}
+variable {fEdges : Core → Finset FEdge}
+variable {edgeLeft edgeRight : Core → FEdge → Atom}
+variable {atomType : Core → Atom → FType}
+variable {terminalFEdge typeCrossingFEdge typedFEdgeClosed : Core → FEdge → Prop}
+variable {fEdgeTerminality typedFEdgeTypeCrossing : Prop}
+variable {traces : Core → Finset Trace}
+variable {traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind}
+variable {monochromeTrace allZeroTrace allOneTrace traceRigidAtom : Core → Atom → Trace → Prop}
+variable {allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity : Prop}
+variable {edgeTrace : Core → FEdge → Trace}
+variable {monochromeFEdge excludedFEdge : Core → FEdge → Prop}
+variable {monochromeFEdgeExclusion : Prop}
+variable {leftPart : Core → Finset Left}
+variable {rightPart : Core → Finset Right}
+variable {caseOf : Core → FirstBitTerminalTypedFBipartiteCase}
+variable {uniformEmpty minoritySubstar k22Subgraph typedBipartiteResolved : Core → Prop}
+variable {typedBipartiteUniformEmpty typedBipartiteMinoritySubstar typedBipartiteK22
+  typedBipartiteCaseSplit : Prop}
+variable {coordinates omittedCoordinates : Core → Atom → Finset Coord}
+variable {omittedCoordinateAllowed omittedCoordinateResolved : Core → Atom → Coord → Prop}
+variable {localOmittedCoordinateConstraints : Prop}
+variable {fDegree atomRG atomSG atomExceptionScalar atomProfileScalar : Core → Atom → ℕ}
+variable {degreeOneOrTwoAtom oneExceptionScalarProfile : Core → Atom → Prop}
+variable {degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier : Prop}
+variable {starPhase : Core → SourceAtom → Collision → Prop}
+variable {rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ}
+variable {signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+variable {signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+  typedFGraphBranchEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalTypedFGraphBranchPublicAPI atoms fEdges edgeLeft edgeRight atomType
+    terminalFEdge typeCrossingFEdge typedFEdgeClosed fEdgeTerminality typedFEdgeTypeCrossing
+    traces traceKind monochromeTrace allZeroTrace allOneTrace traceRigidAtom
+    allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity edgeTrace monochromeFEdge
+    excludedFEdge monochromeFEdgeExclusion leftPart rightPart caseOf uniformEmpty minoritySubstar
+    k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty typedBipartiteMinoritySubstar
+    typedBipartiteK22 typedBipartiteCaseSplit coordinates omittedCoordinates
+    omittedCoordinateAllowed omittedCoordinateResolved localOmittedCoordinateConstraints fDegree
+    atomRG atomSG atomExceptionScalar atomProfileScalar degreeOneOrTwoAtom
+    oneExceptionScalarProfile degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier
+    starPhase rG SG quotientScalar closureScalar signedQuotientClosed signedQuotientScalarClosure
+    signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint)
+
+/-- Project the signed-quotient scalar-closure endpoint imported by the typed `F` branch. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.signedQuotientImport.to_signedQuotientScalarClosureEndpoint
+
+/-- Project typed `F`-edge terminality through the public API. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.terminal_of_fEdge
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    terminalFEdge core edge :=
+  h.typedFGraphSurfaces.edgeFacade.terminal_of_edge hedge
+
+/-- Project typed `F`-edge type crossing through the public API. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.typeCrossing_of_fEdge
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    typeCrossingFEdge core edge :=
+  h.typedFGraphSurfaces.edgeFacade.typeCrossing_of_edge hedge
+
+/-- Project typed `F`-edge closure through the public API. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.typedFEdgeClosed_of_fEdge
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core) :
+    typedFEdgeClosed core edge :=
+  h.typedFGraphSurfaces.edgeFacade.closed_of_edge hedge
+
+/-- Project monochrome trace rigidity through the public API. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.rigid_of_monochrome_trace
+    {core : Core} {atom : Atom} {trace : Trace}
+    (hmono : monochromeTrace core atom trace) :
+    traceRigidAtom core atom trace :=
+  h.typedFGraphSurfaces.traceRigidityFacade.rigid_of_monochrome hmono
+
+/-- Terminal typed `F` edges are not monochrome. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.not_monochrome_of_terminal_fEdge
+    {core : Core} {edge : FEdge} (hedge : edge ∈ fEdges core)
+    (hterminal : terminalFEdge core edge) :
+    ¬ monochromeFEdge core edge :=
+  h.typedFGraphSurfaces.monochromeEdgeFacade.not_monochrome_of_terminal hedge hterminal
+
+/-- Project typed bipartite `F`-graph case alternatives. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.typedBipartite_case_cases
+    {core : Core} :
+    caseOf core = .uniformEmpty ∨ caseOf core = .minoritySubstar ∨
+      caseOf core = .k22Subgraph :=
+  h.typedFGraphSurfaces.bipartiteFacade.case_cases
+
+/-- Project resolution of the typed bipartite `F`-graph branch. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.typedBipartiteResolved_of_case
+    {core : Core} :
+    typedBipartiteResolved core :=
+  h.typedFGraphSurfaces.bipartiteFacade.resolved_of_case
+
+/-- Project the local omitted-coordinate cardinality bound. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.omittedCoordinate_card_le_one
+    {core : Core} {atom : Atom} (hatom : atom ∈ atoms core) :
+    (omittedCoordinates core atom).card ≤ 1 :=
+  h.typedFGraphSurfaces.omittedCoordinateFacade.omitted_card_le_one hatom
+
+/-- Project the local allowed-coordinate constraint. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.omittedCoordinate_allowed
+    {core : Core} {atom : Atom} {coord : Coord}
+    (hatom : atom ∈ atoms core) (hcoord : coord ∈ omittedCoordinates core atom) :
+    omittedCoordinateAllowed core atom coord :=
+  h.typedFGraphSurfaces.omittedCoordinateFacade.allowed_of_omitted hatom hcoord
+
+/-- Project the one-exception scalar equation for atoms of `F`-degree one or two. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.oneException_scalar_profile_equation
+    {core : Core} {atom : Atom} (hdegree : degreeOneOrTwoAtom core atom) :
+    FirstBitTerminalTypedFOneExceptionScalarProfileEquation
+      (atomRG core atom) (atomSG core atom)
+      (atomExceptionScalar core atom) (atomProfileScalar core atom) :=
+  h.typedFGraphSurfaces.scalarProfileFacade.scalar_profile_equation hdegree
+
+/-- Project the one-exception scalar profile for atoms of `F`-degree one or two. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.oneExceptionScalarProfile_of_degreeOneOrTwo
+    {core : Core} {atom : Atom} (hdegree : degreeOneOrTwoAtom core atom) :
+    oneExceptionScalarProfile core atom :=
+  h.typedFGraphSurfaces.scalarProfileFacade.oneException_of_degreeOneOrTwo hdegree
+
+/-- Project the typed `F`-graph branch endpoint marker. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.to_typedFGraphBranchEndpoint :
+    typedFGraphBranchEndpoint :=
+  h.typedFGraphBranchEndpointCert
+
+/-- Compact marker bundle for downstream typed `F`-graph branch wrappers. -/
+theorem FirstBitTerminalTypedFGraphBranchPublicAPI.typedFGraphBranchMarkerBundle :
+    fEdgeTerminality ∧ typedFEdgeTypeCrossing ∧ allZeroTraceRigidity ∧
+      allOneTraceRigidity ∧ monochromeTraceRigidity ∧ monochromeFEdgeExclusion ∧
+        typedBipartiteUniformEmpty ∧ typedBipartiteMinoritySubstar ∧ typedBipartiteK22 ∧
+          typedBipartiteCaseSplit ∧ localOmittedCoordinateConstraints ∧
+            degreeOneOrTwoScalarProfile ∧ oneExceptionScalarProfileFrontier ∧
+              signedQuotientScalarClosure ∧ signedQuotientScalarClosureEndpoint ∧
+                typedFGraphBranchEndpoint :=
+  ⟨h.typedFGraphSurfaces.edgeFacade.to_fEdgeTerminality,
+    h.typedFGraphSurfaces.edgeFacade.to_typedFEdgeTypeCrossing,
+    h.typedFGraphSurfaces.traceRigidityFacade.to_allZeroTraceRigidity,
+    h.typedFGraphSurfaces.traceRigidityFacade.to_allOneTraceRigidity,
+    h.typedFGraphSurfaces.traceRigidityFacade.to_monochromeTraceRigidity,
+    h.typedFGraphSurfaces.monochromeEdgeFacade.to_monochromeFEdgeExclusion,
+    h.typedFGraphSurfaces.bipartiteFacade.to_typedBipartiteUniformEmpty,
+    h.typedFGraphSurfaces.bipartiteFacade.to_typedBipartiteMinoritySubstar,
+    h.typedFGraphSurfaces.bipartiteFacade.to_typedBipartiteK22,
+    h.typedFGraphSurfaces.bipartiteFacade.to_typedBipartiteCaseSplit,
+    h.typedFGraphSurfaces.omittedCoordinateFacade.to_localOmittedCoordinateConstraints,
+    h.typedFGraphSurfaces.scalarProfileFacade.to_degreeOneOrTwoScalarProfile,
+    h.typedFGraphSurfaces.scalarProfileFacade.to_oneExceptionScalarProfileFrontier,
+    h.signedQuotientImport.to_signedQuotientScalarClosure,
+    h.signedQuotientImport.to_signedQuotientScalarClosureEndpoint,
+    h.typedFGraphBranchEndpointCert⟩
+
+end FirstBitTerminalTypedFGraphBranchPublicAPI
+
 /--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
