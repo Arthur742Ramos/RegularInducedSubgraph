@@ -285,6 +285,14 @@ the first-bit selector must control.  Equivalently, for `v` in a retained set `W
 selected neighbors of `v`.  The first-bit target is therefore exactly a simultaneous graph-degree and
 centered pair-hypergraph parity selector, not a single linear parity-label theorem: find a `1/32`-large
 `W` on which both coordinates are constant.
+
+For the orientation route, a clean sufficient matrix target is available.  Fix an Eulerian orientation
+of the ambient even graph and let `M` be its zero-diagonal orientation matrix over `F_2`.  If a set `S`
+has all row sums and all column sums of the principal submatrix `M[S,S]` equal to the same bit `c`, then
+every vertex in `S` has undirected degree `2c [MOD 4]`.  Thus the route is a diagonal
+principal-submatrix row/column parity selector.  Bipartite parity theorems that choose unrelated row and
+column sets do not enforce this diagonal constraint.
+
 For nested sets `W subset S` with `B=S\W`, the carry obeys
 `c_W = c_S + c_B + p_W p_B` over `F_2`, alongside `p_W=p_S+p_B`.  This identity is the exact terminal
 self-layer equation: the last discarded layer must have both its linear degree bit and its centered
@@ -459,6 +467,24 @@ discard-set `C` that regularizes both the old side and the retained side.  Refin
 so this is not yet a proof; it is the cleanest even-specific alternative to the arbitrary labelled
 self-layer lemma.
 
+The stronger way to keep the even-specific slack is not to pass to an `h_0` residue class.  Let
+`B_0 subset T` be old-balanced on `W`, with `|B_0|>25m/2`, and put
+
+```text
+h(b)=deg_W(b)+deg_{B_0}(b).
+```
+
+For old-balanced `B subset B_0`, with `X=B_0\B` and old increment `delta_B`, the append condition is
+
+```text
+theta_X(b):=h(b)-deg_X(b)-delta_B == r       for b in B.
+```
+
+But cardinal-maximal old-balance is trivial on the whole packet: `B_0` itself is old-balanced, so the
+maximum old-balanced subset is `B_0` and the complement is empty.  Thus this whole-packet equation is
+not a zero-sum-free boundary normal form.  A nontrivial boundary requires either restricting to a piece
+such as the `h_0`-class `C`, or maximizing a value-correct condition rather than old-balance alone.
+
 With the signed-Olson normalization, the first old-frame step inside `T` can be made stronger:
 old-balancing a packet `B_0 subset T` leaves `|B_0|>|T|-3(m-1)>25m/2`.  A class of
 `deg_{B_0}(b)+deg_W(b)` therefore has size `>25m/8`, barely above the `3m` threshold.  But an
@@ -562,24 +588,58 @@ eta_{X'}(u)=eta_X(u)-deg_Z(u)+deg_Y(u)       for u in B\Y,
 eta_{X'}(z)=deg_{X\Z}(z)+deg_Y(z)+deg_R(z)   for z in Z.
 ```
 
-The final boundary-exchange lemma is to find such an old-vector-balanced exchange making this label
-constant on `B'=(B\Y) union Z`.  A pure discard (`Z=empty`) only recurses inside `B`; any real closure
-has to use vertices of the zero-sum-free boundary `X`.
+The value-coupled label also changes by the old increment.  With `delta_B=deg_B(w_0)`,
+
+```text
+delta_{B'}=delta_B+deg_Z(w_0)-deg_Y(w_0),
+theta_X(v)=eta_X(v)+delta_B,
+```
+
+and hence
+
+```text
+theta_{X'}(u)=theta_X(u)-deg_Z(u)+deg_Y(u)+deg_Z(w_0)-deg_Y(w_0)
+                                                    for u in B\Y,
+theta_{X'}(z)=deg_{X\Z}(z)+deg_Y(z)+deg_R(z)+delta_{B'}
+                                                    for z in Z.
+```
+
+The target value is the fixed residue `H-r`.
+
+The final boundary-exchange lemma is to find such an old-vector-balanced exchange making `theta`
+equal to `H-r` on `B'=(B\Y) union Z`.  A pure discard (`Z=empty`) only recurses inside `B`; any real
+closure has to use vertices of the zero-sum-free boundary `X`.
 
 The extremal boundary should be chosen lexicographically: first maximize `|B|` among old-balanced
-subsets of `C`, then maximize the largest fiber on `B` of the corrected label
+subsets of `C`, then maximize the target fiber `{b in B : theta_X(b)=H-r}` of the corrected label
 `theta_X=eta_X+delta_B`.  Such a boundary has no
 old-vector-balanced exchange with `|Z|>|Y|`, and no equal-size exchange that improves the largest
-updated `theta`-fiber.  Hence the terminal obstruction can be stated as a value-stable zero-sum-free
+updated target fiber.  Hence the terminal obstruction can be stated as a target-stable zero-sum-free
 boundary:
 
 ```text
 X zero-sum-free;
 no balanced exchange imports more from X than it exports from B;
-no equal-size balanced exchange improves the theta fiber structure.
+no equal-size balanced exchange improves the target theta-fiber.
 ```
 
 This is the strongest finite local target reached so far.
+
+Writing `T={b in B : theta_X(b)=H-r}`, target-stability means every balanced equal-size exchange
+`(Y,Z)` satisfies
+
+```text
+|{u in B\Y : theta_{X'}(u)=H-r}| + |{z in Z : theta_{X'}(z)=H-r}| <= |T|.
+```
+
+For a singleton same-old-vector swap `y -> z`, this compares the neighbourhoods of `y` and `z` inside
+the retained side; in the exact basis model the anchor shift vanishes.
+
+With `L=H-r`, define the vertices gained by the swap as non-target vertices moved to `L`, plus the
+imported vertex if it lands at `L`; define losses as target vertices moved away from `L`, plus the
+exported vertex if it was target.  Target-stability is precisely `gain(y,z)<=loss(y,z)` for every
+same-old-vector singleton import.  Hence every target-correct boundary import must be paid for by a
+lost target vertex.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard
@@ -589,8 +649,219 @@ from `X` to `X union (B\S)`, so the relevant label is
 eta_{X union (B\S)}(s)=eta_X(s)+deg_{B\S}(s).
 ```
 
-The pure-discard case therefore recurses; it closes only when this updated label is constant.  The
-terminal obstruction is not a five-piece zero-sum-free decomposition by `eta_X`-fibers.
+The pure-discard case therefore recurses; it closes only when the value-coupled updated label
+
+```text
+theta_{X union (B\S)}(s)=eta_X(s)+deg_{B\S}(s)+delta_S
+```
+
+equals `H-r` on `S`.  The terminal obstruction is not a five-piece zero-sum-free decomposition by
+`eta_X`-fibers.
+
+If both `S` and `B\S` are old-balanced, this recursive condition has the cleaner form
+
+```text
+theta_{X union (B\S)}(s)
+  = theta_X(s)+deg_{B\S}(s)-delta_{B\S}.
+```
+
+Hence `S` exits exactly when
+
+```text
+theta_X(s)+deg_{B\S}(s)-delta_{B\S} == H-r       for every s in S.
+```
+
+Every old-balanced block must fail this block-interaction equation in a terminal counterexample.
+
+For an old-balanced block decomposition `B=S_1 disjoint_union ... disjoint_union S_l` with increments
+`delta_i`, the block `S_i` exits exactly when
+
+```text
+theta_X(s)+sum_{j != i} (deg_{S_j}(s)-delta_j) == H-r       for every s in S_i.
+```
+
+So the no-import endpoint can be viewed as an interacting zero-sum-block system in which every block
+has a nonzero corrected interaction defect.
+
+For a minimal old-balanced block `S`, write the defect
+
+```text
+phi_S(s)=theta_X(s)+deg_{B\S}(s)-delta_{B\S}-(H-r).
+```
+
+Pure discard closes exactly when `phi_S=0`.  A local import repair chooses nonempty `Z subset X` and
+`Y subset S` with `sum p_Z=sum p_Y`, replacing `S` by `(S\Y) union Z`.  On vertices `u in S\Y`, the
+defect changes by
+
+```text
+phi_{S'}(u)=phi_S(u)-deg_Z(u)+deg_Y(u)+deg_Z(w_0)-deg_Y(w_0).
+```
+
+So the local move is a value-coupled zero-sum exchange that kills `phi_S`, not just a balanced import.
+
+The same defect also has a boundary-free form.  Since
+
+```text
+theta_X(s)+deg_{B\S}(s)-delta_{B\S}
+  = deg_{B_0\S}(s)+delta_S
+```
+
+and `H=deg_W(s)+deg_{B_0}(s)` on `C`,
+
+```text
+phi_S(s)=r+delta_S-deg_W(s)-deg_S(s).
+```
+
+Thus a zero-defect block is exactly a self-correcting atom that appends to the old witness.  Boundary
+exchange is a way to replace `S` by another old-balanced atom `S'` for which the same append defect
+vanishes.  The maximal split only supplies a zero-sum-free exchange reservoir.
+
+For any old-balanced atom `S`, the scalar sum is
+
+```text
+sum_{s in S} phi_S(s)=|S|r+(|S|-m)delta_S-2e(S)       [MOD 4].
+```
+
+This scalar identity is necessary but not sufficient; the remaining theorem is pointwise defect
+synchronization on an old-balanced atom.
+
+There is a signed atom version.  Replacing `W` by `E=W\D` and adding an old-balanced atom `S` succeeds
+with residue `r+delta_S-c` iff
+
+```text
+deg_D(w)=c                  for w in E,
+deg_D(s)=c-phi_S(s)         for s in S,
+|S|>|D|.
+```
+
+So append-only closure is the special case `D=empty`; a terminal obstruction must also rule out all
+smaller old corrections of defective atoms.
+
+The `h_0`-class has a little unused rank margin.  Since `|C|>25m/8`, Olson can be run on
+`m-1+a` fixed `Z/4Z` coordinates whenever `3(m-1+a)<|C|`.  Thus one may add at least one auxiliary
+coordinate, and for large `m` about `m/24` of them.  This can force scalar side conditions such as
+
+```text
+|S|=0,        delta_S=0,        or        sum_{s in S} deg_R(s)=0        [MOD 4].
+```
+
+This does not close the self-layer by itself: the atom condition remains pointwise,
+`r+delta_S-deg_W(s)-deg_S(s)=0` for every `s in S`.  Any successful use of the extra `25m/8` slack must
+turn these auxiliary scalar constraints into pointwise defect cancellation or into a signed atom
+repair.
+
+The maximal-boundary condition is also a sumset-separation statement.  If
+`Sigma_l(X)` denotes sums of `l` boundary old-vectors, then no equality
+`sum p_Y=sum p_Z` with `Y subset B`, `Z subset X`, and `|Z|>|Y|` is allowed.  In particular,
+`p(B)` avoids every boundary subset-sum of length at least two.  In the exact extremal
+zero-sum-free model `X={e_i,e_i,e_i : 1<=i<=d}` in `C_4^d`, every nonzero element except the basis
+elements `e_i` is such a length-at-least-two sum.  Hence retained vectors in the extremal model must
+be only `0` or basis vectors, and minimal atoms reduce to zero-row singletons or four-copy same-basis
+atoms.  The near-extremal inverse-Davenport branch should therefore either find a profitable import
+from a deviation from this basis model, or solve these singleton/four-copy atom defects by append or
+signed repair.
+
+In that exact basis case, a zero-vector singleton closes iff `r=0`.  A four-copy atom in one feasible
+basis direction `g` has a fixed old-neighbourhood residue `omega(g)=deg_W(b)` and defect
+
+```text
+phi_S(b)=r-omega(g)-deg_S(b).
+```
+
+So it closes exactly when the four selected vertices induce the required regular four-vertex type
+modulo `4`.  This catalogue is finite but not yet forcing: the retained mass can be spread over many
+basis directions, and a single direction may avoid the one required regular four-vertex type without
+contradicting the current maximality bounds.
+
+Signed deletion does not repair a nonregular four-copy atom within one basis direction: all four
+vertices have the same old neighbourhood, so `deg_D` is constant on them for every `D subset W`.  The
+signed condition then forces the original defect to be constant, i.e. the four vertices were already
+regular.  Thus the exact extremal branch needs either the required regular four-set in a basis fiber or
+a cross-direction import that changes internal degrees non-uniformly.
+
+A regular four-copy atom with the wrong residue is a separate signed branch.  If the induced degree is
+`d'` and the required value is `d=r-omega(g)`, the defect is the constant `d-d'`; signed repair reduces
+to finding `D subset W` with `|D|<4`, constant degree on `W\D`, and the shifted prescribed intersection
+with the common old-neighbourhood type of the direction.  Thus terminal exact-basis configurations must
+also block these small old co-regular deletion repairs.
+
+For each direction this gives a repair spectrum `Rep(g)` of regular four-block residues repaired by
+deletions `D subset W` with `|D|<4`; the append-only required residue is included via `D=empty`.  A
+terminal direction fiber must avoid induced regular four-sets of every residue in `Rep(g)`.  In
+particular, if both `0` and `3` lie in `Rep(g)`, then Ramsey bounds the fiber by `R(4,4)`, since those
+are independent four-sets and cliques.
+
+The same constant-defect repair applies to larger same-direction blocks: if `|S|=0 mod 4` and `G[S]`
+is regular of degree `d'`, then the defect is constant `d-d'`, and signed repair only asks for an old
+co-regular deletion `D` with `|D|<|S|` and the shifted intersection with the direction type.  Large
+empty/complete direction fibers therefore remain attackable through larger surplus blocks; a terminal
+fiber must block all such constant-defect repairs.
+
+Equivalently, with `E=W\D`, the condition that `deg_D` is constant on `W\D` says exactly that `E` is
+itself a congruent induced witness inside the old maximum witness `W`.  Constant-defect signed repair
+therefore splices a same-direction regular block onto a smaller old witness, subject to the scalar
+intersection condition with that direction and the surplus inequality `|S|>|D|`.
+
+The three boundary copies in a basis direction give an immediate `3+1` test.  If
+`X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has
+old-vector `g_i`, then `X_i union {b}` is old-balanced.  It closes if it induces the required regular
+four-vertex type of degree `r-omega(g_i)`.  For a fixed triple, the allowed extension pattern is unique:
+miss an independent triple for degree `0`, hit the isolated vertex of a one-edge triple for degree `1`,
+hit the endpoints of a path triple for degree `2`, and hit all of a triangle for degree `3`.  Terminal
+exact-extremal configurations must avoid these allowed `3+1` patterns in every direction.
+
+Equivalently, if `C_i` is a full direction fiber in the exact basis model, any four vertices of `C_i`
+are old-balanced.  A four-set closes exactly when it induces the required `d_i`-regular graph, where
+`d_i=r-omega(g_i)`.  Thus the exact basis obstruction is the finite condition that each direction
+fiber avoids one specified induced regular graph on four vertices.  This condition alone is not
+contradictory; it must be combined with global maximality or with a perturbation/import out of the
+exact basis model.
+
+Unions of direction blocks can still close through cross-edges.  For a four-vertex block
+`S_i subset C_i`, set `a_i(s)=r-omega(g_i)-deg_{S_i}(s)`.  A union `S=union_i S_i` of such
+old-balanced blocks closes iff
+
+```text
+sum_{j != i} deg_{S_j}(s)=a_i(s)        for every s in S_i.
+```
+
+So the exact basis branch is an interacting four-block correction problem: force one regular block, or
+force several nonregular blocks whose cross-degrees supply the missing pointwise defects.
+
+An atom-only exact-basis proof would be false.  If every direction has required residue `d_i=0`, every
+direction fiber is a clique, and there are no cross-edges between directions, then any old-balanced
+selection takes a multiple of four vertices from each direction and each selected vertex sees
+`-1 mod 4`, not `0`, inside its direction block.  Thus the finite atom catalogue needs extra global
+information; it cannot close the theorem by itself.
+
+Compressing four-blocks to supervertices recovers the same kind of row-sum selector: each block carries
+a four-coordinate defect vector, and each pair of blocks contributes a `4 by 4` cross-adjacency matrix.
+Selecting blocks asks for selected cross-matrix row sums to equal the defect vectors.  So the exact
+basis reduction only helps if the boundary-triple origin or the maximum-witness hypothesis is used; as
+an abstract bounded-block problem it merely repackages the self-layer obstruction.
+
+The zero-sum-free boundary `X` has length at most the Davenport extremal value `3(m-1)` in
+`C_4^(m-1)`.  This suggests the next split:
+
+1. If `X` is not close to extremal, the retained side `B=C\X` has extra mass for the
+   block-interaction route.
+2. If `X` is close to extremal, an inverse-Davenport theorem for `C_4^(m-1)` should force a
+   basis-like boundary, roughly three copies of independent order-`4` directions, and the allowed
+   imports from `X` become explicit coordinate exchanges.
+
+So the remaining input is an inverse/stability theorem for value-coupled zero-sum-free boundaries,
+not another ordinary zero-sum extraction.
+
+Equivalently, decompose `B` into minimal old-balanced blocks.  A minimal block `S` has no proper
+old-balanced subblock, and it exits by pure discard exactly when
+
+```text
+theta_X(s)+deg_{B\S}(s)-delta_{B\S} == H-r       for all s in S.
+```
+
+If every minimal block fails, then any repair must import a nonempty subset of the zero-sum-free
+boundary `X` and export an old-coordinate-equivalent subset of `B`.  This is the exchange-basis form
+of the terminal problem.
 
 The same endpoint has a useful one-large-class coloring normal form.  In a labelled graph
 `(H,alpha)`, a random four-coloring has the following property: for each vertex, the congruence
@@ -605,6 +876,17 @@ vertices have constant degree into that pre-satisfied fiber, the fiber is alread
 remaining obstruction is exactly the nonconstant same-color contamination term, i.e. the final
 self-layer again.  This is weaker than the false full fixed-point coloring theorem but strong enough
 to expose the only missing cleanup lemma.
+
+The Eulerian-orientation reformulation is exact but still diagonal.  If `J` is even and Eulerianly
+oriented, then for any `S` with `J[S]` even,
+
+```text
+deg_{J[S]}(v)/2 == out_S(v) == in_S(v)        [MOD 2].
+```
+
+So a mod-`4` congruent induced subgraph is the same as a large diagonal set whose inherited in- and
+out-degrees are constant modulo `2`.  In the bipartite double-cover the two sides must be the same
+vertex set; ordinary bipartite parity selectors do not enforce that diagonal condition.
 
 The current internal attack is the exposed-layer refinement diagnostic.  Once a discarded layer has been
 exposed and the retained set is refined by degree into that layer modulo `4`, its contribution remains
