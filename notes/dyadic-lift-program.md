@@ -991,6 +991,12 @@ iterated zero-trace remainders inside the exclusive layers.
 Thus the target-layer dichotomy is: colour `0` is a clique and hence `m`-bounded, leaving only the
 colour-`1` zero-trace analysis; or colour `0` has a nonedge and supplies the edge-anchor decomposition,
 again leaving only controlled layers plus zero-trace remainders.
+The exact irreducible local core is therefore the all-target colour-`1` case: off-target layers empty,
+colour `0` empty or clique-bounded, and target layer contained in colour `1`.  Then all target-stability
+inequalities are vacuous and the pure-discard rule is just the retained-only `2K_2` exclusion.  In
+complement language, the remaining theorem must address induced-`C_4`-free, `K_4`-free graphs with
+`alpha<=m` and no induced `Delta<=2` selector larger than `11m/5`; no further finite boundary-table
+case split can close this core.
 Useful structure remains inside that class.  If `abc` is a triangle in the complement `H`, trace every
 outside vertex by `N_H(v) cap {a,b,c}`.  No trace has size three; incomparable nonempty traces are
 anti-complete, since an edge between them and an anchor edge induce a `C_4`.  Thus two-neighbour trace

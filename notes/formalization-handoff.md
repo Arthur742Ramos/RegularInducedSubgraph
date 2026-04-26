@@ -1622,6 +1622,10 @@ Recommended attack:
    most `3m` by the distance-three quotient lemma.  Record the dichotomy: either colour `0` is a clique
    and `m`-bounded, or a colour-`0` nonedge gives this edge-anchor decomposition; in both cases the
    remaining large target mass is zero-trace.
+   Also record the irreducible local core: all off-target layers empty and target layer contained in
+   colour `1`.  Then target-stability is vacuous and the only visible local condition is the
+   induced-`2K_2` exclusion, equivalently an induced-`C_4`-free, `K_4`-free complement with
+   `alpha<=m` and no induced `Delta<=2` selector larger than `11m/5`.
    Within that complement class, formalize the triangle-anchor trace lemma: for a triangle `abc`, no
    outside vertex is adjacent to all three anchors; vertices with incomparable nonempty traces into
    `{a,b,c}` are anti-complete; the two-neighbour trace classes are independent; singleton trace classes
