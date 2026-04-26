@@ -18508,6 +18508,697 @@ theorem ten_le_F_40960_of_exact42ProfileStatus_commonSum_countProfile_degreeEigh
     hstatus h8 h9 h13 hcommon hcount).toTenLeF_40960
 
 
+
+/--
+Endpoint-only downstream import surface.  This packages endpoint residuals, middle-degree local
+ledgers, local/global handoffs, and the propagated Ramsey-10 consequences without requiring a
+consumer to import the profiled exact-`42` final bundle.
+-/
+structure RamseyTenR45EndpointDownstreamImport : Prop where
+  endpointReady : RamseyTenR45EndpointReadyCertificate
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointCertificate : RamseyTenR45EndpointResidualCertificate
+  middleDegreeCertificate : RamseyTenR45MiddleDegreeEndpointCertificate
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  degreeTenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard G 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Materialize the endpoint downstream import from the endpoint-ready certificate. -/
+theorem RamseyTenR45EndpointReadyCertificate.toEndpointDownstreamImport
+    (h : RamseyTenR45EndpointReadyCertificate) : RamseyTenR45EndpointDownstreamImport where
+  endpointReady := h
+  endpointResiduals := h.endpointResiduals
+  endpointCertificate := h.endpointCertificate
+  middleDegreeCertificate := h.middleDegreeCertificate
+  localLedgers := h.localLedgers
+  degreeTenHandoff :=
+    { ledger := h.degreeTenSplits
+      r45TwentySevenTable := h.r45TwentySevenTable
+      finalStatus := h.finalStatus
+      globalConsequences := h.globalConsequences }
+  degreeElevenHandoff :=
+    { ledger := h.degreeElevenSplits
+      r45TwentySevenTable := h.r45TwentySevenTable
+      finalStatus := h.finalStatus
+      globalConsequences := h.globalConsequences }
+  degreeTwelveHandoff :=
+    { ledger := h.degreeTwelveSplits
+      r45TwentySevenTable := h.r45TwentySevenTable
+      finalStatus := h.finalStatus
+      globalConsequences := h.globalConsequences }
+  middleDegreeHandoff :=
+    { ledger := h.middleDegreeSplits
+      r45TwentySevenTable := h.r45TwentySevenTable
+      finalStatus := h.finalStatus
+      globalConsequences := h.globalConsequences }
+  r45TwentySevenTable := h.r45TwentySevenTable
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+  finalConsequences := h.finalConsequences
+  r45TwentySeven := h.r45TwentySeven
+  r10Ten39246 := h.r10Ten39246
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.admissibleTenAt40960
+  f40960 := h.f40960
+
+/-- Endpoint residuals can be imported through the endpoint-only downstream surface. -/
+theorem RamseyTenR45EndpointResiduals.toEndpointDownstreamImport
+    (h : RamseyTenR45EndpointResiduals) : RamseyTenR45EndpointDownstreamImport :=
+  h.toEndpointReadyCertificate.toEndpointDownstreamImport
+
+/-- Assumption-explicit constructor for the endpoint-only downstream import. -/
+theorem ramseyTenR45EndpointDownstreamImport_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45EndpointDownstreamImport :=
+  (ramseyTenR45EndpointReadyCertificate_of_degreeEight_degreeNine_degreeThirteen h8 h9 h13)
+    |>.toEndpointDownstreamImport
+
+/-- Full ready certificates expose the endpoint-only downstream import. -/
+theorem RamseyTenR45ReadyCertificate.toEndpointDownstreamImport
+    (h : RamseyTenR45ReadyCertificate) : RamseyTenR45EndpointDownstreamImport :=
+  h.endpointReady.toEndpointDownstreamImport
+
+/-- Final certificate bundles expose the endpoint-only downstream import. -/
+theorem RamseyTenR45FinalCertificateBundle.toEndpointDownstreamImport
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45EndpointDownstreamImport :=
+  h.toReadyCertificate.toEndpointDownstreamImport
+
+/-- Select endpoint-ready data from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toEndpointReadyCertificate
+    (h : RamseyTenR45EndpointDownstreamImport) : RamseyTenR45EndpointReadyCertificate :=
+  h.endpointReady
+
+/-- Select endpoint residuals from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toEndpointResiduals
+    (h : RamseyTenR45EndpointDownstreamImport) : RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the expanded endpoint certificate from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toEndpointResidualCertificate
+    (h : RamseyTenR45EndpointDownstreamImport) : RamseyTenR45EndpointResidualCertificate :=
+  h.endpointCertificate
+
+/-- Select the middle-degree endpoint certificate from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toMiddleDegreeEndpointCertificate
+    (h : RamseyTenR45EndpointDownstreamImport) : RamseyTenR45MiddleDegreeEndpointCertificate :=
+  h.middleDegreeCertificate
+
+/-- Select the local ledger bundle from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toLocalLedgerBundle
+    (h : RamseyTenR45EndpointDownstreamImport) : RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the degree-`10` local/global handoff from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toDegreeTenSplitHandoff
+    (h : RamseyTenR45EndpointDownstreamImport) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.degreeTenHandoff
+
+/-- Select the degree-`11` local/global handoff from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toDegreeElevenSplitHandoff
+    (h : RamseyTenR45EndpointDownstreamImport) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.degreeElevenHandoff
+
+/-- Select the degree-`12` local/global handoff from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toDegreeTwelveSplitHandoff
+    (h : RamseyTenR45EndpointDownstreamImport) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.degreeTwelveHandoff
+
+/-- Select the middle-degree local/global handoff from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toMiddleDegreeSplitHandoff
+    (h : RamseyTenR45EndpointDownstreamImport) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.middleDegreeHandoff
+
+/-- Select the relaxed `R(4,5) <= 27` table from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toR45TwentySevenTable
+    (h : RamseyTenR45EndpointDownstreamImport) : RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select final status from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toFinalStatus
+    (h : RamseyTenR45EndpointDownstreamImport) : RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select global consequences from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toGlobalConsequenceBundle
+    (h : RamseyTenR45EndpointDownstreamImport) : RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select final consequences from an endpoint downstream import. -/
+theorem RamseyTenR45EndpointDownstreamImport.toFinalConsequenceSurface
+    (h : RamseyTenR45EndpointDownstreamImport) : RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume an endpoint downstream import as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45EndpointDownstreamImport.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45EndpointDownstreamImport) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume an endpoint downstream import as the propagated `R(10,10) <= 39246` bound. -/
+theorem RamseyTenR45EndpointDownstreamImport.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45EndpointDownstreamImport) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume an endpoint downstream import as the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45EndpointDownstreamImport.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45EndpointDownstreamImport)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.regularTenAt40960 G hcard
+
+/-- Consume an endpoint downstream import as the admissible-bound conclusion. -/
+theorem RamseyTenR45EndpointDownstreamImport.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45EndpointDownstreamImport) : 10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume an endpoint downstream import as the extremal-function lower bound. -/
+theorem RamseyTenR45EndpointDownstreamImport.toTenLeF_40960
+    (h : RamseyTenR45EndpointDownstreamImport) : 10 ≤ F 40960 :=
+  h.f40960
+
+/--
+One-import downstream surface for Ramsey-10/R45 consumers.  It keeps the ready certificate, the
+endpoint-only import, exact-`42` status, selector surface, local handoffs, and all final consequences
+available by projection.
+-/
+structure RamseyTenR45DownstreamImport : Prop where
+  readyCertificate : RamseyTenR45ReadyCertificate
+  endpointImport : RamseyTenR45EndpointDownstreamImport
+  endpointReady : RamseyTenR45EndpointReadyCertificate
+  finalBundle : RamseyTenR45FinalCertificateBundle
+  selectorSurface : RamseyTenR45FinalBundleSelectorSurface
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  exact42ProfileHandoff :
+    RamseyTenR45LocalLedgerHandoff RamseyThreeTenExact42ThreeRowProfileSurface
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  degreeTenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard G 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Materialize the one-import downstream surface from a ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toDownstreamImport
+    (h : RamseyTenR45ReadyCertificate) : RamseyTenR45DownstreamImport := by
+  let hendpointImport := h.toEndpointDownstreamImport
+  exact
+    { readyCertificate := h
+      endpointImport := hendpointImport
+      endpointReady := h.endpointReady
+      finalBundle := h.finalBundle
+      selectorSurface := h.selectorSurface
+      exact42Status := h.exact42Status
+      exact42Profile := h.exact42Profile
+      exact42WithMiddleSplits := h.exact42WithMiddleSplits
+      exact42ProfileHandoff :=
+        { ledger := h.exact42Profile
+          r45TwentySevenTable := h.r45TwentySevenTable
+          finalStatus := h.finalStatus
+          globalConsequences := h.globalConsequences }
+      localLedgers := h.localLedgers
+      degreeTenHandoff := hendpointImport.degreeTenHandoff
+      degreeElevenHandoff := hendpointImport.degreeElevenHandoff
+      degreeTwelveHandoff := hendpointImport.degreeTwelveHandoff
+      middleDegreeHandoff := hendpointImport.middleDegreeHandoff
+      threeTenFortyTwo := h.threeTenFortyTwo
+      r45TwentySevenTable := h.r45TwentySevenTable
+      finalStatus := h.finalStatus
+      globalConsequences := h.globalConsequences
+      finalConsequences := h.finalConsequences
+      r45TwentySeven := h.r45TwentySeven
+      r10Ten39246 := h.r10Ten39246
+      regularTenAt40960 := h.regularTenAt40960
+      admissibleTenAt40960 := h.admissibleTenAt40960
+      f40960 := h.f40960 }
+
+/-- Final certificate bundles can be consumed through the one-import downstream surface. -/
+theorem RamseyTenR45FinalCertificateBundle.toDownstreamImport
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45DownstreamImport :=
+  h.toReadyCertificate.toDownstreamImport
+
+/-- Profiled middle-degree handoffs can be consumed through the one-import downstream surface. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toDownstreamImport
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff) : RamseyTenR45DownstreamImport :=
+  h.toReadyCertificate.toDownstreamImport
+
+/-- Exact-`42` status plus endpoint residuals produce the one-import downstream surface. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toDownstreamImport
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    RamseyTenR45DownstreamImport :=
+  (h.toReadyCertificate hendpoints).toDownstreamImport
+
+/-- Constructor for the downstream import from exact-`42` status and endpoint residuals. -/
+theorem ramseyTenR45DownstreamImport_of_exact42ProfileStatus_and_endpointResiduals
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    RamseyTenR45DownstreamImport :=
+  hstatus.toDownstreamImport hendpoints
+
+/-- Assumption-explicit constructor for the downstream import from exact-`42` status. -/
+theorem ramseyTenR45DownstreamImport_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45DownstreamImport :=
+  hstatus.toDownstreamImport ⟨h8, h9, h13⟩
+
+/-- Assumption-explicit constructor for the downstream import from a profiled exact-`42` surface. -/
+theorem ramseyTenR45DownstreamImport_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    RamseyTenR45DownstreamImport :=
+  (ramseyTenR45ReadyCertificate_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    h8 h9 h13 hexact42).toDownstreamImport
+
+/-- Select the ready certificate from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toReadyCertificate
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45ReadyCertificate :=
+  h.readyCertificate
+
+/-- Select the endpoint-only import from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toEndpointDownstreamImport
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45EndpointDownstreamImport :=
+  h.endpointImport
+
+/-- Select endpoint-ready data from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toEndpointReadyCertificate
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45EndpointReadyCertificate :=
+  h.endpointReady
+
+/-- Select the final certificate bundle from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toFinalCertificateBundle
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45FinalCertificateBundle :=
+  h.finalBundle
+
+/-- Select the final-bundle selector surface from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toFinalBundleSelectorSurface
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45FinalBundleSelectorSurface :=
+  h.selectorSurface
+
+/-- Select exact-`42` status with local ledgers from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    (h : RamseyTenR45DownstreamImport) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the profiled exact-`42` surface from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toExact42ProfileSurface
+    (h : RamseyTenR45DownstreamImport) : RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select the profiled exact-`42` surface paired with middle-degree ledgers. -/
+theorem RamseyTenR45DownstreamImport.toExact42WithMiddleSplits
+    (h : RamseyTenR45DownstreamImport) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the exact-`42` profile handoff from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toExact42ProfileHandoff
+    (h : RamseyTenR45DownstreamImport) :
+    RamseyTenR45LocalLedgerHandoff RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42ProfileHandoff
+
+/-- Select local middle-degree ledgers from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toLocalLedgerBundle
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the degree-`10` local/global handoff from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toDegreeTenSplitHandoff
+    (h : RamseyTenR45DownstreamImport) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.degreeTenHandoff
+
+/-- Select the degree-`11` local/global handoff from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toDegreeElevenSplitHandoff
+    (h : RamseyTenR45DownstreamImport) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.degreeElevenHandoff
+
+/-- Select the degree-`12` local/global handoff from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toDegreeTwelveSplitHandoff
+    (h : RamseyTenR45DownstreamImport) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.degreeTwelveHandoff
+
+/-- Select the middle-degree local/global handoff from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toMiddleDegreeSplitHandoff
+    (h : RamseyTenR45DownstreamImport) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.middleDegreeHandoff
+
+/-- Consume a downstream import as the low-row exact-`42` result. -/
+theorem RamseyTenR45DownstreamImport.toThreeTenFortyTwo
+    (h : RamseyTenR45DownstreamImport) : HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Select the relaxed `R(4,5) <= 27` table from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toR45TwentySevenTable
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select final status from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toFinalStatus
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select global consequences from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toGlobalConsequenceBundle
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select final consequences from a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toFinalConsequenceSurface
+    (h : RamseyTenR45DownstreamImport) : RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume a downstream import as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45DownstreamImport.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45DownstreamImport) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume a downstream import as the propagated `R(10,10) <= 39246` bound. -/
+theorem RamseyTenR45DownstreamImport.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45DownstreamImport) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume a downstream import as the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45DownstreamImport.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45DownstreamImport)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.regularTenAt40960 G hcard
+
+/-- Consume a downstream import as the admissible-bound conclusion. -/
+theorem RamseyTenR45DownstreamImport.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45DownstreamImport) : 10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume a downstream import as the extremal-function lower bound. -/
+theorem RamseyTenR45DownstreamImport.toTenLeF_40960
+    (h : RamseyTenR45DownstreamImport) : 10 ≤ F 40960 :=
+  h.f40960
+
+/--
+Top-row downstream import.  This is the final-facing consumer object for a specific exact-`42`
+top-row branch: it carries the one-import Ramsey/R45 surface together with the top-row selector and
+the final top-row handoff.
+-/
+structure RamseyTenR45TopRowDownstreamImport
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  downstreamImport : RamseyTenR45DownstreamImport
+  readyCertificate : RamseyTenR45ReadyCertificate
+  topRowSelector : RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v
+  topRowSelectorHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v)
+  topRowFinalHandoff : RamseyThreeTenExact42TopRowFinalHandoff G s v
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  finalBundle : RamseyTenR45FinalCertificateBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Attach a profiled top-row branch to a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toTopRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v := by
+  let hselector := h.readyCertificate.toTopRowSelectorWithLocalLedgers htop
+  exact
+    { downstreamImport := h
+      readyCertificate := h.readyCertificate
+      topRowSelector := hselector
+      topRowSelectorHandoff := h.readyCertificate.toTopRowSelectorHandoff htop
+      topRowFinalHandoff := h.readyCertificate.toTopRowFinalHandoff htop
+      topRowProfile := htop
+      topRowCommonSum := hselector.toCommonSum
+      topRowCountProfile := hselector.toCountProfile
+      finalBundle := h.finalBundle
+      finalConsequences := h.finalConsequences
+      globalConsequences := h.globalConsequences
+      threeTenFortyTwo := h.threeTenFortyTwo
+      r45TwentySeven := h.r45TwentySeven
+      r10Ten39246 := h.r10Ten39246
+      regularTenAt40960 := h.regularTenAt40960
+      admissibleTenAt40960 := h.admissibleTenAt40960
+      f40960 := h.f40960 }
+
+/-- Attach common-sum/count-profile top-row data to a downstream import. -/
+theorem RamseyTenR45DownstreamImport.toTopRowDownstreamImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.toTopRowDownstreamImport
+    (ramseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation_of_commonSum_countProfile
+      hcommon hcount)
+
+/-- Ready certificates can be consumed as a top-row downstream import. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.toDownstreamImport.toTopRowDownstreamImport htop
+
+/-- Ready certificates can be consumed as a top-row downstream import from profile components. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowDownstreamImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.toDownstreamImport.toTopRowDownstreamImport_ofCommonSumCountProfile hcommon hcount
+
+/-- Final bundles can be consumed as a top-row downstream import. -/
+theorem RamseyTenR45FinalCertificateBundle.toTopRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.toDownstreamImport.toTopRowDownstreamImport htop
+
+/-- Final bundles can be consumed as a top-row downstream import from profile components. -/
+theorem RamseyTenR45FinalCertificateBundle.toTopRowDownstreamImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.toDownstreamImport.toTopRowDownstreamImport_ofCommonSumCountProfile hcommon hcount
+
+/-- Select the one-import Ramsey/R45 surface from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : RamseyTenR45DownstreamImport :=
+  h.downstreamImport
+
+/-- Select the ready certificate from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : RamseyTenR45ReadyCertificate :=
+  h.readyCertificate
+
+/-- Select the top-row selector with local ledgers from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toTopRowSelectorWithLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v :=
+  h.topRowSelector
+
+/-- Select the top-row local/global handoff from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toTopRowSelectorHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v) :=
+  h.topRowSelectorHandoff
+
+/-- Select the final-facing top-row handoff from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toTopRowFinalHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyThreeTenExact42TopRowFinalHandoff G s v :=
+  h.topRowFinalHandoff
+
+/-- Select the profiled top-row branch from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the common-sum top-row obligation from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the count-profile top-row obligation from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Select the final bundle from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toFinalCertificateBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : RamseyTenR45FinalCertificateBundle :=
+  h.finalBundle
+
+/-- Select final consequences from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Select global consequences from a top-row downstream import. -/
+theorem RamseyTenR45TopRowDownstreamImport.toGlobalConsequenceBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Consume a top-row downstream import as the low-row exact-`42` result. -/
+theorem RamseyTenR45TopRowDownstreamImport.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Consume a top-row downstream import as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45TopRowDownstreamImport.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume a top-row downstream import as the propagated `R(10,10) <= 39246` bound. -/
+theorem RamseyTenR45TopRowDownstreamImport.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume a top-row downstream import as the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45TopRowDownstreamImport.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960 H hcard
+
+/-- Consume a top-row downstream import as the admissible-bound conclusion. -/
+theorem RamseyTenR45TopRowDownstreamImport.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : 10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume a top-row downstream import as the extremal-function lower bound. -/
+theorem RamseyTenR45TopRowDownstreamImport.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) : 10 ≤ F 40960 :=
+  h.f40960
+
+
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
