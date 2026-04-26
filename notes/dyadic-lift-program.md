@@ -1521,6 +1521,19 @@ For two trace classes `(p,mu),(q,nu)`, equalization is the signed three-subset e
 `x` omitted points from `A` and `y` from `B`, with a total omitted size three, so that
 `x-y=mu-nu [MOD 4]`.  The positive-atom obstruction is a finite anti-Horn family of these pair
 constraints with no common omitted triple among the `35` triples.
+Equivalently define
+`D_3(a,b)={x-y [MOD 4]:0<=x<=a,0<=y<=b,0<=3-x-y<=7-a-b}`.  A trace pair blocks exactly when
+`mu-nu notin D_3(|p\q|,|q\p|)`.  Hence identical traces with different `mu` block, complementary traces
+with even `mu-nu` block, and the remaining pairwise failures are just the small private-size entries of
+this `D_3` table.
+For a non-exact boundary, replace `h_X` by the maximum available import height
+`H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`.  Terminality forces
+`H_X(sigma(Y))-|Y|<=m-|B|` for every graph-compatible export.  The exact top is just the case
+`H_X=h_X`; near-top inverse Davenport input is needed only to give useful lower bounds on `H_X`.
+If stability places `X` in an exact basis box with `rho` missing copies, then
+`H_X(g)>=h_box(g)-rho`, so all exact-top inequalities hold with effective deficit `d+rho`.  In
+particular the carry inequality and the complementary-cut support bound survive unchanged after replacing
+`d` by `d+rho`.
 
 So the remaining input is an inverse/stability theorem for value-coupled zero-sum-free boundaries,
 not another ordinary zero-sum extraction.

@@ -4923,6 +4923,14 @@ That column condition is finite on traces: with `p=N(a) cap R_i` and `mu=M_A(a)+
 Pairwise, two trace classes require the signed omitted-triple equation
 `|p cap O|-|q cap O|=mu-nu [MOD 4]`; terminality in the positive atom is a finite anti-Horn family of
 these constraints with no common one of the `35` triples.
+With `D_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=7-a-b} [MOD 4]`, a trace pair blocks exactly when
+`mu-nu notin D_3(|p\q|,|q\p|)`.  Identical traces with different labels and complementary traces with
+even label difference are immediate blockers.
+For non-exact boundaries, use the maximum import height
+`H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`; terminal exports satisfy
+`H_X(sigma(Y))-|Y|<=m-|B|`.  Exact top is the explicit box-height case.
+If a near-top boundary embeds in a basis box with `rho` holes, then
+`H_X>=h_box-rho`, so the same carry and cut inequalities hold with effective deficit `d+rho`.
 
 ## Supporting work that is useful but not on the critical path
 

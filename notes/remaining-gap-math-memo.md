@@ -1672,6 +1672,13 @@ The latter depends only on the labelled trace alphabet `(p,mu) in {0,1}^7 x Z/4Z
 triple `O` requires `mu-|p cap O|` to be constant on all occupied classes.
 For two classes this is the signed equation `|p cap O|-|q cap O|=mu-nu [MOD 4]`; the positive-atom
 terminal case is a finite anti-Horn obstruction over the `35` omitted triples.
+The pairwise blocker set is `mu-nu notin D_3(|p\q|,|q\p|)`, where
+`D_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=7-a-b} [MOD 4]`.
+Away from the exact boundary top, the same inequality uses
+`H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`: terminality forces
+`H_X(sigma(Y))-|Y|<=m-|B|` for every compatible export.
+In a basis box with `rho` holes, `H_X>=h_box-rho`; hence the exact-top carry and cut bounds persist with
+deficit `d+rho`.
 
 ## 14. Pair-chamber orientation normal form
 

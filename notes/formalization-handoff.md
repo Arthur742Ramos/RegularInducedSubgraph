@@ -1981,6 +1981,19 @@ Recommended attack:
    `A=p\q`, `B=q\p`, and `C=R_i\(A union B)`, this is equivalent to integers
    `0<=x<=|A|`, `0<=y<=|B|`, `0<=3-x-y<=|C|`, and `x-y=mu-nu [MOD 4]`.  Multiple classes require one
    omitted triple satisfying all such pair constraints and the internal four-set equation.
+   Introduce `D_3(a,b)={x-y [MOD 4]:0<=x<=a,0<=y<=b,0<=3-x-y<=7-a-b}`.  Then a pair of trace classes is
+   a pairwise blocker iff `mu-nu notin D_3(|p\q|,|q\p|)`.  Record the boundary entries
+   `D_3(0,0)={0}`, `D_3(a,0)={0..min(3,a)}` for `a<=4`,
+   `D_3(5,0)={1,2,3}`, `D_3(6,0)={2,3}`, `D_3(7,0)={3}`, symmetry under negating/swapping, and
+   complementary traces allowing only odd residues.
+   Generalize the height inequality to non-exact boundaries with
+   `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}` (or unavailable).  For every graph-compatible export `Y`,
+   terminality gives `H_X(sigma(Y))-|Y|<=m-|B|`; exact Davenport top is the special case `H_X=h_X`.
+   Near-top stability lemmas should provide lower bounds on this height function.
+   Formalize the basis-with-holes transfer: if `X` is contained in an exact basis box with `rho` missing
+   copies, then `H_X(g)>=h_box(g)-rho`; terminality gives
+   `h_box(sigma(Y))-|Y|<=m-|B|+rho`.  Therefore all exact-top carry and cut inequalities remain valid
+   with effective deficit `d+rho`.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

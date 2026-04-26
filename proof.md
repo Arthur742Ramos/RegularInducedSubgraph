@@ -8547,6 +8547,72 @@ terminal obstruction is precisely a finite family of such pair constraints, toge
 four-set equation, with no common omitted triple among the `35` possibilities.  This is the anti-Horn
 version of the seven-point table.
 
+It is useful to name the two-class residue set
+
+```text
+D_3(a,b)={x-y [MOD 4] :
+          0<=x<=a, 0<=y<=b, 0<=3-x-y<=7-a-b}.
+```
+
+Here `a=|p\q|` and `b=|q\p|`.  The pair `(p,mu),(q,nu)` is a genuine pairwise blocker exactly when
+`mu-nu notin D_3(a,b)`.  Thus the pairwise obstruction forgets the actual positions of the seven points
+and remembers only the two private trace sizes, until several pair constraints are intersected.
+Some boundary entries are immediate:
+
+```text
+D_3(0,0)={0};
+D_3(a,0)={0,1,...,min(3,a)}        for 0<=a<=4;
+D_3(5,0)={1,2,3},  D_3(6,0)={2,3},  D_3(7,0)={3};
+D_3(0,b)=-D_3(b,0);
+if a+b=7, then D_3(a,b) contains only odd residues.
+```
+
+Consequently identical traces with different `mu` block immediately, and complementary traces with even
+`mu-nu` block immediately.  All other failures are small private-size defects recorded by the same
+`D_3` table.  This is the first genuinely finite anti-Horn compression of the positive atom.
+
+The same height language also covers the non-exact boundary.  For an arbitrary zero-sum-free boundary
+`X`, define the available import height
+
+```text
+H_X(g)=max{|Z|: Z subset X, sigma(Z)=g},
+```
+
+with `H_X(g)=-infty` if no representative exists.  Any compatible export `Y` closes whenever
+
+```text
+|B|-|Y|+H_X(sigma(Y))>m.
+```
+
+Therefore terminality forces
+
+```text
+H_X(sigma(Y))-|Y| <= d=m-|B|
+```
+
+for every graph-compatible export.  The exact Davenport-top case is the special case where
+`H_X=h_X` is the coordinate sum on the basis box `0<=a_i<=3`.  Near-top boundary stability is thus needed
+only to lower-bound `H_X` on many export values; the exchange inequality itself is already exact.
+
+In the basis-with-holes regime this lower bound is immediate.  Suppose an inverse theorem has placed
+`X` inside the exact box `e_1^3...e_r^3` with `rho` missing boundary copies.  Then every exact-box
+representative of value `g` loses at most `rho` vertices after intersecting with `X`, so
+
+```text
+H_X(g) >= h_box(g)-rho.
+```
+
+Consequently terminality implies the exact-top inequalities with effective deficit `d+rho`:
+
+```text
+h_box(sigma(Y))-|Y| <= d+rho
+```
+
+for every graph-compatible export `Y`.  The carry inequality and the complementary-cut bound therefore
+survive verbatim after replacing `d` by `d+rho`.  Thus near-top inverse Davenport is only needed to
+produce a basis box with small hole count; once that is known, the boundary arithmetic is already
+absorbed into the same weighted trace calculus.
+
 Thus a plausible final route is now precise: prove a stability/inverse-Davenport boundary theorem
 adapted to the value-coupled exchange.  The required input is not another zero-sum existence theorem;
 existence is already exhausted.  It is an inverse theorem for zero-sum-free boundaries together with
