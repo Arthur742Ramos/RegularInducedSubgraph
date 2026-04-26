@@ -1019,8 +1019,12 @@ every edge dominates all but at most three vertices.  In the `C_4`-free branch w
 nonedge has clique common-neighborhood and clique common-nonneighborhood, each of size at most `m`; the
 large residual is therefore in the two exclusive neighborhoods.
 For either anchor pair `p,q`, with `epsilon=1_{pq}`, equal exclusive wings `X,Y` of size `h` give a
-congruent packet exactly when `deg_{X union Y}(z)=h+epsilon-1` on every wing vertex.  Thus edge anchors
-ask for `h`-regular equal-wing packets, and nonedge anchors ask for `(h-1)`-regular equal-wing packets.
+new-side-regular packet exactly when `deg_{X union Y}(z)=h+epsilon-1` on every wing vertex.  In one
+nonzero exact-basis direction it is old-balanced only for odd `h`.  The `h=1` case forbids cross-edges
+for edge anchors and cross-nonedges for nonedge anchors.
+Therefore the unit branch, already `2K_2`-free, is also `C_4`-free, and the `sigma_g=2` branch, already
+`C_4`-free, is also `2K_2`-free.  The endpoint is pseudo-split; with one side bounded by `m` and the
+other by `alpha<=3` up to complement, every terminal exact-basis direction has size at most `m+8`.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has

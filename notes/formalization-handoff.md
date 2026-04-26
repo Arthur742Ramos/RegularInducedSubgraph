@@ -1537,7 +1537,11 @@ Recommended attack:
    at most three vertices; in the `C_4`-free/`alpha<=3` branch every nonedge has common-neighborhood and
    common-nonneighborhood cliques, each bounded by `m`.
    Add the equal-wing anchor equation: for anchor pair `p,q`, `epsilon=1_{pq}`, exclusive wings
-   `|X|=|Y|=h` close iff every wing vertex has degree `h+epsilon-1` inside `X union Y`.
+   `|X|=|Y|=h` have synchronized new-side degrees iff every wing vertex has degree `h+epsilon-1` inside
+   `X union Y`; in a nonzero exact-basis direction also require `h` odd for old-balance.  The `h=1`
+   local atom forbids cross-edges for edge anchors and cross-nonedges for nonedge anchors.
+   Formalize the collapse: unit `sigma_g` endpoints become both `2K_2`-free and `C_4`-free; `sigma_g=2`
+   endpoints do too.  Pseudo-split structure then bounds each terminal exact-basis direction by `m+8`.
 
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is

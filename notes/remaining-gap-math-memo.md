@@ -1638,7 +1638,10 @@ Endpoint anchor reductions: in the `2K_2`-free/`alpha<=3` branch every edge domi
 vertices; in the `C_4`-free/`alpha<=3` branch every nonedge leaves clique common-neighborhood and
 common-nonneighborhood parts, each of size at most `m`.
 For an anchor pair `p,q` with `epsilon=1_{pq}`, equal exclusive wings of size `h` close exactly when the
-wing union is `(h+epsilon-1)`-regular modulo `4`.
+wing union is `(h+epsilon-1)`-regular modulo `4` and, in a nonzero exact-basis direction, `h` is odd.
+The `h=1` atom forbids cross-edges for edge anchors and cross-nonedges for nonedge anchors.
+Thus both sparse hereditary endpoints are actually `(2K_2,C_4)`-free, so pseudo-split structure bounds a
+terminal exact-basis direction by `m+8`.
 The `25m/8` class margin also gives, for `m>24`, an augmented atom with `|S|=delta_S=0`, so
 `sum_S phi_S=-2e(S)`.
 

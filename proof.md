@@ -6798,7 +6798,7 @@ exclusive-neighborhood synchronization problem after discarding at most `2m` anc
 The two anchor reductions have the same exact packet equation.  Let `p,q` be an anchor pair with
 `epsilon=1_{pq}`, let `X` be selected vertices adjacent to `p` and not `q`, and let `Y` be selected
 vertices adjacent to `q` and not `p`; ignore common-neighborhood vertices.  Then
-`{p,q} union X union Y` is congruent modulo `4` exactly when
+`{p,q} union X union Y` has synchronized new-side degrees exactly when
 
 ```text
 |X|=|Y|=h,
@@ -6808,7 +6808,39 @@ deg_{X union Y}(z)=h+epsilon-1        for every z in X union Y.      [MOD 4]
 The anchor vertices then have degree `epsilon+h`, and each wing vertex has degree
 `1+deg_{X union Y}(z)`.  Thus an edge anchor in the `2K_2`-free branch asks for an `h`-regular
 equal-wing packet on `2h` vertices, while a nonedge anchor in the `C_4`-free branch asks for an
-`(h-1)`-regular equal-wing packet.  Any such packet with `2+2h>m` contradicts maximality of `W`.
+`(h-1)`-regular equal-wing packet.  In a single nonzero exact-basis direction this packet is
+old-balanced only when
+
+```text
+2+2h=0        [MOD 4],
+```
+
+so `h` must be odd.  Then the packet appends to `W`, and any such packet contradicts maximality of
+`W`.
+
+The first case `h=1` is especially rigid.  For an edge anchor, a cross-edge between the two exclusive
+wings gives a four-vertex `2`-regular atom; for a nonedge anchor, a cross-nonedge gives a four-vertex
+`1`-regular atom.  Therefore terminality forbids these `h=1` patterns inside a nonzero exact-basis
+direction.
+
+Consequently the two sparse hereditary endpoints collapse further.  In the unit branch, which was
+already induced-`2K_2`-free, any induced `C_4` would contain an edge anchor whose two exclusive opposite
+vertices are cross-adjacent, giving the forbidden `h=1` atom.  Hence the unit branch is also
+induced-`C_4`-free.  In the `sigma_g=2` branch, which was already induced-`C_4`-free, any induced
+`2K_2` contains a nonedge anchor whose two exclusive opposite vertices are cross-nonadjacent, giving the
+other forbidden `h=1` atom.  Hence it is also induced-`2K_2`-free.
+
+Thus every terminal exact-basis hereditary endpoint is `(2K_2,C_4)`-free.  By the pseudo-split
+structure theorem it is a clique joined to an independent set, possibly with a five-cycle core.  Since
+one of the clique/independent sides is bounded by the old maximum clique cap `m` and the other by the
+endpoint condition `alpha<=3` after complementing if necessary, every such direction has size at most
+
+```text
+m+8.
+```
+
+This eliminates the very-large exact-basis direction branch after the small old-deletion repair spectrum
+and the `h=1` anchor atom are included.
 
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
