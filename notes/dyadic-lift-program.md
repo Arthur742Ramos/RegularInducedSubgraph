@@ -1229,6 +1229,8 @@ subgraphs give `4`.
 The size `2` and `3` packets route to the row/pair/one-corner host closures; the only residual
 `F`-containing all-ternary cases are four-exception `2/2` packets: matching, three-edge `K_{2,2}`, or full
 `K_{2,2}`.
+These are exactly three labeled `2x2` type-square skeletons with one exceptional row at each of
+`E_0,E_1,T_0,T_1`.
 The pure all-edge minimum has only star phase (three edge supports share a parity word) or triangle phase
 (three edge supports avoid one parity word), plus the `2+1` multiplicities on the size-three edge targets.
 For a symmetric all-ternary cycle, transposing the two-atom trace matrix forces every mutual edge target to

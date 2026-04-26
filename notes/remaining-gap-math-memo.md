@@ -2146,6 +2146,8 @@ The exceptional-row packet is finite: its nonflat atom count is `2`, `3`, or `4`
 `K_{2,2}` subgraph shape.
 The `2`- and `3`-exception packets are local row/pair/one-corner certificates and discharge under the host
 closures; only four-exception `2/2` packets remain.
+They are the three labeled `2x2` type-square skeletons: cross matching, one missing cross edge, or full
+`K_{2,2}`.
 The pure all-edge minimum has only star or triangle phase in the four-word parity tetrahedron, plus `2+1`
 multiplicity on each size-three edge target.
 In a symmetric all-ternary cycle, mutual edge targets pass the transpose test only when the edge contains an

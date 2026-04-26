@@ -12901,6 +12901,22 @@ data are the three `2 mod 4` scalar flips.  Thus, after the saturated row/pair/o
 
 This is a finite four-row scalar packet on top of a typed bipartite quotient-regular skeleton.
 
+Write the two empty atoms as `E_0,E_1` and the two triangular atoms as `T_0,T_1`.  The four-exception
+residual has exactly three skeletons:
+
+```text
+matching:       F edges E_0T_0 and E_1T_1;
+three-edge:     K_{2,2} with one cross edge missing;
+complete:       all four cross edges are F.
+```
+
+In the matching skeleton, each atom has one same-type corner edge and one cross-type corner edge, and these
+two corners must omit distinct local coordinates.  In the three-edge skeleton, the two degree-one atoms
+impose this same distinctness condition; the two degree-two atoms have only their same-type corner edge.  In
+the complete skeleton, the only corner edges are the same-type pairs `E_0E_1` and `T_0T_1`.  Thus the final
+`F`-containing all-ternary residual is not a graph family: it is these three labeled `2x2` type-square
+skeletons with one exceptional row at each corner.
+
 It remains useful to split the pure all-edge minimum by phase.  Fix one parity tetrahedron, say the even
 words.  An edge target `E_i` is specified by the constant value of coordinate `i`; its two labels are the two
 even words with that coordinate value.  For the permutation edge-triangle `E_1,E_2,E_3`, the three label

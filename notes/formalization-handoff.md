@@ -2639,6 +2639,8 @@ Recommended attack:
     `4`.
     Record the local-host discharge: two-exception packets are pair-chamber certificates, three-exception
     packets are one-corner ternary certificates, so only four-exception `2/2` `F` graphs remain.
+    Enumerate the four-exception skeletons on two empty and two triangular atoms: cross matching, three-edge
+    `K_{2,2}`, and full `K_{2,2}`, with one exceptional row at each atom.
     For the all-edge permutation minimum, formalize the phase split: the three parity edges form either a
     star through one parity word or the triangle avoiding one parity word, and each size-three edge target
     has only a `2+1` label multiplicity choice.
