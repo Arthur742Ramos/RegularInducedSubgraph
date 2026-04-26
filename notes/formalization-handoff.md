@@ -1416,8 +1416,48 @@ Recommended attack:
    (`3`).  A terminal exact-extremal proof obligation is to rule out simultaneous avoidance of these
    allowed `3+1` extensions.
 
-   Equivalently, every four vertices in one exact direction fiber `C_i` are old-balanced, and they close
-   precisely when they induce the specified `d_i`-regular four-vertex graph with
+   Formalize the stronger augmented-fiber sieve.  If `C_i` is the retained fiber with old-vector `g_i`,
+   then every four-set `Y union Z` with `Y subset X_i`, `Z subset C_i`, `|Y|+|Z|=4`, and `Z nonempty`
+   is old-balanced.  It appends whenever
+
+   ```text
+   deg_Y(y)+sum_{z in Z}1_{zy}=d_i        for y in Y,
+   deg_Z(z)+|N_{X_i}(z) cap Y|=d_i        for z in Z,
+   d_i=r-omega(g_i).
+   ```
+
+   Thus the exact-basis terminal condition must also exclude mixed `2+2` and `1+3` regular atoms.
+   Equivalently, retained vertices are typed by their eight adjacency patterns to the boundary triple,
+   and the finite forbidden configurations are the regularity solutions of the displayed equations.
+   Moreover, the same augmented four-set is signed-repairable whenever its regular residue lies in
+   `Rep(g_i)`, since the defect is constant across a single old-neighbourhood type.  Formal terminality
+   should therefore quantify the augmented sieve over all residues in `Rep(g_i)`, not only the
+   append-only residue `d_i`.
+
+   The useful finite tables are:
+
+   ```text
+   2+2: for Y={x,y}, Z={b,c}, e=1_xy, epsilon=1_bc,
+        regularity is equivalent to epsilon=e and the cross square
+        ({b,c},{x,y}) being (d_i-e)-regular.
+
+   1+3:
+        d_i=0  independent retained triple, all miss x;
+        d_i=1  exactly one hitter of x, isolated in the retained triple;
+        d_i=2  exactly two hitters of x, and the unique misser is the middle of a P_3;
+        d_i=3  retained triangle, all hit x.
+   ```
+
+   Equivalent type constraints worth formalizing: for a boundary pair `{x,y}` of status `e`, terminality
+   forbids retained edge-status `e` on type-`00` pairs if `d_i-e=0`, on type-`10`/type-`01` pairs if
+   `d_i-e=1`, and on type-`11` pairs if `d_i-e=2`.  For a boundary vertex `x`, the miss class has no
+   independent triple when `d_i=0`, the hit class has no triangle when `d_i=3`, each hitter's
+   non-neighbours in the miss class are independent when `d_i=1`, and each misser's neighbours in the
+   hit class form a clique when `d_i=2`.
+
+   The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
+   fiber `C_i` are old-balanced, and they close precisely when they induce the specified
+   `d_i`-regular four-vertex graph with
    `d_i=r-omega(g_i)`.  The exact basis branch has therefore been reduced to direction fibers avoiding
    one specified regular four-vertex induced pattern; this finite obstruction still needs global
    maximality or a non-basis import to become contradictory.

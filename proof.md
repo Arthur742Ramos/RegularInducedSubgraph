@@ -6145,8 +6145,105 @@ triple, and any successful inverse-Davenport closure must show that the simultan
 these `3+1` regular extensions either creates a profitable import elsewhere or contradicts maximality of
 the original witness.
 
-Equivalently, let `C_i` be all vertices of `C` with old-vector `g_i` in the exact basis model.  Every
-four vertices of `C_i` form an old-balanced atom with the same old-neighbourhood residue `omega(g_i)`.
+The `3+1` test is only the first member of the augmented-direction sieve.  In the exact basis model the
+three boundary copies and all retained copies in the same direction have the same old vector.  Therefore
+every four-set
+
+```text
+Y union Z,        Y subset X_i, Z subset C_i, |Y|+|Z|=4, |Z|>0,
+```
+
+is old-balanced.  It closes append-only whenever it is `d_i`-regular, where
+`d_i=r-omega(g_i)`.  Thus a terminal exact-basis configuration must forbid `d_i`-regular four-sets in
+the **augmented fiber** `A_i=X_i union C_i`, not just among four retained vertices or among
+`X_i union {b}`.
+
+The signed repair spectrum applies to these augmented atoms as well.  If such a four-set in `A_i`
+induces a regular graph of residue `d'`, its defect is again constant `d_i-d'`, because all four vertices
+have the same old-neighbourhood type.  Hence every residue `d' in Rep(g_i)` is forbidden in the
+augmented fiber, provided the four-set uses at least one retained vertex so that it is a genuine
+profitable import from the boundary/retained pool.  The append-only sieve is the special case
+`d'=d_i`.
+
+Equivalently, for each retained vertex `b in C_i` let
+
+```text
+a_b(x)=1_{bx},        x in X_i.
+```
+
+Then the mixed atom conditions are explicit.  For `Y subset X_i` and `Z subset C_i` with
+`|Y|+|Z|=4`, the atom closes iff
+
+```text
+deg_Y(y)+sum_{z in Z} a_z(y)=d_i          for every y in Y,
+deg_Z(z)+sum_{y in Y} a_z(y)=d_i          for every z in Z.
+```
+
+The cases `|Z|=2` and `|Z|=3` are new finite obstructions: two retained vertices together with two
+boundary copies, or three retained vertices together with one boundary copy, can repair a direction even
+when neither a single retained vertex nor a four-retained block works.  Hence the exact-basis endpoint
+should be treated as an eight-type graph over the boundary triple, with these mixed regularity equations
+forbidden in every active direction.
+
+The `2+2` equation collapses to a particularly rigid square rule.  Let `Y={x,y} subset X_i` and
+`Z={b,c} subset C_i`.  Write `e=1_{xy}` and `epsilon=1_{bc}`.  The four-set is `d_i`-regular iff
+
+```text
+epsilon=e,
+the 2 by 2 bipartite graph between {b,c} and {x,y} is (d_i-e)-regular.
+```
+
+Thus `d_i-e` must be `0`, `1`, or `2`; the cross pattern is respectively empty, a perfect matching
+(one of the two `2`-edge 1-regular squares), or complete.  In particular, retained pairs whose edge
+status matches a boundary pair are dangerous exactly when their two adjacency types to that boundary pair
+form the corresponding regular square.
+
+The `1+3` equation is the dual of the `3+1` table.  For a boundary vertex `x` and retained triple
+`T`, a `d_i`-regular atom occurs precisely as follows:
+
+```text
+d_i=0:  T is independent and every vertex of T misses x;
+d_i=1:  exactly one vertex of T hits x, and it is isolated in T;
+d_i=2:  exactly two vertices of T hit x, and the unique misser is the middle of a path P_3;
+d_i=3:  T is a triangle and every vertex of T hits x.
+```
+
+These tables are still not a contradiction, but they are stronger than the earlier retained-only
+hereditary obstruction: each boundary edge/nonedge cuts the retained type graph by a prescribed
+edge-status square rule, and each boundary vertex cuts retained triples by the displayed one-corner
+patterns.
+
+It is useful to restate the same tables as hereditary constraints on types.  Fix a boundary pair
+`{x,y}` with edge status `e`, and write the two-bit type of a retained vertex as its adjacency to
+`(x,y)`.  Put `q=d_i-e`.  Terminality implies:
+
+```text
+q=0:  two vertices of type 00 may not have retained edge-status e;
+q=1:  a type-10 vertex and a type-01 vertex may not have retained edge-status e;
+q=2:  two vertices of type 11 may not have retained edge-status e;
+```
+
+with no `2+2` restriction from this pair when `q` is outside `{0,1,2}`.  Thus, depending on the boundary
+pair and the required residue, a type class is forced to be independent or clique, or two complementary
+one-hit classes are forced to be joined or co-joined.
+
+Similarly, for a boundary vertex `x`, let `M_x` be the retained vertices missing `x` and `H_x` those
+hitting `x`.  The `1+3` table says:
+
+```text
+d_i=0:  alpha(G[M_x]) <= 2;
+d_i=3:  omega(G[H_x]) <= 2;
+d_i=1:  for every h in H_x, the non-neighbours of h inside M_x form an independent set;
+d_i=2:  for every m in M_x, the neighbours of m inside H_x form a clique.
+```
+
+These are purely finite graph constraints.  A terminal exact-basis proof can now target the eight-type
+quotient: either one of these constraints forces a large outside-only congruent set, or the quotient has
+enough regular cross-type squares/triples to build an appendable atom.
+
+The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
+old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with
+the same old-neighbourhood residue `omega(g_i)`.
 Hence any induced regular four-set in `C_i` of degree
 
 ```text

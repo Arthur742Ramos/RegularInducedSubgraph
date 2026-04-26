@@ -865,8 +865,38 @@ miss an independent triple for degree `0`, hit the isolated vertex of a one-edge
 hit the endpoints of a path triple for degree `2`, and hit all of a triangle for degree `3`.  Terminal
 exact-extremal configurations must avoid these allowed `3+1` patterns in every direction.
 
-Equivalently, if `C_i` is a full direction fiber in the exact basis model, any four vertices of `C_i`
-are old-balanced.  A four-set closes exactly when it induces the required `d_i`-regular graph, where
+The augmented direction actually gives more tests.  Since `X_i` and the retained fiber `C_i` have the
+same old vector, every four-set `Y union Z` with `Y subset X_i`, `Z subset C_i`, `|Y|+|Z|=4`, and
+`Z nonempty` is old-balanced.  It closes exactly when
+
+```text
+deg_Y(y)+sum_{z in Z}1_{zy}=d_i        for y in Y,
+deg_Z(z)+|N_{X_i}(z) cap Y|=d_i        for z in Z,
+```
+
+where `d_i=r-omega(g_i)`.  Thus the exact-basis sieve must include the mixed `2+2` and `1+3` atoms, not
+only `3+1` and four-retained atoms.  Each retained vertex has one of eight adjacency types to the
+boundary triple; terminality forbids the finite regularity patterns produced by these type equations.
+The same mixed atom is signed-repairable whenever its regular residue lies in `Rep(g_i)`, since the
+defect is constant on the augmented direction.  Thus replace `d_i` by each residue in the repair spectrum
+when applying the augmented sieve.
+
+For `2+2` atoms the equations simplify.  If `Y={x,y} subset X_i`, `Z={b,c} subset C_i`, `e=1_{xy}`,
+and `epsilon=1_{bc}`, then `Y union Z` is `d_i`-regular iff `epsilon=e` and the bipartite square between
+`{b,c}` and `{x,y}` is `(d_i-e)`-regular.  Thus the cross square is empty, 1-regular, or complete
+according as `d_i-e=0,1,2`.  For `1+3` atoms, a boundary vertex `x` and retained triple `T` close iff:
+independent/all miss `x` for `d_i=0`; one hitter isolated for `d_i=1`; two hitters with the unique
+misser as the middle of a `P_3` for `d_i=2`; triangle/all hit `x` for `d_i=3`.
+
+As type constraints, a boundary pair `{x,y}` of status `e` forbids retained edge-status `e` on type
+`00` pairs when `d_i-e=0`, on complementary `10/01` pairs when `d_i-e=1`, and on type `11` pairs when
+`d_i-e=2`.  For a boundary vertex `x`, terminality gives: if `d_i=0`, the miss class has no independent
+triple; if `d_i=3`, the hit class has no triangle; if `d_i=1`, each hitter's non-neighbours in the miss
+class are independent; if `d_i=2`, each misser's neighbours in the hit class are a clique.
+
+The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
+exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it
+induces the required `d_i`-regular graph, where
 `d_i=r-omega(g_i)`.  Thus the exact basis obstruction is the finite condition that each direction
 fiber avoids one specified induced regular graph on four vertices.  This condition alone is not
 contradictory; it must be combined with global maximality or with a perturbation/import out of the
