@@ -801,6 +801,12 @@ Recommended attack:
    degree into the leaf, yet their half-degree parities can vary by vertex, leaving the carry coordinate
    uncontrolled.
 
+   A one-coordinate odd-degree theorem for 3-uniform hypergraphs is also not enough.  The carry
+   coordinate is the degree in the centered-pair 3-uniform hypergraph with edges `{v,x,y}` whenever
+   `vx` and `vy` are graph edges.  Such a theorem can synchronize `binom(deg,2) [MOD 2]` on a support,
+   but it does not simultaneously synchronize `deg [MOD 2]`.  A usable import would need a
+   vector-valued induced parity selector for both coordinates on the same retained set.
+
    Avoid two false imports here.  The Caro--Krasikov--Roditty zero-sum partition theorem is about the
    number of edges in each induced part modulo `q`, not all vertex degrees modulo `q`; random-graph
    modulo-`q` partition theorems are also irrelevant to arbitrary fixed witnesses.  The exact deterministic
@@ -934,6 +940,12 @@ Recommended attack:
    at most `3(m-1)` vertices.  A possible weaker formal endpoint is therefore a replacement lemma for
    such a large old-balanced packet.  If `B subset P_t` has old increment `delta` and one deletes
    `D subset W`, then `W\D union B` has common residue `R` exactly when
+
+   An external arbitrary-graph mod-`4` selector with constant strictly greater than `4/31` would also
+   close this chamber directly, because it would find a mod-`4` congruent induced subgraph inside
+   `P_t` larger than `m`.  Constants at or below `4/31` do not suffice for this direct chamber
+   maximality argument, so the formal proof should either import a stronger universal constant or use
+   the special degree-to-`W` chamber structure.
 
    ```text
    deg_D(w)=r+delta-R       for kept old vertices w,
@@ -1362,6 +1374,18 @@ Recommended attack:
    both middle residues lie in `Rep(g)`, a terminal large fiber must avoid both patterns; any remaining
    hereditary case should be combined with the outside-only maximum constraint, especially for repeated
    cyclic blocks.
+
+   The useful structural import is the pseudo-split characterization of `(2K_2,C_4)`-free graphs.  In
+   this branch, a direction fiber decomposes into a clique part, an independent part, and possibly a
+   five-cycle core.  Since no clique or independent set inside a chamber can be larger than `m=|W|`, a
+   pseudo-split direction fiber has size at most about `2m+5`.  Therefore a direction fiber
+   substantially larger than `2m` must have `Rep(g)` missing at least one middle residue.
+
+   Combining this with the exclusion of repairable residues `0` and `3`, a direction fiber above the
+   pseudo-split cap has `Rep(g)={d}`.  Formal consequence: every usable `D subset W`, `|D|<4`, with
+   `deg_D(w)=c` on `W\D` must satisfy `deg_D(b_g)=c` for the direction's old-neighbourhood type.
+   Singleton, pair, and triple co-regular deletions in `W` therefore become rigid membership tests for
+   very large terminal directions.
 
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is

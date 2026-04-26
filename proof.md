@@ -5322,6 +5322,15 @@ after greedily removing old-balanced packets, the leftover has size at most `3(m
 the removed packets is itself old-balanced and has size greater than `19m/4`.  The missing point is
 then no longer old-coordinate balancing at all, but how to repair the self-layer.
 
+Equivalently, this gives a precise external-import threshold.  In a terminal counterexample every
+outside chamber `P_t` of size `>31m/4` must itself have no mod-`4` congruent induced subgraph of size
+greater than `m`.  Therefore any arbitrary-graph theorem guaranteeing a mod-`4` congruent induced
+subgraph of size more than `(4/31)|P_t|` inside every graph would close the first-bit endpoint
+immediately by applying it to this chamber.  Constants at or below `4/31` are not enough by this direct
+chamber-maximality argument.  The live proof is thus asking for either a universal selector stronger
+than `4/31` or, more realistically, a selector that exploits the special degree-to-`W` chamber
+structure and the old-coordinate packet equations.
+
 The repair equations show why the append-only packet lemma is the rigid endpoint.  Suppose
 `B subset P_t` is old-balanced, so every `w in W` has `deg_B(w)=delta`.  If we delete
 `D subset W` and keep `W'=W\D`, then `W' union B` has common residue `R` exactly when
@@ -6073,6 +6082,32 @@ also forbids collecting many congruent cyclic blocks from such fibers.  This doe
 but it reduces the large-fiber exact-basis endpoint to hereditary middle-residue structure plus the
 old-deletion shift catalogue.
 
+More concretely, the standard pseudo-split characterization of `(2K_2,C_4)`-free graphs gives a
+finite structural branch.  Such a fiber has a partition into a clique part `K`, an independent part `I`,
+and possibly a five-cycle core `M`, with the usual prescribed adjacencies between the core and the
+split parts.  Since `W` is maximum, the fiber has no clique or independent set larger than `m`; hence
+the pseudo-split branch has size at most about `2m+5` in a single direction.  Thus any exact-basis
+counterexample with a direction fiber substantially larger than `2m` must have a repair spectrum
+missing one of the two middle residues.  This turns the large-fiber obstruction into a finite
+old-deletion spectrum problem rather than an arbitrary hereditary graph problem.
+
+Combining this with the Ramsey-extreme exclusion gives a sharper rigidity.  In a terminal direction
+fiber larger than the pseudo-split cap, the repair spectrum cannot contain `0` or `3`, and it cannot
+contain both `1` and `2`.  Since the append-only residue `d` is always in the spectrum, the spectrum is
+forced to be the singleton `{d}`.  Equivalently,
+
+```text
+Delta_<(4)(g)={0}
+```
+
+for every usable deletion `D` of size `<4`.  Thus every singleton, pair, or triple deletion in `W` whose
+degree into `W\D` is constant must see the direction's old-neighbourhood type with the same constant.
+For example, if a vertex `u in W` is either isolated from or complete to `W\{u}`, then every very large
+terminal direction type must respectively miss or contain `u`.  Pair and triple co-regular deletions
+give analogous rigid intersection tests.  Large exact-basis directions are therefore not arbitrary
+middle-residue hereditary graphs; their old-neighbourhood types are fixed by all small co-regular
+subwitnesses inside `W`.
+
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
 `deg_D(b)` constant on the four vertices.  The signed condition
@@ -6362,6 +6397,16 @@ steps.  However the leaf is only even; its degrees can still split between `0` a
 successive sibling layers have even degree into the current leaf, but their half-degree parities are not
 synchronized, so the carry coordinate `binom(deg,2) [MOD 2]` remains free.  Thus recursive Gallai
 partitioning proves only first-bit parity regularity at the required scale, not the mod-`4` congruence.
+
+The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
+theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with
+`vx` and `vy` edges of the original graph; then the degree of `v` in `K[W]` is exactly the carry
+`binom(deg_W(v),2) [MOD 2]`.  A large induced subhypergraph of `K` with all degrees odd would
+synchronize the carry coordinate on some support, but it says nothing about the graph-degree parity
+`deg_W(v) [MOD 2]` on that same support.  Conversely Gallai synchronizes graph parity but not the
+3-uniform carry.  The needed external input would have to be a **vector-valued** induced hypergraph
+parity selector for the pair `(graph degree parity, centered-pair degree parity)` with a constant at
+least `1/32`; an ordinary all-odd 3-uniform theorem supplies only one linear coordinate.
 
 A bounded modular partition would be a sufficient but currently unavailable shortcut.  If every graph
 could be partitioned into at most `K` vertex classes whose induced degrees are constant modulo `4` in

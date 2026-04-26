@@ -286,6 +286,11 @@ Iterating Gallai even/even partitions is also insufficient.  It gives nested eve
 size `n/32` after five halvings, and degrees to each discarded sibling layer are even, but the
 half-degree parities of those sibling contributions are not synchronized.  The final leaf can still mix
 degrees `0` and `2 mod 4`.
+Likewise, a one-coordinate odd-degree theorem for 3-uniform hypergraphs is insufficient by itself.
+The carry is the degree in the centered-pair 3-uniform hypergraph with edges `{v,x,y}` for pairs of
+selected neighbors of `v`; an all-odd induced subhypergraph there synchronizes only
+`binom(deg,2) mod 2`, while Gallai synchronizes only `deg mod 2`.  Closing via hypergraphs would require
+a vector-valued induced parity selector for these two coordinates on the same support.
 Prescribed-parity variants remain linear `F_2` inputs: they can choose the first bit of the retained
 degrees, but the next bit is the carry `binom(deg,2) [MOD 2]`, equivalently the synchronized in/out
 parity condition only after the selected even graph is oriented on its own.  That carry is exactly what
@@ -335,6 +340,10 @@ condition is linear: from any outside pool of size greater than `3(|W|-1)`, AFK/
 mod-`4` difference vectors to a fixed anchor in `W` produces a nonempty packet whose degrees into `W`
 are constant modulo `4`.  Thus the hard part is not balancing the old witness; it is forcing the
 packet's own internal degrees to match the shifted residue, i.e. the same fresh self-layer carry.
+Quantitatively, if `|W|=m<n/32`, then some degree-to-`W` chamber has size `>31m/4`; any universal
+mod-`4` congruent induced-subgraph theorem with constant strictly larger than `4/31` would find a
+larger witness inside that chamber alone.  Constants at or below `4/31` do not close this chamber
+maximality route, so the proof still needs the special old-coordinate structure.
 This kills the zero-shift sparse chamber: if `P_0={b: deg_W(b)=r}` contains an independent set larger
 than `3|W|`, Olson on the full adjacency vectors supplies a nonempty subset with zero old degree
 vector; its internal packet degree is zero, so it extends `W`.  Hence every maximal obstruction has
@@ -839,6 +848,14 @@ blocks give stronger exclusions, but these two hereditary classes are the visibl
 Since `2K_2` and `C_4` are complements, any direction whose repair spectrum contains both middle
 residues is forced into the much narrower class avoiding both patterns; remaining large examples must
 be controlled by the outside-only maximum constraint on repeated cyclic/split-like blocks.
+Using the pseudo-split characterization of `(2K_2,C_4)`-free graphs, such a direction decomposes into
+a clique part, an independent part, and at most a five-cycle core.  Because no clique or independent
+set inside a chamber can exceed `m=|W|`, a pseudo-split direction has size only about `2m+5`.  Thus
+any much larger direction fiber must have a repair spectrum missing one of the middle residues.
+Together with the Ramsey exclusion of residues `0` and `3`, this forces the repair spectrum of a very
+large terminal direction to be the singleton `{d}`; equivalently every usable deletion `D subset W` with
+`|D|<4` has shift `deg_D(b_g)-c=0`.  Singleton/pair/triple co-regular deletions in `W` therefore impose
+rigid intersection tests on the direction's old-neighbourhood type.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has
