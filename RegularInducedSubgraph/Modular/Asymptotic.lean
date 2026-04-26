@@ -39968,6 +39968,806 @@ theorem FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle.markerBundle
 end FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle
 
 /--
+The three cap-tight unit strict-absorption templates in the all-large no-leftover branch.
+`templateA` is one support covering two whole opposite atoms, `templateB` is one support
+covering all but one vertex of three opposite atoms, and `templateC` is the two-support
+cover of all three opposite atoms.
+-/
+inductive FirstBitTerminalUnitStrictAbsorptionTemplate : Type
+  | templateA
+  | templateB
+  | templateC
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalUnitStrictAbsorptionTemplate
+
+/-- Number of projected supports in a unit strict-absorption template. -/
+def supportCount : FirstBitTerminalUnitStrictAbsorptionTemplate → ℕ
+  | templateA => 1
+  | templateB => 1
+  | templateC => 2
+
+/-- Number of opposite atoms hit by a unit strict-absorption template. -/
+def hitAtomCount : FirstBitTerminalUnitStrictAbsorptionTemplate → ℕ
+  | templateA => 2
+  | templateB => 3
+  | templateC => 3
+
+/-- Number of omitted opposite-atom vertices in a unit strict-absorption template. -/
+def omittedVertexCount : FirstBitTerminalUnitStrictAbsorptionTemplate → ℕ
+  | templateA => 0
+  | templateB => 1
+  | templateC => 0
+
+/-- Size of the opposite trace covered by a unit strict-absorption template. -/
+def traceSize : FirstBitTerminalUnitStrictAbsorptionTemplate → ℕ
+  | templateA => 8
+  | templateB => 11
+  | templateC => 12
+
+/-- Lower bound for the trace-overlap table of two unit strict-absorption templates. -/
+def overlapLowerBound :
+    FirstBitTerminalUnitStrictAbsorptionTemplate →
+      FirstBitTerminalUnitStrictAbsorptionTemplate → ℕ
+  | templateA, templateA => 4
+  | templateA, templateB => 7
+  | templateA, templateC => 8
+  | templateB, templateA => 7
+  | templateB, templateB => 10
+  | templateB, templateC => 11
+  | templateC, templateA => 8
+  | templateC, templateB => 11
+  | templateC, templateC => 12
+
+@[simp] theorem supportCount_templateA : supportCount templateA = 1 := rfl
+@[simp] theorem supportCount_templateB : supportCount templateB = 1 := rfl
+@[simp] theorem supportCount_templateC : supportCount templateC = 2 := rfl
+
+@[simp] theorem hitAtomCount_templateA : hitAtomCount templateA = 2 := rfl
+@[simp] theorem hitAtomCount_templateB : hitAtomCount templateB = 3 := rfl
+@[simp] theorem hitAtomCount_templateC : hitAtomCount templateC = 3 := rfl
+
+@[simp] theorem omittedVertexCount_templateA : omittedVertexCount templateA = 0 := rfl
+@[simp] theorem omittedVertexCount_templateB : omittedVertexCount templateB = 1 := rfl
+@[simp] theorem omittedVertexCount_templateC : omittedVertexCount templateC = 0 := rfl
+
+@[simp] theorem traceSize_templateA : traceSize templateA = 8 := rfl
+@[simp] theorem traceSize_templateB : traceSize templateB = 11 := rfl
+@[simp] theorem traceSize_templateC : traceSize templateC = 12 := rfl
+
+@[simp] theorem overlapLowerBound_templateA_templateA :
+    overlapLowerBound templateA templateA = 4 := rfl
+@[simp] theorem overlapLowerBound_templateA_templateB :
+    overlapLowerBound templateA templateB = 7 := rfl
+@[simp] theorem overlapLowerBound_templateA_templateC :
+    overlapLowerBound templateA templateC = 8 := rfl
+@[simp] theorem overlapLowerBound_templateB_templateA :
+    overlapLowerBound templateB templateA = 7 := rfl
+@[simp] theorem overlapLowerBound_templateB_templateB :
+    overlapLowerBound templateB templateB = 10 := rfl
+@[simp] theorem overlapLowerBound_templateB_templateC :
+    overlapLowerBound templateB templateC = 11 := rfl
+@[simp] theorem overlapLowerBound_templateC_templateA :
+    overlapLowerBound templateC templateA = 8 := rfl
+@[simp] theorem overlapLowerBound_templateC_templateB :
+    overlapLowerBound templateC templateB = 11 := rfl
+@[simp] theorem overlapLowerBound_templateC_templateC :
+    overlapLowerBound templateC templateC = 12 := rfl
+
+/-- The overlap-congestion table is symmetric. -/
+theorem overlapLowerBound_symm
+    (left right : FirstBitTerminalUnitStrictAbsorptionTemplate) :
+    overlapLowerBound left right = overlapLowerBound right left := by
+  cases left <;> cases right <;> rfl
+
+/-- Every unit strict-absorption template has opposite trace size at least eight. -/
+theorem traceSize_ge_eight
+    (template : FirstBitTerminalUnitStrictAbsorptionTemplate) :
+    8 ≤ traceSize template := by
+  cases template <;> decide
+
+/-- Every overlap-congestion table entry is positive. -/
+theorem overlapLowerBound_pos
+    (left right : FirstBitTerminalUnitStrictAbsorptionTemplate) :
+    0 < overlapLowerBound left right := by
+  cases left <;> cases right <;> decide
+
+/-- Every overlap-congestion table entry is at least four. -/
+theorem overlapLowerBound_ge_four
+    (left right : FirstBitTerminalUnitStrictAbsorptionTemplate) :
+    4 ≤ overlapLowerBound left right := by
+  cases left <;> cases right <;> decide
+
+end FirstBitTerminalUnitStrictAbsorptionTemplate
+
+/--
+Assumption-backed all-large unit-absorption overlap-congestion facade.  It names the
+`A/B/C` taxonomy, pairwise-intersecting opposite traces through a common atom, and the
+trace-overlap table `A-A ≥ 4`, `A-B ≥ 7`, `A-C = 8`, `B-B ≥ 10`, `B-C = 11`,
+`C-C = 12` as reusable API fields.
+-/
+structure FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade
+    {Core Atom Absorption Vertex : Type*} [DecidableEq Vertex]
+    (atomPartition : Core → Finset Atom)
+    (unitStrictAbsorption : Core → Atom → Absorption → Prop)
+    (deletedVertex : Core → Atom → Absorption → Vertex)
+    (oppositeTrace : Core → Atom → Absorption → Finset Vertex)
+    (absorptionTemplate :
+      Core → Atom → Absorption → FirstBitTerminalUnitStrictAbsorptionTemplate)
+    (allAtomsSizeAtLeastFourStrictDefect : Core → Prop)
+    (unitStrictAbsorptionTemplateTaxonomy allLargeUnitAbsorptionPairwiseIntersecting
+      allLargeUnitAbsorptionOverlapCongestion : Prop) : Prop where
+  unitStrictAbsorptionTemplateTaxonomyCert : unitStrictAbsorptionTemplateTaxonomy
+  allLargeUnitAbsorptionPairwiseIntersectingCert : allLargeUnitAbsorptionPairwiseIntersecting
+  allLargeUnitAbsorptionOverlapCongestionCert : allLargeUnitAbsorptionOverlapCongestion
+  oppositeTrace_cardCert :
+    ∀ core, allAtomsSizeAtLeastFourStrictDefect core → ∀ atom,
+      atom ∈ atomPartition core → ∀ absorption,
+        unitStrictAbsorption core atom absorption →
+          (oppositeTrace core atom absorption).card =
+            FirstBitTerminalUnitStrictAbsorptionTemplate.traceSize
+              (absorptionTemplate core atom absorption)
+  pairwise_intersecting_oppositeTracesCert :
+    ∀ core, allAtomsSizeAtLeastFourStrictDefect core → ∀ atom,
+      atom ∈ atomPartition core → ∀ left,
+        unitStrictAbsorption core atom left → ∀ right,
+          unitStrictAbsorption core atom right →
+            deletedVertex core atom left ≠ deletedVertex core atom right →
+              (oppositeTrace core atom left ∩ oppositeTrace core atom right).Nonempty
+  overlap_congestionCert :
+    ∀ core, allAtomsSizeAtLeastFourStrictDefect core → ∀ atom,
+      atom ∈ atomPartition core → ∀ left,
+        unitStrictAbsorption core atom left → ∀ right,
+          unitStrictAbsorption core atom right →
+            FirstBitTerminalUnitStrictAbsorptionTemplate.overlapLowerBound
+              (absorptionTemplate core atom left) (absorptionTemplate core atom right) ≤
+                (oppositeTrace core atom left ∩ oppositeTrace core atom right).card
+
+/-- Build the all-large unit-absorption overlap-congestion facade from explicit certificates. -/
+theorem firstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade_of_parts
+    {Core Atom Absorption Vertex : Type*} [DecidableEq Vertex]
+    {atomPartition : Core → Finset Atom}
+    {unitStrictAbsorption : Core → Atom → Absorption → Prop}
+    {deletedVertex : Core → Atom → Absorption → Vertex}
+    {oppositeTrace : Core → Atom → Absorption → Finset Vertex}
+    {absorptionTemplate :
+      Core → Atom → Absorption → FirstBitTerminalUnitStrictAbsorptionTemplate}
+    {allAtomsSizeAtLeastFourStrictDefect : Core → Prop}
+    {unitStrictAbsorptionTemplateTaxonomy allLargeUnitAbsorptionPairwiseIntersecting
+      allLargeUnitAbsorptionOverlapCongestion : Prop}
+    (htaxonomy : unitStrictAbsorptionTemplateTaxonomy)
+    (hintersect : allLargeUnitAbsorptionPairwiseIntersecting)
+    (hoverlapMarker : allLargeUnitAbsorptionOverlapCongestion)
+    (hcard :
+      ∀ core, allAtomsSizeAtLeastFourStrictDefect core → ∀ atom,
+        atom ∈ atomPartition core → ∀ absorption,
+          unitStrictAbsorption core atom absorption →
+            (oppositeTrace core atom absorption).card =
+              FirstBitTerminalUnitStrictAbsorptionTemplate.traceSize
+                (absorptionTemplate core atom absorption))
+    (hpairwise :
+      ∀ core, allAtomsSizeAtLeastFourStrictDefect core → ∀ atom,
+        atom ∈ atomPartition core → ∀ left,
+          unitStrictAbsorption core atom left → ∀ right,
+            unitStrictAbsorption core atom right →
+              deletedVertex core atom left ≠ deletedVertex core atom right →
+                (oppositeTrace core atom left ∩ oppositeTrace core atom right).Nonempty)
+    (hoverlap :
+      ∀ core, allAtomsSizeAtLeastFourStrictDefect core → ∀ atom,
+        atom ∈ atomPartition core → ∀ left,
+          unitStrictAbsorption core atom left → ∀ right,
+            unitStrictAbsorption core atom right →
+              FirstBitTerminalUnitStrictAbsorptionTemplate.overlapLowerBound
+                (absorptionTemplate core atom left) (absorptionTemplate core atom right) ≤
+                  (oppositeTrace core atom left ∩ oppositeTrace core atom right).card) :
+    FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade atomPartition
+      unitStrictAbsorption deletedVertex oppositeTrace absorptionTemplate
+      allAtomsSizeAtLeastFourStrictDefect unitStrictAbsorptionTemplateTaxonomy
+      allLargeUnitAbsorptionPairwiseIntersecting allLargeUnitAbsorptionOverlapCongestion where
+  unitStrictAbsorptionTemplateTaxonomyCert := htaxonomy
+  allLargeUnitAbsorptionPairwiseIntersectingCert := hintersect
+  allLargeUnitAbsorptionOverlapCongestionCert := hoverlapMarker
+  oppositeTrace_cardCert := hcard
+  pairwise_intersecting_oppositeTracesCert := hpairwise
+  overlap_congestionCert := hoverlap
+
+section FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade
+
+variable {Core Atom Absorption Vertex : Type*} [DecidableEq Vertex]
+variable {atomPartition : Core → Finset Atom}
+variable {unitStrictAbsorption : Core → Atom → Absorption → Prop}
+variable {deletedVertex : Core → Atom → Absorption → Vertex}
+variable {oppositeTrace : Core → Atom → Absorption → Finset Vertex}
+variable {absorptionTemplate :
+  Core → Atom → Absorption → FirstBitTerminalUnitStrictAbsorptionTemplate}
+variable {allAtomsSizeAtLeastFourStrictDefect : Core → Prop}
+variable {unitStrictAbsorptionTemplateTaxonomy allLargeUnitAbsorptionPairwiseIntersecting
+  allLargeUnitAbsorptionOverlapCongestion : Prop}
+
+variable (h :
+  FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade atomPartition
+    unitStrictAbsorption deletedVertex oppositeTrace absorptionTemplate
+    allAtomsSizeAtLeastFourStrictDefect unitStrictAbsorptionTemplateTaxonomy
+    allLargeUnitAbsorptionPairwiseIntersecting allLargeUnitAbsorptionOverlapCongestion)
+
+/-- Project the unit strict-absorption `A/B/C` taxonomy marker. -/
+@[simp] theorem
+    FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade.to_unitStrictAbsorptionTemplateTaxonomy :
+    unitStrictAbsorptionTemplateTaxonomy :=
+  h.unitStrictAbsorptionTemplateTaxonomyCert
+
+/-- Project the pairwise-intersection marker for all-large unit absorptions. -/
+@[simp] theorem
+    FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade.to_allLargeUnitAbsorptionPairwiseIntersecting :
+    allLargeUnitAbsorptionPairwiseIntersecting :=
+  h.allLargeUnitAbsorptionPairwiseIntersectingCert
+
+/-- Project the overlap-congestion marker for all-large unit absorptions. -/
+@[simp] theorem
+    FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade.to_allLargeUnitAbsorptionOverlapCongestion :
+    allLargeUnitAbsorptionOverlapCongestion :=
+  h.allLargeUnitAbsorptionOverlapCongestionCert
+
+/-- Read off the trace size dictated by the selected `A/B/C` template. -/
+theorem FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade.oppositeTrace_card
+    {core : Core} (hlarge : allAtomsSizeAtLeastFourStrictDefect core)
+    {atom : Atom} (hatom : atom ∈ atomPartition core)
+    {absorption : Absorption} (habs : unitStrictAbsorption core atom absorption) :
+    (oppositeTrace core atom absorption).card =
+      FirstBitTerminalUnitStrictAbsorptionTemplate.traceSize
+        (absorptionTemplate core atom absorption) :=
+  h.oppositeTrace_cardCert core hlarge atom hatom absorption habs
+
+/-- Two unit absorptions through distinct deleted vertices in the same atom have intersecting traces. -/
+theorem
+    FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade.oppositeTraces_intersect_of_distinct_deleted
+    {core : Core} (hlarge : allAtomsSizeAtLeastFourStrictDefect core)
+    {atom : Atom} (hatom : atom ∈ atomPartition core)
+    {left right : Absorption}
+    (hleft : unitStrictAbsorption core atom left)
+    (hright : unitStrictAbsorption core atom right)
+    (hne : deletedVertex core atom left ≠ deletedVertex core atom right) :
+    (oppositeTrace core atom left ∩ oppositeTrace core atom right).Nonempty :=
+  h.pairwise_intersecting_oppositeTracesCert core hlarge atom hatom left hleft right hright hne
+
+/-- Apply the exact `A/B/C` overlap-congestion table to two all-large unit absorptions. -/
+theorem FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade.overlap_congestion
+    {core : Core} (hlarge : allAtomsSizeAtLeastFourStrictDefect core)
+    {atom : Atom} (hatom : atom ∈ atomPartition core)
+    {left right : Absorption}
+    (hleft : unitStrictAbsorption core atom left)
+    (hright : unitStrictAbsorption core atom right) :
+    FirstBitTerminalUnitStrictAbsorptionTemplate.overlapLowerBound
+      (absorptionTemplate core atom left) (absorptionTemplate core atom right) ≤
+        (oppositeTrace core atom left ∩ oppositeTrace core atom right).card :=
+  h.overlap_congestionCert core hlarge atom hatom left hleft right hright
+
+/-- Every all-large unit-absorption overlap has at least four opposite-trace vertices. -/
+theorem FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade.overlap_card_ge_four
+    {core : Core} (hlarge : allAtomsSizeAtLeastFourStrictDefect core)
+    {atom : Atom} (hatom : atom ∈ atomPartition core)
+    {left right : Absorption}
+    (hleft : unitStrictAbsorption core atom left)
+    (hright : unitStrictAbsorption core atom right) :
+    4 ≤ (oppositeTrace core atom left ∩ oppositeTrace core atom right).card :=
+  le_trans
+    (FirstBitTerminalUnitStrictAbsorptionTemplate.overlapLowerBound_ge_four
+      (absorptionTemplate core atom left) (absorptionTemplate core atom right))
+    (h.overlap_congestionCert core hlarge atom hatom left hleft right hright)
+
+/-- Compact marker bundle exported by the all-large unit-absorption overlap facade. -/
+theorem FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade.markerBundle :
+    unitStrictAbsorptionTemplateTaxonomy ∧ allLargeUnitAbsorptionPairwiseIntersecting ∧
+      allLargeUnitAbsorptionOverlapCongestion :=
+  ⟨h.unitStrictAbsorptionTemplateTaxonomyCert,
+    h.allLargeUnitAbsorptionPairwiseIntersectingCert,
+    h.allLargeUnitAbsorptionOverlapCongestionCert⟩
+
+end FirstBitTerminalAllLargeUnitAbsorptionOverlapCongestionFacade
+
+/--
+Assumption-backed facade for anchored no-split lift-collision pairs.  A collision-blocked
+deletion repair contains two shadow supports with disjoint projected traces; their unlifted
+columns are absent, and their only original lifts are the two thickenings through the same
+deleted anchor.
+-/
+structure FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade
+    {Core Atom Collision ShadowSupport Vertex : Type*} [DecidableEq Vertex]
+    (atomPartition : Core → Finset Atom)
+    (deletedVertexLiftCollision : Core → Atom → Collision → Prop)
+    (deletedAnchor : Core → Atom → Collision → Vertex)
+    (shadowSupport originalLift :
+      Core → Atom → Collision → ShadowSupport → Finset Vertex)
+    (unliftedColumnAvailable : Core → Atom → Collision → ShadowSupport → Prop)
+    (anchoredNoSplitPair : Core → Atom → Collision → ShadowSupport → ShadowSupport → Prop)
+    (allAtomsSizeAtLeastFourStrictDefect : Core → Prop)
+    (anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore : Prop) : Prop where
+  anchoredNoSplitLiftCollisionPairsCert : anchoredNoSplitLiftCollisionPairs
+  liftCollisionFiniteCoreCert : liftCollisionFiniteCore
+  collision_has_anchoredNoSplitPairCert :
+    ∀ core, allAtomsSizeAtLeastFourStrictDefect core → ∀ atom,
+      atom ∈ atomPartition core → ∀ collision,
+        deletedVertexLiftCollision core atom collision →
+          ∃ left : ShadowSupport, ∃ right : ShadowSupport,
+            left ≠ right ∧ anchoredNoSplitPair core atom collision left right
+  anchored_pair_shadow_disjointCert :
+    ∀ core atom collision {left right : ShadowSupport},
+      anchoredNoSplitPair core atom collision left right →
+        Disjoint (shadowSupport core atom collision left)
+          (shadowSupport core atom collision right)
+  anchored_pair_unlifted_absent_leftCert :
+    ∀ core atom collision {left right : ShadowSupport},
+      anchoredNoSplitPair core atom collision left right →
+        ¬ unliftedColumnAvailable core atom collision left
+  anchored_pair_unlifted_absent_rightCert :
+    ∀ core atom collision {left right : ShadowSupport},
+      anchoredNoSplitPair core atom collision left right →
+        ¬ unliftedColumnAvailable core atom collision right
+  anchored_pair_thickened_lift_leftCert :
+    ∀ core atom collision {left right : ShadowSupport},
+      anchoredNoSplitPair core atom collision left right →
+        originalLift core atom collision left =
+          shadowSupport core atom collision left ∪
+            ({deletedAnchor core atom collision} : Finset Vertex)
+  anchored_pair_thickened_lift_rightCert :
+    ∀ core atom collision {left right : ShadowSupport},
+      anchoredNoSplitPair core atom collision left right →
+        originalLift core atom collision right =
+          shadowSupport core atom collision right ∪
+            ({deletedAnchor core atom collision} : Finset Vertex)
+
+/-- Build the anchored no-split lift-collision facade from explicit finite-core certificates. -/
+theorem firstBitTerminalAnchoredNoSplitLiftCollisionPairFacade_of_parts
+    {Core Atom Collision ShadowSupport Vertex : Type*} [DecidableEq Vertex]
+    {atomPartition : Core → Finset Atom}
+    {deletedVertexLiftCollision : Core → Atom → Collision → Prop}
+    {deletedAnchor : Core → Atom → Collision → Vertex}
+    {shadowSupport originalLift :
+      Core → Atom → Collision → ShadowSupport → Finset Vertex}
+    {unliftedColumnAvailable : Core → Atom → Collision → ShadowSupport → Prop}
+    {anchoredNoSplitPair : Core → Atom → Collision → ShadowSupport → ShadowSupport → Prop}
+    {allAtomsSizeAtLeastFourStrictDefect : Core → Prop}
+    {anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore : Prop}
+    (hpairMarker : anchoredNoSplitLiftCollisionPairs)
+    (hfiniteMarker : liftCollisionFiniteCore)
+    (hexists :
+      ∀ core, allAtomsSizeAtLeastFourStrictDefect core → ∀ atom,
+        atom ∈ atomPartition core → ∀ collision,
+          deletedVertexLiftCollision core atom collision →
+            ∃ left : ShadowSupport, ∃ right : ShadowSupport,
+              left ≠ right ∧ anchoredNoSplitPair core atom collision left right)
+    (hdisjoint :
+      ∀ core atom collision {left right : ShadowSupport},
+        anchoredNoSplitPair core atom collision left right →
+          Disjoint (shadowSupport core atom collision left)
+            (shadowSupport core atom collision right))
+    (habsentLeft :
+      ∀ core atom collision {left right : ShadowSupport},
+        anchoredNoSplitPair core atom collision left right →
+          ¬ unliftedColumnAvailable core atom collision left)
+    (habsentRight :
+      ∀ core atom collision {left right : ShadowSupport},
+        anchoredNoSplitPair core atom collision left right →
+          ¬ unliftedColumnAvailable core atom collision right)
+    (hliftLeft :
+      ∀ core atom collision {left right : ShadowSupport},
+        anchoredNoSplitPair core atom collision left right →
+          originalLift core atom collision left =
+            shadowSupport core atom collision left ∪
+              ({deletedAnchor core atom collision} : Finset Vertex))
+    (hliftRight :
+      ∀ core atom collision {left right : ShadowSupport},
+        anchoredNoSplitPair core atom collision left right →
+          originalLift core atom collision right =
+            shadowSupport core atom collision right ∪
+              ({deletedAnchor core atom collision} : Finset Vertex)) :
+    FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade atomPartition
+      deletedVertexLiftCollision deletedAnchor shadowSupport originalLift
+      unliftedColumnAvailable anchoredNoSplitPair allAtomsSizeAtLeastFourStrictDefect
+      anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore where
+  anchoredNoSplitLiftCollisionPairsCert := hpairMarker
+  liftCollisionFiniteCoreCert := hfiniteMarker
+  collision_has_anchoredNoSplitPairCert := hexists
+  anchored_pair_shadow_disjointCert := hdisjoint
+  anchored_pair_unlifted_absent_leftCert := habsentLeft
+  anchored_pair_unlifted_absent_rightCert := habsentRight
+  anchored_pair_thickened_lift_leftCert := hliftLeft
+  anchored_pair_thickened_lift_rightCert := hliftRight
+
+section FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade
+
+variable {Core Atom Collision ShadowSupport Vertex : Type*} [DecidableEq Vertex]
+variable {atomPartition : Core → Finset Atom}
+variable {deletedVertexLiftCollision : Core → Atom → Collision → Prop}
+variable {deletedAnchor : Core → Atom → Collision → Vertex}
+variable {shadowSupport originalLift :
+  Core → Atom → Collision → ShadowSupport → Finset Vertex}
+variable {unliftedColumnAvailable : Core → Atom → Collision → ShadowSupport → Prop}
+variable {anchoredNoSplitPair :
+  Core → Atom → Collision → ShadowSupport → ShadowSupport → Prop}
+variable {allAtomsSizeAtLeastFourStrictDefect : Core → Prop}
+variable {anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore : Prop}
+
+variable (h :
+  FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade atomPartition
+    deletedVertexLiftCollision deletedAnchor shadowSupport originalLift
+    unliftedColumnAvailable anchoredNoSplitPair allAtomsSizeAtLeastFourStrictDefect
+    anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore)
+
+/-- Project the anchored no-split pair marker. -/
+@[simp] theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.to_anchoredNoSplitLiftCollisionPairs :
+    anchoredNoSplitLiftCollisionPairs :=
+  h.anchoredNoSplitLiftCollisionPairsCert
+
+/-- Project the finite-core lift-collision marker. -/
+@[simp] theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.to_liftCollisionFiniteCore :
+    liftCollisionFiniteCore :=
+  h.liftCollisionFiniteCoreCert
+
+/-- Every all-large lift collision exposes an anchored no-split pair. -/
+theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.exists_anchoredNoSplitPair
+    {core : Core} (hlarge : allAtomsSizeAtLeastFourStrictDefect core)
+    {atom : Atom} (hatom : atom ∈ atomPartition core)
+    {collision : Collision} (hcollision : deletedVertexLiftCollision core atom collision) :
+    ∃ left : ShadowSupport, ∃ right : ShadowSupport,
+      left ≠ right ∧ anchoredNoSplitPair core atom collision left right :=
+  h.collision_has_anchoredNoSplitPairCert core hlarge atom hatom collision hcollision
+
+/-- The two shadow supports in an anchored no-split pair are disjoint in the deleted core. -/
+theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.shadow_disjoint
+    {core : Core} {atom : Atom} {collision : Collision} {left right : ShadowSupport}
+    (hpair : anchoredNoSplitPair core atom collision left right) :
+    Disjoint (shadowSupport core atom collision left)
+      (shadowSupport core atom collision right) :=
+  h.anchored_pair_shadow_disjointCert core atom collision hpair
+
+/-- The left unlifted column of an anchored no-split pair is absent. -/
+theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.unlifted_absent_left
+    {core : Core} {atom : Atom} {collision : Collision} {left right : ShadowSupport}
+    (hpair : anchoredNoSplitPair core atom collision left right) :
+    ¬ unliftedColumnAvailable core atom collision left :=
+  h.anchored_pair_unlifted_absent_leftCert core atom collision hpair
+
+/-- The right unlifted column of an anchored no-split pair is absent. -/
+theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.unlifted_absent_right
+    {core : Core} {atom : Atom} {collision : Collision} {left right : ShadowSupport}
+    (hpair : anchoredNoSplitPair core atom collision left right) :
+    ¬ unliftedColumnAvailable core atom collision right :=
+  h.anchored_pair_unlifted_absent_rightCert core atom collision hpair
+
+/-- The left original lift is exactly the shadow support thickened by the deleted anchor. -/
+theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.thickened_lift_left
+    {core : Core} {atom : Atom} {collision : Collision} {left right : ShadowSupport}
+    (hpair : anchoredNoSplitPair core atom collision left right) :
+    originalLift core atom collision left =
+      shadowSupport core atom collision left ∪
+        ({deletedAnchor core atom collision} : Finset Vertex) :=
+  h.anchored_pair_thickened_lift_leftCert core atom collision hpair
+
+/-- The right original lift is exactly the shadow support thickened by the deleted anchor. -/
+theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.thickened_lift_right
+    {core : Core} {atom : Atom} {collision : Collision} {left right : ShadowSupport}
+    (hpair : anchoredNoSplitPair core atom collision left right) :
+    originalLift core atom collision right =
+      shadowSupport core atom collision right ∪
+        ({deletedAnchor core atom collision} : Finset Vertex) :=
+  h.anchored_pair_thickened_lift_rightCert core atom collision hpair
+
+/-- Compact finite-core summary for the anchored pair inside a collision-blocked deletion repair. -/
+theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.collision_pairCore_summary
+    {core : Core} (hlarge : allAtomsSizeAtLeastFourStrictDefect core)
+    {atom : Atom} (hatom : atom ∈ atomPartition core)
+    {collision : Collision} (hcollision : deletedVertexLiftCollision core atom collision) :
+    ∃ left : ShadowSupport, ∃ right : ShadowSupport,
+      left ≠ right ∧ anchoredNoSplitPair core atom collision left right ∧
+        Disjoint (shadowSupport core atom collision left)
+          (shadowSupport core atom collision right) ∧
+          ¬ unliftedColumnAvailable core atom collision left ∧
+            ¬ unliftedColumnAvailable core atom collision right ∧
+              originalLift core atom collision left =
+                shadowSupport core atom collision left ∪
+                  ({deletedAnchor core atom collision} : Finset Vertex) ∧
+                originalLift core atom collision right =
+                  shadowSupport core atom collision right ∪
+                    ({deletedAnchor core atom collision} : Finset Vertex) := by
+  rcases h.collision_has_anchoredNoSplitPairCert core hlarge atom hatom collision hcollision with
+    ⟨left, right, hne, hpair⟩
+  exact ⟨left, right, hne, hpair,
+    h.anchored_pair_shadow_disjointCert core atom collision hpair,
+    h.anchored_pair_unlifted_absent_leftCert core atom collision hpair,
+    h.anchored_pair_unlifted_absent_rightCert core atom collision hpair,
+    h.anchored_pair_thickened_lift_leftCert core atom collision hpair,
+    h.anchored_pair_thickened_lift_rightCert core atom collision hpair⟩
+
+/-- Compact marker bundle exported by the anchored lift-collision facade. -/
+theorem FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade.markerBundle :
+    anchoredNoSplitLiftCollisionPairs ∧ liftCollisionFiniteCore :=
+  ⟨h.anchoredNoSplitLiftCollisionPairsCert, h.liftCollisionFiniteCoreCert⟩
+
+end FirstBitTerminalAnchoredNoSplitLiftCollisionPairFacade
+
+/--
+Prop-level endpoint bundle for the all-large strict-defect branch.  It keeps the
+overlap-congestion side and the anchored no-split lift-collision side separate, then
+exposes only the imported all-large strict-defect endpoint.
+-/
+structure FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+    (allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+      anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore
+      allLargeStrictDefectEndpoint : Prop) : Prop where
+  allAtomsSizeAtLeastFourStrictDefectBranchCert : allAtomsSizeAtLeastFourStrictDefectBranch
+  allLargeUnitAbsorptionOverlapCongestionCert : allLargeUnitAbsorptionOverlapCongestion
+  anchoredNoSplitLiftCollisionPairsCert : anchoredNoSplitLiftCollisionPairs
+  liftCollisionFiniteCoreCert : liftCollisionFiniteCore
+  allLargeStrictDefectEndpointCert :
+    allAtomsSizeAtLeastFourStrictDefectBranch → allLargeUnitAbsorptionOverlapCongestion →
+      anchoredNoSplitLiftCollisionPairs → liftCollisionFiniteCore →
+        allLargeStrictDefectEndpoint
+
+/-- Build the all-large strict-defect endpoint bundle from the two finite facades. -/
+theorem firstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle_of_parts
+    {allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+      anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore
+      allLargeStrictDefectEndpoint : Prop}
+    (hlarge : allAtomsSizeAtLeastFourStrictDefectBranch)
+    (hoverlap : allLargeUnitAbsorptionOverlapCongestion)
+    (hcollision : anchoredNoSplitLiftCollisionPairs)
+    (hfinite : liftCollisionFiniteCore)
+    (hendpoint :
+      allAtomsSizeAtLeastFourStrictDefectBranch → allLargeUnitAbsorptionOverlapCongestion →
+        anchoredNoSplitLiftCollisionPairs → liftCollisionFiniteCore →
+          allLargeStrictDefectEndpoint) :
+    FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+      allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+      anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore allLargeStrictDefectEndpoint where
+  allAtomsSizeAtLeastFourStrictDefectBranchCert := hlarge
+  allLargeUnitAbsorptionOverlapCongestionCert := hoverlap
+  anchoredNoSplitLiftCollisionPairsCert := hcollision
+  liftCollisionFiniteCoreCert := hfinite
+  allLargeStrictDefectEndpointCert := hendpoint
+
+section FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+
+variable {allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+  anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore allLargeStrictDefectEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+    allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+    anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore allLargeStrictDefectEndpoint)
+
+/-- Project the all-large strict-defect branch marker. -/
+theorem
+    FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle.to_allAtomsSizeAtLeastFourStrictDefectBranch :
+    allAtomsSizeAtLeastFourStrictDefectBranch :=
+  h.allAtomsSizeAtLeastFourStrictDefectBranchCert
+
+/-- Project the all-large unit-absorption overlap-congestion marker. -/
+theorem
+    FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle.to_allLargeUnitAbsorptionOverlapCongestion :
+    allLargeUnitAbsorptionOverlapCongestion :=
+  h.allLargeUnitAbsorptionOverlapCongestionCert
+
+/-- Project the anchored no-split lift-collision pair marker. -/
+theorem
+    FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle.to_anchoredNoSplitLiftCollisionPairs :
+    anchoredNoSplitLiftCollisionPairs :=
+  h.anchoredNoSplitLiftCollisionPairsCert
+
+/-- Project the lift-collision finite-core marker. -/
+theorem
+    FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle.to_liftCollisionFiniteCore :
+    liftCollisionFiniteCore :=
+  h.liftCollisionFiniteCoreCert
+
+/-- Project the imported all-large strict-defect endpoint. -/
+theorem
+    FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle.to_allLargeStrictDefectEndpoint :
+    allLargeStrictDefectEndpoint :=
+  h.allLargeStrictDefectEndpointCert h.allAtomsSizeAtLeastFourStrictDefectBranchCert
+    h.allLargeUnitAbsorptionOverlapCongestionCert h.anchoredNoSplitLiftCollisionPairsCert
+    h.liftCollisionFiniteCoreCert
+
+/-- Compact marker bundle for the all-large strict-defect endpoint. -/
+theorem FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle.markerBundle :
+    allAtomsSizeAtLeastFourStrictDefectBranch ∧ allLargeUnitAbsorptionOverlapCongestion ∧
+      anchoredNoSplitLiftCollisionPairs ∧ liftCollisionFiniteCore ∧
+        allLargeStrictDefectEndpoint :=
+  ⟨h.allAtomsSizeAtLeastFourStrictDefectBranchCert,
+    h.allLargeUnitAbsorptionOverlapCongestionCert,
+    h.anchoredNoSplitLiftCollisionPairsCert,
+    h.liftCollisionFiniteCoreCert,
+    h.allLargeStrictDefectEndpointCert h.allAtomsSizeAtLeastFourStrictDefectBranchCert
+      h.allLargeUnitAbsorptionOverlapCongestionCert h.anchoredNoSplitLiftCollisionPairsCert
+      h.liftCollisionFiniteCoreCert⟩
+
+end FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+
+/--
+Terminal no-leftover all-large foldback bundle importing the large-target protected-core
+frontier.  It extends the current no-leftover foldback by attaching the all-large
+absorption/collision endpoint package, without making an unconditional terminal claim.
+-/
+structure FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle
+    (twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint : Prop) : Prop where
+  protectedCoreFoldback :
+    FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+  allLargeStrictDefect :
+    FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+      allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+      anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore allLargeStrictDefectEndpoint
+  allLargeAbsorptionCollisionFoldbackEndpointCert :
+    currentNoLeftoverFrontierEndpoint → allLargeStrictDefectEndpoint →
+      allLargeAbsorptionCollisionFoldbackEndpoint
+
+/-- Build the all-large absorption/collision foldback bundle from the protected-core foldback and endpoint. -/
+theorem firstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle_of_parts
+    {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint : Prop}
+    (hfoldback :
+      FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle
+        twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+        fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+        rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+        signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+        signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+        fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+        oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+        largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+        symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint)
+    (hallLarge :
+      FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+        allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+        anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore allLargeStrictDefectEndpoint)
+    (hendpoint :
+      currentNoLeftoverFrontierEndpoint → allLargeStrictDefectEndpoint →
+        allLargeAbsorptionCollisionFoldbackEndpoint) :
+    FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint where
+  protectedCoreFoldback := hfoldback
+  allLargeStrictDefect := hallLarge
+  allLargeAbsorptionCollisionFoldbackEndpointCert := hendpoint
+
+section FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle
+
+variable {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+  fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+  rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+  signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+  signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+  fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+  oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+  largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+  symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+  allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+  liftCollisionFiniteCore allLargeStrictDefectEndpoint
+  allLargeAbsorptionCollisionFoldbackEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle
+    twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+    fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+    rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+    signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+    signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+    fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+    largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+    symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+    allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+    liftCollisionFiniteCore allLargeStrictDefectEndpoint
+    allLargeAbsorptionCollisionFoldbackEndpoint)
+
+/-- Recover the protected-core no-leftover foldback imported by the all-large bundle. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle.to_protectedCoreFoldback :
+    FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint :=
+  h.protectedCoreFoldback
+
+/-- Project the all-large strict-defect endpoint bundle. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle.to_allLargeStrictDefectBundle :
+    FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+      allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+      anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore allLargeStrictDefectEndpoint :=
+  h.allLargeStrictDefect
+
+/-- Project the current no-leftover frontier endpoint from the imported protected-core foldback. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle.to_currentNoLeftoverFrontierEndpoint :
+    currentNoLeftoverFrontierEndpoint :=
+  h.protectedCoreFoldback.to_currentNoLeftoverFrontierEndpoint
+
+/-- Project the large-target reduction endpoint from the imported protected-core foldback. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle.to_largeTargetReductionEndpoint :
+    largeTargetReductionEndpoint :=
+  h.protectedCoreFoldback.to_largeTargetReductionEndpoint
+
+/-- Project the all-large strict-defect endpoint from the absorption/collision bundle. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle.to_allLargeStrictDefectEndpoint :
+    allLargeStrictDefectEndpoint :=
+  h.allLargeStrictDefect.to_allLargeStrictDefectEndpoint
+
+/-- Project the combined all-large absorption/collision foldback endpoint. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle.to_allLargeAbsorptionCollisionFoldbackEndpoint :
+    allLargeAbsorptionCollisionFoldbackEndpoint :=
+  h.allLargeAbsorptionCollisionFoldbackEndpointCert
+    h.protectedCoreFoldback.to_currentNoLeftoverFrontierEndpoint
+    h.allLargeStrictDefect.to_allLargeStrictDefectEndpoint
+
+/-- Compact marker bundle for the terminal no-leftover all-large foldback. -/
+theorem FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle.markerBundle :
+    currentNoLeftoverFrontierEndpoint ∧ largeTargetReductionEndpoint ∧
+      allAtomsSizeAtLeastFourStrictDefectBranch ∧ allLargeUnitAbsorptionOverlapCongestion ∧
+        anchoredNoSplitLiftCollisionPairs ∧ liftCollisionFiniteCore ∧
+          allLargeStrictDefectEndpoint ∧ allLargeAbsorptionCollisionFoldbackEndpoint :=
+  ⟨h.protectedCoreFoldback.to_currentNoLeftoverFrontierEndpoint,
+    h.protectedCoreFoldback.to_largeTargetReductionEndpoint,
+    h.allLargeStrictDefect.allAtomsSizeAtLeastFourStrictDefectBranchCert,
+    h.allLargeStrictDefect.allLargeUnitAbsorptionOverlapCongestionCert,
+    h.allLargeStrictDefect.anchoredNoSplitLiftCollisionPairsCert,
+    h.allLargeStrictDefect.liftCollisionFiniteCoreCert,
+    h.allLargeStrictDefect.to_allLargeStrictDefectEndpoint,
+    h.allLargeAbsorptionCollisionFoldbackEndpointCert
+      h.protectedCoreFoldback.to_currentNoLeftoverFrontierEndpoint
+      h.allLargeStrictDefect.to_allLargeStrictDefectEndpoint⟩
+
+end FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
