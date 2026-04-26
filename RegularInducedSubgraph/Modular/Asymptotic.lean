@@ -4747,6 +4747,321 @@ theorem sparseZeroTwoIndependentBoundary_large_fiber_forces_zeroType_or_large_no
   have hcap := sparseZeroTwoIndependentBoundary_seven_type_cap S τ m hzero hsmall
   omega
 
+
+/--
+General finite support cap for boundary-type decompositions: if only `k` boundary types are
+realized and every realized type fiber has size at most `m`, then the whole packet has size at
+most `k * m`.
+-/
+theorem boundaryTripleType_support_card_cap
+    {α : Type*} (S : Finset α) (τ : α → Fin 8) {k m : ℕ}
+    (hsupport : (S.image τ).card ≤ k)
+    (hsmall : ∀ t ∈ S.image τ, (S.filter fun x => τ x = t).card ≤ m) :
+    S.card ≤ k * m := by
+  classical
+  have hmaps : (S : Set α).MapsTo τ (S.image τ) := by
+    intro x hx
+    exact Finset.mem_image.mpr ⟨x, hx, rfl⟩
+  have hcard :
+      S.card = ∑ t in S.image τ, (S.filter fun x => τ x = t).card := by
+    simpa using
+      (Finset.card_eq_sum_card_fiberwise (f := τ) (s := S) (t := S.image τ) hmaps)
+  have hsum_le :
+      (∑ t in S.image τ, (S.filter fun x => τ x = t).card) ≤
+        ∑ _t in S.image τ, m := by
+    exact Finset.sum_le_sum (fun t ht => hsmall t ht)
+  have hconst : (∑ _t in S.image τ, m) = (S.image τ).card * m := by
+    simpa using
+      (Finset.sum_const_nat (s := S.image τ) (m := m) (f := fun _ : Fin 8 => m)
+        (by intro t ht; rfl))
+  calc
+    S.card = ∑ t in S.image τ, (S.filter fun x => τ x = t).card := hcard
+    _ ≤ ∑ _t in S.image τ, m := hsum_le
+    _ = (S.image τ).card * m := hconst
+    _ ≤ k * m := Nat.mul_le_mul_right m hsupport
+
+/-- Support-size-six instance of `boundaryTripleType_support_card_cap`. -/
+theorem boundaryTripleType_support_six_type_cap
+    {α : Type*} (S : Finset α) (τ : α → Fin 8) {m : ℕ}
+    (hsupport : (S.image τ).card ≤ 6)
+    (hsmall : ∀ t ∈ S.image τ, (S.filter fun x => τ x = t).card ≤ m) :
+    S.card ≤ 6 * m :=
+  boundaryTripleType_support_card_cap S τ hsupport hsmall
+
+/-- Parity of a three-bit boundary type. -/
+def boundaryTripleParity (τ : Fin 8) : ℕ :=
+  (boundaryTripleBit τ (0 : Fin 3) + boundaryTripleBit τ (1 : Fin 3) +
+    boundaryTripleBit τ (2 : Fin 3)) % 2
+
+lemma boundaryTripleParity_lt_two (τ : Fin 8) : boundaryTripleParity τ < 2 := by
+  simpa [boundaryTripleParity] using
+    Nat.mod_lt
+      (boundaryTripleBit τ (0 : Fin 3) + boundaryTripleBit τ (1 : Fin 3) +
+        boundaryTripleBit τ (2 : Fin 3)) (by decide : 0 < 2)
+
+/--
+If a type support omits at least one even and one odd cube type, then at most six types remain.
+This is the formal finite support half of the parity-compression residual.
+-/
+theorem boundaryTripleType_support_card_le_six_of_missing_each_parity
+    (T : Finset (Fin 8))
+    (heven : ∃ e : Fin 8, e ∉ T ∧ boundaryTripleParity e = 0)
+    (hodd : ∃ o : Fin 8, o ∉ T ∧ boundaryTripleParity o = 1) :
+    T.card ≤ 6 := by
+  classical
+  rcases heven with ⟨e, heT, hepar⟩
+  rcases hodd with ⟨o, hoT, hopar⟩
+  have heo : e ≠ o := by
+    intro heq
+    have hpar : boundaryTripleParity e = 1 := by simpa [heq] using hopar
+    omega
+  have hsub : T ⊆ (Finset.univ.erase e).erase o := by
+    intro t ht
+    have hte : t ≠ e := by
+      intro hte
+      exact heT (by simpa [hte] using ht)
+    have hto : t ≠ o := by
+      intro hto
+      exact hoT (by simpa [hto] using ht)
+    simp [hte, hto]
+  have hoMem : o ∈ (Finset.univ.erase e : Finset (Fin 8)) := by
+    simp [heo.symm]
+  have hcard : ((Finset.univ.erase e : Finset (Fin 8)).erase o).card = 6 := by
+    rw [Finset.card_erase_of_mem hoMem]
+    have hcardErase : (Finset.univ.erase e : Finset (Fin 8)).card = 7 := by simp
+    rw [hcardErase]
+    norm_num
+  exact le_trans (Finset.card_le_card hsub) (by simpa [hcard])
+
+/--
+Support-size-six cap obtained from the parity-compression omission of one even and one odd type.
+-/
+theorem boundaryTripleType_support_six_type_cap_of_missing_each_parity
+    {α : Type*} (S : Finset α) (τ : α → Fin 8) {m : ℕ}
+    (heven : ∃ e : Fin 8, e ∉ S.image τ ∧ boundaryTripleParity e = 0)
+    (hodd : ∃ o : Fin 8, o ∉ S.image τ ∧ boundaryTripleParity o = 1)
+    (hsmall : ∀ t ∈ S.image τ, (S.filter fun x => τ x = t).card ≤ m) :
+    S.card ≤ 6 * m :=
+  boundaryTripleType_support_six_type_cap S τ
+    (boundaryTripleType_support_card_le_six_of_missing_each_parity (S.image τ) heven hodd)
+    hsmall
+
+/-- Arithmetic scale used by the `j ≥ 7` terminal selector tail. -/
+lemma seven_mul_two_pow_lt_selector_size_fromSeven {j : ℕ} (hj : 7 ≤ j) :
+    7 * 2 ^ j < (2 ^ j) ^ 5 * 2 ^ j := by
+  have hj1 : 1 ≤ j := by omega
+  have htwo : 2 ≤ 2 ^ j := by
+    calc
+      2 = 2 ^ 1 := by norm_num
+      _ ≤ 2 ^ j := Nat.pow_le_pow_right (by decide : 0 < 2) hj1
+  have hpow : 32 ≤ (2 ^ j) ^ 5 := by
+    calc
+      32 = 2 ^ 5 := by norm_num
+      _ ≤ (2 ^ j) ^ 5 := Nat.pow_le_pow_left htwo 5
+  have hlt : 7 < (2 ^ j) ^ 5 := by omega
+  exact Nat.mul_lt_mul_of_pos_right hlt (Nat.pow_pos (by decide : 0 < 2) j)
+
+/--
+At the `j ≥ 7` selector scale, the seven-type cap forces either the forbidden all-miss type
+or a nonzero type fiber larger than the target bucket size.
+-/
+theorem sparseZeroTwoIndependentBoundary_fromSeven_forces_zeroType_or_large_nonzero_type
+    {α : Type*} {j : ℕ} (S : Finset α) (τ : α → Fin 8)
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card) :
+    (∃ x ∈ S, τ x = (0 : Fin 8)) ∨
+      ∃ t : Fin 8, t ≠ (0 : Fin 8) ∧
+        2 ^ j < (S.filter fun x => τ x = t).card := by
+  have hlarge : 7 * 2 ^ j < S.card :=
+    lt_of_lt_of_le (seven_mul_two_pow_lt_selector_size_fromSeven hj) hS
+  exact
+    sparseZeroTwoIndependentBoundary_large_fiber_forces_zeroType_or_large_nonzero_type
+      S τ hlarge
+
+/-- A large complete boundary-type fiber supplies a modular exact subbucket. -/
+theorem modEqSubbucket_of_large_complete_boundary_type_fiber
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    {t : Fin 8}
+    (hlarge : 2 ^ j < (S.filter fun x => τ x = t).card)
+    (hcomplete :
+      ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → G.Adj x y) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧ InducesModEqDegree G u (2 ^ j) := by
+  classical
+  let F : Finset (Fin n) := S.filter fun x => τ x = t
+  have hle : 2 ^ j ≤ F.card := by
+    exact le_of_lt (by simpa [F] using hlarge)
+  rcases exists_subset_card_eq_of_le_card (s := F) hle with ⟨u, huF, hcard⟩
+  have huS : u ⊆ S := by
+    intro x hx
+    exact (Finset.mem_filter.mp (huF hx)).1
+  have hclique : G.IsClique ((u : Set (Fin n))) := by
+    intro x hx y hy hxy
+    have hxF : x ∈ F := huF hx
+    have hyF : y ∈ F := huF hy
+    exact
+      hcomplete x (Finset.mem_filter.mp hxF).1 (Finset.mem_filter.mp hxF).2
+        y (Finset.mem_filter.mp hyF).1 (Finset.mem_filter.mp hyF).2 hxy
+  exact
+    ⟨u, huS, hcard,
+      inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+        (inducesRegularOfDegree_of_isClique G u hclique)⟩
+
+/-- A large complete boundary-type fiber also freezes the dropped tail inside a mod-equal host. -/
+theorem droppedTailSubbucket_of_large_complete_boundary_type_fiber
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    {t : Fin 8}
+    (hmod : InducesModEqDegree G S (2 ^ j))
+    (hlarge : 2 ^ j < (S.filter fun x => τ x = t).card)
+    (hcomplete :
+      ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → G.Adj x y) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases modEqSubbucket_of_large_complete_boundary_type_fiber
+      (G := G) (j := j) (S := S) τ hlarge hcomplete with
+    ⟨u, huS, hcard, huMod⟩
+  have hhost :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hmod ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  exact
+    ⟨u, huS, hcard,
+      modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+        (G := G) huS hhost huMod⟩
+
+/--
+Independent-boundary `{0,2}` branch closure at the `j ≥ 7` modular-selector scale: if the
+all-miss type is absent and every nonzero type fiber is complete, then the large fixed witness
+already contains a modular exact subbucket.
+-/
+theorem sparseZeroTwoIndependentBoundary_fromSeven_modEq_closed_of_no_zeroType_and_complete_fibers
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card)
+    (hzero : ∀ x ∈ S, τ x ≠ (0 : Fin 8))
+    (hcomplete :
+      ∀ t : Fin 8, t ≠ (0 : Fin 8) →
+        ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → G.Adj x y) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧ InducesModEqDegree G u (2 ^ j) := by
+  rcases sparseZeroTwoIndependentBoundary_fromSeven_forces_zeroType_or_large_nonzero_type
+      S τ hj hS with hhit | hlarge
+  · rcases hhit with ⟨x, hxS, hxτ⟩
+    exact False.elim (hzero x hxS hxτ)
+  · rcases hlarge with ⟨t, ht0, htlarge⟩
+    exact
+      modEqSubbucket_of_large_complete_boundary_type_fiber
+        (G := G) (j := j) (S := S) τ htlarge (hcomplete t ht0)
+
+/--
+Dropped-tail form of the independent-boundary `{0,2}` branch closure.  This is the reusable
+selector-facing version: in a mod-equal host, the same large complete nonzero type fiber freezes the
+dropped part as well.
+-/
+theorem sparseZeroTwoIndependentBoundary_fromSeven_droppedTail_closed_of_no_zeroType_and_complete_fibers
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card)
+    (hmod : InducesModEqDegree G S (2 ^ j))
+    (hzero : ∀ x ∈ S, τ x ≠ (0 : Fin 8))
+    (hcomplete :
+      ∀ t : Fin 8, t ≠ (0 : Fin 8) →
+        ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → G.Adj x y) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] := by
+  rcases sparseZeroTwoIndependentBoundary_fromSeven_forces_zeroType_or_large_nonzero_type
+      S τ hj hS with hhit | hlarge
+  · rcases hhit with ⟨x, hxS, hxτ⟩
+    exact False.elim (hzero x hxS hxτ)
+  · rcases hlarge with ⟨t, ht0, htlarge⟩
+    exact
+      droppedTailSubbucket_of_large_complete_boundary_type_fiber
+        (G := G) (j := j) (S := S) τ hmod htlarge (hcomplete t ht0)
+
+
+/--
+The `3+1` independent-boundary sieve forbids every realized all-miss type.  This packages the
+pointwise form needed by selector branch closures.
+-/
+theorem sparseZeroTwoIndependentBoundary_no_zeroType_of_forbidden_threeOne_atoms
+    {α : Type*} {S : Finset α} (τ : α → Fin 8) {spectrum : Finset ℕ}
+    (hzeroResidue : 0 ∈ spectrum)
+    (hforbid :
+      ∀ x ∈ S, ∀ d ∈ spectrum, ¬ AugmentedThreeOneAtomRegular d 0 0 0 (τ x)) :
+    ∀ x ∈ S, τ x ≠ (0 : Fin 8) := by
+  intro x hx hτ
+  have hforbidZero :
+      ∀ d ∈ spectrum, ¬ AugmentedThreeOneAtomRegular d 0 0 0 (0 : Fin 8) := by
+    intro d hd
+    simpa [hτ] using hforbid x hx d hd
+  exact augmentedThreeOne_independentBoundary_forbidden_zeroType hzeroResidue hforbidZero
+
+/--
+The same-type `2+2` independent-boundary sieve turns every surviving nonzero type fiber into a
+clique.  The edge bit is read from the ambient graph, so this is the bridge from finite atom
+forbiddance to the selector-facing complete-fiber hypothesis.
+-/
+theorem sparseZeroTwoIndependentBoundary_complete_nonzero_fibers_of_forbidden_sameType_atoms
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {S : Finset (Fin n)} (τ : Fin n → Fin 8) {spectrum : Finset ℕ}
+    (hzeroResidue : 0 ∈ spectrum) (htwoResidue : 2 ∈ spectrum)
+    (hforbid :
+      ∀ t : Fin 8, t ≠ (0 : Fin 8) →
+        ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y →
+          ∀ i k : Fin 3, i ≠ k →
+            ∀ d ∈ spectrum,
+              ¬ AugmentedTwoTwoAtomRegular d 0 (if G.Adj x y then 1 else 0) t t i k) :
+    ∀ t : Fin 8, t ≠ (0 : Fin 8) →
+      ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → G.Adj x y := by
+  intro t ht0 x hxS hxt y hyS hyt hxy
+  by_contra hnotAdj
+  have hεle : (if G.Adj x y then 1 else 0) ≤ 1 := by
+    by_cases hxyAdj : G.Adj x y <;> simp [hxyAdj]
+  have hforced : (if G.Adj x y then 1 else 0) = 1 :=
+    augmentedTwoTwoSameType_forces_clique_of_zeroTwo_independentBoundary_allPairs
+      (spectrum := spectrum) (ε := if G.Adj x y then 1 else 0) (τ := t)
+      hzeroResidue htwoResidue hεle
+      (hforbid t ht0 x hxS hxt y hyS hyt hxy)
+  simpa [hnotAdj] using hforced
+
+/--
+Fully selector-facing independent-boundary `{0,2}` closure: the `3+1` atom removes the all-miss
+type, the same-type `2+2` atoms make all remaining type fibers complete, and the seven-type
+pigeonhole cap then produces a dropped-tail subbucket for every `j ≥ 7` host.
+-/
+theorem sparseZeroTwoIndependentBoundary_fromSeven_droppedTail_closed_of_forbidden_atoms
+    {n j : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {S : Finset (Fin n)} (τ : Fin n → Fin 8) {spectrum : Finset ℕ}
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card)
+    (hmod : InducesModEqDegree G S (2 ^ j))
+    (hzeroResidue : 0 ∈ spectrum) (htwoResidue : 2 ∈ spectrum)
+    (hforbidThreeOne :
+      ∀ x ∈ S, ∀ d ∈ spectrum, ¬ AugmentedThreeOneAtomRegular d 0 0 0 (τ x))
+    (hforbidTwoTwo :
+      ∀ t : Fin 8, t ≠ (0 : Fin 8) →
+        ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y →
+          ∀ i k : Fin 3, i ≠ k →
+            ∀ d ∈ spectrum,
+              ¬ AugmentedTwoTwoAtomRegular d 0 (if G.Adj x y then 1 else 0) t t i k) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] := by
+  have hzeroType : ∀ x ∈ S, τ x ≠ (0 : Fin 8) :=
+    sparseZeroTwoIndependentBoundary_no_zeroType_of_forbidden_threeOne_atoms
+      τ hzeroResidue hforbidThreeOne
+  have hcomplete :
+      ∀ t : Fin 8, t ≠ (0 : Fin 8) →
+        ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → G.Adj x y :=
+    sparseZeroTwoIndependentBoundary_complete_nonzero_fibers_of_forbidden_sameType_atoms
+      G τ hzeroResidue htwoResidue hforbidTwoTwo
+  exact
+    sparseZeroTwoIndependentBoundary_fromSeven_droppedTail_closed_of_no_zeroType_and_complete_fibers
+      G τ hj hS hmod hzeroType hcomplete
+
 /-- Full-spectrum corollary of the same-type `2+2` rule. -/
 theorem augmentedTwoTwoSameType_forces_opposite_of_fullSpectrum_forbidden
     {spectrum : Finset ℕ} {e ε : ℕ} {τ : Fin 8} {i k : Fin 3}
