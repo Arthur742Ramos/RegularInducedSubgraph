@@ -1062,6 +1062,8 @@ This mixed equation is hereditary: on `U subset J`, the label becomes
 `epsilon_U=epsilon-deg_{J\U}`, and selectors are exactly constancy of `epsilon_U-deg_E` on `U\E`.
 Constant-label modules for `epsilon_U` are exits, giving the same selector-prime/rank constraints in mixed
 subbuckets.
+The mixed balanced-swap calculus uses `omega_T=epsilon-deg_{J\T}` and the same `deg_Y-deg_X` formulas as
+the pure signed core.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

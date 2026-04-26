@@ -5338,7 +5338,8 @@ and exact three-block when `e_Z=0`; the one-block case is the co-singleton patte
 So the `e_Z>=2` branch splits into a pure co-singleton core (`A\{a}` present for all `a`, `A` absent, no
 bipartition/tripartition) or a multi-block witness with all one-coordinate thickenings absent.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
-explicit scalar mismatch, and near-threshold two-residue deletion.
+explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
+swap/deletion-core structure.
 Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
 Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
 `R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.
@@ -5354,6 +5355,8 @@ More generally, the mixed equation is hereditary with label
 two-level label.
 Constant-label modules in this two-level label lift selectors, so terminal mixed subbuckets are
 selector-prime and obey the same label-refined row-rank exit.
+For retained mixed `T`, `omega_T=epsilon-deg_{J\T}` is constant exactly on selectors; balanced swaps obey
+the same `+deg_Y-deg_X` old-vertex formula and shifted incoming self-layer with label `epsilon`.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

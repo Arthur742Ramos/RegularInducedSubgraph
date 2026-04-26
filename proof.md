@@ -11560,6 +11560,24 @@ two-level-selector-prime: no false-twin, true-twin, or more general module with 
 have size greater than `m`.  In particular the label-refined row-rank bound applies to mixed subbuckets as
 well as to the pure `R` and `C` restrictions.
 
+For a retained mixed set `T subset J`, define
+
+```text
+omega_T(v)=epsilon(v)-deg_{J\T}(v)        [MOD 4]        (v in T).
+```
+
+Then `T` is a selector iff `omega_T` is constant.  If `X subset T` and `Y subset J\T` with `|X|=|Y|`, the
+balanced-swap formula is identical to the pure one:
+
+```text
+omega_{(T\X) union Y}(v)=omega_T(v)+deg_Y(v)-deg_X(v)        (v in T\X),
+omega_{(T\X) union Y}(y)=epsilon(y)-deg_{J\T}(y)+deg_Y(y)-deg_X(y)        (y in Y).
+```
+
+Thus every mixed repair again splits into an old-vertex incoming target and a shifted self-layer on the
+incoming packet, but now the fixed label is the two-level Gallai label `epsilon`.  The pure `R` swap
+calculus is the special case `T subset R` after absorbing `C` into the signed label.
+
 The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
 theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with
 `vx` and `vy` edges of the original graph; then the degree of `v` in `K[W]` is exactly the carry
@@ -11672,7 +11690,8 @@ large-outside ternary target avoidance:
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches;
 near-threshold two-residue deletion:
-  bounded deletion templates on R and, when above threshold, on C, plus the mixed two-level deletion target.
+  bounded deletion templates on R and, when above threshold, on C, plus the hereditary mixed two-level
+  deletion-core with module exits and balanced-swap target/self-layer equations.
 ```
 
 What is not used:

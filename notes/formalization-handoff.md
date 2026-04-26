@@ -2451,6 +2451,8 @@ Recommended attack:
     Add two-level module exits: constant-`epsilon_U` modules lift selectors after a residue shift, so
     terminal mixed subbuckets have no large constant-label twin/module classes and satisfy the
     label-refined row-rank bound.
+    Add mixed balanced-swap calculus: `omega_T=epsilon-deg_{J\T}`; old vertices change by `deg_Y-deg_X`,
+    and incoming vertices have `epsilon-deg_{J\T}+deg_Y-deg_X`.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

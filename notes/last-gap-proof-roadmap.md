@@ -1963,6 +1963,7 @@ What remains justified after audit is:
       the mixed equation is hereditary with two-level label `epsilon_U=epsilon-deg_{J\U}`;
       constant-label modules for this two-level label are exits, extending selector-prime/rank constraints
       to mixed subbuckets;
+      mixed balanced swaps use `omega_T=epsilon-deg_{J\T}` and the same target/self-layer equations;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

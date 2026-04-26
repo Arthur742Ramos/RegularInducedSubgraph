@@ -1987,6 +1987,7 @@ The mixed label is hereditary: on `U subset J`, use `epsilon_U=epsilon-deg_{J\U}
 constancy of `epsilon_U-deg_E`.
 Constant-label modules for this two-level label are exits, so the mixed branch is selector-prime and
 label-rank constrained.
+Mixed balanced swaps use `omega_T=epsilon-deg_{J\T}` and the same `deg_Y-deg_X` target/self-layer split.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,
