@@ -30537,6 +30537,734 @@ theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.circuitPetal
 
 end FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier
 
+/-- A forced petal in the small-atom collision core carries strict deficit. -/
+def firstBitSmallAtomPairForcedPetalStrictDeficit {Petal : Type*}
+    (petalDeficit : Petal → ℕ) (petal : Petal) : Prop :=
+  1 ≤ petalDeficit petal
+
+/-- The two-petal small-atom branch must draw at least three units of shared rebate. -/
+def firstBitSmallAtomTwoPetalRebateAtLeastThree {Petal : Type*} [DecidableEq Petal]
+    (rebate : Finset Petal → ℕ) (petalDeficit : Petal → ℕ) (petals : Finset Petal) :
+    Prop :=
+  petals.card = 2 ∧ 3 ≤ rebate petals
+
+/--
+Finite projected templates for the no-leftover small-atom collision core.  The parameters are
+`s` forced petals, projected packing contribution `pi`, and cross-defect `delta`.
+-/
+inductive FirstBitSmallAtomCollisionTemplate : ℕ → ℕ → ℕ → Prop where
+  | twoPetalThreeZero : FirstBitSmallAtomCollisionTemplate 2 3 0
+  | twoPetalFourZero : FirstBitSmallAtomCollisionTemplate 2 4 0
+  | twoPetalFourOne : FirstBitSmallAtomCollisionTemplate 2 4 1
+  | threePetalFourZero : FirstBitSmallAtomCollisionTemplate 3 4 0
+
+/--
+Template-facing facade for small atoms.  It packages pair forced-petal strict deficits, the
+two-petal rebate lower bound, and the no-leftover size-three collision-only finite template table.
+-/
+structure FirstBitTerminalSmallAtomCollisionTemplateFacade
+    {Atom Circuit Petal : Type*} [DecidableEq Petal]
+    (forcedPetals : Circuit → Finset Petal)
+    (petalDeficit : Circuit → Petal → ℕ)
+    (rebate : Circuit → Finset Petal → ℕ)
+    (collisionCircuit : Atom → Circuit → Prop)
+    (noLeftover pairAtom sizeThreeAtom : Atom → Prop)
+    (pairForcedPetalStrictDeficit twoPetalRebateAtLeastThree
+      sizeThreeNoLeftoverCollisionOnlyTemplates : Prop) : Prop where
+  pair_forcedPetal_strictDeficitCert :
+    ∀ atom : Atom, pairAtom atom → noLeftover atom → ∀ circuit : Circuit,
+      collisionCircuit atom circuit → ∀ petal : Petal, petal ∈ forcedPetals circuit →
+        firstBitSmallAtomPairForcedPetalStrictDeficit (petalDeficit circuit) petal
+  pair_twoPetal_rebate_atLeastThreeCert :
+    ∀ atom : Atom, pairAtom atom → noLeftover atom → ∀ circuit : Circuit,
+      collisionCircuit atom circuit → (forcedPetals circuit).card = 2 →
+        firstBitSmallAtomTwoPetalRebateAtLeastThree
+          (rebate circuit) (petalDeficit circuit) (forcedPetals circuit)
+  sizeThree_noLeftover_collisionOnly_templatesCert :
+    ∀ atom : Atom, sizeThreeAtom atom → noLeftover atom →
+      ∃ circuit : Circuit, collisionCircuit atom circuit ∧
+        ∃ s pi delta : ℕ,
+          FirstBitSmallAtomCollisionTemplate s pi delta ∧
+            (forcedPetals circuit).card = s
+  pairForcedPetalStrictDeficitCert : pairForcedPetalStrictDeficit
+  twoPetalRebateAtLeastThreeCert : twoPetalRebateAtLeastThree
+  sizeThreeNoLeftoverCollisionOnlyTemplatesCert : sizeThreeNoLeftoverCollisionOnlyTemplates
+
+/-- Build the small-atom collision-template facade from its assumption-backed components. -/
+theorem firstBitTerminalSmallAtomCollisionTemplateFacade_of_parts
+    {Atom Circuit Petal : Type*} [DecidableEq Petal]
+    {forcedPetals : Circuit → Finset Petal}
+    {petalDeficit : Circuit → Petal → ℕ}
+    {rebate : Circuit → Finset Petal → ℕ}
+    {collisionCircuit : Atom → Circuit → Prop}
+    {noLeftover pairAtom sizeThreeAtom : Atom → Prop}
+    {pairForcedPetalStrictDeficit twoPetalRebateAtLeastThree
+      sizeThreeNoLeftoverCollisionOnlyTemplates : Prop}
+    (hstrict :
+      ∀ atom : Atom, pairAtom atom → noLeftover atom → ∀ circuit : Circuit,
+        collisionCircuit atom circuit → ∀ petal : Petal, petal ∈ forcedPetals circuit →
+          firstBitSmallAtomPairForcedPetalStrictDeficit (petalDeficit circuit) petal)
+    (htwo :
+      ∀ atom : Atom, pairAtom atom → noLeftover atom → ∀ circuit : Circuit,
+        collisionCircuit atom circuit → (forcedPetals circuit).card = 2 →
+          firstBitSmallAtomTwoPetalRebateAtLeastThree
+            (rebate circuit) (petalDeficit circuit) (forcedPetals circuit))
+    (hthree :
+      ∀ atom : Atom, sizeThreeAtom atom → noLeftover atom →
+        ∃ circuit : Circuit, collisionCircuit atom circuit ∧
+          ∃ s pi delta : ℕ,
+            FirstBitSmallAtomCollisionTemplate s pi delta ∧
+              (forcedPetals circuit).card = s)
+    (hstrictMarker : pairForcedPetalStrictDeficit)
+    (htwoMarker : twoPetalRebateAtLeastThree)
+    (hthreeMarker : sizeThreeNoLeftoverCollisionOnlyTemplates) :
+    FirstBitTerminalSmallAtomCollisionTemplateFacade forcedPetals petalDeficit rebate
+      collisionCircuit noLeftover pairAtom sizeThreeAtom pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates where
+  pair_forcedPetal_strictDeficitCert := hstrict
+  pair_twoPetal_rebate_atLeastThreeCert := htwo
+  sizeThree_noLeftover_collisionOnly_templatesCert := hthree
+  pairForcedPetalStrictDeficitCert := hstrictMarker
+  twoPetalRebateAtLeastThreeCert := htwoMarker
+  sizeThreeNoLeftoverCollisionOnlyTemplatesCert := hthreeMarker
+
+section FirstBitTerminalSmallAtomCollisionTemplateFacade
+
+variable {Atom Circuit Petal : Type*} [DecidableEq Petal]
+variable {forcedPetals : Circuit → Finset Petal}
+variable {petalDeficit : Circuit → Petal → ℕ}
+variable {rebate : Circuit → Finset Petal → ℕ}
+variable {collisionCircuit : Atom → Circuit → Prop}
+variable {noLeftover pairAtom sizeThreeAtom : Atom → Prop}
+variable {pairForcedPetalStrictDeficit twoPetalRebateAtLeastThree
+  sizeThreeNoLeftoverCollisionOnlyTemplates : Prop}
+
+variable (h :
+  FirstBitTerminalSmallAtomCollisionTemplateFacade forcedPetals petalDeficit rebate
+    collisionCircuit noLeftover pairAtom sizeThreeAtom pairForcedPetalStrictDeficit
+    twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates)
+
+/-- Project strict deficit for a forced petal of a no-leftover pair atom. -/
+theorem FirstBitTerminalSmallAtomCollisionTemplateFacade.pair_forcedPetal_strictDeficit
+    {atom : Atom} (hpair : pairAtom atom) (hleft : noLeftover atom)
+    {circuit : Circuit} (hcircuit : collisionCircuit atom circuit)
+    {petal : Petal} (hpetal : petal ∈ forcedPetals circuit) :
+    firstBitSmallAtomPairForcedPetalStrictDeficit (petalDeficit circuit) petal :=
+  h.pair_forcedPetal_strictDeficitCert atom hpair hleft circuit hcircuit petal hpetal
+
+/-- Project the two-petal rebate lower bound. -/
+theorem FirstBitTerminalSmallAtomCollisionTemplateFacade.pair_twoPetal_rebate_atLeastThree
+    {atom : Atom} (hpair : pairAtom atom) (hleft : noLeftover atom)
+    {circuit : Circuit} (hcircuit : collisionCircuit atom circuit)
+    (hcard : (forcedPetals circuit).card = 2) :
+    firstBitSmallAtomTwoPetalRebateAtLeastThree
+      (rebate circuit) (petalDeficit circuit) (forcedPetals circuit) :=
+  h.pair_twoPetal_rebate_atLeastThreeCert atom hpair hleft circuit hcircuit hcard
+
+/-- Project the size-three no-leftover collision-only finite-template alternative. -/
+theorem FirstBitTerminalSmallAtomCollisionTemplateFacade.sizeThree_noLeftover_collisionOnly_templates
+    {atom : Atom} (hsize : sizeThreeAtom atom) (hleft : noLeftover atom) :
+    ∃ circuit : Circuit, collisionCircuit atom circuit ∧
+      ∃ s pi delta : ℕ,
+        FirstBitSmallAtomCollisionTemplate s pi delta ∧
+          (forcedPetals circuit).card = s :=
+  h.sizeThree_noLeftover_collisionOnly_templatesCert atom hsize hleft
+
+/-- Project the strict-deficit marker. -/
+theorem FirstBitTerminalSmallAtomCollisionTemplateFacade.to_pairForcedPetalStrictDeficit :
+    pairForcedPetalStrictDeficit :=
+  h.pairForcedPetalStrictDeficitCert
+
+/-- Project the two-petal rebate marker. -/
+theorem FirstBitTerminalSmallAtomCollisionTemplateFacade.to_twoPetalRebateAtLeastThree :
+    twoPetalRebateAtLeastThree :=
+  h.twoPetalRebateAtLeastThreeCert
+
+/-- Project the size-three finite-template marker. -/
+theorem
+    FirstBitTerminalSmallAtomCollisionTemplateFacade.to_sizeThreeNoLeftoverCollisionOnlyTemplates :
+    sizeThreeNoLeftoverCollisionOnlyTemplates :=
+  h.sizeThreeNoLeftoverCollisionOnlyTemplatesCert
+
+end FirstBitTerminalSmallAtomCollisionTemplateFacade
+
+/--
+Collision-free cutoff facade: below total no-leftover size sixteen, a small atom forces a finite
+collision circuit; the first collision-free no-leftover branch is the four-by-four atom core.
+-/
+structure FirstBitTerminalSmallAtomCollisionFreeCutoffFacade
+    {Core Atom Circuit : Type*} [DecidableEq Atom]
+    (atomPartition : Core → Finset Atom)
+    (atomSize : Core → Atom → ℕ)
+    (totalAtomSize : Core → ℕ)
+    (smallAtomCollisionCircuit : Core → Atom → Circuit → Prop)
+    (noLeftoverCore collisionFreeCore : Core → Prop)
+    (collisionFreeCutoffAtFourFour : Prop) : Prop where
+  smallAtom_collision_of_total_le_fifteen :
+    ∀ core : Core, noLeftoverCore core → totalAtomSize core ≤ 15 →
+      ∃ atom : Atom, atom ∈ atomPartition core ∧ atomSize core atom ≤ 3 ∧
+        ∃ circuit : Circuit, smallAtomCollisionCircuit core atom circuit
+  collisionFree_noLeftover_fourFour :
+    ∀ core : Core, noLeftoverCore core → collisionFreeCore core →
+      (atomPartition core).card = 4 ∧
+        ∀ atom : Atom, atom ∈ atomPartition core → atomSize core atom = 4
+  collisionFreeCutoffAtFourFourCert : collisionFreeCutoffAtFourFour
+
+/-- Build the collision-free cutoff facade from its cutoff and four-four assumptions. -/
+theorem firstBitTerminalSmallAtomCollisionFreeCutoffFacade_of_parts
+    {Core Atom Circuit : Type*} [DecidableEq Atom]
+    {atomPartition : Core → Finset Atom}
+    {atomSize : Core → Atom → ℕ}
+    {totalAtomSize : Core → ℕ}
+    {smallAtomCollisionCircuit : Core → Atom → Circuit → Prop}
+    {noLeftoverCore collisionFreeCore : Core → Prop}
+    {collisionFreeCutoffAtFourFour : Prop}
+    (hsmall :
+      ∀ core : Core, noLeftoverCore core → totalAtomSize core ≤ 15 →
+        ∃ atom : Atom, atom ∈ atomPartition core ∧ atomSize core atom ≤ 3 ∧
+          ∃ circuit : Circuit, smallAtomCollisionCircuit core atom circuit)
+    (hfour :
+      ∀ core : Core, noLeftoverCore core → collisionFreeCore core →
+        (atomPartition core).card = 4 ∧
+          ∀ atom : Atom, atom ∈ atomPartition core → atomSize core atom = 4)
+    (hmarker : collisionFreeCutoffAtFourFour) :
+    FirstBitTerminalSmallAtomCollisionFreeCutoffFacade atomPartition atomSize
+      totalAtomSize smallAtomCollisionCircuit noLeftoverCore collisionFreeCore
+      collisionFreeCutoffAtFourFour where
+  smallAtom_collision_of_total_le_fifteen := hsmall
+  collisionFree_noLeftover_fourFour := hfour
+  collisionFreeCutoffAtFourFourCert := hmarker
+
+section FirstBitTerminalSmallAtomCollisionFreeCutoffFacade
+
+variable {Core Atom Circuit : Type*} [DecidableEq Atom]
+variable {atomPartition : Core → Finset Atom}
+variable {atomSize : Core → Atom → ℕ}
+variable {totalAtomSize : Core → ℕ}
+variable {smallAtomCollisionCircuit : Core → Atom → Circuit → Prop}
+variable {noLeftoverCore collisionFreeCore : Core → Prop}
+variable {collisionFreeCutoffAtFourFour : Prop}
+
+variable (h :
+  FirstBitTerminalSmallAtomCollisionFreeCutoffFacade atomPartition atomSize
+    totalAtomSize smallAtomCollisionCircuit noLeftoverCore collisionFreeCore
+    collisionFreeCutoffAtFourFour)
+
+/-- A no-leftover core of total size at most fifteen has a finite small-atom collision. -/
+theorem
+    FirstBitTerminalSmallAtomCollisionFreeCutoffFacade.smallAtom_collision_of_total_le_fifteen_of_core
+    {core : Core} (hcore : noLeftoverCore core) (hsize : totalAtomSize core ≤ 15) :
+    ∃ atom : Atom, atom ∈ atomPartition core ∧ atomSize core atom ≤ 3 ∧
+      ∃ circuit : Circuit, smallAtomCollisionCircuit core atom circuit :=
+  h.smallAtom_collision_of_total_le_fifteen core hcore hsize
+
+/-- Collision-free no-leftover cores are already the four-four branch. -/
+theorem FirstBitTerminalSmallAtomCollisionFreeCutoffFacade.collisionFree_noLeftover_fourFour_summary
+    {core : Core} (hcore : noLeftoverCore core) (hfree : collisionFreeCore core) :
+    (atomPartition core).card = 4 ∧
+      ∀ atom : Atom, atom ∈ atomPartition core → atomSize core atom = 4 :=
+  h.collisionFree_noLeftover_fourFour core hcore hfree
+
+/-- Project the four-four cutoff marker. -/
+theorem FirstBitTerminalSmallAtomCollisionFreeCutoffFacade.to_collisionFreeCutoffAtFourFour :
+    collisionFreeCutoffAtFourFour :=
+  h.collisionFreeCutoffAtFourFourCert
+
+end FirstBitTerminalSmallAtomCollisionFreeCutoffFacade
+
+/--
+Complementary-transversal facade for the four-pair no-leftover collision core.  Each pair has two
+endpoints with distinct complementary labels, and endpoint supports are paired by transversal
+complement.
+-/
+structure FirstBitTerminalFourPairComplementaryTransversalLabelFacade
+    {Pair Endpoint Label Transversal : Type*}
+    [DecidableEq Pair] [DecidableEq Endpoint] [DecidableEq Transversal]
+    (pairs : Finset Pair)
+    (endpointsOf : Pair → Finset Endpoint)
+    (pairOf : Endpoint → Pair)
+    (labelOf : Endpoint → Label)
+    (supportOf : Endpoint → Finset Transversal)
+    (transversalComplement : Transversal → Transversal)
+    (equalEndpointLabelCloses complementaryTransversalLabels : Prop) : Prop where
+  pairs_card_eq_four : pairs.card = 4
+  endpoints_card_eq_two :
+    ∀ pair : Pair, pair ∈ pairs → (endpointsOf pair).card = 2
+  endpoint_pairOf :
+    ∀ pair : Pair, pair ∈ pairs → ∀ endpoint : Endpoint,
+      endpoint ∈ endpointsOf pair → pairOf endpoint = pair
+  pairedEndpoint_labels_distinct :
+    ∀ pair : Pair, pair ∈ pairs → ∀ left right : Endpoint,
+      left ∈ endpointsOf pair → right ∈ endpointsOf pair → left ≠ right →
+        labelOf left ≠ labelOf right
+  endpoint_supports_complementary :
+    ∀ pair : Pair, pair ∈ pairs → ∀ left right : Endpoint,
+      left ∈ endpointsOf pair → right ∈ endpointsOf pair → left ≠ right →
+        ∀ T : Transversal, T ∈ supportOf left →
+          transversalComplement T ∈ supportOf right
+  equalEndpointLabelClosesCert : equalEndpointLabelCloses
+  complementaryTransversalLabelsCert : complementaryTransversalLabels
+
+/-- Build the four-pair complementary-transversal facade from explicit endpoint data. -/
+theorem firstBitTerminalFourPairComplementaryTransversalLabelFacade_of_parts
+    {Pair Endpoint Label Transversal : Type*}
+    [DecidableEq Pair] [DecidableEq Endpoint] [DecidableEq Transversal]
+    {pairs : Finset Pair}
+    {endpointsOf : Pair → Finset Endpoint}
+    {pairOf : Endpoint → Pair}
+    {labelOf : Endpoint → Label}
+    {supportOf : Endpoint → Finset Transversal}
+    {transversalComplement : Transversal → Transversal}
+    {equalEndpointLabelCloses complementaryTransversalLabels : Prop}
+    (hpairs : pairs.card = 4)
+    (hendpoints : ∀ pair : Pair, pair ∈ pairs → (endpointsOf pair).card = 2)
+    (hpairOf :
+      ∀ pair : Pair, pair ∈ pairs → ∀ endpoint : Endpoint,
+        endpoint ∈ endpointsOf pair → pairOf endpoint = pair)
+    (hlabels :
+      ∀ pair : Pair, pair ∈ pairs → ∀ left right : Endpoint,
+        left ∈ endpointsOf pair → right ∈ endpointsOf pair → left ≠ right →
+          labelOf left ≠ labelOf right)
+    (hsupports :
+      ∀ pair : Pair, pair ∈ pairs → ∀ left right : Endpoint,
+        left ∈ endpointsOf pair → right ∈ endpointsOf pair → left ≠ right →
+          ∀ T : Transversal, T ∈ supportOf left →
+            transversalComplement T ∈ supportOf right)
+    (hclose : equalEndpointLabelCloses)
+    (hcomplementary : complementaryTransversalLabels) :
+    FirstBitTerminalFourPairComplementaryTransversalLabelFacade pairs endpointsOf
+      pairOf labelOf supportOf transversalComplement equalEndpointLabelCloses
+      complementaryTransversalLabels where
+  pairs_card_eq_four := hpairs
+  endpoints_card_eq_two := hendpoints
+  endpoint_pairOf := hpairOf
+  pairedEndpoint_labels_distinct := hlabels
+  endpoint_supports_complementary := hsupports
+  equalEndpointLabelClosesCert := hclose
+  complementaryTransversalLabelsCert := hcomplementary
+
+section FirstBitTerminalFourPairComplementaryTransversalLabelFacade
+
+variable {Pair Endpoint Label Transversal : Type*}
+variable [DecidableEq Pair] [DecidableEq Endpoint] [DecidableEq Transversal]
+variable {pairs : Finset Pair}
+variable {endpointsOf : Pair → Finset Endpoint}
+variable {pairOf : Endpoint → Pair}
+variable {labelOf : Endpoint → Label}
+variable {supportOf : Endpoint → Finset Transversal}
+variable {transversalComplement : Transversal → Transversal}
+variable {equalEndpointLabelCloses complementaryTransversalLabels : Prop}
+
+variable (h :
+  FirstBitTerminalFourPairComplementaryTransversalLabelFacade pairs endpointsOf
+    pairOf labelOf supportOf transversalComplement equalEndpointLabelCloses
+    complementaryTransversalLabels)
+
+/-- Project the four-pair cardinality of the collision core. -/
+theorem FirstBitTerminalFourPairComplementaryTransversalLabelFacade.pairs_card :
+    pairs.card = 4 :=
+  h.pairs_card_eq_four
+
+/-- Each pair contributes two endpoints. -/
+theorem FirstBitTerminalFourPairComplementaryTransversalLabelFacade.endpoints_card
+    {pair : Pair} (hpair : pair ∈ pairs) :
+    (endpointsOf pair).card = 2 :=
+  h.endpoints_card_eq_two pair hpair
+
+/-- Paired endpoints carry distinct labels. -/
+theorem FirstBitTerminalFourPairComplementaryTransversalLabelFacade.endpoint_labels_distinct
+    {pair : Pair} (hpair : pair ∈ pairs) {left right : Endpoint}
+    (hleft : left ∈ endpointsOf pair) (hright : right ∈ endpointsOf pair)
+    (hne : left ≠ right) :
+    labelOf left ≠ labelOf right :=
+  h.pairedEndpoint_labels_distinct pair hpair left right hleft hright hne
+
+/-- Complementary-transversal support transfers from one endpoint to the other endpoint of the pair. -/
+theorem FirstBitTerminalFourPairComplementaryTransversalLabelFacade.support_complement_mem
+    {pair : Pair} (hpair : pair ∈ pairs) {left right : Endpoint}
+    (hleft : left ∈ endpointsOf pair) (hright : right ∈ endpointsOf pair)
+    (hne : left ≠ right) {T : Transversal} (hT : T ∈ supportOf left) :
+    transversalComplement T ∈ supportOf right :=
+  h.endpoint_supports_complementary pair hpair left right hleft hright hne T hT
+
+/-- Project the equal-label closure marker. -/
+theorem FirstBitTerminalFourPairComplementaryTransversalLabelFacade.to_equalEndpointLabelCloses :
+    equalEndpointLabelCloses :=
+  h.equalEndpointLabelClosesCert
+
+/-- Project the complementary-transversal label marker. -/
+theorem
+    FirstBitTerminalFourPairComplementaryTransversalLabelFacade.to_complementaryTransversalLabels :
+    complementaryTransversalLabels :=
+  h.complementaryTransversalLabelsCert
+
+end FirstBitTerminalFourPairComplementaryTransversalLabelFacade
+
+/--
+Boolean quotient orientation facade for the four-pair hidden-transversal core.  It records the
+antipodal quotient, antipodal-free orientation, and a selected distance-three edge in every
+coordinate-bit facet.
+-/
+structure FirstBitTerminalBooleanAntipodalQuotientOrientationFacade
+    {BooleanPoint Coordinate Edge : Type*}
+    [DecidableEq BooleanPoint] [DecidableEq Coordinate]
+    (points : Finset BooleanPoint) (coordinates : Finset Coordinate)
+    (facet : Coordinate → Finset BooleanPoint)
+    (antipode : BooleanPoint → BooleanPoint)
+    (edgeLeft edgeRight : Edge → BooleanPoint)
+    (selectedFacetEdge : Coordinate → Edge)
+    (oriented : BooleanPoint → BooleanPoint → Prop)
+    (antipodalQuotient antipodalFreeOrientation selectedFacetDistanceThreeEdges : Prop) :
+    Prop where
+  facet_subset_points :
+    ∀ coord : Coordinate, coord ∈ coordinates → facet coord ⊆ points
+  antipode_mem :
+    ∀ point : BooleanPoint, point ∈ points → antipode point ∈ points
+  antipode_involutive :
+    ∀ point : BooleanPoint, point ∈ points → antipode (antipode point) = point
+  oriented_no_antipodal_pair :
+    ∀ left right : BooleanPoint, left ∈ points → right ∈ points →
+      oriented left right → ¬ oriented (antipode left) (antipode right)
+  selectedFacetEdge_mem :
+    ∀ coord : Coordinate, coord ∈ coordinates →
+      edgeLeft (selectedFacetEdge coord) ∈ facet coord ∧
+        edgeRight (selectedFacetEdge coord) ∈ facet coord
+  selectedFacetEdge_oriented :
+    ∀ coord : Coordinate, coord ∈ coordinates →
+      oriented (edgeLeft (selectedFacetEdge coord)) (edgeRight (selectedFacetEdge coord))
+  antipodalQuotientCert : antipodalQuotient
+  antipodalFreeOrientationCert : antipodalFreeOrientation
+  selectedFacetDistanceThreeEdgesCert : selectedFacetDistanceThreeEdges
+
+/-- Build the Boolean/antipodal quotient orientation facade from explicit facet data. -/
+theorem firstBitTerminalBooleanAntipodalQuotientOrientationFacade_of_parts
+    {BooleanPoint Coordinate Edge : Type*}
+    [DecidableEq BooleanPoint] [DecidableEq Coordinate]
+    {points : Finset BooleanPoint} {coordinates : Finset Coordinate}
+    {facet : Coordinate → Finset BooleanPoint}
+    {antipode : BooleanPoint → BooleanPoint}
+    {edgeLeft edgeRight : Edge → BooleanPoint}
+    {selectedFacetEdge : Coordinate → Edge}
+    {oriented : BooleanPoint → BooleanPoint → Prop}
+    {antipodalQuotient antipodalFreeOrientation selectedFacetDistanceThreeEdges : Prop}
+    (hfacet : ∀ coord : Coordinate, coord ∈ coordinates → facet coord ⊆ points)
+    (hmem : ∀ point : BooleanPoint, point ∈ points → antipode point ∈ points)
+    (hinvolutive : ∀ point : BooleanPoint, point ∈ points → antipode (antipode point) = point)
+    (hfree :
+      ∀ left right : BooleanPoint, left ∈ points → right ∈ points →
+        oriented left right → ¬ oriented (antipode left) (antipode right))
+    (hedgeMem :
+      ∀ coord : Coordinate, coord ∈ coordinates →
+        edgeLeft (selectedFacetEdge coord) ∈ facet coord ∧
+          edgeRight (selectedFacetEdge coord) ∈ facet coord)
+    (horiented :
+      ∀ coord : Coordinate, coord ∈ coordinates →
+        oriented (edgeLeft (selectedFacetEdge coord)) (edgeRight (selectedFacetEdge coord)))
+    (hquotient : antipodalQuotient)
+    (hfreeMarker : antipodalFreeOrientation)
+    (hedges : selectedFacetDistanceThreeEdges) :
+    FirstBitTerminalBooleanAntipodalQuotientOrientationFacade points coordinates facet
+      antipode edgeLeft edgeRight selectedFacetEdge oriented antipodalQuotient
+      antipodalFreeOrientation selectedFacetDistanceThreeEdges where
+  facet_subset_points := hfacet
+  antipode_mem := hmem
+  antipode_involutive := hinvolutive
+  oriented_no_antipodal_pair := hfree
+  selectedFacetEdge_mem := hedgeMem
+  selectedFacetEdge_oriented := horiented
+  antipodalQuotientCert := hquotient
+  antipodalFreeOrientationCert := hfreeMarker
+  selectedFacetDistanceThreeEdgesCert := hedges
+
+section FirstBitTerminalBooleanAntipodalQuotientOrientationFacade
+
+variable {BooleanPoint Coordinate Edge : Type*}
+variable [DecidableEq BooleanPoint] [DecidableEq Coordinate]
+variable {points : Finset BooleanPoint} {coordinates : Finset Coordinate}
+variable {facet : Coordinate → Finset BooleanPoint}
+variable {antipode : BooleanPoint → BooleanPoint}
+variable {edgeLeft edgeRight : Edge → BooleanPoint}
+variable {selectedFacetEdge : Coordinate → Edge}
+variable {oriented : BooleanPoint → BooleanPoint → Prop}
+variable {antipodalQuotient antipodalFreeOrientation selectedFacetDistanceThreeEdges : Prop}
+
+variable (h :
+  FirstBitTerminalBooleanAntipodalQuotientOrientationFacade points coordinates facet
+    antipode edgeLeft edgeRight selectedFacetEdge oriented antipodalQuotient
+    antipodalFreeOrientation selectedFacetDistanceThreeEdges)
+
+/-- The selected edge of a coordinate facet lies in that facet. -/
+theorem FirstBitTerminalBooleanAntipodalQuotientOrientationFacade.selectedFacetEdge_mem_summary
+    {coord : Coordinate} (hcoord : coord ∈ coordinates) :
+    edgeLeft (selectedFacetEdge coord) ∈ facet coord ∧
+      edgeRight (selectedFacetEdge coord) ∈ facet coord :=
+  h.selectedFacetEdge_mem coord hcoord
+
+/-- The selected facet edge is oriented in the quotient facade. -/
+theorem FirstBitTerminalBooleanAntipodalQuotientOrientationFacade.selectedFacetEdge_oriented_of_coord
+    {coord : Coordinate} (hcoord : coord ∈ coordinates) :
+    oriented (edgeLeft (selectedFacetEdge coord)) (edgeRight (selectedFacetEdge coord)) :=
+  h.selectedFacetEdge_oriented coord hcoord
+
+/-- Antipodal orientation cannot select both an edge and its antipodal mate. -/
+theorem FirstBitTerminalBooleanAntipodalQuotientOrientationFacade.no_antipodal_oriented_pair
+    {left right : BooleanPoint} (hleft : left ∈ points) (hright : right ∈ points)
+    (horient : oriented left right) :
+    ¬ oriented (antipode left) (antipode right) :=
+  h.oriented_no_antipodal_pair left right hleft hright horient
+
+/-- Project the antipodal quotient marker. -/
+theorem FirstBitTerminalBooleanAntipodalQuotientOrientationFacade.to_antipodalQuotient :
+    antipodalQuotient :=
+  h.antipodalQuotientCert
+
+/-- Project the antipodal-free orientation marker. -/
+theorem FirstBitTerminalBooleanAntipodalQuotientOrientationFacade.to_antipodalFreeOrientation :
+    antipodalFreeOrientation :=
+  h.antipodalFreeOrientationCert
+
+/-- Project the selected distance-three facet-edge marker. -/
+theorem FirstBitTerminalBooleanAntipodalQuotientOrientationFacade.to_selectedFacetDistanceThreeEdges :
+    selectedFacetDistanceThreeEdges :=
+  h.selectedFacetDistanceThreeEdgesCert
+
+end FirstBitTerminalBooleanAntipodalQuotientOrientationFacade
+
+/--
+Endpoint surface list for the public small-atom collision core.  The first marker is intended to be
+instantiated by the existing `FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier` layer.
+-/
+structure FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces
+    (rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade : Prop) : Prop where
+  rankThreePairCollisionRebateCircuitFrontierCert :
+    rankThreePairCollisionRebateCircuitFrontier
+  pairForcedPetalStrictDeficitCert : pairForcedPetalStrictDeficit
+  twoPetalRebateAtLeastThreeCert : twoPetalRebateAtLeastThree
+  sizeThreeNoLeftoverCollisionOnlyTemplatesCert :
+    sizeThreeNoLeftoverCollisionOnlyTemplates
+  collisionFreeCutoffAtFourFourCert : collisionFreeCutoffAtFourFour
+  fourPairComplementaryTransversalLabelsCert : fourPairComplementaryTransversalLabels
+  booleanAntipodalQuotientOrientationFacadeCert :
+    booleanAntipodalQuotientOrientationFacade
+
+/-- Build the public small-atom endpoint surface list from its seven surfaces. -/
+theorem firstBitTerminalSmallAtomCollisionCoreEndpointSurfaces_of_parts
+    {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade : Prop}
+    (hrebate : rankThreePairCollisionRebateCircuitFrontier)
+    (hstrict : pairForcedPetalStrictDeficit)
+    (htwo : twoPetalRebateAtLeastThree)
+    (hthree : sizeThreeNoLeftoverCollisionOnlyTemplates)
+    (hcutoff : collisionFreeCutoffAtFourFour)
+    (hlabels : fourPairComplementaryTransversalLabels)
+    (horientation : booleanAntipodalQuotientOrientationFacade) :
+    FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade where
+  rankThreePairCollisionRebateCircuitFrontierCert := hrebate
+  pairForcedPetalStrictDeficitCert := hstrict
+  twoPetalRebateAtLeastThreeCert := htwo
+  sizeThreeNoLeftoverCollisionOnlyTemplatesCert := hthree
+  collisionFreeCutoffAtFourFourCert := hcutoff
+  fourPairComplementaryTransversalLabelsCert := hlabels
+  booleanAntipodalQuotientOrientationFacadeCert := horientation
+
+section FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces
+
+variable {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+  twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+  collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+  booleanAntipodalQuotientOrientationFacade : Prop}
+
+variable (h :
+  FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces
+    rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+    twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+    collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+    booleanAntipodalQuotientOrientationFacade)
+
+/-- Project the reused pair-collision rebate frontier marker. -/
+theorem
+    FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces.to_rankThreePairCollisionRebateCircuitFrontier :
+    rankThreePairCollisionRebateCircuitFrontier :=
+  h.rankThreePairCollisionRebateCircuitFrontierCert
+
+/-- Project the forced-petal strict-deficit marker. -/
+theorem FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces.to_pairForcedPetalStrictDeficit :
+    pairForcedPetalStrictDeficit :=
+  h.pairForcedPetalStrictDeficitCert
+
+/-- Project the two-petal rebate lower-bound marker. -/
+theorem FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces.to_twoPetalRebateAtLeastThree :
+    twoPetalRebateAtLeastThree :=
+  h.twoPetalRebateAtLeastThreeCert
+
+/-- Project the size-three no-leftover template marker. -/
+theorem
+    FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces.to_sizeThreeNoLeftoverCollisionOnlyTemplates :
+    sizeThreeNoLeftoverCollisionOnlyTemplates :=
+  h.sizeThreeNoLeftoverCollisionOnlyTemplatesCert
+
+/-- Project the four-four cutoff marker. -/
+theorem FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces.to_collisionFreeCutoffAtFourFour :
+    collisionFreeCutoffAtFourFour :=
+  h.collisionFreeCutoffAtFourFourCert
+
+/-- Project the complementary-transversal labels marker. -/
+theorem
+    FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces.to_fourPairComplementaryTransversalLabels :
+    fourPairComplementaryTransversalLabels :=
+  h.fourPairComplementaryTransversalLabelsCert
+
+/-- Project the Boolean/antipodal quotient orientation marker. -/
+theorem
+    FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces.to_booleanAntipodalQuotientOrientationFacade :
+    booleanAntipodalQuotientOrientationFacade :=
+  h.booleanAntipodalQuotientOrientationFacadeCert
+
+end FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces
+
+/--
+Public API bundle for the small-atom collision core above the pair-collision rebate frontier.  This
+is the stable assumption-backed layer consumed by terminal/dyadic first-bit routes.
+-/
+structure FirstBitTerminalSmallAtomCollisionCorePublicAPI
+    (rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions :
+      Prop) : Prop where
+  endpointSurfaces :
+    FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade
+  remainingSmallAtomCollisionCoreAssumptionsCert :
+    remainingSmallAtomCollisionCoreAssumptions
+
+/-- Build the public API bundle from endpoint surfaces and retained assumptions. -/
+theorem firstBitTerminalSmallAtomCollisionCorePublicAPI_of_surfaces
+    {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions :
+      Prop}
+    (hsurfaces :
+      FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces
+        rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+        twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+        collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+        booleanAntipodalQuotientOrientationFacade)
+    (hremaining : remainingSmallAtomCollisionCoreAssumptions) :
+    FirstBitTerminalSmallAtomCollisionCorePublicAPI
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions where
+  endpointSurfaces := hsurfaces
+  remainingSmallAtomCollisionCoreAssumptionsCert := hremaining
+
+/-- Build the public API bundle directly from the seven endpoint markers. -/
+theorem firstBitTerminalSmallAtomCollisionCorePublicAPI_of_parts
+    {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions :
+      Prop}
+    (hrebate : rankThreePairCollisionRebateCircuitFrontier)
+    (hstrict : pairForcedPetalStrictDeficit)
+    (htwo : twoPetalRebateAtLeastThree)
+    (hthree : sizeThreeNoLeftoverCollisionOnlyTemplates)
+    (hcutoff : collisionFreeCutoffAtFourFour)
+    (hlabels : fourPairComplementaryTransversalLabels)
+    (horientation : booleanAntipodalQuotientOrientationFacade)
+    (hremaining : remainingSmallAtomCollisionCoreAssumptions) :
+    FirstBitTerminalSmallAtomCollisionCorePublicAPI
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions :=
+  firstBitTerminalSmallAtomCollisionCorePublicAPI_of_surfaces
+    (firstBitTerminalSmallAtomCollisionCoreEndpointSurfaces_of_parts
+      hrebate hstrict htwo hthree hcutoff hlabels horientation)
+    hremaining
+
+section FirstBitTerminalSmallAtomCollisionCorePublicAPI
+
+variable {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+  twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+  collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+  booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions :
+  Prop}
+
+variable (h :
+  FirstBitTerminalSmallAtomCollisionCorePublicAPI
+    rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+    twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+    collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+    booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions)
+
+/-- Project the endpoint surfaces from the public API bundle. -/
+theorem FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_endpointSurfaces :
+    FirstBitTerminalSmallAtomCollisionCoreEndpointSurfaces
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade :=
+  h.endpointSurfaces
+
+/-- Recover the reused pair-collision rebate frontier marker. -/
+theorem
+    FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_rankThreePairCollisionRebateCircuitFrontier :
+    rankThreePairCollisionRebateCircuitFrontier :=
+  h.endpointSurfaces.to_rankThreePairCollisionRebateCircuitFrontier
+
+/-- Recover the forced-petal strict-deficit marker. -/
+theorem FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_pairForcedPetalStrictDeficit :
+    pairForcedPetalStrictDeficit :=
+  h.endpointSurfaces.to_pairForcedPetalStrictDeficit
+
+/-- Recover the two-petal rebate lower-bound marker. -/
+theorem FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_twoPetalRebateAtLeastThree :
+    twoPetalRebateAtLeastThree :=
+  h.endpointSurfaces.to_twoPetalRebateAtLeastThree
+
+/-- Recover the size-three no-leftover template marker. -/
+theorem
+    FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_sizeThreeNoLeftoverCollisionOnlyTemplates :
+    sizeThreeNoLeftoverCollisionOnlyTemplates :=
+  h.endpointSurfaces.to_sizeThreeNoLeftoverCollisionOnlyTemplates
+
+/-- Recover the four-four cutoff marker. -/
+theorem FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_collisionFreeCutoffAtFourFour :
+    collisionFreeCutoffAtFourFour :=
+  h.endpointSurfaces.to_collisionFreeCutoffAtFourFour
+
+/-- Recover the complementary-transversal label marker. -/
+theorem FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_fourPairComplementaryTransversalLabels :
+    fourPairComplementaryTransversalLabels :=
+  h.endpointSurfaces.to_fourPairComplementaryTransversalLabels
+
+/-- Recover the Boolean/antipodal quotient orientation marker. -/
+theorem FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_booleanAntipodalQuotientOrientationFacade :
+    booleanAntipodalQuotientOrientationFacade :=
+  h.endpointSurfaces.to_booleanAntipodalQuotientOrientationFacade
+
+/-- Project the retained small-atom collision-core assumptions. -/
+theorem FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_remainingSmallAtomCollisionCoreAssumptions :
+    remainingSmallAtomCollisionCoreAssumptions :=
+  h.remainingSmallAtomCollisionCoreAssumptionsCert
+
+end FirstBitTerminalSmallAtomCollisionCorePublicAPI
+
 /--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
