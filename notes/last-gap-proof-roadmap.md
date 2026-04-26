@@ -2114,7 +2114,8 @@ What remains justified after audit is:
       `h-1`, strict side constraints `t_i+k_i<=h-1`, and side-slack sum `e_1+e_2=h-4`;
       partner-free large targets contain a canonical four-vertex balanced core plus explicit slack vertices;
       slack deletion preserves the same two-petal atom-defect equations until the four-vertex core;
-      partner-hit large-target petals satisfy the stronger side bound `t+k<=h-2`;
+      partner-hit large-target petals satisfy the stronger side bound `t+k<=h-2` and are extra-deficit
+      petals with slack `e^hit=h-2-(t+k)`;
       after square discharge, the no-leftover all-ternary target-code branch has only signed-quotient scalar
       mismatch or extra-rebate/large-target exits;
       near-threshold pure deletion templates are boundary diagnostics only; mixed near-threshold obstructions

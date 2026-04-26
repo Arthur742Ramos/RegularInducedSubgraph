@@ -2684,6 +2684,8 @@ Recommended attack:
     opposite slack by one while preserving the two-petal atom-defect equations.
     Add the partner-hit large-target side bound: a full-pair petal hitting `t` vertices of a size-`h` atom and
     carrying `k` whole opposite atoms satisfies `t+k<=h-2`.
+    Record `e^hit=h-2-(t+k)`: partner-hit sides are extra-deficit and require rebate beyond the tight
+    four-vertex core.
     Record the all-ternary closure summary: after square discharge, the no-leftover all-ternary target-code
     branch has only signed-quotient scalar mismatch or extra-rebate/large-target exits.
     Record near-threshold uniformity: pure deletion templates are boundary diagnostics; every mixed

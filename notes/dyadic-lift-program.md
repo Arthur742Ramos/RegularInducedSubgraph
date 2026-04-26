@@ -1271,6 +1271,7 @@ Deleting a slack vertex preserves the same atom-defect circuit with `h` lowered 
 need an additional protection mechanism beyond the split-cut equations.
 Partner-hit large-target petals obey the stricter side bound `t+k<=h-2`, contributing one extra slack unit
 beyond the partner-free capacity inequality.
+Equivalently `e^hit=h-2-(t+k)>=0`; such a petal is extra-deficit and needs rebate beyond the tight core.
 Consequently the all-ternary no-leftover target-code branch is exhausted after square discharge: surviving
 all-ternary endpoints are signed-quotient scalar mismatch or extra-rebate/large-target exits.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:

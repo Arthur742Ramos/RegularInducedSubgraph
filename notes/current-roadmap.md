@@ -5551,6 +5551,8 @@ Slack deletion is hereditary in the atom-defect equations: deleting a slack vert
 the four-vertex core.
 In the partner-hit large-target side, the full-pair petal satisfies the stricter inequality `t+k<=h-2`;
 for `h=4` it omits at least two vertices of the four-atom, and for `h>4` it adds another visible slack unit.
+With `e^hit=h-2-(t+k)`, a partner-hit petal has effective capacity `h-2` and is always an extra-deficit
+petal, requiring rebate beyond the single tight four-vertex core.
 With four atoms, the ternary-cycle profiles are only `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`; the first is
 already the coupled two-three-atom table.
 The all-ternary profiles have high outdegree: in `3,3,3,3`, deleting any atom splits at least two other

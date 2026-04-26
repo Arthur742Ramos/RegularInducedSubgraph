@@ -2185,6 +2185,8 @@ At the atom-defect level, slack deletion is hereditary and lowers `h` by one whi
 circuit, so `h>4` requires extra protection beyond the cut geometry.
 Partner-hit large-target petals are stricter: a full-pair petal with `t` vertices of the size-`h` atom and
 `k` whole opposite atoms must satisfy `t+k<=h-2`.
+The slack `e^hit=h-2-(t+k)` marks partner-hit petals as extra-deficit, requiring another rebate source beyond
+the tight core.
 After square discharge, the all-ternary no-leftover target-code branch is exhausted: it becomes signed-quotient
 scalar mismatch or extra-rebate/large-target.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has

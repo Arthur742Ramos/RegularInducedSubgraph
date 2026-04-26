@@ -12697,6 +12697,17 @@ Thus a partner-hit petal consumes one more unit of large-target capacity than a 
 for `h>4` it contributes an additional visible slack unit to be compensated by the other petals or by a
 second split target.
 
+Writing
+
+```text
+e^{hit}=h-2-(t+k) >= 0,
+```
+
+the partner-hit side has effective capacity `h-2`, not `h-1`.  Thus it can never be one of the two
+unit-deficit sides of the partner-free core.  It is automatically an extra-deficit petal, and any
+inclusion-minimal positive circuit containing it must obtain an additional rebate source beyond the single
+tight four-vertex core.
+
 Since there are only four atoms, the ternary-cycle meta-case has only the sorted profiles
 
 ```text
