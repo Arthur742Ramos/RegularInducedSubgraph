@@ -4471,7 +4471,8 @@ theorem hasCliqueOrIndepSetBound_four_five_twenty_six_iff_noCounterexample :
 Degree-`8` endpoint residual for the sharp `R(4,5) <= 26` frontier.  The obligation keeps the
 standard 26-vertex degree window and local Ramsey surfaces, and additionally exposes the exact
 degree-`8` non-neighborhood regularity, adjacent/nonadjacent split ledgers, common-nonneighbor
-ledgers, and the global caps on the degree-`8` class.
+ledgers, and the global cap on the degree-`8` class.  The saturated `D8.card = 6` local
+degree-`2` branch is now discharged by `degree_eight_neighborFinset_card_eq_two_of_degree_eight_vertices_card_eq_six`.
 -/
 def NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix : Prop :=
   ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj],
@@ -4549,9 +4550,6 @@ def NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix : Prop :=
       (∀ w : α, G.IsClique (((G.neighborFinset w).filter (fun u => G.degree u = 8)) : Set α)) →
       (∀ w : α, ((G.neighborFinset w).filter (fun u => G.degree u = 8)).card ≤ 3) →
       (((Finset.univ : Finset α).filter (fun v => G.degree v = 8)).card ≤ 6) →
-      (∀ (hD8card : ((Finset.univ : Finset α).filter (fun v => G.degree v = 8)).card = 6)
-          {a : α}, G.degree a = 8 →
-        ((G.neighborFinset a).filter (fun v => G.degree v = 8)).card = 2) →
         (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
 
 /-- The degree-`8` endpoint residual implies the exact `R(4,5) <= 26` endpoint. -/
@@ -4642,10 +4640,6 @@ theorem noRamseyFourFiveCounterexampleOnTwentySix_of_degreeEightEndpoint
       intro w
       exact degree_eight_neighborFinset_card_le_three G hcard hnoK4 hnoI5 w)
     (degree_eight_vertices_card_le_six G hcard hnoK4 hnoI5)
-    (by
-      intro hD8card a hdega
-      exact degree_eight_neighborFinset_card_eq_two_of_degree_eight_vertices_card_eq_six
-        G hcard hnoK4 hnoI5 hD8card hdega)
 
 /-- The degree-`8` endpoint residual is enough for the localized `R(4,5) <= 26` input. -/
 theorem hasCliqueOrIndepSetBound_four_five_twenty_six_of_degreeEightEndpoint
