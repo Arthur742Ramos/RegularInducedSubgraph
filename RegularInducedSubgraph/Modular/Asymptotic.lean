@@ -6560,6 +6560,214 @@ theorem retainedTraceFiniteHole_of_exactEqualityResidual
     simpa [hrow] using hmem
   exact hmissing (0 : Fin 3) hmem'
 
+/-- The labelled seven-point reservoir carried by a positive exact-basis atom. -/
+def positiveAtomSevenPointReservoir : Finset (Fin 7) := Finset.univ
+
+/-- The positive atom reservoir has the expected seven labels. -/
+theorem positiveAtomSevenPointReservoir_card :
+    positiveAtomSevenPointReservoir.card = 7 := by
+  simp [positiveAtomSevenPointReservoir]
+
+/-- The finite list of omitted triples in the positive-atom trace table. -/
+def positiveAtomOmittedTriples : Finset (Finset (Fin 7)) :=
+  positiveAtomSevenPointReservoir.powersetCard 3
+
+/-- Membership in the omitted-triple table is exactly being a three-subset of the reservoir. -/
+theorem mem_positiveAtomOmittedTriples_iff {O : Finset (Fin 7)} :
+    O ∈ positiveAtomOmittedTriples ↔ O.card = 3 := by
+  constructor
+  · intro hO
+    exact (Finset.mem_powersetCard.mp (by simpa [positiveAtomOmittedTriples] using hO)).2
+  · intro hcard
+    have hsubset : O ⊆ positiveAtomSevenPointReservoir := by
+      intro x _hx
+      simp [positiveAtomSevenPointReservoir]
+    simpa [positiveAtomOmittedTriples] using
+      (Finset.mem_powersetCard.mpr ⟨hsubset, hcard⟩)
+
+/-- There are exactly `35` omitted triples in the seven-point table. -/
+theorem positiveAtomOmittedTriples_card :
+    positiveAtomOmittedTriples.card = 35 := by
+  native_decide
+
+/-- Predicate form for omitted triples. -/
+def PositiveAtomOmittedTriple (O : Finset (Fin 7)) : Prop :=
+  O ∈ positiveAtomOmittedTriples
+
+/-- Omitted triples have cardinality three. -/
+theorem PositiveAtomOmittedTriple.card {O : Finset (Fin 7)}
+    (hO : PositiveAtomOmittedTriple O) :
+    O.card = 3 :=
+  mem_positiveAtomOmittedTriples_iff.mp hO
+
+/--
+A labelled positive-atom trace class: a trace subset `p ⊆ R_i` together with the residue
+`mu = M_A(a) + |p|` modulo `4`.
+-/
+structure PositiveAtomTraceClass where
+  trace : Finset (Fin 7)
+  mu : Fin 4
+deriving DecidableEq
+
+namespace PositiveAtomTraceClass
+
+/-- Number of omitted neighbours of a trace class for a candidate omitted triple. -/
+def omittedCount (c : PositiveAtomTraceClass) (O : Finset (Fin 7)) : ℕ :=
+  (c.trace ∩ O).card
+
+end PositiveAtomTraceClass
+
+/--
+Constant-column condition for one trace class: `mu - |p ∩ O|` has value `R` modulo `4`,
+written without subtraction as `mu = R + |p ∩ O|`.
+-/
+def PositiveAtomTraceValueCongruent
+    (O : Finset (Fin 7)) (c : PositiveAtomTraceClass) (R : ℕ) : Prop :=
+  c.mu.val ≡ R + c.omittedCount O [MOD 4]
+
+/--
+The signed omitted-triple equation for two occupied trace classes:
+`|p ∩ O| - |q ∩ O| = mu - nu [MOD 4]`, written in cancellation-free form.
+-/
+def PositiveAtomOmittedTriplePairEquation
+    (O : Finset (Fin 7)) (c d : PositiveAtomTraceClass) : Prop :=
+  c.omittedCount O + d.mu.val ≡ d.omittedCount O + c.mu.val [MOD 4]
+
+/-- The pair equation is reflexive. -/
+theorem PositiveAtomOmittedTriplePairEquation.refl
+    (O : Finset (Fin 7)) (c : PositiveAtomTraceClass) :
+    PositiveAtomOmittedTriplePairEquation O c c :=
+  Nat.ModEq.refl _
+
+/-- The pair equation is symmetric. -/
+theorem PositiveAtomOmittedTriplePairEquation.symm
+    {O : Finset (Fin 7)} {c d : PositiveAtomTraceClass}
+    (h : PositiveAtomOmittedTriplePairEquation O c d) :
+    PositiveAtomOmittedTriplePairEquation O d c :=
+  h.symm
+
+/-- An omitted triple equalizes all occupied trace classes when the trace value is constant. -/
+def PositiveAtomOmittedTripleEqualizesTraceClasses
+    (O : Finset (Fin 7)) (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∃ R : ℕ, ∀ c ∈ classes, PositiveAtomTraceValueCongruent O c R
+
+/-- Pairwise form of trace equalization for an omitted triple. -/
+def PositiveAtomOmittedTriplePairwiseEqualizes
+    (O : Finset (Fin 7)) (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∀ c ∈ classes, ∀ d ∈ classes, PositiveAtomOmittedTriplePairEquation O c d
+
+/-- A constant trace column gives every pairwise signed omitted-triple equation. -/
+theorem positiveAtomOmittedTriplePairwiseEqualizes_of_equalizes
+    {O : Finset (Fin 7)} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomOmittedTripleEqualizesTraceClasses O classes) :
+    PositiveAtomOmittedTriplePairwiseEqualizes O classes := by
+  rcases h with ⟨R, hR⟩
+  intro c hc d hd
+  have hcR : PositiveAtomTraceValueCongruent O c R := hR c hc
+  have hdR : PositiveAtomTraceValueCongruent O d R := hR d hd
+  have hleft :
+      c.omittedCount O + d.mu.val ≡
+        c.omittedCount O + (R + d.omittedCount O) [MOD 4] :=
+    Nat.ModEq.add (Nat.ModEq.refl (c.omittedCount O)) hdR
+  have hright :
+      d.omittedCount O + c.mu.val ≡
+        d.omittedCount O + (R + c.omittedCount O) [MOD 4] :=
+    Nat.ModEq.add (Nat.ModEq.refl (d.omittedCount O)) hcR
+  have hmiddle :
+      c.omittedCount O + (R + d.omittedCount O) ≡
+        d.omittedCount O + (R + c.omittedCount O) [MOD 4] := by
+    simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+      (Nat.ModEq.refl (c.omittedCount O + (R + d.omittedCount O)) :
+        c.omittedCount O + (R + d.omittedCount O) ≡
+          c.omittedCount O + (R + d.omittedCount O) [MOD 4])
+  exact hleft.trans (hmiddle.trans hright.symm)
+
+/-- Trace-only certificate: some omitted triple makes the finite trace alphabet constant. -/
+def PositiveAtomTraceOmissionCertificate
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∃ O : Finset (Fin 7),
+    PositiveAtomOmittedTriple O ∧ PositiveAtomOmittedTripleEqualizesTraceClasses O classes
+
+/-- Trace-only obstruction: no omitted triple equalizes the occupied trace alphabet. -/
+def PositiveAtomTraceOmissionObstruction
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∀ O : Finset (Fin 7),
+    PositiveAtomOmittedTriple O → ¬ PositiveAtomOmittedTripleEqualizesTraceClasses O classes
+
+/-- The obstruction is exactly the negation of the trace-only certificate. -/
+theorem positiveAtomTraceOmissionObstruction_iff_not_certificate
+    {classes : Finset PositiveAtomTraceClass} :
+    PositiveAtomTraceOmissionObstruction classes ↔
+      ¬ PositiveAtomTraceOmissionCertificate classes := by
+  constructor
+  · intro hobs hcert
+    rcases hcert with ⟨O, hO, heq⟩
+    exact hobs O hO heq
+  · intro hnot O hO heq
+    exact hnot ⟨O, hO, heq⟩
+
+/--
+Finite anti-Horn form of the trace obstruction: every omitted triple is killed by at least one
+explicit pairwise signed equation.
+-/
+def PositiveAtomPairwiseTraceAntiHornObstruction
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∀ O : Finset (Fin 7),
+    PositiveAtomOmittedTriple O →
+      ∃ c ∈ classes, ∃ d ∈ classes, ¬ PositiveAtomOmittedTriplePairEquation O c d
+
+/-- A pairwise anti-Horn obstruction rules out every constant trace column. -/
+theorem positiveAtomTraceOmissionObstruction_of_pairwiseAntiHorn
+    {classes : Finset PositiveAtomTraceClass}
+    (hanti : PositiveAtomPairwiseTraceAntiHornObstruction classes) :
+    PositiveAtomTraceOmissionObstruction classes := by
+  intro O hO heq
+  rcases hanti O hO with ⟨c, hc, d, hd, hbad⟩
+  exact hbad (positiveAtomOmittedTriplePairwiseEqualizes_of_equalizes heq c hc d hd)
+
+/-- Internal four-set line of the same omitted-triple table. -/
+def PositiveAtomInternalFourSetEquation
+    (internal : Fin 7 → ℕ) (O : Finset (Fin 7)) : Prop :=
+  ∃ R : ℕ, ∀ v ∈ positiveAtomSevenPointReservoir \ O, internal v ≡ R [MOD 4]
+
+/--
+Full positive-atom trace/omission table certificate: an omitted triple is one of the `35` triples,
+equalizes the occupied remainder trace alphabet, and satisfies the internal four-set line.
+-/
+structure PositiveAtomTraceOmissionTableCertificate
+    (internal : Fin 7 → ℕ) (classes : Finset PositiveAtomTraceClass) : Prop where
+  omitted : Finset (Fin 7)
+  omitted_mem : PositiveAtomOmittedTriple omitted
+  traceEqualizes : PositiveAtomOmittedTripleEqualizesTraceClasses omitted classes
+  internalEqualizes : PositiveAtomInternalFourSetEquation internal omitted
+
+/-- The omitted set in a positive-atom table certificate is a triple. -/
+theorem PositiveAtomTraceOmissionTableCertificate.omitted_card
+    {internal : Fin 7 → ℕ} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceOmissionTableCertificate internal classes) :
+    h.omitted.card = 3 :=
+  PositiveAtomOmittedTriple.card h.omitted_mem
+
+/-- Forget the internal four-set line and recover the trace-only certificate. -/
+theorem PositiveAtomTraceOmissionTableCertificate.to_traceCertificate
+    {internal : Fin 7 → ℕ} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceOmissionTableCertificate internal classes) :
+    PositiveAtomTraceOmissionCertificate classes :=
+  ⟨h.omitted, h.omitted_mem, h.traceEqualizes⟩
+
+/-- Read all pairwise trace equations from a positive-atom table certificate. -/
+theorem PositiveAtomTraceOmissionTableCertificate.pairwise
+    {internal : Fin 7 → ℕ} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceOmissionTableCertificate internal classes) :
+    PositiveAtomOmittedTriplePairwiseEqualizes h.omitted classes :=
+  positiveAtomOmittedTriplePairwiseEqualizes_of_equalizes h.traceEqualizes
+
+/-- Final finite-table package: either a positive-atom omitted triple works, or the trace alphabet is obstructed. -/
+def PositiveAtomTraceFiniteTablePackage
+    (internal : Fin 7 → ℕ) (classes : Finset PositiveAtomTraceClass) : Prop :=
+  PositiveAtomTraceOmissionTableCertificate internal classes ∨
+    PositiveAtomTraceOmissionObstruction classes
+
 /-- A repaired-residue spectrum is full when it contains all four regular four-vertex residues. -/
 def ContainsAllFourResidues (spectrum : Finset ℕ) : Prop :=
   0 ∈ spectrum ∧ 1 ∈ spectrum ∧ 2 ∈ spectrum ∧ 3 ∈ spectrum
@@ -8815,6 +9023,246 @@ theorem
       FirstBitTerminalMixedTypeHomogeneousCarryImports :=
   FirstBitTerminalPacketResidualOutcome.mixedTypeResidual
     h.to_mixedTypeHomogeneousCarryImports
+
+/--
+Named residual import for the positive-atom seven-point trace/omission table.  This is deliberately a
+frontier input: it exposes the finite table for every internal line and occupied trace alphabet, but it
+does not assert that the global terminal theorem is closed.
+-/
+structure FirstBitTerminalPositiveAtomTraceResidualImports : Prop where
+  finiteTraceTable :
+    ∀ (internal : Fin 7 → ℕ) (classes : Finset PositiveAtomTraceClass),
+      PositiveAtomTraceFiniteTablePackage internal classes
+
+/--
+Exact-boundary exchange-budget imports together with the positive-atom trace-table residual.  The
+near-basis exchange-budget layer and the positive-atom finite table are kept as separate fields so the
+terminal frontier can route them independently.
+-/
+structure FirstBitTerminalExchangeBudgetAndPositiveAtomTraceImports : Prop where
+  exchangeBudget : FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+  positiveAtomTrace : FirstBitTerminalPositiveAtomTraceResidualImports
+
+/-- Add the canonical exact-boundary exchange-budget imports to a positive-atom trace residual. -/
+theorem firstBitTerminalExchangeBudgetAndPositiveAtomTraceImports_of_positiveAtomTrace
+    (htrace : FirstBitTerminalPositiveAtomTraceResidualImports) :
+    FirstBitTerminalExchangeBudgetAndPositiveAtomTraceImports where
+  exchangeBudget := firstBitTerminalNearBasisBoundaryExchangeBudgetImports
+  positiveAtomTrace := htrace
+
+/-- Project the exchange-budget near-basis imports from the combined import package. -/
+theorem FirstBitTerminalExchangeBudgetAndPositiveAtomTraceImports.to_exchangeBudget
+    (h : FirstBitTerminalExchangeBudgetAndPositiveAtomTraceImports) :
+    FirstBitTerminalNearBasisBoundaryExchangeBudgetImports :=
+  h.exchangeBudget
+
+/-- Project the positive-atom trace-table residual from the combined import package. -/
+theorem FirstBitTerminalExchangeBudgetAndPositiveAtomTraceImports.to_positiveAtomTrace
+    (h : FirstBitTerminalExchangeBudgetAndPositiveAtomTraceImports) :
+    FirstBitTerminalPositiveAtomTraceResidualImports :=
+  h.positiveAtomTrace
+
+/--
+Final-facing four-way branch outcome for the terminal packet frontier: exact-basis closed endpoint,
+near-basis exchange-budget import, mixed-type homogeneous-carry/Arf import, or positive-atom trace
+residual.
+-/
+inductive FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace
+    (ExactClosed NearBasisBoundary MixedTypeBoundary PositiveAtomTraceBoundary : Prop) : Prop where
+  | exactClosed : ExactClosed →
+      FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace
+        ExactClosed NearBasisBoundary MixedTypeBoundary PositiveAtomTraceBoundary
+  | nearBasisResidual : NearBasisBoundary →
+      FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace
+        ExactClosed NearBasisBoundary MixedTypeBoundary PositiveAtomTraceBoundary
+  | mixedTypeResidual : MixedTypeBoundary →
+      FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace
+        ExactClosed NearBasisBoundary MixedTypeBoundary PositiveAtomTraceBoundary
+  | positiveAtomTraceResidual : PositiveAtomTraceBoundary →
+      FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace
+        ExactClosed NearBasisBoundary MixedTypeBoundary PositiveAtomTraceBoundary
+
+/--
+Concrete final branch wrapper: the exact-basis packet quotient is closed up to the collapsed endpoint
+bound, near-basis imports are supplied by exact exchange budgets, mixed-type imports by homogeneous-carry
+and Arf residuals, and the positive-atom endpoint remains as the finite trace-table residual.
+-/
+structure FirstBitTerminalPacketFinalBranchWrappers : Prop where
+  exactBasis :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound
+  nearBasis : FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+  mixedType : FirstBitTerminalMixedTypeHomogeneousCarryImports
+  positiveAtomTrace : FirstBitTerminalPositiveAtomTraceResidualImports
+
+/-- Construct the four-way final branch wrappers from their independent frontier pieces. -/
+theorem firstBitTerminalPacketFinalBranchWrappers_of_parts
+    (hexact : FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound)
+    (hnear : FirstBitTerminalNearBasisBoundaryExchangeBudgetImports)
+    (hmixed : FirstBitTerminalMixedTypeHomogeneousCarryImports)
+    (htrace : FirstBitTerminalPositiveAtomTraceResidualImports) :
+    FirstBitTerminalPacketFinalBranchWrappers where
+  exactBasis := hexact
+  nearBasis := hnear
+  mixedType := hmixed
+  positiveAtomTrace := htrace
+
+/--
+Build the four-way final branch wrappers from target elimination, exact endpoint-bound surfaces, the
+mixed-type homogeneous-carry residual reductions, and the positive-atom trace-table residual.
+-/
+theorem firstBitTerminalPacketFinalBranchWrappers_of_targetElimination
+    (htarget : HasFirstBitPacketTargetEliminationReduction)
+    (hexact : FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces)
+    (hsupport : HasHomogeneousMixedCarrySupportCompressionReduction)
+    (harf : HasHomogeneousMixedCarryAffineArfCertificateReduction)
+    (htrace : FirstBitTerminalPositiveAtomTraceResidualImports) :
+    FirstBitTerminalPacketFinalBranchWrappers :=
+  firstBitTerminalPacketFinalBranchWrappers_of_parts
+    (firstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound_of_targetElimination
+      htarget hexact)
+    firstBitTerminalNearBasisBoundaryExchangeBudgetImports
+    (firstBitTerminalMixedTypeHomogeneousCarryImports_of_reductions hsupport harf)
+    htrace
+
+/--
+Packet quotient frontier with all concrete terminal residual names, including the positive-atom
+trace-table residual.
+-/
+structure FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace :
+    Prop where
+  core : FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry
+  positiveAtomTrace : FirstBitTerminalPositiveAtomTraceResidualImports
+
+/-- Construct the concrete packet frontier with the positive-atom trace residual from parts. -/
+theorem
+    firstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace_of_parts
+    (hexact : FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound)
+    (hnear : FirstBitTerminalNearBasisBoundaryExchangeBudgetImports)
+    (hmixed : FirstBitTerminalMixedTypeHomogeneousCarryImports)
+    (htrace : FirstBitTerminalPositiveAtomTraceResidualImports) :
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace where
+  core :=
+    firstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry_of_parts
+      hexact hnear hmixed
+  positiveAtomTrace := htrace
+
+/--
+Construct the concrete packet frontier with positive-atom trace residuals from target elimination and
+the named residual imports.
+-/
+theorem
+    firstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace_of_targetElimination
+    (htarget : HasFirstBitPacketTargetEliminationReduction)
+    (hexact : FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces)
+    (hsupport : HasHomogeneousMixedCarrySupportCompressionReduction)
+    (harf : HasHomogeneousMixedCarryAffineArfCertificateReduction)
+    (htrace : FirstBitTerminalPositiveAtomTraceResidualImports) :
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace :=
+  firstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace_of_parts
+    (firstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound_of_targetElimination
+      htarget hexact)
+    firstBitTerminalNearBasisBoundaryExchangeBudgetImports
+    (firstBitTerminalMixedTypeHomogeneousCarryImports_of_reductions hsupport harf)
+    htrace
+
+/-- Forget the positive-atom trace field and recover the existing three-way concrete frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.to_core
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace) :
+    FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry :=
+  h.core
+
+/-- Project the exact-basis packet quotient from the four-way concrete frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.to_exactBasis
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace) :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound :=
+  h.core.to_exactBasis
+
+/-- Project the near-basis exchange-budget imports from the four-way concrete frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.to_nearBasisExchangeBudgetImports
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace) :
+    FirstBitTerminalNearBasisBoundaryExchangeBudgetImports :=
+  h.core.to_nearBasisExchangeBudgetImports
+
+/-- Project the mixed-type homogeneous-carry imports from the four-way concrete frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.to_mixedTypeHomogeneousCarryImports
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace) :
+    FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  h.core.to_mixedTypeHomogeneousCarryImports
+
+/-- Project the positive-atom trace-table residual from the four-way concrete frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.to_positiveAtomTrace
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace) :
+    FirstBitTerminalPositiveAtomTraceResidualImports :=
+  h.positiveAtomTrace
+
+/-- Export the four fields as the final branch wrapper package. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.to_finalBranchWrappers
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace) :
+    FirstBitTerminalPacketFinalBranchWrappers where
+  exactBasis := h.to_exactBasis
+  nearBasis := h.to_nearBasisExchangeBudgetImports
+  mixedType := h.to_mixedTypeHomogeneousCarryImports
+  positiveAtomTrace := h.to_positiveAtomTrace
+
+/-- Exact-basis branch outcome in the four-way final wrapper. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.outcome_exactBasis
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace)
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hbranch : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace
+      (FirstBitTerminalExactBasisCollapsedEndpointBoundCertificate Usable Δ σ G S m)
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+      FirstBitTerminalMixedTypeHomogeneousCarryImports
+      FirstBitTerminalPositiveAtomTraceResidualImports :=
+  FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace.exactClosed
+    (firstBitTerminalExactBasisCollapsedEndpointBoundCertificate_of_surfaces
+      h.to_exactBasis.exactBasisBound hbranch hcaps)
+
+/-- Near-basis branch outcome in the four-way final wrapper. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.outcome_nearBasis
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace)
+    {ExactClosed : Prop} :
+    FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace ExactClosed
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+      FirstBitTerminalMixedTypeHomogeneousCarryImports
+      FirstBitTerminalPositiveAtomTraceResidualImports :=
+  FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace.nearBasisResidual
+    h.to_nearBasisExchangeBudgetImports
+
+/-- Mixed-type branch outcome in the four-way final wrapper. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.outcome_mixedType
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace)
+    {ExactClosed : Prop} :
+    FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace ExactClosed
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+      FirstBitTerminalMixedTypeHomogeneousCarryImports
+      FirstBitTerminalPositiveAtomTraceResidualImports :=
+  FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace.mixedTypeResidual
+    h.to_mixedTypeHomogeneousCarryImports
+
+/-- Positive-atom trace-table branch outcome in the four-way final wrapper. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace.outcome_positiveAtomTrace
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetHomogeneousCarryAndPositiveAtomTrace)
+    {ExactClosed : Prop} :
+    FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace ExactClosed
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+      FirstBitTerminalMixedTypeHomogeneousCarryImports
+      FirstBitTerminalPositiveAtomTraceResidualImports :=
+  FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace.positiveAtomTraceResidual
+    h.to_positiveAtomTrace
 
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
