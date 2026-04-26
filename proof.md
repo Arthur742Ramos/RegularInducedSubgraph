@@ -11993,12 +11993,12 @@ delta_P(C) >= pi_P(C).
 ```
 
 Equivalently, a support crossing `r` atoms omits at least `r` vertices from the packed atoms it meets.  In
-the first no-leftover core `|A|=16`, where the four atoms all have size four, a support crossing two atoms
+the four-four no-leftover subcase `|A|=16`, where the four atoms all have size four, a support crossing two atoms
 has size at most six, crossing three atoms has size at most nine, and crossing all four atoms has size at
 most twelve.  The no-leftover core is therefore a strict cross-defect four-block system, not merely a
 nonpositive-gain system.
 
-The deletion endpoint in this first no-leftover core is also rigid.  Let every atom have size four and
+The deletion endpoint in this four-four no-leftover subcase is also rigid.  Let every atom have size four and
 `L=0`.  For a deletion from an atom `B_j`, the four-case lift table leaves only one possible nonpositive
 disjoint full lift.  The shortened-block unlift with `g^-=1` would be zero-gain and hence local, impossible
 without leftover vertices; equality pure absorption with `g^-=2` would likewise be zero-gain and would need
@@ -12010,9 +12010,10 @@ h=0,        t=1,        g^-=1,        full gain = -1.
 ```
 
 If no such lift exists, the only remaining obstruction is deleted-vertex collision.  Thus the first
-no-leftover core has an exact deletion dichotomy: **unit strict absorption** or **lift-collision**.
+four-four no-leftover subcase has an exact deletion dichotomy: **unit strict absorption** or
+**lift-collision**.
 
-The unit strict absorption side has a finite atom-level taxonomy.  In the first no-leftover core, delete
+The unit strict absorption side has a finite atom-level taxonomy.  In the four-four no-leftover subcase, delete
 `a in B_0` and let `R^-` be a projected repair family of `s` disjoint supports avoiding `B_0\{a}` with
 projected gain `g^-=1`.  Let `pi` be the number of the other three four-atoms hit by the family, and let
 `delta` be the number of omitted vertices from those hit atoms.  Then
@@ -12037,7 +12038,7 @@ Equivalently, unit strict absorption is cap-tight.  The first template lifts to 
 crossing three atoms, exactly the `6/9/12` cap for three-atom crossings after including `a`; the second
 lifts to a support of size `12` crossing all four atoms, exactly the four-atom cap; and the third is a
 two-support cover of the three opposite atoms with one support thickened by `a`.  Hence every nonclosing
-absorption in the first no-leftover core is a maximum-size strict cross-defect event.
+absorption in the four-four no-leftover subcase is a maximum-size strict cross-defect event.
 
 Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
 `P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
@@ -12146,22 +12147,18 @@ members.  For `g^-=1`, the only nonpositive disjoint full lift is the shortened-
 blocked by a positive lift; genuine absorption starts only at atoms of size at least four for gain at least
 two.
 
-The collision-star alternative collapses at a size-two atom once the projected repair family is chosen
-inclusion-minimal.  In such a minimal positive-gain family, every member has strictly positive projected
-gain; otherwise removing a nonpositive member would leave a smaller positive-gain family.  Let
-`B_j={a,b}`.  In any projected family after deleting `a`, at most one member can meet the shortened atom
-`{b}`.  If an `a`-forced member misses `b`, its thickened lift has the same positive gain against `P`, since
-`|B_j|=2`; this is a forbidden positive support.  Therefore every `a`-forced member would have to meet `b`,
-but disjointness allows at most one such member.  Hence a lift-collision star cannot occur at a pair atom.
-
-Consequently a size-two atom has only the pivot endpoint.  For each of its two vertices `a`, every minimal
-projected positive-gain repair after deleting `a` must be a
+For a size-two atom `B_j={a,b}`, the noncollision branch has only the pivot endpoint.  If a projected repair
+after deleting `a` has a disjoint full lift, the four-case table leaves only the zero-gain shortened-block
+unlift as a nonpositive possibility:
 
 ```text
 zero-gain pivot:  g^-=1, it hits the other vertex b, and its unlifted lift is tight.
 ```
 
-There is no absorption or collision case at a two-atom.
+If no such disjoint lift exists, the endpoint is a genuine collision star: at least two projected supports
+are forced through `a`.  Inclusion-minimality gives only positive **marginal** contribution of each member,
+not positive individual gain, so this collision branch cannot be discarded.  There is no absorption case at
+a two-atom.
 
 Zero-gain saturation sharply restricts the pivot side.  Let `B_j={a,b}` be a pair atom in a saturated
 packing.  A zero-gain pivot after deleting `a` is an unlifted support `C` containing `b` with
@@ -12174,22 +12171,19 @@ C={b,l}
 ```
 
 with a leftover singleton atom `l`.  Consequently, if a saturated deficit-one packing has no leftover
-singletons, it cannot contain a pair atom at all.  If it has one leftover singleton, pair pivots can only
-swap the deleted vertex with that singleton.
+singletons, it has no pair-pivot escape.  If it has one leftover singleton, pair pivots can only swap the
+deleted vertex with that singleton.
 
-This gives a useful size cutoff, and the lift-locality sharpens it once more.  A zero-gain-saturated
-deficit-one packing with `L=0` has no pair atom.  It also has no three-atom: for a deletion from a
-three-atom, collision is impossible by the same positive-member argument; a nonpositive shortened-block
-unlift would be a zero-gain same-size exchange and needs a leftover singleton; and equality pure absorption
-would need two leftover singletons.  Therefore all four atoms have size at least four, and `|A|>=16`.
-Equivalently, in every saturated rank-three endpoint with `|A|<=15`, each deficit-one packing has at least
-one leftover singleton.  The first no-leftover saturated bridge core can occur only at `|A|=16`, and then it
-is forced to be four atoms of size exactly four; all smaller active dimensions are leftover-budgeted.
+With no leftover singletons, zero-gain boundary motion disappears but collision does not.  A pair atom with
+`L=0` has no pivot option, so every deletion from that atom is a genuine lift-collision endpoint.  A
+three-atom with `L=0` has no zero-gain or equality-absorption option; its deletion repairs are again strict
+absorption when the lift table permits it, or lift-collision.  Thus no-leftover packings are not excluded by
+small atoms; rather, their terminality is entirely collision/strict-absorption driven.
 
 When `L=0`, zero-gain locality becomes rigidity.  A zero-gain support can meet at most one packed atom and
 must have the same size as that atom; with no leftover vertices available, it is exactly that packed atom.
 Thus the zero-gain replacement orbit is trivial in every no-leftover saturated packing.  In particular, the
-first no-leftover `|A|=16` core has four fixed four-atoms and no nontrivial zero-gain moves.
+four-four no-leftover subcase has four fixed four-atoms and no nontrivial zero-gain moves.
 
 More generally the leftover count is a budget.  Let `L` be the number of leftover singleton atoms of the
 four-atom packing.  A zero-gain shortened-block lift at an atom `B_j` is a same-size exchange and therefore

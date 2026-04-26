@@ -2489,9 +2489,9 @@ Recommended attack:
     orbit.
     Derive zero-gain locality: in a lexicographically saturated packing, a zero-gain support cannot meet two
     packed atoms; if it meets one, it has the same size as that atom.
-    Add strict cross-defect corollary: supports meeting `r>=2` atoms satisfy `delta>=r`; in the first
-    no-leftover four-four-atom core, cross-support sizes are bounded by `6/9/12`.
-    Add the first no-leftover deletion dichotomy: in the four-four-atom core, every deletion repair is either
+    Add strict cross-defect corollary: supports meeting `r>=2` atoms satisfy `delta>=r`; in the four-four
+    no-leftover subcase, cross-support sizes are bounded by `6/9/12`.
+    Add the four-four no-leftover deletion dichotomy: every deletion repair is either
     unit strict absorption (`h=0,t=1,g^-=1`) or lift-collision.
     Formalize the unit strict absorption taxonomy from `g^-=pi-s-delta=1`: the only templates are
     `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)` on the three atoms opposite the deleted vertex.
@@ -2512,14 +2512,15 @@ Recommended attack:
     singletons.
     Add lift-collision alternative: a projected repair family has no disjoint full lift only if at least two
     projected supports are forced to lift through the deleted vertex.
-    Derive the small-atom corollary: size-two atoms have no collision-star endpoint after
-    inclusion-minimality; their only deletion endpoint is a zero-gain pivot.  Size-three atoms purely absorb
-    only unit projected gain.
+    Derive the small-atom corollary: size-two atoms have only zero-gain pivots in the noncollision branch;
+    size-three atoms purely absorb only unit projected gain.
+    Record the caution that inclusion-minimality gives positive marginal contribution, not positive individual
+    gain, so two-atom collision stars remain a real branch.
     Add pair-pivot saturation: a zero-gain pair pivot meeting another packed atom creates a larger block and
     contradicts zero-gain saturation; surviving pair pivots are same-size exchanges with leftover singletons,
-    so saturated packings with no leftover singletons have no pair atoms.
-    Derive the no-leftover cutoff: if `L=0`, pair atoms are excluded by pivot saturation and three-atoms are
-    excluded by lift-locality, so all four atoms have size at least four and `|A|>=16`.
+    so pair atoms with no leftover singleton are collision endpoints.
+    Record the no-leftover small-atom endpoint: pair atoms have no pivot option, and three-atoms have no
+    zero-gain/equality-absorption boundary lift; both survive only by strict absorption or collision.
     Add no-leftover zero-gain rigidity: with `L=0`, zero-gain supports are exactly the packed atoms and the
     zero-gain orbit is trivial.
     Record leftover-budget rules: zero-gain shortened-block exchanges require `L>=1`; equality pure

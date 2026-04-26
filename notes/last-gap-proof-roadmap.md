@@ -1998,9 +1998,9 @@ What remains justified after audit is:
       replacement orbit;
       zero-gain supports in a lexicographically saturated packing are local same-size exchanges with at most
       one packed atom;
-      cross-atom supports have strict atom defect `delta>=pi`, giving `6/9/12` size caps in the first
-      no-leftover four-four-atom core;
-      deletion in that first no-leftover core is exactly unit strict absorption or lift-collision;
+      cross-atom supports have strict atom defect `delta>=pi`, giving `6/9/12` size caps in the four-four
+      no-leftover subcase;
+      deletion in that four-four no-leftover subcase is exactly unit strict absorption or lift-collision;
       unit strict absorption has only the three atom templates
       `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)`, all cap-tight;
       deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
@@ -2015,12 +2015,14 @@ What remains justified after audit is:
       singletons;
       absence of a disjoint full lift is exactly lift-collision by at least two supports forced through the
       deleted vertex;
-      small atoms sharpen this: inclusion-minimality rules out pair-atom collision stars, so two-atom
-      deletion endpoints are only zero-gain pivots, while size-three atoms purely absorb only unit gain;
+      small atoms sharpen this: two-atom noncollision endpoints are only zero-gain pivots, while size-three
+      atoms purely absorb only unit gain;
+      two-atom collision stars remain genuine because minimality gives positive marginal contribution, not
+      positive individual gain;
       zero-gain saturation leaves pair pivots only as same-size exchanges with leftover singletons, so
-      saturated packings with no leftover singletons have no pair atoms;
-      lift-locality also excludes three-atoms without leftover singletons, so no-leftover saturated packings
-      have `|A|>=16`, with the first no-leftover core forced to be four four-atoms;
+      pair atoms with no leftover singleton are collision endpoints;
+      three-atoms without leftover singletons have no zero-gain/equality-absorption boundary lift and survive
+      only by strict absorption or collision;
       with no leftovers, zero-gain supports are only the packed atoms and the zero-gain orbit is trivial;
       leftover count is a budget: zero-gain exchanges need one leftover singleton, and equality pure
       absorption at `B_j` needs `|B_j|-1`;
