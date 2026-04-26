@@ -39437,6 +39437,537 @@ theorem FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle.m
 end FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle
 
 /--
+Numerical guard for the first one-large terminal profile `h,2,2,2`: either the large
+atom is covered by the absolute terminal table (`h ≤ 24`) or by the sharpened
+partner-free/partner-hit accounting budget `3p + 4q`.
+-/
+def FirstBitTerminalOneLargeHTwoTwoTwoBound
+    (h partnerFreeBudget partnerHitBudget : ℕ) : Prop :=
+  h ≤ 24 ∨ h ≤ 3 * partnerFreeBudget + 4 * partnerHitBudget
+
+/-- The absolute `h ≤ 24` table supplies the one-large `h,2,2,2` bound. -/
+theorem FirstBitTerminalOneLargeHTwoTwoTwoBound.of_le_twentyFour
+    {h partnerFreeBudget partnerHitBudget : ℕ} (h24 : h ≤ 24) :
+    FirstBitTerminalOneLargeHTwoTwoTwoBound h partnerFreeBudget partnerHitBudget :=
+  Or.inl h24
+
+/-- The sharpened `3p + 4q` protected-core accounting supplies the one-large bound. -/
+theorem FirstBitTerminalOneLargeHTwoTwoTwoBound.of_weight_budget
+    {h partnerFreeBudget partnerHitBudget : ℕ}
+    (hbudget : h ≤ 3 * partnerFreeBudget + 4 * partnerHitBudget) :
+    FirstBitTerminalOneLargeHTwoTwoTwoBound h partnerFreeBudget partnerHitBudget :=
+  Or.inr hbudget
+
+/-- Branch tags for the large-target protected-core reduction. -/
+inductive FirstBitTerminalLargeTargetProtectedCoreBranch : Type
+  | oneLargeHTwoTwoTwoFiniteCore
+  | allAtomsSizeAtLeastFourStrictDefect
+  deriving DecidableEq
+
+/--
+Assumption-backed protected-core facade for the large-target terminal lane.  It records
+the two tight protection caps, the deletion of unprotected slack, and the handoff from a
+large target core to the protected-core endpoint.
+-/
+structure FirstBitTerminalLargeTargetProtectedCoreFacade
+    {Core Label Vertex Slack : Type*}
+    (partnerFreeLabel partnerHitLabel : Core → Label → Prop)
+    (protectedByLabel tightOmittedByLabel : Core → Label → Finset Vertex)
+    (unprotectedSlack slackDeleted : Core → Slack → Prop)
+    (largeTargetCore protectedCore largeTargetProtectedCoreEndpoint : Core → Prop) :
+    Prop where
+  partnerFree_protection_card_le_threeCert :
+    ∀ core label, largeTargetCore core → partnerFreeLabel core label →
+      (protectedByLabel core label).card ≤ 3
+  partnerHit_tight_omitted_card_le_fourCert :
+    ∀ core label, largeTargetCore core → partnerHitLabel core label →
+      (tightOmittedByLabel core label).card ≤ 4
+  slackDeleted_of_unprotectedCert :
+    ∀ core slack, largeTargetCore core → unprotectedSlack core slack → slackDeleted core slack
+  protectedCore_of_largeTargetCert : ∀ core, largeTargetCore core → protectedCore core
+  largeTargetProtectedCoreEndpointCert :
+    ∀ core, protectedCore core → largeTargetProtectedCoreEndpoint core
+
+/-- Build the large-target protected-core facade from its local certificates. -/
+theorem firstBitTerminalLargeTargetProtectedCoreFacade_of_parts
+    {Core Label Vertex Slack : Type*}
+    {partnerFreeLabel partnerHitLabel : Core → Label → Prop}
+    {protectedByLabel tightOmittedByLabel : Core → Label → Finset Vertex}
+    {unprotectedSlack slackDeleted : Core → Slack → Prop}
+    {largeTargetCore protectedCore largeTargetProtectedCoreEndpoint : Core → Prop}
+    (hfree :
+      ∀ core label, largeTargetCore core → partnerFreeLabel core label →
+        (protectedByLabel core label).card ≤ 3)
+    (hhit :
+      ∀ core label, largeTargetCore core → partnerHitLabel core label →
+        (tightOmittedByLabel core label).card ≤ 4)
+    (hdelete :
+      ∀ core slack, largeTargetCore core → unprotectedSlack core slack → slackDeleted core slack)
+    (hprotected : ∀ core, largeTargetCore core → protectedCore core)
+    (hendpoint : ∀ core, protectedCore core → largeTargetProtectedCoreEndpoint core) :
+    FirstBitTerminalLargeTargetProtectedCoreFacade partnerFreeLabel partnerHitLabel
+      protectedByLabel tightOmittedByLabel unprotectedSlack slackDeleted largeTargetCore
+      protectedCore largeTargetProtectedCoreEndpoint where
+  partnerFree_protection_card_le_threeCert := hfree
+  partnerHit_tight_omitted_card_le_fourCert := hhit
+  slackDeleted_of_unprotectedCert := hdelete
+  protectedCore_of_largeTargetCert := hprotected
+  largeTargetProtectedCoreEndpointCert := hendpoint
+
+section FirstBitTerminalLargeTargetProtectedCoreFacade
+
+variable {Core Label Vertex Slack : Type*}
+variable {partnerFreeLabel partnerHitLabel : Core → Label → Prop}
+variable {protectedByLabel tightOmittedByLabel : Core → Label → Finset Vertex}
+variable {unprotectedSlack slackDeleted : Core → Slack → Prop}
+variable {largeTargetCore protectedCore largeTargetProtectedCoreEndpoint : Core → Prop}
+
+variable (h :
+  FirstBitTerminalLargeTargetProtectedCoreFacade partnerFreeLabel partnerHitLabel
+    protectedByLabel tightOmittedByLabel unprotectedSlack slackDeleted largeTargetCore
+    protectedCore largeTargetProtectedCoreEndpoint)
+
+/-- Partner-free labels protect at most three vertices in a large target core. -/
+theorem FirstBitTerminalLargeTargetProtectedCoreFacade.partnerFree_protected_card_le_three
+    {core : Core} {label : Label} (hcore : largeTargetCore core)
+    (hlabel : partnerFreeLabel core label) :
+    (protectedByLabel core label).card ≤ 3 :=
+  h.partnerFree_protection_card_le_threeCert core label hcore hlabel
+
+/-- Partner-hit labels protect at most four tight omitted vertices in a large target core. -/
+theorem FirstBitTerminalLargeTargetProtectedCoreFacade.partnerHit_tight_omitted_card_le_four
+    {core : Core} {label : Label} (hcore : largeTargetCore core)
+    (hlabel : partnerHitLabel core label) :
+    (tightOmittedByLabel core label).card ≤ 4 :=
+  h.partnerHit_tight_omitted_card_le_fourCert core label hcore hlabel
+
+/-- Unprotected slack is deleted before the large-target protected-core handoff. -/
+theorem FirstBitTerminalLargeTargetProtectedCoreFacade.slackDeleted_of_unprotected
+    {core : Core} {slack : Slack} (hcore : largeTargetCore core)
+    (hslack : unprotectedSlack core slack) :
+    slackDeleted core slack :=
+  h.slackDeleted_of_unprotectedCert core slack hcore hslack
+
+/-- Project the protected-core marker produced from a large target core. -/
+theorem FirstBitTerminalLargeTargetProtectedCoreFacade.to_protectedCore
+    {core : Core} (hcore : largeTargetCore core) :
+    protectedCore core :=
+  h.protectedCore_of_largeTargetCert core hcore
+
+/-- Project the large-target protected-core endpoint. -/
+theorem FirstBitTerminalLargeTargetProtectedCoreFacade.to_largeTargetProtectedCoreEndpoint
+    {core : Core} (hcore : largeTargetCore core) :
+    largeTargetProtectedCoreEndpoint core :=
+  h.largeTargetProtectedCoreEndpointCert core (h.protectedCore_of_largeTargetCert core hcore)
+
+/-- Compact per-core marker bundle exported by the protected-core facade. -/
+theorem FirstBitTerminalLargeTargetProtectedCoreFacade.protectedCoreMarkerBundle
+    {core : Core} (hcore : largeTargetCore core) :
+    (∀ label, partnerFreeLabel core label → (protectedByLabel core label).card ≤ 3) ∧
+      (∀ label, partnerHitLabel core label → (tightOmittedByLabel core label).card ≤ 4) ∧
+        (∀ slack, unprotectedSlack core slack → slackDeleted core slack) ∧
+          protectedCore core ∧ largeTargetProtectedCoreEndpoint core :=
+  ⟨fun label hlabel => h.partnerFree_protection_card_le_threeCert core label hcore hlabel,
+    fun label hlabel => h.partnerHit_tight_omitted_card_le_fourCert core label hcore hlabel,
+    fun slack hslack => h.slackDeleted_of_unprotectedCert core slack hcore hslack,
+    h.protectedCore_of_largeTargetCert core hcore,
+    h.largeTargetProtectedCoreEndpointCert core (h.protectedCore_of_largeTargetCert core hcore)⟩
+
+end FirstBitTerminalLargeTargetProtectedCoreFacade
+
+/--
+Facade for the first one-large `h,2,2,2` profile.  The large atom is certified by the
+`h ≤ 24` table or by the sharpened `3p + 4q` protected-core budget, while all small
+profile atoms are explicitly size two.
+-/
+structure FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade
+    {Core Atom : Type*}
+    (profileAtoms : Core → Finset Atom)
+    (largeAtom smallAtom : Core → Atom → Prop)
+    (atomSize partnerFreeBudget partnerHitBudget : Core → Atom → ℕ)
+    (oneLargeHTwoTwoTwoCore finiteCoreEndpoint allAtomsSizeAtLeastFourStrictDefect
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint : Core → Prop) : Prop where
+  largeAtom_memCert :
+    ∀ core atom, oneLargeHTwoTwoTwoCore core → largeAtom core atom →
+      atom ∈ profileAtoms core
+  smallAtom_memCert :
+    ∀ core atom, oneLargeHTwoTwoTwoCore core → smallAtom core atom →
+      atom ∈ profileAtoms core
+  smallAtom_size_twoCert :
+    ∀ core atom, oneLargeHTwoTwoTwoCore core → smallAtom core atom →
+      atomSize core atom = 2
+  largeAtom_boundCert :
+    ∀ core atom, oneLargeHTwoTwoTwoCore core → largeAtom core atom →
+      FirstBitTerminalOneLargeHTwoTwoTwoBound (atomSize core atom)
+        (partnerFreeBudget core atom) (partnerHitBudget core atom)
+  finiteCore_or_strictDefectCert :
+    ∀ core, oneLargeHTwoTwoTwoCore core →
+      finiteCoreEndpoint core ∨ allAtomsSizeAtLeastFourStrictDefect core
+  oneLargeHTwoTwoTwoFiniteCoreEndpointCert :
+    ∀ core, finiteCoreEndpoint core ∨ allAtomsSizeAtLeastFourStrictDefect core →
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint core
+
+/-- Build the first one-large `h,2,2,2` finite-core facade from its certificates. -/
+theorem firstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade_of_parts
+    {Core Atom : Type*}
+    {profileAtoms : Core → Finset Atom}
+    {largeAtom smallAtom : Core → Atom → Prop}
+    {atomSize partnerFreeBudget partnerHitBudget : Core → Atom → ℕ}
+    {oneLargeHTwoTwoTwoCore finiteCoreEndpoint allAtomsSizeAtLeastFourStrictDefect
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint : Core → Prop}
+    (hlargeMem :
+      ∀ core atom, oneLargeHTwoTwoTwoCore core → largeAtom core atom →
+        atom ∈ profileAtoms core)
+    (hsmallMem :
+      ∀ core atom, oneLargeHTwoTwoTwoCore core → smallAtom core atom →
+        atom ∈ profileAtoms core)
+    (hsmallSize :
+      ∀ core atom, oneLargeHTwoTwoTwoCore core → smallAtom core atom →
+        atomSize core atom = 2)
+    (hbound :
+      ∀ core atom, oneLargeHTwoTwoTwoCore core → largeAtom core atom →
+        FirstBitTerminalOneLargeHTwoTwoTwoBound (atomSize core atom)
+          (partnerFreeBudget core atom) (partnerHitBudget core atom))
+    (hbranch :
+      ∀ core, oneLargeHTwoTwoTwoCore core →
+        finiteCoreEndpoint core ∨ allAtomsSizeAtLeastFourStrictDefect core)
+    (hendpoint :
+      ∀ core, finiteCoreEndpoint core ∨ allAtomsSizeAtLeastFourStrictDefect core →
+        oneLargeHTwoTwoTwoFiniteCoreEndpoint core) :
+    FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade profileAtoms largeAtom smallAtom
+      atomSize partnerFreeBudget partnerHitBudget oneLargeHTwoTwoTwoCore finiteCoreEndpoint
+      allAtomsSizeAtLeastFourStrictDefect oneLargeHTwoTwoTwoFiniteCoreEndpoint where
+  largeAtom_memCert := hlargeMem
+  smallAtom_memCert := hsmallMem
+  smallAtom_size_twoCert := hsmallSize
+  largeAtom_boundCert := hbound
+  finiteCore_or_strictDefectCert := hbranch
+  oneLargeHTwoTwoTwoFiniteCoreEndpointCert := hendpoint
+
+section FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade
+
+variable {Core Atom : Type*}
+variable {profileAtoms : Core → Finset Atom}
+variable {largeAtom smallAtom : Core → Atom → Prop}
+variable {atomSize partnerFreeBudget partnerHitBudget : Core → Atom → ℕ}
+variable {oneLargeHTwoTwoTwoCore finiteCoreEndpoint allAtomsSizeAtLeastFourStrictDefect
+  oneLargeHTwoTwoTwoFiniteCoreEndpoint : Core → Prop}
+
+variable (h :
+  FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade profileAtoms largeAtom smallAtom
+    atomSize partnerFreeBudget partnerHitBudget oneLargeHTwoTwoTwoCore finiteCoreEndpoint
+    allAtomsSizeAtLeastFourStrictDefect oneLargeHTwoTwoTwoFiniteCoreEndpoint)
+
+/-- Small atoms in the first one-large profile are the three size-two atoms. -/
+theorem FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade.smallAtom_size_two
+    {core : Core} {atom : Atom} (hcore : oneLargeHTwoTwoTwoCore core)
+    (hsmall : smallAtom core atom) :
+    atomSize core atom = 2 :=
+  h.smallAtom_size_twoCert core atom hcore hsmall
+
+/-- The large atom obeys the absolute-or-budgeted `h,2,2,2` bound. -/
+theorem FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade.largeAtom_bound
+    {core : Core} {atom : Atom} (hcore : oneLargeHTwoTwoTwoCore core)
+    (hlarge : largeAtom core atom) :
+    FirstBitTerminalOneLargeHTwoTwoTwoBound (atomSize core atom)
+      (partnerFreeBudget core atom) (partnerHitBudget core atom) :=
+  h.largeAtom_boundCert core atom hcore hlarge
+
+/-- The first one-large profile branches to a finite core or to the all-large strict defect lane. -/
+theorem FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade.finiteCore_or_strictDefect
+    {core : Core} (hcore : oneLargeHTwoTwoTwoCore core) :
+    finiteCoreEndpoint core ∨ allAtomsSizeAtLeastFourStrictDefect core :=
+  h.finiteCore_or_strictDefectCert core hcore
+
+/-- Project the endpoint for the first one-large `h,2,2,2` profile. -/
+theorem FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade.to_oneLargeHTwoTwoTwoFiniteCoreEndpoint
+    {core : Core} (hcore : oneLargeHTwoTwoTwoCore core) :
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint core :=
+  h.oneLargeHTwoTwoTwoFiniteCoreEndpointCert core
+    (h.finiteCore_or_strictDefectCert core hcore)
+
+/-- Compact marker bundle for a certified one-large profile core. -/
+theorem FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade.profileMarkerBundle
+    {core : Core} (hcore : oneLargeHTwoTwoTwoCore core) :
+    (∀ atom, largeAtom core atom →
+      atom ∈ profileAtoms core ∧
+        FirstBitTerminalOneLargeHTwoTwoTwoBound (atomSize core atom)
+          (partnerFreeBudget core atom) (partnerHitBudget core atom)) ∧
+      (∀ atom, smallAtom core atom →
+        atom ∈ profileAtoms core ∧ atomSize core atom = 2) ∧
+        (finiteCoreEndpoint core ∨ allAtomsSizeAtLeastFourStrictDefect core) ∧
+          oneLargeHTwoTwoTwoFiniteCoreEndpoint core :=
+  ⟨fun atom hlarge =>
+      ⟨h.largeAtom_memCert core atom hcore hlarge,
+        h.largeAtom_boundCert core atom hcore hlarge⟩,
+    fun atom hsmall =>
+      ⟨h.smallAtom_memCert core atom hcore hsmall,
+        h.smallAtom_size_twoCert core atom hcore hsmall⟩,
+    h.finiteCore_or_strictDefectCert core hcore,
+    h.oneLargeHTwoTwoTwoFiniteCoreEndpointCert core
+      (h.finiteCore_or_strictDefectCert core hcore)⟩
+
+end FirstBitTerminalOneLargeHTwoTwoTwoFiniteCoreFacade
+
+/--
+Prop-level reduction bundle for the large-target protected-core lane.  From the
+protected-core endpoint it keeps only the first one-large finite-core branch or the
+all-atoms-size-at-least-four strict-defect branch, and exposes the resulting reduction
+endpoint without asserting any unconditional final theorem.
+-/
+structure FirstBitTerminalLargeTargetStrictDefectReductionBundle
+    (largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+      allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint : Prop) :
+    Prop where
+  largeTargetProtectedCoreEndpointCert : largeTargetProtectedCoreEndpoint
+  oneLarge_or_strictDefectCert :
+    largeTargetProtectedCoreEndpoint →
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allAtomsSizeAtLeastFourStrictDefectBranch
+  largeTargetReductionEndpoint_of_branchCert :
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allAtomsSizeAtLeastFourStrictDefectBranch →
+      largeTargetReductionEndpoint
+
+/-- Build the large-target strict-defect reduction bundle from its branch certificates. -/
+theorem firstBitTerminalLargeTargetStrictDefectReductionBundle_of_parts
+    {largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+      allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint : Prop}
+    (hprotected : largeTargetProtectedCoreEndpoint)
+    (hbranch :
+      largeTargetProtectedCoreEndpoint →
+        oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allAtomsSizeAtLeastFourStrictDefectBranch)
+    (hreduction :
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allAtomsSizeAtLeastFourStrictDefectBranch →
+        largeTargetReductionEndpoint) :
+    FirstBitTerminalLargeTargetStrictDefectReductionBundle largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint where
+  largeTargetProtectedCoreEndpointCert := hprotected
+  oneLarge_or_strictDefectCert := hbranch
+  largeTargetReductionEndpoint_of_branchCert := hreduction
+
+section FirstBitTerminalLargeTargetStrictDefectReductionBundle
+
+variable {largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+  allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalLargeTargetStrictDefectReductionBundle largeTargetProtectedCoreEndpoint
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+    largeTargetReductionEndpoint)
+
+/-- Project the one-large-or-strict-defect branch selected by the reduction bundle. -/
+theorem FirstBitTerminalLargeTargetStrictDefectReductionBundle.to_branch :
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allAtomsSizeAtLeastFourStrictDefectBranch :=
+  h.oneLarge_or_strictDefectCert h.largeTargetProtectedCoreEndpointCert
+
+/-- Project the large-target reduction endpoint. -/
+theorem FirstBitTerminalLargeTargetStrictDefectReductionBundle.to_largeTargetReductionEndpoint :
+    largeTargetReductionEndpoint :=
+  h.largeTargetReductionEndpoint_of_branchCert
+    (h.oneLarge_or_strictDefectCert h.largeTargetProtectedCoreEndpointCert)
+
+/-- Compact marker bundle for the one-large/strict-defect reduction. -/
+theorem FirstBitTerminalLargeTargetStrictDefectReductionBundle.markerBundle :
+    largeTargetProtectedCoreEndpoint ∧
+      (oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allAtomsSizeAtLeastFourStrictDefectBranch) ∧
+        largeTargetReductionEndpoint :=
+  ⟨h.largeTargetProtectedCoreEndpointCert,
+    h.oneLarge_or_strictDefectCert h.largeTargetProtectedCoreEndpointCert,
+    h.largeTargetReductionEndpoint_of_branchCert
+      (h.oneLarge_or_strictDefectCert h.largeTargetProtectedCoreEndpointCert)⟩
+
+end FirstBitTerminalLargeTargetStrictDefectReductionBundle
+
+/--
+Terminal no-leftover foldback bundle for the large-target protected-core extension.  It
+imports the four-exception residual/binary normalization frontier, folds in the
+large-target strict-defect reduction, and records the all-ternary/star-phase and
+signed-quotient/typed-`F` endpoints needed by the current public frontier.
+-/
+structure FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle
+    (twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint : Prop) :
+    Prop where
+  residualBinaryNormalization :
+    FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint
+  largeTargetReduction :
+    FirstBitTerminalLargeTargetStrictDefectReductionBundle largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint
+  allTernary3333IncidenceProfilesCert : allTernary3333IncidenceProfiles
+  symmetricAllTernaryStarPhaseEndpointCert : symmetricAllTernaryStarPhaseEndpoint
+  currentNoLeftoverFrontierEndpointCert :
+    fourExceptionResidualBinaryNormalizationEndpoint → largeTargetReductionEndpoint →
+      allTernary3333IncidenceProfiles → symmetricAllTernaryStarPhaseEndpoint →
+        signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+          currentNoLeftoverFrontierEndpoint
+
+/--
+Build the large-target terminal no-leftover foldback bundle from the residual/binary
+normalization bundle, the large-target reduction bundle, and the all-ternary/current
+frontier handoff rule.
+-/
+theorem firstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle_of_parts
+    {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint : Prop}
+    (hresidual :
+      FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle
+        twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+        fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+        rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+        signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+        signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+        fourExceptionResidualBinaryNormalizationEndpoint)
+    (hlarge :
+      FirstBitTerminalLargeTargetStrictDefectReductionBundle largeTargetProtectedCoreEndpoint
+        oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+        largeTargetReductionEndpoint)
+    (hallTernary : allTernary3333IncidenceProfiles)
+    (hstar : symmetricAllTernaryStarPhaseEndpoint)
+    (hcurrent :
+      fourExceptionResidualBinaryNormalizationEndpoint → largeTargetReductionEndpoint →
+        allTernary3333IncidenceProfiles → symmetricAllTernaryStarPhaseEndpoint →
+          signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+            currentNoLeftoverFrontierEndpoint) :
+    FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint where
+  residualBinaryNormalization := hresidual
+  largeTargetReduction := hlarge
+  allTernary3333IncidenceProfilesCert := hallTernary
+  symmetricAllTernaryStarPhaseEndpointCert := hstar
+  currentNoLeftoverFrontierEndpointCert := hcurrent
+
+section FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle
+
+variable {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+  fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+  rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+  signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+  signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+  fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+  oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+  largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+  symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle
+    twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+    fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+    rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+    signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+    signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+    fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+    largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+    symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint)
+
+/-- Project the large-target reduction endpoint carried by the foldback bundle. -/
+theorem FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle.to_largeTargetReductionEndpoint :
+    largeTargetReductionEndpoint :=
+  h.largeTargetReduction.largeTargetReductionEndpoint_of_branchCert
+    (h.largeTargetReduction.oneLarge_or_strictDefectCert
+      h.largeTargetReduction.largeTargetProtectedCoreEndpointCert)
+
+/-- Project the residual/binary normalization endpoint carried by the foldback bundle. -/
+theorem
+    FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle.to_fourExceptionResidualBinaryNormalizationEndpoint :
+    fourExceptionResidualBinaryNormalizationEndpoint :=
+  h.residualBinaryNormalization.fourExceptionResidualBinaryNormalizationEndpointCert
+
+/-- Project the signed-quotient scalar closure endpoint imported from the residual bundle. -/
+theorem
+    FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.residualBinaryNormalization.signedQuotientScalarClosureEndpointCert
+
+/-- Project the typed `F`-graph branch endpoint imported from the residual bundle. -/
+theorem FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle.to_typedFGraphBranchEndpoint :
+    typedFGraphBranchEndpoint :=
+  h.residualBinaryNormalization.typedFGraphBranchEndpointCert
+
+/-- Project the all-ternary `3,3,3,3` incidence-profile marker. -/
+theorem FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle.to_allTernary3333IncidenceProfiles :
+    allTernary3333IncidenceProfiles :=
+  h.allTernary3333IncidenceProfilesCert
+
+/-- Project the symmetric all-ternary star-phase endpoint. -/
+theorem
+    FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle.to_symmetricAllTernaryStarPhaseEndpoint :
+    symmetricAllTernaryStarPhaseEndpoint :=
+  h.symmetricAllTernaryStarPhaseEndpointCert
+
+/-- Project the current no-leftover terminal frontier endpoint. -/
+theorem FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle.to_currentNoLeftoverFrontierEndpoint :
+    currentNoLeftoverFrontierEndpoint :=
+  h.currentNoLeftoverFrontierEndpointCert
+    h.residualBinaryNormalization.fourExceptionResidualBinaryNormalizationEndpointCert
+    (h.largeTargetReduction.largeTargetReductionEndpoint_of_branchCert
+      (h.largeTargetReduction.oneLarge_or_strictDefectCert
+        h.largeTargetReduction.largeTargetProtectedCoreEndpointCert))
+    h.allTernary3333IncidenceProfilesCert
+    h.symmetricAllTernaryStarPhaseEndpointCert
+    h.residualBinaryNormalization.signedQuotientScalarClosureEndpointCert
+    h.residualBinaryNormalization.typedFGraphBranchEndpointCert
+
+/-- Compact marker bundle exported to the current terminal/no-leftover frontier. -/
+theorem FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle.markerBundle :
+    fourExceptionResidualBinaryNormalizationEndpoint ∧ largeTargetProtectedCoreEndpoint ∧
+      (oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allAtomsSizeAtLeastFourStrictDefectBranch) ∧
+        largeTargetReductionEndpoint ∧ allTernary3333IncidenceProfiles ∧
+          symmetricAllTernaryStarPhaseEndpoint ∧ signedQuotientScalarClosureEndpoint ∧
+            typedFGraphBranchEndpoint ∧ currentNoLeftoverFrontierEndpoint :=
+  ⟨h.residualBinaryNormalization.fourExceptionResidualBinaryNormalizationEndpointCert,
+    h.largeTargetReduction.largeTargetProtectedCoreEndpointCert,
+    h.largeTargetReduction.oneLarge_or_strictDefectCert
+      h.largeTargetReduction.largeTargetProtectedCoreEndpointCert,
+    h.largeTargetReduction.largeTargetReductionEndpoint_of_branchCert
+      (h.largeTargetReduction.oneLarge_or_strictDefectCert
+        h.largeTargetReduction.largeTargetProtectedCoreEndpointCert),
+    h.allTernary3333IncidenceProfilesCert,
+    h.symmetricAllTernaryStarPhaseEndpointCert,
+    h.residualBinaryNormalization.signedQuotientScalarClosureEndpointCert,
+    h.residualBinaryNormalization.typedFGraphBranchEndpointCert,
+    h.currentNoLeftoverFrontierEndpointCert
+      h.residualBinaryNormalization.fourExceptionResidualBinaryNormalizationEndpointCert
+      (h.largeTargetReduction.largeTargetReductionEndpoint_of_branchCert
+        (h.largeTargetReduction.oneLarge_or_strictDefectCert
+          h.largeTargetReduction.largeTargetProtectedCoreEndpointCert))
+      h.allTernary3333IncidenceProfilesCert
+      h.symmetricAllTernaryStarPhaseEndpointCert
+      h.residualBinaryNormalization.signedQuotientScalarClosureEndpointCert
+      h.residualBinaryNormalization.typedFGraphBranchEndpointCert⟩
+
+end FirstBitTerminalLargeTargetNoLeftoverFrontierFoldbackBundle
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
