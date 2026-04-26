@@ -6553,14 +6553,14 @@ same independent-pair argument applies.  Therefore a forest support has at most 
 classes, and if there are two then they are adjacent in the cube; all other supported types are cliques
 of size at most `m`.
 
-This leaves only one genuinely new adjacent-type residual.  If the adjacent types share a zero
+At first this leaves only one adjacent-type residual.  If the adjacent types share a zero
 coordinate, their union lies in a single miss class `M_x`, so the whole union has independence number at
 most two; since the ambient direction is induced-`C_4`-free, complementing this union gives exactly the
 same girth-five selector already isolated above.  If the adjacent types share no zero coordinate, then
 up to symmetry the pair is `111`--`110`: the lower type lies in one miss class, and every vertex of that
 lower type has a clique neighbourhood in the all-hit type by the one-corner rule.  Thus the
-support-at-most-four branch reduces to the one-type girth-five selector or to this single top-edge
-incidence problem, plus at most `2m` clique-bounded spill.
+support-at-most-four branch reduces to the one-type girth-five selector or to this top-edge incidence
+problem, plus at most `2m` clique-bounded spill.
 
 The top-edge incidence problem also collapses to one-type selector surfaces.  Write the lower type as
 `A=110` and the all-hit type as `B=111`.  If `A` contains an independent pair `a_1,a_2`, then each
@@ -6571,8 +6571,16 @@ The only unbounded part is then `A`, which is an `alpha<=2`, induced-`C_4`-free 
 therefore complements to the girth-five selector above.  If `A` has no independent pair, it is a clique
 and contributes at most `m`; the only unbounded part is `B`, an `alpha<=3`, induced-`C_4`-free one-type
 instance, equivalently after complement a `2K_2`-free, `K_4`-free selector with the same
-induced-`Delta<=2` exclusion recorded for the corrected `{0,1}` branch.  Thus small cube-forest support
-introduces no new two-type obstruction.
+induced-`Delta<=2` exclusion recorded for the corrected `{0,1}` branch.  Here a genuine chromatic import
+is available: Wagon's χ-bound for `2K_2`-free graphs gives
+
+```text
+chi <= binom(omega+1,2).
+```
+
+Since the complement has `omega<=3` and independence number at most `m`, this all-hit case has size at
+most `6m`.  Thus small cube-forest support introduces no new two-type obstruction and is linearly capped
+apart from the already isolated girth-five one-type selector.
 
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with
