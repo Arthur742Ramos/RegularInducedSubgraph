@@ -21884,6 +21884,1948 @@ theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinal
 
 end FinalConsumerPairPivotBridgeBlockerApi
 
+/-!
+## Final consumer strict cross-atom and no-leftover deletion handoff
+
+The pair-pivot handoff exposes the terminal deletion pivots and collision-star alternative.
+This layer keeps the next proof-md frontier explicit: strict cross-atom defect control and the
+first no-leftover four-four-atom deletion dichotomy remain assumptions, but are packaged with the
+final consumer surface so downstream users can import one coherent handoff.
+-/
+
+/--
+Assumption packet for the no-leftover deletion frontier.  The dichotomy itself is kept separate
+from the named unit-absorption/lift-collision consequence so consumers can depend on either public
+surface without closing the current-frontier proof.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+    (terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop) :
+    Type where
+  noLeftoverFourFourAtomDeletionDichotomy :
+    terminalNoLeftoverFourFourAtomDeletionDichotomy
+  unitStrictAbsorptionOrLiftCollision :
+    terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+
+/--
+Final consumer handoff after adjoining strict cross-atom defect control to the pair-pivot
+bridge-blocker handoff.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop)
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop)
+    (terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop)
+    (terminalStrictCrossAtomDefect : Prop) :
+    Type where
+  finalConsumerPairPivotHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+  strictCrossAtomDefect : terminalStrictCrossAtomDefect
+
+/--
+Final consumer handoff carrying the strict cross-atom defect assumption and the first no-leftover
+four-four-atom deletion dichotomy.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop)
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop)
+    (terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop)
+    (terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop) :
+    Type where
+  strictCrossDefectHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+  noLeftoverDeletionAssumptions :
+    CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+
+section FinalConsumerStrictCrossNoLeftoverApi
+
+variable {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+variable {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+variable {packingSize : AnchoredPacking → ℕ}
+variable {WitnessCountAtLeast : ℕ → ℕ → Prop}
+variable {TwoDisjointTemplatesNeedTwo : Prop}
+variable {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+variable {v : ↑(s : Set α)}
+variable {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+variable {terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop}
+variable {terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop}
+variable {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+  terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+
+/-- Project the no-leftover four-four-atom deletion dichotomy. -/
+def CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions.toNoLeftoverFourFourAtomDeletionDichotomy
+    {terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverFourFourAtomDeletionDichotomy :=
+  h.noLeftoverFourFourAtomDeletionDichotomy
+
+/-- Project the unit strict absorption / lift-collision no-leftover consequence. -/
+def CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions.toUnitStrictAbsorptionOrLiftCollision
+    {terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.unitStrictAbsorptionOrLiftCollision
+
+/-- Promote a pair-pivot handoff by adjoining strict cross-atom defect control. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerStrictCrossDefectHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect) :
+    CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect where
+  finalConsumerPairPivotHandoff := h
+  strictCrossAtomDefect := strictCrossAtomDefect
+
+/-- Non-dot constructor for the strict cross-atom defect handoff. -/
+def certifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff_of_pairPivotHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect) :
+    CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect :=
+  h.toFinalConsumerStrictCrossDefectHandoff strictCrossAtomDefect
+
+/-- Project the underlying pair-pivot bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff.toFinalConsumerPairPivotHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing :=
+  h.finalConsumerPairPivotHandoff
+
+/-- Project the strict cross-atom defect assumption. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff.toTerminalStrictCrossAtomDefect
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect) :
+    terminalStrictCrossAtomDefect :=
+  h.strictCrossAtomDefect
+
+/-- Promote a strict cross-atom defect handoff by adjoining no-leftover deletion assumptions. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision where
+  strictCrossDefectHandoff := h
+  noLeftoverDeletionAssumptions := noLeftoverDeletionAssumptions
+
+/-- Promote a pair-pivot handoff directly to the no-leftover handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerStrictCrossDefectHandoff strictCrossAtomDefect).toFinalConsumerNoLeftoverHandoff
+    noLeftoverDeletionAssumptions
+
+/-- Non-dot constructor for the no-leftover handoff from the pair-pivot handoff. -/
+def certifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff_of_pairPivotHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toFinalConsumerNoLeftoverHandoff strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the archive/release bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the final consumer archive/release facade. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the final public archive/release facade. -/
+def CertifiedProofMdCurrentFrontierFinalPublicArchiveReleaseFacade.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the final public archive/release bundle. -/
+def CertifiedProofMdCurrentFrontierFinalPublicArchiveRelease.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicArchiveRelease
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the final public archive bundle. -/
+def CertifiedProofMdCurrentFrontierFinalPublicArchiveBundle.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicArchiveBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the final public release bundle. -/
+def CertifiedProofMdCurrentFrontierFinalPublicReleaseBundle.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicReleaseBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the final public handoff export. -/
+def CertifiedProofMdCurrentFrontierFinalPublicHandoffExport.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the final handoff manifest. -/
+def CertifiedProofMdCurrentFrontierFinalHandoffManifest.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Build the no-leftover handoff from the final consumer handoff export. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toFinalConsumerPairPivotHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions).toFinalConsumerNoLeftoverHandoff
+    strictCrossAtomDefect noLeftoverDeletionAssumptions
+
+/-- Project the strict cross-atom handoff from the no-leftover handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerStrictCrossDefectHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect :=
+  h.strictCrossDefectHandoff
+
+/-- Project the no-leftover deletion assumption packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toNoLeftoverDeletionAssumptions
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverDeletionAssumptions
+
+/-- Project the pair-pivot bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerPairPivotHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing :=
+  h.toFinalConsumerStrictCrossDefectHandoff.toFinalConsumerPairPivotHandoff
+
+/-- Project the archive/release bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerPairPivotHandoff.toFinalConsumerArchiveReleaseHandoff
+
+/-- Project the final consumer archive/release facade. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerArchiveReleaseFacade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalConsumerArchiveReleaseFacade
+
+/-- Project the final public archive/release facade. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalPublicArchiveReleaseFacade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalPublicArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalPublicArchiveReleaseFacade
+
+/-- Project the final public archive/release bundle. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalPublicArchiveRelease
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalPublicArchiveRelease
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalPublicArchiveRelease
+
+/-- Project the final public archive bundle. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalPublicArchiveBundle
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalPublicArchiveBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalPublicArchiveBundle
+
+/-- Project the final public release bundle. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalPublicReleaseBundle
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalPublicReleaseBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalPublicReleaseBundle
+
+/-- Project the final public handoff export. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalPublicHandoffExport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalPublicHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalPublicHandoffExport
+
+/-- Project the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerDashboard
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalConsumerDashboard
+
+/-- Project the final handoff manifest. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalHandoffManifest
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalHandoffManifest
+
+/-- Project the final consumer handoff export. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerHandoffExport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalConsumerHandoffExport
+
+/-- Project the public handoff summary. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toPublicHandoffSummary
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierPublicHandoffSummary
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toPublicHandoffSummary
+
+/-- Project the final public checklist. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalPublicChecklist
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalPublicChecklist
+
+/-- Project the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toPublicAuditChecklist
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toPublicAuditChecklist
+
+/-- Project the downstream audit ledger. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toDownstreamAuditLedger
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toDownstreamAuditLedger
+
+/-- Project the downstream manifest. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toDownstreamManifest
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierDownstreamManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toDownstreamManifest
+
+/-- Project the downstream obligation matrix. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toDownstreamObligationMatrix
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierDownstreamObligationMatrix
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toDownstreamObligationMatrix
+
+/-- Project the consumer obligation export. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toConsumerObligationExport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierConsumerObligationExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toConsumerObligationExport
+
+/-- Project the remaining assumption-backed surfaces. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalRemainingAssumptionSurfaces
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierFinalRemainingAssumptionSurfaces
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toFinalRemainingAssumptionSurfaces
+
+/-- Project the Ramsey current-frontier consumer release surface. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toRamseyCurrentFrontierConsumerSurface
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toFinalConsumerPairPivotHandoff.toRamseyCurrentFrontierConsumerSurface
+
+/-- Project the Ramsey proof-md import surface. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toRamseyCurrentFrontierProofMdImport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toFinalConsumerPairPivotHandoff.toRamseyCurrentFrontierProofMdImport
+
+/-- Project the bridge-blocker assumption packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toBridgeBlockerAssumptions
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerPairPivotHandoff.toBridgeBlockerAssumptions
+
+/-- Project the terminal rank-three bridge closure assumption. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalRankThreeBridgeClosure
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalRankThreeBridgeClosure :=
+  h.toFinalConsumerPairPivotHandoff.toTerminalRankThreeBridgeClosure
+
+/-- Project the terminal zero-gain saturation assumption. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalZeroGainSaturation
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalZeroGainSaturation :=
+  h.toFinalConsumerPairPivotHandoff.toTerminalZeroGainSaturation
+
+/-- Project the terminal four-atom bridge-blocker assumption. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalFourAtomBridgeBlockers
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerPairPivotHandoff.toTerminalFourAtomBridgeBlockers
+
+/-- Project the pair-pivot bridge-blocker assumption packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toPairPivotBridgeBlockerAssumptions
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing :=
+  h.toFinalConsumerPairPivotHandoff.toPairPivotBridgeBlockerAssumptions
+
+/-- Project the strict cross-atom defect assumption. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalStrictCrossAtomDefect
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalStrictCrossAtomDefect :=
+  h.toFinalConsumerStrictCrossDefectHandoff.toTerminalStrictCrossAtomDefect
+
+/-- Project the no-leftover four-four-atom deletion dichotomy. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalNoLeftoverFourFourAtomDeletionDichotomy
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverFourFourAtomDeletionDichotomy :=
+  h.toNoLeftoverDeletionAssumptions.toNoLeftoverFourFourAtomDeletionDichotomy
+
+/-- Project the no-leftover unit strict absorption / lift-collision consequence. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toNoLeftoverDeletionAssumptions.toUnitStrictAbsorptionOrLiftCollision
+
+/-- Project the terminal pair-atom deletion pivot assumption. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalPairAtomDeletionPivots
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalPairAtomDeletionPivots :=
+  h.toFinalConsumerPairPivotHandoff.toTerminalPairAtomDeletionPivots
+
+/-- Project the terminal pair-pivot saturation assumption. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalPairPivotSaturation
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalPairPivotSaturation :=
+  h.toFinalConsumerPairPivotHandoff.toTerminalPairPivotSaturation
+
+/-- Project the collision-star forcing assumption. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalCollisionStarForcing
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalCollisionStarForcing :=
+  h.toFinalConsumerPairPivotHandoff.toTerminalCollisionStarForcing
+
+/-- Project the terminal packet-atom public export. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalPacketAtomPublicExport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomPublicExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toTerminalPacketAtomPublicExport
+
+/-- Project terminal mixed-core imports. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalMixedCore
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.toFinalConsumerPairPivotHandoff.toTerminalMixedCore
+
+/-- Project the first-bit co-cut assumptions. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFirstBitCoCut
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toFinalConsumerPairPivotHandoff.toFirstBitCoCut
+
+/-- Project packet-atom frontier imports. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toPacketAtomFrontierImports
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitTerminalPacketAtomFrontierImports
+      sizeRefinedAtoms defectCorrection unionAntiCancellation :=
+  h.toFinalConsumerPairPivotHandoff.toPacketAtomFrontierImports
+
+/-- Project packet-atom shadow imports. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toPacketAtomShadowImports
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+      (FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerPairPivotHandoff.toPacketAtomShadowImports
+
+/-- Project the q16 terminal Ramsey bound. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toCliqueOrIndepSetBound16
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    HasCliqueOrIndepSetBound 16 16 8388607 :=
+  h.toFinalConsumerPairPivotHandoff.toCliqueOrIndepSetBound16
+
+/-- Project the terminal dyadic tail route. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTerminalTailFromFive
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive :=
+  h.toFinalConsumerPairPivotHandoff.toTerminalTailFromFive
+
+/-- Project the higher-bit fixed-witness target imports. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toHigherBitFixedWitnessTargetsFromEleven
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven :=
+  h.toFinalConsumerPairPivotHandoff.toHigherBitFixedWitnessTargetsFromEleven
+
+/-- Project the target statement bundle. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTargetStatementBundle
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toFinalConsumerPairPivotHandoff.toTargetStatementBundle
+
+/-- Project the final target consumer certificate. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalTargetConsumerCertificate
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.toFinalConsumerPairPivotHandoff.toFinalTargetConsumerCertificate
+
+/-- Project compact Ramsey numerical consequences. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalNumericalConsequences
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalConsumerPairPivotHandoff.toFinalNumericalConsequences
+
+/-- Project the target statement. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toTargetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.toFinalConsumerPairPivotHandoff.toTargetStatement
+
+/-- The no-leftover handoff exposes the certified target statement from the final consumer surface. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.toTargetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions.mk_toNoLeftoverFourFourAtomDeletionDichotomy
+    (noLeftoverDichotomy : terminalNoLeftoverFourFourAtomDeletionDichotomy)
+    (unitOrCollision : terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions.mk
+      noLeftoverDichotomy unitOrCollision).toNoLeftoverFourFourAtomDeletionDichotomy =
+      noLeftoverDichotomy :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions.mk_toUnitStrictAbsorptionOrLiftCollision
+    (noLeftoverDichotomy : terminalNoLeftoverFourFourAtomDeletionDichotomy)
+    (unitOrCollision : terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions.mk
+      noLeftoverDichotomy unitOrCollision).toUnitStrictAbsorptionOrLiftCollision =
+      unitOrCollision :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerStrictCrossDefectHandoff_pairPivotHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect) :
+    (h.toFinalConsumerStrictCrossDefectHandoff strictCrossAtomDefect).toFinalConsumerPairPivotHandoff =
+      h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerStrictCrossDefectHandoff_strictCross
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect) :
+    (h.toFinalConsumerStrictCrossDefectHandoff strictCrossAtomDefect).toTerminalStrictCrossAtomDefect =
+      strictCrossAtomDefect :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff.toFinalConsumerNoLeftoverHandoff_strictCross
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff noLeftoverDeletionAssumptions).toFinalConsumerStrictCrossDefectHandoff =
+      h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff.toFinalConsumerNoLeftoverHandoff_noLeftoverAssumptions
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff noLeftoverDeletionAssumptions).toNoLeftoverDeletionAssumptions =
+      noLeftoverDeletionAssumptions :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerNoLeftoverHandoff_pairPivotHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff strictCrossAtomDefect noLeftoverDeletionAssumptions).toFinalConsumerPairPivotHandoff =
+      h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerNoLeftoverHandoff_strictCross
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff strictCrossAtomDefect noLeftoverDeletionAssumptions).toTerminalStrictCrossAtomDefect =
+      strictCrossAtomDefect :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerNoLeftoverHandoff_noLeftoverDichotomy
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff strictCrossAtomDefect noLeftoverDeletionAssumptions).toTerminalNoLeftoverFourFourAtomDeletionDichotomy =
+      noLeftoverDeletionAssumptions.toNoLeftoverFourFourAtomDeletionDichotomy :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerNoLeftoverHandoff_unitStrictAbsorptionOrLiftCollision
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff strictCrossAtomDefect noLeftoverDeletionAssumptions).toTerminalNoLeftoverUnitStrictAbsorptionOrLiftCollision =
+      noLeftoverDeletionAssumptions.toUnitStrictAbsorptionOrLiftCollision :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerNoLeftoverHandoff_publicSummary
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff strictCrossAtomDefect noLeftoverDeletionAssumptions).toPublicHandoffSummary =
+      h.toPublicHandoffSummary :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerNoLeftoverHandoff_targetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff strictCrossAtomDefect noLeftoverDeletionAssumptions).toTargetStatement =
+      h.toTargetStatement :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerNoLeftoverHandoff_numericalConsequences
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff strictCrossAtomDefect noLeftoverDeletionAssumptions).toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalConsumerNoLeftoverHandoff_archiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff pairPivotBridgeBlockerAssumptions strictCrossAtomDefect noLeftoverDeletionAssumptions).toFinalConsumerArchiveReleaseHandoff =
+      h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalConsumerNoLeftoverHandoff_pairPivotAssumptions
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff pairPivotBridgeBlockerAssumptions strictCrossAtomDefect noLeftoverDeletionAssumptions).toPairPivotBridgeBlockerAssumptions =
+      pairPivotBridgeBlockerAssumptions :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerNoLeftoverHandoff_facade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions strictCrossAtomDefect noLeftoverDeletionAssumptions).toFinalConsumerArchiveReleaseFacade =
+      h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerNoLeftoverHandoff_bridgeBlockerAssumptions
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions strictCrossAtomDefect noLeftoverDeletionAssumptions).toBridgeBlockerAssumptions =
+      bridgeBlockerAssumptions :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerNoLeftoverHandoff_targetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (h.toFinalConsumerNoLeftoverHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions strictCrossAtomDefect noLeftoverDeletionAssumptions).toTargetStatement =
+      h.toTargetStatement :=
+  rfl
+
+end FinalConsumerStrictCrossNoLeftoverApi
+
 end FinalObligationDashboard
 
 end RegularInducedSubgraph
