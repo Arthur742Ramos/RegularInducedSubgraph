@@ -2056,6 +2056,11 @@ Recommended attack:
    with the six lines of `F\{L_0}`, then only `empty`, `L_0`, `R_i\L_0`, and `R_i` occur.
    Conclude that full and near-Fano anchored packings force trace twins, so a trace-twin-free anchored
    quotient has external packing size at most five.
+   Record the post-quotient witness-count table from `|P|-nu(Gamma(P))`: sizes `5,4,3,2` need at least
+   `3,2,2,1` witnesses respectively, except two disjoint triples need two.
+   Add the six-cycle leave collapse: the forced block system
+   `{024},{135},{infty 03},{infty 14},{infty 25}` has anchored balanced traces only `empty` and full,
+   by `3(t-x_infty)=2t`.  Therefore irreducible anchored five-packings must have two-triangle leave.
    In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
    iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

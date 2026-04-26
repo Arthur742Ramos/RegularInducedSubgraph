@@ -8908,6 +8908,35 @@ packing has size at most five.  The Fano and near-Fano witness-cover catalogues 
 diagnostics: their occurrence forces a twin split/merge rather than a genuinely seven-point anchored
 core.
 
+The remaining trace-twin-free anchored packing core is therefore bounded by the following witness-count
+table:
+
+```text
+|P|=5: at least 5-nu(Gamma(P)) >= 3 witnesses;
+|P|=4: at least 4-nu(Gamma(P)) >= 2 witnesses;
+|P|=3: at least 3-nu(Gamma(P)) >= 2 witnesses;
+|P|=2: one witness iff the two triples meet, otherwise two.
+```
+
+Equality means exactly the maximum-matching normal form above.  Thus the only post-quotient anchored
+terminal core with three external templates or more has at least two internally bad kept pairs, and the
+five-template endpoint has at least three.
+
+The six-cycle leave subcase of `|P|=5` also forces trace twins.  If the leave is
+`C_6` on `0,1,2,3,4,5` with isolated point `infty`, the five triples are forced to be
+
+```text
+{0,2,4}, {1,3,5},
+{infty,0,3}, {infty,1,4}, {infty,2,5}.
+```
+
+For an anchored occupied trace with common intersection `t`, the three `infty`-lines give
+`x_0+x_3=x_1+x_4=x_2+x_5=t-x_infty`, while the two alternating lines give
+`x_0+x_2+x_4=x_1+x_3+x_5=t`.  Summing the three pair equations and the two alternating equations forces
+`3(t-x_infty)=2t`.  If `x_infty=0`, then `t=0`; if `x_infty=1`, then `t=3`.  Thus the trace is empty or
+full.  Hence a trace-twin-free anchored five-packing cannot have six-cycle leave; its leave must be the
+two-triangle Eulerian type.
+
 For `P=F` this lower bound has an exact Fano-plane form.  A kept-pair witness `e` kills precisely the
 Fano lines disjoint from `e`; therefore a witness graph `H` kills all Fano omitted triples iff no Fano
 line meets every edge of `H`.  Equivalently, `H` is not vertex-covered by any Fano line.  Every graph

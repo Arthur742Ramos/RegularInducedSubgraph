@@ -1715,6 +1715,9 @@ Anchored full-Fano ambiguity allows only empty/full traces; anchored Fano-minus-
 only the missing line and its complement in addition.
 Thus full and near-Fano anchored packings force trace twins, so the irreducible anchored quotient has
 packing size at most five.
+Post-quotient, witness counts are bounded below by `3,2,2` for packing sizes `5,4,3`.
+The six-cycle leave five-packing has only empty/full anchored balanced traces; the irreducible
+five-template anchored case is therefore the two-triangle leave.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

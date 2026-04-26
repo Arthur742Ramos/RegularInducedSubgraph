@@ -1597,6 +1597,11 @@ Anchored large packings rigidify traces: full Fano ambiguity allows only empty/f
 `empty, L_0, R_i\L_0, R_i`.
 Thus full and near-Fano anchored ambiguity force trace twins; after trace-twin quotienting, irreducible
 anchored packings have size at most five.
+In that post-quotient anchored range the witness lower bounds are explicit:
+`|P|=5` needs at least `3`, `|P|=4` at least `2`, `|P|=3` at least `2`, and two disjoint templates need
+two.
+The six-cycle leave five-packing has only empty/full anchored balanced traces, so it also forces trace
+twins.  Thus the irreducible anchored five-template case has the two-triangle leave type.
 For `P` Fano, the exact graph shadow is that the internal witness graph is not covered by any Fano line;
 all three-edge witness graphs are line-covered.
 Equivalently, dualize to the seven Fano lines: each kept-pair witness joins the two lines disjoint from

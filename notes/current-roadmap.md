@@ -4975,6 +4975,10 @@ Anchored large-packing ambiguity has a tiny trace alphabet: full Fano permits on
 Fano-minus-one-line permits only `empty`, the missing line, its complement, and full.
 Hence full and near-Fano anchored packings force trace twins; after trace-twin quotienting, irreducible
 anchored packings have size at most five.
+For the post-quotient anchored core, `|P|=5,4,3` require at least `3,2,2` internal kept-pair witnesses,
+and two disjoint templates require two.
+The six-cycle leave five-packing has only empty/full anchored balanced traces, so it forces trace twins;
+irreducible anchored five-packings must have two-triangle leave.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is
