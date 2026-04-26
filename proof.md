@@ -5813,6 +5813,15 @@ In particular `|B|>|D|`, and the zero-sum condition gives
 deg_B(w)-deg_D(w) == deg_B(w_0)-deg_D(w_0)        for every w in W.
 ```
 
+Writing this common value as `K`, summing over the whole old frame gives the signed old-frame scalar
+
+```text
+mK=|B|t-|D|r        [MOD 4].
+```
+
+This is the deletion analogue of the packet identity `m delta=a|B|`: if `m` is odd, `K` is intrinsic,
+while if `m=0 [MOD 4]` the signed packet must satisfy `|B|t=|D|r`.
+
 This proves the old-side half of the profitable signed packet with surplus.  The whole first-bit
 problem is therefore concentrated in the signed self-layer cleanup: pass from such a surplus signed
 old-balanced packet to one for which `deg_B(b)-deg_D(b)` is constant on the retained positive side.

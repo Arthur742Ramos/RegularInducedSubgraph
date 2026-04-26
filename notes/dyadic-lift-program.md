@@ -516,6 +516,9 @@ blocks gives a signed packet `(B,D)` with
 deg_B(w)-deg_D(w) == constant      for every w in W.
 ```
 
+If the constant is `K`, summing over the old frame gives the signed old-frame scalar
+`mK=|B|t-|D|r [MOD 4]`; for odd `m`, `K` is determined by `|B|,|D|,t,r`, while for `m=0` the signed
+packet must satisfy `|B|t=|D|r`.
 Thus the old side of a profitable replacement can be made honest with large positive surplus.  The
 remaining obstruction is exactly the signed self-layer cleanup: refine such a packet, without losing
 the surplus, until `deg_B(b)-deg_D(b)` is constant on the positive side.

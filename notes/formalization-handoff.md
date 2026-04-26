@@ -1022,6 +1022,8 @@ Recommended attack:
    `(m-|D|-|B|)K=(|B|-|D|)r+2e(D)-2e(B) [MOD 4]`; if `m-|D|+|B|` is odd then `r+K` is even.
 
    The safe formal replacement for the invalid arbitrary-target shortcut is a signed Olson packet.
+   When the signed old side has common value `K` on all of `W`, include the double-count
+   `mK=|B|t-|D|r [MOD 4]`.
    Record two target-zero chamber caps first.  In a packet-maximal witness of residue `r`, the independent
    number of `P_0={b:deg_W(b)=r}` is at most `3m`, and the clique number of
    `P_+={b:deg_W(b)=r+1}` is at most `3m`.  The dense cap uses Olson on
