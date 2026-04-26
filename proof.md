@@ -12784,6 +12784,21 @@ A monochrome ternary target cannot occur in `3,3,2,2`, and a monochrome pair can
 endpoint is also finite, with the only all-edge minima again given by a permutation of the three omitted
 coordinates.
 
+It remains useful to split the pure all-edge minimum by phase.  Fix one parity tetrahedron, say the even
+words.  An edge target `E_i` is specified by the constant value of coordinate `i`; its two labels are the two
+even words with that coordinate value.  For the permutation edge-triangle `E_1,E_2,E_3`, the three label
+edges in the tetrahedron are therefore either
+
+```text
+star phase:      all three edges share one parity word;
+triangle phase:  the three edges form the triangle avoiding one parity word.
+```
+
+The distinction is the parity of the three constant coordinate values.  Each size-three edge target has
+multiplicity pattern `2+1` on its two labels, so after square-breaker discharge the all-edge endpoint is a
+finite phase/multiplicity template: star or triangle phase, together with the three choices of minority label
+inside the three edge targets.  No higher-dimensional ternary code remains hidden in this branch.
+
 If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
 cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
 source atom `G` (`q=2` or `3`) and hitting `r` other packed atoms.  Since this full lift crosses atoms,

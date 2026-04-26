@@ -5567,6 +5567,9 @@ and monochrome targets as `M`, the only high-outdegree patterns are `FFF`, `FFX`
 The pair profiles have the same finite table: in `3,3,3,2` the patterns are `FFP_x`, `F E_i P_j`
 with `i!=j`, or `E_iE_jP_k` with all omissions distinct; in `3,3,2,2` they are `F P_i P_j`
 with `i!=j` or `E_iP_jP_k` with all omissions distinct.
+The pure all-edge minimum further splits into only two phase types inside the parity tetrahedron: the three
+edge supports either share one parity word (star phase) or form the triangle avoiding one parity word
+(triangle phase), with only the `2+1` multiplicity choice left on each size-three edge target.
 If a forced petal hits the shortened pair and lifts with `q=2` or `3` source vertices while hitting `r` other
 atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+1` for `q=3`; the remaining
 petals must compensate those omissions.

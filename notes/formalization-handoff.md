@@ -2618,6 +2618,9 @@ Recommended attack:
     Extend the same enumeration to pair profiles: `3,3,3,2` gives `FFP_x`, `F E_iP_j` with `i!=j`, or
     `E_iE_jP_k` with all omissions distinct; `3,3,2,2` gives `F P_iP_j` with `i!=j` or `E_iP_jP_k`
     with all omissions distinct.
+    For the all-edge permutation minimum, formalize the phase split: the three parity edges form either a
+    star through one parity word or the triangle avoiding one parity word, and each size-three edge target
+    has only a `2+1` label multiplicity choice.
     Add shortened-pair-hit strict defect: a forced petal using `q=2,3` source vertices and hitting `r` other
     atoms has `delta_other>=r` or `r+1`, respectively; remaining petals compensate those omissions.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
