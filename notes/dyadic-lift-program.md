@@ -1231,6 +1231,11 @@ The size `2` and `3` packets route to the row/pair/one-corner host closures; the
 `K_{2,2}`.
 These are exactly three labeled `2x2` type-square skeletons with one exceptional row at each of
 `E_0,E_1,T_0,T_1`.
+The exceptional cross table has a Boolean second difference: odd curvature is the one-corner `0001` square,
+while zero curvature leaves only affine tables, including the balanced `0101/0011` compensator, plus
+same-type boundary signs.
+Affine row/column terms are local switches, so after square discharge this four-exception branch merges into
+the same signed-degree quotient closure test as the pure Latin branch.
 The pure all-edge minimum has only star phase (three edge supports share a parity word) or triangle phase
 (three edge supports avoid one parity word), plus the `2+1` multiplicities on the size-three edge targets.
 For a symmetric all-ternary cycle, transposing the two-atom trace matrix forces every mutual edge target to
@@ -1251,6 +1256,8 @@ Shortened-pair-hit petals obey strict cross-defect: if the lift uses `q=2,3` sou
 other atoms, then `delta_other>=r` or `r+1`, respectively.
 Consequently `q=2` is tight only with one omission per hit atom, while `q=3` forces a singleton hit in a
 size-three/larger target unless a larger atom supplies the extra omission.
+The only all-small tight hit mode is therefore `q=2`, which folds into the same corner/F incidence tables
+with the shortened pair treated as a pair target.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

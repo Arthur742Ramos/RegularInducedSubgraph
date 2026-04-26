@@ -12917,6 +12917,40 @@ the complete skeleton, the only corner edges are the same-type pairs `E_0E_1` an
 `F`-containing all-ternary residual is not a graph family: it is these three labeled `2x2` type-square
 skeletons with one exceptional row at each corner.
 
+There is a final binary normalization of these four rows.  Let `e_i` be the exceptional row in `E_i` and
+`t_j` the exceptional row in `T_j`, and record the cross table
+
+```text
+eta_ij = 1_{e_i t_j is an edge},        i,j in {0,1}.
+```
+
+The same-type exceptional edges `e_0e_1` and `t_0t_1` are row/column boundary data; the genuinely square
+datum is the Boolean second difference
+
+```text
+partial eta = eta_00+eta_01+eta_10+eta_11        [MOD 2].
+```
+
+If `partial eta=1`, then after complementing rows or columns of the `2x2` table the four exceptional rows
+are exactly the one-corner `0001` square.  This is the support-local square-breaker already discharged.  If
+`partial eta=0`, the table is affine: constant, row-only, column-only, or the balanced diagonal/off-diagonal
+`0101/0011` compensator.  Thus after one-corner discharge the four-exception `F` residual is no longer a
+new ternary packet; it is an affine binary compensator table plus the two same-type boundary signs, i.e. the
+same signed-quotient scalar data that remains in the pure all-edge Latin branch.
+
+Indeed, in the affine case write
+
+```text
+eta_ij = alpha_i + beta_j + gamma        [MOD 2].
+```
+
+The row terms `alpha_i` and column terms `beta_j` are exactly the allowed row/column switches of the local
+exceptional coordinates.  After these switches, the only cross datum is the constant `gamma`; the
+diagonal/off-diagonal representative is the balanced `0101/0011` compensator form of the same affine class.
+Hence the post-square four-exception branch has the same quotient closure test as the pure Latin branch:
+it closes when the induced atom residues satisfy the signed-degree equation, and otherwise it is one of the
+finite signed-quotient scalar obstructions.
+
 It remains useful to split the pure all-edge minimum by phase.  Fix one parity tetrahedron, say the even
 words.  An edge target `E_i` is specified by the constant value of coordinate `i`; its two labels are the two
 even words with that coordinate value.  For the permutation edge-triangle `E_1,E_2,E_3`, the three label
@@ -13072,6 +13106,13 @@ the number of hit atoms.  Since a hit pair can supply at most one omission, an a
 tight on pairs alone; it must hit some size-three opposite atom in a singleton (or hit a larger atom).  Hence
 the shortened-pair-hit branch either returns to the same finite one-omission incidence tables or exposes a
 size-three/larger target with a singleton hit, i.e. an extra rebate beyond the all-edge minimum.
+
+Therefore the only tight shortened-pair-hit mode in the small profiles is the `q=2` one-omission mode.  On a
+hit pair target this is a singleton target; on a hit size-three target it is exactly a two-vertex parity-edge
+target.  Thus the tight hit branch is the same corner/F incidence calculus, with the shortened pair counted
+as a pair target in the `3,3,3,2` or `3,3,2,2` tables above.  Any `q=3` petal or any singleton hit in a
+size-three target is an extra-rebate branch: it either points to a size-at-least-four split target or leaves
+the all-edge minimum and hence cannot be part of the final all-small tight residual.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
@@ -13322,7 +13363,9 @@ large-outside ternary target avoidance:
   equation r_G-S_G; fully split all-ternary pairs are mutual permutation/complement traces, monochrome pairs
   are excluded, and the remaining F-containing branch is a typed bipartite F-graph with one exceptional
   row at each atom of F-degree 1 or 2; two- and three-exception packets route to local host closures, leaving
-  only the four-exception 2/2 type-square skeletons;
+  only the four-exception 2/2 type-square skeletons, whose odd cross curvature is the one-corner square and
+  whose affine remnants merge into the signed-quotient scalar obstruction; shortened-pair-hit tight cases
+  fold back into the same corner/F incidence tables;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

@@ -2641,6 +2641,11 @@ Recommended attack:
     packets are one-corner ternary certificates, so only four-exception `2/2` `F` graphs remain.
     Enumerate the four-exception skeletons on two empty and two triangular atoms: cross matching, three-edge
     `K_{2,2}`, and full `K_{2,2}`, with one exceptional row at each atom.
+    Add the binary cross-table normalization for the four exceptional rows: the Boolean second difference
+    `partial eta` is the one-corner square when odd; when even the table is affine (constant, row/column, or
+    balanced `0101/0011`) plus same-type boundary signs.
+    Formalize that affine row/column terms are local switches, leaving only the same signed-degree quotient
+    closure test as the pure Latin branch.
     For the all-edge permutation minimum, formalize the phase split: the three parity edges form either a
     star through one parity word or the triangle avoiding one parity word, and each size-three edge target
     has only a `2+1` label multiplicity choice.
@@ -2664,6 +2669,8 @@ Recommended attack:
     atoms has `delta_other>=r` or `r+1`, respectively; remaining petals compensate those omissions.
     Record the small-profile hit table: `q=2` tight means exactly one omission in every hit atom; `q=3`
     cannot be tight on pair targets alone and forces a singleton hit in a size-three/larger target.
+    Add the hit-branch foldback: the only all-small tight hit mode is `q=2`, which is the same corner/F
+    incidence table with the shortened pair treated as a pair target; `q=3` is extra-rebate/large-target.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

@@ -2096,7 +2096,9 @@ What remains justified after audit is:
       scalar shadow is one exceptional row shifted by `2 mod 4` at each atom of `F`-degree `1` or `2`, so the
       remaining exceptional-row packet has size `2`, `3`, or `4`; local host closures discharge sizes `2`
       and `3`, leaving only four-exception `2/2` packets: cross matching, one-missing-edge `K_{2,2}`, or full
-      `K_{2,2}`;
+      `K_{2,2}`; their exceptional cross table has odd Boolean curvature exactly in the one-corner case, so
+      after square discharge only affine/balanced compensator tables remain and merge into the same
+      signed-degree quotient closure test as the pure Latin branch;
       all-edge minimum has only star or triangle phase plus `2+1` target multiplicities, and the symmetric
       transpose test excludes triangle phase in a genuine all-ternary cycle; after unit-edge discharge, this
       becomes a half-edge Latin `K_{2,2}` design with one omitted row and column on each atom-pair, whose
@@ -2105,7 +2107,8 @@ What remains justified after audit is:
       sign graphs are empty/C4/matching/K4 in uniform type, majority K3 or minority star in `1/3` type, and
       none in `2/2` type, so nonclosure is a finite signed-quotient obstruction;
       shortened-pair-hit petals have a finite omission table: `q=2` is one-omission-per-hit tight, while
-      `q=3` forces a singleton hit in a size-three/larger target;
+      `q=3` forces a singleton hit in a size-three/larger target; the only all-small tight hit mode is `q=2`
+      and folds back into the corner/F incidence tables;
       shortened-pair-hit petals satisfy strict cross-defect `delta_other>=r` or `r+1` according as they use
       two or three source vertices;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers

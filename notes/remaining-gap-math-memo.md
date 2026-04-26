@@ -2148,6 +2148,10 @@ The `2`- and `3`-exception packets are local row/pair/one-corner certificates an
 closures; only four-exception `2/2` packets remain.
 They are the three labeled `2x2` type-square skeletons: cross matching, one missing cross edge, or full
 `K_{2,2}`.
+On the four exceptional rows, odd Boolean second difference of the cross table is the one-corner square;
+after square discharge only affine cross tables remain, including the balanced `0101/0011` compensator.
+The affine row/column terms are local switches, so this branch merges into the same signed-degree quotient
+test as the pure Latin branch.
 The pure all-edge minimum has only star or triangle phase in the four-word parity tetrahedron, plus `2+1`
 multiplicity on each size-three edge target.
 In a symmetric all-ternary cycle, mutual edge targets pass the transpose test only when the edge contains an
@@ -2167,6 +2171,8 @@ Thus nonclosure is exactly a finite signed-quotient obstruction: nonregular sign
 neither closer in `1/3`, or any sign graph in `2/2`.
 Shortened-pair-hit petals obey the same finite omission table: `q=2` is tight only with one omission per hit
 atom, and `q=3` needs a singleton hit in a size-three/larger target to supply the extra omission.
+The only all-small tight hit mode is `q=2`; it folds back into the corner/F incidence tables with the
+shortened pair as a pair target.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has
 strict defect `delta_other>=r` or `r+1`; other petals compensate the omissions.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,

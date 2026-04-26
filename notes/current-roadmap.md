@@ -5593,6 +5593,11 @@ the four-exception `2/2` cases remain, namely a matching, a three-edge `K_{2,2}`
 Equivalently the residual is one of three labeled `2x2` type-square skeletons on empty atoms `E_0,E_1` and
 triangular atoms `T_0,T_1`: a cross matching, one missing cross edge, or all four cross edges, with one
 exceptional row at each corner.
+For the four exceptional rows, the cross table `eta_ij=1_{e_i t_j}` has Boolean second difference
+`partial eta`.  If `partial eta=1`, it is the one-corner `0001` square; after square discharge only affine
+tables remain: constant, row/column, or the balanced `0101/0011` compensator with same-type boundary signs.
+Writing an affine table as `eta_ij=alpha_i+beta_j+gamma`, the row/column terms are local switches, so the
+post-square four-exception branch uses the same signed-degree quotient closure test as the pure Latin branch.
 The pure all-edge minimum further splits into only two phase types inside the parity tetrahedron: the three
 edge supports either share one parity word (star phase) or form the triangle avoiding one parity word
 (triangle phase), with only the `2+1` multiplicity choice left on each size-three edge target.
@@ -5619,6 +5624,9 @@ atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+
 petals must compensate those omissions.
 Thus `q=2` is tight only with one omission in every hit atom, while `q=3` cannot be tight on pairs alone and
 must expose a singleton hit in a size-three/larger target, giving extra rebate beyond the all-edge minimum.
+Consequently the only tight shortened-pair-hit mode is `q=2`, and it is exactly the same corner/F incidence
+calculus with the shortened pair counted as a pair target; `q=3` or singleton-hit size-three petals leave the
+all-small tight residual.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.
