@@ -1743,6 +1743,11 @@ common-neighborhood domination inequality.  Unpaid `T_2` vertices missing an imp
 Thus an exact basis direction with three boundary copies forces majority synchronization: each unpaid
 `T_2` vertex is almost constant on the corresponding old fiber, matching its majority adjacency to the
 boundary triple.
+In exception form, `M_g(u)=1_{deg_{Z_g}(u)>=2}` and each `u` marks at most one old-fiber exception.
+The shadows `Q_g(a)` are disjoint, and on each boundary-pattern cell every nonexceptional old pair matches
+the appropriate majority pair from the boundary triple.
+The silent core avoids every repairable regular four-block; if `{0,3}` lies in the repair spectrum, then
+`|A_g|<=|T_2|+R(4,4)-1`.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

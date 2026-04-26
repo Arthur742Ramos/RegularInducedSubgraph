@@ -1778,7 +1778,11 @@ What remains justified after audit is:
       pure-`T_2` no-pair-cut rule; summing this over all export pairs in an old-vector fiber gives a
       quadratic common-neighborhood domination inequality, and in an exact basis direction with three
       boundary copies it forces unpaid `T_2` vertices to be almost constant on the matching old fiber by
-      boundary-triple majority;
+      boundary-triple majority; equivalently, each unpaid `T_2` vertex marks at most one exceptional
+      old-fiber vertex, so the one-corner shadows `Q_g(a)` are disjoint and nonexceptional old pairs match
+      a majority boundary pair on each boundary-pattern cell; the resulting silent core must avoid every
+      repairable regular four-block, giving `|A_g|<=|T_2|+R(4,4)-1` whenever `{0,3}` lies in the repair
+      spectrum;
       Fano itself needs four kept-pair
       witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual
