@@ -3269,6 +3269,697 @@ theorem CertifiedProofMdCurrentFrontierRamseySurfaceBridge.certifiedNumericalCon
       h.toRamseyFinalNumericalConsequences := by
   exact Subsingleton.elim _ _
 
+/-!
+## Public current-frontier dashboard facade
+
+The bridge above keeps the proof-md checklist and the localized Ramsey surface together.  The facade
+below is a more public dashboard layer: it simultaneously exposes target-statement/dashboard
+normalization, Ramsey theorem checklists/target rows/normalization routes, and the terminal mixed
+and first-bit obligation surfaces.  The packet-atom extension at the end is deliberately parameterized
+by proposition-valued frontier assumptions, so it records current terminal packet-atom/principal-bucket
+obligations without certifying any unsolved row.
+-/
+
+/--
+Public proof-md/Ramsey dashboard facade for the current frontier.  It is a normalized projection of
+`CertifiedProofMdCurrentFrontierRamseySurfaceBridge`, with no new mathematical content.
+-/
+structure CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Type where
+  bridge :
+    CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+  targetImports :
+    CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  downstreamChecklist :
+    CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  targetStatementBundle :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  finalDashboard :
+    CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  targetConsumer : CertifiedProofMdFinalTargetConsumerCertificate
+  ramseySurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  ramseyTheoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  ramseyTargetRows : RamseyTenR45CurrentFrontierTargetRows
+  ramseyNormalization : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  terminalMixedCore : CertifiedProofMdTerminalMixedTargetCoreImports
+  firstBitCoCut :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+
+/-- Promote the proof-md/Ramsey bridge to the public dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toRamseyDashboardFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v where
+  bridge := h
+  targetImports := h.toCurrentFrontierTargetImports
+  downstreamChecklist := h.toDownstreamChecklist
+  targetStatementBundle := h.toTargetStatementBundle
+  finalDashboard := h.toCurrentFrontierTargetImports.toFinalObligationDashboard
+  targetConsumer := h.toCurrentFrontierTargetImports.toFinalTargetConsumerCertificate
+  ramseySurface := h.toRamseyCurrentFrontierConsumerSurface
+  ramseyTheoremChecklist :=
+    h.toRamseyCurrentFrontierConsumerSurface.toCurrentFrontierTheoremChecklist
+  ramseyTargetRows := h.toRamseyCurrentFrontierConsumerSurface.toCurrentFrontierTargetRows
+  ramseyNormalization :=
+    h.toRamseyCurrentFrontierConsumerSurface.toCurrentFrontierNormalizationRoute
+  terminalMixedCore := h.toDownstreamChecklist.toTerminalMixedCore
+  firstBitCoCut := h.toDownstreamChecklist.toFirstBitCoCut
+
+/-- Build the public dashboard facade directly from target imports and a Ramsey current surface. -/
+def CertifiedProofMdCurrentFrontierTargetImports.toRamseyDashboardFacade
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hramsey : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v :=
+  (h.toRamseySurfaceBridge hramsey).toRamseyDashboardFacade
+
+/-- Build the public dashboard facade directly from a downstream checklist and Ramsey surface. -/
+def CertifiedProofMdCurrentFrontierDownstreamChecklist.toRamseyDashboardFacade
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hramsey : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v :=
+  (h.withRamseySurface hramsey).toRamseyDashboardFacade
+
+/-- Project the underlying proof-md/Ramsey bridge from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toRamseySurfaceBridge
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v :=
+  h.bridge
+
+/-- Project target imports from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toCurrentFrontierTargetImports
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.targetImports
+
+/-- Project the downstream checklist from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toDownstreamChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.downstreamChecklist
+
+/-- Project the target-statement bundle from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toTargetStatementBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.targetStatementBundle
+
+/-- Project the final obligation dashboard from the public current-frontier facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toFinalObligationDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.finalDashboard
+
+/-- Project the final target consumer from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toFinalTargetConsumerCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.targetConsumer
+
+/-- Project the localized Ramsey current-frontier consumer from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toRamseyCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.ramseySurface
+
+/-- Project the Ramsey theorem checklist from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toRamseyCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.ramseyTheoremChecklist
+
+/-- Project Ramsey target rows from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toRamseyCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.ramseyTargetRows
+
+/-- Project the Ramsey normalization route from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toRamseyCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.ramseyNormalization
+
+/-- Project terminal mixed-core imports from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toTerminalMixedCore
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.terminalMixedCore
+
+/-- Project first-bit/co-cut obligations from the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.toFirstBitCoCut
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut
+
+/-- The public dashboard facade exposes its certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierRamseyDashboardFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    TargetStatement :=
+  h.toTargetStatementBundle.targetStatement
+
+/--
+Terminal packet-atom/principal-bucket shadow dashboard extension.  The packet-atom and shadow rows
+are explicit proposition-valued inputs; this bundle only ties them to the current proof-md/Ramsey
+dashboard for downstream consumers.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop) :
+    Type where
+  facade :
+    CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+  packetAtomShadow :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+      (FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+      principalBucketShadowFrontier
+
+/-- Attach packet-atom and principal-bucket shadow frontier imports to the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.withTerminalPacketAtomShadow
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v)
+    {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+    (hpacket :
+      FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+    (hshadow : principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier where
+  facade := h
+  packetAtomShadow :=
+    firstBitTerminalPacketAtomPrincipalBucketShadowImports_of_parts hpacket hshadow
+
+/-- Attach a prepackaged packet-atom/principal-bucket shadow import bundle to the dashboard facade. -/
+def CertifiedProofMdCurrentFrontierRamseyDashboardFacade.withTerminalPacketAtomShadowImports
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v)
+    {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+    (hpacketShadow :
+      FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+        (FirstBitTerminalPacketAtomFrontierImports
+          sizeRefinedAtoms defectCorrection unionAntiCancellation)
+        principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier where
+  facade := h
+  packetAtomShadow := hpacketShadow
+
+/-- Project the proof-md/Ramsey dashboard facade from the packet-atom extension. -/
+def CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toRamseyDashboardFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v :=
+  h.facade
+
+/-- Project target imports through the packet-atom dashboard extension. -/
+def CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toCurrentFrontierTargetImports
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.facade.toCurrentFrontierTargetImports
+
+/-- Project the Ramsey theorem checklist through the packet-atom dashboard extension. -/
+def CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toRamseyCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.facade.toRamseyCurrentFrontierTheoremChecklist
+
+/-- Project Ramsey target rows through the packet-atom dashboard extension. -/
+def CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toRamseyCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.facade.toRamseyCurrentFrontierTargetRows
+
+/-- Project the Ramsey normalization route through the packet-atom dashboard extension. -/
+def CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toRamseyCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.facade.toRamseyCurrentFrontierNormalizationRoute
+
+/-- Project terminal mixed-core imports through the packet-atom dashboard extension. -/
+def CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toTerminalMixedCore
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.facade.toTerminalMixedCore
+
+/-- Project first-bit/co-cut obligations through the packet-atom dashboard extension. -/
+def CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toFirstBitCoCut
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.facade.toFirstBitCoCut
+
+/-- Project the packet-atom/principal-bucket shadow imports from the terminal extension. -/
+def CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toPacketAtomShadowImports
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+      (FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+      principalBucketShadowFrontier :=
+  h.packetAtomShadow
+
+/-- Project packet-atom frontier imports from the terminal extension. -/
+def CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toPacketAtomFrontierImports
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    FirstBitTerminalPacketAtomFrontierImports
+      sizeRefinedAtoms defectCorrection unionAntiCancellation :=
+  h.packetAtomShadow.to_packetAtomFrontier
+
+/-- Project the principal-bucket shadow frontier assumption from the terminal extension. -/
+theorem CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toPrincipalBucketShadowFrontier
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    principalBucketShadowFrontier :=
+  h.packetAtomShadow.to_principalBucketShadowFrontier
+
+/-- Project the size-refined packet-atom frontier assumption from the terminal extension. -/
+theorem CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toSizeRefinedAtoms
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    sizeRefinedAtoms :=
+  h.toPacketAtomFrontierImports.to_sizeRefinedAtoms
+
+/-- Project the packet-atom defect-correction frontier assumption from the terminal extension. -/
+theorem CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toDefectCorrection
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    defectCorrection :=
+  h.toPacketAtomFrontierImports.to_defectCorrection
+
+/-- Project the packet-atom anti-cancellation frontier assumption from the terminal extension. -/
+theorem CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.toUnionAntiCancellation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    unionAntiCancellation :=
+  h.toPacketAtomFrontierImports.to_unionAntiCancellation
+
+/-- Project a packet-atom selector obligation from the terminal extension. -/
+theorem CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.packetAtomObligation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (selector : FirstBitTerminalPacketAtomFrontierSelector) :
+    FirstBitTerminalPacketAtomFrontierSelector.obligation
+      sizeRefinedAtoms defectCorrection unionAntiCancellation selector :=
+  h.toPacketAtomFrontierImports.obligation selector
+
+/-- Project a packet-atom/principal-bucket shadow selector obligation from the terminal extension. -/
+theorem CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard.packetAtomShadowObligation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (selector : FirstBitTerminalPacketAtomPrincipalBucketShadowSelector) :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowSelector.obligation
+      (FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+      principalBucketShadowFrontier selector :=
+  h.toPacketAtomShadowImports.obligation selector
+
+/-- The packet-atom dashboard extension still exposes the certified proof-md target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierTerminalPacketAtomShadowDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    TargetStatement :=
+  targetStatement_of_certifiedProofMdCurrentFrontierRamseyDashboardFacade h.facade
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toRamseyDashboardFacade_bridge
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    h.toRamseyDashboardFacade.toRamseySurfaceBridge = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toRamseyDashboardFacade_targetImports
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    h.toRamseyDashboardFacade.toCurrentFrontierTargetImports =
+      h.toCurrentFrontierTargetImports :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toRamseyDashboardFacade_ramseyRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    h.toRamseyDashboardFacade.toRamseyCurrentFrontierTargetRows =
+      h.toRamseyCurrentFrontierConsumerSurface.toCurrentFrontierTargetRows :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierRamseyDashboardFacade.withTerminalPacketAtomShadow_facade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v)
+    {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+    (hpacket :
+      FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+    (hshadow : principalBucketShadowFrontier) :
+    (h.withTerminalPacketAtomShadow hpacket hshadow).toRamseyDashboardFacade = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierRamseyDashboardFacade.withTerminalPacketAtomShadow_packetAtomFrontier
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseyDashboardFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v)
+    {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+    (hpacket :
+      FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+    (hshadow : principalBucketShadowFrontier) :
+    (h.withTerminalPacketAtomShadow hpacket hshadow).toPacketAtomFrontierImports = hpacket :=
+  by
+    exact Subsingleton.elim _ _
+
 @[simp]
 theorem CertifiedProofMdCurrentFrontierTargetImports.toDownstreamChecklist_targetImports
     (h : CertifiedProofMdCurrentFrontierTargetImports
