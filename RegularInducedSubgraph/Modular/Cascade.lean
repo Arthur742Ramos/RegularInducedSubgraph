@@ -1506,6 +1506,15 @@ lemma exists_mod_class_card_mul_ge_card
       _ ≤ q * ((s.card - 1) / q) + q := by omega
       _ = q * n := by simp [n, Nat.mul_add, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
 
+lemma exists_mod_class_card_mul_ge_card_of_card_pos
+    {α : Type*} [DecidableEq α] (s : Finset α) {q : ℕ}
+    (hs : 0 < s.card) (f : α → Fin q) :
+    ∃ r : Fin q, s.card ≤ q * (s.filter fun x => f x = r).card := by
+  classical
+  rcases Finset.card_pos.mp hs with ⟨x, _hx⟩
+  have hq : 0 < q := lt_of_le_of_lt (Nat.zero_le (f x).val) (f x).isLt
+  exact exists_mod_class_card_mul_ge_card (s := s) (q := q) hq f
+
 lemma exists_large_subset_with_constant_externalDegree
     (G : SimpleGraph V) [DecidableRel G.Adj] (s t : Finset V) {k : ℕ}
     (hsize : (t.card + 1) * k ≤ s.card) :

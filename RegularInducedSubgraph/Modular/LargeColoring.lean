@@ -88,9 +88,7 @@ theorem hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFour
   classical
   rcases hcolor G (s := s) hsLarge hsEven with ⟨color, hclasses⟩
   have hsPos : 0 < s.card := lt_of_lt_of_le (by decide : 0 < 33) hsLarge
-  rcases Finset.card_pos.mp hsPos with ⟨x, _hx⟩
-  have hCpos : 0 < C := lt_of_le_of_lt (Nat.zero_le (color x).val) (color x).isLt
-  rcases exists_mod_class_card_mul_ge_card (s := s) (q := C) hCpos color with
+  rcases exists_mod_class_card_mul_ge_card_of_card_pos (s := s) (q := C) hsPos color with
     ⟨r, hr⟩
   refine ⟨s.filter fun v => color v = r, ?_, ?_, hclasses r⟩
   · exact Finset.filter_subset _ _

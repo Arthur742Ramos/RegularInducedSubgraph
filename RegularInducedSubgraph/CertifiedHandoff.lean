@@ -301,7 +301,7 @@ def certifiedProofMdExternalBlockNonRamseyRestCertificate_of_coloringRest
     CertifiedProofMdExternalBlockNonRamseyRestCertificate where
   evenDegreeModFourLoss32 :=
     hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-      h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound
+      h.firstBitColorCount_le32 h.evenModFourColoringBound
   fixedWitnessExternalBlockSelfBridgeFive := h.fixedWitnessExternalBlockSelfBridgeFive
   higherBitSelectors := h.higherBitSelectors
 
@@ -500,7 +500,7 @@ theorem
   targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven
     sevenVertexFourOrFiveBoolCertificate
     (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-      h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound)
+      h.firstBitColorCount_le32 h.evenModFourColoringBound)
     ramseyTenSmallTable h.fixedWitnessExternalBlockSelfBridgeFive h.higherBitTargets
 
 /--
@@ -635,7 +635,7 @@ theorem
     targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven
       sevenVertexFourOrFiveBoolCertificate
       (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-        h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound)
+        h.firstBitColorCount_le32 h.evenModFourColoringBound)
       ramseyTenSmallTable hterminal h.higherBitTargets
 
 /--
@@ -669,7 +669,7 @@ theorem
     targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven
       sevenVertexFourOrFiveBoolCertificate
       (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-        h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound)
+        h.firstBitColorCount_le32 h.evenModFourColoringBound)
       ramseyTenSmallTable hterminal h.higherBitTargets
 
 /--
@@ -746,7 +746,7 @@ theorem
   targetStatement_of_proofMdFinalHandoff_of_largeEvenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven_certifiedSeven
     (hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourLoss32InducedSubgraph
       (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-        hCpos hC evenModFourColoringBound))
+        hC evenModFourColoringBound))
     ramseyTenSmallTable cliqueOrIndepSetBound16 cliqueOrIndepSetBoundTail higherBitSelectors
 
 /--
@@ -1194,7 +1194,7 @@ theorem
     TargetStatement :=
   targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_unifiedRamseyConsequences_and_cliqueOrIndepSetBound16_and_terminalTail_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
     (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC evenModFourColoringBound)
+      hC evenModFourColoringBound)
     ramseyConsequences cliqueOrIndepSetBound16 terminalTailFromFive higherBitTargets
 
 /--
@@ -1281,7 +1281,7 @@ theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toEvenDegreeModFour
       WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
     HasEvenDegreeModFourLoss32InducedSubgraph :=
   hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-    h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound
+    h.firstBitColorCount_le32 h.evenModFourColoringBound
 
 /-- Project the terminal mixed-target core imports from the integrated frontier certificate. -/
 theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toTerminalMixedCore
@@ -1376,7 +1376,7 @@ def CertifiedProofMdFinalTargetConsumerCertificate.toEvenDegreeModFourLoss32
     (h : CertifiedProofMdFinalTargetConsumerCertificate) :
     HasEvenDegreeModFourLoss32InducedSubgraph :=
   hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-    h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound
+    h.firstBitColorCount_le32 h.evenModFourColoringBound
 
 /-- Project the unified Ramsey consequence bundle. -/
 def CertifiedProofMdFinalTargetConsumerCertificate.toGlobalConsequenceBundle

@@ -51392,16 +51392,21 @@ theorem hasEvenDegreeModFourCongruentDegreeColoringBound_mono {C D : ℕ} (hCD :
 
 /--
 Any even-degree bounded partition with at most `32` colors supplies the loss-`32` selector by taking
-the largest color class.
+the largest color class.  The empty support is handled directly; on a nonempty support the returned
+coloring itself forces the color count to be positive.
 -/
 theorem hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    {C : ℕ} (hC : C ≤ 32)
     (hcolor : HasEvenDegreeModFourCongruentDegreeColoringBound C) :
     HasEvenDegreeModFourLoss32InducedSubgraph := by
   intro n G s hsEven
   classical
+  by_cases hsEmpty : s.card = 0
+  · refine ⟨∅, by simp, ?_, inducesModEqDegree_empty G 4⟩
+    simp [hsEmpty]
   rcases hcolor G (s := s) hsEven with ⟨color, hclasses⟩
-  rcases exists_mod_class_card_mul_ge_card (s := s) (q := C) hCpos color with
+  have hsPos : 0 < s.card := Nat.pos_of_ne_zero hsEmpty
+  rcases exists_mod_class_card_mul_ge_card_of_card_pos (s := s) (q := C) hsPos color with
     ⟨r, hr⟩
   refine ⟨s.filter fun v => color v = r, ?_, ?_, hclasses r⟩
   · exact Finset.filter_subset _ _
@@ -51412,7 +51417,7 @@ theorem hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentD
     (hcolor : HasEvenDegreeModFourCongruentDegreeColoringBound 32) :
     HasEvenDegreeModFourLoss32InducedSubgraph :=
   hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-    (C := 32) (by decide) (by decide) hcolor
+    (C := 32) (by decide) hcolor
 
 /-- A bounded 32-color mod-four partition also supplies the large-support core selector. -/
 theorem hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_modFourCongruentDegreeColoringBound
@@ -62019,7 +62024,7 @@ theorem targetStatement_of_proofMdFinalHandoff_of_evenModFourColoringBound_le32_
   targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
     sevenVertexBooleanCertificate
     (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-      hCpos hC evenModFourColoringBound)
+      hC evenModFourColoringBound)
     ramseyTenSmallTable fixedWitnessExternalBlockSelfBridgeFive higherBitSelectors
 
 /--
@@ -62138,7 +62143,7 @@ theorem targetStatement_of_proofMdFinalHandoff_of_evenModFourColoringBound_le32_
       sevenVertexBooleanCertificate
       (hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourLoss32InducedSubgraph
         (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
-          hCpos hC evenModFourColoringBound))
+          hC evenModFourColoringBound))
       ramseyTenSmallTable cliqueOrIndepSetBound16 cliqueOrIndepSetBoundTail higherBitSelectors
 
 /-- The named-field final handoff certificate closes the target statement. -/
