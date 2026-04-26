@@ -1076,6 +1076,10 @@ Thus for every retained `T` and outgoing triple `X`, the terminal is scalar-kill
 zero-filter capacity, low-rank bounded (`m<=16`), or rank-three high-active.
 The low-rank bounded line is confined to the finite Ramsey window
 `3<=m<=16` and `32m+1<=n<R_4(m+1)`, since a monochromatic mod-`4` clique is a selector.
+Rank-three support is a single-column trace pinning: an outside vertex matches the switch pattern on the
+two zero `q`-classes and has at least three deviations on the adjacent active pair.
+Different residue endpoints are mostly column-separated: adjacent zero-pinnings conflict on the shared zero
+class, and opposite zero-pinnings would create forbidden full active supports.
 A rank-three high-active support leaves exactly one excess unit missing after adding a feasible complement
 packing, so that branch is a one-defect bridge obstruction: all one-saving bridges, thickenings, or larger
 replacement supports are blocked.

@@ -2462,6 +2462,10 @@ Recommended attack:
     small-active zero-filter, low-rank bounded, or rank-three high-active.
     Add the finite Ramsey window for the low-rank bounded line: a monochromatic clique in the mod-`4`
     edge-coloring is a selector, so `3<=m<=16` and `32m+1<=n<R_4(m+1)`.
+    Translate rank-three support to original traces: for each rotation, an outside vertex matches the
+    switch pattern on the two zero `q`-classes and has at least three deviations on the active pair.
+    Add the column-separation lemma: adjacent residue zero-pinnings conflict on the shared zero `q`-class,
+    and opposite zero-pinnings imply forbidden full active supports in high-active terminal endpoints.
     Formalize rank-three support contraction: a support `B` of size `r>=3` plus a complement-shadow packing
     saves `|A|-4`, so terminality is exactly absence/capacity-deficiency of all one-saving bridges,
     thickenings, or larger replacements.

@@ -5316,6 +5316,12 @@ scalar-killed residue, small-active zero-filter capacity, low-rank high-active w
 high-active rank-three projected support.
 The low-rank bounded line lies in a finite Ramsey window: coloring each pair by its matrix entry modulo
 `4`, any monochromatic clique is a selector, so a survivor has `n<R_4(m+1)` with `3<=m<=16`.
+In trace language, rank-three support means a single outside vertex matches the switch pattern exactly on
+the two zero `q`-classes and has at least three deviations on the adjacent active pair; the four residues
+are cyclic rotations of this two-class trace pinning.
+The pinning is residue-separated: adjacent residues prescribe opposite values on their shared zero
+`q`-class, while opposite zero-pinnings would make the full active set a support in each endpoint, forbidden
+by the terminal support-size cap.
 After coordinate switching, `h` is `{0,1}`-valued; realization is three outside columns vanishing on the
 zero coordinates and disjointly covering the one coordinates.
 Thus the target branch is a critical filtered three-cover: zero coordinates filter admissible columns, and

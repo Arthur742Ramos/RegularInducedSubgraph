@@ -2004,6 +2004,10 @@ Equivalently, for every retained `T` and outgoing triple `X`, terminality is sca
 zero-filter capacity, low-rank bounded (`m<=16`), or rank-three high-active.
 The low-rank bounded line is finite: a monochromatic mod-`4` clique is a selector, so
 `3<=m<=16` and `32m+1<=n<R_4(m+1)`.
+Rank-three support means single-column trace pinning: one outside vertex matches the switch pattern on the
+two zero `q`-classes and deviates at least three times on the adjacent active pair.
+Zero-pinned columns are residue-separated: adjacent residues conflict on their shared zero class, while
+opposite zero-pinning gives forbidden full active supports.
 Any rank-three support plus a feasible complement packing saves exactly `|A|-4`, so rank-three high-active
 is a one-defect bridge obstruction: all one-saving bridges/thickenings/replacements are blocked.
 Equivalently every support has nonpositive replacement gain against every deficit-one packing

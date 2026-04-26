@@ -1978,6 +1978,10 @@ What remains justified after audit is:
       zero-filter, low-rank bounded, or rank-three high-active;
       the low-rank bounded line is confined to the finite Ramsey window
       `3<=m<=16`, `32m+1<=n<R_4(m+1)`;
+      rank-three support is a single-column trace pinning: exact switch match on the two zero `q`-classes
+      and at least three deviations on the active pair;
+      such zero-pinned columns are residue-separated, since adjacent pins conflict on the shared zero class
+      and opposite pins imply forbidden full active supports;
       a rank-three support plus a feasible complement packing is exactly one excess unit short, reducing
       that branch to a one-defect bridge obstruction;
       in gain form, every support has nonpositive replacement gain against every deficit-one packing;

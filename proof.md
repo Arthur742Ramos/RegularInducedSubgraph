@@ -11349,6 +11349,35 @@ Thus the low-rank line is restricted to the finite Ramsey window
 
 with `m<=2` already excluded by the pair selector and `R_4(3)`.
 
+In the original trace language, the rank-three alternative is a single-column statement.  For example,
+in the `k=0` row of the rotation table, a support `C in F_Z` is an outside vertex `y` such that
+
+```text
+y is nonadjacent to all vertices in N_0,
+y is adjacent to all vertices in N_3,
+C = (N(y) cap N_1) union (N_2 \ N(y)).
+```
+
+Thus a rank-three support has `|C|>=3`: at least three deviations from the switch pattern on the active
+pair `N_1 union N_2`, while the zero pair `N_0 union N_3` is matched exactly.  The other residues are the
+cyclic rotations of this statement.  Hence the large-core rank-three branch can be read as a strong
+two-class trace pinning condition for one outside vertex, not only as an abstract support in a clutter.
+
+This trace pinning separates the four residue endpoints.  A single outside vertex cannot be zero-pinned for
+two adjacent residues unless the shared zero `q`-class is empty: on that shared class the two switch
+prescriptions are opposite.  Nor can it be zero-pinned for two opposite high-active terminal residues.  For
+instance, simultaneous zero-pinning for residues `0` and `2` would force
+
+```text
+y=0 on N_0,  y=1 on N_1,  y=0 on N_2,  y=1 on N_3.
+```
+
+Against the residue-`0` endpoint this makes the support equal to the full active set
+`N_1 union N_2`, and against the residue-`2` endpoint it makes the support equal to
+`N_0 union N_3`.  Full active supports violate the terminal support-size cap `|C|<=|A|-3`.  Thus in the
+large high-active branch, zero-pinned rank-three witnesses for distinct residues are column-separated,
+except for degenerate adjacent residues whose shared zero class is empty.
+
 If both opposite residues `k` and `k+2` are in the high-active full-minor target-avoidance branch on a
 shared coordinate certificate, the singleton-shadow collapse gives an antipodal trace core.  On that shared
 coordinate set, the outside trace multiset contains
