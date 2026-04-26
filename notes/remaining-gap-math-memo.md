@@ -1937,6 +1937,8 @@ branch has certificate size at least `4`.
 The scalar-killed branch is finite too: incoming endpoints request internal degrees, residue `3` is
 impossible, and the graphical three-vertex patterns are `000`, `110`, `211`, and `222`.
 These prescribe empty, one-edge, two-edge path, and triangle internal graphs.
+The corresponding failures are extra edge, missing/wrong one-edge, missing path edge or extra `1-1` edge,
+and missing triangle edge.
 The target-avoidance branch is a critical capacitated 3-sum cube: no three outside trace columns sum to
 `h`, but every proper coordinate shadow is feasible; irreducible dimension is at least `4`.
 After coordinate switching, it is a critical three-column disjoint-cover problem with `{0,1}` target.
@@ -1958,12 +1960,21 @@ Equivalently, the partition-size spectrum misses the interval allowed by empty-s
 active deletion or zero-filter relaxation fills the gap.
 The gap cases are empty spectrum for `e_Z>=2`, spectrum inside `{1}` for `e_Z=1`, and spectrum inside
 `{1,2}` for `e_Z=0`.
+Equivalently, the absent alternatives are full support/bipartitions/tripartitions, then
+bipartitions/tripartitions, then tripartitions only.
 Criticality says every active deletion and every zero-relaxation has spectrum meeting its allowed interval.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.
+Every zero-relaxed cover uses at least one private support or private empty class.
 Active-coordinate relaxation gives a projected cover of `A\{a}`; every lift putting `a` into exactly one
 block is capacity-deficient.
+Thus every allowed partition of `A\{a}` has all block thickenings by `a` absent, and singleton `{a}` absent
+if a new color class is allowed.
+Active witnesses are one/two/three-block for `e_Z>=2`, two/three-block for `e_Z=1`, and exact three-block
+for `e_Z=0`.
+For `e_Z>=2`, either there is a pure co-singleton core or a multi-block witness with all one-coordinate
+thickenings absent.
 If `|R|=m+s`, `s<=3`, terminality inside `R` is the finite list that `b-deg_D` is nonconstant on `R\D`
 for every `|D|<=s-1`.
 The full two-residue core is equivalently `epsilon(v)-deg_D(v)=const` on `J\D`, with `epsilon=0` on `R`

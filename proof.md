@@ -11192,6 +11192,18 @@ Equivalently, for a target-realizing triple `Y={y_1,y_2,y_3}`, let `d_i` be the 
 Any other requested triple, including any endpoint residue `3`, is non-graphical.  Hence scalar-good
 emptiness is a finite pattern-mismatch assertion over the target-realizing triples.
 
+The mismatch alternatives are explicit.  For a target-realizing triple:
+
+```text
+000 fails iff at least one internal edge is present;
+110 fails iff the edge between the two 1-vertices is absent or an edge incident to the 0-vertex is present;
+211 fails iff one of the two edges from the 2-vertex is absent or the two 1-vertices are adjacent;
+222 fails iff at least one internal edge is absent.
+```
+
+Together with the endpoint-residue-`3` case, these four lines are the complete scalar-killed ternary
+normal form.
+
 The target-avoidance half can be written as a capacitated 3-sum cube.  For a coordinate-minimal
 certificate `P`, let `M_P` be the multiset of outside trace columns
 
@@ -11337,6 +11349,18 @@ one needs a two- or three-block partition.  In the third, even one- and two-bloc
 because no empty-support columns are available; an exact three-block partition is required.  Every active
 deletion or zero-filter relaxation must move the corresponding spectrum into the required interval.
 
+Equivalently, the forbidden alternatives are:
+
+```text
+e_Z>=2:  no full support A, no admissible bipartition B|A\B, and no admissible tripartition;
+e_Z=1:   no admissible bipartition B|A\B and no admissible tripartition;
+e_Z=0:   no admissible tripartition.
+```
+
+Here "admissible" means that every displayed block belongs to `F_Z`.  This is often the simplest way to
+recognize which part of the obstruction is genuine and which part is caused only by too little
+empty-support capacity.
+
 The criticality conditions are therefore:
 
 ```text
@@ -11388,6 +11412,13 @@ the all-zero case this says: if `q=c_Z(empty)<=2`, then each `z in Z` has at lea
 whose trace on `Z` is exactly `{z}`.  More generally, for `|A|<=3`, each relaxed cover must repair one of
 the deficient displayed support alternatives using private `p_z(B)` capacity.
 
+The same private-support repair form holds in every active dimension.  For each `z in Z`, choose a
+partition of `A` whose size is allowed by `e_{Z\{z}}` and whose support multiplicities are bounded by
+`c_Z+p_z`.  Since the unrelaxed table `c_Z` has no allowed partition, at least one support block in this
+repair uses private `p_z` capacity, or one empty color class uses private `p_z(empty)` capacity.  Thus every
+zero coordinate carries a private repair tuple: an allowed three-coloring of `A` in which at least one color
+is supplied by a column whose zero-trace is exactly `{z}`.
+
 Active-coordinate criticality has a parallel lift-exclusion form.  Let `a in A`, and let
 `B_1,B_2,B_3 subset A` be the supports of a near-cover after deleting `a`; the projections
 `B_i\{a}` are pairwise disjoint and cover `A\{a}`.  A full cover with the same projected blocks would be
@@ -11401,6 +11432,45 @@ Terminality therefore says that every such one-coordinate lift is capacity-defic
 hole, double-collision, and triple-collision witnesses are exactly the cases where the original
 near-cover has `0`, `2`, or `3` of the `E_i` equal to `{a}`; every repair toggles this count to `1`, and
 all repairs are forbidden by the support-capacity table.
+
+In support-family terms this is a thickening exclusion.  Let `Pi_a={B_1,...,B_k}` be any admissible
+partition of `A\{a}` whose size lies in the allowed interval for the fixed empty capacity.  Since the same
+size `k` is also allowed for `A`, every thickened block
+
+```text
+B_i union {a}
+```
+
+is absent from `F_Z`; otherwise replacing `B_i` by `B_i union {a}` would partition `A`.  If `k<3`, then
+the singleton `{a}` is also absent from `F_Z` whenever `k+1` lies in the allowed interval; otherwise adding
+`{a}` as a new color class would partition `A`.  Thus each active coordinate is surrounded by a whole
+forbidden one-coordinate boundary around every projected partition of `A\{a}`.
+
+The allowed active-deletion witnesses depend only on `e_Z`:
+
+```text
+e_Z>=2:  A\{a} may have a one-, two-, or three-block witness;
+e_Z=1:   A\{a} must have a two- or three-block witness;
+e_Z=0:   A\{a} must have a three-block witness.
+```
+
+In the first line, the one-block case is the co-singleton pattern `A\{a} in F_Z` with full support
+`A notin F_Z`; in the second line, full support may exist but every bipartition/tripartition of `A` is
+absent; in the third line, every active deletion supplies a genuine three-block partition of `A\{a}` and
+all three one-coordinate thickenings are absent.  This is the high-active analogue of the earlier
+row/pair/cube local certificates, now at the partition-clutter level.
+
+Thus the `e_Z>=2` high-active branch splits once more.  Either every active coordinate has a one-block
+witness, giving the **co-singleton core**
+
+```text
+A\{a} in F_Z for every a in A,        A notin F_Z,
+```
+
+with no admissible bipartition or tripartition of `A`; or some active coordinate has a genuine multi-block
+witness, and then all one-coordinate thickenings of that multi-block partition are absent.  The first case
+is a pure high-dimensional support obstruction, while the second already exposes a forbidden boundary of
+lower-dimensional support blocks.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
@@ -11572,6 +11642,18 @@ What remains open:
 ```text
 HasParityToModFourLoss64FixedWitnessLift, or an equivalent parity-to-mod-four fixed-loss theorem;
 the stronger q >= 4 terminal-cascade bridge, which is not needed for terminal regularization.
+```
+
+At the current reduction level, the first-bit theorem has only the following terminal forms:
+
+```text
+large-outside ternary target avoidance:
+  a critical filtered three-cover / partition-spectrum gap, with active thickening exclusions and
+  zero-filter private repair tuples;
+large-outside ternary scalar failure:
+  endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches;
+near-threshold two-residue deletion:
+  bounded deletion templates on R and, when above threshold, on C, plus the mixed two-level deletion target.
 ```
 
 What is not used:

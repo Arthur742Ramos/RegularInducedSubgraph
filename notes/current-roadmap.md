@@ -5286,6 +5286,8 @@ The scalar-killed side is a three-vertex graphicality test: each incoming vertex
 `000`, `110`, `211`, and `222`.
 For a target-realizing triple, these patterns prescribe the unique internal edge pattern: empty, the edge
 between the two `1`s, the two-edge path from the `2`, or the triangle.
+Thus scalar failure is exactly extra edge for `000`, missing/extra wrong edge for `110`, missing path edge
+or extra `1-1` edge for `211`, or missing edge for `222`.
 The target-avoidance side is a capacitated 3-sum cube: outside trace columns in `{0,1}^P` fail to sum to
 `h|_P` using three distinct vertices, while every coordinate projection is feasible.  Hence each coordinate
 has a single-defect realizing triple; inclusion-minimality makes every proper coordinate shadow feasible,
@@ -5313,6 +5315,8 @@ More exactly, `Spec_Z(A)` records partition sizes `1,2,3`; target realization re
 by every active deletion or zero-filter relaxation.
 The gap cases are `e_Z>=2` with empty spectrum, `e_Z=1` with spectrum contained in `{1}`, and `e_Z=0` with
 spectrum contained in `{1,2}`.
+Equivalently: with at least two empty columns, full support/bipartition/tripartition are all absent; with
+one empty column, bipartitions and tripartitions are absent; with none, tripartitions are absent.
 Criticality is exactly that every `A\{a}` meets the same allowed spectrum interval, while every
 zero-relaxation uses `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)` and the enlarged support family to meet its
 allowed interval.
@@ -5323,8 +5327,18 @@ or three-singleton alternatives with the required empty columns.
 Relaxing a zero coordinate adds only private columns `p_z(B)` whose zero-trace is exactly `{z}`; in the
 all-zero case, if only `q<=2` common-zero columns exist, every zero coordinate has at least `3-q` private
 columns.
+In general, each zero relaxation has a private repair tuple: an allowed coloring of `A` using at least one
+support or empty class supplied by `p_z`.
 Active-coordinate defect witnesses have a dual lift-exclusion: their three projected support blocks cover
 `A\{a}`, and every way to toggle `a` into exactly one block is capacity-deficient.
+Equivalently, for any allowed partition of `A\{a}`, every block thickening `B union {a}` is absent from
+`F_Z`; if a color slot is empty and still allowed, the singleton `{a}` is absent too.
+By empty capacity, active witnesses are: one/two/three-block when `e_Z>=2`, two/three-block when `e_Z=1`,
+and exact three-block when `e_Z=0`; the one-block case is the co-singleton pattern.
+So the `e_Z>=2` branch splits into a pure co-singleton core (`A\{a}` present for all `a`, `A` absent, no
+bipartition/tripartition) or a multi-block witness with all one-coordinate thickenings absent.
+Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
+explicit scalar mismatch, and near-threshold two-residue deletion.
 Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
 Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
 `R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.

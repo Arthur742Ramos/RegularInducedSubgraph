@@ -1009,6 +1009,8 @@ certificate has size at least `4`.
 On the scalar side, every target-realizing incoming triple must realize one of the internal degree patterns
 `000`, `110`, `211`, or `222`; residue `3` at an endpoint is immediately impossible.
 The patterns prescribe respectively empty, one-edge, two-edge-path, and triangle internal graphs.
+Their failure modes are extra edge, missing/wrong one-edge, missing path edge or extra `1-1` edge, and
+missing triangle edge.
 On the target side, the remaining obstruction is a critical capacitated 3-sum cube: `h` is not a sum of
 three outside trace columns, but every proper coordinate shadow is; after local closures its dimension is
 at least `4`.
@@ -1031,13 +1033,23 @@ Equivalently, the partition-size spectrum `Spec_Z(A) subset {1,2,3}` misses the 
 empty-support capacity, while every active deletion or zero-filter relaxation fills the gap.
 The three gaps are: no partition when `e_Z>=2`, only one-block partitions when `e_Z=1`, or no three-block
 partition when `e_Z=0`.
+In block terms this forbids respectively full-support/bipartition/tripartition, bipartition/tripartition,
+or tripartition alternatives in `F_Z`.
 Active criticality projects to `A\{a}` with the same empty capacity; zero criticality enlarges capacities by
 private columns `p_z` and must meet the new allowed interval.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.
+Every zero relaxation must use at least one private support or private empty class, otherwise it would
+already be a cover under `c_Z`.
 Active deletion gives projected three-block covers of `A\{a}`; terminality forbids every one-coordinate
 lift that toggles `a` into exactly one block.
+In support-family terms, every block thickening `B union {a}` from an allowed partition of `A\{a}` is
+absent, and singleton `{a}` is absent whenever adding a new color class is allowed.
+The active witness taxonomy is one/two/three-block for `e_Z>=2`, two/three-block for `e_Z=1`, and exact
+three-block for `e_Z=0`.
+For `e_Z>=2`, either all active coordinates give the co-singleton core, or some multi-block witness exposes
+absent one-coordinate thickenings.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

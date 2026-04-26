@@ -2386,6 +2386,8 @@ Recommended attack:
     are `000`, `110`, `211`, and `222`.
     Record the edge-pattern table: `000` empty, `110` the edge between the two `1`s, `211` the two-edge path
     centered at the `2`, and `222` triangle.
+    Record the scalar mismatch table: extra edge for `000`; missing correct edge or extra wrong edge for
+    `110`; missing path edge or extra `1-1` edge for `211`; missing edge for `222`.
     Add the target-avoidance 3-sum normal form: for a coordinate-minimal certificate `P`, outside trace
     columns in `{0,1}^P` do not capacity-respecting sum to `h|_P` in triples, but every coordinate projection
     and hence every proper coordinate shadow does; after local closures, `|P|>=4`.
@@ -2412,6 +2414,8 @@ Recommended attack:
     `F_Z`; realization requires intersection with `{max(1,3-e_Z),...,3}`.
     Record the three empty-capacity cases: `e_Z>=2` forces empty spectrum, `e_Z=1` permits only useless
     one-block partitions, and `e_Z=0` permits only useless one-/two-block partitions.
+    Record the equivalent forbidden block alternatives: absence of full support/bipartitions/tripartitions
+    according to the empty-capacity case.
     Record the criticality equations for `Spec_Z(A\{a})` and `Spec_{Z\{z}}(A)`, with
     `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)`.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
@@ -2420,9 +2424,18 @@ Recommended attack:
     Add the private-column relaxation formula
     `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts active support `B` columns whose zero trace is
     exactly `{z}`.
+    Record private repair tuples: every zero-relaxed cover must use at least one support block or empty
+    class supplied by `p_z`, because otherwise it would already be an unrelaxed cover.
     Add active lift-exclusion: a near-cover after deleting `a` has projected blocks covering `A\{a}`;
     replacing them by supports that put `a` in exactly one block must be capacity-deficient for every such
     choice.
+    Record the support-family thickening form: for every allowed partition of `A\{a}`, all block
+    thickenings `B union {a}` are absent from `F_Z`, and singleton `{a}` is absent when a new color class is
+    allowed.
+    Record the active witness taxonomy by empty capacity: one/two/three-block for `e_Z>=2`, two/three-block
+    for `e_Z=1`, and exact three-block for `e_Z=0`.
+    Add the `e_Z>=2` split: pure co-singleton core (`A\{a}` present for all `a`, `A` absent) versus a
+    multi-block witness whose one-coordinate thickenings are absent.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

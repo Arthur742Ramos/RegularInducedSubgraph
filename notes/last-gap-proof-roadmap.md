@@ -1921,6 +1921,7 @@ What remains justified after audit is:
       scalar-killed target triples reduce to internal degree graphicality on three vertices, allowing only
       `000`, `110`, `211`, and `222` and forbidding endpoint residue `3`;
       those four patterns prescribe empty, one-edge, two-edge-path, and triangle internal graphs;
+      scalar mismatch is the corresponding extra-edge, missing/wrong-edge, or missing-triangle-edge failure;
       target-avoidance is a critical capacitated 3-sum cube of trace columns, infeasible only in full
       dimension and feasible on every proper coordinate shadow, with irreducible dimension at least `4`;
       coordinate switching normalizes this cube to a `{0,1}` three-column disjoint-cover problem;
@@ -1938,11 +1939,19 @@ What remains justified after audit is:
       equivalently, a partition-spectrum gap relative to empty-support capacity;
       the gap cases are empty spectrum, only useless one-block partitions, or no exact three-block
       partition, according as empty capacity is at least two, one, or zero;
+      equivalently, full-support/bipartition/tripartition alternatives are absent according to that
+      capacity;
       active deletions and zero-filter relaxations must fill the corresponding spectrum interval;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
+      every zero-relaxed cover must use at least one such private column;
       active-coordinate near-covers forbid every one-coordinate lift that toggles the active coordinate
       into exactly one support block;
+      equivalently, every allowed partition of `A\{a}` has all block thickenings by `a` forbidden;
+      active witness types are one/two/three-block, two/three-block, or exact three-block according to
+      empty-support capacity;
+      the high-empty-capacity case splits into pure co-singleton core or multi-block forbidden-boundary
+      witness;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on
