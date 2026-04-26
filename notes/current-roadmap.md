@@ -5150,6 +5150,10 @@ exactly when the cross-bundle correction vector equals `-R` on both sides; termi
 avoidance of that cancellation target.
 For a single outside atom `y`, `B union {y}` is dangerous exactly when `c_iy=-R_i(B)` for all `i in B`
 and `e_y+sum_i c_yi=0`; every outside atom must avoid this affine repair profile.
+For an outside atom packet `Y`, repair requires
+`sum_{y in Y}c_iy=-R_i(B)` on the bundle atoms and
+`e_y+sum_{i in B}c_yi+sum_{z in Y,z!=y}c_yz=0` on `Y`; this is the same co-cut/self-layer equation at
+atom-quotient scale.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

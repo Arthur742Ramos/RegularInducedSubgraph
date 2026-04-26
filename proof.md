@@ -10209,6 +10209,19 @@ correction to an atom of `B` misses `-R_i(B)`, or the outgoing row sum from `y` 
 terminal pure-quotient branch, this pointwise repair avoidance must hold for every tight threshold
 bundle and every atom outside it.
 
+For a packet `Y` of outside atoms the repair equations are the atom-level co-cut system
+
+```text
+sum_{y in Y}c_{iy} == -R_i(B)        for every i in B,
+e_y + sum_{i in B}c_{yi} + sum_{z in Y, z != y}c_{yz} == 0        for every y in Y.
+```
+
+The first line is linear in the old bundle `B`; the second line is the fresh self-layer on the atom packet
+`Y`.  Thus the pure quotient branch has reproduced the original obstruction at a smaller quotient scale:
+old residuals can be repaired by an outside atom packet only if that packet both hits the affine
+incoming target and is internally regular after the shifted row labels.  Terminality says every outside
+atom packet fails one of these two lines.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

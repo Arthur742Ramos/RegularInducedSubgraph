@@ -915,6 +915,8 @@ For pure quotient blocks, define residuals `R_i=e_i+sum c_ij`; two blocked bundl
 cross-bundle correction vector avoids the affine target `-R` on both sides.
 The one-atom repair profile is also explicit: an outside atom `y` repairs `B` iff its incoming
 corrections are `-R_i(B)` on all atoms of `B` and its outgoing row sum cancels `e_y`.
+For an outside atom packet `Y`, the repair equations are the incoming affine target to `B` plus the
+shifted self-layer equation on `Y`; terminality says every such atom packet fails one of these two lines.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

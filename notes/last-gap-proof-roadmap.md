@@ -1846,7 +1846,8 @@ What remains justified after audit is:
       a three-certificate split: defect variation, cross-irregularity, or pure weighted-quotient
       unsolvability; in the pure quotient case, nonzero residual vectors for the two bundles must avoid
       affine cancellation by the cross-bundle correction sums, and every outside atom must avoid the
-      corresponding one-atom affine repair profile;
+      corresponding one-atom affine repair profile; outside atom packets satisfy the same incoming-target
+      plus shifted self-layer equations at quotient scale;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;
