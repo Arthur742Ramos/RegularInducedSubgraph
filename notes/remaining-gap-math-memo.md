@@ -2074,6 +2074,13 @@ In the four-pair no-leftover collision core, deletion from endpoint `a` gives ex
 of one pair must have distinct labels, or complementary supports partition all four pairs.
 Equivalently it is an antipodal-free orientation of transversal pairs in `{0,1}^4` with a selected
 distance-three edge in every coordinate-bit facet: the finite two-sheet hidden-cover model.
+The quotient coloring is forced to be `1+3`: every coordinate matching needs a bichromatic edge, and exactly
+the `2+2` splits fail one matching.  Thus the four-pair core has a unique hidden center for the three
+base-coordinate matchings.
+The star is rigid: all selected transversals are supports, all antipodes are absent, and every two-face
+through the hidden center is a one-corner `0001/0111` square, so the core routes to the host square-breaker.
+After discharging that square-breaker, the no-leftover rank-three branch starts with finite rebate circuits
+splitting an atom of size at least three, or with all atoms size at least four.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

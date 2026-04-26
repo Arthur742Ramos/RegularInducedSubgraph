@@ -2042,6 +2042,12 @@ What remains justified after audit is:
       supports `{a} union T` and `{a} union T^c`, and paired endpoints must have distinct labels;
       equivalently it is an antipodal-free orientation of transversal pairs in `{0,1}^4` with a selected
       distance-three edge in every coordinate-bit facet;
+      its Boolean quotient is forced to be a `1+3` star coloring, so the base-coordinate matchings have a
+      unique hidden center;
+      every two-face through that center is a one-corner `0001/0111` square, routing the finite core back to
+      the host square-breaker;
+      after square-breaker discharge, remaining no-leftover rank-three endpoints have a finite rebate circuit
+      splitting an atom of size at least three, or all atoms have size at least four;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

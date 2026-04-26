@@ -1151,6 +1151,12 @@ distinct transversal labels or two complementary supports close.
 In cube language it is an antipodal-free orientation of transversal pairs in `{0,1}^4` whose every
 coordinate-bit facet contains a selected distance-three edge; this is the finite two-sheet hidden-cover
 normal form.
+The quotient orientation is necessarily a `1+3` star coloring on the four base complement-pairs: a `2+2`
+split makes one coordinate matching monochromatic, contradicting the facet-edge requirement.
+The star forces all selected transversals and exposes a one-corner `0001/0111` square on every two-face
+through the hidden center, so this finite core is the same host square-breaker in small-atom form.
+Once that square-breaker is discharged, only finite rebate circuits splitting an atom of size at least three
+or the all-atoms-size-at-least-four no-leftover branch remain.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

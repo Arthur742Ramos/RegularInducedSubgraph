@@ -2549,6 +2549,15 @@ Recommended attack:
     give two disjoint support blocks partitioning all four pairs.
     Repackage this core as an antipodal-free orientation of full transversals in `{0,1}^4`, with each
     coordinate-bit facet containing a selected distance-three edge (`v_i=1111+e_i` in the antipodal quotient).
+    Prove the Boolean quotient lemma: the three coordinate matchings on the four base complement-pairs each
+    need a bichromatic edge, so nonconstant colorings are forced to be `1+3` stars; the four-pair core has a
+    unique hidden center for the three base-coordinate matchings.
+    Add star rigidity: all selected transversals become actual supports, all antipodes are absent, and every
+    two-face through the center is a one-corner `0001/0111` square, identifying the core with the host
+    square-breaker.
+    Record the discharge consequence: once the support-local one-corner square-breaker is excluded, the
+    four-pair no-leftover collision core is gone; remaining no-leftover rank-three cases either split an
+    atom of size at least three in a finite rebate circuit or have all atoms size at least four.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

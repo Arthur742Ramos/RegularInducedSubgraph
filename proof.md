@@ -12364,6 +12364,50 @@ constant-sheet values on long diagonals.  This is precisely the finite two-sheet
 appears in the host-frontier non-overlap table, now derived purely from the rank-three small-atom collision
 branch.
 
+The Boolean model has only star colorings.  In the gauge above, write the four complement-pairs of the base
+cube `{0,1}^3/<111>` as
+
+```text
+A={000,111},   B={001,110},   C={010,101},   D={011,100}.
+```
+
+The selected sheet gives a two-coloring of `A,B,C,D`.  For coordinate `1`, the two possible selected
+`v_1`-edges are the matching edges `AD` and `BC`; the endpoint condition says at least one of these two
+edges is bichromatic.  Similarly coordinates `2` and `3` demand a bichromatic edge in the matchings
+
+```text
+AC | BD,        AB | CD.
+```
+
+The coordinate `4` condition says the coloring is nonconstant.  A nonconstant two-coloring of four points
+fails one of the three displayed matching tests exactly when it is a `2+2` split, because the matching whose
+two edges are the two color classes is monochromatic.  Therefore every four-pair collision core is, up to
+sheet reversal, a `1+3` star coloring: one complement-pair has the minority sheet and the other three have
+the majority sheet.  Thus the finite small-atom collision endpoint is not an arbitrary two-sheet cover; it
+has a unique hidden center.  For the three base-coordinate matchings, the forced distance-three edge is
+incident to that center; the fourth coordinate is the long-diagonal condition that both sheet values occur.
+
+This star coloring is rigid.  Once the hidden center is fixed, the unique bichromatic edge in each of the
+three coordinate matchings is center-incident, so the endpoint conditions force both full-cube lifts of that
+edge.  As the three matchings cover the three noncenter base pairs, all eight selected transversals in the
+star orientation are actual supports, and all eight antipodal transversals are absent.  Moreover every
+two-face of the base cube containing the hidden center has the sheet pattern
+
+```text
+center value, opposite value, opposite value, opposite value,
+```
+
+that is, after sheet reversal and corner ordering, the one-corner `0001/0111` square.  Hence the four-pair
+collision core is not a new finite obstruction: it is the rank-three small-atom incarnation of the same
+positive-AND / one-corner square-breaker that appears in `host-silentedge128`, `host-opppair123`, and
+`host-orient115`.
+
+Consequently, in any quotient where the support-local one-corner square-breaker has already been discharged,
+the four-pair no-leftover collision core is discharged as well.  The genuinely new no-leftover rank-three
+work can therefore start after the small-collision alternatives: either a finite rebate circuit with a split
+atom of size at least three remains, or all atoms have size at least four and the first collision-free case
+is the four-four unit-absorption/lift-collision branch.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff
@@ -12607,7 +12651,7 @@ large-outside ternary target avoidance:
   small-active zero-filter, low-rank bounded, or rank-three high-active; the low-rank bounded line is in the
   finite Ramsey window 3<=m<=16, and the rank-three case is a positive-gain bridge blocker whose small
   atom collisions are finite rebate circuits; the four-pair collision core is the antipodal
-  hidden-transversal orientation model;
+  hidden-transversal orientation model, forced to a 1+3 star with a one-corner square through its center;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

@@ -5492,6 +5492,15 @@ partition all four pairs and close.
 Equivalently this core is an antipodal-free orientation of transversal pairs in `{0,1}^4`: every
 coordinate-bit facet contains a selected distance-three edge (`v_i=1111+e_i` in the antipodal quotient),
 which is the finite two-sheet hidden-cover model behind the host non-overlap table.
+The Boolean quotient forces a `1+3` star coloring: the three coordinate matchings on the four base
+complement-pairs each need a bichromatic edge, excluding exactly the `2+2` splits.  Hence the four-pair
+collision core has a unique hidden center for the three base-coordinate matchings.
+This star is rigid: all eight selected transversals are actual supports, all antipodes are absent, and every
+two-face through the hidden center is the one-corner `0001/0111` square.  Thus the four-pair collision core
+routes back to the same host square-breaker.
+After square-breaker discharge, the remaining no-leftover rank-three work starts with finite rebate circuits
+splitting an atom of size at least three, or with all atoms size at least four and the four-four
+unit-absorption/lift-collision branch.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.
