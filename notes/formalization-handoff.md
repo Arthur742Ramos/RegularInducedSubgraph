@@ -2277,6 +2277,10 @@ Recommended attack:
     Add the dyadic flag refinement: choose an index-two subgroup chain to the period subgroup.  At each
     quotient bit, either a minimal odd seed moves the residual target into the next subgroup, or the
     quotient character separates the residual target from all remaining zero-prefix profile packets.
+    Formalize the stopped-bit certificate as a residual subgroup `K`, character `chi:K->Z/2Z`, and target
+    `tau` with `chi(P_B(Y))=0` for every available lower-zero repair packet but `chi(tau)=1`.
+    Add the relation-rigidity equivalent: for disjoint repair-packet relations with zero lower quotient
+    sum, the sum of stopped characters is forced even; an odd relation is exactly the next seed.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

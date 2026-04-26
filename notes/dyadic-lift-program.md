@@ -928,6 +928,10 @@ Sequence Kneser gives the inverse form: for `H=Stab(Sigma_B(A))`, the target cos
 Refining the dyadic quotient through an index-two flag, every target-avoid counterexample either descends
 after an odd seed or stops at a parity character that is zero on all remaining zero-prefix packets and
 nonzero on the residual target.
+Thus the final target-avoid certificate is a first-bit separator
+`chi(P_B(Y))=0` for every lower-zero repair packet but `chi(tau)=1` for the residual target.
+In relation form, all disjoint lower-profile relations have even successor bit; finding one odd relation is
+equivalent to finding the missing seed.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

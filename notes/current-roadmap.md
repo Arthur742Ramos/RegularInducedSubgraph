@@ -5168,6 +5168,11 @@ Since the profile group is dyadic, this can be refined along an index-two subgro
 has an odd seed that moves the residual target into the next subgroup, or a parity character separates the
 target from all remaining zero-prefix profile packets.  Thus the target-avoid branch is a first-bit
 quotient obstruction.
+At the stopping level, for a residual target `tau` and character `chi`, all available lower-zero repair
+packets satisfy `chi(P_B(Y))=0` while `chi(tau)=1`; this is the atom-profile version of the missing
+successor-bit square.
+Equivalently, every disjoint lower-profile relation has even `chi`-sum; an odd relation would be the next
+seed and would close the stopped branch.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

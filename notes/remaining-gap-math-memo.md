@@ -1860,6 +1860,10 @@ Inverse Kneser turns target avoidance into a period-subgroup certificate: for
 inside `H`.
 Along an index-two flag to `H`, the obstruction becomes a binary descent: an odd seed descends the residual
 target one level, or a parity character separates the target from all remaining zero-prefix packets.
+The stopped branch is `chi(P_B(Y))=0` for every lower-zero repair packet but `chi(tau)=1` for the residual
+target, a single successor-bit obstruction.
+Equivalently all lower-profile relations have even successor bit; an odd relation supplies the missing
+seed.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

@@ -1855,7 +1855,10 @@ What remains justified after audit is:
       period subgroup whose target coset is missing and which contains all but boundedly many outside
       atom profiles; along a dyadic index-two flag this is a first-bit descent, where each level either
       has an odd seed moving the residual target down one subgroup or a parity character separating the
-      target from all remaining zero-prefix packets;
+      target from all remaining zero-prefix packets; the stopped form is a character `chi` with
+      `chi(P_B(Y))=0` for every lower-zero repair packet but `chi(tau)=1` on the residual target, the
+      atom-profile version of the missing successor-bit square; equivalently every lower-profile relation
+      has even successor bit, and an odd relation is the missing seed;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

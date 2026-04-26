@@ -10338,6 +10338,39 @@ and passes to the next index-two subgroup, or stops at a parity character that i
 remaining zero-prefix packets but nonzero on the residual target.  In particular, the affine-avoidance
 branch is a first-bit obstruction in a quotient flag, not an unstructured subset-sum failure.
 
+At the stopping level this can be stated without the preceding flag.  Let `K` be the subgroup already
+forced by the earlier zero-prefix conditions and let `chi:K -> Z/2Z` be the next quotient character.  The
+stopped branch is exactly
+
+```text
+chi(P_B(Y))=0        for every available K-valued repair packet Y,
+chi(tau)=1           for the residual target tau.
+```
+
+Equivalently, the next bit of every realizable repair packet is a consequence of the previous quotient
+bits, but the target has the opposite next bit.  The terminal selector theorem is therefore reduced, in
+this branch, to excluding a single first-bit separation character on atom-profile repair packets.  This is
+the profile-sum analogue of the hidden `0001`/missing-`0111` square: the visible lower bits are all
+compatible, and the only missing datum is one successor bit that refuses to be realized by a packet.
+
+The same stopped form can be read as relation-rigidity.  Let `pi` denote the lower quotient profile before
+the stopped character.  For every admissible packet relation
+
+```text
+sum_{Y in F} pi(P_B(Y)) = 0
+```
+
+among pairwise disjoint available repair packets, one must also have
+
+```text
+sum_{Y in F} chi(P_B(Y)) = 0.
+```
+
+Otherwise the union of that relation is lower-zero and odd in the stopped bit, giving the next seed and
+contradicting stoppedness.  Thus the successor bit factors through the lower packet-relation monoid; the
+residual target is precisely a lower-zero element on which this factorization would take value `1`.  Any
+proof of a lower-profile odd relation is therefore enough to close the target-avoid branch.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over
