@@ -23516,6 +23516,518 @@ theorem RamseyThreeTenExact42TopRowFinalImport.toUnifiedFinalConsumerImport_toTo
     h.toUnifiedFinalConsumerImport.toTopRowFinalImport = h := by
   exact Subsingleton.elim _ _
 
+/--
+Parameter-free theorem bundle for downstream consumers that only need the final numerical
+consequences.  The `R(4,5) <= 27` field is the localized/assumption-backed input transported by
+the final Ramsey facade; this bundle does not assert a new unconditional `R(4,5)` theorem.
+-/
+structure RamseyTenR45UnifiedFinalTheoremBundle : Prop where
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Add the exact-`42` theorem to a final-status handoff to obtain the theorem bundle. -/
+theorem RamseyTenR45FinalStatus.toUnifiedFinalTheoremBundle
+    (h : RamseyTenR45FinalStatus) (h42 : HasCliqueOrIndepSetBound 3 10 42) :
+    RamseyTenR45UnifiedFinalTheoremBundle where
+  finalStatus := h
+  globalConsequences := h.toGlobalConsequenceBundle
+  finalConsequences := h.toFinalConsequenceSurface
+  threeTenFortyTwo := h42
+  r45TwentySeven := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  r10Ten39246 := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.toTenMemAdmissibleBounds_40960
+  f40960 := h.toTenLeF_40960
+
+/-- Add the exact-`42` theorem to a global consequence bundle to obtain the theorem bundle. -/
+theorem RamseyTenR45GlobalConsequenceBundle.toUnifiedFinalTheoremBundle
+    (h : RamseyTenR45GlobalConsequenceBundle) (h42 : HasCliqueOrIndepSetBound 3 10 42) :
+    RamseyTenR45UnifiedFinalTheoremBundle where
+  finalStatus := h.toFinalStatus
+  globalConsequences := h
+  finalConsequences := h.toFinalConsequenceSurface
+  threeTenFortyTwo := h42
+  r45TwentySeven := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  r10Ten39246 := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.toTenMemAdmissibleBounds_40960
+  f40960 := h.toTenLeF_40960
+
+/-- Add the exact-`42` theorem to a final consequence surface to obtain the theorem bundle. -/
+theorem RamseyTenR45FinalConsequenceSurface.toUnifiedFinalTheoremBundle
+    (h : RamseyTenR45FinalConsequenceSurface)
+    (h42 : HasCliqueOrIndepSetBound 3 10 42) :
+    RamseyTenR45UnifiedFinalTheoremBundle where
+  finalStatus := h.toFinalStatus
+  globalConsequences := h.toGlobalConsequenceBundle
+  finalConsequences := h
+  threeTenFortyTwo := h42
+  r45TwentySeven := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  r10Ten39246 := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.toTenMemAdmissibleBounds_40960
+  f40960 := h.toTenLeF_40960
+
+/-- Select final status from the parameter-free theorem bundle. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toFinalStatus
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select global consequences from the parameter-free theorem bundle. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toGlobalConsequenceBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select final consequences from the parameter-free theorem bundle. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toFinalConsequenceSurface
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume the theorem bundle as the low-row exact-`42` result. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toThreeTenFortyTwo
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Consume the theorem bundle as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume the theorem bundle as the propagated `R(10,10) <= 39246` bound. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume the theorem bundle as the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45UnifiedFinalTheoremBundle)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960 H hcard
+
+/-- Consume the theorem bundle as the admissible-bound conclusion. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : 10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume the theorem bundle as the extremal-function lower bound. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toTenLeF_40960
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : 10 ≤ F 40960 :=
+  h.f40960
+
+/-- The downstream final-consumer import materializes the parameter-free theorem bundle. -/
+theorem RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle where
+  finalStatus := h.toFinalStatus
+  globalConsequences := h.toGlobalConsequenceBundle
+  finalConsequences := h.toFinalConsequenceSurface
+  threeTenFortyTwo := h.toThreeTenFortyTwo
+  r45TwentySeven := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  r10Ten39246 := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.toTenMemAdmissibleBounds_40960
+  f40960 := h.toTenLeF_40960
+
+/-- Unified final consequence surfaces materialize the parameter-free theorem bundle. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle
+
+/-- Final downstream imports materialize the parameter-free theorem bundle. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle
+
+/-- Compact final consumers materialize the parameter-free theorem bundle. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle
+
+/-- Consumer-normalized imports materialize the parameter-free theorem bundle. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle
+
+/-- Top-row downstream imports materialize the parameter-free theorem bundle. -/
+theorem RamseyTenR45TopRowDownstreamImport.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle
+
+/-- Exact-`42` top-row final imports materialize the parameter-free theorem bundle. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle
+
+/-- Top-row ready certificates materialize the parameter-free theorem bundle. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle
+
+/-- Final-facing top-row handoffs materialize the parameter-free theorem bundle. -/
+theorem RamseyThreeTenExact42TopRowFinalHandoff.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalHandoff G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle
+
+/-- Downstream imports with a profiled top row materialize the theorem bundle. -/
+theorem RamseyTenR45DownstreamImport.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport htop).toUnifiedFinalTheoremBundle
+
+/-- Downstream imports with common-sum/count-profile data materialize the theorem bundle. -/
+theorem RamseyTenR45DownstreamImport.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport_ofCommonSumCountProfile hcommon hcount)
+    |>.toUnifiedFinalTheoremBundle
+
+/-- Ready certificates with a profiled top row materialize the theorem bundle. -/
+theorem RamseyTenR45ReadyCertificate.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport htop).toUnifiedFinalTheoremBundle
+
+/-- Ready certificates with common-sum/count-profile data materialize the theorem bundle. -/
+theorem RamseyTenR45ReadyCertificate.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport_ofCommonSumCountProfile hcommon hcount)
+    |>.toUnifiedFinalTheoremBundle
+
+/-- Final bundles with a profiled top row materialize the theorem bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport htop).toUnifiedFinalTheoremBundle
+
+/-- Final bundles with common-sum/count-profile data materialize the theorem bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport_ofCommonSumCountProfile hcommon hcount)
+    |>.toUnifiedFinalTheoremBundle
+
+/-- Profiled middle-degree handoffs with a top row materialize the theorem bundle. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport htop).toUnifiedFinalTheoremBundle
+
+/-- Profiled middle-degree handoffs with common-sum/count-profile data materialize the bundle. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport_ofCommonSumCountProfile hcommon hcount)
+    |>.toUnifiedFinalTheoremBundle
+
+/-- Exact-`42` status, endpoints, and a top-row branch materialize the theorem bundle. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport hendpoints htop).toUnifiedFinalTheoremBundle
+
+/-- Exact-`42` status and endpoints with profile components materialize the theorem bundle. -/
+theorem
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport_ofCommonSumCountProfile hendpoints hcommon hcount)
+    |>.toUnifiedFinalTheoremBundle
+
+/-- Profiled exact-`42` surfaces, endpoints, and a top-row branch materialize the theorem bundle. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport hendpoints htop).toUnifiedFinalTheoremBundle
+
+/-- Profiled exact-`42` surfaces with endpoints and profile components materialize the bundle. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  (h.toUnifiedFinalConsumerImport_ofCommonSumCountProfile hendpoints hcommon hcount)
+    |>.toUnifiedFinalTheoremBundle
+
+/-- Constructor exposing the theorem bundle from a downstream final-consumer import. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_unifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalTheoremBundle
+
+/-- Constructor exposing the theorem bundle from a unified final consequence surface. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalTheoremBundle
+
+/-- Constructor exposing the theorem bundle from a final downstream import. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_finalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalTheoremBundle
+
+/-- Constructor exposing the theorem bundle from a compact final consumer. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalTheoremBundle
+
+/-- Constructor exposing the theorem bundle from a consumer-normalized route. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalTheoremBundle
+
+/-- Constructor exposing the theorem bundle from a top-row downstream import. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_topRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalTheoremBundle
+
+/-- Constructor exposing the theorem bundle from an exact-`42` top-row final import. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalTheoremBundle
+
+/-- Constructor exposing the theorem bundle from exact-`42` status and endpoint assumptions. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_exact42Status_endpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  hstatus.toUnifiedFinalTheoremBundle hendpoints htop
+
+/-- Common-sum/count-profile constructor for the theorem bundle from exact-`42` status. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_exact42Status_commonSum_countProfile_endpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  hstatus.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile
+    hendpoints hcommon hcount
+
+/-- Theorem-bundle route to the low-row exact-`42` result. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toThreeTenFortyTwo
+
+/-- Theorem-bundle route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Theorem-bundle route to the propagated `R(10,10) <= 39246` bound. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Theorem-bundle route to the regular induced `10`-subgraph theorem. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Theorem-bundle route to the admissible-bound conclusion. -/
+theorem ten_mem_admissibleBounds_40960_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : 10 ∈ admissibleBounds 40960 :=
+  h.toTenMemAdmissibleBounds_40960
+
+/-- Theorem-bundle route to the extremal-function lower bound. -/
+theorem ten_le_F_40960_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : 10 ≤ F 40960 :=
+  h.toTenLeF_40960
+
+/-- Theorem bundles expose final status as a flat projection. -/
+theorem ramseyTenR45FinalStatus_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : RamseyTenR45FinalStatus :=
+  h.toFinalStatus
+
+/-- Theorem bundles expose global consequences as a flat projection. -/
+theorem ramseyTenR45GlobalConsequenceBundle_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : RamseyTenR45GlobalConsequenceBundle :=
+  h.toGlobalConsequenceBundle
+
+/-- Theorem bundles expose final consequences as a flat projection. -/
+theorem ramseyTenR45FinalConsequenceSurface_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) : RamseyTenR45FinalConsequenceSurface :=
+  h.toFinalConsequenceSurface
+
+/-- Final-consumer imports round-trip through the theorem bundle on final status. -/
+theorem RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle_toFinalStatus_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    h.toUnifiedFinalTheoremBundle.toFinalStatus = h.toFinalStatus := by
+  exact Subsingleton.elim _ _
+
+/-- Final-consumer imports round-trip through the theorem bundle on global consequences. -/
+theorem
+    RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle_toGlobalConsequenceBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    h.toUnifiedFinalTheoremBundle.toGlobalConsequenceBundle = h.toGlobalConsequenceBundle := by
+  exact Subsingleton.elim _ _
+
+/-- Final-consumer imports round-trip through the theorem bundle on final consequences. -/
+theorem
+    RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle_toFinalConsequenceSurface_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    h.toUnifiedFinalTheoremBundle.toFinalConsequenceSurface = h.toFinalConsequenceSurface := by
+  exact Subsingleton.elim _ _
+
+/-- Final-consumer imports round-trip through the theorem bundle on the exact-`42` theorem. -/
+theorem RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle_toThreeTenFortyTwo_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    h.toUnifiedFinalTheoremBundle.toThreeTenFortyTwo = h.toThreeTenFortyTwo := by
+  exact Subsingleton.elim _ _
+
+/-- Final-consumer imports round-trip through the theorem bundle on the localized `R(4,5)` input. -/
+theorem
+    RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    h.toUnifiedFinalTheoremBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final-consumer imports round-trip through the theorem bundle on the `R(10,10)` theorem. -/
+theorem
+    RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle_toHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    h.toUnifiedFinalTheoremBundle.toHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/-- Final-consumer imports round-trip through the theorem bundle on the admissible-bound theorem. -/
+theorem
+    RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle_toTenMemAdmissibleBounds_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    h.toUnifiedFinalTheoremBundle.toTenMemAdmissibleBounds_40960 =
+      h.toTenMemAdmissibleBounds_40960 := by
+  exact Subsingleton.elim _ _
+
+/-- Final-consumer imports round-trip through the theorem bundle on the extremal-function bound. -/
+theorem RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle_toTenLeF_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    h.toUnifiedFinalTheoremBundle.toTenLeF_40960 = h.toTenLeF_40960 := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
