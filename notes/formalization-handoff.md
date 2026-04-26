@@ -1972,6 +1972,15 @@ Recommended attack:
    `M_A(a)+deg_T(a)=R` on `A` and `L_A(v)+deg_T(v)=R` on `T`; equivalently, for the omitted triple
    `O=R_i\T`, use `deg_T=deg_{R_i}-deg_O` in both lines.  The positive atom is therefore a seven-vertex
    omission table plus a constant-column condition on `A`.
+   Formalize the trace quotient of the column condition: for `p(a)=N(a) cap R_i` and
+   `mu(a)=M_A(a)+|p(a)|`, an omitted triple `O` satisfies the remainder line iff
+   `mu(a)-|p(a) cap O|` is constant on all occupied labelled trace classes `(p,mu)`.  Hence the local
+   endpoint is finite over `{0,1}^7 x Z/4Z` and the `35` omitted triples.
+   Formalize the pairwise equalization criterion: for occupied trace classes `(p,mu),(q,nu)`, an omitted
+   triple can equalize them only if `|p cap O|-|q cap O|=mu-nu [MOD 4]`.  With
+   `A=p\q`, `B=q\p`, and `C=R_i\(A union B)`, this is equivalent to integers
+   `0<=x<=|A|`, `0<=y<=|B|`, `0<=3-x-y<=|C|`, and `x-y=mu-nu [MOD 4]`.  Multiple classes require one
+   omitted triple satisfying all such pair constraints and the internal four-set equation.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

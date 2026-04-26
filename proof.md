@@ -8509,6 +8509,44 @@ constant-column condition on the fixed remainder.  One must rule out, or exploit
 every omitted triple fails one of these displayed congruences.  This is a rerooting problem rather than a
 Davenport problem; the group arithmetic has disappeared.
 
+The column condition has a finite trace quotient.  For `a in A`, record the trace
+
+```text
+p(a)=N(a) cap R_i in {0,1}^{R_i},        mu(a)=M_A(a)+|p(a)|       [MOD 4].
+```
+
+For an omitted triple `O`, the remainder line becomes
+
+```text
+mu(a)-|p(a) cap O| = R        for every a in A.        [MOD 4]
+```
+
+Thus only the occupied labelled trace classes `(p,mu)` matter.  The positive-atom endpoint is finite in
+the following literal sense: choose one of the `35` omitted triples `O` in a seven-point labelled graph
+and test whether the affine functional `mu-|p cap O|` is constant on the occupied trace alphabet and
+whether the internal line on `R_i\O` is constant.  If no `O` passes, terminality is witnessed by a finite
+set of labelled trace classes in `{0,1}^7 x Z/4Z`.  This is the exact ternary/omission form of the
+self-layer residue.
+
+For two occupied trace classes `(p,mu)` and `(q,nu)`, the remainder line can equalize them by an omitted
+triple only if
+
+```text
+|p cap O|-|q cap O| = mu-nu        [MOD 4].
+```
+
+Writing `A=p\q`, `B=q\p`, `C=R_i\(A union B)`, this is the existence of integers
+
+```text
+0<=x<=|A|, 0<=y<=|B|, 0<=3-x-y<=|C|,
+x-y = mu-nu        [MOD 4].
+```
+
+Thus each pair of trace classes supplies an explicit signed three-subset constraint.  A positive-atom
+terminal obstruction is precisely a finite family of such pair constraints, together with the internal
+four-set equation, with no common omitted triple among the `35` possibilities.  This is the anti-Horn
+version of the seven-point table.
+
 Thus a plausible final route is now precise: prove a stability/inverse-Davenport boundary theorem
 adapted to the value-coupled exchange.  The required input is not another zero-sum existence theorem;
 existence is already exhausted.  It is an inverse theorem for zero-sum-free boundaries together with

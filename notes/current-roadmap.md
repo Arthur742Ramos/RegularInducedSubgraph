@@ -4917,6 +4917,12 @@ For that atom, the retained four-set plus the boundary triple is a seven-vertex 
 remainder `A`, the test is `M_A+deg_T=R` on `A` and `L_A+deg_T=R` on `T`, or equivalently a labelled
 omitted-triple table using `deg_T=deg_{R_i}-deg_O`.  The positive-atom residue is therefore a seven-point
 table plus one constant-column condition.
+That column condition is finite on traces: with `p=N(a) cap R_i` and `mu=M_A(a)+|p|`, an omitted triple
+`O` works on the remainder iff `mu-|p cap O|` is constant on the occupied labelled trace classes in
+`{0,1}^7 x Z/4Z`.
+Pairwise, two trace classes require the signed omitted-triple equation
+`|p cap O|-|q cap O|=mu-nu [MOD 4]`; terminality in the positive atom is a finite anti-Horn family of
+these constraints with no common one of the `35` triples.
 
 ## Supporting work that is useful but not on the critical path
 

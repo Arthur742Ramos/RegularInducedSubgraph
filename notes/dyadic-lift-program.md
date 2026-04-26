@@ -1511,6 +1511,16 @@ With `A` the fixed selected remainder, the full reroot test is:
 `O=R_i\T`, replace `deg_T` by `deg_{R_i}-deg_O`.  Hence the final positive-atom residue is a labelled
 seven-vertex omission table coupled to one constant-column condition on the fixed remainder, not a
 group-theoretic boundary problem.
+The column condition depends only on the trace quotient of `A` into `R_i`: for
+`p(a)=N(a) cap R_i` and `mu(a)=M_A(a)+|p(a)|`, an omitted triple `O` works on the remainder iff
+`mu(a)-|p(a) cap O|` is constant on all occupied labelled trace classes.  Therefore the positive-atom
+endpoint is a finite alphabet problem on `{0,1}^7 x Z/4Z` plus the internal four-set equation on
+`R_i\O`.
+For two trace classes `(p,mu),(q,nu)`, equalization is the signed three-subset equation
+`|p cap O|-|q cap O|=mu-nu [MOD 4]`.  With `A=p\q`, `B=q\p`, this means choosing
+`x` omitted points from `A` and `y` from `B`, with a total omitted size three, so that
+`x-y=mu-nu [MOD 4]`.  The positive-atom obstruction is a finite anti-Horn family of these pair
+constraints with no common omitted triple among the `35` triples.
 
 So the remaining input is an inverse/stability theorem for value-coupled zero-sum-free boundaries,
 not another ordinary zero-sum extraction.

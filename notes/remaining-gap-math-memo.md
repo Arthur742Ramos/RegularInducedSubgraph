@@ -1668,6 +1668,10 @@ For this atom, `S_i=e_i^4` together with the boundary triple `X_i=e_i^3` forms a
 Every same-size old-coordinate reroot is a four-set `T`; with fixed selected remainder `A`, it must
 satisfy `M_A+deg_T=R` on `A` and `L_A+deg_T=R` on `T`.  In omitted-triple form this is the
 seven-point table obtained from `deg_T=deg_{R_i}-deg_O`, plus a constant-column condition on `A`.
+The latter depends only on the labelled trace alphabet `(p,mu) in {0,1}^7 x Z/4Z`, since an omitted
+triple `O` requires `mu-|p cap O|` to be constant on all occupied classes.
+For two classes this is the signed equation `|p cap O|-|q cap O|=mu-nu [MOD 4]`; the positive-atom
+terminal case is a finite anti-Horn obstruction over the `35` omitted triples.
 
 ## 14. Pair-chamber orientation normal form
 
