@@ -1220,15 +1220,31 @@ subgraph `Q[U]` gives an outside-only residue-`0` set of size `2|U|`.  Thus term
 `2|U|>=m-1`, any outside non-triangle triple that is cross-empty to all of `U` augments the selector,
 and any outside non-triangle triple cross-complete to all of `U` augments it when `|U|` is odd.  The
 surviving homogeneous quotient must therefore have mixed neighbourhoods into every near-half even class.
-The same statement holds for the triangle class with all residues shifted by one: edge pairs in triangle
-triples have internal residue `1`, so an even quotient subset gives a residue-`1` selector of size
-`2|U|`, with the same cross-empty and odd cross-complete augmentations inside the triangle class.
-Thus a mixed homogeneous quotient can survive only by balancing the non-triangle pair-residue `0` class
-against the triangle pair-residue `1` class.
+The pair-word statement only needs constant quotient degree parity.  A two-vertex regular word of
+internal residue `q_pair` gives final residue `q_pair+2 deg_Q(i) [MOD 4]`; odd quotient degree merely
+shifts the common residue by `2`.  Thus non-triangle triples use nonedge pairs with `q_pair=0`, triangle
+triples use edge pairs with `q_pair=1`, and a mixed homogeneous quotient can survive only by balancing
+these two pair-residue classes so that neither has a near-half constant-parity selector.
 Pair-only selectors cannot mix these classes: size-two words contribute only even cross-degrees, so the
 parity of the final residue is the parity of the internal pair residue.  Any genuine mixed-class
 selector must therefore use singleton or whole-triple words, the odd-size words that can change
 cross-contribution parity.
+The odd-word part has an exact linear carry equation.  On a quotient parity class `U`, choose singletons
+everywhere and whole triples on `T` among independent/triangle triples.  With `tau_i=0` for independent
+and `tau_i=1` for triangle, congruence modulo `4` is equivalent to
+`floor(deg_{Q[U]}(i)/2)+deg_T(i)+tau_i 1_{i in T}=c [MOD 2]` for all `i in U`.  The selector has size
+`|U|+2|T|`; terminality forces every solution to have size at most `m`.  Thus the last homogeneous
+mixed-class obstruction is a low-weight affine solution space over `F_2`.
+Writing `M_U=A(Q[U])+diag(tau)`, any kernel vector toggles one solution to another, so if a solution
+exists terminality forces every `H in ker M_U` to have `|H|<=m-|U|`.  A large twisted-Eulerian kernel
+vector closes the branch.  If no constant bit makes the affine system soluble, symmetry gives a dual
+kernel certificate incompatible with the carry right-hand side.  The irreducible endpoint is therefore
+small-kernel plus affine-inconsistency for this twisted quotient matrix.
+In the parity-matched constant-type case, `tau` is constant and `deg_Q(i)=tau [MOD 2]`, so `1_U` lies
+in the kernel.  If `|U|` is odd, the constant bit `c` can always satisfy the single all-ones
+compatibility equation.  But the full selector already closes any constant-type constant-parity quotient
+set with `|U|>m/2` by pair words, so the Arf-type half-degree bit is only a below-threshold diagnostic,
+not an independent large obstruction.
 
 The zero-sum-free boundary `X` has length at most the Davenport extremal value `3(m-1)` in
 `C_4^(m-1)`.  This suggests the next split:

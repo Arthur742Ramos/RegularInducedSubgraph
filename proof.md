@@ -7247,13 +7247,18 @@ outside non-triangle coordinate must have a genuinely mixed neighbourhood into e
 quotient class (except for the complete case when `|U|` is even).  This is the homogeneous-quotient
 version of the finite-alphabet mixed-interaction barrier.
 
-The triangle-only quotient has the same form with residue shifted by one.  In a triangle triple, every
-two-vertex word is an edge pair of internal residue `1`.  Therefore, if a homogeneous quotient `Q` is
-formed on triangle triples and `Q[U]` is even, selecting an edge pair from every triple of `U` gives an
-outside-only residue-`1` set of size `2|U|`.  The same near-half augmentation applies inside the triangle
-class: a triangle triple cross-empty to `U` augments by an edge pair, while a cross-complete triangle
-triple augments when `|U|` is odd, shifting the common residue from `1` to `3`.  Hence terminality forces
-Gallai-half tightness separately on both pair-residue classes:
+The pair-word quotient is slightly stronger: it only needs constant quotient degree parity, not evenness.
+If every selected triple contributes a two-vertex regular word of internal residue `q_pair`, then every
+selected vertex has residue
+
+```text
+q_pair + 2 deg_{Q[U]}(i)       [MOD 4].
+```
+
+Thus any induced quotient set `U` on which all degrees have one parity gives a pair-word outside-only
+selector of size `2|U|`.  For non-triangle triples take a nonedge pair and `q_pair=0`; for triangle
+triples take an edge pair and `q_pair=1`.  Hence terminality forces Gallai-half tightness separately on
+both pair-residue classes:
 
 ```text
 non-triangle triples: pair residue 0,
@@ -7261,13 +7266,72 @@ triangle triples:     pair residue 1.
 ```
 
 A mixed homogeneous quotient can survive only by balancing these two pair-residue classes so that
-neither class contains a near-half even quotient selector with an augmenting same-class outside triple.
+neither class contains a near-half constant-parity quotient selector with an augmenting same-class
+outside triple.  The earlier even-quotient statements are the residue-preserving subcase; odd quotient
+degree simply shifts the common residue by `2`.
 Moreover, this split is forced by parity: if all selected words have size two, every cross-word
 contribution is even (`0` or `2` modulo `4` in the homogeneous quotient), so the parity of the final
 degree residue is the parity of the internal pair residue.  Pair-only selectors therefore cannot mix
 non-triangle pairs with triangle pairs.  Any terminal mixed-class construction must use singleton or
 whole-triple words somewhere; those are exactly the words whose sizes are odd and can change the parity
 of cross-contributions.
+
+The odd-word subproblem has an exact linear form.  Work in a homogeneous quotient `Q` on a set `U` of
+boundary triples and choose only singleton words, except that on a subset `T` of whole-word-eligible
+triples one may choose the whole triple instead.  Whole-word-eligible means independent or triangle;
+write `tau_i=0` for an independent triple and `tau_i=1` for a triangle, since replacing a singleton by
+the whole triple adds internal residue `0` or `2`.  First restrict to a parity class of `Q[U]`, so
+`deg_{Q[U]}(i)=p [MOD 2]` is constant on `U`.  Then the selected degrees are congruent modulo `4` iff
+there is a bit `c` such that, for every `i in U`,
+
+```text
+floor(deg_{Q[U]}(i)/2) + deg_T(i) + tau_i 1_{i in T} = c       [MOD 2].
+```
+
+The resulting outside-only set has size `|U|+2|T|`.  Hence terminality says that every solution of this
+linear carry equation has `|U|+2|T|<=m`.  Equivalently, once the pair-residue classes are Gallai-tight,
+the remaining homogeneous mixed-class obstruction is a low-weight affine solution space for this
+carry equation.  This is strictly sharper than the previous odd-word formulation: failure is now a
+linear dual-certificate problem over `F_2`, with variables only on the independent/triangle triples.
+
+Write the matrix of the carry equation as
+
+```text
+M_U = A(Q[U]) + diag(tau)          over F_2.
+```
+
+If one solution `T_0` exists, then every kernel vector `H in ker M_U` produces the second solution
+`T_0 triangle H`.  Since terminality bounds both solution weights by `(m-|U|)/2`, it also forces
+
+```text
+|H| <= m-|U|             for every H in ker M_U.
+```
+
+Thus a large kernel vector immediately closes the odd-word branch.  If no choice of the constant bit
+`c` makes the system solvable, the obstruction is dual: by symmetry of `M_U`, there is a kernel vector
+whose dot product with the carry right-hand side is incompatible with both constants (equivalently the
+ratios against `1_U` and `floor(deg/2)` are inconsistent).  Hence the irreducible homogeneous
+mixed-class case is not an arbitrary labelled quotient; it is a quotient in which the twisted Eulerian
+kernel of `A+diag(tau)` is small and simultaneously supplies the affine inconsistency certificate.
+That is a much narrower algebraic endpoint.
+
+One important special case is already explicit.  Suppose `tau` is constant on `U` and
+`deg_{Q[U]}(i)=tau [MOD 2]` for every `i in U`.  Then `1_U in ker M_U`.  If `|U|>m/2` and the carry
+equation is soluble for some `c`, the two complementary solutions `T` and `U\T` have weights summing
+to `|U|`, so one has weight greater than `(m-|U|)/2`, giving an outside-only selector of size
+greater than `m`.  Hence a terminal parity-matched constant-type class of size greater than `m/2` must
+be affine-inconsistent.  The inconsistency is one-dimensional: because `1_U` is the kernel certificate,
+solvability requires
+
+```text
+sum_{i in U} ( floor(deg_{Q[U]}(i)/2) + c ) = 0       [MOD 2].
+```
+
+If `|U|` is odd, one can choose `c` to satisfy this equation, so the odd-word equation itself is soluble.
+In the full selector, however, the pair-word shortcut already closes any constant-type quotient set with
+constant degree parity and `|U|>m/2`.  Therefore this Arf-type bit is only a residual diagnostic below
+the pair-word threshold or after the class has been forced to split; it is not an independent large
+boundary obstruction.
 
 The boundary side has one more structural feature: `X` is zero-sum-free in
 `C_4^(m-1)` and has length at most the exact Davenport extremal value `3(m-1)`.  Hence the terminal

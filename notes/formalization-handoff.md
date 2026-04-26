@@ -1744,12 +1744,25 @@ Recommended attack:
    size `2|U|`.  Hence terminality implies `even_selector(Q)<=m/2`.  If `2|U|>=m-1`, an outside
    non-triangle triple that is cross-empty to all of `U` augments by a nonedge pair; if it is
    cross-complete to all of `U` and `|U|` is odd, the same augmentation gives residue `2`.
-   Add the triangle analogue: edge pairs in triangle triples have internal residue `1`, so even quotient
-   subsets give residue-`1` selectors of size `2|U|`, with the same same-class augmentations (residue
-   `1` for cross-empty, residue `3` for odd cross-complete).
+   Strengthen the pair-word quotient lemma: it requires constant quotient degree parity, not evenness.
+   A two-vertex regular word of internal residue `q_pair` gives final residue
+   `q_pair+2 deg_Q(i) [MOD 4]`; use `q_pair=0` for non-triangle nonedge pairs and `q_pair=1` for
+   triangle edge pairs.
    Record the parity split: pair-only selectors cannot mix non-triangle and triangle pair classes,
    because size-two words contribute only even cross-degrees.  Mixed-class selectors must use odd-size
    singleton or whole-triple words.
+   For those odd words, formalize the linear carry equation on a quotient parity class `U`: with
+   `tau_i=0` on independent triples and `tau_i=1` on triangle triples, choosing whole triples on
+   `T` and singletons elsewhere gives congruent degrees iff
+   `floor(deg_{Q[U]}(i)/2)+deg_T(i)+tau_i 1_{i in T}` is constant modulo `2`; the selector size is
+   `|U|+2|T|`.
+   Let `M_U=A(Q[U])+diag(tau)`.  If one solution exists, every kernel vector toggles solutions, so
+   terminality implies `|H|<=m-|U|` for all `H in ker M_U`; a large kernel vector closes.  If no constant
+   bit is soluble, record the dual obstruction as a kernel vector witnessing affine inconsistency.
+   In the constant `tau` parity-matched case (`deg_Q(i)=tau [MOD 2]`), `1_U` is in the kernel; if
+   `|U|` is odd, some constant bit is always compatible.  The full selector already closes
+   constant-type constant-parity quotient sets above `m/2` by pair words, so keep the Arf bit only as a
+   below-threshold diagnostic.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event
