@@ -5757,6 +5757,12 @@ def FirstBitInducedTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) 
 def FirstBitInducedCycleFourFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
   SimpleGraph.IsInducedCopyFree (G.induce (S : Set V)) cycleFour
 
+/-- Pseudo-split terminal endpoint: the packet forbids both induced `2K₂` and induced `C₄`. -/
+structure FirstBitPseudoSplitEndpoint {V : Type*} (G : SimpleGraph V) (S : Finset V) :
+    Prop where
+  induced_twoKTwo_free : FirstBitInducedTwoKTwoFreeOn G S
+  induced_cycleFour_free : FirstBitInducedCycleFourFreeOn G S
+
 /-- Hereditary endpoint for the `{0,1}` branch. -/
 structure FirstBitAlphaTwoKTwoFreeEndpoint {V : Type*} (G : SimpleGraph V)
     (S : Finset V) : Prop where
@@ -5899,6 +5905,146 @@ theorem firstBitExactBasis_sigmaTwoEndpointPackage_cases
         FirstBitExactBasisRepairedResidueEndpointCertificate G S
           FirstBitExactBasisResidueBranch.zeroTwo.complement := by
   rfl
+
+/--
+The missing obstruction supplied by the `h = 1` anchor atom for each exact-basis hereditary
+endpoint.  Branches already carrying `2K₂`-freeness need `C₄`-freeness, and conversely.
+-/
+def FirstBitAnchorOneEndpointMissingObstruction
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) :
+    FirstBitExactBasisHereditaryEndpointKind → Prop
+  | .alphaTwoKTwoFree => FirstBitInducedCycleFourFreeOn G S
+  | .omegaCycleFourFree => FirstBitInducedTwoKTwoFreeOn G S
+  | .alphaCycleFourFree => FirstBitInducedTwoKTwoFreeOn G S
+  | .omegaTwoKTwoFree => FirstBitInducedCycleFourFreeOn G S
+
+/-- Exact-basis hereditary endpoint plus the `h = 1` anchor row collapses to pseudo-split. -/
+theorem firstBitPseudoSplitEndpoint_of_exactBasisEndpoint_and_anchorOneMissingObstruction
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    {kind : FirstBitExactBasisHereditaryEndpointKind}
+    (hend : FirstBitExactBasisHereditaryEndpoint G S kind)
+    (hmissing : FirstBitAnchorOneEndpointMissingObstruction G S kind) :
+    FirstBitPseudoSplitEndpoint G S := by
+  cases kind <;>
+    simp [FirstBitExactBasisHereditaryEndpoint,
+      FirstBitAnchorOneEndpointMissingObstruction] at hend hmissing ⊢
+  · exact ⟨hend.induced_twoKTwo_free, hmissing⟩
+  · exact ⟨hmissing, hend.induced_cycleFour_free⟩
+  · exact ⟨hmissing, hend.induced_cycleFour_free⟩
+  · exact ⟨hend.induced_twoKTwo_free, hmissing⟩
+
+/-- Branch-indexed endpoint-collapse certificate produced by an `h = 1` anchor atom. -/
+structure FirstBitAnchorOneEndpointCollapseCertificate
+    {V : Type*} (G : SimpleGraph V) (S : Finset V)
+    (branch : FirstBitExactBasisResidueBranch) : Prop where
+  endpoint : FirstBitExactBasisRepairedResidueEndpointCertificate G S branch
+  missing : FirstBitAnchorOneEndpointMissingObstruction G S branch.endpointKind
+
+/-- Read the pseudo-split endpoint from a branch-indexed `h = 1` collapse certificate. -/
+theorem FirstBitAnchorOneEndpointCollapseCertificate.to_pseudoSplit
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    {branch : FirstBitExactBasisResidueBranch}
+    (h : FirstBitAnchorOneEndpointCollapseCertificate G S branch) :
+    FirstBitPseudoSplitEndpoint G S :=
+  firstBitPseudoSplitEndpoint_of_exactBasisEndpoint_and_anchorOneMissingObstruction
+    h.endpoint.endpoint h.missing
+
+/--
+Surface form of the `h = 1` anchor collapse: every repaired-residue endpoint receives its missing
+`2K₂`/`C₄` obstruction.  This is a local frontier surface, not a global graph theorem.
+-/
+def HasFirstBitAnchorOneEndpointCollapseSurface : Prop :=
+  ∀ {V : Type*} (G : SimpleGraph V) (S : Finset V)
+    (branch : FirstBitExactBasisResidueBranch),
+      FirstBitExactBasisRepairedResidueEndpointCertificate G S branch →
+        FirstBitAnchorOneEndpointMissingObstruction G S branch.endpointKind
+
+/-- Package a repaired-residue endpoint with its anchor-one missing obstruction. -/
+theorem firstBitAnchorOneEndpointCollapseCertificate_of_surface
+    (hcollapse : HasFirstBitAnchorOneEndpointCollapseSurface)
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    {branch : FirstBitExactBasisResidueBranch}
+    (hend : FirstBitExactBasisRepairedResidueEndpointCertificate G S branch) :
+    FirstBitAnchorOneEndpointCollapseCertificate G S branch :=
+  ⟨hend, hcollapse G S branch hend⟩
+
+/-- Unit-shift branches after the `h = 1` endpoint collapse. -/
+def FirstBitExactBasisUnitShiftAnchorOneEndpointPackage
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  FirstBitAnchorOneEndpointCollapseCertificate G S
+      FirstBitExactBasisResidueBranch.zeroOne ∨
+    FirstBitAnchorOneEndpointCollapseCertificate G S
+      FirstBitExactBasisResidueBranch.twoThree
+
+/-- Sigma-two branches after the `h = 1` endpoint collapse. -/
+def FirstBitExactBasisSigmaTwoAnchorOneEndpointPackage
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  FirstBitAnchorOneEndpointCollapseCertificate G S
+      FirstBitExactBasisResidueBranch.zeroTwo ∨
+    FirstBitAnchorOneEndpointCollapseCertificate G S
+      FirstBitExactBasisResidueBranch.oneThree
+
+/-- Combined terminal branch package after `h = 1` collapses every endpoint to pseudo-split. -/
+def FirstBitExactBasisTerminalBranchAnchorOneEndpointPackage
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  FirstBitExactBasisUnitShiftAnchorOneEndpointPackage G S ∨
+    FirstBitExactBasisSigmaTwoAnchorOneEndpointPackage G S
+
+/-- Collapse a unit-shift endpoint package using the anchor-one surface. -/
+theorem firstBitExactBasisUnitShiftAnchorOneEndpointPackage_of_endpointPackage
+    (hcollapse : HasFirstBitAnchorOneEndpointCollapseSurface)
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitExactBasisUnitShiftEndpointPackage G S) :
+    FirstBitExactBasisUnitShiftAnchorOneEndpointPackage G S := by
+  rcases h with hzeroOne | htwoThree
+  · exact Or.inl (firstBitAnchorOneEndpointCollapseCertificate_of_surface hcollapse hzeroOne)
+  · exact Or.inr (firstBitAnchorOneEndpointCollapseCertificate_of_surface hcollapse htwoThree)
+
+/-- Collapse a sigma-two endpoint package using the anchor-one surface. -/
+theorem firstBitExactBasisSigmaTwoAnchorOneEndpointPackage_of_endpointPackage
+    (hcollapse : HasFirstBitAnchorOneEndpointCollapseSurface)
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitExactBasisSigmaTwoEndpointPackage G S) :
+    FirstBitExactBasisSigmaTwoAnchorOneEndpointPackage G S := by
+  rcases h with hzeroTwo | honeThree
+  · exact Or.inl (firstBitAnchorOneEndpointCollapseCertificate_of_surface hcollapse hzeroTwo)
+  · exact Or.inr (firstBitAnchorOneEndpointCollapseCertificate_of_surface hcollapse honeThree)
+
+/-- Collapse the terminal branch endpoint package using the anchor-one surface. -/
+theorem firstBitExactBasisTerminalBranchAnchorOneEndpointPackage_of_endpointPackage
+    (hcollapse : HasFirstBitAnchorOneEndpointCollapseSurface)
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitExactBasisTerminalBranchEndpointPackage G S) :
+    FirstBitExactBasisTerminalBranchAnchorOneEndpointPackage G S := by
+  rcases h with hunit | hsigma
+  · exact Or.inl
+      (firstBitExactBasisUnitShiftAnchorOneEndpointPackage_of_endpointPackage hcollapse hunit)
+  · exact Or.inr
+      (firstBitExactBasisSigmaTwoAnchorOneEndpointPackage_of_endpointPackage hcollapse hsigma)
+
+/-- Wire the branch-split terminal frontier directly into the anchor-one collapsed endpoint package. -/
+theorem firstBitExactBasisTerminalBranchAnchorOneEndpointPackage_of_branchSplit
+    (hcollapse : HasFirstBitAnchorOneEndpointCollapseSurface)
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S) :
+    FirstBitExactBasisTerminalBranchAnchorOneEndpointPackage G S :=
+  firstBitExactBasisTerminalBranchAnchorOneEndpointPackage_of_endpointPackage hcollapse
+    (firstBitExactBasisTerminalBranchEndpointPackage_of_branchSplit h)
+
+/-- Any collapsed terminal branch package exposes a pseudo-split endpoint. -/
+theorem firstBitPseudoSplitEndpoint_of_terminalBranchAnchorOneEndpointPackage
+    {V : Type*} {G : SimpleGraph V} {S : Finset V}
+    (h : FirstBitExactBasisTerminalBranchAnchorOneEndpointPackage G S) :
+    FirstBitPseudoSplitEndpoint G S := by
+  rcases h with hunit | hsigma
+  · rcases hunit with hzeroOne | htwoThree
+    · exact FirstBitAnchorOneEndpointCollapseCertificate.to_pseudoSplit hzeroOne
+    · exact FirstBitAnchorOneEndpointCollapseCertificate.to_pseudoSplit htwoThree
+  · rcases hsigma with hzeroTwo | honeThree
+    · exact FirstBitAnchorOneEndpointCollapseCertificate.to_pseudoSplit hzeroTwo
+    · exact FirstBitAnchorOneEndpointCollapseCertificate.to_pseudoSplit honeThree
 
 /--
 Two-coordinate augmented atom normalization surface: the atom size and old increment vanish modulo
@@ -8078,6 +8224,85 @@ def HasCliqueBoundOn {V : Type*} (G : SimpleGraph V) (S : Finset V) (m : ℕ) : 
 /-- Independence-size bound for all finite subsets of a host packet. -/
 def HasIndependenceBoundOn {V : Type*} (G : SimpleGraph V) (S : Finset V) (m : ℕ) : Prop :=
   ∀ I : Finset V, I ⊆ S → G.IsIndepSet (I : Set V) → I.card ≤ m
+
+/-- Side caps used by the pseudo-split endpoint-bound surface. -/
+structure FirstBitPseudoSplitEndpointSideCaps
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) (m : ℕ) : Prop where
+  clique_le_three : HasCliqueBoundOn G S 3
+  independence_le_m : HasIndependenceBoundOn G S m
+
+/--
+Frontier surface for the pseudo-split endpoint bound: once an `h = 1` collapse gives both
+`2K₂`- and `C₄`-freeness, the side caps bound the packet by `m + κ`.
+-/
+def HasFirstBitPseudoSplitEndpointBoundSurface (κ : ℕ) : Prop :=
+  ∀ {V : Type*} (G : SimpleGraph V) {S : Finset V} {m : ℕ},
+    FirstBitPseudoSplitEndpoint G S →
+      FirstBitPseudoSplitEndpointSideCaps G S m →
+        S.card ≤ m + κ
+
+/-- The concrete `m + 8` pseudo-split endpoint-bound frontier surface. -/
+abbrev HasFirstBitPseudoSplitEndpointBoundEightSurface : Prop :=
+  HasFirstBitPseudoSplitEndpointBoundSurface 8
+
+/-- Bound certificate produced by a pseudo-split endpoint-bound surface. -/
+structure FirstBitPseudoSplitEndpointBoundCertificate
+    {V : Type*} (G : SimpleGraph V) (S : Finset V) (m κ : ℕ) : Prop where
+  pseudoSplit : FirstBitPseudoSplitEndpoint G S
+  sideCaps : FirstBitPseudoSplitEndpointSideCaps G S m
+  card_le : S.card ≤ m + κ
+
+/-- Package the direct `m + 8` consequence of the pseudo-split endpoint-bound surface. -/
+theorem firstBitPseudoSplitEndpointBoundCertificate_of_surface
+    (hbound : HasFirstBitPseudoSplitEndpointBoundSurface 8)
+    {V : Type*} {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hpseudo : FirstBitPseudoSplitEndpoint G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    FirstBitPseudoSplitEndpointBoundCertificate G S m 8 where
+  pseudoSplit := hpseudo
+  sideCaps := hcaps
+  card_le := hbound G hpseudo hcaps
+
+/-- A collapsed branch endpoint is bounded by `m + 8` under the pseudo-split bound surface. -/
+theorem firstBitAnchorOneEndpointCollapseCertificate_card_le_add_eight
+    (hbound : HasFirstBitPseudoSplitEndpointBoundSurface 8)
+    {V : Type*} {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    {branch : FirstBitExactBasisResidueBranch}
+    (hcert : FirstBitAnchorOneEndpointCollapseCertificate G S branch)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    S.card ≤ m + 8 :=
+  hbound G (FirstBitAnchorOneEndpointCollapseCertificate.to_pseudoSplit hcert) hcaps
+
+/-- The anchor-one terminal package inherits the pseudo-split `m + 8` endpoint bound. -/
+theorem firstBitExactBasisTerminalBranchAnchorOneEndpointPackage_card_le_add_eight
+    (hbound : HasFirstBitPseudoSplitEndpointBoundSurface 8)
+    {V : Type*} {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hpackage : FirstBitExactBasisTerminalBranchAnchorOneEndpointPackage G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    S.card ≤ m + 8 := by
+  rcases hpackage with hunit | hsigma
+  · rcases hunit with hzeroOne | htwoThree
+    · exact firstBitAnchorOneEndpointCollapseCertificate_card_le_add_eight hbound hzeroOne hcaps
+    · exact firstBitAnchorOneEndpointCollapseCertificate_card_le_add_eight hbound htwoThree hcaps
+  · rcases hsigma with hzeroTwo | honeThree
+    · exact firstBitAnchorOneEndpointCollapseCertificate_card_le_add_eight hbound hzeroTwo hcaps
+    · exact firstBitAnchorOneEndpointCollapseCertificate_card_le_add_eight hbound honeThree hcaps
+
+/--
+Combined endpoint-collapse and pseudo-split-bound wrapper for the exact-basis terminal branch split.
+This records the current frontier route only; the two imported surfaces remain explicit hypotheses.
+-/
+theorem firstBitExactBasisTerminalBranch_card_le_add_eight_of_branchSplit_anchorOne
+    (hcollapse : HasFirstBitAnchorOneEndpointCollapseSurface)
+    (hbound : HasFirstBitPseudoSplitEndpointBoundSurface 8)
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hbranch : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    S.card ≤ m + 8 :=
+  firstBitExactBasisTerminalBranchAnchorOneEndpointPackage_card_le_add_eight hbound
+    (firstBitExactBasisTerminalBranchAnchorOneEndpointPackage_of_branchSplit hcollapse hbranch) hcaps
 
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
