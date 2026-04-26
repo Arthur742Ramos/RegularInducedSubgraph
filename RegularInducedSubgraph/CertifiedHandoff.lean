@@ -1331,4 +1331,466 @@ theorem targetStatement_of_certifiedProofMdIntegratedFrontierHandoffCertificate
     h.ramsey.toGlobalConsequenceBundle h.cliqueOrIndepSetBound16 h.terminalTailFromFive
     h.higherBitTargets
 
+
+/-!
+## Final proof-md obligation dashboard
+
+The next declarations are final-facing aliases over the integrated handoff certificate.  They split the
+current frontier into a small target consumer and a broader checklist that still exposes the exact-`42`,
+terminal mixed-target, and first-bit/co-cut obligations for downstream lanes.
+-/
+
+/--
+Small target-statement consumer for the current proof-md frontier.  This keeps only the assumptions
+used by the final `TargetStatement` route: bounded-coloring first-bit work, unified Ramsey
+consequences, the split D=5 terminal tail, and higher-bit fixed targets.
+-/
+structure CertifiedProofMdFinalTargetConsumerCertificate : Type where
+  firstBitColorCount : ℕ
+  firstBitColorCount_pos : 0 < firstBitColorCount
+  firstBitColorCount_le32 : firstBitColorCount ≤ 32
+  evenModFourColoringBound :
+    HasEvenDegreeModFourCongruentDegreeColoringBound firstBitColorCount
+  ramseyConsequences : RamseyTenR45GlobalConsequenceBundle
+  cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607
+  terminalTailFromFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive
+  higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven
+
+/-- Project the Ramsey regular-10 target used by the proof-md consumer route. -/
+def CertifiedProofMdFinalTargetConsumerCertificate.toRamseyTenRegular
+    (h : CertifiedProofMdFinalTargetConsumerCertificate) :
+    HasRamseyTenRegularAtDyadicTarget :=
+  hasRamseyTenRegularAtDyadicTarget_of_ramseyTenR45GlobalConsequenceBundle
+    h.ramseyConsequences
+
+/-- Project the D=5 external-block terminal bridge from the split terminal fields. -/
+def CertifiedProofMdFinalTargetConsumerCertificate.toExternalBlockSelfBridgeFive
+    (h : CertifiedProofMdFinalTargetConsumerCertificate) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_fromFive
+    h.cliqueOrIndepSetBound16 h.terminalTailFromFive
+
+/-- Project the normalized loss-32 first-bit selector from the bounded-coloring field. -/
+def CertifiedProofMdFinalTargetConsumerCertificate.toEvenDegreeModFourLoss32
+    (h : CertifiedProofMdFinalTargetConsumerCertificate) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
+    h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound
+
+/-- Project the unified Ramsey consequence bundle. -/
+def CertifiedProofMdFinalTargetConsumerCertificate.toGlobalConsequenceBundle
+    (h : CertifiedProofMdFinalTargetConsumerCertificate) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.ramseyConsequences
+
+/-- The small final target consumer closes `TargetStatement`. -/
+theorem targetStatement_of_certifiedProofMdFinalTargetConsumerCertificate
+    (h : CertifiedProofMdFinalTargetConsumerCertificate) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenModFourColoringBound_le32_and_unifiedRamseyConsequences_and_cliqueOrIndepSetBound16_and_terminalTail_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    h.firstBitColorCount_pos h.firstBitColorCount_le32 h.evenModFourColoringBound
+    h.ramseyConsequences h.cliqueOrIndepSetBound16 h.terminalTailFromFive
+    h.higherBitTargets
+
+section FinalObligationDashboard
+
+variable {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+variable {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+variable {packingSize : AnchoredPacking → ℕ}
+variable {WitnessCountAtLeast : ℕ → ℕ → Prop}
+variable {TwoDisjointTemplatesNeedTwo : Prop}
+
+/-- Extract the small target consumer from the integrated handoff certificate. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toFinalTargetConsumerCertificate
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFinalTargetConsumerCertificate where
+  firstBitColorCount := h.firstBitColorCount
+  firstBitColorCount_pos := h.firstBitColorCount_pos
+  firstBitColorCount_le32 := h.firstBitColorCount_le32
+  evenModFourColoringBound := h.evenModFourColoringBound
+  ramseyConsequences := h.ramsey.toGlobalConsequenceBundle
+  cliqueOrIndepSetBound16 := h.cliqueOrIndepSetBound16
+  terminalTailFromFive := h.terminalTailFromFive
+  higherBitTargets := h.higherBitTargets
+
+/-- Constructor alias with a non-dot name for orchestration scripts. -/
+def certifiedProofMdFinalTargetConsumerCertificate_of_integratedFrontierHandoff
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.toFinalTargetConsumerCertificate
+
+/-- Project the normalized exact-`42` Ramsey surface from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toExact42ConsumerNormalizedRamsey
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate :=
+  h.ramsey
+
+/-- Project the exact-`42` profile with middle-degree endpoint ledgers from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toExact42WithMiddleSplits
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.ramsey.toExact42WithMiddleSplits
+
+/-- Project the exact-`42` three-row profile surface from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toExact42ProfileSurface
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.ramsey.toExact42ProfileSurface
+
+/-- Project the local Ramsey endpoint ledger bundle from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toLocalLedgerBundle
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.ramsey.toLocalLedgerBundle
+
+/-- Project the `R(3,10) <= 42` row from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toThreeTenFortyTwo
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.ramsey.toThreeTenFortyTwo
+
+/-- Project the relaxed `R(4,5) <= 27` row from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toR45TwentySeven
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.ramsey.toR45TwentySeven
+
+/-- Project the propagated `R(10,10) <= 39246` row from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toR10Ten39246
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.ramsey.toR10Ten39246
+
+/-- Project the terminal homogeneous-carry import bundle from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toHomogeneousCarryImports
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  h.terminalMixedCore.toHomogeneousCarryImports
+
+/-- Project the available-cut final first-bit wrapper from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toFirstBitAvailableCutFinalWrapper
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom :=
+  h.firstBitCoCut.toAvailableCutFinalWrapper
+
+/-- Project the ordinary first-bit final branch wrappers from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toFirstBitFinalBranchWrappers
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappers :=
+  h.firstBitCoCut.toFinalBranchWrappers
+
+/-- Project the available-cut positive-atom imports from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toFirstBitAvailableCutPositiveAtom
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom :=
+  h.firstBitCoCut.toAvailableCutPositiveAtom
+
+/-- Project the available-cut collapse import from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toFirstBitAvailableCutCollapse
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom :=
+  h.firstBitCoCut.toAvailableCutCollapse
+
+/-- Project the full-coordinate available-cut collapse import from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toFirstBitFullCoordinateCollapse
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse
+      WithHoles PositiveAtom :=
+  h.firstBitCoCut.toFullCoordinateCollapse
+
+/-- Project the post-quotient anchored-packing imports from the integrated handoff. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toFirstBitPostQuotientAnchoredPacking
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut.toPostQuotientAnchoredPacking
+
+/--
+Final proof-obligation dashboard.  It keeps the target consumer fields together with the exact-`42`,
+terminal mixed-target, and co-cut surfaces that are useful for handoff checklists.
+-/
+structure CertifiedProofMdFinalObligationDashboard
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Type where
+  firstBitColorCount : ℕ
+  firstBitColorCount_pos : 0 < firstBitColorCount
+  firstBitColorCount_le32 : firstBitColorCount ≤ 32
+  evenModFourColoringBound :
+    HasEvenDegreeModFourCongruentDegreeColoringBound firstBitColorCount
+  exact42Ramsey : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate
+  cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607
+  terminalTailFromFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive
+  higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven
+  terminalMixedCore : CertifiedProofMdTerminalMixedTargetCoreImports
+  firstBitCoCut :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+
+/-- Collapse the full dashboard to the small target consumer. -/
+def CertifiedProofMdFinalObligationDashboard.toFinalTargetConsumerCertificate
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFinalTargetConsumerCertificate where
+  firstBitColorCount := h.firstBitColorCount
+  firstBitColorCount_pos := h.firstBitColorCount_pos
+  firstBitColorCount_le32 := h.firstBitColorCount_le32
+  evenModFourColoringBound := h.evenModFourColoringBound
+  ramseyConsequences := h.exact42Ramsey.toGlobalConsequenceBundle
+  cliqueOrIndepSetBound16 := h.cliqueOrIndepSetBound16
+  terminalTailFromFive := h.terminalTailFromFive
+  higherBitTargets := h.higherBitTargets
+
+/-- Build the final dashboard from the integrated handoff certificate. -/
+def certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  firstBitColorCount := h.firstBitColorCount
+  firstBitColorCount_pos := h.firstBitColorCount_pos
+  firstBitColorCount_le32 := h.firstBitColorCount_le32
+  evenModFourColoringBound := h.evenModFourColoringBound
+  exact42Ramsey := h.toExact42ConsumerNormalizedRamsey
+  cliqueOrIndepSetBound16 := h.cliqueOrIndepSetBound16
+  terminalTailFromFive := h.terminalTailFromFive
+  higherBitTargets := h.higherBitTargets
+  terminalMixedCore := h.toTerminalMixedCore
+  firstBitCoCut := h.toFirstBitCoCut
+
+/-- Project exact-`42` Ramsey obligations from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toExact42ConsumerNormalizedRamsey
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate :=
+  h.exact42Ramsey
+
+/-- Project unified Ramsey consequences from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toGlobalConsequenceBundle
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.exact42Ramsey.toGlobalConsequenceBundle
+
+/-- Project the Ramsey regular-10 target from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toRamseyTenRegular
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasRamseyTenRegularAtDyadicTarget :=
+  h.exact42Ramsey.toRamseyTenRegular
+
+/-- Project the normalized loss-32 first-bit selector from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toEvenDegreeModFourLoss32
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  h.toFinalTargetConsumerCertificate.toEvenDegreeModFourLoss32
+
+/-- Project the D=5 external-block bridge from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toExternalBlockSelfBridgeFive
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  h.toFinalTargetConsumerCertificate.toExternalBlockSelfBridgeFive
+
+/-- Project terminal mixed-target imports from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toTerminalMixedCore
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.terminalMixedCore
+
+/-- Project first-bit/co-cut obligations from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toFirstBitCoCut
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut
+
+/-- The final dashboard closes `TargetStatement` through its small target consumer. -/
+theorem targetStatement_of_certifiedProofMdFinalObligationDashboard
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  targetStatement_of_certifiedProofMdFinalTargetConsumerCertificate
+    h.toFinalTargetConsumerCertificate
+
+/-- The integrated handoff also closes `TargetStatement` through the dashboard route. -/
+theorem targetStatement_of_certifiedProofMdIntegratedFrontierHandoffCertificate_via_dashboard
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  targetStatement_of_certifiedProofMdFinalObligationDashboard
+    (certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff h)
+
+@[simp]
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toFinalTargetConsumerCertificate_firstBitColorCount
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toFinalTargetConsumerCertificate.firstBitColorCount = h.firstBitColorCount :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toFinalTargetConsumerCertificate_ramseyConsequences
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toFinalTargetConsumerCertificate.ramseyConsequences = h.ramsey.toGlobalConsequenceBundle :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toFinalTargetConsumerCertificate_cliqueOrIndepSetBound16
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toFinalTargetConsumerCertificate.cliqueOrIndepSetBound16 = h.cliqueOrIndepSetBound16 :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toFinalTargetConsumerCertificate_terminalTailFromFive
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toFinalTargetConsumerCertificate.terminalTailFromFive = h.terminalTailFromFive :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdIntegratedFrontierHandoffCertificate.toFinalTargetConsumerCertificate_higherBitTargets
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toFinalTargetConsumerCertificate.higherBitTargets = h.higherBitTargets :=
+  rfl
+
+@[simp]
+theorem certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff_targetConsumer
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff h).toFinalTargetConsumerCertificate =
+      h.toFinalTargetConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff_exact42Ramsey
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff h).exact42Ramsey =
+      h.toExact42ConsumerNormalizedRamsey :=
+  rfl
+
+@[simp]
+theorem certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff_terminalMixedCore
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff h).terminalMixedCore =
+      h.toTerminalMixedCore :=
+  rfl
+
+@[simp]
+theorem certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff_firstBitCoCut
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff h).firstBitCoCut =
+      h.toFirstBitCoCut :=
+  rfl
+
+end FinalObligationDashboard
+
 end RegularInducedSubgraph
