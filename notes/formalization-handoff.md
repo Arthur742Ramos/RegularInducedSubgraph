@@ -2327,6 +2327,9 @@ Recommended attack:
     Add the conservative quotient lemma: identifying graph-intrinsically equal boundary rows preserves all
     deletion and shifted self-layer equations.  The saturated graph proof closes after this quotient; the
     only remaining comparison is whether the historical path-only category realizes the quotient.
+    Record that the historical comparison is not required for the graph theorem: terminal descent is run in
+    the graph-intrinsic saturated category.  The old path-only Theorem G is a stronger bookkeeping
+    statement, not a dependency of the saturated proof.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are
@@ -2334,6 +2337,15 @@ Recommended attack:
     Add the hereditary density/codensity consequences: every induced `U` of a terminal bucket with
     `|U|>m` has `alpha,omega<=m`, so Caro--Wei/Turan gives average degree and average complement degree at
     least `|U|/m-1`.
+    Add the maximum-core extension equations: for a maximum selector `S` of residue `a`, an outside packet
+    `X` extends it iff `deg_X(v)=c-a` on all `v in S` and `deg_S(x)+deg_X(x)=c` on all `x in X`.  Record
+    singleton/pair/ternary tests as the core-level forms of row promotion, no-split, and one-corner lift.
+    Add the four-step Gallai normal form for the first-bit selector: in a critical counterexample
+    `n>=32m+1`, an even core `J` of size `>2m` has a larger internal `0/2 mod 4` degree class `R` of size
+    `>m`; since `deg_R(v)=deg_J(v)-deg_C(v) mod 4`, terminality forces `deg_C mod 4` nonconstant on `R`.
+    Add the labeled deletion-core equivalence: with `b(v)=deg_C(v) mod 4`, a subset `T=R\D` is a selector
+    iff `deg_D(v)=b(v)-lambda mod 4` for all `v in T`.  The residual has all four labeled cores of size
+    at most `m`.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

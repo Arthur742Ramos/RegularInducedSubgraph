@@ -10673,6 +10673,24 @@ on the historical path-only boundary category rather than the graph-intrinsic qu
 comparison theorem that the historical category already performs this quotient unless a local
 missing-corner square appears.
 
+For the theorem proved in this document that comparison is disposable.  The terminal descent is defined
+from the graph-intrinsic saturated category, not from a remembered path word.  Enlarging from the path-only
+category to this quotient does not add a formal move: every saturated boundary row is represented by actual
+four-corner graph exchange data with zero terminal residue, and every quotient identification preserves the
+degree equations above.  Therefore a path-only hidden-memory survivor is not a counterexample to the
+graph theorem; it is only a counterexample to the stronger statement that one particular historical
+first-return bookkeeping convention already chose the graph-intrinsic representative.  The three named
+host atoms are consequently discharged for the saturated proof:
+
+```text
+host-orient115:   the two-fiber non-overlap is the two-state sheet transposition;
+host-opppair123:  outgoing no-split failure is the same transposition seen on Q^+;
+host-silentedge128: the silent edge is the first nonflat commutation of that transposition.
+```
+
+In `FR^sat` the first two are killed by row promotion plus Proposition 9.2, and the third is exactly the
+local missing-corner exit.  No extra host-frontier input is needed by the saturated terminal proof.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over
@@ -10716,6 +10734,30 @@ avgdeg(complement(H[U])) >= |U|/m - 1.
 Consequently no sparse or dense induced chamber can survive inside the terminal bucket.  The final
 obstruction is simultaneously deletion-rigid, selector-prime, high-rank over `F_2`, and hereditarily
 dense/codense; any proof of the principal selector may now assume all four properties.
+
+There are also small-extension equations around every maximum core.  Fix a maximum selector `S` of size
+`m` and residue `a`, and put `O=V(H)\S`.  For a nonempty outside set `X subset O`, the extension
+`S union X` would be a selector of size greater than `m` exactly when there is a residue `c` such that
+
+```text
+deg_X(v) == c-a                         [MOD 4]        for every v in S,
+deg_S(x)+deg_X(x) == c                  [MOD 4]        for every x in X.
+```
+
+Thus terminality forbids every outside packet whose trace-sum on `S` is constant and whose shifted
+self-layer has the matching constant.  The first cases are explicit:
+
+```text
+|X|=1:  x is complete or anticomplete to S, with the corresponding scalar degree congruence;
+|X|=2:  the two traces have constant sum on S, and the two shifted degrees agree with that sum;
+|X|=3:  a ternary constant-sum trace with one shifted self-layer equation on the induced triangle/path.
+```
+
+These are the principal-submatrix analogues of the three host atoms.  The singleton test is row
+promotion, the pair test is the opposite-pair/no-split test, and the ternary test is the one-corner
+missing-square test.  The atom-quotient reductions above are precisely the large-packet version of these
+same equations: if a large outside family contains a constant-sum trace packet whose shifted self-layer is
+regular, the maximum core extends and terminality is contradicted.
 
 One stronger way to prove it would be a global fixed-point coloring
 `gamma : V(H) -> Z/4Z` satisfying
@@ -10824,6 +10866,58 @@ successive sibling layers have even degree into the current leaf, but their half
 synchronized, so the carry coordinate `binom(deg,2) [MOD 2]` remains free.  Thus recursive Gallai
 partitioning proves only first-bit parity regularity at the required scale, not the mod-`4` congruence.
 
+In a critical counterexample the same observation gives a useful four-step normal form.  Let `m` be the
+maximum size of a mod-`4` principal selector and assume `n>=32m+1`.  After four Gallai even-child steps
+there is an even induced core `J` with
+
+```text
+|J| >= n/16 > 2m.
+```
+
+Split `J` into its two internal degree-residue classes
+
+```text
+J_0={v in J : deg_J(v)=0 mod 4},        J_2={v in J : deg_J(v)=2 mod 4}.
+```
+
+One of these, call it `R`, has size greater than `m`; let `C=J\R`.  Since `deg_J` is constant modulo `4`
+on `R`, the induced degrees in `R` satisfy
+
+```text
+deg_R(v) == deg_J(v)-deg_C(v)        [MOD 4]        (v in R).
+```
+
+Therefore `R` itself would be a forbidden selector unless the co-cut degree `deg_C(v) mod 4` is nonconstant
+on `R`.  Thus every critical first-bit counterexample contains a **large two-residue co-cut obstruction**:
+an even core `J=R disjoint_union C`, with `|R|>m`, constant `deg_J mod 4` on `R`, and nonconstant
+`deg_C mod 4` on `R`.  This is the exact terminal self-layer defect left by recursive Gallai: the first
+bit is synchronized inside `J`, and the only unsynchronized datum is the co-cut carry from the opposite
+residue class.
+
+The co-cut obstruction is a labeled deletion-core problem on `R`.  Let
+
+```text
+b(v)=deg_C(v)        [MOD 4]        (v in R).
+```
+
+For `T subset R` and `D=R\T`, since `deg_J` is constant modulo `4` on `R`,
+
+```text
+deg_T(v) == const - b(v) - deg_D(v)        [MOD 4]        (v in T).
+```
+
+Hence `T` is a mod-`4` selector iff there is a residue `lambda` such that
+
+```text
+deg_D(v) == b(v)-lambda        [MOD 4]        for every v in T.
+```
+
+Equivalently, start with `R` and iteratively delete vertices not satisfying
+`deg_D(v)=b(v)-lambda` for the current deleted layer `D`; the surviving `lambda`-core is exactly a selector
+inside `R`.  Therefore the first-bit residual can be stated without the opposite class except through the
+fixed label `b`: a large labeled graph `(R,b)` whose four labeled deletion-cores all have size at most
+`m`.  This is the labeled version of the principal bucket pruning process.
+
 The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
 theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with
 `vx` and `vy` edges of the original graph; then the degree of `v` in `K[W]` is exactly the carry
@@ -10923,7 +11017,6 @@ What is proved here:
 What remains open:
 
 ```text
-the original path-only Theorem G, equivalently path-saturation comparison with FR^sat;
 HasParityToModFourLoss64FixedWitnessLift, or an equivalent parity-to-mod-four fixed-loss theorem;
 the stronger q >= 4 terminal-cascade bridge, which is not needed for terminal regularization.
 ```
@@ -10932,6 +11025,8 @@ What is not used:
 
 ```text
 equivalence with arbitrary nonminimal extrinsic path choices.
+the original path-only Theorem G / path-saturation comparison, which is a stronger bookkeeping statement
+than the graph-intrinsic saturated terminal proof.
 ```
 
 Such paths can avoid saturated squares by fiat.  The intended path-only first-return construction is

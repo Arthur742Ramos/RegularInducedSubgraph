@@ -1895,10 +1895,21 @@ Graph-visible differences between transported copies reduce to same-trace/twin l
 provenance failures, so the residual memory is purely historical.
 The graph-intrinsic quotient by identical lower profiles, terminal residues, and carrier row-actions is
 degree-conservative; only historical path bookkeeping remains outside the saturated proof.
+This bookkeeping is not used by the graph theorem.  In the saturated category the three named host atoms
+are the row-promotion/local-square alternatives above and are discharged; path-only comparison is only a
+stronger convention-equivalence problem.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no
 independent set or clique larger than `m`.
+For a maximum core `S`, terminality forbids outside packets whose trace-sum on `S` is constant and whose
+shifted self-layer matches the same residue; singleton/pair/ternary packets are the core-level row
+promotion/no-split/one-corner tests.
+For the first-bit selector, four Gallai even-child steps give an even core `J` of size `>2m`; the larger
+`deg_J=0/2 mod 4` class `R` has `|R|>m`, so terminality forces nonconstant co-cut degree from `R` into
+`J\R`.
+With `b(v)=deg_C(v) mod 4`, selecting `T=R\D` is equivalent to the labeled deletion equation
+`deg_D(v)=b(v)-lambda`; all four labeled cores are small in a terminal counterexample.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

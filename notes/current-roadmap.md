@@ -5223,6 +5223,11 @@ history only; quotienting by graph-intrinsic equality is the memory-free axiom.
 This quotient is conservative for the selector degree equations, which depend only on lower profiles,
 terminal residues, and carrier row-actions.  Hence the graph-intrinsic saturated proof has no two-state
 sheet obstruction left; only the historical path-only bookkeeping comparison remains.
+That comparison is disposable for the graph theorem: the terminal descent is defined in the
+graph-intrinsic saturated category, where every boundary row is an actual zero-residue graph exchange and
+quotienting identical row-actions preserves the degree equations.  Thus `host-orient115`,
+`host-opppair123`, and `host-silentedge128` are closed for the saturated proof; the residual path-only
+comparison is only a stronger bookkeeping theorem.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and
@@ -5230,6 +5235,16 @@ complement.
 It is also hereditarily dense/codense at scale `m`: every induced `U` with `|U|>m` has
 `alpha(H[U]),omega(H[U])<=m`, hence both `H[U]` and its complement have average degree at least
 `|U|/m-1`.
+Around any maximum core `S` of residue `a`, terminality forbids every outside packet `X` with constant
+trace-sum `deg_X(v)=c-a` on `S` and shifted self-layer `deg_S(x)+deg_X(x)=c` on `X`.  The singleton, pair,
+and ternary cases are exactly row promotion, opposite-pair/no-split, and one-corner missing-square tests.
+For the first-bit selector itself, four Gallai even-child steps in a critical counterexample
+`n>=32m+1` give an even core `J` with `|J|>2m`; the larger of the two `deg_J=0/2 mod 4` classes has
+size `>m`, so terminality forces its co-cut degree into the opposite residue class to be nonconstant.  The
+residual first-bit obstruction is this large two-residue co-cut defect.
+Writing `b(v)=deg_C(v) mod 4` on the large class `R`, a subset `T=R\D` is a selector iff
+`deg_D(v)=b(v)-lambda mod 4` on `T`; thus the residual is a labeled deletion-core problem whose four cores
+all have size at most `m`.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

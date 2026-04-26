@@ -965,11 +965,21 @@ Any graph-visible difference between transported copies yields a same-trace/twin
 provenance failure, so a minimal survivor is only hidden historical memory.
 Quotienting by graph-intrinsic equality is conservative for the degree equations; the remaining issue is
 only whether the historical path category already implements this quotient.
+For the saturated proof this issue is not needed: defining terminal descent in the graph-intrinsic
+quotient discharges the three host atoms, while the historical path comparison is only a stronger
+bookkeeping statement.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense and codense at scale `m`, since any induced chamber containing an
 independent set or clique larger than `m` already closes.
+For a maximum core `S`, any outside packet with constant trace-sum on `S` and matching shifted self-layer
+would extend `S`; terminality forbids these singleton/pair/ternary extension equations.
+At the raw first-bit level, a critical counterexample with maximum selector size `m` has an even Gallai
+core `J` of size `>2m`; the larger `0/2 mod 4` degree class inside `J` is blocked only by a nonconstant
+co-cut degree into the opposite class.
+With label `b=deg_C mod 4` on that large class `R`, the selector equation for `T=R\D` is
+`deg_D(v)=b(v)-lambda`; the residual is a labeled deletion-core obstruction.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

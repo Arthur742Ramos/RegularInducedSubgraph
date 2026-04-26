@@ -1883,7 +1883,17 @@ What remains justified after audit is:
       Proposition `9.2`; any graph-visible difference between transported copies gives a same-trace/twin
       local exit or smaller provenance failure, so a minimal survivor is pure historical memory; quotienting
       graph-intrinsically equal rows is conservative for all selector equations, leaving only historical
-      path bookkeeping outside the saturated proof;
+      path bookkeeping outside the saturated proof; this bookkeeping comparison is not used for the graph
+      theorem, because terminal descent is defined directly in the graph-intrinsic saturated category, so
+      the three named host atoms are discharged there;
+      around a maximum core `S`, any outside packet with constant trace-sum on `S` and matching shifted
+      self-layer extends `S`, so terminality forbids exactly the singleton/pair/ternary extension equations
+      corresponding to row promotion, no-split, and one-corner lift;
+      the raw first-bit selector has a four-step Gallai normal form: a critical counterexample contains an
+      even core `J` of size `>2m`, and the larger internal `0/2 mod 4` degree class is blocked only by a
+      nonconstant co-cut degree into the opposite class;
+      labeling that class by co-cut degree `b`, any selector `T=R\D` is exactly a labeled deletion core
+      satisfying `deg_D(v)=b(v)-lambda`, so the residual is a labeled principal-bucket pruning problem;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;
