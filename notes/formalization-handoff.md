@@ -1501,6 +1501,32 @@ Recommended attack:
    Complementation swaps the first/last and middle two cases, so only two sparse branches remain up to
    complement before the augmented boundary-type constraints are added.
 
+   Two branch reductions are available.  For the `2K_2` branch, a standard structural theorem would give
+   `chi(G)<=omega(G)+1` whenever `G` is `2K_2`-free and `alpha(G)<=3`; if imported, this caps
+   `{0,1}` directions by `3(m+1)` and, by complement, caps `{3,2}` directions.  Verify this theorem before
+   formal use.  For the C4 branch, the augmented boundary rules give an internal cap: if
+   `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and the other seven
+   boundary types are cliques, so `|C_i|<=7m`.  Complementarily, `{3,1}` plus a triangle boundary gives
+   `|C_i|<=7m`.
+
+   Residual `{0,2}` exceptional types by boundary shape: if `X_i` has one edge `xy` and isolated vertex
+   `z`, all types except `001` and `110` are cliques.  If `X_i` is a path `x-y-z`, all types with equal
+   endpoint bits are cliques and type `101` is forbidden by the residue-`2` `3+1` atom, leaving only the
+   four unequal-endpoint types exceptional.  If `X_i` is a triangle, the pair rules are cross-type only;
+   this is the hardest remaining shape.  Complement these statements for the `{3,1}` branch.
+
+   In that triangle-boundary `{0,2}` case, formalize the cube anti-join system:
+
+   ```text
+   10* anti-joins 01*,
+   1*0 anti-joins 0*1,
+   *10 anti-joins *01.
+   ```
+
+   Also formalize `alpha(M_x)<=2` for every miss class and the one-corner rule that each misser's
+   neighbourhood in the corresponding hit class is a clique.  This finite eight-type cube is the residual
+   sparse C4 surface; the independent-boundary `{3,1}` case is its complement.
+
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified
    `d_i`-regular four-vertex graph with

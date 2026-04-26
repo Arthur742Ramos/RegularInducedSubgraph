@@ -926,6 +926,21 @@ the earlier false singleton-rigidity claim.
 The four two-residue cases are respectively: `alpha<=3` plus `2K_2`-free; `alpha<=3` plus induced
 `C_4`-free; `omega<=3` plus `2K_2`-free; and `omega<=3` plus induced-`C_4`-free.  Up to complement,
 only the first two sparse hereditary branches remain, plus the augmented boundary-type constraints.
+The `2K_2` branch would be linearly capped by the standard structural estimate
+`chi(G)<=omega(G)+1` for `2K_2`-free graphs with `alpha<=3`, giving `|C_i|<=3(m+1)`; verify this before
+formal import.  For the C4 branch, the augmented boundary rules give a direct shape cap: if
+`{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and all other seven
+boundary types are cliques, so `|C_i|<=7m`.  Complementarily, `{3,1}` with a triangle boundary also gives
+`|C_i|<=7m`.
+For the remaining `{0,2}` branch, boundary shape localizes the exceptions: with a one-edge boundary
+`xy` plus isolated `z`, all types except `001` and `110` are cliques; with a path boundary `x-y-z`, all
+types with equal endpoint bits are cliques and type `101` is forbidden, leaving only the four unequal
+endpoint types exceptional; with a triangle boundary, pair rules are cross-type only and this remains the
+hardest shape.  Complement gives the analogous `{3,1}` statements.
+In that hardest triangle-boundary `{0,2}` case, the cube-type constraints are:
+`10*` anti-joins `01*`, `1*0` anti-joins `0*1`, and `*10` anti-joins `*01`; each miss class has
+independence number at most two; and every misser's neighbourhood in the corresponding hit class is a
+clique.  This finite eight-type cube problem is the residual sparse C4 surface.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it

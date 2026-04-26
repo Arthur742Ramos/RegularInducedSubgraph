@@ -6309,6 +6309,65 @@ large exact-basis endpoint has been reduced to two sparse hereditary branches up
 boundary-type constraints.  Any final closure of the exact-basis branch can target these two classes
 rather than an arbitrary direction graph.
 
+Two further reductions separate these branches.  First, a standard structural route for `2K_2`-free
+graphs would close the `{0,1}` branch linearly: if one imports or proves the sharp chromatic estimate
+
+```text
+chi(G) <= omega(G)+1        for 2K_2-free graphs with alpha(G)<=3,
+```
+
+then `|C_i| <= alpha(C_i) chi(C_i) <= 3(m+1)`.  By complement this also caps the `{3,2}` branch.  This
+is a genuine graph-structure lemma, not a consequence of Ramsey; it should be verified before being used
+as a formal import.
+
+Second, the augmented boundary rules already give a `7m` cap for one C4-branch boundary shape.  If
+`Rep(g_i)` contains `{0,2}` and the boundary triple `X_i` is independent, then type `000` is forbidden by
+the repaired residue `0` `3+1` atom.  For every other boundary type, either some boundary pair has type
+`00` (so residue `0` forces that type class to be a clique) or some boundary pair has type `11` (so
+residue `2` forces that type class to be a clique).  Hence the seven remaining type classes are cliques,
+each of size at most `m`, and `|C_i|<=7m`.  The complementary statement is: if `Rep(g_i)` contains
+`{3,1}` and `X_i` is a triangle, then `|C_i|<=7m`.  Thus a direction of size greater than `7m` in the
+`{0,2}` branch must have a non-independent boundary triple, and its complement branch must have a
+non-triangle boundary triple.
+
+For the remaining `{0,2}` branch, the boundary shape localizes the exceptional types.  Write the retained
+type as a three-bit word on the boundary triple.
+
+* If `X_i` has exactly one edge, say `xy` with isolated vertex `z`, then all type classes except
+  `001` and `110` are cliques by the `2+2` rules for residues `0` and `2`; hence they have size at most
+  `m`.  The two exceptional types are "hit only the isolated vertex" and "hit exactly the edge
+  endpoints".
+* If `X_i` is a path `x-y-z`, then the nonedge pair `xz` makes every type with equal `x,z` bits a clique,
+  and type `101` is forbidden by the residue-`2` `3+1` atom.  Thus only the four types with unequal
+  endpoint bits remain exceptional.
+* If `X_i` is a triangle, the pair rules are only cross-type restrictions and no single type class is
+  forced homogeneous by this argument; this is the hardest `{0,2}` boundary shape.
+
+The complementary statements hold for the `{3,1}` branch after swapping clique/independent and
+triangle/independent boundary shapes.  Therefore the unresolved sparse branch has a small, explicit
+exceptional-type surface, not an arbitrary eight-type graph.
+
+In the hardest `{0,2}` triangle-boundary shape the residual constraints are still explicit.  For each
+boundary pair, the residue-`2` `2+2` rule says that two retained types whose bits on that pair are `10`
+and `01` are anti-complete to one another.  Thus, on the cube of boundary types,
+
+```text
+10* anti-joins 01*,      1*0 anti-joins 0*1,      *10 anti-joins *01.
+```
+
+In addition, residue `0` gives `alpha(M_x)<=2` for each miss class `M_x={tau:tau_x=0}`, and residue `2`
+says that for every `v in M_x`, the neighbourhood of `v` inside the hit class
+`H_x={tau:tau_x=1}` is a clique.  Therefore the final triangle-boundary `{0,2}` problem is a finite
+eight-type cube problem with prescribed anti-joins and one-corner clique-neighbourhood constraints.  Its
+complement is the independent-boundary `{3,1}` cube problem.
+
+The anti-join graph on the eight types is exactly the graph joining two bitstrings at Hamming distance
+at least two.  Its two parity classes are four-cliques.  Since an anti-join clique of four nonempty types
+would give an independent four-set in `C_i`, a terminal `{0,2}` triangle-boundary direction must omit at
+least one even-parity type and at least one odd-parity type.  Hence at most six boundary types can be
+nonempty in this residual cube problem.  The remaining obstacle is not support size, but bounding the
+individual C4-free type classes that survive these anti-join and one-corner constraints.
+
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with
 the same old-neighbourhood residue `omega(g_i)`.
