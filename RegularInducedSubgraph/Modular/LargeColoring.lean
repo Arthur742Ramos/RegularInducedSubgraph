@@ -7563,6 +7563,544 @@ theorem targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosure
     TargetStatement :=
   h.targetStatementForRow row
 
+/--
+Public rows exported by the downstream final-closure handoff.  These rows keep the final
+first-bit facade together with the scalar-quotient, typed `F`-residual, current-selector, and
+public target-selector closure endpoints needed by downstream proof-md consumers.
+-/
+inductive ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffRow : Type where
+  | finalClosureFacade
+  | typedFGraphResidualFacade
+  | scalarQuotientPublicEndpoint
+  | finalProofMdConsumerPublicEndpoint
+  | scalarQuotientPublicTargetSelectorObligations
+  | typedFGraphResidualPublicTargetSelectorObligations
+  | currentSelectorEndpoint
+  | downstreamObligationProjection
+  | finalReleaseBundleReuse
+  | allTernaryEndpointExhaustion
+  | nearThresholdBoundaryDiagnostics
+  | publicDownstreamTargetSelectorConsumerClosure
+  deriving DecidableEq, Repr
+
+namespace ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffRow
+
+/-- The endpoint, packet, or assumption selected by a downstream final-closure handoff row. -/
+def obligation :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffRow → Sort _
+  | .finalClosureFacade =>
+      ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade
+  | .typedFGraphResidualFacade =>
+      ProofMdLargeSupportColoringTypedFGraphResidualPublicEndpointBundle
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+        localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+        fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+        publicDownstreamTargetSelectorConsumerClosure
+  | .scalarQuotientPublicEndpoint =>
+      ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  | .finalProofMdConsumerPublicEndpoint =>
+      ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  | .scalarQuotientPublicTargetSelectorObligations =>
+      ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  | .typedFGraphResidualPublicTargetSelectorObligations =>
+      ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelectorObligationPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+        localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+        fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+        publicDownstreamTargetSelectorConsumerClosure
+  | .currentSelectorEndpoint => FirstBitLargeSupportColoringCurrentSelectorEndpoint
+  | .downstreamObligationProjection =>
+      ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  | .finalReleaseBundleReuse => FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  | .allTernaryEndpointExhaustion => allTernaryEndpointExhaustion
+  | .nearThresholdBoundaryDiagnostics => nearThresholdBoundaryDiagnostics
+  | .publicDownstreamTargetSelectorConsumerClosure =>
+      publicDownstreamTargetSelectorConsumerClosure
+
+end ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffRow
+
+/--
+Downstream handoff bundle for the final public first-bit closure.  It keeps the recently
+packaged final closure facade, the all-large typed `F` residual/scalar-quotient endpoints,
+near-threshold diagnostics, all-ternary exhaustion, and both public target-selector closure
+packets in a single assumption-backed interface.
+-/
+structure ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle : Type where
+  finalClosureFacade :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade
+  typedFGraphResidualFacade :
+    ProofMdLargeSupportColoringTypedFGraphResidualPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+      localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+      fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+      publicDownstreamTargetSelectorConsumerClosure
+  scalarQuotientPublicEndpoint :
+    ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  finalProofMdConsumerPublicEndpoint :
+    ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  scalarQuotientPublicTargetSelectorObligations :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  typedFGraphResidualPublicTargetSelectorObligations :
+    ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+      localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+      fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+      publicDownstreamTargetSelectorConsumerClosure
+  currentSelectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint
+  downstreamObligationProjection :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  finalReleaseBundleReuse : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  allTernaryEndpointExhaustionCert : allTernaryEndpointExhaustion
+  nearThresholdBoundaryDiagnosticsCert : nearThresholdBoundaryDiagnostics
+  publicDownstreamTargetSelectorConsumerClosureCert :
+    publicDownstreamTargetSelectorConsumerClosure
+  targetStatement_fromFinalClosureFacade : TargetStatement
+  targetStatement_fromTypedFGraphResidualFacade : TargetStatement
+  targetStatement_fromScalarQuotientPublicEndpoint : TargetStatement
+  targetStatement_fromFinalProofMdConsumerPublicEndpoint : TargetStatement
+  targetStatement_fromScalarQuotientPublicTargetSelectorObligations : TargetStatement
+  targetStatement_fromTypedFGraphResidualPublicTargetSelectorObligations : TargetStatement
+  targetStatement_fromCurrentSelectorEndpoint : TargetStatement
+  targetStatement_fromDownstreamObligationProjection : TargetStatement
+  targetStatement_fromFinalReleaseBundleReuse : TargetStatement
+  targetStatement_fromAllTernaryEndpointExhaustion : TargetStatement
+  targetStatement_fromNearThresholdBoundaryDiagnostics : TargetStatement
+  targetStatement_fromPublicDownstreamTargetSelectorConsumerClosure : TargetStatement
+
+namespace ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle
+
+/-- Build the downstream final-closure handoff bundle from the final closure facade. -/
+def ofFinalClosureFacade
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade) :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle where
+  finalClosureFacade := h
+  typedFGraphResidualFacade := h.toTypedFGraphResidualPublicEndpointBundle
+  scalarQuotientPublicEndpoint := h.toScalarQuotientPublicEndpointBundle
+  finalProofMdConsumerPublicEndpoint :=
+    h.typedFGraphResidualFacade.finalProofMdConsumerPublicEndpoint
+  scalarQuotientPublicTargetSelectorObligations :=
+    h.scalarQuotientPublicEndpoint.toPublicTargetSelectorObligationPacket
+  typedFGraphResidualPublicTargetSelectorObligations :=
+    h.typedFGraphResidualTargetSelectorObligations
+  currentSelectorEndpoint := h.currentSelectorEndpoint
+  downstreamObligationProjection := h.downstreamObligationProjection
+  finalReleaseBundleReuse := h.finalReleaseBundleReuse
+  allTernaryEndpointExhaustionCert := h.toAllTernaryEndpointExhaustion
+  nearThresholdBoundaryDiagnosticsCert := h.toNearThresholdBoundaryDiagnostics
+  publicDownstreamTargetSelectorConsumerClosureCert :=
+    h.toPublicDownstreamTargetSelectorConsumerClosure
+  targetStatement_fromFinalClosureFacade :=
+    targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosureFacade h
+  targetStatement_fromTypedFGraphResidualFacade :=
+    h.targetStatement_fromTypedFGraphResidualFacade
+  targetStatement_fromScalarQuotientPublicEndpoint :=
+    h.targetStatement_fromScalarQuotientPublicEndpoint
+  targetStatement_fromFinalProofMdConsumerPublicEndpoint :=
+    h.typedFGraphResidualFacade.targetStatement_fromFinalProofMdConsumerPublicEndpoint
+  targetStatement_fromScalarQuotientPublicTargetSelectorObligations :=
+    h.scalarQuotientPublicEndpoint.targetStatement_fromPublicTargetSelectorObligations
+  targetStatement_fromTypedFGraphResidualPublicTargetSelectorObligations :=
+    h.typedFGraphResidualFacade.targetStatement_fromTypedFGraphResidualTargetSelectorObligations
+  targetStatement_fromCurrentSelectorEndpoint :=
+    h.targetStatement_fromCurrentSelectorEndpoint
+  targetStatement_fromDownstreamObligationProjection :=
+    h.targetStatement_fromDownstreamObligationProjection
+  targetStatement_fromFinalReleaseBundleReuse :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle_viaFinalReleaseEndpoint
+      h.typedFGraphResidualFacade.finalProofMdConsumerPublicEndpoint
+  targetStatement_fromAllTernaryEndpointExhaustion :=
+    h.targetStatement_fromAllTernaryEndpointExhaustion
+  targetStatement_fromNearThresholdBoundaryDiagnostics :=
+    h.targetStatement_fromNearThresholdBoundaryDiagnostics
+  targetStatement_fromPublicDownstreamTargetSelectorConsumerClosure :=
+    h.targetStatement_fromPublicDownstreamTargetSelectorConsumerClosure
+
+/-- Build the handoff bundle directly from a typed `F` residual public endpoint. -/
+def ofTypedFGraphResidualPublicEndpointBundle
+    (htyped :
+      ProofMdLargeSupportColoringTypedFGraphResidualPublicEndpointBundle
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+        localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+        fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+        publicDownstreamTargetSelectorConsumerClosure)
+    (hallTernary : allTernaryEndpointExhaustion)
+    (hnearThreshold : nearThresholdBoundaryDiagnostics) :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle :=
+  ofFinalClosureFacade
+    (htyped.toFirstBitPublicFinalClosureFacade hallTernary hnearThreshold)
+
+/-- Build the handoff bundle from scalar-quotient and typed residual assumptions. -/
+def ofScalarQuotientPublicEndpointBundle
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers)
+    (hresidual :
+      ProofMdLargeSupportColoringTypedFGraphResidualAssumptionPacket
+        localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+        fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+        publicDownstreamTargetSelectorConsumerClosure)
+    (hallTernary : allTernaryEndpointExhaustion)
+    (hnearThreshold : nearThresholdBoundaryDiagnostics) :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle :=
+  ofFinalClosureFacade
+    (h.toFirstBitPublicFinalClosureFacade hresidual hallTernary hnearThreshold)
+
+/-- Recover the final closure facade from the downstream handoff bundle. -/
+def toFirstBitPublicFinalClosureFacade
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade :=
+  h.finalClosureFacade
+
+/-- Recover the typed `F` residual public endpoint from the downstream handoff bundle. -/
+def toTypedFGraphResidualPublicEndpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    ProofMdLargeSupportColoringTypedFGraphResidualPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+      localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+      fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+      publicDownstreamTargetSelectorConsumerClosure :=
+  h.typedFGraphResidualFacade
+
+/-- Recover the scalar-quotient public endpoint from the downstream handoff bundle. -/
+def toScalarQuotientPublicEndpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers :=
+  h.scalarQuotientPublicEndpoint
+
+/-- Recover final proof-md/public endpoint reuse from the downstream handoff bundle. -/
+def toFinalProofMdConsumerPublicEndpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.finalProofMdConsumerPublicEndpoint
+
+/-- Recover scalar-quotient public target-selector obligations from the handoff bundle. -/
+def toScalarQuotientPublicTargetSelectorObligationPacket
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers :=
+  h.scalarQuotientPublicTargetSelectorObligations
+
+/-- Recover typed `F` residual public target-selector obligations from the handoff bundle. -/
+def toTypedFGraphResidualPublicTargetSelectorObligationPacket
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+      localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+      fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+      publicDownstreamTargetSelectorConsumerClosure :=
+  h.typedFGraphResidualPublicTargetSelectorObligations
+
+/-- Recover the current-selector endpoint from the downstream handoff bundle. -/
+def toCurrentSelectorEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    FirstBitLargeSupportColoringCurrentSelectorEndpoint :=
+  h.currentSelectorEndpoint
+
+/-- Recover downstream target-obligation projections from the handoff bundle. -/
+def toFinalPublicDownstreamTargetObligationLayer
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.downstreamObligationProjection
+
+/-- Recover final-release bundle reuse from the downstream handoff bundle. -/
+def toPublicFinalArchiveReleaseBundle
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle :=
+  h.finalReleaseBundleReuse
+
+/-- Project the all-ternary endpoint exhaustion assumption from the handoff bundle. -/
+def toAllTernaryEndpointExhaustion
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    allTernaryEndpointExhaustion :=
+  h.allTernaryEndpointExhaustionCert
+
+/-- Project near-threshold boundary diagnostics from the handoff bundle. -/
+def toNearThresholdBoundaryDiagnostics
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    nearThresholdBoundaryDiagnostics :=
+  h.nearThresholdBoundaryDiagnosticsCert
+
+/-- Project the public downstream target-selector consumer closure from the handoff bundle. -/
+def toPublicDownstreamTargetSelectorConsumerClosure
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    publicDownstreamTargetSelectorConsumerClosure :=
+  h.publicDownstreamTargetSelectorConsumerClosureCert
+
+/-- Project any public row from the downstream final-closure handoff bundle. -/
+def rowObligation
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle)
+    (row : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffRow) :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffRow.obligation row := by
+  cases row
+  · exact h.finalClosureFacade
+  · exact h.typedFGraphResidualFacade
+  · exact h.scalarQuotientPublicEndpoint
+  · exact h.finalProofMdConsumerPublicEndpoint
+  · exact h.scalarQuotientPublicTargetSelectorObligations
+  · exact h.typedFGraphResidualPublicTargetSelectorObligations
+  · exact h.currentSelectorEndpoint
+  · exact h.downstreamObligationProjection
+  · exact h.finalReleaseBundleReuse
+  · exact h.allTernaryEndpointExhaustionCert
+  · exact h.nearThresholdBoundaryDiagnosticsCert
+  · exact h.publicDownstreamTargetSelectorConsumerClosureCert
+
+/-- Select the target statement associated to a downstream final-closure handoff row. -/
+def targetStatementForRow
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffRow → TargetStatement
+  | .finalClosureFacade => h.targetStatement_fromFinalClosureFacade
+  | .typedFGraphResidualFacade => h.targetStatement_fromTypedFGraphResidualFacade
+  | .scalarQuotientPublicEndpoint => h.targetStatement_fromScalarQuotientPublicEndpoint
+  | .finalProofMdConsumerPublicEndpoint =>
+      h.targetStatement_fromFinalProofMdConsumerPublicEndpoint
+  | .scalarQuotientPublicTargetSelectorObligations =>
+      h.targetStatement_fromScalarQuotientPublicTargetSelectorObligations
+  | .typedFGraphResidualPublicTargetSelectorObligations =>
+      h.targetStatement_fromTypedFGraphResidualPublicTargetSelectorObligations
+  | .currentSelectorEndpoint => h.targetStatement_fromCurrentSelectorEndpoint
+  | .downstreamObligationProjection => h.targetStatement_fromDownstreamObligationProjection
+  | .finalReleaseBundleReuse => h.targetStatement_fromFinalReleaseBundleReuse
+  | .allTernaryEndpointExhaustion => h.targetStatement_fromAllTernaryEndpointExhaustion
+  | .nearThresholdBoundaryDiagnostics => h.targetStatement_fromNearThresholdBoundaryDiagnostics
+  | .publicDownstreamTargetSelectorConsumerClosure =>
+      h.targetStatement_fromPublicDownstreamTargetSelectorConsumerClosure
+
+/-- The handoff bundle discharges every typed `F` residual public target selector. -/
+theorem publicTargetSelectorObligation
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle)
+    (selector : ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelector) :
+    ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelector.obligation
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+      localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+      fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+      publicDownstreamTargetSelectorConsumerClosure selector :=
+  ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelectorObligationPacket.obligation
+    h.typedFGraphResidualPublicTargetSelectorObligations selector
+
+/-- The handoff bundle discharges every scalar-quotient public target selector. -/
+theorem scalarQuotientPublicTargetSelectorObligation
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle)
+    (selector : ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector) :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector.obligation
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers selector :=
+  ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket.obligation
+    h.scalarQuotientPublicTargetSelectorObligations selector
+
+@[simp] theorem ofFinalClosureFacade_finalClosureFacade
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade) :
+    (ofFinalClosureFacade h).finalClosureFacade = h :=
+  rfl
+
+@[simp] theorem ofFinalClosureFacade_typedFGraphResidualFacade
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade) :
+    (ofFinalClosureFacade h).typedFGraphResidualFacade =
+      h.toTypedFGraphResidualPublicEndpointBundle :=
+  rfl
+
+@[simp] theorem ofFinalClosureFacade_scalarQuotientPublicEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade) :
+    (ofFinalClosureFacade h).scalarQuotientPublicEndpoint =
+      h.toScalarQuotientPublicEndpointBundle :=
+  rfl
+
+@[simp] theorem ofFinalClosureFacade_typedFGraphResidualPublicTargetSelectorObligations
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade) :
+    (ofFinalClosureFacade h).typedFGraphResidualPublicTargetSelectorObligations =
+      h.typedFGraphResidualTargetSelectorObligations :=
+  rfl
+
+@[simp] theorem ofFinalClosureFacade_allTernaryEndpointExhaustion
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade) :
+    (ofFinalClosureFacade h).allTernaryEndpointExhaustionCert =
+      h.toAllTernaryEndpointExhaustion :=
+  rfl
+
+@[simp] theorem ofFinalClosureFacade_nearThresholdBoundaryDiagnostics
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade) :
+    (ofFinalClosureFacade h).nearThresholdBoundaryDiagnosticsCert =
+      h.toNearThresholdBoundaryDiagnostics :=
+  rfl
+
+@[simp] theorem ofFinalClosureFacade_publicDownstreamTargetSelectorConsumerClosure
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade) :
+    (ofFinalClosureFacade h).publicDownstreamTargetSelectorConsumerClosureCert =
+      h.toPublicDownstreamTargetSelectorConsumerClosure :=
+  rfl
+
+end ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle
+
+/-- Expose the downstream final-closure handoff bundle from the final closure facade. -/
+def ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade.toFirstBitPublicFinalClosureHandoffBundle
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade) :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle :=
+  ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle.ofFinalClosureFacade h
+
+/-- Expose the downstream final-closure handoff bundle from a typed residual endpoint. -/
+def ProofMdLargeSupportColoringTypedFGraphResidualPublicEndpointBundle.toFirstBitPublicFinalClosureHandoffBundle
+    (h : ProofMdLargeSupportColoringTypedFGraphResidualPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+      localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+      fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+      publicDownstreamTargetSelectorConsumerClosure)
+    (hallTernary : allTernaryEndpointExhaustion)
+    (hnearThreshold : nearThresholdBoundaryDiagnostics) :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle :=
+  ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle.ofTypedFGraphResidualPublicEndpointBundle
+    h hallTernary hnearThreshold
+
+/-- Expose the downstream final-closure handoff bundle from scalar and typed residual assumptions. -/
+def ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.toFirstBitPublicFinalClosureHandoffBundle
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers)
+    (hresidual :
+      ProofMdLargeSupportColoringTypedFGraphResidualAssumptionPacket
+        localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+        fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+        publicDownstreamTargetSelectorConsumerClosure)
+    (hallTernary : allTernaryEndpointExhaustion)
+    (hnearThreshold : nearThresholdBoundaryDiagnostics) :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle :=
+  ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle.ofScalarQuotientPublicEndpointBundle
+    h hresidual hallTernary hnearThreshold
+
+/-- The downstream final-closure handoff closes the target by final closure facade reuse. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    TargetStatement :=
+  h.targetStatement_fromFinalClosureFacade
+
+/-- Target-statement facade via the typed `F` residual endpoint in the handoff bundle. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle_viaTypedFGraphResidualFacade
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    TargetStatement :=
+  h.targetStatement_fromTypedFGraphResidualFacade
+
+/-- Target-statement facade via scalar-quotient public endpoint reuse. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle_viaScalarQuotientPublicEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    TargetStatement :=
+  h.targetStatement_fromScalarQuotientPublicEndpoint
+
+/-- Target-statement facade via typed residual public target-selector closure. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle_viaTypedFGraphResidualPublicTargetSelectors
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    TargetStatement :=
+  h.targetStatement_fromTypedFGraphResidualPublicTargetSelectorObligations
+
+/-- Target-statement facade via scalar-quotient public target-selector closure. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle_viaScalarQuotientPublicTargetSelectors
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    TargetStatement :=
+  h.targetStatement_fromScalarQuotientPublicTargetSelectorObligations
+
+/-- Target-statement facade via the current-selector endpoint carried by the handoff. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle_viaCurrentSelectorEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    TargetStatement :=
+  h.targetStatement_fromCurrentSelectorEndpoint
+
+/-- Target-statement facade via downstream target-obligation projections. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle_viaDownstreamObligationProjection
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle) :
+    TargetStatement :=
+  h.targetStatement_fromDownstreamObligationProjection
+
+/-- Target-statement facade selected by any downstream final-closure handoff row. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle_viaRow
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle)
+    (row : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffRow) :
+    TargetStatement :=
+  h.targetStatementForRow row
+
 end FirstBitPublicFinalClosure
 
 end RegularInducedSubgraph
