@@ -11784,6 +11784,828 @@ theorem
     SizeTwoAdjacent P ∨ SizeTwoDisjoint P :=
   h.finiteCore.sizeTwo_route P hfree hcard
 
+/-- A natural number viewed as a first-bit residue modulo four. -/
+def firstBitNatModFourResidue (x : ℕ) : Fin 4 :=
+  ⟨x % 4, Nat.mod_lt _ (by decide : 0 < 4)⟩
+
+/-- The two Ramsey-extreme residues in the exact-basis repair spectrum. -/
+def FirstBitRamseyExtremeResidue (ρ : Fin 4) : Prop :=
+  ρ = (0 : Fin 4) ∨ ρ = (3 : Fin 4)
+
+/-- The repair spectrum contains both Ramsey extremes `{0,3}`. -/
+def FirstBitRepairSpectrumContainsRamseyExtremes (RepairSpectrum : Finset (Fin 4)) :
+    Prop :=
+  (0 : Fin 4) ∈ RepairSpectrum ∧ (3 : Fin 4) ∈ RepairSpectrum
+
+/-- A Ramsey extreme is missing from the old-side repair spectrum. -/
+def FirstBitRepairSpectrumMissingRamseyExtreme
+    (RepairSpectrum : Finset (Fin 4)) (ρ : Fin 4) : Prop :=
+  FirstBitRamseyExtremeResidue ρ ∧ ρ ∉ RepairSpectrum
+
+/-- Project the fact that a missing repair-spectrum row is a Ramsey extreme. -/
+theorem FirstBitRepairSpectrumMissingRamseyExtreme.extreme
+    {RepairSpectrum : Finset (Fin 4)} {ρ : Fin 4}
+    (h : FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ) :
+    FirstBitRamseyExtremeResidue ρ :=
+  h.1
+
+/-- Project non-membership from a missing Ramsey-extreme repair-spectrum row. -/
+theorem FirstBitRepairSpectrumMissingRamseyExtreme.not_mem
+    {RepairSpectrum : Finset (Fin 4)} {ρ : Fin 4}
+    (h : FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ) :
+    ρ ∉ RepairSpectrum :=
+  h.2
+
+/-- If the repair spectrum does not contain both Ramsey extremes, then one extreme is missing. -/
+theorem firstBitRepairSpectrum_exists_missingRamseyExtreme_of_not_contains_extremes
+    {RepairSpectrum : Finset (Fin 4)}
+    (hnot : ¬ FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    ∃ ρ : Fin 4, FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ := by
+  by_cases hzero : (0 : Fin 4) ∈ RepairSpectrum
+  · refine ⟨(3 : Fin 4), Or.inr rfl, ?_⟩
+    intro hthree
+    exact hnot ⟨hzero, hthree⟩
+  · exact ⟨(0 : Fin 4), Or.inl rfl, hzero⟩
+
+/-- The anti-Horn forbidden residue `ρ - d + c` modulo four. -/
+def firstBitRepairAntiHornForbiddenResidue (ρ d : Fin 4) (c : ℕ) : Fin 4 :=
+  firstBitModFourAddTable (firstBitModFourSubTable ρ d) (firstBitNatModFourResidue c)
+
+/-- The silent core consists of vertices whose majority-exception shadow is empty. -/
+noncomputable def FirstBitMajoritySilentCore
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (Q : Old → Finset Shadow) : Finset Old := by
+  classical
+  exact A.filter fun a => Q a = ∅
+
+/-- Membership in the silent core is membership in the old fiber plus empty exception shadow. -/
+theorem mem_firstBitMajoritySilentCore_iff
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {Q : Old → Finset Shadow} {a : Old} :
+    a ∈ FirstBitMajoritySilentCore A Q ↔ a ∈ A ∧ Q a = ∅ := by
+  classical
+  simp [FirstBitMajoritySilentCore]
+
+/-- Majority-exception shadows `Q_g(a)` sit inside `T₂` and are pairwise disjoint. -/
+structure FirstBitMajorityExceptionShadowCertificate
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 : Finset Shadow) (Q : Old → Finset Shadow) : Prop where
+  shadow_subset : ∀ a : Old, a ∈ A → Q a ⊆ T2
+  shadow_disjoint :
+    ∀ a : Old, a ∈ A → ∀ b : Old, b ∈ A → a ≠ b → Disjoint (Q a) (Q b)
+
+/-- Project containment of a majority-exception shadow in `T₂`. -/
+theorem FirstBitMajorityExceptionShadowCertificate.shadow_subset_of_mem
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    (h : FirstBitMajorityExceptionShadowCertificate A T2 Q)
+    {a : Old} (ha : a ∈ A) :
+    Q a ⊆ T2 :=
+  h.shadow_subset a ha
+
+/-- Project pairwise disjointness of majority-exception shadows. -/
+theorem FirstBitMajorityExceptionShadowCertificate.shadow_disjoint_of_ne
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    (h : FirstBitMajorityExceptionShadowCertificate A T2 Q)
+    {a b : Old} (ha : a ∈ A) (hb : b ∈ A) (hab : a ≠ b) :
+    Disjoint (Q a) (Q b) :=
+  h.shadow_disjoint a ha b hb hab
+
+/--
+Imported majority-shadow accounting: disjoint exception shadows bound the non-silent part of the
+old fiber, leaving only the silent core as a separate repair-spectrum target.
+-/
+structure FirstBitMajorityExceptionShadowImports
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 : Finset Shadow) (Q : Old → Finset Shadow) : Prop where
+  shadows : FirstBitMajorityExceptionShadowCertificate A T2 Q
+  shadowBudget : A.card ≤ T2.card + (FirstBitMajoritySilentCore A Q).card
+
+/-- Project the majority-exception shadow certificate from the import package. -/
+theorem FirstBitMajorityExceptionShadowImports.to_shadows
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    (h : FirstBitMajorityExceptionShadowImports A T2 Q) :
+    FirstBitMajorityExceptionShadowCertificate A T2 Q :=
+  h.shadows
+
+/-- Project the old-fiber budget coming from majority-exception shadows. -/
+theorem FirstBitMajorityExceptionShadowImports.card_le_shadow_add_silentCore
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    (h : FirstBitMajorityExceptionShadowImports A T2 Q) :
+    A.card ≤ T2.card + (FirstBitMajoritySilentCore A Q).card :=
+  h.shadowBudget
+
+/--
+Imported silent-core cap: when the repair spectrum contains both Ramsey extremes, terminality bounds
+the silent core by `R(4,4)-1`.
+-/
+structure FirstBitSilentCoreRepairSpectrumCapImport
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (Q : Old → Finset Shadow)
+    (RepairSpectrum : Finset (Fin 4)) (R44 : ℕ) : Prop where
+  silentCoreCap :
+    FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum →
+      (FirstBitMajoritySilentCore A Q).card ≤ R44 - 1
+
+/-- Apply the imported silent-core cap under the `{0,3}` repair-spectrum hypothesis. -/
+theorem FirstBitSilentCoreRepairSpectrumCapImport.silentCore_card_le
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    (h : FirstBitSilentCoreRepairSpectrumCapImport A Q RepairSpectrum R44)
+    (hextreme : FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    (FirstBitMajoritySilentCore A Q).card ≤ R44 - 1 :=
+  h.silentCoreCap hextreme
+
+/--
+Anti-Horn exclusion for a missing Ramsey extreme: every usable singleton/pair deletion avoids the
+residue `ρ - d + c` at the distinguished old-side anchor.
+-/
+def FirstBitRepairMissingExtremeAntiHornExclusion
+    {Old : Type*}
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (ρ d : Fin 4) : Prop :=
+  ∀ {D : Finset Old} {c : ℕ} {σ : Fin 4},
+    FirstBitSingletonOrPairDeletion D →
+      Usable D c σ →
+        degreeIntoAnchor D ≠ firstBitRepairAntiHornForbiddenResidue ρ d c
+
+/-- Imported anti-Horn exclusions for every Ramsey extreme missing from the repair spectrum. -/
+structure FirstBitRepairSpectrumMissingExtremeAntiHornImports
+    {Old : Type*}
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (RepairSpectrum : Finset (Fin 4)) (appendResidue : Fin 4) : Prop where
+  antiHornOfMissingExtreme :
+    ∀ ρ : Fin 4,
+      FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ →
+        FirstBitRepairMissingExtremeAntiHornExclusion
+          Usable degreeIntoAnchor ρ appendResidue
+
+/-- Apply the anti-Horn import to a chosen missing Ramsey extreme. -/
+theorem FirstBitRepairSpectrumMissingExtremeAntiHornImports.antiHorn
+    {Old : Type*}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {RepairSpectrum : Finset (Fin 4)} {appendResidue ρ : Fin 4}
+    (h :
+      FirstBitRepairSpectrumMissingExtremeAntiHornImports
+        Usable degreeIntoAnchor RepairSpectrum appendResidue)
+    (hmissing : FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ) :
+    FirstBitRepairMissingExtremeAntiHornExclusion
+      Usable degreeIntoAnchor ρ appendResidue :=
+  h.antiHornOfMissingExtreme ρ hmissing
+
+/-- If the `{0,3}` cap side fails, the anti-Horn imports expose a missing Ramsey extreme. -/
+theorem
+    FirstBitRepairSpectrumMissingExtremeAntiHornImports.exists_missingExtreme_antiHorn_of_not_contains_extremes
+    {Old : Type*}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {RepairSpectrum : Finset (Fin 4)} {appendResidue : Fin 4}
+    (h :
+      FirstBitRepairSpectrumMissingExtremeAntiHornImports
+        Usable degreeIntoAnchor RepairSpectrum appendResidue)
+    (hnot : ¬ FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    ∃ ρ : Fin 4,
+      FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ ∧
+        FirstBitRepairMissingExtremeAntiHornExclusion
+          Usable degreeIntoAnchor ρ appendResidue := by
+  rcases firstBitRepairSpectrum_exists_missingRamseyExtreme_of_not_contains_extremes hnot with
+    ⟨ρ, hmissing⟩
+  exact ⟨ρ, hmissing, h.antiHorn hmissing⟩
+
+/-- Certificate for one concrete usable deletion excluded by a missing Ramsey extreme. -/
+structure FirstBitRepairMissingExtremeAntiHornCertificate
+    {Old : Type*}
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (RepairSpectrum : Finset (Fin 4)) (ρ appendResidue : Fin 4)
+    (D : Finset Old) (c : ℕ) (σ : Fin 4) : Prop where
+  missingExtreme : FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ
+  singletonOrPair : FirstBitSingletonOrPairDeletion D
+  usable : Usable D c σ
+  excluded :
+    degreeIntoAnchor D ≠ firstBitRepairAntiHornForbiddenResidue ρ appendResidue c
+
+/-- Build a concrete anti-Horn certificate from the missing-extreme import. -/
+theorem firstBitRepairMissingExtremeAntiHornCertificate_of_imports
+    {Old : Type*}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {RepairSpectrum : Finset (Fin 4)} {ρ appendResidue : Fin 4}
+    {D : Finset Old} {c : ℕ} {σ : Fin 4}
+    (h :
+      FirstBitRepairSpectrumMissingExtremeAntiHornImports
+        Usable degreeIntoAnchor RepairSpectrum appendResidue)
+    (hmissing : FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ)
+    (hD : FirstBitSingletonOrPairDeletion D) (husable : Usable D c σ) :
+    FirstBitRepairMissingExtremeAntiHornCertificate
+      Usable degreeIntoAnchor RepairSpectrum ρ appendResidue D c σ where
+  missingExtreme := hmissing
+  singletonOrPair := hD
+  usable := husable
+  excluded := h.antiHorn hmissing hD husable
+
+/--
+Finite exact-basis repair-spectrum imports: majority exception shadows, the silent-core Ramsey cap,
+and the missing-extreme anti-Horn exclusions are all kept as explicit fields.
+-/
+structure FirstBitExactBasisFiniteRepairSpectrumImports
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 : Finset Shadow) (Q : Old → Finset Shadow)
+    (RepairSpectrum : Finset (Fin 4)) (R44 : ℕ)
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (appendResidue : Fin 4) : Prop where
+  majorityExceptionShadows : FirstBitMajorityExceptionShadowImports A T2 Q
+  silentCoreCap : FirstBitSilentCoreRepairSpectrumCapImport A Q RepairSpectrum R44
+  missingExtremeAntiHorn :
+    FirstBitRepairSpectrumMissingExtremeAntiHornImports
+      Usable degreeIntoAnchor RepairSpectrum appendResidue
+
+/-- Construct finite repair-spectrum imports from explicit assumptions. -/
+theorem firstBitExactBasisFiniteRepairSpectrumImports_of_assumptions
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (hshadows : FirstBitMajorityExceptionShadowCertificate A T2 Q)
+    (hshadowBudget : A.card ≤ T2.card + (FirstBitMajoritySilentCore A Q).card)
+    (hsilent :
+      FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum →
+        (FirstBitMajoritySilentCore A Q).card ≤ R44 - 1)
+    (hanti :
+      ∀ ρ : Fin 4,
+        FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ →
+          FirstBitRepairMissingExtremeAntiHornExclusion
+            Usable degreeIntoAnchor ρ appendResidue) :
+    FirstBitExactBasisFiniteRepairSpectrumImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue where
+  majorityExceptionShadows := ⟨hshadows, hshadowBudget⟩
+  silentCoreCap := ⟨hsilent⟩
+  missingExtremeAntiHorn := ⟨hanti⟩
+
+/-- Project the majority-exception shadow import from finite repair-spectrum imports. -/
+theorem FirstBitExactBasisFiniteRepairSpectrumImports.to_majorityExceptionShadows
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (h :
+      FirstBitExactBasisFiniteRepairSpectrumImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue) :
+    FirstBitMajorityExceptionShadowImports A T2 Q :=
+  h.majorityExceptionShadows
+
+/-- Project the silent-core cap import from finite repair-spectrum imports. -/
+theorem FirstBitExactBasisFiniteRepairSpectrumImports.to_silentCoreCap
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (h :
+      FirstBitExactBasisFiniteRepairSpectrumImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue) :
+    FirstBitSilentCoreRepairSpectrumCapImport A Q RepairSpectrum R44 :=
+  h.silentCoreCap
+
+/-- Project missing-extreme anti-Horn imports from finite repair-spectrum imports. -/
+theorem FirstBitExactBasisFiniteRepairSpectrumImports.to_missingExtremeAntiHorn
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (h :
+      FirstBitExactBasisFiniteRepairSpectrumImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue) :
+    FirstBitRepairSpectrumMissingExtremeAntiHornImports
+      Usable degreeIntoAnchor RepairSpectrum appendResidue :=
+  h.missingExtremeAntiHorn
+
+/-- The `{0,3}` repair-spectrum case bounds the whole old fiber by the shadow side plus `R(4,4)-1`. -/
+theorem FirstBitExactBasisFiniteRepairSpectrumImports.card_le_shadow_add_ramseyMinusOne
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (h :
+      FirstBitExactBasisFiniteRepairSpectrumImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue)
+    (hextreme : FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    A.card ≤ T2.card + (R44 - 1) :=
+  Nat.le_trans h.majorityExceptionShadows.shadowBudget
+    (Nat.add_le_add_left (h.silentCoreCap.silentCore_card_le hextreme) T2.card)
+
+/-- Apply the missing-extreme anti-Horn exclusion from finite repair-spectrum imports. -/
+theorem FirstBitExactBasisFiniteRepairSpectrumImports.antiHorn_of_missingExtreme
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue ρ : Fin 4}
+    (h :
+      FirstBitExactBasisFiniteRepairSpectrumImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue)
+    (hmissing : FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ) :
+    FirstBitRepairMissingExtremeAntiHornExclusion
+      Usable degreeIntoAnchor ρ appendResidue :=
+  h.missingExtremeAntiHorn.antiHorn hmissing
+
+/-- If the `{0,3}` silent-core cap is unavailable, finite repair imports return an anti-Horn branch. -/
+theorem FirstBitExactBasisFiniteRepairSpectrumImports.exists_missingExtreme_antiHorn_of_not_contains_extremes
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (h :
+      FirstBitExactBasisFiniteRepairSpectrumImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue)
+    (hnot : ¬ FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    ∃ ρ : Fin 4,
+      FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ ∧
+        FirstBitRepairMissingExtremeAntiHornExclusion
+          Usable degreeIntoAnchor ρ appendResidue :=
+  h.missingExtremeAntiHorn.exists_missingExtreme_antiHorn_of_not_contains_extremes hnot
+
+/--
+Repair-spectrum imports bundled beside the existing post-quotient finite-core positive-atom imports.
+This is a projection layer: both halves remain explicit assumptions.
+-/
+structure FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 : Finset Shadow) (Q : Old → Finset Shadow)
+    (RepairSpectrum : Finset (Fin 4)) (R44 : ℕ)
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (appendResidue : Fin 4)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop) : Prop where
+  repairSpectrum :
+    FirstBitExactBasisFiniteRepairSpectrumImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+  postQuotientFiniteCore :
+    PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint
+
+/-- Project repair-spectrum imports from the repair/post-quotient bundle. -/
+theorem FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports.to_repairSpectrum
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitExactBasisFiniteRepairSpectrumImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue :=
+  h.repairSpectrum
+
+/-- Project the existing post-quotient finite-core imports from the repair/post-quotient bundle. -/
+theorem FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports.to_postQuotientFiniteCore
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.postQuotientFiniteCore
+
+/-- Project the coarser anchored-packing imports from the repair/post-quotient bundle. -/
+theorem FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports.to_postQuotientAnchoredPacking
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.postQuotientFiniteCore.to_anchoredPacking
+
+/--
+Final-facing wrapper that enriches the available-cut/post-quotient finite-core surface with exact-basis
+repair-spectrum imports.
+-/
+structure
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 : Finset Shadow) (Q : Old → Finset Shadow)
+    (RepairSpectrum : Finset (Fin 4)) (R44 : ℕ)
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (appendResidue : Fin 4)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop) : Prop where
+  finalFiniteCore :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint
+  repairSpectrum :
+    FirstBitExactBasisFiniteRepairSpectrumImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+
+/-- Construct the repair-spectrum-enriched final wrapper from the existing finite-core wrapper. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum_of_parts
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hrepair :
+      FirstBitExactBasisFiniteRepairSpectrumImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+      Basis WithHoles PositiveAtom
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  finalFiniteCore := hfinal
+  repairSpectrum := hrepair
+
+/--
+Construct the repair-spectrum-enriched final wrapper directly from explicit anti-Horn assumptions and
+the existing finite-core selector imports.
+-/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum_of_assumptions
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+        Basis WithHoles PositiveAtom)
+    (hsize : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P ≤ 4)
+    (hsizeFive : WitnessCountAtLeast 5 3)
+    (hfiniteCounts : PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (hroutes : PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint)
+    (hshadows : FirstBitMajorityExceptionShadowCertificate A T2 Q)
+    (hshadowBudget : A.card ≤ T2.card + (FirstBitMajoritySilentCore A Q).card)
+    (hsilent :
+      FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum →
+        (FirstBitMajoritySilentCore A Q).card ≤ R44 - 1)
+    (hanti :
+      ∀ ρ : Fin 4,
+        FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ →
+          FirstBitRepairMissingExtremeAntiHornExclusion
+            Usable degreeIntoAnchor ρ appendResidue) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+      Basis WithHoles PositiveAtom
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum_of_parts
+    (firstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore_of_assumptions
+      hfinal hsize hsizeFive hfiniteCounts hroutes)
+    (firstBitExactBasisFiniteRepairSpectrumImports_of_assumptions
+      hshadows hshadowBudget hsilent hanti)
+
+/-- Forget repair-spectrum fields and recover the existing finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum.to_finiteCoreFinalWrapper
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+        Basis WithHoles PositiveAtom
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.finalFiniteCore
+
+/-- Project the exact-basis repair-spectrum imports from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum.to_repairSpectrum
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+        Basis WithHoles PositiveAtom
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitExactBasisFiniteRepairSpectrumImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue :=
+  h.repairSpectrum
+
+/-- Export repair-spectrum imports together with the post-quotient finite-core imports. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum.to_repairSpectrumAndPostQuotientFiniteCore
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+        Basis WithHoles PositiveAtom
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  repairSpectrum := h.repairSpectrum
+  postQuotientFiniteCore := h.finalFiniteCore.to_postQuotientFiniteCore
+
+/-- Project majority-exception shadows from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum.to_majorityExceptionShadows
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+        Basis WithHoles PositiveAtom
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitMajorityExceptionShadowImports A T2 Q :=
+  h.repairSpectrum.to_majorityExceptionShadows
+
+/-- Project missing-extreme anti-Horn imports from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum.to_missingExtremeAntiHorn
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+        Basis WithHoles PositiveAtom
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitRepairSpectrumMissingExtremeAntiHornImports
+      Usable degreeIntoAnchor RepairSpectrum appendResidue :=
+  h.repairSpectrum.to_missingExtremeAntiHorn
+
+/-- Apply the `{0,3}` repair-spectrum cap from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum.card_le_shadow_add_ramseyMinusOne
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+        Basis WithHoles PositiveAtom
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hextreme : FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    A.card ≤ T2.card + (R44 - 1) :=
+  h.repairSpectrum.card_le_shadow_add_ramseyMinusOne hextreme
+
+/-- Apply a missing-extreme anti-Horn exclusion from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum.antiHorn_of_missingExtreme
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue ρ : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+        Basis WithHoles PositiveAtom
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hmissing : FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ) :
+    FirstBitRepairMissingExtremeAntiHornExclusion
+      Usable degreeIntoAnchor ρ appendResidue :=
+  h.repairSpectrum.antiHorn_of_missingExtreme hmissing
+
+/-- If the enriched final wrapper is not on the `{0,3}` cap side, it exposes an anti-Horn branch. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum.exists_missingExtreme_antiHorn_of_not_contains_extremes
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 : Finset Shadow} {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+        Basis WithHoles PositiveAtom
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hnot : ¬ FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    ∃ ρ : Fin 4,
+      FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ ∧
+        FirstBitRepairMissingExtremeAntiHornExclusion
+          Usable degreeIntoAnchor ρ appendResidue :=
+  h.repairSpectrum.exists_missingExtreme_antiHorn_of_not_contains_extremes hnot
+
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
   ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
