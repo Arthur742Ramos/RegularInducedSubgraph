@@ -12632,6 +12632,28 @@ total split rebate at least `3`.  Therefore:
 
 Thus the all-ternary branch is a finite high-outdegree split system, not a sparse dependency graph.
 
+There is also source-side separation for size-three atoms.  Let `G={a,b,c}` be a size-three atom and delete
+`a`.  If the projected collision avoids the shortened pair `G\{a}`, then the projected system can hit only
+the other three atoms.  Positivity and the fact that collision needs at least two forced petals imply
+
+```text
+s=2,        pi=3,        delta=0.
+```
+
+So the repair is a complementary bipartition
+
+```text
+{a} union C,        {a} union (M\C)
+```
+
+of the union `M` of the other three atoms.  The same applies to deletions of `b` and `c`.  Two vertices of
+`G` cannot have the same complementary-bipartition label: if `a` and `b` both use `C|M\C`, then
+`{a} union C` and `{b} union (M\C)` are disjoint supports, and `c` remains as a singleton, giving a
+three-block partition of all four atoms.  Thus every size-three source atom has three distinct
+shortened-pair-free labels, each satisfying the split-rebate threshold above.  In `3,3,3,3` each such label
+splits at least two of the other three-atoms; in `3,3,3,2` it splits both other three-atoms or one
+three-atom together with the pair.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

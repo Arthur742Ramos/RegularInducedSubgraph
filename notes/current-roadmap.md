@@ -5541,6 +5541,9 @@ With four atoms, the ternary-cycle profiles are only `3,3,2,2`, `3,3,3,2`, and `
 already the coupled two-three-atom table.
 The all-ternary profiles have high outdegree: in `3,3,3,3`, deleting any atom splits at least two other
 three-atoms; in `3,3,3,2`, deleting a three-atom splits both other three-atoms or one three-atom plus the pair.
+For a size-three source atom, any collision avoiding the shortened pair is a complementary bipartition of
+the other three atoms; the three vertex deletions must have distinct labels, or two supports plus the third
+source vertex as singleton close.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

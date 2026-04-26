@@ -2112,6 +2112,8 @@ ternary cycles entirely among size-three atoms.
 The ternary-cycle profiles are exactly `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`.
 In `3,3,3,3`, every deletion splits at least two other three-atoms; in `3,3,3,2`, a three-atom deletion
 splits both other three-atoms or one three-atom plus the pair.
+If a size-three deletion avoids the shortened pair, it gives a complementary bipartition label of the other
+three atoms; the three vertices of the source atom must have distinct labels.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

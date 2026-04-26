@@ -2075,6 +2075,8 @@ What remains justified after audit is:
       among size-three atoms;
       the ternary-cycle profiles are only `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`;
       rebate makes these high-outdegree systems: all-ternary deletions split at least two other three-atoms;
+      shortened-pair-free deletions from a size-three source give complementary bipartition labels, distinct
+      for the three source vertices;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

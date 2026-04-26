@@ -2594,6 +2594,8 @@ Recommended attack:
     two-three-atom table for the first.
     Add the ternary-cycle outdegree lemma: `3,3,3,3` deletions split at least two other three-atoms, and
     `3,3,3,2` deletions split both other three-atoms or one three-atom plus the pair.
+    Add source-side separation: a shortened-pair-free deletion from a size-three atom gives a complementary
+    bipartition of the other three atoms, and the three source vertices must have distinct labels.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

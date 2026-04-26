@@ -1188,6 +1188,8 @@ ternary-cycle case inside size-three atoms.
 The only ternary-cycle profiles are `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`.
 Rebate forces high outdegree: `3,3,3,3` deletions split at least two other three-atoms, while `3,3,3,2`
 deletions split both other three-atoms or one three-atom plus the pair.
+Shortened-pair-free deletions from a size-three source give complementary bipartition labels on the other
+three atoms, and the three source vertices must use distinct labels.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.
