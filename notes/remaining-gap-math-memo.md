@@ -1784,6 +1784,14 @@ comparable in one bucket, so terminality compares mixed `T_2` and mixed target c
 logarithmic loss.
 After refining by `deg_B,deg_X mod 4`, all external residues are fixed and the last statement is an
 internal principal-submatrix mod-`4` selector on a cut-homogeneous mixed bucket.
+In deletion form this is `deg_D(v)==deg_H(v)-c mod 4` on all retained vertices, where `D` is the removed
+layer.
+Bitwise this is Gallai's co-cut parity equation plus the centered cut-pair carry equation on the same
+deletion layer.
+Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
+high-rank over `F_2` in both graph and complement.
+It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no
+independent set or clique larger than `m`.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

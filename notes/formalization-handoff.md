@@ -2158,6 +2158,19 @@ Recommended attack:
     the all-pairs inequality compares mixed `T_2` and mixed target cardinalities up to bucket-count loss.
     Add the residue refinement by `deg_B mod 4` and `deg_X mod 4`, reducing the remaining homogeneous
     mixed target bucket to an internal principal-submatrix selector with constant degree modulo `4`.
+    Formalize the equivalent deletion equation: for `D=V(H)\S`, the selector condition is
+    `deg_D(v)==deg_H(v)-c mod 4` on all retained vertices.  Terminality says every deletion set with
+    complement larger than `m` violates this equation for every residue `c`.
+    Add the bit split: the same equation is equivalent to the Gallai parity equation for `deg_D(v)` and
+    the centered cut-pair parity equation
+    `#{ {x,y} subset D : vx,vy in E(H) } == floor((deg_H(v)-c)/2) mod 2` on the same retained support.
+    Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
+    selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
+    selector validity because outside contribution is constant.  Conclude terminal buckets are
+    selector-prime and have F2 row-rank at least `log_2(n/m)` in both graph and complement.
+    Add the hereditary density/codensity consequences: every induced `U` of a terminal bucket with
+    `|U|>m` has `alpha,omega<=m`, so Caro--Wei/Turan gives average degree and average complement degree at
+    least `|U|/m-1`.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

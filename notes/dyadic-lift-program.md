@@ -841,6 +841,16 @@ already linear sparse/dense error and a logarithmic bucket loss.
 After also refining by `deg_B,deg_X mod 4`, all external cut residues are fixed.  The final homogeneous
 bucket asks only for an internal induced subgraph with constant degree modulo `4`, i.e. a
 principal-submatrix selector on one cut-homogeneous bucket.
+In deletion form, for `D` the removed layer, this asks for
+`deg_D(v)==deg_H(v)-c mod 4` on all retained vertices; terminal buckets are rigid against every such
+large-complement deletion equation.
+Splitting this congruence gives the Gallai parity co-cut equation plus the centered cut-pair parity
+equation on the same deletion layer, so the carry line is the only remaining unsynchronized bit.
+Large row-twin classes, complement-row classes, and modules close immediately: false twins give
+independent selectors, true twins give clique selectors, and modules have constant outside contribution.
+Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.
+It is also hereditarily dense and codense at scale `m`, since any induced chamber containing an
+independent set or clique larger than `m` already closes.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

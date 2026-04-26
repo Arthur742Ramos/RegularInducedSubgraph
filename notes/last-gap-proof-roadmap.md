@@ -1804,6 +1804,12 @@ What remains justified after audit is:
       `T_mix(L)`, and dyadic bucketing of the four cut factors reduces it to one homogeneous mixed bucket
       where `Damage` and `Polar` have comparable scale; refining by `deg_B,deg_X mod 4` fixes external
       residues and leaves an internal principal-submatrix mod-`4` selector on that cut-homogeneous bucket;
+      equivalently, a deletion layer `D` must satisfy `deg_D(v)==deg_H(v)-c mod 4` on every retained
+      vertex, i.e. the Gallai parity co-cut equation plus the centered cut-pair carry equation on the same
+      support, so terminal buckets are rigid against all large-complement deletion equations;
+      row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
+      `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
+      at scale `m`;
       Fano itself needs four kept-pair
       witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual

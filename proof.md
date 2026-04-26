@@ -9677,6 +9677,81 @@ mixed-bucket obstruction is a principal-submatrix mod-`4` row-sum selector in a 
 comparable degrees and codegrees to both sides of the ambient cut.  All boundary arithmetic, old-vector
 data, positive atoms, and one-corner polarized pieces have been removed from this last statement.
 
+There is an exact co-cut form of the same problem.  Put `H` for the principal bucket and write
+`D=V(H)\S`.  For `v in S`,
+
+```text
+deg_{H[S]}(v)=deg_H(v)-deg_D(v).
+```
+
+Therefore `S` is a selector with common residue `c` if and only if
+
+```text
+deg_D(v) == deg_H(v)-c        [MOD 4]        for every v in V(H)\D.
+```
+
+Thus a terminal bucket is deletion-rigid: for every `c in Z/4Z` and every deletion set `D` whose
+complement has size greater than `m`, at least one retained vertex violates this affine co-cut equation.
+This is the internal version of the previous chamber/co-cut obstruction; the old boundary has simply
+become the deletion layer `D`.
+
+Splitting the same equation into bits gives the exact first-bit/carry obstruction.  For
+`r_c(v)=deg_H(v)-c [MOD 4]`, the deletion layer must satisfy, on every retained vertex,
+
+```text
+deg_D(v) == r_c(v)                                      [MOD 2],
+#{ {x,y} subset D : vx and vy are edges of H } == floor(r_c(v)/2)   [MOD 2].
+```
+
+The first line is the ordinary Gallai/F2 cut equation.  The second line is the centered pair-neighbour
+equation for the same deletion layer.  Thus the terminal principal bucket is exactly a simultaneous
+co-cut selector for the graph-neighbour parity and the cut-pair parity.  Any proof that selects `D` by
+only the first line merely produces a parity-regular retained set; it has not synchronized the carry bit.
+
+This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
+neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
+than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over
+`F_2` has row-rank `r`, some row class has size at least `n/2^r`, so a terminal bucket of size `n` must
+satisfy
+
+```text
+2^r > n/m.
+```
+
+The same statement in the complement controls true-twin classes: a complement-row class of size greater
+than `m` is a clique congruent selector.  Therefore a terminal principal bucket is high-rank on both the
+graph and its complement at the selector scale.
+
+Modules give the corresponding nonlinear exit.  If `M` is a module of the principal bucket, then every
+vertex of `M` has the same external contribution from the bucket complement.  Hence any mod-`4` selector
+inside `G[M]` of size greater than `m` is also a selector in the whole bucket.  A terminal bucket is
+therefore selector-prime: every module of size exceeding the current threshold is itself a smaller
+terminal principal bucket.  In particular, modular decomposition cannot be the source of the final
+obstruction; one may pass to a prime node whose size is still superlinear in `m`.
+
+Combining these two exits, the final mixed bucket can be assumed to have no large twin class, no large
+co-twin class, no large reducible module, and F2 row-rank at least `log_2(n/m)` in both graph and
+complement.  This is the first intrinsic constraint on the internal principal-submatrix selector.
+
+It is also hereditarily dense and hereditarily codense at the selector scale.  Indeed, if some induced
+subbucket `U` has an independent set or a clique of size greater than `m`, that set is already a
+principal selector.  Hence every `U` with `|U|>m` satisfies
+
+```text
+alpha(H[U]) <= m,        omega(H[U]) <= m.
+```
+
+By Caro--Wei, or just the average-degree form of Turan's bound, this forces
+
+```text
+avgdeg(H[U]) >= |U|/m - 1,
+avgdeg(complement(H[U])) >= |U|/m - 1.
+```
+
+Consequently no sparse or dense induced chamber can survive inside the terminal bucket.  The final
+obstruction is simultaneously deletion-rigid, selector-prime, high-rank over `F_2`, and hereditarily
+dense/codense; any proof of the principal selector may now assume all four properties.
+
 One stronger way to prove it would be a global fixed-point coloring
 `gamma : V(H) -> Z/4Z` satisfying
 

@@ -5064,6 +5064,19 @@ within that bucket `Damage` and `Polar` have the same scale, so pair-exchange te
 cardinalities of mixed `T_2` and mixed target vertices up to logarithmic loss.
 Refining the mixed target bucket by `deg_B mod 4` and `deg_X mod 4` fixes all external cut contributions;
 the remaining statement is an internal principal-submatrix mod-`4` selector on one cut-homogeneous bucket.
+Equivalently, for a deletion layer `D`, one must solve
+`deg_D(v)==deg_H(v)-c mod 4` on every retained vertex; a terminal bucket is rigid against every such
+large-complement deletion equation.
+Bitwise, this is the simultaneous co-cut system consisting of the Gallai parity equation for `deg_D(v)`
+and the centered pair-neighbour equation counting unordered pairs in `N(v) cap D`; the second line is the
+unsynchronized carry bit.
+Large row-twin classes close as independent selectors, large complement-row classes close as clique
+selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
+any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and
+complement.
+It is also hereditarily dense/codense at scale `m`: every induced `U` with `|U|>m` has
+`alpha(H[U]),omega(H[U])<=m`, hence both `H[U]` and its complement have average degree at least
+`|U|/m-1`.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is
