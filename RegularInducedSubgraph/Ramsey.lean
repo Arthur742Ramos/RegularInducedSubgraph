@@ -381,6 +381,108 @@ theorem HasCliqueOrIndepSetBound.step_even_mono
   HasCliqueOrIndepSetBound.mono
     (HasCliqueOrIndepSetBound.step_even hN₁ hN₂ hN₁even hN₂even hleft hright) hN
 
+/--
+One-vertex Ramsey recurrence with the only remaining extremal case isolated explicitly.  The usual
+recurrence proves the result on at least `N₁ + N₂` vertices.  On exactly `N₁ + N₂ - 1` vertices,
+any counterexample must make the induced graph regular of degree `N₁ - 1`; ruling out that regular
+extremal case gives the same one-vertex saving without requiring the parity hypothesis used by
+`step_even`.
+-/
+theorem HasCliqueOrIndepSetBound.step_of_extremal_regular
+    {a b N₁ N₂ : ℕ} (hN₁ : 0 < N₁) (hN₂ : 0 < N₂)
+    (hleft : HasCliqueOrIndepSetBound a (b + 1) N₁)
+    (hright : HasCliqueOrIndepSetBound (a + 1) b N₂)
+    (hregular :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = N₁ + N₂ - 1 →
+        (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = N₁ - 1) →
+        (∃ t ⊆ s, G.IsNClique (a + 1) t) ∨
+          ∃ t ⊆ s, G.IsNIndepSet (b + 1) t) :
+    HasCliqueOrIndepSetBound (a + 1) (b + 1) (N₁ + N₂ - 1) := by
+  intro α _ G s hs
+  classical
+  by_cases hbig : N₁ + N₂ ≤ s.card
+  · exact HasCliqueOrIndepSetBound.step hN₁ hN₂ hleft hright G s hbig
+  have hcard : s.card = N₁ + N₂ - 1 := by omega
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique (a + 1) t) ∨
+        ∃ t ⊆ s, G.IsNIndepSet (b + 1) t
+  · exact hdone
+  have hdegree :
+      ∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = N₁ - 1 := by
+    intro v
+    let A : Finset α := (s.erase (v : α)).filter (G.Adj (v : α))
+    let B : Finset α := (s.erase (v : α)).filter fun w => ¬ G.Adj (v : α) w
+    have hA_sub_s : A ⊆ s := by
+      intro x hx
+      exact (Finset.mem_erase.mp (Finset.mem_filter.mp hx).1).2
+    have hB_sub_s : B ⊆ s := by
+      intro x hx
+      exact (Finset.mem_erase.mp (Finset.mem_filter.mp hx).1).2
+    have hpart : A.card + B.card = (s.erase (v : α)).card := by
+      dsimp [A, B]
+      simpa using
+        (Finset.card_filter_add_card_filter_not (s := s.erase (v : α))
+          (p := G.Adj (v : α)))
+    have hA_lt : A.card < N₁ := by
+      by_contra hnot
+      have hAlarge : N₁ ≤ A.card := le_of_not_gt hnot
+      rcases hleft G A hAlarge with hclique | hindep
+      · rcases hclique with ⟨t, htA, hct⟩
+        exact hdone (Or.inl ⟨insert (v : α) t, ?_, ?_⟩)
+        · intro x hx
+          rcases Finset.mem_insert.mp hx with rfl | hx
+          · exact v.2
+          · exact hA_sub_s (htA hx)
+        · exact hct.insert (fun w hw => (Finset.mem_filter.mp (htA hw)).2)
+      · rcases hindep with ⟨t, htA, hit⟩
+        exact hdone (Or.inr ⟨t, subset_trans htA hA_sub_s, hit⟩)
+    have hB_lt : B.card < N₂ := by
+      by_contra hnot
+      have hBlarge : N₂ ≤ B.card := le_of_not_gt hnot
+      rcases hright G B hBlarge with hclique | hindep
+      · rcases hclique with ⟨t, htB, hct⟩
+        exact hdone (Or.inl ⟨t, subset_trans htB hB_sub_s, hct⟩)
+      · rcases hindep with ⟨t, htB, hit⟩
+        exact hdone (Or.inr ⟨insert (v : α) t, ?_,
+          indepInsertOfSubsetFilter_succ (G := G) (a := (v : α)) (s := s) htB hit⟩)
+        intro x hx
+        rcases Finset.mem_insert.mp hx with rfl | hx
+        · exact v.2
+        · exact hB_sub_s (htB hx)
+    have hErase : (s.erase (v : α)).card = s.card - 1 :=
+      Finset.card_erase_of_mem v.2
+    have hAeq : A.card = N₁ - 1 := by omega
+    have hA_filter : s.filter (fun w => G.Adj (v : α) w) = A := by
+      ext x
+      by_cases hxv : x = (v : α)
+      · subst x
+        simp [A]
+      · simp [A, hxv]
+    calc
+      (G.induce (s : Set α)).degree v =
+          (s.filter fun w => G.Adj (v : α) w).card :=
+        degree_induce_finset_eq_card_filter_adj G s v
+      _ = A.card := by rw [hA_filter]
+      _ = N₁ - 1 := hAeq
+  exact hregular G s hcard hdegree
+
+/-- Monotone form of `step_of_extremal_regular`. -/
+theorem HasCliqueOrIndepSetBound.step_of_extremal_regular_mono
+    {a b N₁ N₂ N : ℕ} (hN₁ : 0 < N₁) (hN₂ : 0 < N₂)
+    (hleft : HasCliqueOrIndepSetBound a (b + 1) N₁)
+    (hright : HasCliqueOrIndepSetBound (a + 1) b N₂)
+    (hregular :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = N₁ + N₂ - 1 →
+        (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = N₁ - 1) →
+        (∃ t ⊆ s, G.IsNClique (a + 1) t) ∨
+          ∃ t ⊆ s, G.IsNIndepSet (b + 1) t)
+    (hN : N₁ + N₂ - 1 ≤ N) :
+    HasCliqueOrIndepSetBound (a + 1) (b + 1) N :=
+  HasCliqueOrIndepSetBound.mono
+    (HasCliqueOrIndepSetBound.step_of_extremal_regular hN₁ hN₂ hleft hright hregular) hN
+
 /-- If a set has neither side of a Ramsey alternative, its cardinality is below the bound. -/
 theorem card_lt_of_no_clique_or_indep
     {a b N : ℕ} (h : HasCliqueOrIndepSetBound a b N)
@@ -3014,6 +3116,84 @@ theorem hasCliqueOrIndepSetBound_10_11_of_ramseyElevenRefinedSmallTable
 theorem hasCliqueOrIndepSetBound_11_11_of_ramseyElevenRefinedSmallTable
     (h : RamseyElevenRefinedSmallTable) : HasCliqueOrIndepSetBound 11 11 120819 :=
   (ramseyElevenRefinedSmallTable_high_row_bounds h).2.2
+
+/--
+Focused two-entry frontier table for the last `R(10,11)` step.  These are the exact predecessor
+obligations used by the refined route immediately before the final `R(10,11)` recurrence.
+-/
+structure RamseyElevenFrontierTable : Prop where
+  r9_11 : HasCliqueOrIndepSetBound 9 11 28575
+  r10_10 : HasCliqueOrIndepSetBound 10 10 31835
+
+/--
+If the regular extremal case at the refined `R(10,11)` frontier is excluded, the generic
+`step_of_extremal_regular` recurrence saves one more vertex, lowering `60410` to `60409`.
+-/
+theorem hasCliqueOrIndepSetBound_10_11_of_ramseyElevenFrontierTable_noRegular60409
+    (h : RamseyElevenFrontierTable)
+    (hregular :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 60409 →
+        (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 28574) →
+        (∃ t ⊆ s, G.IsNClique 10 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 11 t) :
+    HasCliqueOrIndepSetBound 10 11 60409 := by
+  refine HasCliqueOrIndepSetBound.step_of_extremal_regular
+    (a := 9) (b := 10) (N₁ := 28575) (N₂ := 31835)
+    (by decide) (by decide) h.r9_11 h.r10_10 ?_
+  intro α _ G s hcard hdegree
+  exact hregular G s (by simpa using hcard) (by
+    intro v
+    simpa using hdegree v)
+
+/-- Arithmetic gap after the regular-extremal one-vertex saving at the refined frontier. -/
+theorem ramseyElevenFrontierTable_noRegular60409_remaining_gap :
+    60409 - 22528 = 37881 ∧ 60410 - 60409 = 1 := by
+  decide
+
+/--
+Two-entry target table isolating the exact high-row finite data that would close the `m = 11`
+finite-field threshold by the existing recurrence grid.  It keeps the current refined `R(8,11)`
+predecessor size and asks for the last symmetric predecessor `R(9,10)` to be `3290`.
+-/
+structure RamseyElevenNarrowTargetTable : Prop where
+  r8_11 : HasCliqueOrIndepSetBound 8 11 12658
+  r9_10 : HasCliqueOrIndepSetBound 9 10 3290
+
+/--
+The focused two-entry table is strictly enough for the target obstruction:
+`R(8,11) <= 12658` and `R(9,10) <= 3290` propagate to `R(10,11) <= 22528`.
+-/
+theorem hasCliqueOrIndepSetBound_10_11_of_ramseyElevenNarrowTargetTable
+    (h : RamseyElevenNarrowTargetTable) :
+    HasCliqueOrIndepSetBound 10 11 22528 := by
+  have h9_11 : HasCliqueOrIndepSetBound 9 11 15947 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 8) (b := 10)
+      (N₁ := 12658) (N₂ := 3290) (N := 15947)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h.r8_11 h.r9_10 (by norm_num)
+  have h10_10 : HasCliqueOrIndepSetBound 10 10 6579 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 9) (b := 9)
+      (N₁ := 3290) (N₂ := 3290) (N := 6579)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h.r9_10 (HasCliqueOrIndepSetBound.symm h.r9_10) (by norm_num)
+  have h10_11 : HasCliqueOrIndepSetBound 10 11 22526 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 9) (b := 10)
+      (N₁ := 15947) (N₂ := 6579) (N := 22526)
+      (by decide) (by decide) h9_11 h10_10 (by norm_num)
+  exact HasCliqueOrIndepSetBound.mono h10_11 (by decide : 22526 ≤ 22528)
+
+/--
+Arithmetic for the focused target table: the current refined `R(9,10)` predecessor `15918` must be
+lowered by `12628` to reach the isolated `3290` threshold, which then leaves two vertices of slack
+against the `22528` target.  Raising that predecessor to `3291` would overshoot this route by
+three vertices.
+-/
+theorem ramseyElevenNarrowTargetTable_arithmetic_gap :
+    15918 - 3290 = 12628 ∧
+      22528 - 22526 = 2 ∧
+        ((12658 + 3291) + (3291 + 3291)) - 22528 = 3 ∧
+          60410 - 22528 = 37882 := by
+  decide
 
 /--
 The finite-field `m = 11` selector would follow from the exact off-diagonal threshold needed by
