@@ -34353,6 +34353,943 @@ theorem
 end FirstBitTerminalTernarySourceCollisionRefinementPublicAPI
 
 /--
+Target classes for the parity-tetrahedron incidence table: the mixed target `M`, one of the
+four edge targets `Eᵢ`, or the face target `F`.
+-/
+inductive FirstBitTerminalParityTetrahedronTargetType : Type
+  | mixed
+  | edge (index : Fin 4)
+  | face
+
+/-- Exhaust the parity-tetrahedron target table into its `M/Eᵢ/F` rows. -/
+theorem firstBitTerminalParityTetrahedronTargetType_cases
+    (targetType : FirstBitTerminalParityTetrahedronTargetType) :
+    targetType = .mixed ∨ (∃ index : Fin 4, targetType = .edge index) ∨
+      targetType = .face := by
+  cases targetType with
+  | mixed => exact Or.inl rfl
+  | edge index => exact Or.inr (Or.inl ⟨index, rfl⟩)
+  | face => exact Or.inr (Or.inr rfl)
+
+/--
+High-outdegree incidence profiles exposed by the parity-tetrahedron layer.  The all-ternary
+case records the `3,3,3,3` source profile; the pair row records the two edge rows of the
+pair profile table.
+-/
+inductive FirstBitTerminalParityTetrahedronHighOutdegreeProfile : Type
+  | allTernaryThreeThreeThreeThree
+  | pairProfile (leftEdge rightEdge : Fin 4)
+
+/-- Exhaust the high-outdegree incidence profile table. -/
+theorem firstBitTerminalParityTetrahedronHighOutdegreeProfile_cases
+    (profile : FirstBitTerminalParityTetrahedronHighOutdegreeProfile) :
+    profile = .allTernaryThreeThreeThreeThree ∨
+      ∃ leftEdge rightEdge : Fin 4, profile = .pairProfile leftEdge rightEdge := by
+  cases profile with
+  | allTernaryThreeThreeThreeThree => exact Or.inl rfl
+  | pairProfile leftEdge rightEdge => exact Or.inr ⟨leftEdge, rightEdge, rfl⟩
+
+/-- The two phases of the all-edge ternary target graph. -/
+inductive FirstBitTerminalAllEdgeTernaryPhase : Type
+  | star
+  | triangle
+
+/-- Exhaust the all-edge ternary phase split. -/
+theorem firstBitTerminalAllEdgeTernaryPhase_cases
+    (phase : FirstBitTerminalAllEdgeTernaryPhase) :
+    phase = .star ∨ phase = .triangle := by
+  cases phase with
+  | star => exact Or.inl rfl
+  | triangle => exact Or.inr rfl
+
+/-- A target-type assignment realizes only the advertised `M/Eᵢ/F` rows. -/
+def firstBitTerminalParityTetrahedronTargetTypeTable
+    {Core Target : Type*} (targets : Core → Finset Target)
+    (targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType) : Prop :=
+  ∀ core : Core, ∀ target : Target, target ∈ targets core →
+    targetType core target = .mixed ∨
+      (∃ index : Fin 4, targetType core target = .edge index) ∨
+        targetType core target = .face
+
+/--
+Parity-tetrahedron rigidity facade.  It keeps the four-vertex tetrahedron certificate,
+the target table, and the incidence-to-rigidity consequence available as assumptions for
+the downstream symmetric ternary phase layer.
+-/
+structure FirstBitTerminalParityTetrahedronRigidityFacade
+    {Core Tetrahedron Vertex Target : Type*}
+    (tetrahedra : Core → Finset Tetrahedron)
+    (verticesOf : Core → Tetrahedron → Finset Vertex)
+    (targets : Core → Finset Target)
+    (targetsOfTetrahedron : Core → Tetrahedron → Finset Target)
+    (targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType)
+    (tetrahedronIncident : Core → Tetrahedron → Vertex → Target → Prop)
+    (rigidTarget : Core → Tetrahedron → Target → Prop)
+    (parityTetrahedronRigidity targetTypeTable : Prop) : Prop where
+  tetrahedron_card_fourCert :
+    ∀ core : Core, ∀ tetrahedron : Tetrahedron, tetrahedron ∈ tetrahedra core →
+      (verticesOf core tetrahedron).card = 4
+  tetrahedron_targets_subsetCert :
+    ∀ core : Core, ∀ tetrahedron : Tetrahedron, tetrahedron ∈ tetrahedra core →
+      targetsOfTetrahedron core tetrahedron ⊆ targets core
+  targetType_tableCert :
+    firstBitTerminalParityTetrahedronTargetTypeTable targets targetType
+  incident_memCert :
+    ∀ core : Core, ∀ tetrahedron : Tetrahedron, ∀ vertex : Vertex, ∀ target : Target,
+      tetrahedron ∈ tetrahedra core → tetrahedronIncident core tetrahedron vertex target →
+        vertex ∈ verticesOf core tetrahedron ∧
+          target ∈ targetsOfTetrahedron core tetrahedron
+  rigid_targetCert :
+    ∀ core : Core, ∀ tetrahedron : Tetrahedron, ∀ target : Target,
+      tetrahedron ∈ tetrahedra core → target ∈ targetsOfTetrahedron core tetrahedron →
+        rigidTarget core tetrahedron target
+  parityTetrahedronRigidityCert : parityTetrahedronRigidity
+  targetTypeTableCert : targetTypeTable
+
+/-- Build the parity-tetrahedron rigidity facade from explicit certificates. -/
+theorem firstBitTerminalParityTetrahedronRigidityFacade_of_parts
+    {Core Tetrahedron Vertex Target : Type*}
+    {tetrahedra : Core → Finset Tetrahedron}
+    {verticesOf : Core → Tetrahedron → Finset Vertex}
+    {targets : Core → Finset Target}
+    {targetsOfTetrahedron : Core → Tetrahedron → Finset Target}
+    {targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType}
+    {tetrahedronIncident : Core → Tetrahedron → Vertex → Target → Prop}
+    {rigidTarget : Core → Tetrahedron → Target → Prop}
+    {parityTetrahedronRigidity targetTypeTable : Prop}
+    (hcard :
+      ∀ core : Core, ∀ tetrahedron : Tetrahedron, tetrahedron ∈ tetrahedra core →
+        (verticesOf core tetrahedron).card = 4)
+    (hsubset :
+      ∀ core : Core, ∀ tetrahedron : Tetrahedron, tetrahedron ∈ tetrahedra core →
+        targetsOfTetrahedron core tetrahedron ⊆ targets core)
+    (htable : firstBitTerminalParityTetrahedronTargetTypeTable targets targetType)
+    (hincident :
+      ∀ core : Core, ∀ tetrahedron : Tetrahedron, ∀ vertex : Vertex, ∀ target : Target,
+        tetrahedron ∈ tetrahedra core → tetrahedronIncident core tetrahedron vertex target →
+          vertex ∈ verticesOf core tetrahedron ∧
+            target ∈ targetsOfTetrahedron core tetrahedron)
+    (hrigid :
+      ∀ core : Core, ∀ tetrahedron : Tetrahedron, ∀ target : Target,
+        tetrahedron ∈ tetrahedra core → target ∈ targetsOfTetrahedron core tetrahedron →
+          rigidTarget core tetrahedron target)
+    (hparity : parityTetrahedronRigidity) (hmarker : targetTypeTable) :
+    FirstBitTerminalParityTetrahedronRigidityFacade tetrahedra verticesOf targets
+      targetsOfTetrahedron targetType tetrahedronIncident rigidTarget
+      parityTetrahedronRigidity targetTypeTable where
+  tetrahedron_card_fourCert := hcard
+  tetrahedron_targets_subsetCert := hsubset
+  targetType_tableCert := htable
+  incident_memCert := hincident
+  rigid_targetCert := hrigid
+  parityTetrahedronRigidityCert := hparity
+  targetTypeTableCert := hmarker
+
+section FirstBitTerminalParityTetrahedronRigidityFacade
+
+variable {Core Tetrahedron Vertex Target : Type*}
+variable {tetrahedra : Core → Finset Tetrahedron}
+variable {verticesOf : Core → Tetrahedron → Finset Vertex}
+variable {targets : Core → Finset Target}
+variable {targetsOfTetrahedron : Core → Tetrahedron → Finset Target}
+variable {targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType}
+variable {tetrahedronIncident : Core → Tetrahedron → Vertex → Target → Prop}
+variable {rigidTarget : Core → Tetrahedron → Target → Prop}
+variable {parityTetrahedronRigidity targetTypeTable : Prop}
+
+variable (h :
+  FirstBitTerminalParityTetrahedronRigidityFacade tetrahedra verticesOf targets
+    targetsOfTetrahedron targetType tetrahedronIncident rigidTarget
+    parityTetrahedronRigidity targetTypeTable)
+
+/-- Project the four-vertex parity tetrahedron certificate. -/
+theorem FirstBitTerminalParityTetrahedronRigidityFacade.tetrahedron_card_four
+    {core : Core} {tetrahedron : Tetrahedron} (htet : tetrahedron ∈ tetrahedra core) :
+    (verticesOf core tetrahedron).card = 4 :=
+  h.tetrahedron_card_fourCert core tetrahedron htet
+
+/-- Project the target-table certificate for a target. -/
+theorem FirstBitTerminalParityTetrahedronRigidityFacade.targetType_cases
+    {core : Core} {target : Target} (htarget : target ∈ targets core) :
+    targetType core target = .mixed ∨
+      (∃ index : Fin 4, targetType core target = .edge index) ∨
+        targetType core target = .face :=
+  h.targetType_tableCert core target htarget
+
+/-- Project the incidence support membership supplied by parity-tetrahedron rigidity. -/
+theorem FirstBitTerminalParityTetrahedronRigidityFacade.incident_mem
+    {core : Core} {tetrahedron : Tetrahedron} {vertex : Vertex} {target : Target}
+    (htet : tetrahedron ∈ tetrahedra core)
+    (hincident : tetrahedronIncident core tetrahedron vertex target) :
+    vertex ∈ verticesOf core tetrahedron ∧ target ∈ targetsOfTetrahedron core tetrahedron :=
+  h.incident_memCert core tetrahedron vertex target htet hincident
+
+/-- Project the rigid target consequence for a tetrahedron target. -/
+theorem FirstBitTerminalParityTetrahedronRigidityFacade.rigid_target
+    {core : Core} {tetrahedron : Tetrahedron} {target : Target}
+    (htet : tetrahedron ∈ tetrahedra core)
+    (htarget : target ∈ targetsOfTetrahedron core tetrahedron) :
+    rigidTarget core tetrahedron target :=
+  h.rigid_targetCert core tetrahedron target htet htarget
+
+/-- Project the parity-tetrahedron rigidity marker. -/
+theorem FirstBitTerminalParityTetrahedronRigidityFacade.to_parityTetrahedronRigidity :
+    parityTetrahedronRigidity :=
+  h.parityTetrahedronRigidityCert
+
+/-- Project the target-type table marker. -/
+theorem FirstBitTerminalParityTetrahedronRigidityFacade.to_targetTypeTable :
+    targetTypeTable :=
+  h.targetTypeTableCert
+
+end FirstBitTerminalParityTetrahedronRigidityFacade
+
+/--
+Target-incidence facade for the source side of the parity tetrahedron.  High outdegree sources
+must hit a target, and every hit target is classified by the `M/Eᵢ/F` table.
+-/
+structure FirstBitTerminalParityTetrahedronTargetIncidenceFacade
+    {Core SourceAtom Target : Type*}
+    (sourceAtoms : Core → Finset SourceAtom)
+    (targets : Core → Finset Target)
+    (targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType)
+    (sourceIncident : Core → SourceAtom → Target → Prop)
+    (sourceOutdegree : Core → SourceAtom → ℕ)
+    (parityTargetIncidence highOutdegreeTargetIncidence : Prop) : Prop where
+  source_incident_target_memCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ target : Target,
+      sourceIncident core source target →
+        source ∈ sourceAtoms core ∧ target ∈ targets core
+  high_outdegree_has_incident_targetCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      3 ≤ sourceOutdegree core source →
+        ∃ target : Target, target ∈ targets core ∧ sourceIncident core source target
+  incident_targetType_casesCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ target : Target,
+      sourceIncident core source target →
+        targetType core target = .mixed ∨
+          (∃ index : Fin 4, targetType core target = .edge index) ∨
+            targetType core target = .face
+  parityTargetIncidenceCert : parityTargetIncidence
+  highOutdegreeTargetIncidenceCert : highOutdegreeTargetIncidence
+
+/-- Build the source-target incidence facade from explicit certificates. -/
+theorem firstBitTerminalParityTetrahedronTargetIncidenceFacade_of_parts
+    {Core SourceAtom Target : Type*}
+    {sourceAtoms : Core → Finset SourceAtom}
+    {targets : Core → Finset Target}
+    {targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType}
+    {sourceIncident : Core → SourceAtom → Target → Prop}
+    {sourceOutdegree : Core → SourceAtom → ℕ}
+    {parityTargetIncidence highOutdegreeTargetIncidence : Prop}
+    (hmem :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ target : Target,
+        sourceIncident core source target →
+          source ∈ sourceAtoms core ∧ target ∈ targets core)
+    (hhigh :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        3 ≤ sourceOutdegree core source →
+          ∃ target : Target, target ∈ targets core ∧ sourceIncident core source target)
+    (htable :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ target : Target,
+        sourceIncident core source target →
+          targetType core target = .mixed ∨
+            (∃ index : Fin 4, targetType core target = .edge index) ∨
+              targetType core target = .face)
+    (hincidence : parityTargetIncidence) (hmarker : highOutdegreeTargetIncidence) :
+    FirstBitTerminalParityTetrahedronTargetIncidenceFacade sourceAtoms targets targetType
+      sourceIncident sourceOutdegree parityTargetIncidence highOutdegreeTargetIncidence where
+  source_incident_target_memCert := hmem
+  high_outdegree_has_incident_targetCert := hhigh
+  incident_targetType_casesCert := htable
+  parityTargetIncidenceCert := hincidence
+  highOutdegreeTargetIncidenceCert := hmarker
+
+section FirstBitTerminalParityTetrahedronTargetIncidenceFacade
+
+variable {Core SourceAtom Target : Type*}
+variable {sourceAtoms : Core → Finset SourceAtom}
+variable {targets : Core → Finset Target}
+variable {targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType}
+variable {sourceIncident : Core → SourceAtom → Target → Prop}
+variable {sourceOutdegree : Core → SourceAtom → ℕ}
+variable {parityTargetIncidence highOutdegreeTargetIncidence : Prop}
+
+variable (h :
+  FirstBitTerminalParityTetrahedronTargetIncidenceFacade sourceAtoms targets targetType
+    sourceIncident sourceOutdegree parityTargetIncidence highOutdegreeTargetIncidence)
+
+/-- Project membership for a source-target incidence. -/
+theorem FirstBitTerminalParityTetrahedronTargetIncidenceFacade.incident_mem
+    {core : Core} {source : SourceAtom} {target : Target}
+    (hincident : sourceIncident core source target) :
+    source ∈ sourceAtoms core ∧ target ∈ targets core :=
+  h.source_incident_target_memCert core source target hincident
+
+/-- A high-outdegree source has an incident parity-tetrahedron target. -/
+theorem FirstBitTerminalParityTetrahedronTargetIncidenceFacade.high_outdegree_has_incident_target
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hdegree : 3 ≤ sourceOutdegree core source) :
+    ∃ target : Target, target ∈ targets core ∧ sourceIncident core source target :=
+  h.high_outdegree_has_incident_targetCert core source hsource hdegree
+
+/-- Project the `M/Eᵢ/F` classification for an incident target. -/
+theorem FirstBitTerminalParityTetrahedronTargetIncidenceFacade.incident_targetType_cases
+    {core : Core} {source : SourceAtom} {target : Target}
+    (hincident : sourceIncident core source target) :
+    targetType core target = .mixed ∨
+      (∃ index : Fin 4, targetType core target = .edge index) ∨
+        targetType core target = .face :=
+  h.incident_targetType_casesCert core source target hincident
+
+/-- Project the target-incidence marker. -/
+theorem FirstBitTerminalParityTetrahedronTargetIncidenceFacade.to_parityTargetIncidence :
+    parityTargetIncidence :=
+  h.parityTargetIncidenceCert
+
+/-- Project the high-outdegree target-incidence marker. -/
+theorem
+    FirstBitTerminalParityTetrahedronTargetIncidenceFacade.to_highOutdegreeTargetIncidence :
+    highOutdegreeTargetIncidence :=
+  h.highOutdegreeTargetIncidenceCert
+
+end FirstBitTerminalParityTetrahedronTargetIncidenceFacade
+
+/--
+High-outdegree incidence patterns for the parity tetrahedron.  The facade records both the
+all-ternary `3,3,3,3` four-target pattern and the two-edge pair-profile pattern.
+-/
+structure FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade
+    {Core SourceAtom Target : Type*}
+    (sourceAtoms : Core → Finset SourceAtom)
+    (targets : Core → Finset Target)
+    (targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType)
+    (sourceIncident : Core → SourceAtom → Target → Prop)
+    (profileOf : Core → SourceAtom → FirstBitTerminalParityTetrahedronHighOutdegreeProfile)
+    (allTernary3333IncidenceProfiles pairIncidenceProfiles : Prop) : Prop where
+  profile_casesCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      profileOf core source = .allTernaryThreeThreeThreeThree ∨
+        ∃ leftEdge rightEdge : Fin 4,
+          profileOf core source = .pairProfile leftEdge rightEdge
+  allTernary3333_four_incident_targetsCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      profileOf core source = .allTernaryThreeThreeThreeThree →
+        ∃ profileTargets : Finset Target, profileTargets ⊆ targets core ∧
+          profileTargets.card = 4 ∧
+            ∀ target : Target, target ∈ profileTargets → sourceIncident core source target
+  pair_profile_two_edge_targetsCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ leftEdge rightEdge : Fin 4,
+      source ∈ sourceAtoms core → profileOf core source = .pairProfile leftEdge rightEdge →
+        ∃ leftTarget rightTarget : Target,
+          leftTarget ∈ targets core ∧ rightTarget ∈ targets core ∧ leftTarget ≠ rightTarget ∧
+            sourceIncident core source leftTarget ∧ sourceIncident core source rightTarget ∧
+              targetType core leftTarget = .edge leftEdge ∧
+                targetType core rightTarget = .edge rightEdge
+  allTernary3333IncidenceProfilesCert : allTernary3333IncidenceProfiles
+  pairIncidenceProfilesCert : pairIncidenceProfiles
+
+/-- Build the high-outdegree incidence-pattern facade from explicit certificates. -/
+theorem firstBitTerminalTernaryHighOutdegreeIncidencePatternFacade_of_parts
+    {Core SourceAtom Target : Type*}
+    {sourceAtoms : Core → Finset SourceAtom}
+    {targets : Core → Finset Target}
+    {targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType}
+    {sourceIncident : Core → SourceAtom → Target → Prop}
+    {profileOf : Core → SourceAtom → FirstBitTerminalParityTetrahedronHighOutdegreeProfile}
+    {allTernary3333IncidenceProfiles pairIncidenceProfiles : Prop}
+    (hcases :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        profileOf core source = .allTernaryThreeThreeThreeThree ∨
+          ∃ leftEdge rightEdge : Fin 4,
+            profileOf core source = .pairProfile leftEdge rightEdge)
+    (hall :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        profileOf core source = .allTernaryThreeThreeThreeThree →
+          ∃ profileTargets : Finset Target, profileTargets ⊆ targets core ∧
+            profileTargets.card = 4 ∧
+              ∀ target : Target, target ∈ profileTargets → sourceIncident core source target)
+    (hpair :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ leftEdge rightEdge : Fin 4,
+        source ∈ sourceAtoms core → profileOf core source = .pairProfile leftEdge rightEdge →
+          ∃ leftTarget rightTarget : Target,
+            leftTarget ∈ targets core ∧ rightTarget ∈ targets core ∧ leftTarget ≠ rightTarget ∧
+              sourceIncident core source leftTarget ∧ sourceIncident core source rightTarget ∧
+                targetType core leftTarget = .edge leftEdge ∧
+                  targetType core rightTarget = .edge rightEdge)
+    (hallmarker : allTernary3333IncidenceProfiles)
+    (hpairmarker : pairIncidenceProfiles) :
+    FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade sourceAtoms targets targetType
+      sourceIncident profileOf allTernary3333IncidenceProfiles pairIncidenceProfiles where
+  profile_casesCert := hcases
+  allTernary3333_four_incident_targetsCert := hall
+  pair_profile_two_edge_targetsCert := hpair
+  allTernary3333IncidenceProfilesCert := hallmarker
+  pairIncidenceProfilesCert := hpairmarker
+
+section FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade
+
+variable {Core SourceAtom Target : Type*}
+variable {sourceAtoms : Core → Finset SourceAtom}
+variable {targets : Core → Finset Target}
+variable {targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType}
+variable {sourceIncident : Core → SourceAtom → Target → Prop}
+variable {profileOf : Core → SourceAtom → FirstBitTerminalParityTetrahedronHighOutdegreeProfile}
+variable {allTernary3333IncidenceProfiles pairIncidenceProfiles : Prop}
+
+variable (h :
+  FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade sourceAtoms targets targetType
+    sourceIncident profileOf allTernary3333IncidenceProfiles pairIncidenceProfiles)
+
+/-- Project the high-outdegree incidence profile cases. -/
+theorem FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade.profile_cases
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core) :
+    profileOf core source = .allTernaryThreeThreeThreeThree ∨
+      ∃ leftEdge rightEdge : Fin 4, profileOf core source = .pairProfile leftEdge rightEdge :=
+  h.profile_casesCert core source hsource
+
+/-- Project the all-ternary `3,3,3,3` four-target incidence pattern. -/
+theorem
+    FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade.allTernary3333_four_incident_targets
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hprofile : profileOf core source = .allTernaryThreeThreeThreeThree) :
+    ∃ profileTargets : Finset Target, profileTargets ⊆ targets core ∧
+      profileTargets.card = 4 ∧
+        ∀ target : Target, target ∈ profileTargets → sourceIncident core source target :=
+  h.allTernary3333_four_incident_targetsCert core source hsource hprofile
+
+/-- Project the pair-profile two-edge incidence pattern. -/
+theorem
+    FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade.pair_profile_two_edge_targets
+    {core : Core} {source : SourceAtom} {leftEdge rightEdge : Fin 4}
+    (hsource : source ∈ sourceAtoms core)
+    (hprofile : profileOf core source = .pairProfile leftEdge rightEdge) :
+    ∃ leftTarget rightTarget : Target,
+      leftTarget ∈ targets core ∧ rightTarget ∈ targets core ∧ leftTarget ≠ rightTarget ∧
+        sourceIncident core source leftTarget ∧ sourceIncident core source rightTarget ∧
+          targetType core leftTarget = .edge leftEdge ∧
+            targetType core rightTarget = .edge rightEdge :=
+  h.pair_profile_two_edge_targetsCert core source leftEdge rightEdge hsource hprofile
+
+/-- Project the all-ternary `3,3,3,3` incidence marker. -/
+theorem
+    FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade.to_allTernary3333IncidenceProfiles :
+    allTernary3333IncidenceProfiles :=
+  h.allTernary3333IncidenceProfilesCert
+
+/-- Project the pair-incidence-profile marker. -/
+theorem FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade.to_pairIncidenceProfiles :
+    pairIncidenceProfiles :=
+  h.pairIncidenceProfilesCert
+
+end FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade
+
+/--
+All-edge ternary phase split.  Every all-edge collision is either in the star phase, with a
+distinguished center edge, or in the triangle phase, with the triangle targets equal to all
+edge targets.
+-/
+structure FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade
+    {Core SourceAtom Target Collision : Type*}
+    (allEdgeTargets : Core → SourceAtom → Collision → Finset Target)
+    (allEdgeCollision : Core → SourceAtom → Collision → Prop)
+    (starCenter : Core → SourceAtom → Collision → Target)
+    (triangleTargets : Core → SourceAtom → Collision → Finset Target)
+    (starPhase trianglePhase : Core → SourceAtom → Collision → Prop)
+    (allEdgeStarTrianglePhaseSplit : Prop) : Prop where
+  allEdgeTargets_card_threeCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      allEdgeCollision core source collision →
+        (allEdgeTargets core source collision).card = 3
+  phase_splitCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      allEdgeCollision core source collision →
+        starPhase core source collision ∨ trianglePhase core source collision
+  star_center_memCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      allEdgeCollision core source collision → starPhase core source collision →
+        starCenter core source collision ∈ allEdgeTargets core source collision
+  triangle_targets_eqCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      allEdgeCollision core source collision → trianglePhase core source collision →
+        triangleTargets core source collision = allEdgeTargets core source collision
+  allEdgeStarTrianglePhaseSplitCert : allEdgeStarTrianglePhaseSplit
+
+/-- Build the all-edge star/triangle phase split facade from explicit certificates. -/
+theorem firstBitTerminalAllEdgeStarTrianglePhaseSplitFacade_of_parts
+    {Core SourceAtom Target Collision : Type*}
+    {allEdgeTargets : Core → SourceAtom → Collision → Finset Target}
+    {allEdgeCollision : Core → SourceAtom → Collision → Prop}
+    {starCenter : Core → SourceAtom → Collision → Target}
+    {triangleTargets : Core → SourceAtom → Collision → Finset Target}
+    {starPhase trianglePhase : Core → SourceAtom → Collision → Prop}
+    {allEdgeStarTrianglePhaseSplit : Prop}
+    (hcard :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        allEdgeCollision core source collision →
+          (allEdgeTargets core source collision).card = 3)
+    (hsplit :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        allEdgeCollision core source collision →
+          starPhase core source collision ∨ trianglePhase core source collision)
+    (hstar :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        allEdgeCollision core source collision → starPhase core source collision →
+          starCenter core source collision ∈ allEdgeTargets core source collision)
+    (htriangle :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        allEdgeCollision core source collision → trianglePhase core source collision →
+          triangleTargets core source collision = allEdgeTargets core source collision)
+    (hmarker : allEdgeStarTrianglePhaseSplit) :
+    FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade allEdgeTargets allEdgeCollision
+      starCenter triangleTargets starPhase trianglePhase allEdgeStarTrianglePhaseSplit where
+  allEdgeTargets_card_threeCert := hcard
+  phase_splitCert := hsplit
+  star_center_memCert := hstar
+  triangle_targets_eqCert := htriangle
+  allEdgeStarTrianglePhaseSplitCert := hmarker
+
+section FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade
+
+variable {Core SourceAtom Target Collision : Type*}
+variable {allEdgeTargets : Core → SourceAtom → Collision → Finset Target}
+variable {allEdgeCollision : Core → SourceAtom → Collision → Prop}
+variable {starCenter : Core → SourceAtom → Collision → Target}
+variable {triangleTargets : Core → SourceAtom → Collision → Finset Target}
+variable {starPhase trianglePhase : Core → SourceAtom → Collision → Prop}
+variable {allEdgeStarTrianglePhaseSplit : Prop}
+
+variable (h :
+  FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade allEdgeTargets allEdgeCollision
+    starCenter triangleTargets starPhase trianglePhase allEdgeStarTrianglePhaseSplit)
+
+/-- Project the all-edge target count. -/
+theorem FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade.allEdgeTargets_card_three
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hcollision : allEdgeCollision core source collision) :
+    (allEdgeTargets core source collision).card = 3 :=
+  h.allEdgeTargets_card_threeCert core source collision hcollision
+
+/-- Project the all-edge star/triangle phase split. -/
+theorem FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade.phase_split
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hcollision : allEdgeCollision core source collision) :
+    starPhase core source collision ∨ trianglePhase core source collision :=
+  h.phase_splitCert core source collision hcollision
+
+/-- Project the star center membership in the all-edge target set. -/
+theorem FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade.star_center_mem
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hcollision : allEdgeCollision core source collision)
+    (hstar : starPhase core source collision) :
+    starCenter core source collision ∈ allEdgeTargets core source collision :=
+  h.star_center_memCert core source collision hcollision hstar
+
+/-- Project the triangle-target identity. -/
+theorem FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade.triangle_targets_eq
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hcollision : allEdgeCollision core source collision)
+    (htriangle : trianglePhase core source collision) :
+    triangleTargets core source collision = allEdgeTargets core source collision :=
+  h.triangle_targets_eqCert core source collision hcollision htriangle
+
+/-- Project the all-edge star/triangle phase split marker. -/
+theorem FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade.to_allEdgeStarTrianglePhaseSplit :
+    allEdgeStarTrianglePhaseSplit :=
+  h.allEdgeStarTrianglePhaseSplitCert
+
+end FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade
+
+/--
+Symmetric all-ternary triangle-phase exclusion.  Once the all-edge phase split is available,
+the symmetric all-ternary condition rules out the triangle phase and therefore forces the
+star phase.
+-/
+structure FirstBitTerminalSymmetricAllTernaryStarPhaseFacade
+    {Core SourceAtom Collision : Type*}
+    (symmetricAllTernary : Core → SourceAtom → Prop)
+    (allEdgeCollision starPhase trianglePhase : Core → SourceAtom → Collision → Prop)
+    (trianglePhaseExcluded symmetricAllTernaryStarPhase : Prop) : Prop where
+  trianglePhase_excludedCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      symmetricAllTernary core source → allEdgeCollision core source collision →
+        ¬ trianglePhase core source collision
+  starPhase_of_splitCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      symmetricAllTernary core source → allEdgeCollision core source collision →
+        starPhase core source collision ∨ trianglePhase core source collision →
+          starPhase core source collision
+  trianglePhaseExcludedCert : trianglePhaseExcluded
+  symmetricAllTernaryStarPhaseCert : symmetricAllTernaryStarPhase
+
+/--
+Build the symmetric all-ternary star-phase facade from a phase split and triangle exclusion.
+-/
+theorem firstBitTerminalSymmetricAllTernaryStarPhaseFacade_of_phaseSplit
+    {Core SourceAtom Collision : Type*}
+    {symmetricAllTernary : Core → SourceAtom → Prop}
+    {allEdgeCollision starPhase trianglePhase : Core → SourceAtom → Collision → Prop}
+    {trianglePhaseExcluded symmetricAllTernaryStarPhase : Prop}
+    (hsplit :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        allEdgeCollision core source collision →
+          starPhase core source collision ∨ trianglePhase core source collision)
+    (hexclude :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        symmetricAllTernary core source → allEdgeCollision core source collision →
+          ¬ trianglePhase core source collision)
+    (htriangle : trianglePhaseExcluded) (hstarMarker : symmetricAllTernaryStarPhase) :
+    FirstBitTerminalSymmetricAllTernaryStarPhaseFacade symmetricAllTernary
+      allEdgeCollision starPhase trianglePhase trianglePhaseExcluded
+      symmetricAllTernaryStarPhase where
+  trianglePhase_excludedCert := hexclude
+  starPhase_of_splitCert := by
+    intro core source collision hsym hall hphase
+    cases hphase with
+    | inl hstar => exact hstar
+    | inr htri => exact False.elim ((hexclude core source collision hsym hall) htri)
+  trianglePhaseExcludedCert := htriangle
+  symmetricAllTernaryStarPhaseCert := hstarMarker
+
+section FirstBitTerminalSymmetricAllTernaryStarPhaseFacade
+
+variable {Core SourceAtom Collision : Type*}
+variable {symmetricAllTernary : Core → SourceAtom → Prop}
+variable {allEdgeCollision starPhase trianglePhase : Core → SourceAtom → Collision → Prop}
+variable {trianglePhaseExcluded symmetricAllTernaryStarPhase : Prop}
+
+variable (h :
+  FirstBitTerminalSymmetricAllTernaryStarPhaseFacade symmetricAllTernary
+    allEdgeCollision starPhase trianglePhase trianglePhaseExcluded symmetricAllTernaryStarPhase)
+
+/-- Project the symmetric all-ternary triangle-phase exclusion. -/
+theorem FirstBitTerminalSymmetricAllTernaryStarPhaseFacade.trianglePhase_excluded
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hsym : symmetricAllTernary core source)
+    (hall : allEdgeCollision core source collision) :
+    ¬ trianglePhase core source collision :=
+  h.trianglePhase_excludedCert core source collision hsym hall
+
+/-- Force the star phase from the all-edge split under symmetric all-ternary hypotheses. -/
+theorem FirstBitTerminalSymmetricAllTernaryStarPhaseFacade.starPhase_of_split
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hsym : symmetricAllTernary core source)
+    (hall : allEdgeCollision core source collision)
+    (hphase : starPhase core source collision ∨ trianglePhase core source collision) :
+    starPhase core source collision :=
+  h.starPhase_of_splitCert core source collision hsym hall hphase
+
+/-- Project the triangle-phase exclusion marker. -/
+theorem FirstBitTerminalSymmetricAllTernaryStarPhaseFacade.to_trianglePhaseExcluded :
+    trianglePhaseExcluded :=
+  h.trianglePhaseExcludedCert
+
+/-- Project the symmetric all-ternary star-phase marker. -/
+theorem FirstBitTerminalSymmetricAllTernaryStarPhaseFacade.to_symmetricAllTernaryStarPhase :
+    symmetricAllTernaryStarPhase :=
+  h.symmetricAllTernaryStarPhaseCert
+
+end FirstBitTerminalSymmetricAllTernaryStarPhaseFacade
+
+/--
+Endpoint handoff connecting the ternary source refinement marker, the partner-split endpoint,
+and the small-atom collision core endpoint assumptions already exported on master.
+-/
+structure FirstBitTerminalParityTetrahedronEndpointHandoffBundle
+    (ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions : Prop) : Prop where
+  ternarySourceCollisionRefinementEndpointCert : ternarySourceCollisionRefinementEndpoint
+  pairCollisionPartnerSplitEndpointCert : pairCollisionPartnerSplitEndpoint
+  remainingSmallAtomCollisionCoreAssumptionsCert : remainingSmallAtomCollisionCoreAssumptions
+
+/-- Build the parity-tetrahedron endpoint handoff from the three upstream endpoint markers. -/
+theorem firstBitTerminalParityTetrahedronEndpointHandoffBundle_of_parts
+    {ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions : Prop}
+    (hsource : ternarySourceCollisionRefinementEndpoint)
+    (hpartner : pairCollisionPartnerSplitEndpoint)
+    (hsmall : remainingSmallAtomCollisionCoreAssumptions) :
+    FirstBitTerminalParityTetrahedronEndpointHandoffBundle
+      ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions where
+  ternarySourceCollisionRefinementEndpointCert := hsource
+  pairCollisionPartnerSplitEndpointCert := hpartner
+  remainingSmallAtomCollisionCoreAssumptionsCert := hsmall
+
+/--
+Public parity-tetrahedron symmetric star-phase API.  It layers the new target-incidence and
+phase-split facades on top of the ternary source collision refinement, partner split, and
+small-atom collision endpoint markers.
+-/
+structure FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI
+    {Core Tetrahedron Vertex SourceAtom Target Collision : Type*}
+    (tetrahedra : Core → Finset Tetrahedron)
+    (verticesOf : Core → Tetrahedron → Finset Vertex)
+    (targets : Core → Finset Target)
+    (targetsOfTetrahedron : Core → Tetrahedron → Finset Target)
+    (targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType)
+    (tetrahedronIncident : Core → Tetrahedron → Vertex → Target → Prop)
+    (rigidTarget : Core → Tetrahedron → Target → Prop)
+    (sourceAtoms : Core → Finset SourceAtom)
+    (sourceIncident : Core → SourceAtom → Target → Prop)
+    (sourceOutdegree : Core → SourceAtom → ℕ)
+    (profileOf : Core → SourceAtom → FirstBitTerminalParityTetrahedronHighOutdegreeProfile)
+    (allEdgeTargets : Core → SourceAtom → Collision → Finset Target)
+    (allEdgeCollision : Core → SourceAtom → Collision → Prop)
+    (starCenter : Core → SourceAtom → Collision → Target)
+    (triangleTargets : Core → SourceAtom → Collision → Finset Target)
+    (starPhase trianglePhase : Core → SourceAtom → Collision → Prop)
+    (symmetricAllTernary : Core → SourceAtom → Prop)
+    (ternarySourceCollision : Core → SourceAtom → Collision → Prop)
+    (ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint : Prop) : Prop where
+  endpointHandoff :
+    FirstBitTerminalParityTetrahedronEndpointHandoffBundle
+      ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions
+  rigidityFacade :
+    FirstBitTerminalParityTetrahedronRigidityFacade tetrahedra verticesOf targets
+      targetsOfTetrahedron targetType tetrahedronIncident rigidTarget
+      parityTetrahedronRigidity targetTypeTable
+  targetIncidenceFacade :
+    FirstBitTerminalParityTetrahedronTargetIncidenceFacade sourceAtoms targets targetType
+      sourceIncident sourceOutdegree parityTargetIncidence highOutdegreeTargetIncidence
+  highOutdegreePatternFacade :
+    FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade sourceAtoms targets targetType
+      sourceIncident profileOf allTernary3333IncidenceProfiles pairIncidenceProfiles
+  phaseSplitFacade :
+    FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade allEdgeTargets allEdgeCollision
+      starCenter triangleTargets starPhase trianglePhase allEdgeStarTrianglePhaseSplit
+  symmetricStarFacade :
+    FirstBitTerminalSymmetricAllTernaryStarPhaseFacade symmetricAllTernary
+      allEdgeCollision starPhase trianglePhase trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint
+  ternarySourceCollision_to_allEdgeCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      symmetricAllTernary core source → ternarySourceCollision core source collision →
+        allEdgeCollision core source collision
+  symmetricAllTernaryStarPhaseEndpointCert : symmetricAllTernaryStarPhaseEndpoint
+
+/-- Build the parity-tetrahedron symmetric star-phase public API from its component facades. -/
+theorem firstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI_of_parts
+    {Core Tetrahedron Vertex SourceAtom Target Collision : Type*}
+    {tetrahedra : Core → Finset Tetrahedron}
+    {verticesOf : Core → Tetrahedron → Finset Vertex}
+    {targets : Core → Finset Target}
+    {targetsOfTetrahedron : Core → Tetrahedron → Finset Target}
+    {targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType}
+    {tetrahedronIncident : Core → Tetrahedron → Vertex → Target → Prop}
+    {rigidTarget : Core → Tetrahedron → Target → Prop}
+    {sourceAtoms : Core → Finset SourceAtom}
+    {sourceIncident : Core → SourceAtom → Target → Prop}
+    {sourceOutdegree : Core → SourceAtom → ℕ}
+    {profileOf : Core → SourceAtom → FirstBitTerminalParityTetrahedronHighOutdegreeProfile}
+    {allEdgeTargets : Core → SourceAtom → Collision → Finset Target}
+    {allEdgeCollision : Core → SourceAtom → Collision → Prop}
+    {starCenter : Core → SourceAtom → Collision → Target}
+    {triangleTargets : Core → SourceAtom → Collision → Finset Target}
+    {starPhase trianglePhase : Core → SourceAtom → Collision → Prop}
+    {symmetricAllTernary : Core → SourceAtom → Prop}
+    {ternarySourceCollision : Core → SourceAtom → Collision → Prop}
+    {ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint : Prop}
+    (hhandoff :
+      FirstBitTerminalParityTetrahedronEndpointHandoffBundle
+        ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+        remainingSmallAtomCollisionCoreAssumptions)
+    (hrigidity :
+      FirstBitTerminalParityTetrahedronRigidityFacade tetrahedra verticesOf targets
+        targetsOfTetrahedron targetType tetrahedronIncident rigidTarget
+        parityTetrahedronRigidity targetTypeTable)
+    (hincidence :
+      FirstBitTerminalParityTetrahedronTargetIncidenceFacade sourceAtoms targets targetType
+        sourceIncident sourceOutdegree parityTargetIncidence highOutdegreeTargetIncidence)
+    (hpatterns :
+      FirstBitTerminalTernaryHighOutdegreeIncidencePatternFacade sourceAtoms targets targetType
+        sourceIncident profileOf allTernary3333IncidenceProfiles pairIncidenceProfiles)
+    (hphase :
+      FirstBitTerminalAllEdgeStarTrianglePhaseSplitFacade allEdgeTargets allEdgeCollision
+        starCenter triangleTargets starPhase trianglePhase allEdgeStarTrianglePhaseSplit)
+    (hstar :
+      FirstBitTerminalSymmetricAllTernaryStarPhaseFacade symmetricAllTernary
+        allEdgeCollision starPhase trianglePhase trianglePhaseExcluded
+        symmetricAllTernaryStarPhaseEndpoint)
+    (hbridge :
+      ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+        symmetricAllTernary core source → ternarySourceCollision core source collision →
+          allEdgeCollision core source collision)
+    (hendpoint : symmetricAllTernaryStarPhaseEndpoint) :
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI tetrahedra verticesOf targets
+      targetsOfTetrahedron targetType tetrahedronIncident rigidTarget sourceAtoms
+      sourceIncident sourceOutdegree profileOf allEdgeTargets allEdgeCollision starCenter
+      triangleTargets starPhase trianglePhase symmetricAllTernary ternarySourceCollision
+      ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint where
+  endpointHandoff := hhandoff
+  rigidityFacade := hrigidity
+  targetIncidenceFacade := hincidence
+  highOutdegreePatternFacade := hpatterns
+  phaseSplitFacade := hphase
+  symmetricStarFacade := hstar
+  ternarySourceCollision_to_allEdgeCert := hbridge
+  symmetricAllTernaryStarPhaseEndpointCert := hendpoint
+
+section FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI
+
+variable {Core Tetrahedron Vertex SourceAtom Target Collision : Type*}
+variable {tetrahedra : Core → Finset Tetrahedron}
+variable {verticesOf : Core → Tetrahedron → Finset Vertex}
+variable {targets : Core → Finset Target}
+variable {targetsOfTetrahedron : Core → Tetrahedron → Finset Target}
+variable {targetType : Core → Target → FirstBitTerminalParityTetrahedronTargetType}
+variable {tetrahedronIncident : Core → Tetrahedron → Vertex → Target → Prop}
+variable {rigidTarget : Core → Tetrahedron → Target → Prop}
+variable {sourceAtoms : Core → Finset SourceAtom}
+variable {sourceIncident : Core → SourceAtom → Target → Prop}
+variable {sourceOutdegree : Core → SourceAtom → ℕ}
+variable {profileOf : Core → SourceAtom → FirstBitTerminalParityTetrahedronHighOutdegreeProfile}
+variable {allEdgeTargets : Core → SourceAtom → Collision → Finset Target}
+variable {allEdgeCollision : Core → SourceAtom → Collision → Prop}
+variable {starCenter : Core → SourceAtom → Collision → Target}
+variable {triangleTargets : Core → SourceAtom → Collision → Finset Target}
+variable {starPhase trianglePhase : Core → SourceAtom → Collision → Prop}
+variable {symmetricAllTernary : Core → SourceAtom → Prop}
+variable {ternarySourceCollision : Core → SourceAtom → Collision → Prop}
+variable {ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+  remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+  parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+  pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+  symmetricAllTernaryStarPhaseEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI tetrahedra verticesOf targets
+    targetsOfTetrahedron targetType tetrahedronIncident rigidTarget sourceAtoms
+    sourceIncident sourceOutdegree profileOf allEdgeTargets allEdgeCollision starCenter
+    triangleTargets starPhase trianglePhase symmetricAllTernary ternarySourceCollision
+    ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+    remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+    parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+    pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+    symmetricAllTernaryStarPhaseEndpoint)
+
+/-- Project the upstream ternary source collision refinement endpoint. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_ternarySourceCollisionRefinementEndpoint :
+    ternarySourceCollisionRefinementEndpoint :=
+  h.endpointHandoff.ternarySourceCollisionRefinementEndpointCert
+
+/-- Project the upstream pair-collision partner split endpoint. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_pairCollisionPartnerSplitEndpoint :
+    pairCollisionPartnerSplitEndpoint :=
+  h.endpointHandoff.pairCollisionPartnerSplitEndpointCert
+
+/-- Project the upstream small-atom collision core endpoint assumptions. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_remainingSmallAtomCollisionCoreAssumptions :
+    remainingSmallAtomCollisionCoreAssumptions :=
+  h.endpointHandoff.remainingSmallAtomCollisionCoreAssumptionsCert
+
+/-- Project the parity-tetrahedron rigidity marker. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_parityTetrahedronRigidity :
+    parityTetrahedronRigidity :=
+  h.rigidityFacade.to_parityTetrahedronRigidity
+
+/-- Project the parity target-incidence marker. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_parityTargetIncidence :
+    parityTargetIncidence :=
+  h.targetIncidenceFacade.to_parityTargetIncidence
+
+/-- Project the high-outdegree target-incidence marker. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_highOutdegreeTargetIncidence :
+    highOutdegreeTargetIncidence :=
+  h.targetIncidenceFacade.to_highOutdegreeTargetIncidence
+
+/-- Project the all-ternary `3,3,3,3` incidence-profile marker. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_allTernary3333IncidenceProfiles :
+    allTernary3333IncidenceProfiles :=
+  h.highOutdegreePatternFacade.to_allTernary3333IncidenceProfiles
+
+/-- Project the pair-incidence-profile marker. -/
+theorem FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_pairIncidenceProfiles :
+    pairIncidenceProfiles :=
+  h.highOutdegreePatternFacade.to_pairIncidenceProfiles
+
+/-- Project the all-edge star/triangle phase split marker. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_allEdgeStarTrianglePhaseSplit :
+    allEdgeStarTrianglePhaseSplit :=
+  h.phaseSplitFacade.to_allEdgeStarTrianglePhaseSplit
+
+/-- Project the triangle-phase exclusion marker. -/
+theorem FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_trianglePhaseExcluded :
+    trianglePhaseExcluded :=
+  h.symmetricStarFacade.to_trianglePhaseExcluded
+
+/-- Project the symmetric all-ternary star-phase endpoint marker. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.to_symmetricAllTernaryStarPhaseEndpoint :
+    symmetricAllTernaryStarPhaseEndpoint :=
+  h.symmetricAllTernaryStarPhaseEndpointCert
+
+/-- Symmetric ternary source collisions enter the all-edge layer. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.allEdge_of_symmetric_ternarySourceCollision
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hsym : symmetricAllTernary core source)
+    (hcollision : ternarySourceCollision core source collision) :
+    allEdgeCollision core source collision :=
+  h.ternarySourceCollision_to_allEdgeCert core source collision hsym hcollision
+
+/-- Symmetric all-ternary ternary source collisions are forced into the star phase. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.starPhase_of_symmetric_ternarySourceCollision
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hsym : symmetricAllTernary core source)
+    (hcollision : ternarySourceCollision core source collision) :
+    starPhase core source collision :=
+  let hall := h.allEdge_of_symmetric_ternarySourceCollision hsym hcollision
+  h.symmetricStarFacade.starPhase_of_split hsym hall
+    (h.phaseSplitFacade.phase_split hall)
+
+/-- Compact marker bundle for downstream target-layer wrappers. -/
+theorem
+    FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI.parityTetrahedronStarPhaseMarkerBundle :
+    ternarySourceCollisionRefinementEndpoint ∧ pairCollisionPartnerSplitEndpoint ∧
+      remainingSmallAtomCollisionCoreAssumptions ∧ parityTetrahedronRigidity ∧
+        targetTypeTable ∧ parityTargetIncidence ∧ highOutdegreeTargetIncidence ∧
+          allTernary3333IncidenceProfiles ∧ pairIncidenceProfiles ∧
+            allEdgeStarTrianglePhaseSplit ∧ trianglePhaseExcluded ∧
+              symmetricAllTernaryStarPhaseEndpoint :=
+  ⟨h.endpointHandoff.ternarySourceCollisionRefinementEndpointCert,
+    h.endpointHandoff.pairCollisionPartnerSplitEndpointCert,
+    h.endpointHandoff.remainingSmallAtomCollisionCoreAssumptionsCert,
+    h.rigidityFacade.to_parityTetrahedronRigidity,
+    h.rigidityFacade.to_targetTypeTable,
+    h.targetIncidenceFacade.to_parityTargetIncidence,
+    h.targetIncidenceFacade.to_highOutdegreeTargetIncidence,
+    h.highOutdegreePatternFacade.to_allTernary3333IncidenceProfiles,
+    h.highOutdegreePatternFacade.to_pairIncidenceProfiles,
+    h.phaseSplitFacade.to_allEdgeStarTrianglePhaseSplit,
+    h.symmetricStarFacade.to_trianglePhaseExcluded,
+    h.symmetricAllTernaryStarPhaseEndpointCert⟩
+
+end FirstBitTerminalParityTetrahedronSymmetricStarPhasePublicAPI
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
