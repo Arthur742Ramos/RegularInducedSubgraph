@@ -5519,6 +5519,69 @@ def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
       G.Adj a b → G.Adj c d →
         ¬ G.Adj a c → ¬ G.Adj a d → ¬ G.Adj b c → ¬ G.Adj b d → False
 
+/-- No induced `C₄` occurs inside the host packet. -/
+def IsInducedC4FreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
+    a ≠ b → a ≠ c → a ≠ d → b ≠ c → b ≠ d → c ≠ d →
+      G.Adj a b → G.Adj b c → G.Adj c d → G.Adj d a →
+        ¬ G.Adj a c → ¬ G.Adj b d → False
+
+/--
+Arithmetic selector for three consecutive classes in a `C₅`/chain blow-up: after deleting at most
+three vertices in total, the two end-class selections and the middle-class selection have matching
+mod-`4` induced degree residues.
+-/
+def HasThreeConsecutiveClassModFourSelector : Prop :=
+  ∀ A B C : ℕ, ∃ x y z : ℕ,
+    x ≤ A ∧ y ≤ B ∧ z ≤ C ∧ A + B + C ≤ x + y + z + 3 ∧
+      (x + z) ≡ y [MOD 4]
+
+/--
+Selector-facing three-class cap: if every mod-`4` aligned selection from capacities `A,B,C` is
+terminally forbidden above size `m`, then the whole consecutive triple has size at most `m + 3`.
+-/
+theorem threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion
+    (hselector : HasThreeConsecutiveClassModFourSelector) {A B C m : ℕ}
+    (hterminal :
+      ∀ x y z : ℕ, x ≤ A → y ≤ B → z ≤ C → (x + z) ≡ y [MOD 4] →
+        x + y + z ≤ m) :
+    A + B + C ≤ m + 3 := by
+  rcases hselector A B C with ⟨x, y, z, hx, hy, hz, htotal, hmod⟩
+  have hsel : x + y + z ≤ m := hterminal x y z hx hy hz hmod
+  omega
+
+/--
+Conditional selector for the corrected `{0,1}`/`{3,2}` complement surface.  A linearly large
+induced-`C₄`-free, `K₄`-free packet with independence at most `m` contains a degree-two regular
+induced selector larger than `m`.
+-/
+def HasCorrectedZeroOneThreeTwoComplementDegreeTwoSelector (C : ℕ) : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    IsInducedC4FreeOn G S →
+      HasCliqueBoundOn G S 3 →
+        HasIndependenceBoundOn G S m →
+          C * m < S.card →
+            ∃ u : Finset (Fin n), u ⊆ S ∧ m < u.card ∧
+              InducesRegularOfDegree G u 2
+
+/--
+The corrected `{0,1}`/`{3,2}` complement residual is linearly capped once the explicit
+degree-two selector is available and terminality forbids every selector larger than `m`.
+-/
+theorem correctedZeroOneThreeTwoComplement_card_le_of_degreeTwo_selector
+    {C n m : ℕ} (hselector : HasCorrectedZeroOneThreeTwoComplementDegreeTwoSelector C)
+    (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (hC4 : IsInducedC4FreeOn G S)
+    (hK4 : HasCliqueBoundOn G S 3)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoDegreeTwo :
+      ∀ u : Finset (Fin n), u ⊆ S → m < u.card → ¬ InducesRegularOfDegree G u 2) :
+    S.card ≤ C * m := by
+  by_contra hnot
+  have hlarge : C * m < S.card := Nat.lt_of_not_ge hnot
+  rcases hselector G hC4 hK4 halpha hlarge with ⟨u, huS, hum, hreg⟩
+  exact False.elim (hnoDegreeTwo u huS hum hreg)
+
 /--
 External import surface for Wagon's chromatic theorem on `2K₂`-free graphs, localized to the finite
 host packet used by the terminal top-edge residual.  It gives a proper coloring of the induced packet
@@ -6121,6 +6184,34 @@ theorem
   hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven_of_modEqSubbucketSelectionFiveFromSeven
     (hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven_of_droppedTailConstancySelectionFiveFromSeven
       hselect)
+
+/--
+The parity-compression terminal selector closes the genuine `j ≥ 7` modular subbucket tail once the
+only remaining large nonhomogeneous-fiber residual is supplied.
+-/
+theorem
+    hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven_of_terminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven
+    (hselect :
+      HasPolynomialCostFixedWitnessTerminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven)
+    (hnonhom : HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven :=
+  hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven_of_droppedTailConstancySelectionFiveFromSeven
+    (hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_terminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven
+      hselect hnonhom)
+
+/--
+Regular exact-subbucket form of the parity-compression reduction: the original terminal regular
+selection tail now depends only on the named large nonhomogeneous-fiber residual.
+-/
+theorem
+    hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven_of_terminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven
+    (hselect :
+      HasPolynomialCostFixedWitnessTerminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven)
+    (hnonhom : HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven :=
+  hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven_of_droppedTailConstancySelectionFiveFromSeven
+    (hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_terminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven
+      hselect hnonhom)
 
 /-- A regular `q = 64` subbucket freezes the dropped tail in the `q = 64` slice. -/
 theorem

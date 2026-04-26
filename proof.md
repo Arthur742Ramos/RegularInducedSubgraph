@@ -6659,6 +6659,12 @@ hereditary surface still not linearly closed is the corrected `{0,1}`/`{3,2}` co
 induced-`C_4`-free, `K_4`-free, independence at most `m`, and no large induced degree-two regular
 selector.
 
+The formal conditional surface is now named
+`HasCorrectedZeroOneThreeTwoComplementDegreeTwoSelector`; under that explicit degree-two selector,
+`correctedZeroOneThreeTwoComplement_card_le_of_degreeTwo_selector` gives the linear cap.  The separate
+chain/C5 arithmetic cap for a three-consecutive-class selector is isolated as
+`threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion`.
+
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with
 the same old-neighbourhood residue `omega(g_i)`.
