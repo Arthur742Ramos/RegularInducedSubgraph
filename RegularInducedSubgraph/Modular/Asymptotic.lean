@@ -5818,6 +5818,299 @@ theorem oneBoundary_emptyTarget_card_le_two_mul_add_three_of_layerGradients
     Finset.card_union_le Aminus Aplus
   omega
 
+/-- Degree of `v` into the labelled four-set `{a,b,c,d}`. -/
+def targetLayerFourSetDegree
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    (v a b c d : Fin n) : ℕ :=
+  (if G.Adj v a then 1 else 0) + (if G.Adj v b then 1 else 0) +
+    (if G.Adj v c then 1 else 0) + (if G.Adj v d then 1 else 0)
+
+/-- The target-layer pure-discard obstruction: no labelled four-set in `A0` realizes its prescribed
+color degrees. -/
+def NoTargetLayerPureDiscardFourSet
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    (A0 : Finset (Fin n)) (color : Fin n → Fin 4) : Prop :=
+  ∀ a ∈ A0, ∀ b ∈ A0, ∀ c ∈ A0, ∀ d ∈ A0,
+    a ≠ b → a ≠ c → a ≠ d → b ≠ c → b ≠ d → c ≠ d →
+      ¬ (targetLayerFourSetDegree G a a b c d = (color a).val ∧
+        targetLayerFourSetDegree G b a b c d = (color b).val ∧
+        targetLayerFourSetDegree G c a b c d = (color c).val ∧
+        targetLayerFourSetDegree G d a b c d = (color d).val)
+
+/-- Color slice of the nonempty target layer. -/
+def targetLayerColorSlice
+    {n : ℕ} (A0 : Finset (Fin n)) (color : Fin n → Fin 4) (r : Fin 4) :
+    Finset (Fin n) :=
+  A0.filter fun v => color v = r
+
+/-- The color-`3` target slice has clique number at most three under pure-discard. -/
+theorem noTargetLayerPureDiscardFourSet_colorThree_cliqueBound
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
+    (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color) :
+    HasCliqueBoundOn G (targetLayerColorSlice A0 color (3 : Fin 4)) 3 := by
+  intro C hC hClique
+  by_contra hnot
+  have hlarge : 3 < C.card := Nat.lt_of_not_ge hnot
+  rcases Finset.three_lt_card.mp hlarge with
+    ⟨a, haC, b, hbC, c, hcC, d, hdC, hab, hac, had, hbc, hbd, hcd⟩
+  have haSlice : a ∈ targetLayerColorSlice A0 color (3 : Fin 4) := hC haC
+  have hbSlice : b ∈ targetLayerColorSlice A0 color (3 : Fin 4) := hC hbC
+  have hcSlice : c ∈ targetLayerColorSlice A0 color (3 : Fin 4) := hC hcC
+  have hdSlice : d ∈ targetLayerColorSlice A0 color (3 : Fin 4) := hC hdC
+  have haA : a ∈ A0 := (Finset.mem_filter.mp haSlice).1
+  have hbA : b ∈ A0 := (Finset.mem_filter.mp hbSlice).1
+  have hcA : c ∈ A0 := (Finset.mem_filter.mp hcSlice).1
+  have hdA : d ∈ A0 := (Finset.mem_filter.mp hdSlice).1
+  have haColor : color a = (3 : Fin 4) := (Finset.mem_filter.mp haSlice).2
+  have hbColor : color b = (3 : Fin 4) := (Finset.mem_filter.mp hbSlice).2
+  have hcColor : color c = (3 : Fin 4) := (Finset.mem_filter.mp hcSlice).2
+  have hdColor : color d = (3 : Fin 4) := (Finset.mem_filter.mp hdSlice).2
+  have habAdj : G.Adj a b := hClique haC hbC hab
+  have hacAdj : G.Adj a c := hClique haC hcC hac
+  have hadAdj : G.Adj a d := hClique haC hdC had
+  have hbcAdj : G.Adj b c := hClique hbC hcC hbc
+  have hbdAdj : G.Adj b d := hClique hbC hdC hbd
+  have hcdAdj : G.Adj c d := hClique hcC hdC hcd
+  have hbaAdj : G.Adj b a := G.symm habAdj
+  have hcaAdj : G.Adj c a := G.symm hacAdj
+  have hdaAdj : G.Adj d a := G.symm hadAdj
+  have hcbAdj : G.Adj c b := G.symm hbcAdj
+  have hdbAdj : G.Adj d b := G.symm hbdAdj
+  have hdcAdj : G.Adj d c := G.symm hcdAdj
+  have haaNon : ¬ G.Adj a a := G.irrefl a
+  have hbbNon : ¬ G.Adj b b := G.irrefl b
+  have hccNon : ¬ G.Adj c c := G.irrefl c
+  have hddNon : ¬ G.Adj d d := G.irrefl d
+  exact
+    hdiscard a haA b hbA c hcA d hdA hab hac had hbc hbd hcd
+      (by
+        refine ⟨?_, ?_, ?_, ?_⟩ <;>
+          simp [targetLayerFourSetDegree, haColor, hbColor, hcColor, hdColor,
+            habAdj, hacAdj, hadAdj, hbcAdj, hbdAdj, hcdAdj, hbaAdj, hcaAdj,
+            hdaAdj, hcbAdj, hdbAdj, hdcAdj, haaNon, hbbNon, hccNon, hddNon])
+
+/-- Ramsey cap for the color-`3` target slice: no `K₄` plus an `m`-independence bound keeps the
+slice below any `R(4,m+1)` bound. -/
+theorem noTargetLayerPureDiscardFourSet_colorThree_card_lt_ramseyBound
+    {R n m : ℕ} (hRamsey : HasCliqueOrIndepSetBound 4 (m + 1) R)
+    (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
+    (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color)
+    (halpha : HasIndependenceBoundOn G (targetLayerColorSlice A0 color (3 : Fin 4)) m) :
+    (targetLayerColorSlice A0 color (3 : Fin 4)).card < R := by
+  by_contra hnot
+  have hlarge : R ≤ (targetLayerColorSlice A0 color (3 : Fin 4)).card :=
+    le_of_not_gt hnot
+  rcases hRamsey G (targetLayerColorSlice A0 color (3 : Fin 4)) hlarge with
+    hclique | hindep
+  · rcases hclique with ⟨K, hK, hKClique⟩
+    rw [SimpleGraph.isNClique_iff] at hKClique
+    rcases hKClique with ⟨hKCliqueSet, hKcard⟩
+    have hKsmall : K.card ≤ 3 :=
+      noTargetLayerPureDiscardFourSet_colorThree_cliqueBound
+        (G := G) hdiscard K hK hKCliqueSet
+    omega
+  · rcases hindep with ⟨I, hI, hIIndep⟩
+    rw [SimpleGraph.isNIndepSet_iff] at hIIndep
+    rcases hIIndep with ⟨hIIndepSet, hIcard⟩
+    have hIsmall : I.card ≤ m := halpha I hI hIIndepSet
+    omega
+
+/-- The color-`0` target slice has independence number at most three under pure-discard. -/
+theorem noTargetLayerPureDiscardFourSet_colorZero_independenceBound
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
+    (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color) :
+    HasIndependenceBoundOn G (targetLayerColorSlice A0 color (0 : Fin 4)) 3 := by
+  intro I hI hIndep
+  by_contra hnot
+  have hlarge : 3 < I.card := Nat.lt_of_not_ge hnot
+  rcases Finset.three_lt_card.mp hlarge with
+    ⟨a, haI, b, hbI, c, hcI, d, hdI, hab, hac, had, hbc, hbd, hcd⟩
+  have haSlice : a ∈ targetLayerColorSlice A0 color (0 : Fin 4) := hI haI
+  have hbSlice : b ∈ targetLayerColorSlice A0 color (0 : Fin 4) := hI hbI
+  have hcSlice : c ∈ targetLayerColorSlice A0 color (0 : Fin 4) := hI hcI
+  have hdSlice : d ∈ targetLayerColorSlice A0 color (0 : Fin 4) := hI hdI
+  have haA : a ∈ A0 := (Finset.mem_filter.mp haSlice).1
+  have hbA : b ∈ A0 := (Finset.mem_filter.mp hbSlice).1
+  have hcA : c ∈ A0 := (Finset.mem_filter.mp hcSlice).1
+  have hdA : d ∈ A0 := (Finset.mem_filter.mp hdSlice).1
+  have haColor : color a = (0 : Fin 4) := (Finset.mem_filter.mp haSlice).2
+  have hbColor : color b = (0 : Fin 4) := (Finset.mem_filter.mp hbSlice).2
+  have hcColor : color c = (0 : Fin 4) := (Finset.mem_filter.mp hcSlice).2
+  have hdColor : color d = (0 : Fin 4) := (Finset.mem_filter.mp hdSlice).2
+  have habNon : ¬ G.Adj a b := fun h => hIndep haI hbI hab h
+  have hacNon : ¬ G.Adj a c := fun h => hIndep haI hcI hac h
+  have hadNon : ¬ G.Adj a d := fun h => hIndep haI hdI had h
+  have hbcNon : ¬ G.Adj b c := fun h => hIndep hbI hcI hbc h
+  have hbdNon : ¬ G.Adj b d := fun h => hIndep hbI hdI hbd h
+  have hcdNon : ¬ G.Adj c d := fun h => hIndep hcI hdI hcd h
+  have hbaNon : ¬ G.Adj b a := fun h => habNon (G.symm h)
+  have hcaNon : ¬ G.Adj c a := fun h => hacNon (G.symm h)
+  have hdaNon : ¬ G.Adj d a := fun h => hadNon (G.symm h)
+  have hcbNon : ¬ G.Adj c b := fun h => hbcNon (G.symm h)
+  have hdbNon : ¬ G.Adj d b := fun h => hbdNon (G.symm h)
+  have hdcNon : ¬ G.Adj d c := fun h => hcdNon (G.symm h)
+  have haaNon : ¬ G.Adj a a := G.irrefl a
+  have hbbNon : ¬ G.Adj b b := G.irrefl b
+  have hccNon : ¬ G.Adj c c := G.irrefl c
+  have hddNon : ¬ G.Adj d d := G.irrefl d
+  exact
+    hdiscard a haA b hbA c hcA d hdA hab hac had hbc hbd hcd
+      (by
+        refine ⟨?_, ?_, ?_, ?_⟩ <;>
+          simp [targetLayerFourSetDegree, haColor, hbColor, hcColor, hdColor,
+            habNon, hacNon, hadNon, hbcNon, hbdNon, hcdNon, hbaNon, hcaNon,
+            hdaNon, hcbNon, hdbNon, hdcNon, haaNon, hbbNon, hccNon, hddNon])
+
+/-- Pseudo-split cap surface needed for the color-`2` target slice. -/
+def HasTargetLayerColorTwoPseudoSplitCapSurface (C : ℕ) : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] {S : Finset (Fin n)},
+    IsInducedC4FreeOn G S →
+      HasCliqueBoundOn G S 3 →
+        HasIndependenceBoundOn G S m →
+          (∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
+            a ≠ b → a ≠ c → a ≠ d → b ≠ c → b ≠ d → c ≠ d →
+              ¬ (targetLayerFourSetDegree G a a b c d = 2 ∧
+                targetLayerFourSetDegree G b a b c d = 2 ∧
+                targetLayerFourSetDegree G c a b c d = 2 ∧
+                targetLayerFourSetDegree G d a b c d = 2)) →
+            S.card ≤ C * m
+
+/-- Pure-discard supplies the labelled degree-two exclusion required by the color-`2` cap surface. -/
+theorem noTargetLayerPureDiscardFourSet_colorTwo_no_labelled_degree_two_four
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
+    (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color) :
+    ∀ a ∈ targetLayerColorSlice A0 color (2 : Fin 4),
+      ∀ b ∈ targetLayerColorSlice A0 color (2 : Fin 4),
+        ∀ c ∈ targetLayerColorSlice A0 color (2 : Fin 4),
+          ∀ d ∈ targetLayerColorSlice A0 color (2 : Fin 4),
+            a ≠ b → a ≠ c → a ≠ d → b ≠ c → b ≠ d → c ≠ d →
+              ¬ (targetLayerFourSetDegree G a a b c d = 2 ∧
+                targetLayerFourSetDegree G b a b c d = 2 ∧
+                targetLayerFourSetDegree G c a b c d = 2 ∧
+                targetLayerFourSetDegree G d a b c d = 2) := by
+  intro a haSlice b hbSlice c hcSlice d hdSlice hab hac had hbc hbd hcd hdeg
+  have haA : a ∈ A0 := (Finset.mem_filter.mp haSlice).1
+  have hbA : b ∈ A0 := (Finset.mem_filter.mp hbSlice).1
+  have hcA : c ∈ A0 := (Finset.mem_filter.mp hcSlice).1
+  have hdA : d ∈ A0 := (Finset.mem_filter.mp hdSlice).1
+  have haColor : color a = (2 : Fin 4) := (Finset.mem_filter.mp haSlice).2
+  have hbColor : color b = (2 : Fin 4) := (Finset.mem_filter.mp hbSlice).2
+  have hcColor : color c = (2 : Fin 4) := (Finset.mem_filter.mp hcSlice).2
+  have hdColor : color d = (2 : Fin 4) := (Finset.mem_filter.mp hdSlice).2
+  exact
+    hdiscard a haA b hbA c hcA d hdA hab hac had hbc hbd hcd
+      (by simpa [haColor, hbColor, hcColor, hdColor] using hdeg)
+
+/-- The color-`2` target slice is capped once the pseudo-split cap surface is available. -/
+theorem targetLayerColorTwo_card_le_of_pseudoSplitCapSurface
+    {C n m : ℕ} (hcap : HasTargetLayerColorTwoPseudoSplitCapSurface C)
+    (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
+    (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color)
+    (hC4 : IsInducedC4FreeOn G (targetLayerColorSlice A0 color (2 : Fin 4)))
+    (hK4 : HasCliqueBoundOn G (targetLayerColorSlice A0 color (2 : Fin 4)) 3)
+    (halpha : HasIndependenceBoundOn G (targetLayerColorSlice A0 color (2 : Fin 4)) m) :
+    (targetLayerColorSlice A0 color (2 : Fin 4)).card ≤ C * m := by
+  exact
+    hcap G hC4 hK4 halpha
+      (noTargetLayerPureDiscardFourSet_colorTwo_no_labelled_degree_two_four
+        (G := G) hdiscard)
+
+/-- A `(0,0,1,1)` mixed quartet is dominated: a color-`0` nonedge and a color-`1` edge cannot be
+mutually anticomplete. -/
+theorem noTargetLayerPureDiscardFourSet_mixed_zero_zero_one_one_domination
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
+    (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color)
+    {a b x y : Fin n}
+    (haA : a ∈ A0) (hbA : b ∈ A0) (hxA : x ∈ A0) (hyA : y ∈ A0)
+    (haColor : color a = (0 : Fin 4)) (hbColor : color b = (0 : Fin 4))
+    (hxColor : color x = (1 : Fin 4)) (hyColor : color y = (1 : Fin 4))
+    (hab : a ≠ b) (hax : a ≠ x) (hay : a ≠ y)
+    (hbx : b ≠ x) (hby : b ≠ y) (hxy : x ≠ y)
+    (habNon : ¬ G.Adj a b) (hxyAdj : G.Adj x y) :
+    ¬ (¬ G.Adj a x ∧ ¬ G.Adj a y ∧ ¬ G.Adj b x ∧ ¬ G.Adj b y) := by
+  intro hmiss
+  rcases hmiss with ⟨haxNon, hayNon, hbxNon, hbyNon⟩
+  have hbaNon : ¬ G.Adj b a := fun h => habNon (G.symm h)
+  have hxaNon : ¬ G.Adj x a := fun h => haxNon (G.symm h)
+  have hyaNon : ¬ G.Adj y a := fun h => hayNon (G.symm h)
+  have hxbNon : ¬ G.Adj x b := fun h => hbxNon (G.symm h)
+  have hybNon : ¬ G.Adj y b := fun h => hbyNon (G.symm h)
+  have hyxAdj : G.Adj y x := G.symm hxyAdj
+  have haaNon : ¬ G.Adj a a := G.irrefl a
+  have hbbNon : ¬ G.Adj b b := G.irrefl b
+  have hxxNon : ¬ G.Adj x x := G.irrefl x
+  have hyyNon : ¬ G.Adj y y := G.irrefl y
+  exact
+    hdiscard a haA b hbA x hxA y hyA hab hax hay hbx hby hxy
+      (by
+        refine ⟨?_, ?_, ?_, ?_⟩ <;>
+          simp [targetLayerFourSetDegree, haColor, hbColor, hxColor, hyColor,
+            habNon, hbaNon, haxNon, hayNon, hbxNon, hbyNon, hxaNon, hyaNon,
+            hxbNon, hybNon, hxyAdj, hyxAdj, haaNon, hbbNon, hxxNon, hyyNon])
+
+/-- If a color-`0` nonedge sees a color-`1` clique in the complement, that common complement
+neighbourhood has size at most one. -/
+theorem noTargetLayerPureDiscardFourSet_colorZero_nonedge_colorOne_common_compl_card_le_one
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
+    (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color)
+    {a b : Fin n} (haA : a ∈ A0) (hbA : b ∈ A0)
+    (haColor : color a = (0 : Fin 4)) (hbColor : color b = (0 : Fin 4))
+    (hab : a ≠ b) (habNon : ¬ G.Adj a b)
+    (hColorOneClique : G.IsClique ((targetLayerColorSlice A0 color (1 : Fin 4)) : Set (Fin n))) :
+    ((targetLayerColorSlice A0 color (1 : Fin 4)).filter
+      fun x => ¬ G.Adj a x ∧ ¬ G.Adj b x).card ≤ 1 := by
+  rw [Finset.card_le_one]
+  intro x hx y hy
+  by_contra hxy
+  rcases Finset.mem_filter.mp hx with ⟨hxSlice, haxMiss, hbxMiss⟩
+  rcases Finset.mem_filter.mp hy with ⟨hySlice, hayMiss, hbyMiss⟩
+  have hxA : x ∈ A0 := (Finset.mem_filter.mp hxSlice).1
+  have hyA : y ∈ A0 := (Finset.mem_filter.mp hySlice).1
+  have hxColor : color x = (1 : Fin 4) := (Finset.mem_filter.mp hxSlice).2
+  have hyColor : color y = (1 : Fin 4) := (Finset.mem_filter.mp hySlice).2
+  have hzero_ne_one : (0 : Fin 4) ≠ (1 : Fin 4) := by decide
+  have hax : a ≠ x := by
+    intro h
+    apply hzero_ne_one
+    calc
+      (0 : Fin 4) = color a := haColor.symm
+      _ = color x := by simpa [h]
+      _ = (1 : Fin 4) := hxColor
+  have hay : a ≠ y := by
+    intro h
+    apply hzero_ne_one
+    calc
+      (0 : Fin 4) = color a := haColor.symm
+      _ = color y := by simpa [h]
+      _ = (1 : Fin 4) := hyColor
+  have hbx : b ≠ x := by
+    intro h
+    apply hzero_ne_one
+    calc
+      (0 : Fin 4) = color b := hbColor.symm
+      _ = color x := by simpa [h]
+      _ = (1 : Fin 4) := hxColor
+  have hby : b ≠ y := by
+    intro h
+    apply hzero_ne_one
+    calc
+      (0 : Fin 4) = color b := hbColor.symm
+      _ = color y := by simpa [h]
+      _ = (1 : Fin 4) := hyColor
+  have hxyAdj : G.Adj x y := hColorOneClique hxSlice hySlice hxy
+  exact
+    (noTargetLayerPureDiscardFourSet_mixed_zero_zero_one_one_domination
+      (G := G) hdiscard haA hbA hxA hyA haColor hbColor hxColor hyColor
+      hab hax hay hbx hby hxy habNon hxyAdj)
+      ⟨haxMiss, hayMiss, hbxMiss, hbyMiss⟩
+
 /--
 Arithmetic selector for three consecutive classes in a `C₅`/chain blow-up: after deleting at most
 three vertices in total, the two end-class selections and the middle-class selection have matching
