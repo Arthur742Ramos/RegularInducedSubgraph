@@ -29571,6 +29571,972 @@ theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.universalDichotomy_o
 
 end FirstBitTerminalRankThreeNoLeftoverDeletionFrontier
 
+/-- Sum of the individual petal deficits in a pair-collision rebate circuit. -/
+def pairCollisionRebateCircuitDeficitSum {Petal : Type*} [DecidableEq Petal]
+    (petalDeficit : Petal → ℕ) (petals : Finset Petal) : ℕ :=
+  ∑ petal in petals, petalDeficit petal
+
+/-- A rebate subfamily overpays when its shared packed-atom rebate exceeds its deficit sum. -/
+def pairCollisionRebateCircuitOverpays {Petal : Type*} [DecidableEq Petal]
+    (rebate : Finset Petal → ℕ) (petalDeficit : Petal → ℕ) (petals : Finset Petal) :
+    Prop :=
+  pairCollisionRebateCircuitDeficitSum petalDeficit petals < rebate petals
+
+/-- A rebate subfamily is nonpositive when its rebate is bounded by its deficit sum. -/
+def pairCollisionRebateCircuitNonpositive {Petal : Type*} [DecidableEq Petal]
+    (rebate : Finset Petal → ℕ) (petalDeficit : Petal → ℕ) (petals : Finset Petal) :
+    Prop :=
+  rebate petals ≤ pairCollisionRebateCircuitDeficitSum petalDeficit petals
+
+/--
+Facade for the pair-collision rebate-circuit endpoint: the shared packed-atom rebate identity,
+the split-atom certificate, the two-petal/three-petal alternative, proper-subfamily
+nonpositivity, and exclusion of larger diffuse collision modes.
+-/
+structure FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+    (sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode : Prop) : Prop where
+  sharedPackedAtomRebateIdentityCert : sharedPackedAtomRebateIdentity
+  splitPackedAtomBetweenForcedPetalsCert : splitPackedAtomBetweenForcedPetals
+  twoPetalOverpayOrGenuineThreePetalCircuitCert :
+    twoPetalOverpayOrGenuineThreePetalCircuit
+  properSubfamilyNonpositiveCert : properSubfamilyNonpositive
+  noLargerDiffusePairCollisionModeCert : noLargerDiffusePairCollisionMode
+
+/-- Build the rebate-circuit endpoint facade from its five assumption-backed surfaces. -/
+theorem firstBitTerminalPairCollisionRebateCircuitEndpointSurfaces_of_parts
+    {sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode : Prop}
+    (hidentity : sharedPackedAtomRebateIdentity)
+    (hsplit : splitPackedAtomBetweenForcedPetals)
+    (htwoThree : twoPetalOverpayOrGenuineThreePetalCircuit)
+    (hproper : properSubfamilyNonpositive) (hnodiffuse : noLargerDiffusePairCollisionMode) :
+    FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+      sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode where
+  sharedPackedAtomRebateIdentityCert := hidentity
+  splitPackedAtomBetweenForcedPetalsCert := hsplit
+  twoPetalOverpayOrGenuineThreePetalCircuitCert := htwoThree
+  properSubfamilyNonpositiveCert := hproper
+  noLargerDiffusePairCollisionModeCert := hnodiffuse
+
+/-- Project the shared packed-atom rebate identity surface. -/
+theorem FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces.to_sharedPackedAtomRebateIdentity
+    {sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode : Prop}
+    (h :
+      FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+        sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+        twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+        noLargerDiffusePairCollisionMode) :
+    sharedPackedAtomRebateIdentity :=
+  h.sharedPackedAtomRebateIdentityCert
+
+/-- Project the split packed-atom surface. -/
+theorem FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces.to_splitPackedAtomBetweenForcedPetals
+    {sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode : Prop}
+    (h :
+      FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+        sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+        twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+        noLargerDiffusePairCollisionMode) :
+    splitPackedAtomBetweenForcedPetals :=
+  h.splitPackedAtomBetweenForcedPetalsCert
+
+/-- Project the two-petal overpay / genuine three-petal circuit surface. -/
+theorem
+    FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces.to_twoPetalOverpayOrGenuineThreePetalCircuit
+    {sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode : Prop}
+    (h :
+      FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+        sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+        twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+        noLargerDiffusePairCollisionMode) :
+    twoPetalOverpayOrGenuineThreePetalCircuit :=
+  h.twoPetalOverpayOrGenuineThreePetalCircuitCert
+
+/-- Project the proper-subfamily nonpositive surface. -/
+theorem FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces.to_properSubfamilyNonpositive
+    {sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode : Prop}
+    (h :
+      FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+        sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+        twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+        noLargerDiffusePairCollisionMode) :
+    properSubfamilyNonpositive :=
+  h.properSubfamilyNonpositiveCert
+
+/-- Project the no-larger/diffuse pair-collision surface. -/
+theorem FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces.to_noLargerDiffusePairCollisionMode
+    {sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode : Prop}
+    (h :
+      FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+        sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+        twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+        noLargerDiffusePairCollisionMode) :
+    noLargerDiffusePairCollisionMode :=
+  h.noLargerDiffusePairCollisionModeCert
+
+/--
+Assumption-backed API layer for the terminal pair-collision rebate-circuit endpoint.  It sits on
+top of the no-leftover deletion frontier and records the finite rebate normal form: shared
+packed-atom rebate identity, forced-petal split atom, proper-subfamily nonpositivity, the
+two-petal overpay / genuine three-petal circuit dichotomy, and absence of larger diffuse modes.
+-/
+structure FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier
+    {Vertex Triple Coord Atom Move RepairFamily Lift PairPivot CollisionStar UnitAbsorption
+      LiftCollision CollisionCircuit CollisionPetal Bridge Thickening Replacement : Type*}
+    [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord] [DecidableEq Atom]
+    [DecidableEq CollisionPetal]
+    (coreVertices : Finset Vertex) (activeCoordinates zeroFilter : Finset Coord)
+    (retainedTargets : Finset (Finset Vertex))
+    (outgoingTriples : Finset Vertex → Finset Triple)
+    (tripleSupport : Triple → Finset Vertex)
+    (rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord)
+    (atomPartition : Finset Vertex → Triple → Finset Atom)
+    (atomBlock : Finset Vertex → Triple → Atom → Finset Vertex)
+    (pureTwoAtomSupport : Finset Vertex → Triple → Atom → Atom → Finset Vertex)
+    (deletedPackedBlock : Finset Vertex → Triple → Atom → Finset Vertex)
+    (packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount :
+      Finset Vertex → Triple → ℕ)
+    (pureTwoAtomGain : Finset Vertex → Triple → Atom → Atom → ℤ)
+    (liftTotalGain : Finset Vertex → Triple → Atom → RepairFamily → Lift → ℤ)
+    (deletionGain : Finset Vertex → Triple → Atom → ℤ)
+    (pairPivotSupport : Finset Vertex → Triple → Atom → PairPivot → Finset Vertex)
+    (collisionStarSupport collisionStarLeafSet :
+      Finset Vertex → Triple → Atom → CollisionStar → Finset Vertex)
+    (collisionStarCenter : Finset Vertex → Triple → Atom → CollisionStar → Vertex)
+    (crossAtomSupport : Finset Vertex → Triple → Finset Atom → Finset Vertex)
+    (unitAbsorptionHeight unitAbsorptionTerminalCount unitAbsorptionDeletedGain :
+      Finset Vertex → Triple → Atom → UnitAbsorption → ℕ)
+    (unitAbsorptionFullGain : Finset Vertex → Triple → Atom → UnitAbsorption → ℤ)
+    (liftCollisionVertex : Finset Vertex → Triple → Atom → LiftCollision → Vertex)
+    (pairCollisionCircuitPetals forcedPairCollisionPetals :
+      Finset Vertex → Triple → Atom → CollisionCircuit → Finset CollisionPetal)
+    (pairCollisionPetalDeficit :
+      Finset Vertex → Triple → Atom → CollisionCircuit → CollisionPetal → ℕ)
+    (sharedPackedAtomRebate :
+      Finset Vertex → Triple → Atom → CollisionCircuit → Finset CollisionPetal → ℕ)
+    (pairCollisionProjectedGain :
+      Finset Vertex → Triple → Atom → CollisionCircuit → Finset CollisionPetal → ℤ)
+    (pairCollisionPetalTouchesPackedAtom :
+      Finset Vertex → Triple → Atom → CollisionCircuit → CollisionPetal → Atom → Prop)
+    (m : ℕ)
+    (scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+      terminalResolved rankThreeBridgeObstructed : Finset Vertex → Triple → Prop)
+    (feasibleComplementShadowPacking capacityDeficient : Finset Vertex → Triple → Prop)
+    (oneSavingBridge : Finset Vertex → Triple → Bridge → Prop)
+    (thickeningBlocker : Finset Vertex → Triple → Thickening → Prop)
+    (replacementBlocker : Finset Vertex → Triple → Replacement → Prop)
+    (forbiddenSupport : Finset Vertex → Triple → Finset Vertex → Prop)
+    (zeroGainMove sameTerminalClass : Finset Vertex → Triple → Move → Prop)
+    (packedAtom sizeTwoPackedAtom : Finset Vertex → Triple → Atom → Prop)
+    (minimalPositiveRepairFamily : Finset Vertex → Triple → Atom → RepairFamily → Prop)
+    (fullLift : Finset Vertex → Triple → Atom → RepairFamily → Lift → Prop)
+    (pairDeletionPivot zeroGainPairPivot sameSizePairExchange :
+      Finset Vertex → Triple → Atom → PairPivot → Prop)
+    (leftoverSingleton : Finset Vertex → Triple → Atom → PairPivot → Vertex → Prop)
+    (collisionStarDeletion : Finset Vertex → Triple → Atom → CollisionStar → Prop)
+    (allPairSaturatedPacking pairDeletionEndpointResolved : Finset Vertex → Triple → Prop)
+    (strictCrossAtomDefect : Finset Vertex → Triple → Atom → Atom → Prop)
+    (firstNoLeftoverCore : Finset Vertex → Triple → Prop)
+    (unitStrictAbsorption : Finset Vertex → Triple → Atom → UnitAbsorption → Prop)
+    (deletedVertexLiftCollision : Finset Vertex → Triple → Atom → LiftCollision → Prop)
+    (noLeftoverDeletionRepair : Finset Vertex → Triple → Atom → Prop)
+    (pairCollisionRebateCircuit twoPetalSplitAtomOverpay genuineThreePetalRebateCircuit :
+      Finset Vertex → Triple → Atom → CollisionCircuit → Prop)
+    (targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+      tracePinningFrontier rankThreeBridgeObstruction terminalRankThreeClosure
+      zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+      deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+      sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode remainingUniversalDichotomyAssumptions
+      remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions
+      remainingFourAtomBridgeBlockerAssumptions remainingPairAtomDeletionAssumptions
+      remainingNoLeftoverDeletionAssumptions : Prop) : Prop where
+  noLeftoverDeletionFrontierCert :
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+      collisionStarCenter crossAtomSupport unitAbsorptionHeight unitAbsorptionTerminalCount
+      unitAbsorptionDeletedGain unitAbsorptionFullGain liftCollisionVertex m
+      scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+      terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient
+      oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove
+      sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily fullLift
+      pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton collisionStarDeletion
+      allPairSaturatedPacking pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore
+      unitStrictAbsorption deletedVertexLiftCollision noLeftoverDeletionRepair
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+      deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions
+  endpointSurfaces :
+    FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+      sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode
+  sharedPackedAtom_rebate_identityCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          pairCollisionRebateCircuit T X atom circuit → ∀ petals : Finset CollisionPetal,
+            petals ⊆ pairCollisionCircuitPetals T X atom circuit →
+              pairCollisionProjectedGain T X atom circuit petals +
+                  (pairCollisionRebateCircuitDeficitSum
+                    (pairCollisionPetalDeficit T X atom circuit) petals : ℤ) =
+                (sharedPackedAtomRebate T X atom circuit petals : ℤ)
+  properSubfamily_projectedGain_nonpositiveCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          pairCollisionRebateCircuit T X atom circuit → ∀ petals : Finset CollisionPetal,
+            petals ⊆ pairCollisionCircuitPetals T X atom circuit →
+              petals ≠ pairCollisionCircuitPetals T X atom circuit →
+                pairCollisionProjectedGain T X atom circuit petals ≤ 0
+  properSubfamily_rebate_boundCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          pairCollisionRebateCircuit T X atom circuit → ∀ petals : Finset CollisionPetal,
+            petals ⊆ pairCollisionCircuitPetals T X atom circuit →
+              petals ≠ pairCollisionCircuitPetals T X atom circuit →
+                pairCollisionRebateCircuitNonpositive
+                  (sharedPackedAtomRebate T X atom circuit)
+                  (pairCollisionPetalDeficit T X atom circuit) petals
+  fullCircuit_projectedGain_positiveCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          pairCollisionRebateCircuit T X atom circuit →
+            0 < pairCollisionProjectedGain T X atom circuit
+              (pairCollisionCircuitPetals T X atom circuit)
+  fullCircuit_rebate_overpayCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          pairCollisionRebateCircuit T X atom circuit →
+            pairCollisionRebateCircuitOverpays
+              (sharedPackedAtomRebate T X atom circuit)
+              (pairCollisionPetalDeficit T X atom circuit)
+              (pairCollisionCircuitPetals T X atom circuit)
+  splitPackedAtom_between_forced_petalsCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          pairCollisionRebateCircuit T X atom circuit →
+            ∃ packed : Atom, packed ∈ atomPartition T X ∧ packedAtom T X packed ∧
+              ∃ p : CollisionPetal, p ∈ forcedPairCollisionPetals T X atom circuit ∧
+                ∃ q : CollisionPetal, q ∈ forcedPairCollisionPetals T X atom circuit ∧
+                  p ≠ q ∧
+                    pairCollisionPetalTouchesPackedAtom T X atom circuit p packed ∧
+                      pairCollisionPetalTouchesPackedAtom T X atom circuit q packed
+  pairCollision_two_or_three_endpoint :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          pairCollisionRebateCircuit T X atom circuit →
+            twoPetalSplitAtomOverpay T X atom circuit ∨
+              genuineThreePetalRebateCircuit T X atom circuit
+  twoPetalSplitAtomOverpay_summaryCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          twoPetalSplitAtomOverpay T X atom circuit →
+            (forcedPairCollisionPetals T X atom circuit).card = 2 ∧
+              pairCollisionRebateCircuitOverpays
+                (sharedPackedAtomRebate T X atom circuit)
+                (pairCollisionPetalDeficit T X atom circuit)
+                (forcedPairCollisionPetals T X atom circuit)
+  genuineThreePetalRebateCircuit_summaryCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          genuineThreePetalRebateCircuit T X atom circuit →
+            (forcedPairCollisionPetals T X atom circuit).card = 3 ∧
+              (∀ petals : Finset CollisionPetal,
+                petals ⊆ forcedPairCollisionPetals T X atom circuit → petals.card = 2 →
+                  pairCollisionRebateCircuitNonpositive
+                    (sharedPackedAtomRebate T X atom circuit)
+                    (pairCollisionPetalDeficit T X atom circuit) petals) ∧
+                pairCollisionRebateCircuitOverpays
+                  (sharedPackedAtomRebate T X atom circuit)
+                  (pairCollisionPetalDeficit T X atom circuit)
+                  (forcedPairCollisionPetals T X atom circuit)
+  no_larger_or_diffuse_pairCollisionCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+          pairCollisionRebateCircuit T X atom circuit →
+            pairCollisionCircuitPetals T X atom circuit =
+                forcedPairCollisionPetals T X atom circuit ∧
+              ((forcedPairCollisionPetals T X atom circuit).card = 2 ∨
+                (forcedPairCollisionPetals T X atom circuit).card = 3)
+
+section FirstBitTerminalRankThreePairCollisionRebateCircuitFrontierConstruction
+
+variable {Vertex Triple Coord Atom Move RepairFamily Lift PairPivot CollisionStar UnitAbsorption
+  LiftCollision CollisionCircuit CollisionPetal Bridge Thickening Replacement : Type*}
+variable [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord] [DecidableEq Atom]
+variable [DecidableEq CollisionPetal]
+variable {coreVertices : Finset Vertex} {activeCoordinates zeroFilter : Finset Coord}
+variable {retainedTargets : Finset (Finset Vertex)}
+variable {outgoingTriples : Finset Vertex → Finset Triple}
+variable {tripleSupport : Triple → Finset Vertex}
+variable {rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord}
+variable {atomPartition : Finset Vertex → Triple → Finset Atom}
+variable {atomBlock : Finset Vertex → Triple → Atom → Finset Vertex}
+variable {pureTwoAtomSupport : Finset Vertex → Triple → Atom → Atom → Finset Vertex}
+variable {deletedPackedBlock : Finset Vertex → Triple → Atom → Finset Vertex}
+variable {packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount :
+  Finset Vertex → Triple → ℕ}
+variable {pureTwoAtomGain : Finset Vertex → Triple → Atom → Atom → ℤ}
+variable {liftTotalGain : Finset Vertex → Triple → Atom → RepairFamily → Lift → ℤ}
+variable {deletionGain : Finset Vertex → Triple → Atom → ℤ}
+variable {pairPivotSupport : Finset Vertex → Triple → Atom → PairPivot → Finset Vertex}
+variable {collisionStarSupport collisionStarLeafSet :
+  Finset Vertex → Triple → Atom → CollisionStar → Finset Vertex}
+variable {collisionStarCenter : Finset Vertex → Triple → Atom → CollisionStar → Vertex}
+variable {crossAtomSupport : Finset Vertex → Triple → Finset Atom → Finset Vertex}
+variable {unitAbsorptionHeight unitAbsorptionTerminalCount unitAbsorptionDeletedGain :
+  Finset Vertex → Triple → Atom → UnitAbsorption → ℕ}
+variable {unitAbsorptionFullGain : Finset Vertex → Triple → Atom → UnitAbsorption → ℤ}
+variable {liftCollisionVertex : Finset Vertex → Triple → Atom → LiftCollision → Vertex}
+variable {pairCollisionCircuitPetals forcedPairCollisionPetals :
+  Finset Vertex → Triple → Atom → CollisionCircuit → Finset CollisionPetal}
+variable {pairCollisionPetalDeficit :
+  Finset Vertex → Triple → Atom → CollisionCircuit → CollisionPetal → ℕ}
+variable {sharedPackedAtomRebate :
+  Finset Vertex → Triple → Atom → CollisionCircuit → Finset CollisionPetal → ℕ}
+variable {pairCollisionProjectedGain :
+  Finset Vertex → Triple → Atom → CollisionCircuit → Finset CollisionPetal → ℤ}
+variable {pairCollisionPetalTouchesPackedAtom :
+  Finset Vertex → Triple → Atom → CollisionCircuit → CollisionPetal → Atom → Prop}
+variable {m : ℕ}
+variable {scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+  terminalResolved rankThreeBridgeObstructed : Finset Vertex → Triple → Prop}
+variable {feasibleComplementShadowPacking capacityDeficient : Finset Vertex → Triple → Prop}
+variable {oneSavingBridge : Finset Vertex → Triple → Bridge → Prop}
+variable {thickeningBlocker : Finset Vertex → Triple → Thickening → Prop}
+variable {replacementBlocker : Finset Vertex → Triple → Replacement → Prop}
+variable {forbiddenSupport : Finset Vertex → Triple → Finset Vertex → Prop}
+variable {zeroGainMove sameTerminalClass : Finset Vertex → Triple → Move → Prop}
+variable {packedAtom sizeTwoPackedAtom : Finset Vertex → Triple → Atom → Prop}
+variable {minimalPositiveRepairFamily : Finset Vertex → Triple → Atom → RepairFamily → Prop}
+variable {fullLift : Finset Vertex → Triple → Atom → RepairFamily → Lift → Prop}
+variable {pairDeletionPivot zeroGainPairPivot sameSizePairExchange :
+  Finset Vertex → Triple → Atom → PairPivot → Prop}
+variable {leftoverSingleton : Finset Vertex → Triple → Atom → PairPivot → Vertex → Prop}
+variable {collisionStarDeletion : Finset Vertex → Triple → Atom → CollisionStar → Prop}
+variable {allPairSaturatedPacking pairDeletionEndpointResolved : Finset Vertex → Triple → Prop}
+variable {strictCrossAtomDefect : Finset Vertex → Triple → Atom → Atom → Prop}
+variable {firstNoLeftoverCore : Finset Vertex → Triple → Prop}
+variable {unitStrictAbsorption : Finset Vertex → Triple → Atom → UnitAbsorption → Prop}
+variable {deletedVertexLiftCollision : Finset Vertex → Triple → Atom → LiftCollision → Prop}
+variable {noLeftoverDeletionRepair : Finset Vertex → Triple → Atom → Prop}
+variable {pairCollisionRebateCircuit twoPetalSplitAtomOverpay genuineThreePetalRebateCircuit :
+  Finset Vertex → Triple → Atom → CollisionCircuit → Prop}
+variable {targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+  scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+  fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+  tracePinningFrontier rankThreeBridgeObstruction terminalRankThreeClosure
+  zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+  smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+  strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+  deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+  sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+  twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+  noLargerDiffusePairCollisionMode remainingUniversalDichotomyAssumptions
+  remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions
+  remainingFourAtomBridgeBlockerAssumptions remainingPairAtomDeletionAssumptions
+  remainingNoLeftoverDeletionAssumptions : Prop}
+
+/-- Build the pair-collision rebate-circuit frontier from the no-leftover layer and endpoint data. -/
+theorem firstBitTerminalRankThreePairCollisionRebateCircuitFrontier_of_noLeftover
+    (hnoLeftover :
+      FirstBitTerminalRankThreeNoLeftoverDeletionFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+        complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+        packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+        liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+        collisionStarCenter crossAtomSupport unitAbsorptionHeight unitAbsorptionTerminalCount
+        unitAbsorptionDeletedGain unitAbsorptionFullGain liftCollisionVertex m
+        scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+        terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient
+        oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove
+        sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily fullLift
+        pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton collisionStarDeletion
+        allPairSaturatedPacking pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore
+        unitStrictAbsorption deletedVertexLiftCollision noLeftoverDeletionRepair
+        targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+        singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+        terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker
+        deletionRepairFamilyObstruction smallAtomDeletionCorollary pairPivotSaturation
+        collisionStarDeletionOutcome strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier
+        unitStrictAbsorptionFrontier deletedVertexLiftCollisionFrontier
+        noLeftoverDeletionRepairDichotomy remainingUniversalDichotomyAssumptions
+        remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions
+        remainingFourAtomBridgeBlockerAssumptions remainingPairAtomDeletionAssumptions
+        remainingNoLeftoverDeletionAssumptions)
+    (hsurfaces :
+      FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+        sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+        twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+        noLargerDiffusePairCollisionMode)
+    (hidentity :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            pairCollisionRebateCircuit T X atom circuit → ∀ petals : Finset CollisionPetal,
+              petals ⊆ pairCollisionCircuitPetals T X atom circuit →
+                pairCollisionProjectedGain T X atom circuit petals +
+                    (pairCollisionRebateCircuitDeficitSum
+                      (pairCollisionPetalDeficit T X atom circuit) petals : ℤ) =
+                  (sharedPackedAtomRebate T X atom circuit petals : ℤ))
+    (hproperGain :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            pairCollisionRebateCircuit T X atom circuit → ∀ petals : Finset CollisionPetal,
+              petals ⊆ pairCollisionCircuitPetals T X atom circuit →
+                petals ≠ pairCollisionCircuitPetals T X atom circuit →
+                  pairCollisionProjectedGain T X atom circuit petals ≤ 0)
+    (hproperRebate :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            pairCollisionRebateCircuit T X atom circuit → ∀ petals : Finset CollisionPetal,
+              petals ⊆ pairCollisionCircuitPetals T X atom circuit →
+                petals ≠ pairCollisionCircuitPetals T X atom circuit →
+                  pairCollisionRebateCircuitNonpositive
+                    (sharedPackedAtomRebate T X atom circuit)
+                    (pairCollisionPetalDeficit T X atom circuit) petals)
+    (hfullGain :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            pairCollisionRebateCircuit T X atom circuit →
+              0 < pairCollisionProjectedGain T X atom circuit
+                (pairCollisionCircuitPetals T X atom circuit))
+    (hfullRebate :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            pairCollisionRebateCircuit T X atom circuit →
+              pairCollisionRebateCircuitOverpays
+                (sharedPackedAtomRebate T X atom circuit)
+                (pairCollisionPetalDeficit T X atom circuit)
+                (pairCollisionCircuitPetals T X atom circuit))
+    (hsplit :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            pairCollisionRebateCircuit T X atom circuit →
+              ∃ packed : Atom, packed ∈ atomPartition T X ∧ packedAtom T X packed ∧
+                ∃ p : CollisionPetal, p ∈ forcedPairCollisionPetals T X atom circuit ∧
+                  ∃ q : CollisionPetal, q ∈ forcedPairCollisionPetals T X atom circuit ∧
+                    p ≠ q ∧
+                      pairCollisionPetalTouchesPackedAtom T X atom circuit p packed ∧
+                        pairCollisionPetalTouchesPackedAtom T X atom circuit q packed)
+    (htwoThree :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            pairCollisionRebateCircuit T X atom circuit →
+              twoPetalSplitAtomOverpay T X atom circuit ∨
+                genuineThreePetalRebateCircuit T X atom circuit)
+    (htwo :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            twoPetalSplitAtomOverpay T X atom circuit →
+              (forcedPairCollisionPetals T X atom circuit).card = 2 ∧
+                pairCollisionRebateCircuitOverpays
+                  (sharedPackedAtomRebate T X atom circuit)
+                  (pairCollisionPetalDeficit T X atom circuit)
+                  (forcedPairCollisionPetals T X atom circuit))
+    (hthree :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            genuineThreePetalRebateCircuit T X atom circuit →
+              (forcedPairCollisionPetals T X atom circuit).card = 3 ∧
+                (∀ petals : Finset CollisionPetal,
+                  petals ⊆ forcedPairCollisionPetals T X atom circuit → petals.card = 2 →
+                    pairCollisionRebateCircuitNonpositive
+                      (sharedPackedAtomRebate T X atom circuit)
+                      (pairCollisionPetalDeficit T X atom circuit) petals) ∧
+                  pairCollisionRebateCircuitOverpays
+                    (sharedPackedAtomRebate T X atom circuit)
+                    (pairCollisionPetalDeficit T X atom circuit)
+                    (forcedPairCollisionPetals T X atom circuit))
+    (hnodiffuse :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom → ∀ circuit : CollisionCircuit,
+            pairCollisionRebateCircuit T X atom circuit →
+              pairCollisionCircuitPetals T X atom circuit =
+                  forcedPairCollisionPetals T X atom circuit ∧
+                ((forcedPairCollisionPetals T X atom circuit).card = 2 ∨
+                  (forcedPairCollisionPetals T X atom circuit).card = 3)) :
+    FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport complementShadowPacking
+      atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock packingSaving
+      bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain liftTotalGain
+      deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet collisionStarCenter
+      crossAtomSupport unitAbsorptionHeight unitAbsorptionTerminalCount unitAbsorptionDeletedGain
+      unitAbsorptionFullGain liftCollisionVertex pairCollisionCircuitPetals
+      forcedPairCollisionPetals pairCollisionPetalDeficit sharedPackedAtomRebate
+      pairCollisionProjectedGain pairCollisionPetalTouchesPackedAtom m scalarKilledTerminal
+      smallActiveZeroFilter lowRankBounded rankThreeHighActive terminalResolved
+      rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient oneSavingBridge
+      thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove sameTerminalClass
+      packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily fullLift pairDeletionPivot
+      zeroGainPairPivot sameSizePairExchange leftoverSingleton collisionStarDeletion
+      allPairSaturatedPacking pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore
+      unitStrictAbsorption deletedVertexLiftCollision noLeftoverDeletionRepair
+      pairCollisionRebateCircuit twoPetalSplitAtomOverpay genuineThreePetalRebateCircuit
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+      deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+      sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode remainingUniversalDichotomyAssumptions
+      remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions
+      remainingFourAtomBridgeBlockerAssumptions remainingPairAtomDeletionAssumptions
+      remainingNoLeftoverDeletionAssumptions where
+  noLeftoverDeletionFrontierCert := hnoLeftover
+  endpointSurfaces := hsurfaces
+  sharedPackedAtom_rebate_identityCert := hidentity
+  properSubfamily_projectedGain_nonpositiveCert := hproperGain
+  properSubfamily_rebate_boundCert := hproperRebate
+  fullCircuit_projectedGain_positiveCert := hfullGain
+  fullCircuit_rebate_overpayCert := hfullRebate
+  splitPackedAtom_between_forced_petalsCert := hsplit
+  pairCollision_two_or_three_endpoint := htwoThree
+  twoPetalSplitAtomOverpay_summaryCert := htwo
+  genuineThreePetalRebateCircuit_summaryCert := hthree
+  no_larger_or_diffuse_pairCollisionCert := hnodiffuse
+
+end FirstBitTerminalRankThreePairCollisionRebateCircuitFrontierConstruction
+
+section FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier
+
+variable {Vertex Triple Coord Atom Move RepairFamily Lift PairPivot CollisionStar UnitAbsorption
+  LiftCollision CollisionCircuit CollisionPetal Bridge Thickening Replacement : Type*}
+variable [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord] [DecidableEq Atom]
+variable [DecidableEq CollisionPetal]
+variable {coreVertices : Finset Vertex} {activeCoordinates zeroFilter : Finset Coord}
+variable {retainedTargets : Finset (Finset Vertex)}
+variable {outgoingTriples : Finset Vertex → Finset Triple}
+variable {tripleSupport : Triple → Finset Vertex}
+variable {rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord}
+variable {atomPartition : Finset Vertex → Triple → Finset Atom}
+variable {atomBlock : Finset Vertex → Triple → Atom → Finset Vertex}
+variable {pureTwoAtomSupport : Finset Vertex → Triple → Atom → Atom → Finset Vertex}
+variable {deletedPackedBlock : Finset Vertex → Triple → Atom → Finset Vertex}
+variable {packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount :
+  Finset Vertex → Triple → ℕ}
+variable {pureTwoAtomGain : Finset Vertex → Triple → Atom → Atom → ℤ}
+variable {liftTotalGain : Finset Vertex → Triple → Atom → RepairFamily → Lift → ℤ}
+variable {deletionGain : Finset Vertex → Triple → Atom → ℤ}
+variable {pairPivotSupport : Finset Vertex → Triple → Atom → PairPivot → Finset Vertex}
+variable {collisionStarSupport collisionStarLeafSet :
+  Finset Vertex → Triple → Atom → CollisionStar → Finset Vertex}
+variable {collisionStarCenter : Finset Vertex → Triple → Atom → CollisionStar → Vertex}
+variable {crossAtomSupport : Finset Vertex → Triple → Finset Atom → Finset Vertex}
+variable {unitAbsorptionHeight unitAbsorptionTerminalCount unitAbsorptionDeletedGain :
+  Finset Vertex → Triple → Atom → UnitAbsorption → ℕ}
+variable {unitAbsorptionFullGain : Finset Vertex → Triple → Atom → UnitAbsorption → ℤ}
+variable {liftCollisionVertex : Finset Vertex → Triple → Atom → LiftCollision → Vertex}
+variable {pairCollisionCircuitPetals forcedPairCollisionPetals :
+  Finset Vertex → Triple → Atom → CollisionCircuit → Finset CollisionPetal}
+variable {pairCollisionPetalDeficit :
+  Finset Vertex → Triple → Atom → CollisionCircuit → CollisionPetal → ℕ}
+variable {sharedPackedAtomRebate :
+  Finset Vertex → Triple → Atom → CollisionCircuit → Finset CollisionPetal → ℕ}
+variable {pairCollisionProjectedGain :
+  Finset Vertex → Triple → Atom → CollisionCircuit → Finset CollisionPetal → ℤ}
+variable {pairCollisionPetalTouchesPackedAtom :
+  Finset Vertex → Triple → Atom → CollisionCircuit → CollisionPetal → Atom → Prop}
+variable {m : ℕ}
+variable {scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+  terminalResolved rankThreeBridgeObstructed : Finset Vertex → Triple → Prop}
+variable {feasibleComplementShadowPacking capacityDeficient : Finset Vertex → Triple → Prop}
+variable {oneSavingBridge : Finset Vertex → Triple → Bridge → Prop}
+variable {thickeningBlocker : Finset Vertex → Triple → Thickening → Prop}
+variable {replacementBlocker : Finset Vertex → Triple → Replacement → Prop}
+variable {forbiddenSupport : Finset Vertex → Triple → Finset Vertex → Prop}
+variable {zeroGainMove sameTerminalClass : Finset Vertex → Triple → Move → Prop}
+variable {packedAtom sizeTwoPackedAtom : Finset Vertex → Triple → Atom → Prop}
+variable {minimalPositiveRepairFamily : Finset Vertex → Triple → Atom → RepairFamily → Prop}
+variable {fullLift : Finset Vertex → Triple → Atom → RepairFamily → Lift → Prop}
+variable {pairDeletionPivot zeroGainPairPivot sameSizePairExchange :
+  Finset Vertex → Triple → Atom → PairPivot → Prop}
+variable {leftoverSingleton : Finset Vertex → Triple → Atom → PairPivot → Vertex → Prop}
+variable {collisionStarDeletion : Finset Vertex → Triple → Atom → CollisionStar → Prop}
+variable {allPairSaturatedPacking pairDeletionEndpointResolved : Finset Vertex → Triple → Prop}
+variable {strictCrossAtomDefect : Finset Vertex → Triple → Atom → Atom → Prop}
+variable {firstNoLeftoverCore : Finset Vertex → Triple → Prop}
+variable {unitStrictAbsorption : Finset Vertex → Triple → Atom → UnitAbsorption → Prop}
+variable {deletedVertexLiftCollision : Finset Vertex → Triple → Atom → LiftCollision → Prop}
+variable {noLeftoverDeletionRepair : Finset Vertex → Triple → Atom → Prop}
+variable {pairCollisionRebateCircuit twoPetalSplitAtomOverpay genuineThreePetalRebateCircuit :
+  Finset Vertex → Triple → Atom → CollisionCircuit → Prop}
+variable {targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+  scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+  fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+  tracePinningFrontier rankThreeBridgeObstruction terminalRankThreeClosure
+  zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+  smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+  strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+  deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+  sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+  twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+  noLargerDiffusePairCollisionMode remainingUniversalDichotomyAssumptions
+  remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions
+  remainingFourAtomBridgeBlockerAssumptions remainingPairAtomDeletionAssumptions
+  remainingNoLeftoverDeletionAssumptions : Prop}
+
+variable (h :
+  FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier coreVertices activeCoordinates
+    zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport complementShadowPacking
+    atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock packingSaving bridgeClosingThreshold
+    packedAtomCount looseAtomCount pureTwoAtomGain liftTotalGain deletionGain pairPivotSupport
+    collisionStarSupport collisionStarLeafSet collisionStarCenter crossAtomSupport unitAbsorptionHeight
+    unitAbsorptionTerminalCount unitAbsorptionDeletedGain unitAbsorptionFullGain liftCollisionVertex
+    pairCollisionCircuitPetals forcedPairCollisionPetals pairCollisionPetalDeficit
+    sharedPackedAtomRebate pairCollisionProjectedGain pairCollisionPetalTouchesPackedAtom m
+    scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive terminalResolved
+    rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient oneSavingBridge
+    thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove sameTerminalClass packedAtom
+    sizeTwoPackedAtom minimalPositiveRepairFamily fullLift pairDeletionPivot zeroGainPairPivot
+    sameSizePairExchange leftoverSingleton collisionStarDeletion allPairSaturatedPacking
+    pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore unitStrictAbsorption
+    deletedVertexLiftCollision noLeftoverDeletionRepair pairCollisionRebateCircuit
+    twoPetalSplitAtomOverpay genuineThreePetalRebateCircuit targetCoverCoherenceFrontier
+    mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+    fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+    singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+    terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+    smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+    strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+    deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+    sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+    twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+    noLargerDiffusePairCollisionMode remainingUniversalDichotomyAssumptions
+    remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions
+    remainingFourAtomBridgeBlockerAssumptions remainingPairAtomDeletionAssumptions
+    remainingNoLeftoverDeletionAssumptions)
+
+/-- Project the no-leftover deletion frontier underneath the rebate-circuit layer. -/
+@[simp] theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.to_noLeftoverDeletionFrontier :
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+      collisionStarCenter crossAtomSupport unitAbsorptionHeight unitAbsorptionTerminalCount
+      unitAbsorptionDeletedGain unitAbsorptionFullGain liftCollisionVertex m scalarKilledTerminal
+      smallActiveZeroFilter lowRankBounded rankThreeHighActive terminalResolved
+      rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient oneSavingBridge
+      thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove sameTerminalClass
+      packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily fullLift pairDeletionPivot
+      zeroGainPairPivot sameSizePairExchange leftoverSingleton collisionStarDeletion
+      allPairSaturatedPacking pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore
+      unitStrictAbsorption deletedVertexLiftCollision noLeftoverDeletionRepair
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+      deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions :=
+  h.noLeftoverDeletionFrontierCert
+
+/-- Project the endpoint facade from the rebate-circuit layer. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.to_endpointSurfaces :
+    FirstBitTerminalPairCollisionRebateCircuitEndpointSurfaces
+      sharedPackedAtomRebateIdentity splitPackedAtomBetweenForcedPetals
+      twoPetalOverpayOrGenuineThreePetalCircuit properSubfamilyNonpositive
+      noLargerDiffusePairCollisionMode :=
+  h.endpointSurfaces
+
+/-- Reuse the pair-atom deletion frontier through the rebate-circuit layer. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.to_pairAtomDeletionFrontier :
+    FirstBitTerminalRankThreePairAtomDeletionFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+      collisionStarCenter m scalarKilledTerminal smallActiveZeroFilter lowRankBounded
+      rankThreeHighActive terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking
+      capacityDeficient oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport
+      zeroGainMove sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily
+      fullLift pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton
+      collisionStarDeletion allPairSaturatedPacking pairDeletionEndpointResolved
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions :=
+  h.to_noLeftoverDeletionFrontier.to_pairAtomDeletionFrontier
+
+/-- Project the shared packed-atom rebate identity marker. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.to_sharedPackedAtomRebateIdentity :
+    sharedPackedAtomRebateIdentity :=
+  h.endpointSurfaces.to_sharedPackedAtomRebateIdentity
+
+/-- Project the split packed-atom marker. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.to_splitPackedAtomBetweenForcedPetals :
+    splitPackedAtomBetweenForcedPetals :=
+  h.endpointSurfaces.to_splitPackedAtomBetweenForcedPetals
+
+/-- Project the two-petal / three-petal endpoint marker. -/
+theorem
+    FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.to_twoPetalOverpayOrGenuineThreePetalCircuit :
+    twoPetalOverpayOrGenuineThreePetalCircuit :=
+  h.endpointSurfaces.to_twoPetalOverpayOrGenuineThreePetalCircuit
+
+/-- Project the proper-subfamily nonpositive marker. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.to_properSubfamilyNonpositive :
+    properSubfamilyNonpositive :=
+  h.endpointSurfaces.to_properSubfamilyNonpositive
+
+/-- Project the no-larger/diffuse pair-collision marker. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.to_noLargerDiffusePairCollisionMode :
+    noLargerDiffusePairCollisionMode :=
+  h.endpointSurfaces.to_noLargerDiffusePairCollisionMode
+
+/-- Reuse the no-leftover four-four core summary through the rebate-circuit layer. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.firstNoLeftoverCore_summary
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X) :
+    (atomPartition T X).card = 4 ∧
+      (∀ atom : Atom, atom ∈ atomPartition T X → (atomBlock T X atom).card = 4) ∧
+        (∀ atoms : Finset Atom, atoms ⊆ atomPartition T X → atoms.card = 2 →
+          (crossAtomSupport T X atoms).card ≤ 6) ∧
+          (∀ atoms : Finset Atom, atoms ⊆ atomPartition T X → atoms.card = 3 →
+            (crossAtomSupport T X atoms).card ≤ 9) ∧
+            ∀ atoms : Finset Atom, atoms ⊆ atomPartition T X → atoms.card = 4 →
+              (crossAtomSupport T X atoms).card ≤ 12 :=
+  h.to_noLeftoverDeletionFrontier.firstNoLeftoverCore_summary hT hX hrank hcore
+
+/-- Reuse the no-leftover deletion-repair dichotomy before entering the rebate endpoint. -/
+theorem
+    FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.deletion_repair_dichotomy_of_noLeftoverCore
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom) :
+    noLeftoverDeletionRepair T X atom ∧
+      ((∃ absorption : UnitAbsorption, unitStrictAbsorption T X atom absorption) ∨
+        (∃ collision : LiftCollision, deletedVertexLiftCollision T X atom collision)) :=
+  h.to_noLeftoverDeletionFrontier.deletion_repair_dichotomy_of_noLeftoverCore
+    hT hX hrank hcore hatom hpacked
+
+/-- The shared packed-atom rebate identity for every subfamily of a collision circuit. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.sharedPackedAtom_rebate_identity
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hcircuit : pairCollisionRebateCircuit T X atom circuit)
+    {petals : Finset CollisionPetal}
+    (hpetals : petals ⊆ pairCollisionCircuitPetals T X atom circuit) :
+    pairCollisionProjectedGain T X atom circuit petals +
+        (pairCollisionRebateCircuitDeficitSum
+          (pairCollisionPetalDeficit T X atom circuit) petals : ℤ) =
+      (sharedPackedAtomRebate T X atom circuit petals : ℤ) :=
+  h.sharedPackedAtom_rebate_identityCert T hT X hX hrank hcore atom hatom hpacked circuit
+    hcircuit petals hpetals
+
+/-- Proper subfamilies have nonpositive projected gain. -/
+theorem
+    FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.properSubfamily_projectedGain_nonpositive
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hcircuit : pairCollisionRebateCircuit T X atom circuit)
+    {petals : Finset CollisionPetal}
+    (hpetals : petals ⊆ pairCollisionCircuitPetals T X atom circuit)
+    (hproper : petals ≠ pairCollisionCircuitPetals T X atom circuit) :
+    pairCollisionProjectedGain T X atom circuit petals ≤ 0 :=
+  h.properSubfamily_projectedGain_nonpositiveCert T hT X hX hrank hcore atom hatom hpacked
+    circuit hcircuit petals hpetals hproper
+
+/-- Proper subfamilies have rebate at most their deficit sum. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.properSubfamily_rebate_bound
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hcircuit : pairCollisionRebateCircuit T X atom circuit)
+    {petals : Finset CollisionPetal}
+    (hpetals : petals ⊆ pairCollisionCircuitPetals T X atom circuit)
+    (hproper : petals ≠ pairCollisionCircuitPetals T X atom circuit) :
+    pairCollisionRebateCircuitNonpositive
+      (sharedPackedAtomRebate T X atom circuit)
+      (pairCollisionPetalDeficit T X atom circuit) petals :=
+  h.properSubfamily_rebate_boundCert T hT X hX hrank hcore atom hatom hpacked circuit
+    hcircuit petals hpetals hproper
+
+/-- The full collision circuit has positive projected gain. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.fullCircuit_projectedGain_positive
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hcircuit : pairCollisionRebateCircuit T X atom circuit) :
+    0 < pairCollisionProjectedGain T X atom circuit
+      (pairCollisionCircuitPetals T X atom circuit) :=
+  h.fullCircuit_projectedGain_positiveCert T hT X hX hrank hcore atom hatom hpacked circuit
+    hcircuit
+
+/-- The full collision circuit overpays its total deficit by shared packed-atom rebate. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.fullCircuit_rebate_overpay
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hcircuit : pairCollisionRebateCircuit T X atom circuit) :
+    pairCollisionRebateCircuitOverpays
+      (sharedPackedAtomRebate T X atom circuit)
+      (pairCollisionPetalDeficit T X atom circuit)
+      (pairCollisionCircuitPetals T X atom circuit) :=
+  h.fullCircuit_rebate_overpayCert T hT X hX hrank hcore atom hatom hpacked circuit hcircuit
+
+/-- A surviving pair-collision circuit splits a packed atom between two forced petals. -/
+theorem
+    FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.splitPackedAtom_between_forced_petals
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hcircuit : pairCollisionRebateCircuit T X atom circuit) :
+    ∃ packed : Atom, packed ∈ atomPartition T X ∧ packedAtom T X packed ∧
+      ∃ p : CollisionPetal, p ∈ forcedPairCollisionPetals T X atom circuit ∧
+        ∃ q : CollisionPetal, q ∈ forcedPairCollisionPetals T X atom circuit ∧
+          p ≠ q ∧ pairCollisionPetalTouchesPackedAtom T X atom circuit p packed ∧
+            pairCollisionPetalTouchesPackedAtom T X atom circuit q packed :=
+  h.splitPackedAtom_between_forced_petalsCert T hT X hX hrank hcore atom hatom hpacked
+    circuit hcircuit
+
+/-- Pair-collision rebate circuits are either two-petal overpays or genuine three-petal circuits. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.two_or_three_rebateCircuit
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hcircuit : pairCollisionRebateCircuit T X atom circuit) :
+    twoPetalSplitAtomOverpay T X atom circuit ∨
+      genuineThreePetalRebateCircuit T X atom circuit :=
+  h.pairCollision_two_or_three_endpoint T hT X hX hrank hcore atom hatom hpacked
+    circuit hcircuit
+
+/-- The two-petal branch is exactly a split-atom overpay. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.twoPetalSplitAtomOverpay_summary
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (htwo : twoPetalSplitAtomOverpay T X atom circuit) :
+    (forcedPairCollisionPetals T X atom circuit).card = 2 ∧
+      pairCollisionRebateCircuitOverpays
+        (sharedPackedAtomRebate T X atom circuit)
+        (pairCollisionPetalDeficit T X atom circuit)
+        (forcedPairCollisionPetals T X atom circuit) :=
+  h.twoPetalSplitAtomOverpay_summaryCert T hT X hX hrank hcore atom hatom hpacked circuit htwo
+
+/-- The three-petal branch has nonpositive pairs and a positive full rebate circuit. -/
+theorem
+    FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.genuineThreePetalRebateCircuit_summary
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hthree : genuineThreePetalRebateCircuit T X atom circuit) :
+    (forcedPairCollisionPetals T X atom circuit).card = 3 ∧
+      (∀ petals : Finset CollisionPetal,
+        petals ⊆ forcedPairCollisionPetals T X atom circuit → petals.card = 2 →
+          pairCollisionRebateCircuitNonpositive
+            (sharedPackedAtomRebate T X atom circuit)
+            (pairCollisionPetalDeficit T X atom circuit) petals) ∧
+        pairCollisionRebateCircuitOverpays
+          (sharedPackedAtomRebate T X atom circuit)
+          (pairCollisionPetalDeficit T X atom circuit)
+          (forcedPairCollisionPetals T X atom circuit) :=
+  h.genuineThreePetalRebateCircuit_summaryCert T hT X hX hrank hcore atom hatom hpacked
+    circuit hthree
+
+/-- There is no larger or diffuse pair-collision mode beyond the forced two/three petals. -/
+theorem
+    FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.no_larger_or_diffuse_pairCollision
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hcircuit : pairCollisionRebateCircuit T X atom circuit) :
+    pairCollisionCircuitPetals T X atom circuit = forcedPairCollisionPetals T X atom circuit ∧
+      ((forcedPairCollisionPetals T X atom circuit).card = 2 ∨
+        (forcedPairCollisionPetals T X atom circuit).card = 3) :=
+  h.no_larger_or_diffuse_pairCollisionCert T hT X hX hrank hcore atom hatom hpacked
+    circuit hcircuit
+
+/-- The visible circuit petal set has cardinality two or three. -/
+theorem FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier.circuitPetals_card_eq_two_or_three
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom)
+    {circuit : CollisionCircuit} (hcircuit : pairCollisionRebateCircuit T X atom circuit) :
+    (pairCollisionCircuitPetals T X atom circuit).card = 2 ∨
+      (pairCollisionCircuitPetals T X atom circuit).card = 3 := by
+  rcases h.no_larger_or_diffuse_pairCollisionCert T hT X hX hrank hcore atom hatom hpacked
+      circuit hcircuit with ⟨heq, hcard⟩
+  rw [heq]
+  exact hcard
+
+end FirstBitTerminalRankThreePairCollisionRebateCircuitFrontier
+
 /--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
