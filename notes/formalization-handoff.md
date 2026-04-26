@@ -2402,6 +2402,12 @@ Recommended attack:
     Add the finite capacity-table criterion: `c_Z(B)` counts admissible columns with active support `B`;
     three-cover existence is equivalent to a disjoint three-block cover of `A` respecting these
     multiplicities, and zero-coordinate deletion changes the table to `c_{Z\{z}}`.
+    For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
+    plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
+    or three singletons, as appropriate to `|A|`.
+    Add the private-column relaxation formula
+    `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts active support `B` columns whose zero trace is
+    exactly `{z}`.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

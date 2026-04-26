@@ -11275,6 +11275,45 @@ failure is witnessed by a deficient support in every ordered three-block partiti
 coordinate `z` is deleted, the same test uses `c_{Z\{z}}`; minimality says at least one formerly deficient
 partition becomes capacity-feasible for each such `z`.
 
+For `|A|<=3` this criterion is the following table:
+
+```text
+A=empty:
+    c(empty) >= 3.
+
+A={a}:
+    c({a}) >= 1 and c(empty) >= 2.
+
+A={a,b}:
+    either c({a,b}) >= 1 and c(empty) >= 2,
+    or     c({a}) >= 1, c({b}) >= 1, and c(empty) >= 1.
+
+A={a,b,c}:
+    either c({a,b,c}) >= 1 and c(empty) >= 2,
+    or     c(P) >= 1, c(A\P) >= 1, and c(empty) >= 1 for some pair P subset A,
+    or     c({a}) >= 1, c({b}) >= 1, and c({c}) >= 1.
+```
+
+Thus every small-active zero-filter obstruction is a failure of one of these displayed alternatives for
+`c_Z`, while criticality says the corresponding table succeeds for each relaxed filter `c_{Z\{z}}`.
+
+The effect of relaxing one zero coordinate is also explicit.  Let
+
+```text
+p_z(B)=#{y in O : a(y) cap A = B and a(y) cap Z = {z}}.
+```
+
+Then
+
+```text
+c_{Z\{z}}(B)=c_Z(B)+p_z(B).
+```
+
+So every zero-coordinate criticality witness is supported by columns private to that zero coordinate.  In
+the all-zero case this says: if `q=c_Z(empty)<=2`, then each `z in Z` has at least `3-q` outside columns
+whose trace on `Z` is exactly `{z}`.  More generally, for `|A|<=3`, each relaxed cover must repair one of
+the deficient displayed support alternatives using private `p_z(B)` capacity.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

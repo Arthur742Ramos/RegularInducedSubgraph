@@ -1021,6 +1021,9 @@ Small active dimension `|A|<=3` is only a finite support-capacity failure inside
 filtered-cover branch has `|A|>=4`.
 The capacity table is `c_Z(B)` for active supports `B subset A`; a cover is exactly three disjoint support
 blocks covering `A` whose multiplicities are bounded by `c_Z(B)`.
+For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
+pair+singleton plus empty, or three singletons.
+Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

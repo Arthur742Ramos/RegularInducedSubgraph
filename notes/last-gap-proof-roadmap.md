@@ -1931,6 +1931,8 @@ What remains justified after audit is:
       filtered-cover branch has `|A|>=4`;
       finite zero-filter obstructions are governed by the support-count table `c_Z(B)` and disjoint
       three-block covers of `A`;
+      for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
+      relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on
