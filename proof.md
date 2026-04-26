@@ -9425,6 +9425,27 @@ unsatisfied vertices may have nonconstant degree into the pre-satisfied fiber.  
 therefore be phrased either as the packet replacement theorem above or as a contamination-removal
 lemma for a large pre-satisfied fiber.
 
+In the unconstrained one-large-class selector, the co-cut inequalities are stronger than in the
+old-vector exchange problem because every equal-size exchange is allowed.  Let `B` be a cardinal-maximal
+label-correct selected set, `X=V(H)\B`, and let `T` be the current target layer inside `B`.  In a pure
+`T_2` terminal branch, summing the pair-exchange inequality over all export pairs
+`Y in binom(B,2)` and all import pairs `Z in binom(X,2)` gives
+
+```text
+sum_{u in T_2} [
+  binom(deg_B(u),2) binom(|X|-deg_X(u),2)
+  + binom(|B|-deg_B(u),2) binom(deg_X(u),2)
+]
+<= total pair-damage on T plus exported/imported target terms.
+```
+
+Thus an unpaid `2`-error vertex is forced to be globally almost constant across the cut: it cannot see
+many vertices of `B` while missing many of `X`, and it cannot miss many vertices of `B` while seeing many
+of `X`.  Equivalently, outside the target-damage budget, every pure `T_2` vertex is either sparse on both
+sides or dense on both sides, up to one-corner exceptions.  This biquadratic domination is the
+unrestricted analogue of the exact-basis majority rule, and it is the current sharp local form of the
+terminal co-cut/self-layer selector.
+
 One stronger way to prove it would be a global fixed-point coloring
 `gamma : V(H) -> Z/4Z` satisfying
 
