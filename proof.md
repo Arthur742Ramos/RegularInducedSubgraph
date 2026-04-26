@@ -6681,6 +6681,9 @@ usable pairs form an intersecting family of two-subsets of `W`; hence they are e
 single old vertex, or they are exactly contained in the three edges of one old triangle.  Thus the
 unit-shift branch reduces to a star/triangle obstruction inside `W`, while the `sigma_g=2` branch is the
 only branch with potentially spread-out disjoint pair repairs.
+Equivalently, in the unit branch there is a kernel `K_g subset W` with `|K_g|<=3` such that every usable
+singleton or pair deletion disjoint from `K_g` has zero shift against the direction.  The star case has
+`|K_g|<=1`, and the only non-star possibility is the triangle case.
 
 In the `sigma_g=2` branch the pair table simplifies further.  A split pair (`c=1`) has shifts
 `a-1 in {3,0,1}`, so it never contributes shift `2`.  The only nonzero repairs are:
@@ -6692,6 +6695,10 @@ c=2: complete old pair with a=0, i.e. both deleted vertices avoid N_W(b_g).
 
 Thus the opposite-shift branch is not arbitrary: every surviving nonzero pair repair is either an
 old-anticomplete pair fully inside the direction neighbourhood or an old-complete pair fully outside it.
+It also has no nonzero singleton repairs.  Therefore any old vertex isolated from `W\{x}` in the
+`r=0` singleton case must be missed by the direction type `b_g`, and any old vertex complete to
+`W\{x}` in the `r=m-1` singleton case must be hit by `b_g`.  Equivalently, all usable singleton shifts
+are forced to be zero in the `sigma_g=2` branch.
 
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has

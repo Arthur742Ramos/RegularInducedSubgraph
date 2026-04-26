@@ -1515,8 +1515,12 @@ Recommended attack:
    is the only case where disjoint nonzero repairs can add to zero.
    For unit `sigma_g`, formalize the standard pair-family classification: the nonzero pair repairs are
    a star, or (if no nonzero singleton exists) contained in one old triangle.
+   Equivalently, formalize the unit-branch kernel `K_g` with `|K_g|<=3` such that all usable singleton
+   or pair deletions disjoint from `K_g` have zero shift.
    For `sigma_g=2`, split old pairs contribute no nonzero shift; only anticomplete pairs inside
    `N_W(b_g)` and complete pairs outside `N_W(b_g)` contribute.
+   Also record singleton zero-shift constraints in the `sigma_g=2` branch: isolated usable old vertices
+   are outside `N_W(b_g)`, and universal usable old vertices are inside `N_W(b_g)`.
 
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is

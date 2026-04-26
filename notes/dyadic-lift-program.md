@@ -994,8 +994,12 @@ zero.
 For unit `sigma_g`, the pair family is therefore a star or a triangle: if a nonzero singleton exists all
 nonzero pairs contain it; otherwise pairwise-intersecting two-subsets are either all incident to one old
 vertex or lie in the three edges of one old triangle.
+Equivalently, there is a kernel `K_g subset W`, `|K_g|<=3`, such that every usable singleton or pair
+deletion disjoint from `K_g` has zero shift.
 For `sigma_g=2`, split pairs never contribute.  The nonzero pair repairs are exactly anticomplete old
 pairs with both vertices in `N_W(b_g)` or complete old pairs with both vertices outside `N_W(b_g)`.
+All usable singleton shifts are zero: isolated old deletion vertices in the `r=0` case are missed by
+`b_g`, and universal old deletion vertices in the `r=m-1` case are hit by `b_g`.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has
