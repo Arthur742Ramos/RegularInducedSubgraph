@@ -7228,6 +7228,25 @@ cross-complete subfamily of more than `2m/3` coordinate triples.  Any surviving 
 obstruction must therefore contain a genuinely mixed cross-interaction graph on every supercritical
 subfamily of triples.
 
+There is also a useful parity-tight form when the cross-interaction is homogeneous but not constant.
+Suppose a family `I` of non-triangle boundary triples has the property that every pair of triples is
+cross-empty or cross-complete; let `Q` be the quotient graph recording cross-complete pairs.  Each
+triple in `I` has a nonedge pair of internal residue `0`.  Hence, for any `U subset I` with `Q[U]`
+even, selecting such a pair from every triple of `U` gives an outside-only residue-`0` set of size
+`2|U|`, because every selected vertex sees `2 deg_{Q[U]}(i)=0 [MOD 4]` outside its own triple.
+Consequently terminality forces every even induced subgraph of `Q` to have size at most `m/2`.
+Gallai's theorem is therefore tight on any homogeneous non-triangle quotient that remains near the
+critical density.
+
+The tight case has little room for outside vertices.  Let `U` be an even quotient set with
+`2|U|>=m-1`.  If a non-triangle triple `X_j` outside `U` is cross-empty to all triples of `U`, then
+adding a nonedge pair from `X_j` preserves residue `0` and gives size `2|U|+2>m`.  If `X_j` is
+cross-complete to all triples of `U` and `|U|` is odd, the same addition gives residue `2` on every
+selected vertex.  Thus a terminal homogeneous quotient must not only be Gallai-half-tight; every
+outside non-triangle coordinate must have a genuinely mixed neighbourhood into each near-half even
+quotient class (except for the complete case when `|U|` is even).  This is the homogeneous-quotient
+version of the finite-alphabet mixed-interaction barrier.
+
 The boundary side has one more structural feature: `X` is zero-sum-free in
 `C_4^(m-1)` and has length at most the exact Davenport extremal value `3(m-1)`.  Hence the terminal
 case splits naturally into two regimes.

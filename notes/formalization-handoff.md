@@ -1739,6 +1739,11 @@ Recommended attack:
    The same cap holds for cross-complete families by complementing the induced graph on the family:
    congruent degrees in the complement translate to congruent degrees in `G` via
    `deg_G[S](v)=|S|-1-deg_{\bar G[S]}(v)`.
+   For homogeneous cross-interaction on non-triangle triples, formalize the quotient lemma: if `Q[U]`
+   is even, choosing a nonedge pair from each triple in `U` gives a residue-`0` outside-only selector of
+   size `2|U|`.  Hence terminality implies `even_selector(Q)<=m/2`.  If `2|U|>=m-1`, an outside
+   non-triangle triple that is cross-empty to all of `U` augments by a nonedge pair; if it is
+   cross-complete to all of `U` and `|U|` is odd, the same augmentation gives residue `2`.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

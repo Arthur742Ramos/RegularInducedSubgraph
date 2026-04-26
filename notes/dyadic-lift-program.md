@@ -1213,6 +1213,13 @@ By complementing the induced graph on such a family, the same `2m/3` cap exclude
 families: congruent degrees in the complement translate back by
 `deg_G[S](v)=|S|-1-deg_{\bar G[S]}(v)`.  Therefore any surviving sparse boundary obstruction must have
 mixed cross-interactions on every supercritical subfamily of coordinate triples.
+For a homogeneous but nonconstant cross-interaction on non-triangle triples, pass to the quotient graph
+`Q` whose edges are cross-complete triple pairs.  A nonedge pair from each triple in an even induced
+subgraph `Q[U]` gives an outside-only residue-`0` set of size `2|U|`.  Thus terminality forces
+`even_selector(Q)<=m/2`, so Gallai is tight near the critical density.  Moreover, if
+`2|U|>=m-1`, any outside non-triangle triple that is cross-empty to all of `U` augments the selector,
+and any outside non-triangle triple cross-complete to all of `U` augments it when `|U|` is odd.  The
+surviving homogeneous quotient must therefore have mixed neighbourhoods into every near-half even class.
 
 The zero-sum-free boundary `X` has length at most the Davenport extremal value `3(m-1)` in
 `C_4^(m-1)`.  This suggests the next split:
