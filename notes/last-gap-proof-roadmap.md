@@ -1896,6 +1896,8 @@ What remains justified after audit is:
       satisfying `deg_D(v)=b(v)-lambda`, so the residual is a labeled principal-bucket pruning problem;
       this has a bad-vertex elimination form for each `lambda`, and label-refined twin/module exits force
       `4*2^r>|R|/m` in graph and complement;
+      the residual is hereditary with relabeling `b_U=b-deg_{R\U}`, so the one-over-threshold form only
+      forces inherited-label nonconstancy and the parent co-cut coupling must still be used;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

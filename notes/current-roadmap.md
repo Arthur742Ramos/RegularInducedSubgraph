@@ -5250,6 +5250,9 @@ Equivalently, for each `lambda`, every `U` with `|U|>m` contains a currently bad
 `lambda` by their outside contribution; constant-label false/true twin classes larger than `m` close as
 independent/clique labeled selectors, giving the label-refined rank bound `4*2^r>|R|/m` in graph and
 complement.
+The residual is hereditary with relabeling `b_U(v)=b(v)-deg_{R\U}(v)`.  Hence every `m+1` subbucket has
+nonconstant `b_U`; this one-over-threshold condition is vacuous by itself, so the remaining content is the
+parent coupling `b=deg_C mod 4` plus the inherited correction.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

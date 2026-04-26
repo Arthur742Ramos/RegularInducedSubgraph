@@ -2349,6 +2349,9 @@ Recommended attack:
     Add the hereditary elimination equivalent: for each `lambda`, every `U` of size `>m` has a bad vertex
     with `deg_{R\U}(v)!=b(v)-lambda`, yielding an elimination order down to `m`.  Add label-refined
     twin/module exits and the rank bound `4*2^r>|R|/m` for graph and complement row ranks.
+    Add hereditary relabeling: for `U subset R`, selectors lift with `b_U(v)=b(v)-deg_{R\U}(v)`.  Record
+    that the size-`m+1` full-set condition is only nonconstancy of `b_U`, so one must use the parent co-cut
+    origin `b=deg_C mod 4`.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

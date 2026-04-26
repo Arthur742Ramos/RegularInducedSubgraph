@@ -10945,6 +10945,26 @@ is an independent labeled selector, and a true-twin row class with constant labe
 for the `F_2` row-rank `r` of the graph, and likewise for the complement.  The label `b` cannot hide in a
 large low-rank row class.
 
+The labeled obstruction is hereditary, but the label changes.  For `U subset R`, a selector
+`T=U\D` inside `U` lifts to a selector in `R` exactly with the relabeled function
+
+```text
+b_U(v)=b(v)-deg_{R\U}(v)        [MOD 4]        (v in U),
+```
+
+because
+
+```text
+deg_{R\T}(v)=deg_{R\U}(v)+deg_{U\T}(v).
+```
+
+Thus every induced subbucket `(U,b_U)` is again terminal at the same threshold.  In particular, for every
+`U` with `|U|=m+1`, the full-set test `D=emptyset` says `b_U` is nonconstant.  This explains why the
+labeled residual cannot be closed by merely shrinking to one-over-threshold size: any graph on `m+1`
+vertices with a nonconstant label survives the full-set test.  The remaining information is in the parent
+coupling, namely that the label is not arbitrary but is the co-cut degree `deg_C mod 4` from the opposite
+Gallai residue class, and that every subbucket inherits the correction `-deg_{R\U}`.
+
 The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
 theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with
 `vx` and `vy` edges of the original graph; then the degree of `v` in `K[W]` is exactly the carry

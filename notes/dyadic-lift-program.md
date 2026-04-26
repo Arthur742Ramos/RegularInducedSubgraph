@@ -982,6 +982,8 @@ With label `b=deg_C mod 4` on that large class `R`, the selector equation for `T
 `deg_D(v)=b(v)-lambda`; the residual is a labeled deletion-core obstruction.
 This has a hereditary bad-vertex elimination form for each `lambda`, and label-refined twin/module exits:
 large constant-label row or complement-row classes close, and modules lift after a residue shift.
+For `U subset R`, labels inherit as `b_U=b-deg_{R\U}`.  Thus size-`m+1` subbuckets only say `b_U` is
+nonconstant; the useful structure is that the original label comes from the parent co-cut into `C`.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

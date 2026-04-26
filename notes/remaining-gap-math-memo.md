@@ -1912,6 +1912,8 @@ With `b(v)=deg_C(v) mod 4`, selecting `T=R\D` is equivalent to the labeled delet
 `deg_D(v)=b(v)-lambda`; all four labeled cores are small in a terminal counterexample.
 For each `lambda`, this is equivalent to a bad-vertex elimination down to `m`; label-refined modules and
 constant-label twin/cotwin classes larger than `m` close, giving `4*2^r>|R|/m`.
+The obstruction is hereditary with relabeling `b_U=b-deg_{R\U}`; size-`m+1` subbuckets only force
+nonconstant inherited label, so the parent co-cut origin of `b` remains essential.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,
