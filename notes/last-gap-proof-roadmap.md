@@ -1820,6 +1820,9 @@ What remains justified after audit is:
       scale `m`; one-vertex merge shadows force maximum residue-`0` selectors to dominate and give the
       dual non-completion constraints, while two-vertex shadows forbid the uniform missed/complete/
       complementary trace extensions satisfying the corrected pair residue equation;
+      Davenport in `(Z/4)^S` around any maximum core gives zero-trace outside packets in large same-degree
+      chambers, and criticality gives two disjoint packets in one chamber whose unions are internally
+      anti-selector;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

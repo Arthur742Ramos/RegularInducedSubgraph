@@ -2198,6 +2198,11 @@ Recommended attack:
     `p in {0,1,2}` vertices of the pair and
     `a+p==delta+deg_S(x)==delta+deg_S(y) mod 4`.  Expand the three trace cases
     `p=0,1,2`.
+    Formalize the Davenport packet reduction relative to a maximum selector `S` of size `m`: in each
+    chamber `U_t={x:deg_S(x)==t mod 4}`, any `3m+1` vertices contain a nonempty packet whose trace sum to
+    `S` is zero in `(Z/4)^S`.  Such a packet cannot be an internal residue-`a-t` selector, and in the
+    critical case some chamber has size greater than `7m`, giving two disjoint zero-trace packets whose
+    nonempty unions are all internally forbidden.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

@@ -9879,6 +9879,31 @@ vertices missed by `S` with `delta==a`, both complete to `S` with `|S|+delta==a+
 traces on `S` with equal corrected degrees `delta+deg_S(x)==delta+deg_S(y)==a+1`.  These are exactly the
 size-two instances of the quotient anti-merge equation.
 
+There is also a large-packet version forced by Davenport.  Fix a maximum selector `S` of size `m` and
+residue `a`, and partition the outside vertices by
+
+```text
+U_t={x notin S : deg_S(x)==t [MOD 4]}.
+```
+
+For `x in U_t`, let `phi(x) in (Z/4Z)^S` be its trace vector to `S`.  Since
+`D((Z/4Z)^m)=3m+1`, every chamber `U_t` of size at least `3m+1` contains a nonempty packet `X` with
+
+```text
+sum_{x in X} phi(x)=0 in (Z/4Z)^S.
+```
+
+Equivalently, every vertex of `S` has `0 mod 4` neighbours in `X`.  If in addition `H[X]` has all
+degrees congruent to `a-t mod 4`, then `S union X` is an `(m+|X|)`-vertex selector, impossible in a
+terminal bucket.  Hence every zero-trace packet in `U_t` is internally forbidden from having residue
+`a-t`.
+
+In the critical case `|V(H)\S|=31m+1`, one of the four chambers `U_t` has size greater than `7m`.
+For `m>=2`, Davenport can be applied twice disjointly in that chamber.  Thus every maximum core carries
+at least two disjoint zero-trace packets in a single outside degree chamber, and every nonempty union of
+such packets is forbidden from being an internal residue-`a-t` selector.  This is the packet quotient
+form of the terminal anti-merge obstruction.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

@@ -1808,6 +1808,9 @@ A maximum residue-`0` selector is dominating, and a residue-`a` selector with `|
 outside vertex complete to it; dual statements hold in the complement.
 For outside pairs, terminality forbids uniform missed/complete/complementary trace extensions satisfying
 `a+p==delta+deg_S(x)==delta+deg_S(y) mod 4`.
+Davenport in `(Z/4)^S` forces zero-trace outside packets in any degree chamber of size at least `3m+1`;
+criticality gives two disjoint such packets in one chamber, and terminality forbids every nonempty packet
+union from having the matching internal residue.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no
