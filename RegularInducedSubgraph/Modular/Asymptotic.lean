@@ -2297,6 +2297,38 @@ structure HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended : Prop wher
   fromSeventeen :
     HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 17
 
+/--
+Higher-bit affine-selector package for just the live `13 <= m < 17` finite block plus the
+`m >= 17` residual.  The `(m,j) = (13,3)` selector is deliberately omitted: the generic binomial
+Ramsey fallback already closes the corresponding fixed-witness target in the `13`-to-`17` wrapper.
+-/
+structure HigherBitSmallModulusAffineSelectorsFromThirteen : Prop where
+  h13_2 : HasExactSmallModulusAffineCrossSelector 2 13
+  h14_2 : HasExactSmallModulusAffineCrossSelector 2 14
+  h14_3 : HasExactSmallModulusAffineCrossSelector 3 14
+  h15_2 : HasExactSmallModulusAffineCrossSelector 2 15
+  h15_3 : HasExactSmallModulusAffineCrossSelector 3 15
+  h16_2 : HasExactSmallModulusAffineCrossSelector 2 16
+  h16_3 : HasExactSmallModulusAffineCrossSelector 3 16
+  fromSeventeen :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulusAffineCrossSelector 17
+
+/--
+Fixed-witness target package for just the live `13 <= m < 17` finite block plus the `m >= 17`
+residual.  As above, `(m,j) = (13,3)` is omitted because it is supplied by the generic Ramsey
+fallback when the residual is assembled.
+-/
+structure HigherBitSmallModulusFixedWitnessTargetsFromThirteen : Prop where
+  h13_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 13
+  h14_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 14
+  h14_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 14
+  h15_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 15
+  h15_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 15
+  h16_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 16
+  h16_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 16
+  fromSeventeen :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 17
+
 /-- Forget the extra `(13,3)` field from the extended higher-bit selector package. -/
 theorem higherBitSmallModulusAffineSelectorsFromEleven_of_extended
     (h : HigherBitSmallModulusAffineSelectorsFromElevenExtended) :
@@ -2312,6 +2344,26 @@ theorem higherBitSmallModulusAffineSelectorsFromEleven_of_extended
   h16_3 := h.h16_3
   fromSeventeen := h.fromSeventeen
 
+/-- Restrict the base higher-bit affine-selector package to the `13 <= m` tail. -/
+theorem higherBitSmallModulusAffineSelectorsFromThirteen_of_selectorsFromEleven
+    (h : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    HigherBitSmallModulusAffineSelectorsFromThirteen where
+  h13_2 := h.h13_2
+  h14_2 := h.h14_2
+  h14_3 := h.h14_3
+  h15_2 := h.h15_2
+  h15_3 := h.h15_3
+  h16_2 := h.h16_2
+  h16_3 := h.h16_3
+  fromSeventeen := h.fromSeventeen
+
+/-- Restrict the extended higher-bit affine-selector package to the `13 <= m` tail. -/
+theorem higherBitSmallModulusAffineSelectorsFromThirteen_of_extended
+    (h : HigherBitSmallModulusAffineSelectorsFromElevenExtended) :
+    HigherBitSmallModulusAffineSelectorsFromThirteen :=
+  higherBitSmallModulusAffineSelectorsFromThirteen_of_selectorsFromEleven
+    (higherBitSmallModulusAffineSelectorsFromEleven_of_extended h)
+
 /-- Forget the extra `(13,3)` field from the extended fixed-witness target package. -/
 theorem higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extendedTargets
     (h : HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended) :
@@ -2326,6 +2378,26 @@ theorem higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extendedTargets
   h16_2 := h.h16_2
   h16_3 := h.h16_3
   fromSeventeen := h.fromSeventeen
+
+/-- Restrict the base higher-bit fixed-target package to the `13 <= m` tail. -/
+theorem higherBitSmallModulusFixedWitnessTargetsFromThirteen_of_targetsFromEleven
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromEleven) :
+    HigherBitSmallModulusFixedWitnessTargetsFromThirteen where
+  h13_2 := h.h13_2
+  h14_2 := h.h14_2
+  h14_3 := h.h14_3
+  h15_2 := h.h15_2
+  h15_3 := h.h15_3
+  h16_2 := h.h16_2
+  h16_3 := h.h16_3
+  fromSeventeen := h.fromSeventeen
+
+/-- Restrict the extended higher-bit fixed-target package to the `13 <= m` tail. -/
+theorem higherBitSmallModulusFixedWitnessTargetsFromThirteen_of_extendedTargets
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromElevenExtended) :
+    HigherBitSmallModulusFixedWitnessTargetsFromThirteen :=
+  higherBitSmallModulusFixedWitnessTargetsFromThirteen_of_targetsFromEleven
+    (higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extendedTargets h)
 
 /--
 A localized Ramsey bound on `m` versus `m` cliques/independent sets supplies an affine selector:
@@ -2479,6 +2551,31 @@ theorem higherBitSmallModulusFixedWitnessTargetsFromElevenExtended_of_targets
   h16_3 := h.h16_3
   fromSeventeen := h.fromSeventeen
 
+/--
+Assemble the original fixed-target package from the two isolated `4 -> 8` targets and the reduced
+`13 <= m` tail.  This lets frontier wrappers avoid asking for affine selectors at `m = 11, 12`
+when fixed-witness certificates are all that is needed there.
+-/
+theorem higherBitSmallModulusFixedWitnessTargetsFromEleven_of_fourToEightTargets_and_fromThirteen
+    (h11 : HasFourToEightTargetElevenFixedWitnessLift)
+    (h12 : HasFourToEightTargetTwelveFixedWitnessLift)
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromThirteen) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven where
+  h11_2 := by
+    intro n hambient G hinput
+    exact h11 hambient G hinput
+  h12_2 := by
+    intro n hambient G hinput
+    exact h12 hambient G hinput
+  h13_2 := h.h13_2
+  h14_2 := h.h14_2
+  h14_3 := h.h14_3
+  h15_2 := h.h15_2
+  h15_3 := h.h15_3
+  h16_2 := h.h16_2
+  h16_3 := h.h16_3
+  fromSeventeen := h.fromSeventeen
+
 /-- The affine cross-selector form closes the finite `m = 11`, `j = 2` target. -/
 theorem hasFourToEightTargetElevenFixedWitnessLift_of_affineCrossSelector
     (hselector : HasExactSmallModulusAffineCrossSelector 2 11) :
@@ -2508,6 +2605,34 @@ theorem
   refine hasFixedModulusWitnessOfCard_of_subset_cross_modEq_card G hus huCard ?_
   intro v w
   simpa using hcross v w
+
+/-- Affine selectors for the `13 <= m` tail provide the reduced fixed-witness target tail. -/
+theorem higherBitSmallModulusFixedWitnessTargetsFromThirteen_of_affineSelectors
+    (h : HigherBitSmallModulusAffineSelectorsFromThirteen) :
+    HigherBitSmallModulusFixedWitnessTargetsFromThirteen where
+  h13_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h13_2
+  h14_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_2
+  h14_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_3
+  h15_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_2
+  h15_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_3
+  h16_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_2
+  h16_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_3
+  fromSeventeen :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
+      h.fromSeventeen
+
+/--
+Mixed higher-bit package: fixed-witness certificates for `m = 11, 12`, affine selectors only from
+`m = 13` onward.
+-/
+theorem
+    higherBitSmallModulusFixedWitnessTargetsFromEleven_of_fourToEightTargets_and_affineSelectorsFromThirteen
+    (h11 : HasFourToEightTargetElevenFixedWitnessLift)
+    (h12 : HasFourToEightTargetTwelveFixedWitnessLift)
+    (h : HigherBitSmallModulusAffineSelectorsFromThirteen) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven :=
+  higherBitSmallModulusFixedWitnessTargetsFromEleven_of_fourToEightTargets_and_fromThirteen
+    h11 h12 (higherBitSmallModulusFixedWitnessTargetsFromThirteen_of_affineSelectors h)
 
 /-- Affine higher-bit selectors provide the extended fixed-witness target package. -/
 theorem higherBitSmallModulusFixedWitnessTargetsFromElevenExtended_of_affineSelectors
@@ -9054,6 +9179,14 @@ theorem
   hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_with_thirteen_three
     h.h13_2 h.h13_3 h.h14_2 h.h14_3 h.h15_2 h.h15_3 h.h16_2 h.h16_3 h.fromSeventeen
 
+/-- The reduced fixed-target tail closes the `13 <= m` higher-bit residual. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_of_targetsFromThirteen
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromThirteen) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 :=
+  hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen
+    h.h13_2 h.h14_2 h.h14_3 h.h15_2 h.h15_3 h.h16_2 h.h16_3 h.fromSeventeen
+
 /-- Affine higher-bit selectors immediately provide the fixed-witness target package. -/
 theorem higherBitSmallModulusFixedWitnessTargetsFromEleven_of_affineSelectors
     (h : HigherBitSmallModulusAffineSelectorsFromEleven) :
@@ -9108,6 +9241,33 @@ theorem
     · norm_num at hgap
   · exact hsmallTwelve hj hm (Nat.succ_le_of_lt hgt) hsmall hindex hgap hambient G hinput
 
+/--
+Mixed residual wrapper: `m = 11, 12` are fixed-witness targets, while the live `13 <= m < 17`
+block is supplied by the reduced fixed-target tail.
+-/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_fourToEightTargets_and_targetsFromThirteen
+    (h11 : HasFourToEightTargetElevenFixedWitnessLift)
+    (h12 : HasFourToEightTargetTwelveFixedWitnessLift)
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromThirteen) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 :=
+  hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_fixedWitnessTargets
+    (higherBitSmallModulusFixedWitnessTargetsFromEleven_of_fourToEightTargets_and_fromThirteen
+      h11 h12 h)
+
+/--
+Mixed affine residual wrapper: only the `13 <= m` tail is affine; `m = 11, 12` may be discharged
+directly as fixed-witness finite targets.
+-/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_fourToEightTargets_and_affineSelectorsFromThirteen
+    (h11 : HasFourToEightTargetElevenFixedWitnessLift)
+    (h12 : HasFourToEightTargetTwelveFixedWitnessLift)
+    (h : HigherBitSmallModulusAffineSelectorsFromThirteen) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 :=
+  hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_fourToEightTargets_and_targetsFromThirteen
+    h11 h12 (higherBitSmallModulusFixedWitnessTargetsFromThirteen_of_affineSelectors h)
+
 /-- The extended fixed-target package closes the higher-bit small-modulus residual from `m = 11`. -/
 theorem
     hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_extendedTargets
@@ -9148,6 +9308,14 @@ theorem
     HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 :=
   hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_of_extended
     (higherBitSmallModulusAffineSelectorsFromElevenExtended_of_selectors h)
+
+/-- The reduced affine tail closes the `13 <= m` higher-bit residual. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_of_affineSelectorsFromThirteen
+    (h : HigherBitSmallModulusAffineSelectorsFromThirteen) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 :=
+  hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_of_targetsFromThirteen
+    (higherBitSmallModulusFixedWitnessTargetsFromThirteen_of_affineSelectors h)
 
 /-- Extended affine-selector package closes the higher-bit small-modulus residual from `m = 11`. -/
 theorem
@@ -19070,6 +19238,50 @@ theorem targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ra
       (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap_of_twiceLargeGap
         htwiceSeven)
       hterminal
+
+/--
+Mixed higher-bit handoff: the first two higher-bit finite cases are fixed-witness targets, while
+the tail from `m = 13` onward is supplied as reduced fixed-witness targets.
+-/
+theorem
+    targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetsElevenTwelve_and_higherBitFixedWitnessTargetsFromThirteen
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (fourToEightTargetEleven : HasFourToEightTargetElevenFixedWitnessLift)
+    (fourToEightTargetTwelve : HasFourToEightTargetTwelveFixedWitnessLift)
+    (higherBitTargetsFromThirteen : HigherBitSmallModulusFixedWitnessTargetsFromThirteen) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven
+    sevenVertexBooleanCertificate evenDegreeModFourLoss32 ramseyTenSmallTable
+    fixedWitnessExternalBlockSelfBridgeFive
+    (higherBitSmallModulusFixedWitnessTargetsFromEleven_of_fourToEightTargets_and_fromThirteen
+      fourToEightTargetEleven fourToEightTargetTwelve higherBitTargetsFromThirteen)
+
+/--
+Mixed higher-bit affine handoff: `m = 11, 12` only need fixed-witness targets; affine cancellation is
+required from the `13 <= m` tail onward.
+-/
+theorem
+    targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetsElevenTwelve_and_higherBitAffineSelectorsFromThirteen
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (fourToEightTargetEleven : HasFourToEightTargetElevenFixedWitnessLift)
+    (fourToEightTargetTwelve : HasFourToEightTargetTwelveFixedWitnessLift)
+    (higherBitSelectorsFromThirteen : HigherBitSmallModulusAffineSelectorsFromThirteen) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven
+    sevenVertexBooleanCertificate evenDegreeModFourLoss32 ramseyTenSmallTable
+    fixedWitnessExternalBlockSelfBridgeFive
+    (higherBitSmallModulusFixedWitnessTargetsFromEleven_of_fourToEightTargets_and_affineSelectorsFromThirteen
+      fourToEightTargetEleven fourToEightTargetTwelve higherBitSelectorsFromThirteen)
 
 /--
 Same sharp handoff, accepting the extended fixed-witness target package with the explicit

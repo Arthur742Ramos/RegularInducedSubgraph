@@ -394,6 +394,80 @@ def certifiedProofMdExternalBlockNonRamseyFixedTargetsRestCertificate_of_extende
   fixedWitnessExternalBlockSelfBridgeFive := h.fixedWitnessExternalBlockSelfBridgeFive
   higherBitTargets := higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extendedTargets h.higherBitTargets
 
+/--
+Rest-only certificate with a mixed higher-bit surface: direct fixed-witness targets for
+`m = 11, 12`, and reduced fixed-witness targets only from `m = 13` onward.
+-/
+structure CertifiedProofMdExternalBlockNonRamseyMixedFixedTargetsRestCertificate : Type where
+  evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph
+  fixedWitnessExternalBlockSelfBridgeFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5
+  fourToEightTargetEleven : HasFourToEightTargetElevenFixedWitnessLift
+  fourToEightTargetTwelve : HasFourToEightTargetTwelveFixedWitnessLift
+  higherBitTargetsFromThirteen : HigherBitSmallModulusFixedWitnessTargetsFromThirteen
+
+/-- Forget the exact `m = 11, 12` field shape from the full fixed-target rest package. -/
+def certifiedProofMdExternalBlockNonRamseyMixedFixedTargetsRestCertificate_of_fixedTargetsRest
+    (h : CertifiedProofMdExternalBlockNonRamseyFixedTargetsRestCertificate) :
+    CertifiedProofMdExternalBlockNonRamseyMixedFixedTargetsRestCertificate where
+  evenDegreeModFourLoss32 := h.evenDegreeModFourLoss32
+  fixedWitnessExternalBlockSelfBridgeFive := h.fixedWitnessExternalBlockSelfBridgeFive
+  fourToEightTargetEleven := by
+    intro n hambient G hinput
+    exact h.higherBitTargets.h11_2 hambient G hinput
+  fourToEightTargetTwelve := by
+    intro n hambient G hinput
+    exact h.higherBitTargets.h12_2 hambient G hinput
+  higherBitTargetsFromThirteen :=
+    higherBitSmallModulusFixedWitnessTargetsFromThirteen_of_targetsFromEleven h.higherBitTargets
+
+/-- The mixed fixed-target rest package plus the Ramsey-10 table closes the target statement. -/
+theorem
+    targetStatement_of_certifiedProofMdExternalBlockNonRamseyMixedFixedTargetsRestCertificate_and_ramseyTenSmallTable
+    (h : CertifiedProofMdExternalBlockNonRamseyMixedFixedTargetsRestCertificate)
+    (ramseyTenSmallTable : RamseyTenSmallTable) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetsElevenTwelve_and_higherBitFixedWitnessTargetsFromThirteen
+    sevenVertexFourOrFiveBoolCertificate h.evenDegreeModFourLoss32 ramseyTenSmallTable
+    h.fixedWitnessExternalBlockSelfBridgeFive h.fourToEightTargetEleven h.fourToEightTargetTwelve
+    h.higherBitTargetsFromThirteen
+
+/--
+Rest-only certificate with direct fixed-witness targets for `m = 11, 12` and affine selectors only
+for the `m >= 13` higher-bit tail.
+-/
+structure CertifiedProofMdExternalBlockNonRamseyMixedAffineTailRestCertificate : Type where
+  evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph
+  fixedWitnessExternalBlockSelfBridgeFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5
+  fourToEightTargetEleven : HasFourToEightTargetElevenFixedWitnessLift
+  fourToEightTargetTwelve : HasFourToEightTargetTwelveFixedWitnessLift
+  higherBitSelectorsFromThirteen : HigherBitSmallModulusAffineSelectorsFromThirteen
+
+/-- Forget the `m = 11, 12` affine selector witnesses from the full affine rest package. -/
+def certifiedProofMdExternalBlockNonRamseyMixedAffineTailRestCertificate_of_nonRamseyRest
+    (h : CertifiedProofMdExternalBlockNonRamseyRestCertificate) :
+    CertifiedProofMdExternalBlockNonRamseyMixedAffineTailRestCertificate where
+  evenDegreeModFourLoss32 := h.evenDegreeModFourLoss32
+  fixedWitnessExternalBlockSelfBridgeFive := h.fixedWitnessExternalBlockSelfBridgeFive
+  fourToEightTargetEleven :=
+    hasFourToEightTargetElevenFixedWitnessLift_of_affineCrossSelector h.higherBitSelectors.h11_2
+  fourToEightTargetTwelve :=
+    hasFourToEightTargetTwelveFixedWitnessLift_of_affineCrossSelector h.higherBitSelectors.h12_2
+  higherBitSelectorsFromThirteen :=
+    higherBitSmallModulusAffineSelectorsFromThirteen_of_selectorsFromEleven h.higherBitSelectors
+
+/-- The mixed affine-tail rest package plus the Ramsey-10 table closes the target statement. -/
+theorem
+    targetStatement_of_certifiedProofMdExternalBlockNonRamseyMixedAffineTailRestCertificate_and_ramseyTenSmallTable
+    (h : CertifiedProofMdExternalBlockNonRamseyMixedAffineTailRestCertificate)
+    (ramseyTenSmallTable : RamseyTenSmallTable) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetsElevenTwelve_and_higherBitAffineSelectorsFromThirteen
+    sevenVertexFourOrFiveBoolCertificate h.evenDegreeModFourLoss32 ramseyTenSmallTable
+    h.fixedWitnessExternalBlockSelfBridgeFive h.fourToEightTargetEleven h.fourToEightTargetTwelve
+    h.higherBitSelectorsFromThirteen
+
 /-- The affine-selector rest package implies the fixed-target rest package. -/
 def certifiedProofMdExternalBlockNonRamseyFixedTargetsRestCertificate_of_nonRamseyRest
     (h : CertifiedProofMdExternalBlockNonRamseyRestCertificate) :
