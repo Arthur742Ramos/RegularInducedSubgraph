@@ -11213,6 +11213,19 @@ zero-target coordinates, and whose supports on the one-target coordinates are pa
 those coordinates.  Thus the irreducible target-avoidance branch is a critical capacitated three-column
 disjoint-cover problem, with all proper coordinate shadows coverable.
 
+Equivalently, write
+
+```text
+Z={p:h_p=0},        A={p:h_p=1}.
+```
+
+Only outside columns vanishing on `Z` are admissible.  Restrict each admissible column to its support in
+`A`; then target realization is exactly a choice of three distinct admissible columns whose supports form a
+disjoint cover of `A`.  Full target failure says no such three-column partition of `A` exists.  Minimality
+has two parts: deleting any active coordinate makes such a partition possible, while deleting any zero
+coordinate relaxes the admissible-column filter enough to make a partition possible.  Thus the target
+branch is a critical filtered three-cover instance.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

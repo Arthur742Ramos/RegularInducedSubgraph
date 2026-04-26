@@ -5290,6 +5290,8 @@ has a single-defect realizing triple; inclusion-minimality makes every proper co
 and the irreducible dimension is at least `4`.
 After coordinate switching, `h` is `{0,1}`-valued; realization is three outside columns vanishing on the
 zero coordinates and disjointly covering the one coordinates.
+Thus the target branch is a critical filtered three-cover: zero coordinates filter admissible columns, and
+active coordinates must be partitioned by three admissible supports.
 Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
 Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
 `R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.
