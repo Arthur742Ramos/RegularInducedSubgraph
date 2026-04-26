@@ -2281,6 +2281,18 @@ Recommended attack:
     `tau` with `chi(P_B(Y))=0` for every available lower-zero repair packet but `chi(tau)=1`.
     Add the relation-rigidity equivalent: for disjoint repair-packet relations with zero lower quotient
     sum, the sum of stopped characters is forced even; an odd relation is exactly the next seed.
+    Add the support form of characters `(Z/4)^B -> Z/2`: choose minimal `W subseteq B` with odd residual
+    `sum_{i in W}R_i(B)`.  Formalize that every proper odd subcut of `W` must have an odd lower-zero seed,
+    while the full `W`-cut has none.
+    Formalize the dual span lemma: in a fixed reservoir, the `F_2`-span of lower-zero packet cut vectors on
+    minimal `W` is the even-parity hyperplane `1_W^\perp`; the remaining task is odd-coset packet
+    realization.
+    Add the cover normal form: build the lower-profile packet graph with `W`-cut parity on moves.  No odd
+    lower-zero packet means every closed walk has even parity, i.e. a flat two-sheeted cover; the first odd
+    local cycle is the packet-square missing-corner obstruction.
+    Formalize the three exits for odd-coset realization: branch disjointization, odd local packet square,
+    and unbranched sheet-character provenance.  Show these match the host `0001`/missing-`0111` atoms and
+    the boundary-provenance endpoint.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

@@ -1858,7 +1858,14 @@ What remains justified after audit is:
       target from all remaining zero-prefix packets; the stopped form is a character `chi` with
       `chi(P_B(Y))=0` for every lower-zero repair packet but `chi(tau)=1` on the residual target, the
       atom-profile version of the missing successor-bit square; equivalently every lower-profile relation
-      has even successor bit, and an odd relation is the missing seed;
+      has even successor bit, and an odd relation is the missing seed; supporting `chi` on a minimal
+      `W subseteq B` gives a minimal binary cut circuit whose proper odd subcuts are seed-realized but
+      whose full cut has odd residual and no odd lower-zero packet; dualizing, the lower-zero packet cut
+      vectors span the even-parity hyperplane on `W`, so the remaining gap is odd-coset packet
+      realization, not binary linear algebra; equivalently the stopped bit is a flat two-sheeted cover of
+      the lower-profile packet graph, with the first nontrivial holonomy appearing as a missing-corner
+      packet square; odd-coset realization has only the branch, local odd-square, and unbranched
+      sheet-character provenance exits;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

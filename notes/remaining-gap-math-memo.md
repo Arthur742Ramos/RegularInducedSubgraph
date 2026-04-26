@@ -1864,6 +1864,14 @@ The stopped branch is `chi(P_B(Y))=0` for every lower-zero repair packet but `ch
 target, a single successor-bit obstruction.
 Equivalently all lower-profile relations have even successor bit; an odd relation supplies the missing
 seed.
+As a coordinate character, this is a minimal support `W subseteq B`: all proper odd subcuts are
+seed-realized, but the full cut has odd residual and no odd lower-zero packet.
+The packet cut vectors then span the even-parity hyperplane on `W`; the surviving gap is converting a
+lower-zero packet into the odd full-cut coset.
+Equivalently, the stopped bit is a flat two-sheeted cover over lower-profile packets; an odd packet is
+nontrivial holonomy, first visible on a missing-corner packet square.
+The odd-coset branch has only three exits: opposite-parity branch/disjointization, odd local packet square,
+or unbranched sheet-character provenance.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

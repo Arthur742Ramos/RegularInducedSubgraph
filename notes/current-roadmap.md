@@ -5173,6 +5173,17 @@ packets satisfy `chi(P_B(Y))=0` while `chi(tau)=1`; this is the atom-profile ver
 successor-bit square.
 Equivalently, every disjoint lower-profile relation has even `chi`-sum; an odd relation would be the next
 seed and would close the stopped branch.
+Writing `chi` as mod-2 summation over a support `W subseteq B`, the stopped branch is a minimal binary
+cut circuit: every proper odd subcut of `W` is seed-realized, but the full `W`-cut parity of every
+lower-zero packet is even while `sum_{i in W}R_i(B)` is odd.
+Dualizing inside a fixed reservoir, the lower-zero packet cut vectors span the full even-parity hyperplane
+on `W`; the sole missing object is an actual disjoint packet with odd total `W`-cut, so the obstruction is
+odd-coset packet realization rather than binary linear algebra.
+Equivalently the stopped bit is a flat two-sheeted cover of the realized lower-profile packet graph; an
+odd packet is nontrivial holonomy, and the first odd local cycle is the profile missing-corner square.
+Odd-coset realization splits exactly into branch disjointization, odd local packet square
+(`0001`/missing-`0111`), or global unbranched sheet-character provenance; there is no separate fourth
+endpoint in the pure target-avoid branch.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

@@ -932,6 +932,15 @@ Thus the final target-avoid certificate is a first-bit separator
 `chi(P_B(Y))=0` for every lower-zero repair packet but `chi(tau)=1` for the residual target.
 In relation form, all disjoint lower-profile relations have even successor bit; finding one odd relation is
 equivalent to finding the missing seed.
+Since every stopped character is a mod-2 coordinate sum over `W subseteq B`, the irreducible certificate is
+a minimal cut circuit: all proper odd subcuts are repairable, but the full `W`-cut has odd target and no
+odd lower-zero packet.
+The dual span is maximal: lower-zero packet cut vectors generate all even vectors on `W`.  The gap is only
+realizing the odd cut-coset by one disjoint lower-zero packet.
+In cover language, the stopped bit is a flat two-sheeted cover over the realized lower-profile packet
+graph; nontrivial holonomy is exactly the missing odd packet.
+The cover has three exits: a branch point with opposite parities over one lower profile, an odd local
+packet square, or an unbranched sheet-character provenance obstruction.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.
