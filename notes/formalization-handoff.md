@@ -1603,12 +1603,22 @@ Recommended attack:
    adjacency sum `t` to the retained type and the exported retained pair is `Y`, then
    `theta'(u)=theta(u)+deg_Y(u)-t` and
    `sum_k |{u in A_{t-k}: deg_Y(u)=k, t-k !=0}| <= sum_{k!=t}|{u in A_0:deg_Y(u)=k}|+O(1)`.
+   Generalize this to any imported boundary subpacket of size `s<=3`, with error `O(s)`; for the model
+   type `110`, importing the full boundary triple has `t=2` and controls all three off-target layers.
    Deduce the empty-target corollary for a type with a miss and two hits: if `A_0=empty`, then
    `|A_{-1}|<=3`, `|A_1|<=m`, and `H[A_2]` has maximum degree at most one, so the same-type residual is
    at most `2m+O(1)`.
    For the nonempty target layer, formalize the pure-discard slice criterion: in
    `D_q={u in A_0: deg_B(u)=q [MOD 4]}`, any four-set closes by pure discard exactly when it induces the
    regular four-vertex graph of degree `q-delta_B`; terminality forbids that pattern in `D_q`.
+   Also formalize the mixed-colour form: with `c(u)=deg_B(u)-delta_B`, no four-set `S subset A_0` has
+   `deg_{G[S]}(u)=c(u)` for all `u`.  Consequences: colour `3` is Ramsey-bounded, colour `2` is
+   pseudo-split and `2m+O(1)`-bounded, and an independent pair in colour `0` dominates all but at most
+   three vertices of colour `1`.
+   Strengthen the last item in complement form: for a colour-`0` nonedge `ab` (an edge in `H`), the
+   colour-`1` common neighbourhood of `ab` in `H` has size at most one; the exclusive layers
+   `N_H(a)\N_H(b)` and `N_H(b)\N_H(a)` inside colour `1` are anti-complete, triangle-free,
+   induced-`C_4`-free, and have alpha-sum at most `m`.
    Within that complement class, formalize the triangle-anchor trace lemma: for a triangle `abc`, no
    outside vertex is adjacent to all three anchors; vertices with incomparable nonempty traces into
    `{a,b,c}` are anti-complete; the two-neighbour trace classes are independent; singleton trace classes

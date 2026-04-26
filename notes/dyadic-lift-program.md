@@ -956,6 +956,11 @@ For two boundary hits this says
 is paid for by target vertices outside the common neighbourhood of the pair; hence mass in the opposite
 layer `A_2` must be nearly dominated by every retained pair.  The two-miss case is dual and controls
 `A_{-2}` through common neighbourhoods.
+More generally, any imported boundary subpacket `Z` of size `s<=3`, with total constant retained
+adjacency `t`, and exported same-size retained set `Y` gives
+`sum_k |{u in A_{t-k}: deg_Y(u)=k, t-k !=0}| <= sum_{k!=t}|{u in A_0:deg_Y(u)=k}|+O(s)`.
+For model type `110`, the full boundary triple has `t=2` and controls all three off-target layers at
+once.  The same-type residual must satisfy this whole singleton/pair/triple label-gradient hierarchy.
 This closes the empty-target same-type degeneration.  If `A_0=empty` and the retained boundary type has
 both a miss and two hits, the singleton miss makes `A_{-1}` a clique in the complement and hence size
 `<=3`; the singleton hit makes `A_1` independent in the complement and hence size `<=m`; the two-hit
@@ -968,6 +973,20 @@ it induces the regular four-vertex graph of degree `q-delta_B`; terminality forb
 that slice.  The remaining target-layer obstruction is therefore a four-coloured graph, each colour
 forbidding one specified regular four-pattern, coupled to the off-target layers by the singleton and
 pair target-stability inequalities.
+The mixed-colour form is stronger: with `c(u)=deg_B(u)-delta_B`, no four-set `S subset A_0` may satisfy
+`deg_{G[S]}(u)=c(u)` for every `u in S`.  Hence colour `3` is Ramsey-bounded, and colour `2` is
+`(2K_2,C_4)`-free and therefore pseudo-split, giving size at most `2m+O(1)`.  The only target colours
+that can remain large are colours `0` and `1`.  Between them, every independent pair in colour `0`
+dominates all but at most three colour-`1` vertices: otherwise an edge in their common non-neighbour set
+would realize degrees `(0,0,1,1)` and close by pure discard.
+In complement form this is sharper.  A colour-`0` nonedge is an edge `ab` in `H`.  The colour-`1` common
+neighbourhood of `ab` in `H` has size at most one: an adjacent pair gives a `K_4`, while a nonadjacent
+pair gives the forbidden `(0,0,1,1)` pure-discard atom.  The remaining colour-`1` vertices split into
+exclusive layers `Y_a=N_H(a)\N_H(b)`, `Y_b=N_H(b)\N_H(a)`, and zero layer `Y_0`.  The exclusive layers
+are anti-complete to each other in `H`, are triangle-free and induced-`C_4`-free, and satisfy
+`alpha_H(Y_a)+alpha_H(Y_b)<=m`.  Hence their bipartite part has total size at most `2m`, and their
+non-bipartite odd cores have total length at most `m`; the remaining colour-`1` mass is pushed into
+the zero layer plus bounded odd-core attachments.
 Useful structure remains inside that class.  If `abc` is a triangle in the complement `H`, trace every
 outside vertex by `N_H(v) cap {a,b,c}`.  No trace has size three; incomparable nonempty traces are
 anti-complete, since an edge between them and an anchor edge induce a `C_4`.  Thus two-neighbour trace

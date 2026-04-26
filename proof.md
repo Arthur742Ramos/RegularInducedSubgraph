@@ -6397,6 +6397,26 @@ neighbourhoods paid for by the target layer.  This second-order labelled dominat
 constraint on the label opposite the target and is the natural target-stability replacement for the
 failed unlabelled colouring route.
 
+The same formula holds for the whole boundary triple.  If `Z subset X_i` has size `s<=3`, total constant
+adjacency `t=sum_{z in Z} epsilon_z` to the one retained type, and `Y subset B` is an exported same-size
+same-direction set, then for `u in B\Y`
+
+```text
+theta'(u)=theta(u)+deg_Y(u)-t.
+```
+
+Target-stability therefore yields the hierarchy
+
+```text
+sum_{k=0}^s |{u in A_{t-k}: deg_Y(u)=k, t-k != 0}|
+   <= sum_{k != t} |{u in A_0: deg_Y(u)=k}| + O(s).
+```
+
+For the model type `110`, importing the whole boundary triple has `s=3` and `t=2`; it simultaneously
+controls `A_2` through vertices missing the exported triple, `A_1` through vertices seeing one exported
+vertex, and `A_{-1}` through vertices seeing all three.  Thus the final same-type residual must satisfy
+all singleton, pair, and triple label-gradient inequalities induced by the boundary triple.
+
 It already closes the empty-target degeneration.  Suppose `A_0=empty` and the retained boundary type has
 both a miss and two hits, as in the model type `110` up to complement.  The singleton miss inequality
 forces `A_{-1}` to be anti-complete to `B` in `G`, hence `A_{-1}` is a clique in the complement `H` and
@@ -6433,6 +6453,67 @@ Ramsey, because one slice may only forbid independent fours, another only `2K_2`
 another only cliques.  But it is now localized: the remaining nonempty-target obstruction is a
 four-coloured target layer with one specified forbidden regular pattern in each colour, together with the
 singleton and pair target-stability domination inequalities on the off-target layers.
+
+The same pure-discard calculation applies to mixed colour sets.  Put
+
+```text
+c(u)=deg_B(u)-delta_B        in {0,1,2,3},        u in A_0.
+```
+
+Then terminality forbids every four-set `S subset A_0` satisfying the self-degree equation
+
+```text
+deg_{G[S]}(u)=c(u)        for every u in S.
+```
+
+This colour-realization rule immediately caps two of the four target colours.  The colour `3` slice has
+no clique four and still has independence number at most three, so it is Ramsey-bounded.  The colour `2`
+slice is both induced-`2K_2`-free (from the `{0,1}` branch) and induced-`C_4`-free (from the target
+slice rule), so the pseudo-split cap gives
+
+```text
+|D_{\delta_B+2}| <= 2m+O(1).
+```
+
+Thus the only target colours that can still carry large mass are the two redundant-pattern slices:
+colour `0`, where the forbidden pattern is already the global independent-four exclusion, and colour
+`1`, where it is already the global `2K_2` exclusion.
+
+There is nevertheless a mixed-colour domination constraint between these two dangerous slices.  If
+`a,b` are nonadjacent vertices of colour `0`, then the common non-neighbour set of `{a,b}` inside the
+colour `1` slice is independent in `G`; otherwise an edge `uv` in that common non-neighbour set would
+make `{a,b,u,v}` self-degree-coloured with degrees `(0,0,1,1)`.  Since `alpha(G)<=3`, every independent
+pair in colour `0` dominates all but at most three colour-`1` vertices.  Consequently, either colour `0`
+is clique-bounded by `m`, or colour `1` is uniformly two-dominated from colour `0` up to an `O(1)`
+exception.  This is now the unique large target-layer configuration not already linearly capped.
+
+Combining the same mixed-colour rule with the complement structure improves the exception and gives a
+usable edge-anchor decomposition.  Work in the complement `H`, and let `ab` be the edge corresponding to
+a nonedge in the colour `0` slice.  A colour-`1` vertex adjacent to both `a` and `b` in `H` is a common
+non-neighbour of the independent pair in `G`.  There is at most one such vertex: two common neighbours
+adjacent in `H` form a `K_4` with `a,b`, while two common neighbours nonadjacent in `H` are adjacent in
+`G` and are forbidden by the `(0,0,1,1)` pure-discard rule.
+
+All other colour-`1` vertices split, relative to the edge `ab`, into
+
+```text
+Y_a=N_H(a)\N_H(b),        Y_b=N_H(b)\N_H(a),        Y_0=V\N_H({a,b}).
+```
+
+The exclusive layers `Y_a` and `Y_b` are anti-complete to each other in `H`; an edge between them would
+induce the four-cycle `y-a-b-z-y`.  Each of `Y_a,Y_b` is triangle-free, since a triangle in `Y_a` with
+the anchor `a` would form a `K_4`, and similarly for `Y_b`; both are induced-`C_4`-free by heredity.
+Moreover
+
+```text
+alpha_H(Y_a)+alpha_H(Y_b) <= alpha(H) <= m
+```
+
+because the layers are anti-complete in `H`.  Hence if the exclusive layers are bipartite they have total
+size at most `2m`; if not, their shortest odd cores have total length at most `m` by the same
+degree-two terminal exclusion.  Thus a non-clique colour-`0` slice reduces the large colour-`1` mass to
+the zero-layer `Y_0` plus the same bounded odd-core attachment problem already isolated in the
+triangle-anchor analysis.
 
 Inside that remaining complement class there is still a useful triangle-anchor decomposition.  Let
 `abc` be a triangle in `H`, and for every outside vertex `v` put
