@@ -4969,6 +4969,8 @@ In dual form, each kept-pair witness joins the two Fano lines disjoint from it; 
 exactly no isolated dual line, and the four-witness core has dual shape `P_3 disjoint union 2K_2`.
 Inclusion-minimal Fano cores are dual star forests: four witnesses give `K_{1,2}+2K_2`, five give
 `K_{1,4}+K_2` or `K_{1,3}+K_{1,2}`, and six give `K_{1,6}`, primal `K_4` on a line complement.
+Each dual star centered at a line `L` is a cluster of bad kept pairs inside the four-point complement
+`R_i\L`.
 For non-exact boundaries, use the maximum import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`; terminal exports satisfy
 `H_X(sigma(Y))-|Y|<=m-|B|`.  Exact top is the explicit box-height case.

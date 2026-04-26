@@ -1591,6 +1591,8 @@ has dual cover `P_3 disjoint union 2K_2`.
 Inclusion-minimal dual covers are star forests: `K_{1,2}+2K_2` with four witnesses,
 `K_{1,4}+K_2` or `K_{1,3}+K_{1,2}` with five, and `K_{1,6}` with six.  The six-star is primal `K_4` on
 the complement of one Fano line.
+More generally a dual star centered at line `L` is a cluster of primal bad pairs inside `R_i\L`; the leaf
+line selects the unique pair outside both lines.
 For a non-exact boundary, replace `h_X` by the maximum available import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`.  Terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every graph-compatible export.  The exact top is just the case

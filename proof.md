@@ -8873,6 +8873,13 @@ The extreme `K_{1,6}` case has a concrete primal meaning: all witness pairs lie 
 complement of one Fano line, and in fact form the whole `K_4` on that complement.  Thus even the
 maximally degenerate Fano ambiguity has a fixed four-point support.
 
+More generally, a dual star centered at a Fano line `L` is exactly a set of primal witness pairs contained
+in the four-point complement `R_i\L`: the leaf line `M` selects the unique pair
+`R_i\(L union M)`.  Hence a minimal Fano terminal core is a union of such complement-four clusters.  This
+is the bridge back to the internal table: the Fano branch can only survive if the internally bad kept
+pairs supplied by `J_int` or by signed `E_3` failures contain one of the listed complement-four
+star-forest patterns.
+
 The same height language also covers the non-exact boundary.  For an arbitrary zero-sum-free boundary
 `X`, define the available import height
 

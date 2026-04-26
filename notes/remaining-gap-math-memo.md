@@ -1712,6 +1712,7 @@ Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is
 and the four-witness case is `P_3 disjoint union 2K_2` in the dual.
 Inclusion-minimal Fano cores are dual star forests, ending in the six-witness `K_{1,6}` case, which is
 primal `K_4` on the complement of one Fano line.
+Each dual star is a cluster of internally bad kept pairs in the complement-four of its center line.
 Away from the exact boundary top, the same inequality uses
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`: terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every compatible export.

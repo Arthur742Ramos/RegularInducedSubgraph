@@ -2050,6 +2050,8 @@ Recommended attack:
    a degree-one vertex, so the dual graph is a star forest.  On seven vertices this gives the four-,
    five-, and six-witness shapes `K_{1,2}+2K_2`, `K_{1,4}+K_2`, `K_{1,3}+K_{1,2}`, and `K_{1,6}`; the
    last is primal `K_4` on the complement of a Fano line.
+   Record the primal dictionary: a dual star centered at line `L` corresponds to bad kept pairs inside
+   the four-point complement of `L`, with each leaf selecting the unique pair disjoint from both lines.
    Generalize the height inequality to non-exact boundaries with
    `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}` (or unavailable).  For every graph-compatible export `Y`,
    terminality gives `H_X(sigma(Y))-|Y|<=m-|B|`; exact Davenport top is the special case `H_X=h_X`.
