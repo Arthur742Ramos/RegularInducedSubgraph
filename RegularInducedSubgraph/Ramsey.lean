@@ -22288,6 +22288,652 @@ theorem hasCliqueOrIndepSetBound_3_10_42_of_finalConsumerSurface
     HasCliqueOrIndepSetBound 3 10 42 :=
   h.toThreeTenFortyTwo
 
+/-- Compact consumers expose the profiled exact-`42` surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toExact42ProfileSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Status.toExact42ProfileSurface
+
+/-- Compact consumers expose the local middle-degree ledgers. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.exact42Status.toLocalLedgerBundle
+
+/-- Compact consumers expose the final-bundle selector surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toFinalBundleSelectorSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45FinalBundleSelectorSurface :=
+  h.toFinalDownstreamImport.toFinalBundleSelectorSurface
+
+/--
+Unified final consequence import for Ramsey/R45/RamseyTen downstream files.  It records the
+canonical final import, compact consumer, normalized consumer, top-row downstream import, exact-`42`
+status/profile data, and the standard final Ramsey/regular-induced consequences in one surface.
+-/
+structure RamseyTenR45Exact42UnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  finalConsumerSurface : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  topRowDownstreamImport : RamseyTenR45TopRowDownstreamImport G s v
+  topRowReady : RamseyThreeTenExact42TopRowReadyCertificate G s v
+  topRowFinalHandoff : RamseyThreeTenExact42TopRowFinalHandoff G s v
+  finalBundle : RamseyTenR45FinalCertificateBundle
+  finalBundleSelector : RamseyTenR45FinalBundleSelectorSurface
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- The one-stop final downstream import materializes the unified final consequence surface. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v where
+  finalDownstreamImport := h
+  finalConsumerSurface := h.toFinalConsumerSurface
+  consumerNormalization := h.toConsumerNormalization
+  topRowFinalImport := h.toTopRowFinalImport
+  topRowDownstreamImport := h.toTopRowDownstreamImport
+  topRowReady := h.toTopRowReadyCertificate
+  topRowFinalHandoff := h.toTopRowFinalHandoff
+  finalBundle := h.toFinalCertificateBundle
+  finalBundleSelector := h.toFinalBundleSelectorSurface
+  endpointResiduals := h.toEndpointResiduals
+  exact42Status := h.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile := h.toExact42ProfileSurface
+  exact42WithMiddleSplits := h.toExact42WithMiddleSplits
+  localLedgers := h.toLocalLedgerBundle
+  topRowProfile := h.toTopRowProfile
+  topRowCommonSum := h.toCommonSum
+  topRowCountProfile := h.toCountProfile
+  r45TwentySevenTable := h.toR45TwentySevenTable
+  finalStatus := h.toFinalStatus
+  globalConsequences := h.toGlobalConsequenceBundle
+  finalConsequences := h.toFinalConsequenceSurface
+  threeTenFortyTwo := h.toThreeTenFortyTwo
+  r45TwentySeven := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  r10Ten39246 := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.toTenMemAdmissibleBounds_40960
+  f40960 := h.toTenLeF_40960
+
+/-- Compact consumers materialize the unified final consequence surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toFinalDownstreamImport.toUnifiedFinalConsequenceSurface
+
+/-- Consumer-normalized imports materialize the unified final consequence surface. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toFinalDownstreamImport.toUnifiedFinalConsequenceSurface
+
+/-- Top-row downstream imports materialize the unified final consequence surface. -/
+theorem RamseyTenR45TopRowDownstreamImport.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toFinalDownstreamImport.toUnifiedFinalConsequenceSurface
+
+/-- Exact-`42` top-row final imports materialize the unified final consequence surface. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toFinalDownstreamImport.toUnifiedFinalConsequenceSurface
+
+/-- Top-row ready certificates materialize the unified final consequence surface. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toFinalDownstreamImport.toUnifiedFinalConsequenceSurface
+
+/-- Final-facing top-row handoffs materialize the unified final consequence surface. -/
+theorem RamseyThreeTenExact42TopRowFinalHandoff.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalHandoff G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toFinalDownstreamImport.toUnifiedFinalConsequenceSurface
+
+/-- Downstream imports with a profiled top-row branch materialize the unified consequence surface. -/
+theorem RamseyTenR45DownstreamImport.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport htop).toUnifiedFinalConsequenceSurface
+
+/-- Downstream imports with common-sum/count-profile top-row data materialize the unified surface. -/
+theorem RamseyTenR45DownstreamImport.toUnifiedFinalConsequenceSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hcommon hcount)
+    |>.toUnifiedFinalConsequenceSurface
+
+/-- Ready certificates with a profiled top-row branch materialize the unified consequence surface. -/
+theorem RamseyTenR45ReadyCertificate.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport htop).toUnifiedFinalConsequenceSurface
+
+/-- Ready certificates with common-sum/count-profile top-row data materialize the unified surface. -/
+theorem RamseyTenR45ReadyCertificate.toUnifiedFinalConsequenceSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hcommon hcount)
+    |>.toUnifiedFinalConsequenceSurface
+
+/-- Final bundles with a profiled top-row branch materialize the unified consequence surface. -/
+theorem RamseyTenR45FinalCertificateBundle.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport htop).toUnifiedFinalConsequenceSurface
+
+/-- Final bundles with common-sum/count-profile top-row data materialize the unified surface. -/
+theorem RamseyTenR45FinalCertificateBundle.toUnifiedFinalConsequenceSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hcommon hcount)
+    |>.toUnifiedFinalConsequenceSurface
+
+/-- Profiled middle-degree handoffs with a top-row branch materialize the unified surface. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport htop).toUnifiedFinalConsequenceSurface
+
+/-- Profiled middle-degree handoffs with common-sum/count-profile data materialize the unified surface. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toUnifiedFinalConsequenceSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hcommon hcount)
+    |>.toUnifiedFinalConsequenceSurface
+
+/-- Exact-`42` status, endpoints, and a top-row branch materialize the unified surface. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport hendpoints htop).toUnifiedFinalConsequenceSurface
+
+/-- Exact-`42` status and endpoints with profile components materialize the unified surface. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toUnifiedFinalConsequenceSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hendpoints hcommon hcount)
+    |>.toUnifiedFinalConsequenceSurface
+
+/-- Profiled exact-`42` surfaces, endpoints, and a top-row branch materialize the unified surface. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport hendpoints htop).toUnifiedFinalConsequenceSurface
+
+/-- Profiled exact-`42` surfaces with endpoints and profile components materialize the unified surface. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toUnifiedFinalConsequenceSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hendpoints hcommon hcount)
+    |>.toUnifiedFinalConsequenceSurface
+
+/-- Select the one-stop final downstream import from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the compact final consumer surface from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  h.finalConsumerSurface
+
+/-- Select the consumer-normalized facade from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.consumerNormalization
+
+/-- Select the top-row downstream import from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toTopRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.topRowDownstreamImport
+
+/-- Select the exact-`42` top-row final import from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalImport
+
+/-- Select the top-row ready certificate from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.topRowReady
+
+/-- Select the final top-row handoff from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toTopRowFinalHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyThreeTenExact42TopRowFinalHandoff G s v :=
+  h.topRowFinalHandoff
+
+/-- Select exact-`42` status from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the profiled exact-`42` surface from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toExact42ProfileSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select exact-`42` profile data with middle-degree splits from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toExact42WithMiddleSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the final certificate bundle from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toFinalCertificateBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45FinalCertificateBundle :=
+  h.finalBundle
+
+/-- Select the final-bundle selector from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toFinalBundleSelectorSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45FinalBundleSelectorSurface :=
+  h.finalBundleSelector
+
+/-- Select endpoint residuals from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select local middle-degree ledgers from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the profiled top-row branch from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the common-sum top-row obligation from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the count-profile top-row obligation from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Select the relaxed `R(4,5) <= 27` table from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select final Ramsey-10 status from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toFinalStatus
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select global consequences from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toGlobalConsequenceBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select final consequences from the unified surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume the unified surface as the low-row exact-`42` result. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Consume the unified surface as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume the unified surface as the propagated `R(10,10) <= 39246` bound. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume the unified surface as the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960 H hcard
+
+/-- Consume the unified surface as the admissible-bound conclusion. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume the unified surface as the extremal-function lower bound. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    10 ≤ F 40960 :=
+  h.f40960
+
+/-- Constructor exposing the unified surface from a final downstream import. -/
+theorem ramseyTenR45Exact42UnifiedFinalConsequenceSurface_of_finalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toUnifiedFinalConsequenceSurface
+
+/-- Constructor exposing the unified surface from a compact final consumer. -/
+theorem ramseyTenR45Exact42UnifiedFinalConsequenceSurface_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toUnifiedFinalConsequenceSurface
+
+/-- Constructor exposing the unified surface from a consumer-normalized route. -/
+theorem ramseyTenR45Exact42UnifiedFinalConsequenceSurface_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toUnifiedFinalConsequenceSurface
+
+/-- Constructor exposing the unified surface from a top-row downstream import. -/
+theorem ramseyTenR45Exact42UnifiedFinalConsequenceSurface_of_topRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toUnifiedFinalConsequenceSurface
+
+/-- Constructor exposing the unified surface from an exact-`42` top-row final import. -/
+theorem ramseyTenR45Exact42UnifiedFinalConsequenceSurface_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.toUnifiedFinalConsequenceSurface
+
+/-- Constructor exposing the unified surface from exact-`42` status and endpoint assumptions. -/
+theorem ramseyTenR45Exact42UnifiedFinalConsequenceSurface_of_exact42Status_endpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  hstatus.toUnifiedFinalConsequenceSurface hendpoints htop
+
+/-- Common-sum/count-profile constructor for the unified surface from exact-`42` status. -/
+theorem ramseyTenR45Exact42UnifiedFinalConsequenceSurface_of_exact42Status_commonSum_countProfile_endpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  hstatus.toUnifiedFinalConsequenceSurface_ofCommonSumCountProfile
+    hendpoints hcommon hcount
+
+/-- Unified-surface route to the low-row exact-`42` result. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toThreeTenFortyTwo
+
+/-- Unified-surface route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Unified-surface route to the propagated `R(10,10) <= 39246` bound. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Unified-surface route to the regular induced `10`-subgraph theorem. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Unified-surface route to the admissible-bound conclusion. -/
+theorem ten_mem_admissibleBounds_40960_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.toTenMemAdmissibleBounds_40960
+
+/-- Unified-surface route to the extremal-function lower bound. -/
+theorem ten_le_F_40960_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    10 ≤ F 40960 :=
+  h.toTenLeF_40960
+
+/-- Rehydrating a compact consumer and projecting it back is idempotent. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toFinalDownstreamImport_toFinalConsumerSurface_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    h.toFinalDownstreamImport.toFinalConsumerSurface = h := by
+  exact Subsingleton.elim _ _
+
+/-- Rehydrating a consumer-normalized route and projecting it back is idempotent. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toFinalDownstreamImport_toConsumerNormalization_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    h.toFinalDownstreamImport.toConsumerNormalization = h := by
+  exact Subsingleton.elim _ _
+
+/-- Rehydrating a top-row downstream import and projecting it back is idempotent. -/
+theorem RamseyTenR45TopRowDownstreamImport.toFinalDownstreamImport_toTopRowDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    h.toFinalDownstreamImport.toTopRowDownstreamImport = h := by
+  exact Subsingleton.elim _ _
+
+/-- Normalizing a final downstream import and projecting it back is idempotent. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toConsumerNormalization_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    h.toConsumerNormalization.toFinalDownstreamImport = h := by
+  exact Subsingleton.elim _ _
+
+/-- Building the unified surface and projecting the final downstream import is idempotent. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toUnifiedFinalConsequenceSurface_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    h.toUnifiedFinalConsequenceSurface.toFinalDownstreamImport = h := by
+  exact Subsingleton.elim _ _
+
+/-- Rebuilding the unified surface from its final downstream import is idempotent. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toFinalDownstreamImport_toUnifiedFinalConsequenceSurface_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    h.toFinalDownstreamImport.toUnifiedFinalConsequenceSurface = h := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
