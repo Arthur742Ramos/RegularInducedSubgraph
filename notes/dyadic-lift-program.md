@@ -762,6 +762,28 @@ Equivalently, if `A_{y,z}` is the set of off-target retained vertices corrected 
 in `z`, and `D_{y,z}` is the set of target vertices knocked off target, then
 `|A_{y,z}|+1_{z lands on target}<=|D_{y,z}|+1_{y in T}`.  Boundary vertices in each old-vector class are
 therefore dominated by their signed cut across the current target fiber.
+Summing over all exports in the same old-vector class `B_p` gives
+`sum_y(|A_{y,z}|-|D_{y,z}|)<=|T cap B_p|-|B_p|1_{z lands on target}`.
+When the anchor shift vanishes, decompose off-target vertices into `T_+`, `T_-`, and `T_2`.  Singleton
+swaps never correct `T_2`; the exact inequality is
+`|N(y)\N(z) cap T_-|+|N(z)\N(y) cap T_+|+1_{z target}
+ <= |(N(y) triangle N(z)) cap T|+1_{y in T}`.
+For a zero-anchor balanced two-for-two exchange, put
+`s_{Y,Z}(u)=deg_Y(u)-deg_Z(u) in {-2,-1,0,1,2}`.  Then `s=1` corrects `T_-`, `s=-1` corrects `T_+`,
+and `|s|=2` corrects `T_2`; target vertices are damaged exactly where `s!=0`.  Thus the pair-exchange
+inequality is the first local test that can see a pure `2`-error layer.
+A terminal pure-`T_2` branch therefore forbids any zero-anchor balanced pair cut with many vertices
+complete to the exports and anticomplete to the imports, or conversely, unless the same cut damages at
+least as many target vertices.
+Summing this inequality over all admissible export pairs in an old-vector fiber `A` gives the quadratic
+common-neighborhood form
+`sum_{u in T_2,deg_Z(u)=0} binom(deg_A(u),2)+sum_{u in T_2,deg_Z(u)=2} binom(|A|-deg_A(u),2)`
+bounded by the target pair-damage plus `( |A|-1)|A cap T|`.
+Hence an unpaid pure-`T_2` vertex that misses an import pair sees at most one export vertex in `A`, while
+one that sees the import pair misses at most one export vertex.
+For an exact basis direction with three boundary copies, applying this to the three import pairs gives a
+majority synchronization rule: each unpaid `T_2` vertex is almost constant on the matching old fiber, with
+the constant equal to the majority of its adjacency to the boundary triple.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

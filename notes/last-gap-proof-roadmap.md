@@ -1772,7 +1772,13 @@ What remains justified after audit is:
       unanchored ambiguity is handled by relative traces against a reference occupied trace, and full or
       near-Fano relative equations force all traces equal, so no large unanchored packing survives;
       on the terminal co-cut side, singleton same-old-vector imports obey the target-stability inequality
-      `|A_{y,z}|+1_{z target}<=|D_{y,z}|+1_{y in T}`;
+      `|A_{y,z}|+1_{z target}<=|D_{y,z}|+1_{y in T}` and its averaged old-vector-class form;
+      with zero anchor shift, singleton swaps correct only `+1/-1` errors and leave the `2`-error layer
+      inert, while zero-anchor pair exchanges see `2`-errors through `|deg_Y-deg_Z|=2` and impose the
+      pure-`T_2` no-pair-cut rule; summing this over all export pairs in an old-vector fiber gives a
+      quadratic common-neighborhood domination inequality, and in an exact basis direction with three
+      boundary copies it forces unpaid `T_2` vertices to be almost constant on the matching old fiber by
+      boundary-triple majority;
       Fano itself needs four kept-pair
       witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual

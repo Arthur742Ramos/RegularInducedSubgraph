@@ -6219,6 +6219,124 @@ vertices in each old-vector class are therefore dominated by the signed cut they
 current target fiber `T`; no boundary vertex can have a strictly positive correction surplus against all
 exports in its old-vector class.
 
+Summing over all retained exports `y` in the same old-vector class `B_p={y in B:p_y=p_z}` gives a useful
+averaged obstruction for each boundary vertex `z`:
+
+```text
+sum_{y in B_p} ( |A_{y,z}|-|D_{y,z}| )
+    <= |T cap B_p| - |B_p| 1_{z lands on target}.
+```
+
+Thus a boundary vertex that would land on target must create total signed damage at least
+`|B_p|-|T cap B_p|` across its old-vector class.  If the signed cut from `z` differs from many exports
+in a way that corrects more off-target vertices than it damages target vertices, the singleton exchange
+already closes the co-cut endpoint.
+
+When the anchor shift vanishes, this inequality can be read by error residues.  Put
+
+```text
+T_+= {u:theta_X(u)=L+1},        T_-={u:theta_X(u)=L-1},        T_2={u:theta_X(u)=L+2}.
+```
+
+Since a singleton swap changes a retained label only by `-1,0,+1`, vertices of `T_2` are invisible to
+singleton correction.  Moreover
+
+```text
+A_{y,z}=(N(y)\N(z) cap T_-) union (N(z)\N(y) cap T_+),
+D_{y,z}=(N(y) triangle N(z)) cap T.
+```
+
+Thus singleton target-stability is the signed cut inequality
+
+```text
+|N(y)\N(z) cap T_-| + |N(z)\N(y) cap T_+| + 1_{z target}
+  <= |(N(y) triangle N(z)) cap T| + 1_{y in T}.
+```
+
+So the singleton-swap route can only exploit the `+1/-1` error layers; any residual made solely of
+`2`-errors requires a larger exchange or a pure block discard.
+
+For a balanced two-for-two exchange the missing `2`-layer becomes visible.  Let
+`Y={y_1,y_2} subset B`, `Z={z_1,z_2} subset X`, assume
+
+```text
+p_{y_1}+p_{y_2}=p_{z_1}+p_{z_2},        deg_Z(w_0)=deg_Y(w_0),
+```
+
+so the anchor shift is zero.  For a surviving retained vertex put
+
+```text
+s_{Y,Z}(u)=deg_Y(u)-deg_Z(u) in {-2,-1,0,1,2}.
+```
+
+Then the retained-side gain layers are
+
+```text
+s= 1 corrects T_-,      s=-1 corrects T_+,
+s= 2 or -2 corrects T_2,
+```
+
+and the target layer `T` is damaged exactly where `s != 0`.  Thus target-stability for such a pair
+exchange says
+
+```text
+|{u in T_-:s(u)=1}| + |{u in T_+:s(u)=-1}| + |{u in T_2:|s(u)|=2}|
+  + imported-target-count
+<= |{u in T:s(u)!=0}| + |Y cap T|.
+```
+
+This is the first local inequality that can see a pure `2`-error obstruction.  Consequently, if all
+singleton swaps are inert and the residual error lies in `T_2`, the next target is a zero-anchor balanced
+pair exchange whose two-export/two-import cut has large `|s|=2` support on `T_2` and small support on the
+current target fiber.
+
+Equivalently, a terminal pure-`T_2` branch must satisfy the following no-pair-cut rule.  For every
+zero-anchor balanced pair exchange `(Y,Z)`,
+
+```text
+|{u in T_2 : deg_Y(u)=2, deg_Z(u)=0}|
++ |{u in T_2 : deg_Y(u)=0, deg_Z(u)=2}|
+  + imported-target-count
+<= |{u in T : deg_Y(u) != deg_Z(u)}| + |Y cap T|.
+```
+
+Thus a large subset of `T_2` on which two old-vector-compatible exports are simultaneously complete and
+two imports simultaneously absent, or conversely, is impossible unless the same pair cut damages at least
+as many target vertices.  This is the pair-exchange analogue of the singleton signed-cut domination.
+
+The same rule has a more useful averaged form.  Fix an old-vector fiber `A subset B` and a boundary
+import pair `Z={z_1,z_2}` with
+
+```text
+p_{a_1}+p_{a_2}=p_{z_1}+p_{z_2},        deg_Z(w_0)=deg_{\{a_1,a_2\}}(w_0)
+```
+
+for every admissible export pair `{a_1,a_2} subset A` in the averaging family.  Summing the no-pair-cut
+inequality over all such export pairs gives
+
+```text
+sum_{u in T_2, deg_Z(u)=0} binom(deg_A(u),2)
++ sum_{u in T_2, deg_Z(u)=2} binom(|A|-deg_A(u),2)
++ binom(|A|,2) imported-target-count
+<= sum_{t in T} #{Y in binom(A,2): deg_Y(t) != deg_Z(t)}
+   + (|A|-1)|A cap T|.
+```
+
+Here a `T_2` vertex contributes only from the two complete/empty extremes: if it misses both imported
+vertices, then every adjacent export pair is a correcting pair, and if it sees both imported vertices,
+then every nonadjacent export pair is correcting.  Therefore a terminal pure-`T_2` branch imposes
+quadratic common-neighborhood domination.  Unless the target side pays quadratically many damaged export
+pairs, every `u in T_2` with `deg_Z(u)=0` has `deg_A(u)<=1`, and every `u in T_2` with `deg_Z(u)=2` has
+`deg_A(u)>=|A|-1`.
+
+In an exact basis direction the import reservoir contains three copies `Z_g={z_1,z_2,z_3}`.  Applying the
+previous inequality to all three import pairs yields the majority synchronization corollary: for any large
+admissible export pool `A_g` in the same direction, an unpaid pure-`T_2` vertex is almost constant on
+`A_g`.  If it sees at most one of the three boundary copies, then it sees at most one vertex of `A_g`; if
+it sees at least two boundary copies, then it misses at most one vertex of `A_g`.  Thus the exact-basis
+pure-`T_2` residual can only survive by making the old fiber copy the boundary triple's majority pattern
+on every unpaid `2`-error vertex, up to one exceptional export vertex per fiber.
+
 One must not overstate the fiber obstruction.  If `S subset B` is old-balanced and `eta_X` is
 constant on `S`, this does not by itself append `S` to `W`: the vertices in `B\S` have moved to the
 discard side and contribute the additional term `deg_{B\S}(s)` on `S`, and the old increment changes

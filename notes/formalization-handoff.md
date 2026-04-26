@@ -2084,8 +2084,28 @@ Recommended attack:
    For the co-cut endpoint, formalize the singleton target-stability inequality.  If `T={theta=L}`,
    same-old-vector swap `y -> z` has corrected-set `A_{y,z}` and damaged-set `D_{y,z}`, then
    `|A_{y,z}|+1_{z lands on target}<=|D_{y,z}|+1_{y in T}`.
-   In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
-   iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
+   Also formalize the averaged old-vector-class inequality obtained by summing over `y in B_p`:
+   `sum_y(|A_{y,z}|-|D_{y,z}|)<=|T cap B_p|-|B_p|1_{z target}`.
+   In the zero anchor-shift case, split errors into `T_+`, `T_-`, and `T_2`; singleton swaps cannot
+   correct `T_2`, and the inequality becomes the signed cut formula using
+   `N(y)\N(z) cap T_-`, `N(z)\N(y) cap T_+`, and `(N(y) triangle N(z)) cap T`.
+   Add the zero-anchor pair-exchange layer table: for balanced two-for-two exchange
+   `s_{Y,Z}=deg_Y-deg_Z`, values `1,-1,±2` correct `T_-`, `T_+`, and `T_2` respectively, while target
+   vertices are damaged where `s_{Y,Z}!=0`.
+    Record the pure-`T_2` no-pair-cut rule: the number of `T_2` vertices with `(deg_Y,deg_Z)=(2,0)` or
+    `(0,2)`, plus imported targets, is at most the number of target vertices with `deg_Y!=deg_Z`, plus
+    exported targets.
+    Add the averaged pair-cut form over an admissible export pool `A`: for a fixed import pair `Z`,
+    the left side is
+    `sum_{u in T_2,deg_Z(u)=0} binom(deg_A(u),2)+sum_{u in T_2,deg_Z(u)=2} binom(|A|-deg_A(u),2)`
+    plus the imported-target term, and the right side is the summed target pair-damage plus
+    `(|A|-1)|A cap T|`.
+    Derive the exact-basis three-copy corollary: if a direction has boundary triple `Z_g`, then any
+    unpaid pure-`T_2` vertex is almost constant on a large matching old fiber `A_g`; adjacency to at most
+    one boundary copy forces `deg_{A_g}(u)<=1`, while adjacency to at least two boundary copies forces
+    `deg_{A_g}(u)>=|A_g|-1`.
+    In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
+    iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness
    connects the two lines disjoint from it, and terminality is no isolated dual vertex.  Four witnesses
    then force the dual cover shape `P_3 disjoint union 2K_2`.

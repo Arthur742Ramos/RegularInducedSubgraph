@@ -4996,6 +4996,20 @@ unanchored packing survives the relative quotient.
 For the terminal co-cut endpoint, singleton target-stability says every same-old-vector boundary import
 has correction gain at most target loss:
 `|A_{y,z}|+1_{z target}<=|D_{y,z}|+1_{y in T}`.
+Summed over an old-vector class `B_p`, this becomes
+`sum_y(|A_{y,z}|-|D_{y,z}|)<=|T cap B_p|-|B_p|1_{z target}`.
+With zero anchor shift, singleton swaps correct only `+1/-1` errors; the `2`-error layer is invisible and
+needs a larger exchange or block discard.
+For a zero-anchor balanced pair exchange, `s=deg_Y-deg_Z` can take values `±2`, so pair swaps are the
+first local moves that can correct a pure `2`-error layer.
+A terminal pure-`2` branch therefore has a no-pair-cut rule: `T_2` vertices with `(deg_Y,deg_Z)=(2,0)`
+or `(0,2)` must be paid for by target vertices with `deg_Y!=deg_Z`.
+Summing over all admissible export pairs in one old-vector fiber gives quadratic common-neighborhood
+domination: unpaid `T_2` vertices missing an import pair have export degree at most one, and those seeing
+an import pair have export codegree at most one.
+In an exact basis direction with three boundary copies this becomes a majority synchronization rule:
+every unpaid `T_2` vertex is almost constant on the matching old fiber according to the majority of its
+adjacency to the three boundary copies.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

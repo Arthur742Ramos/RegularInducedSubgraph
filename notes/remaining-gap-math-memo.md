@@ -1731,6 +1731,18 @@ Unanchored ambiguity is reduced by relative traces `1_p-1_{p_0}`; full and near-
 force all occupied traces equal, so large unanchored packings collapse before the internal table.
 In the co-cut endpoint, singleton same-old-vector swaps satisfy
 `|A_{y,z}|+1_{z target}<=|D_{y,z}|+1_{y in T}`, so every target gain is paid for by target loss.
+The averaged class form is
+`sum_y(|A_{y,z}|-|D_{y,z}|)<=|T cap B_p|-|B_p|1_{z target}`.
+With zero anchor shift, singleton swaps see only the `+1/-1` error layers; `2`-errors are singleton-inert.
+Zero-anchor pair exchanges see `2`-errors through the layer `|deg_Y-deg_Z|=2`.
+Pure `2`-error terminality forbids pair cuts that are complete/empty on many `T_2` vertices without
+matching target damage.
+After summing over all admissible export pairs in an old-vector fiber `A`, this is a quadratic
+common-neighborhood domination inequality.  Unpaid `T_2` vertices missing an import pair have
+`deg_A<=1`, and unpaid `T_2` vertices seeing an import pair have `deg_A>=|A|-1`.
+Thus an exact basis direction with three boundary copies forces majority synchronization: each unpaid
+`T_2` vertex is almost constant on the corresponding old fiber, matching its majority adjacency to the
+boundary triple.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,
