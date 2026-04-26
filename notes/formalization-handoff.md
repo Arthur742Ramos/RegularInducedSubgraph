@@ -2624,8 +2624,18 @@ Recommended attack:
     Add the symmetric transpose test: if two size-three atoms are mutual parity-edge targets, the edge support
     must contain an all-constant column, so the all-ternary edge endpoint is star phase and not triangle
     phase.
+    Add the star-multiplicity normalization: multiplicity two of the all-constant word transposes to a
+    unit-edge square-breaker, so the residual trace is a corner matrix with one omitted row, one omitted
+    column, and a filled complementary `2x2`; globally this is a half-edge Latin `K_{2,2}` design.
+    Formalize the cross-residue-flat calculation for the Latin design:
+    `deg_cross(g_i)=3s_i+sum_{h!=i}(2-s_h)=4-S+4s_i`, independent of `i` modulo `4`.
+    Add the quotient scalar equation for the full all-edge carrier: with internal residue `r_G` and incident
+    sign sum `S_G`, atom `G` has total residue `r_G-S_G`; if these four residues are constant the carrier is
+    a selector, otherwise the residual is a finite signed-`K_4` scalar obstruction.
     Add shortened-pair-hit strict defect: a forced petal using `q=2,3` source vertices and hitting `r` other
     atoms has `delta_other>=r` or `r+1`, respectively; remaining petals compensate those omissions.
+    Record the small-profile hit table: `q=2` tight means exactly one omission in every hit atom; `q=3`
+    cannot be tight on pair targets alone and forces a singleton hit in a size-three/larger target.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

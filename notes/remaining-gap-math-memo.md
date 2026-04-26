@@ -2133,6 +2133,16 @@ The pure all-edge minimum has only star or triangle phase in the four-word parit
 multiplicity on each size-three edge target.
 In a symmetric all-ternary cycle, mutual edge targets pass the transpose test only when the edge contains an
 all-constant column, so triangle phase is excluded and the all-edge endpoint is star phase.
+Then unit-edge discharge forces the all-constant word to have multiplicity one, yielding corner matrices:
+one omitted row, one omitted column, and a complementary `2x2` block.  The residual all-edge model is a
+half-edge Latin `K_{2,2}` design.
+Its cross-degrees are constant modulo `4` inside each atom, since
+`3s_i+sum_{h!=i}(2-s_h)=4-S+4s_i`; only atom-internal residues or quotient signs remain scalar.
+The full all-edge carrier closes iff `r_G-S_G` is constant over the four atoms, where `r_G` is the internal
+atom residue and `S_G` is the incident corner-sign sum; otherwise only a finite signed-`K_4` scalar
+obstruction remains.
+Shortened-pair-hit petals obey the same finite omission table: `q=2` is tight only with one omission per hit
+atom, and `q=3` needs a singleton hit in a size-three/larger target to supply the extra omission.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has
 strict defect `delta_other>=r` or `r+1`; other petals compensate the omissions.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,

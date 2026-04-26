@@ -5573,9 +5573,20 @@ edge supports either share one parity word (star phase) or form the triangle avo
 In the symmetric all-ternary cycle, the transpose test kills triangle phase: a mutual edge target must contain
 an all-constant column, hence all three edge supports pass through the same parity word.  Thus the genuine
 all-edge `3,3,3,3` endpoint is star phase only.
+After unit-edge discharge, the all-constant word is forced to occur once, not twice; otherwise the transpose
+is a unit-edge atom.  Therefore every two-atom trace is a corner matrix: one omitted row, one omitted column,
+and the complementary `2x2` block.  The residual all-edge model is a half-edge Latin `K_{2,2}` design.
+This design is cross-residue-flat modulo `4`: at a fixed atom, the omitted-neighbor contribution changes by
+`4s_i`, so every vertex has the same cross-degree modulo `4`.  Any remaining scalar failure is internal to
+the size-three atoms or their four-atom quotient signs.
+Writing `r_G` for the internal residue of atom `G` and `S_G=sum_{H!=G}s_{GH}` for incident corner signs, the
+full twelve-vertex carrier is a selector iff `r_G-S_G` is constant on the four atoms.  Otherwise the endpoint
+is a finite signed-`K_4` scalar obstruction.
 If a forced petal hits the shortened pair and lifts with `q=2` or `3` source vertices while hitting `r` other
 atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+1` for `q=3`; the remaining
 petals must compensate those omissions.
+Thus `q=2` is tight only with one omission in every hit atom, while `q=3` cannot be tight on pairs alone and
+must expose a singleton hit in a size-three/larger target, giving extra rebate beyond the all-edge minimum.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

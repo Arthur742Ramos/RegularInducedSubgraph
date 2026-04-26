@@ -12809,6 +12809,62 @@ every mutual edge target must contain the same all-constant word.  Therefore the
 `3,3,3,3` endpoint is forced into star phase; the triangle phase cannot occur in a genuine symmetric
 ternary-cycle endpoint.
 
+The star phase has one more forced normalization.  For a mutual edge target, if the all-constant word occurred
+twice in the size-three target atom, then after transposing the trace matrix the two row labels would differ
+in exactly one coordinate.  That is precisely the unit-edge code atom, already routed to the one-corner
+square-breaker.  Hence, after square-breaker discharge, the all-constant word occurs exactly once and the
+other parity-edge word occurs twice.
+
+Equivalently, for every pair of size-three atoms `G,H`, the bipartite trace matrix can be normalized to the
+corner form
+
+```text
+row i and column j are constant,
+the complementary 2x2 block is the other parity value.
+```
+
+In the `0/1` normalization this is a zero row, a zero column, and a filled `2x2` block on
+`(G\{i}) x (H\{j})` (or its complement, depending on the common parity value).  Since each source atom must
+omit the three coordinates once across its three opposite atoms, the surviving all-edge `3,3,3,3` residual is
+exactly a half-edge Latin `K_{2,2}` design: every unordered atom-pair carries one omitted vertex on each side,
+and at each atom the three incident omissions are a permutation of its three vertices.
+
+This Latin design is already scalar-flat modulo `4` on cross-degrees.  Give an atom-pair sign `s=0` for the
+filled-`2x2` normalization and `s=1` for its complement.  At a fixed atom `G`, let the three incident signs
+be `s_1,s_2,s_3`, with vertex `g_i` omitted on the pair of sign `s_i`.  The cross-degree of `g_i` into the
+other three atoms is
+
+```text
+3 s_i + sum_{h != i} (2-s_h) = 4 - (s_1+s_2+s_3) + 4 s_i,
+```
+
+which is independent of `i` modulo `4`.  Hence the all-edge Latin endpoint has no remaining ternary
+cross-residue obstruction; any residual scalar failure is pushed into the atom-internal residues or the
+four-atom quotient signs.
+
+Because each size-three packed atom is itself a selector block, its internal degree is constant modulo `4`;
+write this residue as `r_G`.  For the full four-atom carrier in the Latin endpoint, let
+
+```text
+S_G = sum_{H != G} s_{GH},
+```
+
+where `s_{GH}` is the sign of the corner matrix on the atom-pair `GH`.  Then every vertex of `G` has total
+degree
+
+```text
+r_G - S_G        [MOD 4]
+```
+
+inside the twelve-vertex carrier.  Thus the all-edge Latin endpoint closes immediately unless the finite
+signed quotient equation
+
+```text
+r_G - S_G is nonconstant on the four atoms
+```
+
+holds.  This is now a scalar signed-`K_4` obstruction, not a ternary collision-code obstruction.
+
 If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
 cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
 source atom `G` (`q=2` or `3`) and hitting `r` other packed atoms.  Since this full lift crosses atoms,
@@ -12829,6 +12885,14 @@ Thus a shortened-pair-hit size-three collision is also a compensation template: 
 source vertices must omit at least one vertex from each other atom it hits on average, while a petal using
 all three source vertices must omit one additional vertex beyond that.  The other petals of the repair
 family must supply these omissions.
+
+In the small profiles this gives an immediate hit table.  A `q=2` petal is tight only when every hit opposite
+atom supplies exactly one omission: a pair is hit in one vertex, and a three-atom is hit in two vertices.
+Any singleton hit inside a three-atom gives extra compensation.  A `q=3` petal needs one omission more than
+the number of hit atoms.  Since a hit pair can supply at most one omission, an all-source petal cannot be
+tight on pairs alone; it must hit some size-three opposite atom in a singleton (or hit a larger atom).  Hence
+the shortened-pair-hit branch either returns to the same finite one-omission incidence tables or exposes a
+size-three/larger target with a singleton hit, i.e. an extra rebate beyond the all-edge minimum.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
@@ -13074,6 +13138,9 @@ large-outside ternary target avoidance:
   finite Ramsey window 3<=m<=16, and the rank-three case is a positive-gain bridge blocker whose small
   atom collisions are finite rebate circuits; the four-pair collision core is the antipodal
   hidden-transversal orientation model, forced to a 1+3 star with a one-corner square through its center;
+  ternary-cycle parity codes reduce to finite target-type incidences; the all-edge all-ternary endpoint is a
+  half-edge Latin K_{2,2} design, cross-residue-flat inside each atom, leaving only the signed-K_4 scalar
+  equation r_G-S_G;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

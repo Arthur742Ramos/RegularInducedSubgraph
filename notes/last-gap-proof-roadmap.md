@@ -2089,7 +2089,12 @@ What remains justified after audit is:
       (`i!=j`), or the pure edge-triangle `E_1E_2E_3`; the pair profiles similarly reduce to `FFP_x`,
       `F E_iP_j`, `E_iE_jP_k`, `F P_iP_j`, or `E_iP_jP_k` with the indicated omissions distinct; the pure
       all-edge minimum has only star or triangle phase plus `2+1` target multiplicities, and the symmetric
-      transpose test excludes triangle phase in a genuine all-ternary cycle;
+      transpose test excludes triangle phase in a genuine all-ternary cycle; after unit-edge discharge, this
+      becomes a half-edge Latin `K_{2,2}` design with one omitted row and column on each atom-pair, whose
+      cross-degrees are constant modulo `4` inside each atom; the full carrier closes exactly when
+      `r_G-S_G` is constant, otherwise leaving only a finite signed-`K_4` scalar obstruction;
+      shortened-pair-hit petals have a finite omission table: `q=2` is one-omission-per-hit tight, while
+      `q=3` forces a singleton hit in a size-three/larger target;
       shortened-pair-hit petals satisfy strict cross-defect `delta_other>=r` or `r+1` according as they use
       two or three source vertices;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers

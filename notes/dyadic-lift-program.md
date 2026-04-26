@@ -1213,8 +1213,17 @@ The pure all-edge minimum has only star phase (three edge supports share a parit
 (three edge supports avoid one parity word), plus the `2+1` multiplicities on the size-three edge targets.
 For a symmetric all-ternary cycle, transposing the two-atom trace matrix forces every mutual edge target to
 contain an all-constant column, so triangle phase is impossible; the genuine all-edge endpoint is star phase.
+After the unit-edge square-breaker is discharged, the all-constant word has multiplicity one in every
+two-atom trace; each pair of size-three atoms is a corner matrix with one omitted row, one omitted column,
+and a complementary `2x2` block.  Thus the all-edge residual is a half-edge Latin `K_{2,2}` design.
+The Latin design is cross-residue-flat modulo `4`: vertex-dependent omissions alter cross-degree by a
+multiple of `4`, leaving only atom-internal residues or four-atom quotient signs as scalar data.
+With internal atom residue `r_G` and incident sign sum `S_G`, the twelve-vertex carrier closes exactly when
+`r_G-S_G` is constant; otherwise the all-edge branch is a finite signed-`K_4` scalar obstruction.
 Shortened-pair-hit petals obey strict cross-defect: if the lift uses `q=2,3` source vertices and hits `r`
 other atoms, then `delta_other>=r` or `r+1`, respectively.
+Consequently `q=2` is tight only with one omission per hit atom, while `q=3` forces a singleton hit in a
+size-three/larger target unless a larger atom supplies the extra omission.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.
