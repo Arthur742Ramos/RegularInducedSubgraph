@@ -4922,6 +4922,38 @@ lemma seven_mul_two_pow_lt_selector_size_fromSeven {j : ℕ} (hj : 7 ≤ j) :
   have hlt : 7 < (2 ^ j) ^ 5 := by omega
   exact Nat.mul_lt_mul_of_pos_right hlt (Nat.pow_pos (by decide : 0 < 2) j)
 
+/-- Six-type support is still too small at the `j ≥ 7` selector scale. -/
+lemma six_mul_two_pow_lt_selector_size_fromSeven {j : ℕ} (hj : 7 ≤ j) :
+    6 * 2 ^ j < (2 ^ j) ^ 5 * 2 ^ j := by
+  have hpos : 0 < 2 ^ j := Nat.pow_pos (by decide : 0 < 2) j
+  have hsix : 6 * 2 ^ j < 7 * 2 ^ j :=
+    Nat.mul_lt_mul_of_pos_right (by norm_num : 6 < 7) hpos
+  exact lt_trans hsix (seven_mul_two_pow_lt_selector_size_fromSeven hj)
+
+/--
+Parity-compression exit for support-size-six residuals: once one even and one odd boundary type are
+missing, a `j ≥ 7` terminal packet must contain a realized type fiber larger than the target bucket.
+-/
+theorem boundaryTripleType_missing_each_parity_fromSeven_forces_large_realized_type
+    {α : Type*} {j : ℕ} (S : Finset α) (τ : α → Fin 8)
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card)
+    (heven : ∃ e : Fin 8, e ∉ S.image τ ∧ boundaryTripleParity e = 0)
+    (hodd : ∃ o : Fin 8, o ∉ S.image τ ∧ boundaryTripleParity o = 1) :
+    ∃ t : Fin 8, t ∈ S.image τ ∧ 2 ^ j < (S.filter fun x => τ x = t).card := by
+  classical
+  by_contra hnoLarge
+  have hsmall :
+      ∀ t ∈ S.image τ, (S.filter fun x => τ x = t).card ≤ 2 ^ j := by
+    intro t ht
+    by_contra hle
+    exact hnoLarge ⟨t, ht, Nat.lt_of_not_ge hle⟩
+  have hcap : S.card ≤ 6 * 2 ^ j :=
+    boundaryTripleType_support_six_type_cap_of_missing_each_parity
+      S τ heven hodd hsmall
+  have hlarge : 6 * 2 ^ j < S.card :=
+    lt_of_lt_of_le (six_mul_two_pow_lt_selector_size_fromSeven hj) hS
+  omega
+
 /--
 At the `j ≥ 7` selector scale, the seven-type cap forces either the forbidden all-miss type
 or a nonzero type fiber larger than the target bucket size.
@@ -5049,6 +5081,37 @@ theorem droppedTailSubbucket_of_large_independent_boundary_type_fiber
     ⟨u, huS, hcard,
       modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
         (G := G) huS hhost huMod⟩
+
+/--
+Selector-facing support-size-six parity-compression branch: if one even and one odd boundary type are
+missing and every realized type fiber is already homogeneous, the large packet closes through the
+large realized fiber and freezes the dropped tail.
+-/
+theorem boundaryTripleType_missing_each_parity_fromSeven_droppedTail_closed_of_homogeneous_fibers
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card)
+    (hmod : InducesModEqDegree G S (2 ^ j))
+    (heven : ∃ e : Fin 8, e ∉ S.image τ ∧ boundaryTripleParity e = 0)
+    (hodd : ∃ o : Fin 8, o ∉ S.image τ ∧ boundaryTripleParity o = 1)
+    (hhomogeneous :
+      ∀ t : Fin 8, t ∈ S.image τ →
+        (∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → G.Adj x y) ∨
+          (∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → ¬ G.Adj x y)) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] := by
+  rcases
+    boundaryTripleType_missing_each_parity_fromSeven_forces_large_realized_type
+      S τ hj hS heven hodd with
+    ⟨t, ht, hlarge⟩
+  rcases hhomogeneous t ht with hcomplete | hindependent
+  · exact
+      droppedTailSubbucket_of_large_complete_boundary_type_fiber
+        (G := G) (j := j) (S := S) τ hmod hlarge hcomplete
+  · exact
+      droppedTailSubbucket_of_large_independent_boundary_type_fiber
+        (G := G) (j := j) (S := S) τ hmod hlarge hindependent
 
 /--
 Independent-boundary `{0,2}` branch closure at the `j ≥ 7` modular-selector scale: if the
