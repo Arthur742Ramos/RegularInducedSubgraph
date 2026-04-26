@@ -11275,6 +11275,68 @@ failure is witnessed by a deficient support in every ordered three-block partiti
 coordinate `z` is deleted, the same test uses `c_{Z\{z}}`; minimality says at least one formerly deficient
 partition becomes capacity-feasible for each such `z`.
 
+Since the nonempty blocks in a disjoint cover are automatically distinct, this is equivalently a
+three-coloring criterion: color `A` with at most three color classes `B_1,B_2,B_3`; every nonempty color
+class must have `c_Z(B_i)>=1`, and if `e` color classes are empty then `c_Z(empty)>=e`.  Thus a full
+filtered-cover obstruction says every 3-coloring of `A` has a missing nonempty color class or insufficient
+empty-support capacity.  This is the exact high-active normal form; the finite small-active tables below
+are its low-dimensional specializations.
+
+Equivalently, put `e_Z=min(c_Z(empty),3)`.  For nonempty `A`, the cover exists iff `A` can be partitioned
+into `k` nonempty admissible supports, for some
+
+```text
+max(1,3-e_Z) <= k <= 3.
+```
+
+Thus `c_Z(empty)>=2` permits a one-block cover by an admissible copy of `A`; `c_Z(empty)=1` requires a
+two- or three-block admissible partition; and `c_Z(empty)=0` requires an exact three-block admissible
+partition.  The all-zero case remains the separate condition `c_Z(empty)>=3`.
+
+In support-family language, let
+
+```text
+F_Z={B nonempty subset A : c_Z(B)>0}.
+```
+
+The high-active target obstruction is therefore a minor-critical statement: `A` has no partition into an
+allowed number of disjoint members of `F_Z`, but for every `a in A` the projected family on `A\{a}` does
+partition `A\{a}`, and for every `z in Z` the enlarged family/capacity obtained from `c_{Z\{z}}` partitions
+`A`.  This isolates the only remaining target-avoidance structure as a critical three-partition clutter
+with zero-filter relaxations.
+
+More precisely, let
+
+```text
+Spec_Z(A)={k in {1,2,3} : A has a partition into k nonempty members of F_Z}.
+```
+
+For `A nonempty` and `e_Z=min(c_Z(empty),3)`, target realization is equivalent to
+
+```text
+Spec_Z(A) cap {max(1,3-e_Z),...,3} nonempty.
+```
+
+Thus the high-active obstruction is a **partition-spectrum gap**: the spectrum may contain partitions with
+too few nonempty blocks to be usable with the available empty-column capacity, or may be empty, but it has
+no admissible size in the interval above.  Active deletion and zero-filter relaxation both fill this
+spectrum gap.  This formulation separates two effects that were conflated in the raw 3-cover statement:
+missing support partitions and insufficient empty-column capacity.
+
+The three empty-capacity cases are:
+
+```text
+e_Z>=2:  Spec_Z(A) is empty;
+e_Z=1:   Spec_Z(A) is contained in {1};
+e_Z=0:   Spec_Z(A) is contained in {1,2}.
+```
+
+In the first case the obstruction is absence of any admissible partition of `A` into at most three blocks.
+In the second, a full-support column may exist, but one empty column is not enough to turn it into a triple;
+one needs a two- or three-block partition.  In the third, even one- and two-block partitions are useless
+because no empty-support columns are available; an exact three-block partition is required.  Every active
+deletion or zero-filter relaxation must move the corresponding spectrum into the required interval.
+
 For `|A|<=3` this criterion is the following table:
 
 ```text

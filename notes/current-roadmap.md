@@ -5302,6 +5302,17 @@ zero-filter capacity.  The genuinely new cover branch has `|A|>=4`.
 For fixed `A,Z`, counts `c_Z(B)` of admissible columns with active support `B subset A` give an exact
 capacity test over three disjoint blocks covering `A`; deleting a zero coordinate replaces `c_Z` by
 `c_{Z\{z}}`.
+Equivalently, it is a 3-coloring test: every nonempty color class needs at least one admissible column, and
+empty color classes consume `c_Z(empty)` capacity.
+With `e_Z=min(c_Z(empty),3)`, nonempty `A` needs an admissible partition into
+`k in [max(1,3-e_Z),3]` nonempty blocks; the all-zero case needs `c_Z(empty)>=3`.
+Equivalently, `F_Z={B nonempty subset A:c_Z(B)>0}` is a minor-critical three-partition clutter: `A` is not
+partitionable in `F_Z`, but every active deletion and every zero-filter relaxation is.
+More exactly, `Spec_Z(A)` records partition sizes `1,2,3`; target realization requires
+`Spec_Z(A)` to meet `{max(1,3-e_Z),...,3}`.  The high-active obstruction is a partition-spectrum gap filled
+by every active deletion or zero-filter relaxation.
+The gap cases are `e_Z>=2` with empty spectrum, `e_Z=1` with spectrum contained in `{1}`, and `e_Z=0` with
+spectrum contained in `{1,2}`.
 For `|A|<=3`, this is the explicit finite table: `empty` needs three empty-support columns; one active
 coordinate needs one singleton plus two empty columns; two active coordinates need either the pair plus two
 empty columns or two singletons plus one empty column; three active coordinates need triple, pair+singleton,

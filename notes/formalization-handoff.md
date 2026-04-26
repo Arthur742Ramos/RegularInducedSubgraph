@@ -2402,6 +2402,16 @@ Recommended attack:
     Add the finite capacity-table criterion: `c_Z(B)` counts admissible columns with active support `B`;
     three-cover existence is equivalent to a disjoint three-block cover of `A` respecting these
     multiplicities, and zero-coordinate deletion changes the table to `c_{Z\{z}}`.
+    Record the equivalent 3-coloring criterion: each nonempty color class needs positive `c_Z`, and the
+    number of empty color classes must be at most `c_Z(empty)`.
+    Record the empty-capacity compression: for nonempty `A`, with `e_Z=min(c_Z(empty),3)`, require an
+    admissible partition into `k` nonempty blocks for some `max(1,3-e_Z)<=k<=3`.
+    Add the support-family endpoint `F_Z={B nonempty subset A:c_Z(B)>0}`: target failure is that `A` has no
+    allowed partition by `F_Z`, while every active deletion and zero-filter relaxation does.
+    Add partition-spectrum language: `Spec_Z(A)` is the set of partition sizes in `{1,2,3}` available from
+    `F_Z`; realization requires intersection with `{max(1,3-e_Z),...,3}`.
+    Record the three empty-capacity cases: `e_Z>=2` forces empty spectrum, `e_Z=1` permits only useless
+    one-block partitions, and `e_Z=0` permits only useless one-/two-block partitions.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

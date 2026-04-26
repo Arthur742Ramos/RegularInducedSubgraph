@@ -1021,6 +1021,16 @@ Small active dimension `|A|<=3` is only a finite support-capacity failure inside
 filtered-cover branch has `|A|>=4`.
 The capacity table is `c_Z(B)` for active supports `B subset A`; a cover is exactly three disjoint support
 blocks covering `A` whose multiplicities are bounded by `c_Z(B)`.
+Equivalently, it is a 3-coloring of `A` whose nonempty color classes occur as admissible supports, with
+empty color classes paid for by `c_Z(empty)`.
+So empty-support capacity determines whether one-, two-, or exactly three-block admissible partitions are
+allowed.
+The high-active endpoint is a minor-critical support family `F_Z`: no allowed partition of `A`, but all
+active deletions and zero-filter relaxations are partitionable.
+Equivalently, the partition-size spectrum `Spec_Z(A) subset {1,2,3}` misses the interval allowed by
+empty-support capacity, while every active deletion or zero-filter relaxation fills the gap.
+The three gaps are: no partition when `e_Z>=2`, only one-block partitions when `e_Z=1`, or no three-block
+partition when `e_Z=0`.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.

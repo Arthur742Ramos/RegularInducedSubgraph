@@ -1931,6 +1931,13 @@ What remains justified after audit is:
       filtered-cover branch has `|A|>=4`;
       finite zero-filter obstructions are governed by the support-count table `c_Z(B)` and disjoint
       three-block covers of `A`;
+      equivalently, by a 3-coloring criterion for admissible active supports plus empty-support capacity;
+      empty-support capacity determines the allowed number of nonempty admissible blocks;
+      the high-active endpoint is a minor-critical support-family obstruction under active deletions and
+      zero-filter relaxations;
+      equivalently, a partition-spectrum gap relative to empty-support capacity;
+      the gap cases are empty spectrum, only useless one-block partitions, or no exact three-block
+      partition, according as empty capacity is at least two, one, or zero;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       active-coordinate near-covers forbid every one-coordinate lift that toggles the active coordinate

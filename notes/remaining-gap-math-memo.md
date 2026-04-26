@@ -1948,6 +1948,16 @@ If `|A|<=3`, this is only a zero-filter small-support capacity obstruction; the 
 `|A|>=4`.
 The finite capacity table is `c_Z(B)` for supports `B subset A`; a cover exists exactly when three disjoint
 blocks cover `A` within those capacities.
+Equivalently, color `A` with at most three colors; nonempty color classes need positive `c_Z`, and empty
+classes consume `c_Z(empty)`.
+Empty-support capacity determines whether the admissible partition may have one, two, or must have three
+nonempty blocks.
+The high-active target endpoint is a minor-critical support family `F_Z`: no allowed partition of `A`, but
+every active deletion and zero-filter relaxation is partitionable.
+Equivalently, the partition-size spectrum misses the interval allowed by empty-support capacity; every
+active deletion or zero-filter relaxation fills the gap.
+The gap cases are empty spectrum for `e_Z>=2`, spectrum inside `{1}` for `e_Z=1`, and spectrum inside
+`{1,2}` for `e_Z=0`.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.
