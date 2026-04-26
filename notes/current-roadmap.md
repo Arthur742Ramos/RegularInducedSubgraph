@@ -5470,6 +5470,9 @@ with positive slack or genuine lift-collision.
 Pair atoms are completely local in this budget: for `B={a,b}`, both deletion pivots must be pairs `{b,l}`
 and `{a,l'}` with leftover singletons, giving a local pair-exchange component; a common leftover forms a
 triangle in the support graph, not a triple support.
+The pair-atom collision branch is finite: after deleting one endpoint, the projected four-atom repair family
+has gain `pi-s-delta>0`, at least two petals forced through the deleted endpoint, and only the atom templates
+`s=2` with `(pi,delta)=(3,0),(4,0),(4,1)` or `s=3` with `(4,0)`; every proper subfamily is nonpositive.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

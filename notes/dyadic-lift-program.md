@@ -1132,6 +1132,9 @@ pure absorption at atom `B_j` needs `|B_j|-1`; without that budget, only strict 
 can remain.
 Pair atoms become local pair-exchange components: both endpoint deletions pivot through leftover singletons,
 and a common leftover gives a triangle in the support graph, not a triple support.
+Their collision branch is finite: the projected four-atom repair has gain `pi-s-delta>0`, at least two
+petals forced through the deleted endpoint, and only `s=2` templates `(3,0),(4,0),(4,1)` or the `s=3`
+template `(4,0)`.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

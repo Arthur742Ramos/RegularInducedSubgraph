@@ -2528,6 +2528,9 @@ Recommended attack:
     Formalize pair-exchange components: for a pair atom `{a,b}`, endpoint deletions force pivot pairs
     `{b,l}` and `{a,l'}` with leftover singletons; common leftovers form support-graph triangles, while the
     triple itself remains forbidden by positive gain.
+    Formalize pair-collision templates: after deleting one endpoint, an inclusion-minimal projected collision
+    repair has gain `pi-s-delta>0`, at least two supports forced through the deleted endpoint, and only
+    `s=2:(3,0),(4,0),(4,1)` or `s=3:(4,0)`.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

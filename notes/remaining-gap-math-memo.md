@@ -2056,6 +2056,9 @@ The leftover count is a budget: zero-gain exchanges need one leftover singleton,
 `B_j` needs `|B_j|-1`, and without that budget only strict absorption or lift-collision remains.
 Pair atoms are local pair-exchange components: both endpoint deletions pivot through leftover singletons, and
 a common leftover forms a support-graph triangle, not a triple support.
+Pair collision stars have a finite atom template: after deletion, the projected four-atom repair has
+`pi-s-delta>0`, at least two supports forced through the deleted endpoint, and only `s=2` with
+`(pi,delta)=(3,0),(4,0),(4,1)` or `s=3` with `(4,0)`.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

@@ -12206,9 +12206,8 @@ endpoint is now `L`-budgeted: small leftover budget forces deletion repair into 
 large atoms or into genuine lift-collision; zero-gain boundary motion is possible only when the leftover
 budget pays for it.
 
-For pair atoms this budgeted endpoint is completely local.  Let `B={a,b}` be a pair atom and let `L_0` be
-the leftover singleton set.  Since deleting either endpoint has only the zero-gain pivot option, there are
-nonempty sets
+For pair atoms the noncollision, budgeted endpoint is completely local.  Let `B={a,b}` be a pair atom and
+let `L_0` be the leftover singleton set.  The possible zero-gain pivots are recorded by
 
 ```text
 L_a={l in L_0 : {b,l} in F_Z},
@@ -12220,7 +12219,32 @@ exchanges one endpoint of the pair with a leftover singleton, and no pivot touch
 `L_a cap L_b` is nonempty, the pair atom lies in a triangle of the **support graph** on `{a,b,l}`; the triple
 `{a,b,l}` itself is still forbidden as a positive-gain support.  If the two sets are disjoint, the pivot
 orbit is a two-sided exchange fan from the pair to distinct leftover singletons.  Thus pair atoms are visible
-as local pair-exchange components attached to the leftover budget.
+as local pair-exchange components attached to the leftover budget.  If, for some deletion, the appropriate
+set `L_a` or `L_b` is empty, that deletion must be handled by the collision branch.
+
+The pair-atom collision branch has a finite atom template.  Delete `a` from `B={a,b}` and let `P^-` be the
+projected deficit-one packing: its four atoms are the other packed atoms of `P` together with the singleton
+atoms `b` and the old leftovers.  Let `R^-={C_1,...,C_s}` be an inclusion-minimal positive-gain projected
+repair family with no disjoint full lift.  At least two of the `C_i` are `a`-forced.  If `pi` is the number
+of atoms of `P^-` hit by the union of the `C_i` and `delta` is the total number of omitted vertices from the
+packed atoms of `P^-` that are hit, then
+
+```text
+g^-(R^-)=pi-s-delta>0.
+```
+
+Since `pi<=4`, every pair-collision repair has `s<=3`.  More precisely the only atom-level possibilities
+are
+
+```text
+s=2:  (pi,delta)=(3,0), (4,0), or (4,1);
+s=3:  (pi,delta)=(4,0).
+```
+
+Every proper subfamily has nonpositive projected gain, so in the three-support case each two-support
+subfamily is still atom-defect nonpositive.  Thus pair collisions are not diffuse: they are two- or
+three-petal pointed repairs through the deleted endpoint, and their projected petals form one of the four
+displayed critical covers of the projected four-atom system.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

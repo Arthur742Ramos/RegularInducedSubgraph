@@ -2026,6 +2026,8 @@ What remains justified after audit is:
       with no leftovers, zero-gain supports are only the packed atoms and the zero-gain orbit is trivial;
       leftover count is a budget: zero-gain exchanges need one leftover singleton, and equality pure
       absorption at `B_j` needs `|B_j|-1`;
+      pair collision stars are finite projected four-atom covers with gain `pi-s-delta>0`, at least two
+      petals forced through the deleted endpoint, and templates `s=2:(3,0),(4,0),(4,1)` or `s=3:(4,0)`;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
