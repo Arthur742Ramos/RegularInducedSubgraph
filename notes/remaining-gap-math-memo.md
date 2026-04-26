@@ -1648,6 +1648,19 @@ The odd-word boundary residual also compresses: a minimal affine-inconsistent Ar
 kernel exactly `{0,1_U}`.  Therefore `|U|` is even, `1_U in ker(A(Q[U])+diag(tau))`, `dim ker<=2`, and
 the irreducible obstruction is the single whole-class bit
 `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`; any other even kernel vector descends to a proper closed support.
+At the exact Davenport boundary top `X=e_1^3...e_r^3`, define
+`h_X(sum_i a_i e_i)=sum_i a_i` with `0<=a_i<=3`.  A graph-compatible export `Y` from the retained side
+closes whenever `|B|-|Y|+h_X(sigma(Y))>m`; thus terminality forces
+`|Y|-h_X(sigma(Y))>=|B|-m` for every compatible export.  The exact-boundary endpoint is therefore a
+weighted finite trace problem; in deficit form `d=m-|B|>=0`, compatible exports must obey
+`h_X(sigma(Y))-|Y|<=d`.
+The height gain satisfies
+`h_X(sigma(Y))-|Y|=sum_y(h_X(sigma(y))-1)-4kappa(Y)`.  Hence carry-free compatible exports have total
+singleton surplus at most `d`; in particular deficit-zero endpoints force every compatible pair of
+positive-surplus vertices to create a coordinate carry or fail the graph-label trace condition.
+If `S` is old-balanced and a cut `Y` plus its complement are both graph-compatible exports, then
+`4 supp(sigma(Y))<=|S|+2d`.  Hence deficit-zero two-sided-compatible cuts in blocks of size less than
+four are impossible, and four-block cuts live on a single coordinate.
 
 ## 14. Pair-chamber orientation normal form
 

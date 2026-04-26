@@ -4896,6 +4896,19 @@ after localizing to a bad closed support, the even kernel is exactly `{0,1_U}`, 
 `1_U in ker(A(Q[U])+diag(tau))`, `dim ker<=2`, and the only remaining obstruction bit is
 `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.  Any larger even kernel gives a proper closed support and is not
 an irreducible whole-class obstruction.
+At the exact Davenport boundary top `X=e_1^3...e_r^3`, the import budget is also fixed: if
+`h_X(sum_i a_i e_i)=sum_i a_i` for `0<=a_i<=3`, then exporting `Y` from the retained side and importing
+the forced matching boundary value leaves size `|B|-|Y|+h_X(sigma(Y))`.  Hence every graph-compatible
+export in a terminal endpoint satisfies `|Y|-h_X(sigma(Y))>=|B|-m`; otherwise the coordinate exchange
+already produces a larger congruent selector.  In deficit form (`d=m-|B|>=0`), all compatible exports
+must have `h_X(sigma(Y))-|Y|<=d`.
+Equivalently,
+`h_X(sigma(Y))-|Y|=sum_y(h_X(sigma(y))-1)-4kappa(Y)`.  Carry-free compatible exports have total
+singleton surplus at most `d`; at deficit zero, two positive-surplus retained vertices cannot be a
+compatible carry-free pair.
+For an old-balanced retained block `S`, a proper cut `Y` with both sides graph-compatible must also obey
+`4 supp(sigma(Y))<=|S|+2d`, since `h_X(g)+h_X(-g)=4 supp(g)`.  Thus deficit-zero compatible cuts below
+size four disappear, and four-block cuts are one-coordinate.
 
 ## Supporting work that is useful but not on the critical path
 

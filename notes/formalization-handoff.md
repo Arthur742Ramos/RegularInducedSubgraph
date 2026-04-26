@@ -1927,24 +1927,40 @@ Recommended attack:
    `ker M_U`, averaging over the kernel gives `|J|<=2(m-|U|)`.  Outside `J`, affine solutions have fixed
    bits, with at most `(m-|U|)/2` forced ones in a terminal soluble branch.
    Formalize the exact dual criterion: with `r_i=floor(deg_{Q[U]}(i)/2)`, some constant bit `c` solves
-    `M_U 1_T=r+c1_U` iff no even-weight `H in ker M_U` has `sum_{i in H} r_i=1 [MOD 2]`.
-    Unpack this as a parity-closed certificate: `deg_H(i)=0` off `H`, `deg_H(i)=tau_i` on `H`, `|H|`
-    even, and the half-degree sum over `H` odd.
-    Add the minimal Arf-kernel normal form.  If an affine-inconsistent quotient is minimal under passing
-    to a bad closed support, then its even kernel is exactly `{0,1_U}`.  An even kernel vector with zero
-    Arf pairing gives the proper bad support `U Delta K`; one with odd Arf pairing is itself a proper bad
-    support.  Therefore `|U|` is even, `1_U in ker M_U`, `sum_U r_i=1`, and `dim ker M_U<=2`; if odd
-    kernel vectors exist, they are a complementary pair modulo `1_U`.  Formalize the equivalent
-    whole-class parity statement `deg_U(i)=tau_i [MOD 2]` and quadratic bit
-    `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.
-    In the constant `tau` parity-matched case (`deg_Q(i)=tau [MOD 2]`), `1_U` is in the kernel; if
-    `|U|` is odd, some constant bit is always compatible.  The full selector already closes
+   `M_U 1_T=r+c1_U` iff no even-weight `H in ker M_U` has `sum_{i in H} r_i=1 [MOD 2]`.
+   Unpack this as a parity-closed certificate: `deg_H(i)=0` off `H`, `deg_H(i)=tau_i` on `H`, `|H|`
+   even, and the half-degree sum over `H` odd.
+   Add the minimal Arf-kernel normal form.  If an affine-inconsistent quotient is minimal under passing
+   to a bad closed support, then its even kernel is exactly `{0,1_U}`.  An even kernel vector with zero
+   Arf pairing gives the proper bad support `U Delta K`; one with odd Arf pairing is itself a proper bad
+   support.  Therefore `|U|` is even, `1_U in ker M_U`, `sum_U r_i=1`, and `dim ker M_U<=2`; if odd
+   kernel vectors exist, they are a complementary pair modulo `1_U`.  Formalize the equivalent
+   whole-class parity statement `deg_U(i)=tau_i [MOD 2]` and quadratic bit
+   `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.
+   In the constant `tau` parity-matched case (`deg_Q(i)=tau [MOD 2]`), `1_U` is in the kernel; if
+   `|U|` is odd, some constant bit is always compatible.  The full selector already closes
    constant-type constant-parity quotient sets above `m/2` by pair words, so keep the Arf bit only as a
    below-threshold diagnostic.
    Formalize the exact Davenport top layer if the boundary route is used: Olson's extremal theorem for
    `C_4^r` identifies every zero-sum-free sequence of length `3r` as three copies of a basis.  In that
    endpoint, boundary imports are coordinate count vectors `0<=a_i<=3`; an export of old-sum
    `sum_i a_i e_i` forces exactly `a_i` imports from the `i`-th parallel triple.
+   Add the exact-top exchange budget: define `h_X(sum_i a_i e_i)=sum_i a_i` with `0<=a_i<=3`.  If
+   `Y subset B` is exported and the forced boundary import has the same old-coordinate value
+   `sigma(Y)`, the resulting size is `|B|-|Y|+h_X(sigma(Y))`.  Therefore any graph-compatible exchange
+   with `|Y|-h_X(sigma(Y))<|B|-m` closes, and terminality forces the opposite inequality for all
+   graph-compatible exports.  Equivalently, for deficit `d=m-|B|>=0`, every compatible export has
+   `h_X(sigma(Y))-|Y|<=d`.  This is the finite weighted trace form of the exact-boundary endpoint.
+   Formalize the carry identity.  If `sigma(y)=sum_i a_i(y)e_i`, `0<=a_i(y)<=3`, and
+   `n_i(Y)=sum_{y in Y}a_i(y)`, then
+   `h_X(sigma(Y))-|Y|=sum_y(h_X(sigma(y))-1)-4 sum_i floor(n_i(Y)/4)`.  Hence terminality is equivalent
+   to `sum_y(h_X(sigma(y))-1)<=d+4kappa(Y)` for every graph-compatible export.  Carry-free compatible
+   exports have total singleton surplus at most `d`; compatible singletons have height at most `d+1`,
+   and at deficit zero no compatible carry-free pair can contain two positive-surplus vertices.
+   Formalize the complementary-cut bound for old-balanced retained blocks: if `sigma(S)=0`, `Y` is a
+   proper cut of `S`, `g=sigma(Y)`, and both `Y` and `S\Y` are graph-compatible exports, then
+   `h_X(g)+h_X(-g)=4 supp(g)` and terminality imply `4 supp(g)<=|S|+2d`.  At deficit zero this forbids
+   two-sided-compatible cuts in blocks of size below four and restricts four-block cuts to one coordinate.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

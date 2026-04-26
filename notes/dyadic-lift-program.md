@@ -1479,6 +1479,25 @@ if `|X|=3r` in `C_4^r`, then after a basis change
 `X=e_1^3 e_2^3 ... e_r^3`.  A boundary import is then just a coordinate count vector
 `0<=a_i<=3`; exporting old-sum `sum_i a_i e_i` forces exactly `a_i` imported copies from the `i`-th
 parallel triple.  The only residual freedom is which parallel graph traces of each coordinate are used.
+Equivalently, with `h_X(sum_i a_i e_i)=sum_i a_i`, deleting `Y subset B` and importing from `X` gives
+size `|B|-|Y|+h_X(sigma(Y))`.  Terminality therefore forces every graph-label-compatible export to obey
+`|Y|-h_X(sigma(Y))>=|B|-m`; otherwise the forced coordinate import already leaves more than `m` selected
+vertices.  At the exact top, the boundary exchange is a finite trace search with this linear surplus
+weight, not a hidden zero-sum choice.
+In deficit form, if `d=m-|B|>=0`, terminality says every compatible export has
+`h_X(sigma(Y))-|Y|<=d`; all larger boundary-height gains would close immediately.
+The gain has the carry identity
+`h_X(sigma(Y))-|Y|=sum_{y in Y}(h_X(sigma(y))-1)-4 sum_i floor(n_i(Y)/4)`, where
+`n_i(Y)` is the total exported coefficient in coordinate `i`.  Thus terminality is the finite inequality
+`sum_y(h_X(sigma(y))-1)<=d+4kappa(Y)` for every graph-compatible export.  Carry-free exports
+(`n_i<=3` in every coordinate) have singleton surplus at most `d`; in particular a compatible singleton
+has height at most `d+1`, and at deficit zero two positive-surplus vertices cannot form a compatible
+carry-free pair.
+Complementary cuts inside old-balanced retained blocks add another restriction.  If `sigma(S)=0`,
+`Y` is a proper cut, and both exports `Y` and `S\Y` are graph-compatible, then with `g=sigma(Y)` the
+identity `h_X(g)+h_X(-g)=4 supp(g)` and the two terminal inequalities give
+`4 supp(g)<=|S|+2d`.  Hence deficit-zero two-sided-compatible cuts in blocks of size below four are
+impossible, and four-block cuts must be supported on one boundary coordinate.
 
 So the remaining input is an inverse/stability theorem for value-coupled zero-sum-free boundaries,
 not another ordinary zero-sum extraction.

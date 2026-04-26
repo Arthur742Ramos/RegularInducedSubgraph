@@ -8352,6 +8352,111 @@ exchange is not a general Davenport problem at the exact endpoint: exporting a r
 `sum_i a_i e_i` forces precisely `a_i` imports from the `i`-th boundary triple.  All remaining freedom is
 inside the three parallel graph traces of each coordinate.
 
+This gives a numerical exchange budget.  For `g=sum_i a_i e_i` with `0<=a_i<=3`, write
+
+```text
+h_X(g)=sum_i a_i.
+```
+
+In the exact boundary endpoint, any exchange that deletes `Y subset B` and imports from `X` while
+preserving the old-coordinate sum must import exactly `h_X(sigma(Y))` boundary vertices.  Thus the
+candidate selected set has size
+
+```text
+|B|-|Y|+h_X(sigma(Y)).
+```
+
+Consequently terminality implies the following weighted surplus obstruction: every graph-label-compatible
+export `Y` must satisfy
+
+```text
+|Y|-h_X(sigma(Y)) >= |B|-m.
+```
+
+Otherwise the forced coordinate import is already large enough to leave more than `m` selected vertices.
+The exact-top boundary problem is therefore a finite trace search with a linear weight
+`|Y|-h_X(sigma(Y))`; no hidden zero-sum choice remains.
+Equivalently, when the retained old-balanced side has deficit `d=m-|B|>=0`, every compatible exchange
+must have
+
+```text
+h_X(sigma(Y))-|Y| <= d.
+```
+
+Thus the exact-top endpoint can only survive if all graph-compatible exports have boundary-height gain at
+most the retained deficit.  Large-height coordinate imports are harmless only when their corresponding
+retained export is graph-label incompatible.
+
+The height gain has an exact carry formula.  Write the old-coordinate value of a retained vertex `y` as
+
+```text
+sigma(y)=sum_i a_i(y)e_i,        0<=a_i(y)<=3,
+```
+
+and for `Y subset B` put `n_i(Y)=sum_{y in Y}a_i(y)`.  Then
+
+```text
+h_X(sigma(Y))-|Y|
+  = sum_{y in Y}(h_X(sigma(y))-1) - 4 sum_i floor(n_i(Y)/4).
+```
+
+Thus terminality is equivalent to the finite carry inequality
+
+```text
+sum_{y in Y}(h_X(sigma(y))-1) <= d + 4 kappa(Y),
+kappa(Y):=sum_i floor(n_i(Y)/4),
+```
+
+for every graph-compatible export `Y`.  In particular every carry-free compatible export
+(`n_i(Y)<=3` for all `i`) has total singleton height surplus at most `d`.  The residual exact-top
+problem has therefore split into two visible mechanisms: either graph labels block all high-surplus
+carry-free exports, or every high-surplus export is forced to spend a coordinate carry, losing four units
+of boundary height.
+
+The first consequences are small but useful.  A compatible singleton `y` must satisfy
+
+```text
+h_X(sigma(y)) <= d+1.
+```
+
+A compatible pair `y,z` with `a_i(y)+a_i(z)<=3` for every coordinate must satisfy
+
+```text
+(h_X(sigma(y))-1)+(h_X(sigma(z))-1) <= d.
+```
+
+Hence at deficit zero, two positive-height-surplus retained vertices cannot form a graph-compatible
+carry-free pair.  Positive surplus is forced into either incompatible traces or coordinate-overlap
+patterns that create a mod-`4` carry.  This is the exact finite replacement for the previous vague
+"value-coupled inverse Davenport" endpoint.
+
+There is also a useful complementary-cut test inside any old-balanced retained block.  If
+`S subset B` has `sigma(S)=0` and `Y` is a proper nonempty cut of `S`, put `g=sigma(Y)`.  Then
+
+```text
+h_X(g)+h_X(-g)=4 supp(g),
+```
+
+where `supp(g)` is the number of nonzero coordinates of `g`.  If both exports `Y` and `S\Y` are
+graph-compatible, terminality gives
+
+```text
+h_X(g)-|Y| <= d,
+h_X(-g)-(|S|-|Y|) <= d.
+```
+
+Adding them yields the block-cut bound
+
+```text
+4 supp(sigma(Y)) <= |S|+2d.
+```
+
+Thus a cut whose old-coordinate value has support larger than `(|S|+2d)/4` cannot be compatible on both
+sides in a terminal exact-top endpoint.  At deficit zero, every two-sided-compatible cut in a block of
+size less than four is impossible, and a two-sided-compatible cut in a four-block must be supported on a
+single boundary coordinate.  This turns the old `3+1`/`2+2` append tables into a support-restricted
+coordinate test rather than an unrestricted finite search.
+
 Thus a plausible final route is now precise: prove a stability/inverse-Davenport boundary theorem
 adapted to the value-coupled exchange.  The required input is not another zero-sum existence theorem;
 existence is already exhausted.  It is an inverse theorem for zero-sum-free boundaries together with
