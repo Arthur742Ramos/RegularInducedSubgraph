@@ -5399,6 +5399,9 @@ After full minor-criticality, the genuine `|A|=4` endpoint is singleton-only: al
 present, `c_Z(empty)>=2`, and every pair/triple/full support is absent and essential.
 For `|A|=5`, the excess threshold is `2`: a triple or two disjoint pairs closes, while every four-shadow
 needs a non-singleton; the pair-only pattern is exactly a triangle on three active coordinates.
+A rank-three support `B` plus any feasible complement-shadow packing has saving exactly `|A|-4`, one below
+the closing threshold.  Hence the rank-three high-active branch is a one-defect bridge problem: all
+one-saving bridges or thickened/replacement supports are absent or capacity-deficient.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

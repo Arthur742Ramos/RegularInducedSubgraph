@@ -2460,6 +2460,9 @@ Recommended attack:
     `|A_k|<=7` for all high-active residues, hence `m<=16`.
     Package this as a universal `X`-dichotomy for every retained `T` and outgoing triple `X`: scalar-killed,
     small-active zero-filter, low-rank bounded, or rank-three high-active.
+    Formalize rank-three support contraction: a support `B` of size `r>=3` plus a complement-shadow packing
+    saves `|A|-4`, so terminality is exactly absence/capacity-deficiency of all one-saving bridges,
+    thickenings, or larger replacements.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

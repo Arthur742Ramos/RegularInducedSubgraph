@@ -1074,6 +1074,9 @@ sum is `2(m-2)`, this low-rank pure high-active case has `m<=16`.  For `m>=17`, 
 forced.
 Thus for every retained `T` and outgoing triple `X`, the terminal is scalar-killed, small-active
 zero-filter capacity, low-rank bounded (`m<=16`), or rank-three high-active.
+A rank-three high-active support leaves exactly one excess unit missing after adding a feasible complement
+packing, so that branch is a one-defect bridge obstruction: all one-saving bridges, thickenings, or larger
+replacement supports are blocked.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

@@ -2002,6 +2002,8 @@ If all four high-active residues avoid rank-three supports, then `|A_k|<=7` for 
 `sum |A_k|=2(m-2)`, so `m<=16`; for `m>=17` a rank-three support is forced.
 Equivalently, for every retained `T` and outgoing triple `X`, terminality is scalar-killed, small-active
 zero-filter capacity, low-rank bounded (`m<=16`), or rank-three high-active.
+Any rank-three support plus a feasible complement packing saves exactly `|A|-4`, so rank-three high-active
+is a one-defect bridge obstruction: all one-saving bridges/thickenings/replacements are blocked.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

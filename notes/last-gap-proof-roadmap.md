@@ -1976,6 +1976,8 @@ What remains justified after audit is:
       `|A_k|<=7` give `m<=16`; for `m>=17` a rank-three support is forced;
       uniformly in every retained `T` and outgoing triple `X`, terminality is scalar-killed, small-active
       zero-filter, low-rank bounded, or rank-three high-active;
+      a rank-three support plus a feasible complement packing is exactly one excess unit short, reducing
+      that branch to a one-defect bridge obstruction;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;

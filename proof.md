@@ -11791,6 +11791,27 @@ For `|A|=5`, the excess threshold is `2`: a triple support or two disjoint pair 
 every four-shadow must contain at least one non-singleton support.  Thus the pair-only surviving pattern is
 exactly a triangle on three of the five active coordinates.
 
+A rank-three support reduces the high-active endpoint to a one-defect bridge problem.  Let `B in F_Z` have
+size `r>=3`.  Since `A\B` is a proper active shadow, full minor-criticality gives a disjoint packing in
+`A\B` with saving at least
+
+```text
+|A\B|-3 = |A|-r-3.
+```
+
+Adding `B` gives total saving at least
+
+```text
+(r-1)+(|A|-r-3)=|A|-4,
+```
+
+exactly one below the closing threshold `|A|-3`.  Therefore every rank-three (or larger) support exposes a
+one-defect complement packing: terminality is precisely that no one-saving bridge can be added to this
+packing.  Equivalently, every pair support joining two singleton residual blocks, every thickening that
+merges a singleton into an existing packed block, and every replacement of `B` by a disjoint larger support
+is absent or capacity-deficient.  Thus the large-core rank-three branch has the same shape as the earlier
+one-defect host obstruction, now inside the active support clutter.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff
@@ -12031,7 +12052,8 @@ large-outside ternary target avoidance:
   kappa covers for fixed T,X obey active/filter complement coherence with antipodal trace cores for
   opposite high-active endpoints; pure high-active target-avoidance for all four residues forces m>=10,
   and if no rank-three support appears then m<=16; uniformly in T,X, terminality is scalar-killed,
-  small-active zero-filter, low-rank bounded, or rank-three high-active;
+  small-active zero-filter, low-rank bounded, or rank-three high-active, and the rank-three case is a
+  one-defect bridge obstruction;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;
