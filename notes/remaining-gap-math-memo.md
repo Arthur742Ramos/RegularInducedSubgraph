@@ -1813,6 +1813,10 @@ criticality gives two disjoint such packets in one chamber, and terminality forb
 union from having the matching internal residue.
 Quotienting by the constant all-ones trace gives a sharper constant-trace packet threshold `3m-2`; a
 constant-trace `p` packet in chamber `t` is forbidden from having internal residue `a+p-t`.
+Each such packet satisfies `|X|t==mp mod 4`.
+Only packets passing `|X|(a+p-t)==0 mod 2` can be dangerous by handshaking.
+Using size mod `4` as an extra Davenport coordinate yields constant-trace packets with `|X|==0 mod 4`;
+for these the handshaking filter is automatic and `mp==0 mod 4`.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

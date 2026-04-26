@@ -9918,6 +9918,60 @@ terminality forbids every constant-trace packet from being an internal selector 
 In the critical case the largest outside degree chamber contains two disjoint constant-trace packets, and
 all nonempty unions of a disjoint constant-trace packet family are forbidden at their matching residues.
 
+Every constant-trace packet also satisfies the cross-edge congruence
+
+```text
+|X| t == m p        [MOD 4],
+```
+
+because both sides count `e(S,X)` modulo `4`: by summing over `X` one gets `|X|t`, while by summing over
+`S` one gets `mp`.  Thus the packet trace residue is not free.  If `t` or `m` is a unit modulo `4`, then
+the packet size determines the constant trace, or conversely; in the even cases only the corresponding
+parity survives.  The terminal packet obstruction is therefore an arithmetic anti-selector problem on
+constant-trace packets satisfying this cross-count congruence.
+
+There is also the handshaking filter.  A packet `X` can be an internal selector of the matching residue
+`r=a+p-t` only if
+
+```text
+|X| r == 0        [MOD 2].
+```
+
+When this fails, `X` is automatically harmless because the sum of its internal degrees would be odd.
+When it holds, the parity of the internal edge count is fixed by
+
+```text
+e(X) == |X|r/2        [MOD 2].
+```
+
+Thus the dangerous packets are exactly the constant-trace packets satisfying both the cross-count
+congruence and this handshaking parity condition.
+
+To remove the handshaking nuisance, add the packet size as one more `Z/4Z` coordinate.  In the group
+
+```text
+((Z/4Z)^S / <(1,1,...,1)>) x Z/4Z ~= (Z/4Z)^m,
+```
+
+the Davenport constant is `3m+1`.  Hence every chamber `U_t` of size at least `3m+1` contains a
+nonempty packet `X` with constant trace to `S` and
+
+```text
+|X| == 0        [MOD 4].
+```
+
+For such a packet the handshaking condition is automatic.  The cross-count congruence reduces to
+
+```text
+m p == 0        [MOD 4],
+```
+
+and terminality says that `H[X]` is not an internal selector of residue `a+p-t`.  In the critical largest
+degree chamber, for `m>=2`, there are two disjoint size-`0 mod 4` constant-trace packets, and every
+nonempty union of a disjoint family of them has the same automatic handshaking property.  This is the
+cleanest packet endpoint: the only remaining obstruction is internal residue synchronization inside
+arithmetically admissible constant-trace packets.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

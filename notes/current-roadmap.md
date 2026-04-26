@@ -5105,6 +5105,13 @@ zero-trace packets exist in one chamber and all nonempty unions are internally f
 The exact merge condition strengthens this to constant-trace packets by quotienting `(Z/4)^S` by the
 all-ones trace: the Davenport threshold becomes `3m-2`, and a packet with constant trace `p` in chamber
 `U_t` is forbidden from being an internal residue-`a+p-t` selector.
+Such packets satisfy the cross-count congruence `|X|t==mp mod 4`, so the packet trace and size are
+arithmetically coupled.
+They are dangerous only when the matching residue `r=a+p-t` also satisfies the handshaking parity
+`|X|r==0 mod 2`; then `e(X)==|X|r/2 mod 2` is fixed.
+Adding packet size as a `Z/4` coordinate gives a cleaner Davenport endpoint: every `3m+1` vertices in a
+degree chamber contain a constant-trace packet with `|X|==0 mod 4`; then handshaking is automatic and the
+cross-count reduces to `mp==0 mod 4`.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and
