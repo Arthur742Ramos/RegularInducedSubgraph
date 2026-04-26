@@ -4920,6 +4920,20 @@ table plus one constant-column condition.
 That column condition is finite on traces: with `p=N(a) cap R_i` and `mu=M_A(a)+|p|`, an omitted triple
 `O` works on the remainder iff `mu-|p cap O|` is constant on the occupied labelled trace classes in
 `{0,1}^7 x Z/4Z`.
+Equivalently, external candidates are the `35` omitted triples for which the occupied trace-label
+function `mu(p)` differs from the template `p -> |p cap O|` by a constant; duplicate labels on one trace
+kill all external candidates.
+If the empty trace and singleton traces are occupied, the omitted triple is decoded by
+`1_{r in O}=mu({r})-mu(empty)`; with all seven singletons present, `C_ext` has at most one candidate.
+Dual decoding from the full trace and co-singletons uses
+`1_{r in O}=mu(R_i)-mu(R_i\{r})`, again giving at most one candidate when complete.
+If two omitted triples survive externally, all occupied traces have constant signed imbalance across
+their symmetric difference; with empty or full trace occupied, every occupied trace is balanced across
+that difference.  Ambiguous `C_ext` therefore requires sparse/separating-poor trace support.
+Anchored ambiguity is exactly failure of the occupied traces to separate triples by intersection counts;
+if they separate all triples, then `|C_ext|<=1`.
+Adjacent surviving templates force a trace-twin pair; without trace twins, anchored `C_ext` is independent
+in `J(7,3)`.
 Pairwise, two trace classes require the signed omitted-triple equation
 `|p cap O|-|q cap O|=mu-nu [MOD 4]`; terminality in the positive atom is a finite anti-Horn family of
 these constraints with no common one of the `35` triples.

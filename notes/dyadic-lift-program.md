@@ -1516,6 +1516,28 @@ The column condition depends only on the trace quotient of `A` into `R_i`: for
 `mu(a)-|p(a) cap O|` is constant on all occupied labelled trace classes.  Therefore the positive-atom
 endpoint is a finite alphabet problem on `{0,1}^7 x Z/4Z` plus the internal four-set equation on
 `R_i\O`.
+Equivalently, if each occupied trace `p` has a single label `mu(p)`, the external candidates are the
+omitted triples `O` for which `mu(p)-|p cap O|` is constant on the occupied trace set.  If a trace carries
+two labels, there is no external candidate.  Thus the positive atom is the intersection problem
+`C_ext cap C_int` inside the `35` omitted triples: `C_ext` is a trace-template set, and `C_int` is the
+internal four-set set.
+If the empty trace and singleton traces are occupied, the external candidates decode directly:
+`R=mu(empty)` and `1_{r in O}=mu({r})-mu(empty)`.  Any singleton difference outside `{0,1}` kills
+`C_ext`; if all seven singletons are present, `C_ext` has at most one triple, existing only when exactly
+three differences are `1` and all higher occupied traces obey the same count formula.
+The dual decoder uses the full trace and co-singletons:
+`1_{r in O}=mu(R_i)-mu(R_i\{r})`.  Thus full trace plus all seven co-singletons also leaves at most one
+external candidate.
+More generally, if two distinct omitted triples `O,O'` both survive externally, then every occupied trace
+has constant imbalance `|p cap (O\O')|-|p cap (O'\O)| [MOD 4]`.  If the empty or full trace is occupied,
+the constant is zero, so every occupied trace must be balanced across the symmetric difference.  External
+ambiguity is therefore possible only on trace families that do not separate surviving templates.
+Anchored by the empty or full trace, this becomes exact: `C_ext` is contained in one equivalence class of
+triples under the map `O -> (|p cap O|)_p`.  If occupied traces separate all triples, then
+`|C_ext|<=1`.
+Adjacent surviving triples force a trace-twin pair: if the triples differ by swapping `x` and `y`, then
+every occupied trace contains either both or neither of `x,y`.  Thus with no trace-twin points, anchored
+`C_ext` is independent in the Johnson graph `J(7,3)`.
 For two trace classes `(p,mu),(q,nu)`, equalization is the signed three-subset equation
 `|p cap O|-|q cap O|=mu-nu [MOD 4]`.  With `A=p\q`, `B=q\p`, this means choosing
 `x` omitted points from `A` and `y` from `B`, with a total omitted size three, so that

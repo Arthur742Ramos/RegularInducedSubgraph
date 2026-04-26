@@ -1976,6 +1976,28 @@ Recommended attack:
    `mu(a)=M_A(a)+|p(a)|`, an omitted triple `O` satisfies the remainder line iff
    `mu(a)-|p(a) cap O|` is constant on all occupied labelled trace classes `(p,mu)`.  Hence the local
    endpoint is finite over `{0,1}^7 x Z/4Z` and the `35` omitted triples.
+   Add the template normal form: if one trace has two labels, the external condition fails for every
+   omitted triple.  Otherwise write the occupied label function as `mu(p)`.  For
+   `phi_O(p)=|p cap O|`, the external candidate set is
+   `C_ext={O: mu-phi_O is constant on occupied traces}`.  The positive-atom reroot exists iff
+   `C_ext` meets the internal candidate set defined by the `E_3` checks.
+   Add singleton-trace decoding: if the empty trace is occupied, it fixes `R=mu(empty)`.  Each occupied
+   singleton trace `{r}` forces `1_{r in O}=mu({r})-mu(empty) [MOD 4]`; differences outside `{0,1}`
+   kill `C_ext`.  If all seven singleton traces are occupied, then there is at most one external
+   candidate, and it must have exactly three forced points and satisfy the count formula on every
+   occupied higher trace.
+   Add the dual decoder: if the full trace is occupied, then each occupied co-singleton `R_i\{r}` forces
+   `1_{r in O}=mu(R_i)-mu(R_i\{r}) [MOD 4]`; full trace plus all seven co-singletons again leaves at
+   most one candidate.
+   Add the multi-template ambiguity law: if two distinct omitted triples `O,O'` are both in `C_ext`, then
+   `|p cap (O\O')|-|p cap (O'\O)|` is constant modulo `4` over all occupied traces.  If the empty or full
+   trace is occupied, this constant is zero, so every occupied trace must be balanced across that
+   symmetric difference.
+   In this anchored case, formalize the separation corollary: `C_ext` lies in one equivalence class of
+   triples for the map `O -> (|p cap O|)_p`; if occupied traces separate all triples, then `|C_ext|<=1`.
+   Also formalize the adjacent-template corollary: if two surviving triples differ by swapping `x` and
+   `y`, then every occupied trace has equal incidence on `x` and `y`; hence `x,y` are trace twins, and
+   without trace twins anchored `C_ext` is independent in `J(7,3)`.
    Formalize the pairwise equalization criterion: for occupied trace classes `(p,mu),(q,nu)`, an omitted
    triple can equalize them only if `|p cap O|-|q cap O|=mu-nu [MOD 4]`.  With
    `A=p\q`, `B=q\p`, and `C=R_i\(A union B)`, this is equivalent to integers

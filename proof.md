@@ -8528,6 +8528,105 @@ whether the internal line on `R_i\O` is constant.  If no `O` passes, terminality
 set of labelled trace classes in `{0,1}^7 x Z/4Z`.  This is the exact ternary/omission form of the
 self-layer residue.
 
+Equivalently, the external column condition is a `35`-template test.  Let `P` be the occupied trace set
+and assume first that each trace `p` has a single label `mu(p)`; if the same trace carries two labels,
+then no omitted triple can equalize the remainder.  For an omitted triple `O`, define
+
+```text
+phi_O(p)=|p cap O|        [MOD 4].
+```
+
+Then the external line holds exactly when
+
+```text
+mu(p)=R+phi_O(p)          for every occupied p in P        [MOD 4]
+```
+
+for some constant `R`.  Thus the external candidates are
+
+```text
+C_ext={O in binom(R_i,3):  mu-phi_O is constant on P}.
+```
+
+The positive-atom reroot exists precisely when `C_ext` intersects the internal candidate set cut out by
+the signed `E_3` equations.  Terminality of this atom is therefore the disjointness of two explicit
+subsets of the `35` omitted triples, one trace-template subset and one internal four-set subset.
+
+The template set is usually tiny.  If the empty trace is occupied, then its label fixes the constant
+`R=mu(empty)`.  If a singleton trace `{r}` is occupied, every external candidate must satisfy
+
+```text
+1_{r in O}=mu({r})-mu(empty)        [MOD 4].
+```
+
+Thus a singleton trace whose label difference is not `0` or `1` kills all external candidates, and each
+valid singleton trace decides whether its point lies in `O`.  If the empty trace and all seven singleton
+traces are occupied, then `C_ext` has at most one element: it exists exactly when the seven differences
+are `0/1` with exactly three `1`s and every other occupied trace `p` satisfies
+
+```text
+mu(p)-mu(empty)=|p cap O|        [MOD 4].
+```
+
+Consequently a trace-rich positive atom is not a large anti-Horn problem: the external side either fails
+immediately or decodes a unique omitted triple, leaving only the internal `E_3` checks.  The genuinely
+ambiguous external obstruction must have sparse low-trace support.
+
+There is a dual high-trace decoder.  If the full trace `R_i` is occupied, then
+`R=mu(R_i)-3`.  If the co-singleton trace `R_i\{r}` is occupied, every external candidate satisfies
+
+```text
+1_{r in O}=mu(R_i)-mu(R_i\{r})        [MOD 4].
+```
+
+Thus full trace plus all seven co-singletons also leaves at most one omitted triple, with the same
+`0/1` and "exactly three ones" tests.  Hence any genuinely ambiguous external positive-atom obstruction
+must be sparse at both ends of the trace lattice: it cannot contain a complete singleton layer or a
+complete co-singleton layer with the corresponding anchor trace.
+
+More generally, two surviving external templates force a balance law.  If distinct triples `O,O'` both
+belong to `C_ext`, then for every occupied trace `p`
+
+```text
+|p cap O|-|p cap O'| = c        [MOD 4]
+```
+
+for one constant `c`.  Equivalently, with `U=O\O'` and `V=O'\O`,
+
+```text
+|p cap U|-|p cap V| = c        [MOD 4].
+```
+
+If the empty trace or the full trace is occupied then `c=0`, so every occupied trace must meet the two
+opposite sides `U,V` equally modulo `4`.  Since `|U|=|V|<=3`, this is ordinary equality of the two
+intersection sizes.  Thus ambiguity of `C_ext` is possible only when all occupied traces are balanced
+across every symmetric difference between surviving omitted triples; any trace that separates one side
+from the other collapses `C_ext` to a smaller template set.
+
+In anchored form this is exact.  If the empty trace or full trace is occupied, define two omitted triples
+`O,O'` to be trace-equivalent when
+
+```text
+|p cap O|=|p cap O'|        for every occupied trace p.
+```
+
+Then `C_ext` is contained in one trace-equivalence class of triples; if the occupied trace family
+separates all distinct triples, `|C_ext|<=1`.  The singleton and co-singleton decoders are just the
+strongest separating families.  Therefore a genuinely ambiguous anchored external endpoint must carry a
+nontrivial equivalence class of triples under the intersection-count map
+`O -> (|p cap O|)_{p in P}`.
+
+The adjacent case is especially restrictive.  If `O=A union {x}` and `O'=A union {y}` share two points,
+then anchored ambiguity forces
+
+```text
+1_{x in p}=1_{y in p}        for every occupied trace p.
+```
+
+Thus `x` and `y` are trace twins relative to the occupied trace family.  Hence any anchored external
+candidate set containing adjacent triples produces a twin pair in the seven-point reservoir; conversely,
+without trace-twin points, an anchored `C_ext` is an independent set in the Johnson graph `J(7,3)`.
+
 For two occupied trace classes `(p,mu)` and `(q,nu)`, the remainder line can equalize them by an omitted
 triple only if
 

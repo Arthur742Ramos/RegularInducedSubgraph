@@ -1670,6 +1670,18 @@ satisfy `M_A+deg_T=R` on `A` and `L_A+deg_T=R` on `T`.  In omitted-triple form t
 seven-point table obtained from `deg_T=deg_{R_i}-deg_O`, plus a constant-column condition on `A`.
 The latter depends only on the labelled trace alphabet `(p,mu) in {0,1}^7 x Z/4Z`, since an omitted
 triple `O` requires `mu-|p cap O|` to be constant on all occupied classes.
+Equivalently, the external side is a `35`-template test: `mu(p)=R+|p cap O|` on occupied traces for some
+omitted triple `O` and constant `R`.
+If empty and singleton traces are occupied, the singleton label differences decode the omitted triple;
+with all seven singletons present there is at most one external candidate.
+The full/co-singleton layer gives the dual decoder
+`1_{r in O}=mu(R_i)-mu(R_i\{r})`.
+If two external templates survive, occupied traces have constant signed imbalance across their symmetric
+difference; with empty or full trace occupied, they must be balanced across it.
+With such an anchor, ambiguity is precisely non-separation of triples by occupied trace intersection
+counts.
+Adjacent surviving templates force a trace-twin pair; without trace twins, anchored candidates are
+Johnson-independent.
 For two classes this is the signed equation `|p cap O|-|q cap O|=mu-nu [MOD 4]`; the positive-atom
 terminal case is a finite anti-Horn obstruction over the `35` omitted triples.
 The pairwise blocker set is `mu-nu notin D_3(|p\q|,|q\p|)`, where
