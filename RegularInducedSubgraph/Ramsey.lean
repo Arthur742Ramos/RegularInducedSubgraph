@@ -7515,6 +7515,76 @@ theorem hasCliqueOrIndepSetBound_3_10_42_of_3_8_28_regular8_with_exact_distribut
     hwindow
 
 /--
+Combined low-row wiring for `R(3,10) <= 42` through the strongest currently exposed
+exact `36`-vertex residual surface: exact ledgers, an average triple-overlap witness,
+five duplicated non-neighbor incidences, and the singleton cap all descend from the
+`R(3,8) <= 28` predecessor before the exact `42` degree-window obligation is posed.
+-/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_3_8_28_regular8_with_exact_distribution_and_singleton_cap
+    (h3_8 : HasCliqueOrIndepSetBound 3 8 28)
+    (hregular :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 36 →
+        (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8) →
+        (∀ v : ↑(s : Set α),
+          27 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) →
+        (∀ v : ↑(s : Set α),
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 27 →
+            ∀ {x : α}, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) →
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1) →
+        (∀ v : ↑(s : Set α), ∀ {x : α}, x ∈ s → ¬ G.Adj (v : α) x →
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card ≤ 8) →
+        (∀ v : ↑(s : Set α),
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 56) →
+        (∀ v : ↑(s : Set α),
+          Finset.sum (s.filter fun w => G.Adj (v : α) w)
+            (fun w =>
+              (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x => G.Adj w x)).card) = 56) →
+        (∀ v : ↑(s : Set α), ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+          (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x => G.Adj w x)).card = 7) →
+        (∀ v : ↑(s : Set α),
+          ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+            3 ≤ (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) →
+        (∀ v : ↑(s : Set α),
+          5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x =>
+              2 ≤ (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card) →
+        (∀ v : ↑(s : Set α),
+          (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 22) →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 9 t)
+    (hwindow :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 42 →
+        (∀ v : ↑(s : Set α),
+          6 ≤ (G.induce (s : Set α)).degree v ∧
+            (G.induce (s : Set α)).degree v < 10) →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  hasCliqueOrIndepSetBound_3_10_42_of_3_9_36_degree_window
+    (hasCliqueOrIndepSetBound_3_9_36_of_3_8_28_regular8_with_exact_distribution_and_singleton_cap
+      h3_8 hregular)
+    hwindow
+
+/--
 Concrete local constraints on any exact `42`-vertex degree-window residual for
 `R(3,10)`: degrees are in `{6,7,8,9}`, and every edge has no common neighbor because
 the residual is triangle-free.
@@ -9775,6 +9845,167 @@ theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_nei
   have htwo :=
     ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_eq_seventy_two_forces_at_least_two_nonNeighbors_common_neighbor_card_ge_three
       (G := G) (s := s) hcard hdegree (v := v) hdegv hsumEq
+  exfalso
+  omega
+
+/--
+First central-band singleton-count eliminator: a degree-`9` ledger in `[33,40]`
+already forces a duplicated non-neighbor, so a certificate with all thirty-two
+non-neighbors still singleton is inconsistent.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_thirty_three_and_singleton_count_ge_thirty_two
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          33 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+          32 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  rcases hcert with ⟨v, hdegv, hsumGe, hsingletonsGe⟩
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_thirty_three_forces_at_most_thirty_one_nonNeighbors_common_neighbor_card_eq_one
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  exfalso
+  omega
+
+/--
+Second central-band singleton-count eliminator: from ledger `≥ 41`, at most thirty
+non-neighbors may remain singleton contributors.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_forty_one_and_singleton_count_ge_thirty_one
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          41 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+          31 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  rcases hcert with ⟨v, hdegv, hsumGe, hsingletonsGe⟩
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_forty_one_forces_at_most_thirty_nonNeighbors_common_neighbor_card_eq_one
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  exfalso
+  omega
+
+/--
+Third central-band singleton-count eliminator: from ledger `≥ 49`, at most twenty-nine
+non-neighbors may remain singleton contributors.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_forty_nine_and_singleton_count_ge_thirty
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          49 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+          30 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  rcases hcert with ⟨v, hdegv, hsumGe, hsingletonsGe⟩
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_forty_nine_forces_at_most_twenty_nine_nonNeighbors_common_neighbor_card_eq_one
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  exfalso
+  omega
+
+/--
+Fourth central-band singleton-count eliminator: from ledger `≥ 57`, at most twenty-eight
+non-neighbors may remain singleton contributors.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_fifty_seven_and_singleton_count_ge_twenty_nine
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          57 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+          29 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  rcases hcert with ⟨v, hdegv, hsumGe, hsingletonsGe⟩
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_fifty_seven_forces_at_most_twenty_eight_nonNeighbors_common_neighbor_card_eq_one
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  exfalso
+  omega
+
+/--
+Top central-band singleton-count eliminator: in the `≥ 65` band, the existing top-band
+ledger permits at most twenty-seven singleton contributors.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_sixty_five_and_singleton_count_ge_twenty_eight
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          65 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+          28 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  rcases hcert with ⟨v, hdegv, hsumGe, hsingletonsGe⟩
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_at_most_twenty_seven_nonNeighbors_common_neighbor_card_eq_one
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
   exfalso
   omega
 
