@@ -4,3 +4,4 @@ import RegularInducedSubgraph.Modular.Module
 import RegularInducedSubgraph.Modular.Substitution
 import RegularInducedSubgraph.Modular.Cascade
 import RegularInducedSubgraph.Modular.Asymptotic
+import RegularInducedSubgraph.Modular.LargeColoring
