@@ -1706,6 +1706,11 @@ In the ambiguous core, after trace-twin quotienting, `C_ext` is a triple packing
 `C_int subset K_3(J_int)`; Fano ambiguity means every Fano line is internally killed.
 A fixed kept pair is disjoint from at most two packing triples, so an ambiguous packing `P` needs at
 least `ceil(|P|/2)` internal kept-pair witnesses; Fano needs four.
+The exact incidence lower bound is `|P|-nu(Gamma(P))`, where `Gamma(P)` joins packing triples that meet
+in one point.
+Minimum covers are maximum matchings plus complement-four witnesses for unmatched triples; a six-packing
+is Fano minus one line, hence has a three-witness minimum core.
+The packing leave graph always has even degrees; five-packings have only six-cycle or two-triangle leaves.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

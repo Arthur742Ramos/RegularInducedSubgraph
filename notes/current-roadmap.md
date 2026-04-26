@@ -4963,6 +4963,14 @@ from `C_int subset K_3(J_int)`; in the Fano case every line must be killed by an
 signed `E_3` failure.
 A fixed kept pair is disjoint from at most two triples of a packing, so terminal ambiguous packing `P`
 requires at least `ceil(|P|/2)` distinct internal kept-pair witnesses; Fano requires four.
+Sharper: with `Gamma(P)` the packing-intersection graph, the incidence lower bound is
+`|P|-nu(Gamma(P))`, since one kept pair can cover two external triples only when they intersect in one
+point.
+Minimum covers are maximum matchings plus one complement-four witness for each unmatched triple.  A
+six-packing is Fano minus one line: its even three-edge leave is a triangle, so `Gamma(P)=K_6` and the
+minimum terminal core has three forced complement-pair witnesses.
+The general leave graph has `21-3|P|` edges and even degrees; for five triples it is only a six-cycle or
+two edge-disjoint triangles.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

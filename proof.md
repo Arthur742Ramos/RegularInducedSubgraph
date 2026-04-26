@@ -8839,6 +8839,46 @@ distinct internal kept-pair witnesses, where a witness is either a blocker edge 
 four distinct internal pair witnesses.  If the internal side has at most three such witnesses, one
 externally surviving omitted triple in `P` survives all internal checks, and the positive atom reroots.
 
+The exact incidence object is the intersection graph `Gamma(P)` of the packing: vertices are triples in
+`P`, and two vertices are adjacent when the corresponding triples meet in one point.  A kept pair can be
+disjoint from two triples of `P` exactly when those two triples are adjacent in `Gamma(P)`; then the pair
+is uniquely `R_i\(O union O')`.  Otherwise it kills only one packing triple.  Thus internal terminality
+against `P` is an edge-cover problem on `Gamma(P)` with optional singleton covers.  Even if every
+possible pair witness were internally available, killing all triples of `P` would require at least
+
+```text
+|P|-nu(Gamma(P))
+```
+
+witnesses, where `nu` is matching number.  The crude `ceil(|P|/2)` bound is the special case
+`nu<=floor(|P|/2)`.
+
+Minimum witness covers have no further mystery.  Choose a maximum matching `M` of `Gamma(P)`.  For each
+matched pair of triples `O,O'`, the two-at-once witness is forced to be the unique kept pair
+`R_i\(O union O')`.  Each unmatched triple `O` then needs a one-at-a-time witness, namely some internally
+bad kept pair inside the four-point complement `R_i\O`.  Hence a minimum terminal core is exactly a
+maximum matching in `Gamma(P)`, together with one bad complement-four pair for every unmatched external
+triple.
+
+The size-six packing case is already near-Fano.  If `|P|=6`, the three uncovered pairs of `R_i` have even
+degree at every point because each point is incident with `6-2d_P(x)` uncovered pairs.  Hence the leave
+is a triangle `L`, and `P union {L}` is the Fano plane.  Thus `Gamma(P)=K_6`, the lower bound is `3`, and
+a minimum terminal core is a perfect matching on the six present Fano lines, i.e. three forced
+complement-pair witnesses.  The full Fano case is the unique size-seven extension and needs one more
+witness because `K_7` has one unmatched line.
+
+This leave calculus also controls the next non-Fano case.  For any packing `P`, the leave graph
+`Lambda(P)` on `R_i` has
+
+```text
+|E Lambda(P)| = 21-3|P|,        deg_Lambda(x)=6-2d_P(x),
+```
+
+so every leave degree is even.  Thus if `|P|=5`, the leave is a six-edge Eulerian graph: it is a
+six-cycle, or the union of two edge-disjoint triangles (possibly sharing one vertex).  Hence all
+five-template ambiguous cores sit inside one of these two leave types before the internal witness
+matching is imposed.
+
 For `P=F` this lower bound has an exact Fano-plane form.  A kept-pair witness `e` kills precisely the
 Fano lines disjoint from `e`; therefore a witness graph `H` kills all Fano omitted triples iff no Fano
 line meets every edge of `H`.  Equivalently, `H` is not vertex-covered by any Fano line.  Every graph

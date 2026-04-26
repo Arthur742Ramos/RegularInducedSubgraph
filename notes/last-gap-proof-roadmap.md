@@ -1755,7 +1755,11 @@ What remains justified after audit is:
       internal candidates `C_int subset K_3(J_int)`;
     - after trace-twin quotienting, ambiguous `C_ext` is a triple packing; terminality is
       `C_ext cap C_int = empty`, and a Fano ambiguity requires an internal witness graph not covered
-      by any Fano line, in particular at least four kept-pair witnesses; dualizing to the seven Fano
+      by any Fano line; for a general packing `P` the internal witness lower bound is
+      `|P| - nu(Gamma(P))` from the packing-intersection graph, minimum covers are matching covers plus
+      complement-four witnesses, and a six-packing is already Fano minus one line with a three-witness
+      minimum core; the leave graph always has even degrees, so five-packings have only six-cycle or
+      two-triangle leaves; Fano itself needs four kept-pair witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual
       star forests (`K_{1,2}+2K_2`, the two five-edge star forests, or `K_{1,6}`), each dual star being
       a cluster of bad kept pairs in the complement of its center line;

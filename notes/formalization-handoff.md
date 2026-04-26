@@ -2041,6 +2041,16 @@ Recommended attack:
    Add the packing-transversal bound: for each kept pair `e`, the family `{O in P:e cap O=empty}` has
    size at most two, since it is a triple packing on five points.  Thus terminality of an external
    packing `P` requires at least `ceil(|P|/2)` distinct internal kept-pair witnesses; Fano requires four.
+   Formalize the sharper matching form: if `Gamma(P)` is the intersection graph of the packing, a kept
+   pair kills two triples exactly along one edge of `Gamma(P)` and otherwise kills one triple.  The
+   incidence lower bound is therefore `|P|-nu(Gamma(P))`.
+   Formalize minimum covers as maximum matchings plus one complement-four witness for each unmatched
+   triple.  Add the six-packing lemma: a six-triple packing on seven points has a three-edge even leave,
+   hence the leave is a triangle and the packing completes uniquely to Fano; its minimum terminal core has
+   three forced complement-pair witnesses.
+   Add the general leave calculus: `|E Lambda(P)|=21-3|P|` and
+   `deg_Lambda(x)=6-2d_P(x)`, so leave degrees are even.  For five triples the leave is either a six-cycle
+   or two edge-disjoint triangles.
    In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
    iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness
