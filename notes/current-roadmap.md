@@ -4926,14 +4926,23 @@ these constraints with no common one of the `35` triples.
 With `D_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=7-a-b} [MOD 4]`, a trace pair blocks exactly when
 `mu-nu notin D_3(|p\q|,|q\p|)`.  Identical traces with different labels and complementary traces with
 even label difference are immediate blockers.
+The only non-full `D_3` entries, up to swapping/negating, are
+`(0,0),(0,1),(0,2),(0,5),(0,6),(0,7),(1,1),(1,6),(2,5),(3,4)`.
 The internal four-set equation is the same anti-Horn constraint on kept pairs, using
 `E_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=5-a-b} [MOD 4]` after deleting the kept pair from the
 seven-point reservoir.
+Its only non-full entries are `(0,0),(0,1),(0,2),(0,3),(0,4),(0,5),(1,1),(1,4),(2,3)` up to symmetry.
+Internal pair blockers form a graph `J_int`; any valid omitted triple must be a vertex cover of
+`J_int`, so vertex-cover number at most three is necessary for a positive-atom reroot.
+Equivalently, the kept side must be an independent four-set of `J_int`; the remaining checks are the
+signed `E_3` equations on its six pairs and the external `D_3` equations on the omitted triple.
 For non-exact boundaries, use the maximum import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`; terminal exports satisfy
 `H_X(sigma(Y))-|Y|<=m-|B|`.  Exact top is the explicit box-height case.
 If a near-top boundary embeds in a basis box with `rho` holes, then
 `H_X>=h_box-rho`, so the same carry and cut inequalities hold with effective deficit `d+rho`.
+For `d+rho<=1`, the four-block collapse still gives only the positive atom `e_i^4`; no new near-top
+coordinate atom appears.
 
 ## Supporting work that is useful but not on the critical path
 

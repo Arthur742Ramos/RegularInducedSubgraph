@@ -1674,13 +1674,21 @@ For two classes this is the signed equation `|p cap O|-|q cap O|=mu-nu [MOD 4]`;
 terminal case is a finite anti-Horn obstruction over the `35` omitted triples.
 The pairwise blocker set is `mu-nu notin D_3(|p\q|,|q\p|)`, where
 `D_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=7-a-b} [MOD 4]`.
+Up to swapping/negating, the only non-full `D_3` entries are
+`(0,0),(0,1),(0,2),(0,5),(0,6),(0,7),(1,1),(1,6),(2,5),(3,4)`.
 The internal kept-pair equation uses the analogous
 `E_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=5-a-b} [MOD 4]`.
+Its only non-full entries are `(0,0),(0,1),(0,2),(0,3),(0,4),(0,5),(1,1),(1,4),(2,3)`.
+The internally impossible kept pairs form a graph that the omitted triple must vertex-cover; cover number
+above three kills the positive-atom reroot.
+Equivalently, candidate reroots are independent four-sets of this blocker graph, followed by the signed
+`E_3` and external `D_3` checks.
 Away from the exact boundary top, the same inequality uses
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`: terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every compatible export.
 In a basis box with `rho` holes, `H_X>=h_box-rho`; hence the exact-top carry and cut bounds persist with
 deficit `d+rho`.
+If `d+rho<=1`, a fully compatible minimal four-block is still forced to be the positive atom `e_i^4`.
 
 ## 14. Pair-chamber orientation normal form
 

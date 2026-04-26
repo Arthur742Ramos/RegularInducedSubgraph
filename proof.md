@@ -8567,6 +8567,21 @@ D_3(0,b)=-D_3(b,0);
 if a+b=7, then D_3(a,b) contains only odd residues.
 ```
 
+In fact the whole non-full table is tiny.  Up to swapping `a,b` and negating residues, the only proper
+subsets of `Z/4Z` are
+
+```text
+(0,0): {0}
+(0,1): {0,3}        (0,2): {0,2,3}
+(0,5): {1,2,3}      (0,6): {1,2}      (0,7): {1}
+(1,1): {0,1,3}
+(1,6): {1,3}        (2,5): {1,3}      (3,4): {1,3}.
+```
+
+Every other admissible pair `a+b<=7` has `D_3(a,b)=Z/4Z`.  Thus most trace pairs are never pairwise
+blockers; blocking is concentrated on identical traces, nearly nested traces, and complementary
+large-private traces.
+
 Consequently identical traces with different `mu` block immediately, and complementary traces with even
 `mu-nu` block immediately.  All other failures are small private-size defects recorded by the same
 `D_3` table.  This is the first genuinely finite anti-Horn compression of the positive atom.
@@ -8598,11 +8613,48 @@ E_3(a,b)={x-y [MOD 4] :
           0<=x<=a, 0<=y<=b, 0<=3-x-y<=5-a-b}.
 ```
 
+Again the non-full table is small.  Up to swapping and negating residues, the only proper entries are
+
+```text
+(0,0): {0}
+(0,1): {0,3}        (0,2): {0,2,3}
+(0,3): {1,2,3}      (0,4): {1,2}      (0,5): {1}
+(1,1): {0,1,3}
+(1,4): {1,3}        (2,3): {1,3}.
+```
+
+All other admissible `a+b<=5` entries are full.
+
 Then a kept pair `u,v` is internally compatible with some omitted triple only if
 `lambda(u)-lambda(v) in E_3(a_{uv},b_{uv})`, and a particular omitted triple must satisfy the
 corresponding signed equation for every kept pair.  Therefore both parts of the positive-atom rerooting
 problem are now anti-Horn constraints on omitted triples: external trace pairs use `D_3`, internal kept
 pairs use `E_3`.
+
+The internal constraints also have a graph shadow.  Put an edge `uv` in `J_int` whenever
+
+```text
+lambda(u)-lambda(v) notin E_3(a_{uv},b_{uv}).
+```
+
+No omitted triple avoiding both endpoints of such an edge can work, so every successful omitted triple
+must be a vertex cover of `J_int`.  Hence `tau(J_int)<=3` is necessary for a positive-atom reroot.
+Equivalently, if the internal blocker graph on the seven-point reservoir has vertex-cover number at
+least four, the positive atom has no self-layer reroot regardless of the external trace classes.  When
+`tau(J_int)<=3`, the remaining internal equations are only the signed `E_3` constraints for pairs not
+covered by the chosen omitted triple, to be intersected with the external `D_3` constraints.
+
+Since `|R_i|=7`, this is more naturally stated in the complement.  The kept four-set
+`T=R_i\O` must be an independent four-set of `J_int`.  Hence the positive-atom search starts with
+
+```text
+T independent in J_int,       |T|=4,
+```
+
+then imposes the exact signed `E_3` equations on the six pairs of `T` and the external `D_3` equations
+on the omitted triple `O=R_i\T`.  A terminal positive atom is therefore certified by one of two finite
+failures: either `alpha(J_int)<=3`, or every independent four-set of `J_int` is killed by an internal
+signed equation or by an external trace-pair equation.
 
 The same height language also covers the non-exact boundary.  For an arbitrary zero-sum-free boundary
 `X`, define the available import height
@@ -8645,6 +8697,14 @@ for every graph-compatible export `Y`.  The carry inequality and the complementa
 survive verbatim after replacing `d` by `d+rho`.  Thus near-top inverse Davenport is only needed to
 produce a basis box with small hole count; once that is known, the boundary arithmetic is already
 absorbed into the same weighted trace calculus.
+
+In particular the four-block collapse survives at effective deficit one.  Let
+`d_eff=d+rho<=1`, and suppose a minimal old-balanced four-block has all singleton and pair cuts
+two-sided-compatible in the basis box.  The complementary-cut bound gives support at most one for every
+singleton and pair cut.  Hence all four old-coordinate values lie on one coordinate.  The singleton
+height inequality gives coefficients only in `{1,2}`; since four coefficients in `{1,2}` sum to `0 mod 4`
+without a proper zero-sum subblock only when all four are `1`, the block is again the positive atom
+`e_i^4`.  Thus a one-hole/one-deficit near-top boundary still has no new four-block coordinate atom.
 
 Thus a plausible final route is now precise: prove a stability/inverse-Davenport boundary theorem
 adapted to the value-coupled exchange.  The required input is not another zero-sum existence theorem;

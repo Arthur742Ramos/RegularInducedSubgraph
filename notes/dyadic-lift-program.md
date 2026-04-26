@@ -1526,12 +1526,24 @@ Equivalently define
 `mu-nu notin D_3(|p\q|,|q\p|)`.  Hence identical traces with different `mu` block, complementary traces
 with even `mu-nu` block, and the remaining pairwise failures are just the small private-size entries of
 this `D_3` table.
+The non-full `D_3` entries are only
+`(0,0),(0,1),(0,2),(0,5),(0,6),(0,7),(1,1),(1,6),(2,5),(3,4)` up to swapping and negating residues;
+all other `a+b<=7` entries are full.
 The internal four-set line is identical after conditioning on the kept pair.  With
 `lambda(v)=L_A(v)+deg_{R_i}(v)`, kept vertices `u,v notin O` require
 `deg_O(u)-deg_O(v)=lambda(u)-lambda(v)`.  Since `O` avoids `u,v`, the allowable residues are
 `E_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=5-a-b} [MOD 4]`, using private neighbourhood sizes inside
 `R_i\{u,v}`.  Thus external trace pairs use `D_3` and internal kept pairs use `E_3`; both are anti-Horn
 constraints on the same omitted triple.
+The non-full `E_3` entries are only
+`(0,0),(0,1),(0,2),(0,3),(0,4),(0,5),(1,1),(1,4),(2,3)` up to the same symmetry.
+There is also an internal blocker graph `J_int` on `R_i`: join `u,v` when
+`lambda(u)-lambda(v) notin E_3(a_{uv},b_{uv})`.  Any successful omitted triple must cover every edge of
+`J_int`; therefore `tau(J_int)<=3` is necessary.  If the vertex-cover number is at least four, the
+positive atom has no self-layer reroot before external traces are considered.
+Equivalently, the kept four-set `T=R_i\O` must be an independent four-set of `J_int`; after choosing such
+a `T`, the remaining signed `E_3` equations are checked on the six pairs of `T` and the external `D_3`
+constraints on `O`.
 For a non-exact boundary, replace `h_X` by the maximum available import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`.  Terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every graph-compatible export.  The exact top is just the case
@@ -1540,6 +1552,9 @@ If stability places `X` in an exact basis box with `rho` missing copies, then
 `H_X(g)>=h_box(g)-rho`, so all exact-top inequalities hold with effective deficit `d+rho`.  In
 particular the carry inequality and the complementary-cut support bound survive unchanged after replacing
 `d` by `d+rho`.
+Therefore the four-block coordinate collapse survives for `d+rho<=1`: two-sided-compatible singleton and
+pair cuts force one-coordinate support, the singleton height bound leaves coefficients in `{1,2}`, and
+minimality plus total sum zero forces the positive atom `e_i^4`.
 
 So the remaining input is an inverse/stability theorem for value-coupled zero-sum-free boundaries,
 not another ordinary zero-sum extraction.

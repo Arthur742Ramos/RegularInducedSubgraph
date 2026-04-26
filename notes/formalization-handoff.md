@@ -1986,11 +1986,22 @@ Recommended attack:
    `D_3(0,0)={0}`, `D_3(a,0)={0..min(3,a)}` for `a<=4`,
    `D_3(5,0)={1,2,3}`, `D_3(6,0)={2,3}`, `D_3(7,0)={3}`, symmetry under negating/swapping, and
    complementary traces allowing only odd residues.
+   Record the full non-blocking compression: up to swapping and negating, the only non-full `D_3` entries
+   are `(0,0),(0,1),(0,2),(0,5),(0,6),(0,7),(1,1),(1,6),(2,5),(3,4)`.
    Formalize the matching internal table: with `lambda(v)=L_A(v)+deg_{R_i}(v)`, kept vertices
    `u,v notin O` require `deg_O(u)-deg_O(v)=lambda(u)-lambda(v)`.  Because `O` avoids `u,v`, the
    admissible residues are
    `E_3(a,b)={x-y [MOD 4]:0<=x<=a,0<=y<=b,0<=3-x-y<=5-a-b}`, where `a,b` are private neighbourhood
    sizes in `R_i\{u,v}`.  Thus the internal line is the same anti-Horn omitted-triple constraint.
+   Up to the same symmetry, the only non-full `E_3` entries are
+   `(0,0),(0,1),(0,2),(0,3),(0,4),(0,5),(1,1),(1,4),(2,3)`.
+   Formalize the internal blocker graph `J_int` on `R_i`: put `uv in J_int` when
+   `lambda(u)-lambda(v) notin E_3(a_{uv},b_{uv})`.  Any omitted triple satisfying the internal line must
+   be a vertex cover of `J_int`; hence `tau(J_int)<=3` is necessary.  After choosing such a cover, only
+   the signed `E_3` equations for kept pairs remain.
+   Equivalently, formalize the complement form: the kept four-set `T=R_i\O` must be an independent
+   four-set of `J_int`; each candidate `T` then has six internal signed `E_3` checks plus the external
+   trace checks on `O`.
    Generalize the height inequality to non-exact boundaries with
    `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}` (or unavailable).  For every graph-compatible export `Y`,
    terminality gives `H_X(sigma(Y))-|Y|<=m-|B|`; exact Davenport top is the special case `H_X=h_X`.
@@ -1999,6 +2010,9 @@ Recommended attack:
    copies, then `H_X(g)>=h_box(g)-rho`; terminality gives
    `h_box(sigma(Y))-|Y|<=m-|B|+rho`.  Therefore all exact-top carry and cut inequalities remain valid
    with effective deficit `d+rho`.
+   Add the small-effective-deficit corollary: if `d+rho<=1` and a minimal four-block has all singleton
+   and pair cuts two-sided-compatible, then all four values lie on one coordinate, coefficients are in
+   `{1,2}`, and minimality forces the positive atom `e_i^4`.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event
