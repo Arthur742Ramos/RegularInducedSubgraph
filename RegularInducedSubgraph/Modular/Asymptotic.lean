@@ -10648,6 +10648,197 @@ theorem PositiveAtomPostQuotientWitnessCountImports.obligation
   · exact h.sizeThree
   · exact h.twoDisjointTemplates
 
+/-- Selector names for the finite trace-twin-free post-quotient anchored-core routes. -/
+inductive PositiveAtomPostQuotientFiniteCoreSelector : Type
+  | sizeFourBaseTriple
+  | sizeFourStar
+  | sizeThreePath
+  | sizeThreeK3
+  | sizeTwoAdjacent
+  | sizeTwoDisjoint
+  deriving DecidableEq, Repr
+
+namespace PositiveAtomPostQuotientFiniteCoreSelector
+
+/-- The anchored-core size represented by a finite-core route selector. -/
+def coreSize : PositiveAtomPostQuotientFiniteCoreSelector → ℕ
+  | sizeFourBaseTriple => 4
+  | sizeFourStar => 4
+  | sizeThreePath => 3
+  | sizeThreeK3 => 3
+  | sizeTwoAdjacent => 2
+  | sizeTwoDisjoint => 2
+
+/-- The witness-count obligation attached to a finite-core route selector. -/
+def witnessCountObligation
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) :
+    PositiveAtomPostQuotientFiniteCoreSelector → Prop
+  | sizeFourBaseTriple => WitnessCountAtLeast 4 2
+  | sizeFourStar => WitnessCountAtLeast 4 2
+  | sizeThreePath => WitnessCountAtLeast 3 2
+  | sizeThreeK3 => WitnessCountAtLeast 3 2
+  | sizeTwoAdjacent => WitnessCountAtLeast 2 2
+  | sizeTwoDisjoint => TwoDisjointTemplatesNeedTwo
+
+@[simp] theorem coreSize_sizeFourBaseTriple :
+    coreSize sizeFourBaseTriple = 4 := rfl
+
+@[simp] theorem coreSize_sizeFourStar :
+    coreSize sizeFourStar = 4 := rfl
+
+@[simp] theorem coreSize_sizeThreePath :
+    coreSize sizeThreePath = 3 := rfl
+
+@[simp] theorem coreSize_sizeThreeK3 :
+    coreSize sizeThreeK3 = 3 := rfl
+
+@[simp] theorem coreSize_sizeTwoAdjacent :
+    coreSize sizeTwoAdjacent = 2 := rfl
+
+@[simp] theorem coreSize_sizeTwoDisjoint :
+    coreSize sizeTwoDisjoint = 2 := rfl
+
+end PositiveAtomPostQuotientFiniteCoreSelector
+
+/--
+Finite post-quotient anchored-core witness-count imports.  The size-four base-triple/star and
+size-three path/K₃ rows both collapse to the existing coarse witness-count rows, while the
+size-two adjacent row is kept explicit beside the disjoint-template row.
+-/
+structure PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Prop where
+  sizeFourBaseTriple : WitnessCountAtLeast 4 2
+  sizeFourStar : WitnessCountAtLeast 4 2
+  sizeThreePath : WitnessCountAtLeast 3 2
+  sizeThreeK3 : WitnessCountAtLeast 3 2
+  sizeTwoAdjacent : WitnessCountAtLeast 2 2
+  sizeTwoDisjoint : TwoDisjointTemplatesNeedTwo
+
+/-- Project a selected finite-core witness-count obligation. -/
+theorem PositiveAtomPostQuotientFiniteCoreWitnessCountImports.obligation
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (selector : PositiveAtomPostQuotientFiniteCoreSelector) :
+    PositiveAtomPostQuotientFiniteCoreSelector.witnessCountObligation
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo selector := by
+  cases selector
+  · exact h.sizeFourBaseTriple
+  · exact h.sizeFourStar
+  · exact h.sizeThreePath
+  · exact h.sizeThreeK3
+  · exact h.sizeTwoAdjacent
+  · exact h.sizeTwoDisjoint
+
+/-- Coarsen finite-core witness-count imports to the existing post-quotient count table. -/
+theorem PositiveAtomPostQuotientFiniteCoreWitnessCountImports.to_witnessCounts
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (hsizeFive : WitnessCountAtLeast 5 3) :
+    PositiveAtomPostQuotientWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  sizeFive := hsizeFive
+  sizeFour := h.sizeFourBaseTriple
+  sizeThree := h.sizeThreePath
+  twoDisjointTemplates := h.sizeTwoDisjoint
+
+/-- Coarsen finite-core witness-count imports using the star and K₃ alternatives. -/
+theorem PositiveAtomPostQuotientFiniteCoreWitnessCountImports.to_witnessCounts_usingStarK3
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (hsizeFive : WitnessCountAtLeast 5 3) :
+    PositiveAtomPostQuotientWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  sizeFive := hsizeFive
+  sizeFour := h.sizeFourStar
+  sizeThree := h.sizeThreeK3
+  twoDisjointTemplates := h.sizeTwoDisjoint
+
+/--
+Finite post-quotient anchored-core route selectors for trace-twin-free residuals of sizes four,
+three, and two.  Each field is an explicit imported finite case split, not an unconditional theorem.
+-/
+structure PositiveAtomPostQuotientFiniteCoreRouteSelectors
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop) : Prop where
+  sizeFour : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P = 4 →
+    SizeFourBaseTriple P ∨ SizeFourStar P
+  sizeThree : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P = 3 →
+    SizeThreePath P ∨ SizeThreeK3 P
+  sizeTwo : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P = 2 →
+    SizeTwoAdjacent P ∨ SizeTwoDisjoint P
+
+/-- Build finite-core route selectors from explicit finite case splits. -/
+theorem positiveAtomPostQuotientFiniteCoreRouteSelectors_of_assumptions
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfour : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P = 4 →
+      SizeFourBaseTriple P ∨ SizeFourStar P)
+    (hthree : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P = 3 →
+      SizeThreePath P ∨ SizeThreeK3 P)
+    (htwo : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P = 2 →
+      SizeTwoAdjacent P ∨ SizeTwoDisjoint P) :
+    PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  sizeFour := hfour
+  sizeThree := hthree
+  sizeTwo := htwo
+
+/-- Project the size-four base-triple/star finite route split. -/
+theorem PositiveAtomPostQuotientFiniteCoreRouteSelectors.sizeFour_route
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) (hcard : packingSize P = 4) :
+    SizeFourBaseTriple P ∨ SizeFourStar P :=
+  h.sizeFour P hfree hcard
+
+/-- Project the size-three path/K₃ finite route split. -/
+theorem PositiveAtomPostQuotientFiniteCoreRouteSelectors.sizeThree_route
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) (hcard : packingSize P = 3) :
+    SizeThreePath P ∨ SizeThreeK3 P :=
+  h.sizeThree P hfree hcard
+
+/-- Project the size-two adjacent/disjoint finite route split. -/
+theorem PositiveAtomPostQuotientFiniteCoreRouteSelectors.sizeTwo_route
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) (hcard : packingSize P = 2) :
+    SizeTwoAdjacent P ∨ SizeTwoDisjoint P :=
+  h.sizeTwo P hfree hcard
+
 /--
 Post-quotient anchored-packing import bundle: the trace-twin-free size cap remains explicit, and the
 finite witness-count rows are exposed as separate projections.
@@ -10780,6 +10971,196 @@ theorem PositiveAtomPostQuotientAnchoredPackingImports.witnessCount_obligation
     PositiveAtomPostQuotientWitnessCountSelector.obligation
       WitnessCountAtLeast TwoDisjointTemplatesNeedTwo selector :=
   h.witnessCounts.obligation selector
+
+/-- Build the post-quotient anchored-packing import bundle from finite-core witness rows. -/
+theorem positiveAtomPostQuotientAnchoredPackingImports_of_finiteCoreAssumptions
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (hsize : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P ≤ 4)
+    (hsizeFive : WitnessCountAtLeast 5 3)
+    (hfiniteCounts : PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  sizeAtMostFour := ⟨hsize⟩
+  witnessCounts := hfiniteCounts.to_witnessCounts hsizeFive
+
+/--
+Finite-core import bundle: the existing post-quotient packing imports plus the refined size-four,
+size-three, and size-two route selectors.
+-/
+structure PositiveAtomPostQuotientFiniteCoreImports
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop) : Prop where
+  anchoredPacking :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  finiteCoreWitnessCounts :
+    PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  routeSelectors :
+    PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint
+
+/-- Build finite-core imports from explicit size cap, witness rows, and finite route splits. -/
+theorem positiveAtomPostQuotientFiniteCoreImports_of_assumptions
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hsize : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P ≤ 4)
+    (hsizeFive : WitnessCountAtLeast 5 3)
+    (hfiniteCounts : PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (hroutes : PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  anchoredPacking :=
+    positiveAtomPostQuotientAnchoredPackingImports_of_finiteCoreAssumptions
+      hsize hsizeFive hfiniteCounts
+  finiteCoreWitnessCounts := hfiniteCounts
+  routeSelectors := hroutes
+
+/-- Project the existing post-quotient anchored-packing imports from finite-core imports. -/
+theorem PositiveAtomPostQuotientFiniteCoreImports.to_anchoredPacking
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.anchoredPacking
+
+/-- Project the finite-core witness-count rows. -/
+theorem PositiveAtomPostQuotientFiniteCoreImports.to_finiteCoreWitnessCounts
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.finiteCoreWitnessCounts
+
+/-- Project the finite-core route selectors. -/
+theorem PositiveAtomPostQuotientFiniteCoreImports.to_routeSelectors
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.routeSelectors
+
+/-- Project a selected finite-core witness-count row from finite-core imports. -/
+theorem PositiveAtomPostQuotientFiniteCoreImports.finiteCoreWitnessCount_obligation
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint)
+    (selector : PositiveAtomPostQuotientFiniteCoreSelector) :
+    PositiveAtomPostQuotientFiniteCoreSelector.witnessCountObligation
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo selector :=
+  h.finiteCoreWitnessCounts.obligation selector
+
+/-- Project the size-four base-triple/star route split from finite-core imports. -/
+theorem PositiveAtomPostQuotientFiniteCoreImports.sizeFour_route
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) (hcard : packingSize P = 4) :
+    SizeFourBaseTriple P ∨ SizeFourStar P :=
+  h.routeSelectors.sizeFour_route P hfree hcard
+
+/-- Project the size-three path/K₃ route split from finite-core imports. -/
+theorem PositiveAtomPostQuotientFiniteCoreImports.sizeThree_route
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) (hcard : packingSize P = 3) :
+    SizeThreePath P ∨ SizeThreeK3 P :=
+  h.routeSelectors.sizeThree_route P hfree hcard
+
+/-- Project the size-two adjacent/disjoint route split from finite-core imports. -/
+theorem PositiveAtomPostQuotientFiniteCoreImports.sizeTwo_route
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h : PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) (hcard : packingSize P = 2) :
+    SizeTwoAdjacent P ∨ SizeTwoDisjoint P :=
+  h.routeSelectors.sizeTwo_route P hfree hcard
 
 /--
 Final wrapper that carries both the available-cut positive-atom route and the explicit
@@ -11076,6 +11457,332 @@ theorem
     (hbasis : Basis d rho) :
     PositiveAtom d rho :=
   h.finalAvailableCut.positiveAtom_of_fullCoordinateNonzero hcoeff hbasis
+
+/--
+Final wrapper that keeps the available-cut positive-atom surface and the refined finite-core
+post-quotient selectors together.
+-/
+structure FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop) : Prop where
+  finalAvailableCut :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom
+  finiteCore :
+    PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint
+
+/-- Build the refined finite-core final wrapper from its two imported pieces. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore_of_parts
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+        Basis WithHoles PositiveAtom)
+    (hfiniteCore :
+      PositiveAtomPostQuotientFiniteCoreImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  finalAvailableCut := hfinal
+  finiteCore := hfiniteCore
+
+/-- Build the refined finite-core final wrapper directly from explicit finite-core assumptions. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore_of_assumptions
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+        Basis WithHoles PositiveAtom)
+    (hsize : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P ≤ 4)
+    (hsizeFive : WitnessCountAtLeast 5 3)
+    (hfiniteCounts : PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (hroutes : PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  finalAvailableCut := hfinal
+  finiteCore :=
+    positiveAtomPostQuotientFiniteCoreImports_of_assumptions
+      hsize hsizeFive hfiniteCounts hroutes
+
+/-- Turn explicit finite-core assumptions into the existing post-quotient final wrapper. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking_of_finiteCoreAssumptions
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+        Basis WithHoles PositiveAtom)
+    (hsize : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P ≤ 4)
+    (hsizeFive : WitnessCountAtLeast 5 3)
+    (hfiniteCounts : PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  finalAvailableCut := hfinal
+  postQuotientAnchoredPacking :=
+    positiveAtomPostQuotientAnchoredPackingImports_of_finiteCoreAssumptions
+      hsize hsizeFive hfiniteCounts
+
+/-- Forget finite-core selectors and recover the existing available-cut/post-quotient wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.to_availableCutAndPostQuotientAnchoredPacking
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  finalAvailableCut := h.finalAvailableCut
+  postQuotientAnchoredPacking := h.finiteCore.to_anchoredPacking
+
+/-- Project the available-cut final wrapper from the finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.to_availableCutFinalWrapper
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom :=
+  h.finalAvailableCut
+
+/-- Project the refined finite-core imports from the finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.to_postQuotientFiniteCore
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.finiteCore
+
+/-- Project the existing post-quotient anchored-packing imports from the finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.to_postQuotientAnchoredPacking
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.finiteCore.to_anchoredPacking
+
+/-- Project the finite-core witness-count imports from the finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.to_finiteCoreWitnessCounts
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.finiteCore.to_finiteCoreWitnessCounts
+
+/-- Project the finite-core route selectors from the finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.to_finiteCoreRouteSelectors
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.finiteCore.to_routeSelectors
+
+/-- Project a selected finite-core witness-count row from the finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.finiteCoreWitnessCount_obligation
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (selector : PositiveAtomPostQuotientFiniteCoreSelector) :
+    PositiveAtomPostQuotientFiniteCoreSelector.witnessCountObligation
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo selector :=
+  h.finiteCore.finiteCoreWitnessCount_obligation selector
+
+/-- Project the size-four base-triple/star route split from the finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.sizeFour_route
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) (hcard : packingSize P = 4) :
+    SizeFourBaseTriple P ∨ SizeFourStar P :=
+  h.finiteCore.sizeFour_route P hfree hcard
+
+/-- Project the size-three path/K₃ route split from the finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.sizeThree_route
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) (hcard : packingSize P = 3) :
+    SizeThreePath P ∨ SizeThreeK3 P :=
+  h.finiteCore.sizeThree_route P hfree hcard
+
+/-- Project the size-two adjacent/disjoint route split from the finite-core final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore.sizeTwo_route
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientFiniteCore
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) (hcard : packingSize P = 2) :
+    SizeTwoAdjacent P ∨ SizeTwoDisjoint P :=
+  h.finiteCore.sizeTwo_route P hfree hcard
 
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
