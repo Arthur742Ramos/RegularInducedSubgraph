@@ -10451,14 +10451,201 @@ local cycle:  a minimal packet square has odd holonomy;
 sheet:        the cover is unbranched and every local packet square is flat.
 ```
 
-In the branch case, cancelling the common lower profile gives the desired odd lower-zero packet after the
-usual disjointization.  In the local-cycle case, the first odd square is a support-local missing-corner
-obstruction, hence one of the `0001`/missing-`0111` host atoms.  In the sheet case, the parity is a global
-sheet character constant on all local packet exchanges.  Then any ambient separator that sees the two
-sheets is a sheet-character module breaker: if it is admitted by the packet boundary, it supplies the
-odd-coset packet; if it is not admitted, the obstruction is exactly boundary provenance for the sheet
-character.  Thus the atom-profile target-avoid branch has no fourth endpoint beyond branch
-disjointization, local missing-corner square, and sheet-character provenance.
+The branch case should be read with its collision term exposed.  Choose two opposite-parity realizations
+`Y^0,Y^1` of one lower profile with `|Y^0 cap Y^1|` minimal and write
+
+```text
+C=Y^0 cap Y^1,        A=Y^0\C,        A'=Y^1\C.
+```
+
+The common part cancels from the stopped bit, so the oddness lives on the signed disjoint relation
+`A-A'`.  If that signed relation can be promoted to an unsigned lower-zero packet, the branch closes.
+If it cannot, minimality gives the signed branch normal form
+
+```text
+pi(P_B(A))=pi(P_B(A')),        chi(P_B(A))+chi(P_B(A'))=1,
+```
+
+with no proper signed subrelation and no neutral packet that reduces either side.  Thus the only surviving
+branch obstruction is signed-to-unsigned packet provenance: a formal opposite-sheet relation exists, but no
+admissible packet realizes its odd coset.  In the local-cycle case, the first odd square is a
+support-local missing-corner obstruction, hence one of the `0001`/missing-`0111` host atoms.  In the sheet
+case, the parity is a global sheet character constant on all local packet exchanges.  Then any ambient
+separator that sees the two sheets is a sheet-character module breaker: if it is admitted by the packet
+boundary, it supplies the odd-coset packet; if it is not admitted, the obstruction is exactly boundary
+provenance for the sheet character.  Thus the atom-profile target-avoid branch has no fourth endpoint
+beyond signed branch provenance, local missing-corner square, and sheet-character provenance.
+
+The signed branch itself has a useful collapse.  Fix the common lower profile and form the exchange graph
+on all realizations of that profile, joining two realizations when their symmetric difference is one
+neutral lower-zero packet exchange.  If the opposite-parity pair lies in one exchange component, a shortest
+path between them is an odd closed walk in the lower-profile packet graph; its first odd elementary square
+is the local-cycle exit above.  If the pair lies in different exchange components, parity is constant on
+each component and the component partition is an unbranched sheet character for that lower profile.  An
+ambient separator between the components is therefore again a sheet-character provenance problem.  Hence,
+after exchange connectivity is admitted, signed branch provenance is not a new case: it folds into either
+an odd local packet square or the same sheet-character boundary provenance.
+
+The sheet case has the corresponding module squeeze.  In an unbranched flat cover, the two sheet classes
+over a fixed lower-profile component are preserved by every neutral packet exchange.  If one sheet class
+has lifted weight greater than `m` and all its internal defects and cross-corrections are quotient-uniform,
+then the atom quotient restricted to that sheet is a smaller principal selector problem.  A quotient
+solution gives a forbidden selector of weight greater than `m`; quotient nonsolvability gives a smaller
+pure `Q` bundle and restarts the target-avoid analysis inside the sheet.  Therefore a terminal unbranched
+sheet survivor can be normalized so that every large sheet component has an explicit local irregularity
+certificate, or else every quotient-uniform sheet component has weight at most `m`.
+
+Consequently the only unbranched sheet case not already reduced is a boundary-provenance failure: the
+global sheet character is visible to some ambient separator, but no admitted first-return/packet-boundary
+row realizes that separator.  This is exactly the rank-one sheet-character fullness problem isolated on
+the host side.  If fullness holds, the separator becomes an odd-coset packet and the target-avoid branch
+closes; if fullness fails, the first failed boundary exchange is again a local missing-corner square.
+
+The fullness problem has a restart form.  Let `h` be a sheet-character separator that is prefix-local for
+the current atom reservoir and whose terminal residue vector is zero in every recorded lower quotient.  Run
+the terminal descent with `h` forced as the first boundary row.  If the restarted descent is comparable
+with the original descent, then zero residue and prefix-locality make `h` an admitted boundary row, hence
+an odd-coset packet.  If the two descents are not comparable, choose the first exchange where their
+boundary histories diverge.  A nonzero residue at that exchange is an already classified local exit; a
+zero-residue disagreement is precisely a missing exchange square.  Thus sheet-character provenance is
+equivalent to restart admissibility:
+
+```text
+zero-residue prefix-local sheet separators are first-boundary admissible,
+unless the comparison exposes a local missing-corner square.
+```
+
+In the intrinsic exchange-saturated boundary category this criterion is tautological: zero-residue
+prefix-local rows are admitted by definition, and the first packet-internal failure is a smaller
+exchange-complete marker.  The remaining unsaturated content is only the comparison between the historical
+path boundary and that saturated boundary, i.e. the path-saturation equivalence/omni-saturation lemma.
+
+The comparison has a shortest-loop normal form.  Suppose a path-only boundary and an exchange-saturated
+boundary first differ on a zero-residue sheet separator, and choose such a comparison with the shortest
+closed exchange loop.  Then the loop has:
+
+```text
+no nonfilled or curved square,          otherwise there is a local missing-corner exit;
+no filled flat chord,                   otherwise the loop splits into shorter comparisons;
+no proper exchange-complete interval,   otherwise that interval is a smaller marker;
+no repeated lower profile,              otherwise the intervening subloop is shorter.
+```
+
+Thus a genuine path-saturation failure is a chordless rank-one flat loop whose every proper interval is
+not exchange-complete and whose only sheet change is the central sheet-character separator.  If all
+rank-one flat loops of this kind are generated by filled packet squares and exchange-complete intervals,
+then path-saturation equivalence holds and the sheet case closes.  If not, the first nongenerated loop is
+the exact omni-saturation atom: a two-state residue-zero square or an admissible-module/local-exit failure
+for the sheet-character module.  This is the current smallest unsaturated endpoint.
+
+Equivalently, the loop endpoint is a two-state package transposition after the following active-edge
+normalization.  If a shortest flat loop contains two independent active sheet separators, their commutator
+is either a nonfilled/curved local square or a filled flat square.  The first is a local exit; the second is
+a chord or an exchange-complete interval, both forbidden by the shortest-loop normalization.  Hence all
+active sheet changes in a genuine survivor are the same rank-one separator.  A loop using one separator
+more than twice repeats a lower profile, and a loop using it exactly twice is the two-state transposition.
+Thus the unsaturated sheet endpoint is precisely:
+
+```text
+a residue-zero two-state sheet transposition not generated by an admitted boundary exchange.
+```
+
+This is the same endpoint reached from the host frontiers: `host-orient115` sees it as missing
+two-fiber overlap, `host-opppair123` as outgoing no-split failure, and `host-silentedge128` as the anchored
+one-corner missing square.
+
+The two-state transposition has a row-action normal form.  Write the two states as disjoint realizations
+`A` and `A'` of the same lower profile after cancelling their common part.  The transposition carrier is
+
+```text
+K=A union A'.
+```
+
+For any ambient row `r`, put
+
+```text
+delta_r(K)=deg_A(r)-deg_{A'}(r)        [MOD 4].
+```
+
+All recorded lower rows have `delta_r(K)=0`; otherwise the two states would not have the same lower
+profile.  If every ambient row has `delta_r(K)=0`, then `A` and `A'` are indistinguishable to the whole
+boundary calculus, so `K` is a sheet-clone module; selector-primality gives a module/local exit.  Hence a
+genuine survivor has a distinguishing row.  Choose the first such row in the boundary history, and choose
+the transposition with minimal carrier among those distinguished by it.
+
+Minimality forces this first distinguishing row to be fully skew on the carrier.  If the support on which
+`r` distinguishes `A` from `A'` were a proper signed subcarrier, that subcarrier would be either a smaller
+zero-residue transposition, a neutral packet reducing one side, or a local missing square at the first
+place where the row action changes.  Therefore the survivor satisfies:
+
+```text
+delta_r(K) != 0,
+delta_s(K)=0 for every earlier recorded row s,
+and r has no proper distinguished subcarrier of K.
+```
+
+This is the concrete boundary-provenance form of the endpoint: a single fully-skew separator row sees the
+two sheets, all earlier prefix-local tests are blind, and admitting that separator as a boundary row would
+generate the missing transposition.  Thus the remaining two-state atom is exactly fully-skew row promotion,
+unless its first row-action change exposes the local `0001` square.
+
+In the exchange-saturated convention this row-promotion endpoint is already closed by Proposition 9.2.
+Indeed, once the first fully-skew row is admitted as an ordered boundary row, Lemma 9.1 makes its first
+packet-internal failed set a whole side of a protected packet of size `<q`; the low-set congruence then
+requires that side to have size `0 mod q`, impossible.  Therefore a two-state transposition cannot survive
+in `FR^sat`.  The unsaturated residue is exactly the transport statement:
+
+```text
+the first fully-skew row distinguished by path-only provenance is also an FR^sat boundary row,
+unless transport to FR^sat exposes a local missing-corner square.
+```
+
+Thus all algebraic and saturated-category obstructions have been removed from the transposition endpoint;
+only path-to-saturated provenance transport remains.
+
+That transport can be normalized as a prefix-insertion ladder.  Let
+
+```text
+b_1,b_2,...,b_t
+```
+
+be the historical path-boundary word before the fully-skew separator `h` becomes visible in `FR^sat`.
+Attempt to commute `h` leftward across the word.  At the step crossing `b_i`, exactly one of the following
+occurs:
+
+```text
+the exchange square (h,b_i) is nonfilled or curved, giving a local missing-corner exit;
+the square is filled and flat, so h commutes past b_i and remains zero-residue prefix-local;
+h is already an admitted boundary row.
+```
+
+Choose a minimal transport failure.  Then every crossing is filled and flat, `h` never becomes admitted,
+and each transported row `h_i` is fully skew on the same carrier `K`; otherwise the first change of carrier
+or row-action gives the local `0001` square or a smaller transposition.  Thus the whole failure is a
+same-carrier skew ladder
+
+```text
+h_t=h, h_{t-1}, ..., h_0
+```
+
+with identical visible residue/profile data and only the hidden path position changing.  If two ladder
+states repeat, the intervening segment is a shorter flat loop; if the ladder reaches the beginning, `h_0`
+is a first boundary row and Proposition 9.2 kills it.  Therefore the unsaturated endpoint is hidden
+selector memory: a same-carrier fully-skew row whose every visible commutation is flat, but whose
+path-only category refuses to identify the transported copies.
+
+This is an exact equivalence.  Define the memory-free prefix axiom:
+
+```text
+two zero-residue prefix-local fully-skew rows with the same carrier K and the same row-action
+are the same boundary row for terminal descent purposes.
+```
+
+Under this axiom the skew ladder collapses immediately to a first-boundary row, so Proposition 9.2 excludes
+the two-state transposition.  Conversely, any path-only transposition survivor produces a skew ladder in
+which all visible data are identical but two transported copies are not identified by the boundary
+category.  Thus the remaining unsaturated theorem is neither additive, Kneser-theoretic, nor modular: it
+is precisely memory-free prefix fullness for same-carrier fully-skew rows.
 
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater

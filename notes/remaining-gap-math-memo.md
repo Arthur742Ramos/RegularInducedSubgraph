@@ -1870,8 +1870,27 @@ The packet cut vectors then span the even-parity hyperplane on `W`; the survivin
 lower-zero packet into the odd full-cut coset.
 Equivalently, the stopped bit is a flat two-sheeted cover over lower-profile packets; an odd packet is
 nontrivial holonomy, first visible on a missing-corner packet square.
-The odd-coset branch has only three exits: opposite-parity branch/disjointization, odd local packet square,
-or unbranched sheet-character provenance.
+The odd-coset branch has three exits: signed opposite-parity branch provenance, odd local packet square, or
+unbranched sheet-character provenance.
+Using the fixed-profile exchange graph, the signed branch collapses to one of the latter two: connected
+opposite parities give an odd local cycle, disconnected components give sheet provenance.
+In an unbranched flat cover, large quotient-uniform sheet components reduce to a smaller selector or
+smaller pure-`Q` analysis, leaving only rank-one boundary-provenance fullness.
+This is restart admissibility for zero-residue prefix-local sheet separators; the saturated boundary
+category closes it, while the path-only form needs saturation equivalence.
+The path-only gap reduces to a shortest chordless rank-one flat loop with no local square exit, no filled
+flat chord, and no complete proper interval: the omni-saturation atom.
+Active-edge normalization reduces this atom to a residue-zero two-state sheet transposition not generated
+by admitted boundary exchanges.
+In row-action form, its carrier `K=A union A'` has a first distinguishing row with nonzero
+`deg_A-deg_A'` and no proper distinguished subcarrier; otherwise the carrier is a sheet-clone module or a
+local square exit.
+If that row is admitted in `FR^sat`, Proposition 9.2 kills it by the protected side-size contradiction, so
+the only unsaturated gap is path-to-saturated row transport.
+Transport is a prefix-insertion ladder: flat commutations keep the same fully-skew carrier, nonflat ones
+are local square exits, and a survivor is hidden path memory.
+Equivalently, the last path-only theorem is memory-free prefix fullness for same-carrier fully-skew rows;
+with it, the saturated Proposition 9.2 kills the endpoint.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

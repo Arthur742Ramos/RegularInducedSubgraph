@@ -1864,8 +1864,23 @@ What remains justified after audit is:
       vectors span the even-parity hyperplane on `W`, so the remaining gap is odd-coset packet
       realization, not binary linear algebra; equivalently the stopped bit is a flat two-sheeted cover of
       the lower-profile packet graph, with the first nontrivial holonomy appearing as a missing-corner
-      packet square; odd-coset realization has only the branch, local odd-square, and unbranched
-      sheet-character provenance exits;
+      packet square; odd-coset realization has only signed branch provenance, local odd-square, and
+      unbranched sheet-character provenance exits; the signed branch folds into odd local cycle or sheet
+      provenance through the fixed-profile exchange graph; large quotient-uniform sheet components reduce
+      internally, so the irreducible unbranched case is rank-one boundary-provenance fullness, equivalently
+      restart admissibility for zero-residue prefix-local sheet separators; the exchange-saturated boundary
+      category closes this and leaves only path-saturation equivalence, whose shortest-loop normal form is
+      a chordless rank-one flat loop with no local square exit, no filled-flat chord, no complete proper
+      interval, and no repeated lower profile; active-edge normalization reduces that loop to a
+      residue-zero two-state sheet transposition, the common endpoint of the three named host frontiers;
+      after cancelling common parts its carrier has a first fully-skew distinguishing row, so the endpoint
+      is fully-skew row promotion unless the row-action change exposes the local `0001` square; once
+      admitted in `FR^sat`, Proposition `9.2` kills the row by the protected side-size contradiction, so
+      the only unsaturated gap is path-to-saturated row transport; in prefix-insertion form this is a
+      same-carrier skew ladder whose flat commutations preserve all visible data, leaving only hidden
+      path memory unless a local missing-corner square appears; equivalently the last path-only theorem is
+      memory-free prefix fullness for same-carrier fully-skew rows, which collapses the ladder to
+      Proposition `9.2`;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;
