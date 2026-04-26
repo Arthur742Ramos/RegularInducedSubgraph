@@ -21846,6 +21846,448 @@ theorem ten_le_F_40960_of_consumerNormalization
 
 
 
+/-- Profiled exact-`42` surfaces plus endpoints expose the compact final consumer surface. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport hendpoints htop).toFinalConsumerSurface
+
+/-- Profiled exact-`42` surfaces plus endpoints expose compact consumers from profile components. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toFinalConsumerSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hendpoints hcommon hcount).toFinalConsumerSurface
+
+/-- Endpoint/exact-`42` profile bridges expose the compact final consumer surface. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport htop).toFinalConsumerSurface
+
+/-- Endpoint/exact-`42` profile bridges expose compact consumers from profile components. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface.toFinalConsumerSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hcommon hcount).toFinalConsumerSurface
+
+/-- Assumption-explicit compact consumer surface from endpoints and an exact-`42` profile. -/
+theorem ramseyTenR45Exact42TopRowFinalConsumerSurface_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (ramseyTenR45Exact42TopRowFinalDownstreamImport_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    h8 h9 h13 hexact42 htop).toFinalConsumerSurface
+
+/-- Assumption-explicit compact consumer surface from common-sum/count-profile top-row data. -/
+theorem ramseyTenR45Exact42TopRowFinalConsumerSurface_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_commonSum_countProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (ramseyTenR45Exact42TopRowFinalDownstreamImport_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_commonSum_countProfile
+    h8 h9 h13 hexact42 hcommon hcount).toFinalConsumerSurface
+
+/-- Consumer-normalized exact-`42` routes expose the compact final consumer surface. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  h.finalDownstreamImport.toFinalConsumerSurface
+
+/-- Compact final consumers can be upgraded to the full consumer-normalized facade. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.topRowFinalHandoff.toConsumerNormalization
+
+/-- Constructor exposing the compact final consumer surface from consumer normalization. -/
+theorem ramseyTenR45Exact42TopRowFinalConsumerSurface_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  h.toFinalConsumerSurface
+
+/-- Constructor exposing consumer normalization from the compact final consumer surface. -/
+theorem ramseyTenR45Exact42ConsumerNormalization_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.toConsumerNormalization
+
+/-- Compacting and re-normalizing a consumer-normalized route is idempotent. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toFinalConsumerSurface_toConsumerNormalization_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    h.toFinalConsumerSurface.toConsumerNormalization = h := by
+  exact Subsingleton.elim _ _
+
+/-- Normalizing and compacting a compact final consumer is idempotent. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toConsumerNormalization_toFinalConsumerSurface_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    h.toConsumerNormalization.toFinalConsumerSurface = h := by
+  exact Subsingleton.elim _ _
+
+/-- Select the ready top-row certificate from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.topRowReady
+
+/-- Select the Ramsey ready certificate from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45ReadyCertificate :=
+  h.finalDownstreamImport.toReadyCertificate
+
+/-- Select endpoint-ready data from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toEndpointReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45EndpointReadyCertificate :=
+  h.endpointDownstreamImport.toEndpointReadyCertificate
+
+/-- Select the expanded endpoint certificate from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toEndpointResidualCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45EndpointResidualCertificate :=
+  h.endpointDownstreamImport.toEndpointResidualCertificate
+
+/-- Select the middle-degree endpoint certificate from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toMiddleDegreeEndpointCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45MiddleDegreeEndpointCertificate :=
+  h.endpointDownstreamImport.toMiddleDegreeEndpointCertificate
+
+/-- Select the final certificate bundle from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toFinalCertificateBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45FinalCertificateBundle :=
+  h.finalBundle
+
+/-- Select the final-bundle selector surface from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toFinalBundleSelectorSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45FinalBundleSelectorSurface :=
+  h.finalDownstreamImport.toFinalBundleSelectorSurface
+
+/-- Select the final-facing top-row handoff from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toTopRowFinalHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyThreeTenExact42TopRowFinalHandoff G s v :=
+  h.topRowFinalHandoff
+
+/-- Select the top-row selector with local ledgers from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toTopRowSelectorWithLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v :=
+  h.topRowSelector
+
+/-- Select the top-row selector handoff from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toTopRowSelectorHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v) :=
+  h.topRowSelectorHandoff
+
+/-- Select local middle-degree ledgers from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select exact-`42` profile data together with middle-degree split ledgers. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toExact42WithMiddleSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the exact-`42` local/global handoff from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toExact42ProfileHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45LocalLedgerHandoff RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.finalDownstreamImport.toExact42ProfileHandoff
+
+/-- Select the degree-`10` split certificate from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toDegreeTenSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.localLedgers.degreeTenSplits
+
+/-- Select the degree-`11` split certificate from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toDegreeElevenSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.localLedgers.degreeElevenSplits
+
+/-- Select the degree-`12` split certificate from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toDegreeTwelveSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.localLedgers.degreeTwelveSplits
+
+/-- Select the uniform middle-degree split certificate from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toMiddleDegreeSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.localLedgers.middleDegreeSplits
+
+/-- Select the degree-`10` split local/global handoff from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toDegreeTenSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.finalDownstreamImport.toDegreeTenSplitHandoff
+
+/-- Select the degree-`11` split local/global handoff from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toDegreeElevenSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.finalDownstreamImport.toDegreeElevenSplitHandoff
+
+/-- Select the degree-`12` split local/global handoff from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toDegreeTwelveSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.finalDownstreamImport.toDegreeTwelveSplitHandoff
+
+/-- Select the uniform middle-degree split local/global handoff from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toMiddleDegreeSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.finalDownstreamImport.toMiddleDegreeSplitHandoff
+
+/-- Select the relaxed `R(4,5) <= 27` table from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.finalDownstreamImport.toR45TwentySevenTable
+
+/-- Select final Ramsey-10 status from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toFinalStatus
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select global consequences from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toGlobalConsequenceBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Raw common-sum bounds from a consumer-normalized exact-`42` route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toCommonSumBounds
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    65 ≤ Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72 :=
+  h.topRowSelector.toCommonSumBounds
+
+/-- Raw singleton/duplicated/triple count-profile bounds from a consumer-normalized route. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toCountProfileBounds
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27 ∧
+      5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          2 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card ∧
+        1 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            3 ≤ (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card :=
+  h.topRowSelector.toCountProfileBounds
+
+/-- Compact final consumers expose the canonical exact-`42` final import. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalHandoff.toTopRowFinalImport
+
+/-- Compact final consumers expose the one-stop final downstream import. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.toConsumerNormalization.toFinalDownstreamImport
+
+/-- Compact final consumers expose the top-row downstream import. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toTopRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.toConsumerNormalization.toTopRowDownstreamImport
+
+/-- Compact final consumers expose the compact Ramsey downstream import. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45DownstreamImport :=
+  h.toConsumerNormalization.toDownstreamImport
+
+/-- Compact final consumers expose the endpoint-only downstream import. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toEndpointDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45EndpointDownstreamImport :=
+  h.toConsumerNormalization.toEndpointDownstreamImport
+
+/-- Constructor exposing the top-row downstream import from consumer normalization. -/
+theorem ramseyTenR45TopRowDownstreamImport_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.toTopRowDownstreamImport
+
+/-- Constructor exposing the compact Ramsey downstream import from consumer normalization. -/
+theorem ramseyTenR45DownstreamImport_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45DownstreamImport :=
+  h.toDownstreamImport
+
+/-- Constructor exposing the endpoint-only downstream import from consumer normalization. -/
+theorem ramseyTenR45EndpointDownstreamImport_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45EndpointDownstreamImport :=
+  h.toEndpointDownstreamImport
+
+/-- Constructor exposing final status from consumer normalization. -/
+theorem ramseyTenR45FinalStatus_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45FinalStatus :=
+  h.toFinalStatus
+
+/-- Consumer-normalized route to the final consequence surface. -/
+theorem ramseyTenR45FinalConsequenceSurface_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45FinalConsequenceSurface :=
+  h.toFinalConsequenceSurface
+
+/-- Consumer-normalized route to the global consequence bundle. -/
+theorem ramseyTenR45GlobalConsequenceBundle_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.toGlobalConsequenceBundle
+
+/-- Compact-consumer route to the low-row exact-`42` result. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toThreeTenFortyTwo
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
