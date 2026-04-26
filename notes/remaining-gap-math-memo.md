@@ -1562,6 +1562,9 @@ Equivalently, after target substitution:
 `(s_a-s_b)(r+delta_a+delta_b-a-d_a)=s_b((a+d_a)-(b+d_b)) [MOD 4]`.
 On odd-size packet subsystems the cross parities become symmetric, giving the labelled first-bit quotient
 condition `a_j+d_j+deg_Q(j)=constant [MOD 2]`; the full mod-`4` quotient is the carry refinement.
+The edge-count symmetry has the corresponding size-stratum table: odd sizes determine opposite residues
+up to units; size `0` against odd forces incoming residue `0`; two size-`2` packets synchronize only
+modulo `2`; and two size-`0` packets are unrestricted modulo `4`.
 Same-chamber same-external-profile packets may be merged whenever their two cross-degree residues agree.
 If they appear in an appendable packet system, their row difference is exactly the difference of those
 two residues, so row compatibility forces coalescence.  Thus an appendable primitive packet system uses

@@ -5465,6 +5465,20 @@ Thus the first bit of a packet-system witness is again an ordinary parity-degree
 graph, with vertex labels `a_j+d_j`.  The remaining obstruction after this parity shadow is precisely
 the mod-`4` carry encoded by the full residues `c_{jk}` and the final old-increment target.
 
+The full edge-count symmetry can be read by size strata.  If `s_j=|B_j| [MOD 4]`, then:
+
+```text
+s_j,s_k odd:       c_{kj}=s_k s_j^{-1} c_{jk}          [MOD 4];
+s_j=0, s_k odd:    c_{kj}=0;
+s_j=2, s_k odd:    c_{kj}=2 c_{jk} s_k^{-1}            [MOD 4];
+s_j=s_k=2:         c_{jk}=c_{kj}                       [MOD 2];
+s_j=s_k=0:         no edge-count restriction modulo 4.
+```
+
+Thus odd packets see all cross residues rigidly, size-`2` packets see only the parity of other size-`2`
+packets, and size-`0` packets are invisible to the edge-count congruence except through rows that point
+back from odd packets.  This is the exact arithmetic source of the remaining carry freedom.
+
 The row-difference form also gives an exact packet coalescence rule.  Suppose two active packets
 `B_1,B_2` have the same chamber value `a`, the same internal residue `d`, and the same external
 cross-profile: for every other packet `B_k`, both `c_{1k}=c_{2k}` and `c_{k1}=c_{k2}`.  Let

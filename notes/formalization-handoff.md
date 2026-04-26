@@ -1043,6 +1043,9 @@ Recommended attack:
    solving a linear congruence modulo `4`.
    Add the odd-size parity shadow: on odd-size packets, `c_{jk}=c_{kj} [MOD 2]`, so the first-bit row
    condition is `a_j+d_j+deg_Q(j)=constant [MOD 2]` for the quotient graph of odd cross parities.
+   Record the size-stratum edge-count table: odd sizes determine opposite residues up to units;
+   size-`0` versus odd forces incoming residue `0`; two size-`2` packets force equality only modulo `2`;
+   two size-`0` packets impose no modulo-`4` edge-count constraint.
    Formalize exact packet coalescence: same-chamber same-external-profile packets with cross residues
    `c_{12},c_{21}` merge if `c_{12}=c_{21}`; the merged internal residue is `d+c_{12}` and the old
    increment is the sum.  Conversely their row difference is `c_{12}-c_{21}`, so any appendable

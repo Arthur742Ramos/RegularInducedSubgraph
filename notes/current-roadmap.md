@@ -4811,6 +4811,9 @@ After substitution this is the single congruence
 `(s_a-s_b)(r+delta_a+delta_b-a-d_a)=s_b((a+d_a)-(b+d_b)) [MOD 4]`.
 On odd-size packet subsystems, cross parities are symmetric and the first-bit condition is the labelled
 quotient equation `a_j+d_j+deg_Q(j)=constant [MOD 2]`; the full `c_{jk}` residues are the carry.
+The edge-count symmetry stratifies by size modulo `4`: odd sizes determine opposite residues up to units,
+size `0` against odd forces the odd packet's incoming residue to vanish, size `2` pairs only synchronize
+parity, and size `0` pairs are unconstrained modulo `4`.
 Same-chamber same-external-profile packets coalesce in this normal form whenever their two cross-degree
 residues agree; row compatibility forces that equality in any appendable system, so an appendable
 primitive packet system uses at most one packet from each such profile.

@@ -386,6 +386,10 @@ if it is `0`, the right side must vanish.
 Modulo `2`, every odd-size packet subsystem has symmetric cross parities, so it is an undirected
 quotient graph `Q` with labelled row condition `a_j+d_j+deg_Q(j)=constant [MOD 2]`.  The full
 mod-`4` residues are the carry beyond this parity shadow.
+The size-stratum form of edge-count symmetry is explicit: odd packet sizes determine the opposite cross
+residue up to multiplication by a unit; a size-`0` packet forces incoming residue `0` from an odd packet;
+two size-`2` packets only force cross residues equal modulo `2`; two size-`0` packets impose no
+edge-count restriction modulo `4`.
 There is an exact coalescence rule: same-chamber same-external-profile packets with cross residues
 `c_{12},c_{21}` merge whenever `c_{12}=c_{21}`; the merged packet has old increment sum and internal
 residue `d+c_{12}`.  Conversely, in an appendable packet system the two row values differ by
