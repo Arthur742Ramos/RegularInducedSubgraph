@@ -13639,6 +13639,149 @@ theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation
   simpa [RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation] using
     ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_count_profile h
 
+/-- Build the top-row common-sum obligation from raw lower and upper bounds. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation_of_common_sum_bounds
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hlo : 65 ≤ Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card))
+    (hhi : Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v := by
+  simpa [RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation] using
+    And.intro hlo hhi
+
+/-- Build the top-row count-profile obligation from the three raw count inequalities. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation_of_count_profile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hsingleton :
+      (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27)
+    (hduplicated :
+      5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          2 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card)
+    (htriple :
+      1 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          3 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v := by
+  simpa [RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation] using
+    And.intro hsingleton (And.intro hduplicated htriple)
+
+/-- Combine separate common-sum and count-profile obligations into the profiled top-row branch. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation_of_commonSum_countProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v := by
+  exact ⟨hcommon, hcount⟩
+
+/-- Build a profiled top-row branch directly from the raw common-sum and count-profile bounds. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation_of_raw_profile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hlo : 65 ≤ Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card))
+    (hhi : Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72)
+    (hsingleton :
+      (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27)
+    (hduplicated :
+      5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          2 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card)
+    (htriple :
+      1 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          3 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v := by
+  exact
+    ramseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation_of_commonSum_countProfile
+      (ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation_of_common_sum_bounds
+        hlo hhi)
+      (ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation_of_count_profile
+        hsingleton hduplicated htriple)
+
+/-- Raw lower common-sum bound extracted from the combined top-row profile. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_common_sum_ge_sixty_five
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v) :
+    65 ≤ Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) :=
+  (ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_common_sum_bounds
+    h).1
+
+/-- Raw upper common-sum bound extracted from the combined top-row profile. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_common_sum_le_seventy_two
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v) :
+    Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72 :=
+  (ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_common_sum_bounds
+    h).2
+
+/-- Raw singleton cap extracted from the combined top-row profile. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_singleton_count_le_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27 :=
+  (ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_count_profile
+    h).1
+
+/-- Raw duplicated-count lower bound extracted from the combined top-row profile. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_duplicated_count_ge_five
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v) :
+    5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        2 ≤ (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card :=
+  (ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_count_profile
+    h).2.1
+
+/-- Raw triple-overlap lower bound extracted from the combined top-row profile. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_triple_count_pos
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v) :
+    1 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        3 ≤ (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card :=
+  (ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_count_profile
+    h).2.2
+
 /--
 `R(3,10) <= 42` degree-window reduction with only the profiled three-row exact-`42`
 degree-`9` branch interface exposed to the residual solver.
@@ -14831,6 +14974,280 @@ theorem hasRegularInducedSubgraphOfCard_ten_40960_of_degreeEight_degreeNine_degr
     HasRegularInducedSubgraphOfCard G 10 :=
   (ramseyTenR45MiddleDegreeEndpointCertificate_of_degreeEight_degreeNine_degreeThirteen
     h8 h9 h13).toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/--
+Certificate pairing the profiled exact-`42` `R(3,10)` surface with the proved middle-degree
+split ledgers for degree-`9` endpoint non-neighbors.  This object deliberately contains no
+`R(4,5)` endpoint field; it is only the low-row exact-`42` data plus local degree-`9` ledgers.
+-/
+structure RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits : Prop where
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+
+/-- Attach the named degree-`9` endpoint middle-degree split ledgers to a profiled exact-`42` surface. -/
+theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.ofExact42Profile
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits where
+  exact42Profile := h
+  degreeTenSplits :=
+    noRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits :=
+    noRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits :=
+    noRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits :=
+    noRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  threeTenFortyTwo := hasCliqueOrIndepSetBound_3_10_42_of_exact42_three_row_profile_surface h
+
+/-- Extract the profiled exact-`42` surface from the exact-`42`/middle-split pairing. -/
+theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.toExact42ProfileSurface
+    (h : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Extract the exact degree-`10` split ledgers from the exact-`42`/middle-split pairing. -/
+theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.toDegreeTenSplitCertificate
+    (h : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.degreeTenSplits
+
+/-- Extract the exact degree-`11` split ledgers from the exact-`42`/middle-split pairing. -/
+theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.toDegreeElevenSplitCertificate
+    (h : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.degreeElevenSplits
+
+/-- Extract the exact degree-`12` split ledgers from the exact-`42`/middle-split pairing. -/
+theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.toDegreeTwelveSplitCertificate
+    (h : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.degreeTwelveSplits
+
+/-- Extract the uniform degree-`10`/`11`/`12` middle-degree split ledger certificate. -/
+theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.toMiddleDegreeSplitCertificate
+    (h : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.middleDegreeSplits
+
+/-- Extract the low-row `R(3,10) <= 42` consequence from the exact-`42`/middle-split pairing. -/
+theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.toThreeTenFortyTwo
+    (h : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/--
+Final handoff joining the assumption-backed `R(4,5)` endpoint certificate, the degree-`9`
+middle-degree split ledgers, and the profiled exact-`42` surface.  The `R(4,5)` conclusion is
+still sourced through `middleDegreeCertificate` and its endpoint residual assumptions.
+-/
+structure RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile : Prop where
+  endpointProfileCertificate : RamseyTenR45EndpointResidualCertificateWithExact42Profile
+  middleDegreeCertificate : RamseyTenR45MiddleDegreeEndpointCertificate
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  finalStatus : RamseyTenR45FinalStatus
+
+/-- Compose an endpoint middle-degree certificate with a profiled exact-`42` surface. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.ofMiddleDegreeAndExact42Profile
+    (hmiddle : RamseyTenR45MiddleDegreeEndpointCertificate)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile where
+  endpointProfileCertificate :=
+    { endpointCertificate := hmiddle.endpointCertificate
+      exact42Profile := hexact42
+      threeTenFortyTwo :=
+        hasCliqueOrIndepSetBound_3_10_42_of_exact42_three_row_profile_surface hexact42 }
+  middleDegreeCertificate := hmiddle
+  exact42WithMiddleSplits :=
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.ofExact42Profile hexact42
+  finalStatus := hmiddle.finalStatus
+
+/-- The combined profiled bridge induces the middle-degree/exact-`42` handoff certificate. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface.toMiddleDegreeProfileCertificate
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface) :
+    RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile :=
+  RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.ofMiddleDegreeAndExact42Profile
+    (RamseyTenR45EndpointResiduals.toMiddleDegreeCertificate h.endpoints) h.exact42Profile
+
+/-- Extract the endpoint-plus-profile certificate from the combined middle-degree handoff. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toEndpointProfileCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyTenR45EndpointResidualCertificateWithExact42Profile :=
+  h.endpointProfileCertificate
+
+/-- Extract the assumption-backed middle-degree endpoint certificate. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toMiddleDegreeCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyTenR45MiddleDegreeEndpointCertificate :=
+  h.middleDegreeCertificate
+
+/-- Extract the exact-`42` profile paired with the degree-`9` endpoint middle ledgers. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toExact42WithMiddleSplits
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Recover endpoint residual assumptions from the combined exact-`42`/middle-degree handoff. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toEndpointResiduals
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyTenR45EndpointResiduals :=
+  h.middleDegreeCertificate.toEndpointResiduals
+
+/-- Extract the expanded endpoint-residual certificate. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toEndpointResidualCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyTenR45EndpointResidualCertificate :=
+  h.middleDegreeCertificate.toEndpointResidualCertificate
+
+/-- Extract the profiled exact-`42` surface. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toExact42ProfileSurface
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42WithMiddleSplits.toExact42ProfileSurface
+
+/-- Extract the low-row `R(3,10) <= 42` consequence. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toThreeTenFortyTwo
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42WithMiddleSplits.toThreeTenFortyTwo
+
+/-- Extract the uniform degree-`10`/`11`/`12` middle-degree split ledgers. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toMiddleDegreeSplitCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.exact42WithMiddleSplits.toMiddleDegreeSplitCertificate
+
+/-- Extract the degree-`10` split ledgers. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toDegreeTenSplitCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.exact42WithMiddleSplits.toDegreeTenSplitCertificate
+
+/-- Extract the degree-`11` split ledgers. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toDegreeElevenSplitCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.exact42WithMiddleSplits.toDegreeElevenSplitCertificate
+
+/-- Extract the degree-`12` split ledgers. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toDegreeTwelveSplitCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.exact42WithMiddleSplits.toDegreeTwelveSplitCertificate
+
+/-- Extract the relaxed `R(4,5) <= 27` table through the endpoint assumptions. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toR45TwentySevenTable
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyTenR45TwentySevenTable :=
+  h.middleDegreeCertificate.toR45TwentySevenTable
+
+/-- Extract the final Ramsey-10 status through the endpoint assumptions. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toFinalStatus
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Consume the combined handoff as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.finalStatus.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Consume the combined handoff as the current `R(10,10)` frontier. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.finalStatus.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Consume the combined handoff as the regular induced `10`-subgraph theorem at `40960`. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.finalStatus.toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Consume the combined handoff as the admissible-bound statement. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    10 ∈ admissibleBounds 40960 :=
+  h.finalStatus.toTenMemAdmissibleBounds_40960
+
+/-- Consume the combined handoff as the extremal-function lower bound. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toTenLeF_40960
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    10 ≤ F 40960 :=
+  h.finalStatus.toTenLeF_40960
+
+/-- Explicit endpoint assumptions plus a profiled exact-`42` surface produce the combined handoff. -/
+theorem ramseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile :=
+  RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.ofMiddleDegreeAndExact42Profile
+    (ramseyTenR45MiddleDegreeEndpointCertificate_of_degreeEight_degreeNine_degreeThirteen
+      h8 h9 h13)
+    hexact42
+
+/--
+Final-facing wrapper: endpoint assumptions, middle-degree ledgers, and a profiled exact-`42` surface
+produce the current Ramsey-10 final status.  The endpoint assumptions remain explicit.
+-/
+theorem ramseyTenR45FinalStatus_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    RamseyTenR45FinalStatus :=
+  (ramseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hexact42).toFinalStatus
+
+/-- Final-facing wrapper to the low-row `R(3,10) <= 42` exact-`42` consequence. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  (ramseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hexact42).toThreeTenFortyTwo
+
+/-- Final-facing wrapper to the localized `R(4,5) <= 27` endpoint input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  (ramseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hexact42).toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Final-facing wrapper to the current `R(10,10)` frontier. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  (ramseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hexact42).toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Final-facing wrapper to the dyadic regular-induced-subgraph statement. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  (ramseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hexact42).toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
