@@ -674,6 +674,23 @@ theorem hasCliqueOrIndepSetBound_of_exact_card {a b N : ℕ}
         simpa [H, inducedOn] using htIndep.1 hvx hvy hvxy
       · simpa using htIndep.2
 
+/-- A localized Ramsey bound gives the corresponding exact-card endpoint on finite types. -/
+theorem HasCliqueOrIndepSetBound.exact_card {a b N : ℕ}
+    (h : HasCliqueOrIndepSetBound a b N) :
+    ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α),
+      Fintype.card α = N →
+        (∃ t : Finset α, G.IsNClique a t) ∨ ∃ t : Finset α, G.IsNIndepSet b t := by
+  intro α _ _ G hcard
+  have hN : N ≤ (Finset.univ : Finset α).card := by
+    simpa [Finset.card_univ, hcard]
+  rcases h G (Finset.univ : Finset α) hN with hClique | hIndep
+  · left
+    rcases hClique with ⟨t, _ht, htClique⟩
+    exact ⟨t, htClique⟩
+  · right
+    rcases hIndep with ⟨t, _ht, htIndep⟩
+    exact ⟨t, htIndep⟩
+
 /-- Internal degree in an induced finite vertex set, written as an external neighbor intersection. -/
 theorem inducedOn_degree_eq_card_neighborFinset_inter
     {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
@@ -774,6 +791,73 @@ theorem degree_mem_Icc_of_card_twenty_six_no_clique_four_no_indep_five
     8 ≤ G.degree v ∧ G.degree v ≤ 13 := by
   constructor
   · exact eight_le_degree_of_card_twenty_six_no_clique_four_no_indep_five
+      G hcard h44 hnoK4 hnoI5 v
+  · exact Nat.le_of_lt_succ
+      (by
+        simpa using
+          degree_lt_of_no_clique_four_no_indep_five G h35 hnoK4 hnoI5 v)
+
+/--
+In a `27`-vertex graph with no `4`-clique and no independent `5`-set, a local `R(4,4)`
+bound forces every vertex to have degree at least `9`.
+-/
+theorem nine_le_degree_of_card_twenty_seven_no_clique_four_no_indep_five
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (h44 : HasCliqueOrIndepSetBound 4 4 18)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    (v : α) :
+    9 ≤ G.degree v := by
+  classical
+  set nonNbrs : Finset α := (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w) with hnonNbrs
+  have hNonNbrsLt : nonNbrs.card < 18 := by
+    refine card_lt_of_no_clique_or_indep h44 G nonNbrs ?_ ?_
+    · rintro ⟨t, _ht, htClique⟩
+      exact hnoK4 ⟨t, htClique⟩
+    · rintro ⟨t, ht, htIndep⟩
+      exact hnoI5 ⟨insert v t, by
+        rw [← SimpleGraph.isNClique_compl] at htIndep ⊢
+        refine htIndep.insert ?_
+        intro b hb
+        have hb' : b ∈ nonNbrs := ht hb
+        rw [hnonNbrs] at hb'
+        rcases Finset.mem_filter.mp hb' with ⟨hbs, hnot⟩
+        have hvb : v ≠ b := (Finset.mem_erase.mp hbs).1.symm
+        exact (SimpleGraph.compl_adj _ _ _).2 ⟨hvb, hnot⟩⟩
+  have hpart :
+      (G.neighborFinset v).card + nonNbrs.card = (Finset.univ.erase v).card := by
+    have hneighbor :
+        G.neighborFinset v = (Finset.univ.erase v).filter (G.Adj v) := by
+      ext w
+      by_cases hwv : w = v
+      · subst w
+        simp
+      · simp [hwv]
+    rw [hneighbor, hnonNbrs]
+    simpa using
+      (Finset.card_filter_add_card_filter_not (s := Finset.univ.erase v) (p := G.Adj v))
+  have htotal : (Finset.univ.erase v).card = 26 := by
+    have h := Finset.card_erase_of_mem (s := (Finset.univ : Finset α)) (a := v) (by simp)
+    rw [Finset.card_univ, hcard] at h
+    simpa using h
+  have hdegCard : G.degree v = (G.neighborFinset v).card := by
+    rw [SimpleGraph.card_neighborFinset_eq_degree]
+  rw [hdegCard]
+  omega
+
+/-- A concise degree interval for any hypothetical `R(4,5)` counterexample on 27 vertices. -/
+theorem degree_mem_Icc_of_card_twenty_seven_no_clique_four_no_indep_five
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (h35 : HasCliqueOrIndepSetBound 3 5 14)
+    (h44 : HasCliqueOrIndepSetBound 4 4 18)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    (v : α) :
+    9 ≤ G.degree v ∧ G.degree v ≤ 13 := by
+  constructor
+  · exact nine_le_degree_of_card_twenty_seven_no_clique_four_no_indep_five
       G hcard h44 hnoK4 hnoI5 v
   · exact Nat.le_of_lt_succ
       (by
@@ -1152,6 +1236,21 @@ theorem degree_mem_Icc_of_card_twenty_six_no_clique_four_no_indep_five_unconditi
     (v : α) :
     8 ≤ G.degree v ∧ G.degree v ≤ 13 :=
   degree_mem_Icc_of_card_twenty_six_no_clique_four_no_indep_five G hcard
+    hasCliqueOrIndepSetBound_three_five_fourteen
+    hasCliqueOrIndepSetBound_four_four_eighteen hnoK4 hnoI5 v
+
+/--
+Unconditional degree pressure on any 27-vertex `R(4,5)` counterexample: every degree lies in
+`[9,13]`.
+-/
+theorem degree_mem_Icc_of_card_twenty_seven_no_clique_four_no_indep_five_unconditional
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    (v : α) :
+    9 ≤ G.degree v ∧ G.degree v ≤ 13 :=
+  degree_mem_Icc_of_card_twenty_seven_no_clique_four_no_indep_five G hcard
     hasCliqueOrIndepSetBound_three_five_fourteen
     hasCliqueOrIndepSetBound_four_four_eighteen hnoK4 hnoI5 v
 
@@ -3038,10 +3137,89 @@ theorem hasCliqueOrIndepSetBound_four_five_twenty_six_of_noCounterexample
     HasCliqueOrIndepSetBound 4 5 26 :=
   hasCliqueOrIndepSetBound_of_exact_card (a := 4) (b := 5) (N := 26) h
 
+/-- The localized `R(4,5) <= 26` bound gives the exact 26-vertex endpoint. -/
+theorem noRamseyFourFiveCounterexampleOnTwentySix_of_bound
+    (h : HasCliqueOrIndepSetBound 4 5 26) :
+    NoRamseyFourFiveCounterexampleOnTwentySix :=
+  HasCliqueOrIndepSetBound.exact_card h
+
+/-- The exact 26-vertex endpoint is equivalent to the localized `R(4,5) <= 26` bound. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_six_iff_noCounterexample :
+    HasCliqueOrIndepSetBound 4 5 26 ↔ NoRamseyFourFiveCounterexampleOnTwentySix := by
+  constructor
+  · exact noRamseyFourFiveCounterexampleOnTwentySix_of_bound
+  · exact hasCliqueOrIndepSetBound_four_five_twenty_six_of_noCounterexample
+
 /-- Package the exact 26-vertex endpoint as the small Ramsey-10 table. -/
 theorem ramseyTenSmallTable_of_noRamseyFourFiveCounterexampleOnTwentySix
     (h : NoRamseyFourFiveCounterexampleOnTwentySix) : RamseyTenSmallTable :=
   ⟨hasCliqueOrIndepSetBound_four_five_twenty_six_of_noCounterexample h⟩
+
+/--
+Endpoint statement for the relaxed Ramsey-10 table: every full 27-vertex graph has a `4`-clique
+or an independent `5`-set.
+-/
+def NoRamseyFourFiveCounterexampleOnTwentySeven : Prop :=
+  ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α),
+    Fintype.card α = 27 →
+      (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
+
+/--
+Residual degree-window form for the `R(4,5) <= 27` endpoint.  It suffices to rule out
+27-vertex graphs whose every degree lies in `[9,13]`.
+-/
+def NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven : Prop :=
+  ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj],
+    Fintype.card α = 27 →
+      (∀ v : α, 9 ≤ G.degree v ∧ G.degree v ≤ 13) →
+        (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
+
+/-- The exact-card endpoint form discharges the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_noCounterexample
+    (h : NoRamseyFourFiveCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  hasCliqueOrIndepSetBound_of_exact_card (a := 4) (b := 5) (N := 27) h
+
+/-- The localized `R(4,5) <= 27` bound gives the exact 27-vertex endpoint. -/
+theorem noRamseyFourFiveCounterexampleOnTwentySeven_of_bound
+    (h : HasCliqueOrIndepSetBound 4 5 27) :
+    NoRamseyFourFiveCounterexampleOnTwentySeven :=
+  HasCliqueOrIndepSetBound.exact_card h
+
+/-- The exact 27-vertex endpoint is equivalent to the localized `R(4,5) <= 27` bound. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_iff_noCounterexample :
+    HasCliqueOrIndepSetBound 4 5 27 ↔ NoRamseyFourFiveCounterexampleOnTwentySeven := by
+  constructor
+  · exact noRamseyFourFiveCounterexampleOnTwentySeven_of_bound
+  · exact hasCliqueOrIndepSetBound_four_five_twenty_seven_of_noCounterexample
+
+/-- The 27-vertex degree-window residual implies the exact `R(4,5)` endpoint. -/
+theorem noRamseyFourFiveCounterexampleOnTwentySeven_of_degreeWindow
+    (hwindow : NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven) :
+    NoRamseyFourFiveCounterexampleOnTwentySeven := by
+  intro α _ _ G hcard
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  by_cases hdone :
+      (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
+  · exact hdone
+  have hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t := by
+    intro hK4
+    exact hdone (Or.inl hK4)
+  have hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t := by
+    intro hI5
+    exact hdone (Or.inr hI5)
+  exact hwindow G hcard (by
+    intro v
+    exact degree_mem_Icc_of_card_twenty_seven_no_clique_four_no_indep_five_unconditional
+      G hcard hnoK4 hnoI5 v)
+
+/-- The degree-window residual is enough for the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeWindow
+    (hwindow : NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  hasCliqueOrIndepSetBound_four_five_twenty_seven_of_noCounterexample
+    (noRamseyFourFiveCounterexampleOnTwentySeven_of_degreeWindow hwindow)
 
 /--
 Relaxed Ramsey-10 table using the sharpened `R(3,k)` row and parity recurrence.  It is enough for
@@ -3049,6 +3227,17 @@ the dyadic regular-10 target to know the slightly weaker off-diagonal endpoint `
 -/
 structure RamseyTenR45TwentySevenTable : Prop where
   r45 : HasCliqueOrIndepSetBound 4 5 27
+
+/-- Package the exact 27-vertex endpoint as the relaxed Ramsey-10 table. -/
+theorem ramseyTenR45TwentySevenTable_of_noRamseyFourFiveCounterexampleOnTwentySeven
+    (h : NoRamseyFourFiveCounterexampleOnTwentySeven) : RamseyTenR45TwentySevenTable :=
+  ⟨hasCliqueOrIndepSetBound_four_five_twenty_seven_of_noCounterexample h⟩
+
+/-- Package the degree-window 27-vertex residual as the relaxed Ramsey-10 table. -/
+theorem ramseyTenR45TwentySevenTable_of_degreeWindow
+    (hwindow : NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven) :
+    RamseyTenR45TwentySevenTable :=
+  ⟨hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeWindow hwindow⟩
 
 /-- The original small table implies the relaxed `R(4,5) <= 27` table. -/
 theorem RamseyTenSmallTable.toR45TwentySevenTable
