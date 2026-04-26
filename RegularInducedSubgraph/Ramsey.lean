@@ -24028,6 +24028,414 @@ theorem RamseyTenR45UnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle_toTen
     h.toUnifiedFinalTheoremBundle.toTenLeF_40960 = h.toTenLeF_40960 := by
   exact Subsingleton.elim _ _
 
+/--
+Smallest theorem-only consequence package for external consumers of the Ramsey/R45 frontier.  It
+forgets the exact-`42` certificates and final/global facade fields, retaining only the numerical
+theorems downstream files commonly project.  The `R(4,5) <= 27` field is still the localized
+assumption-backed input transported through the existing Ramsey/R45 surfaces, not a new
+unconditional theorem.
+-/
+structure RamseyTenR45FinalNumericalConsequences : Prop where
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- The parameter-free theorem bundle projects to the compact numerical consequence package. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toFinalNumericalConsequences
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) :
+    RamseyTenR45FinalNumericalConsequences where
+  threeTenFortyTwo := h.toThreeTenFortyTwo
+  r45TwentySeven := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  r10Ten39246 := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.toTenMemAdmissibleBounds_40960
+  f40960 := h.toTenLeF_40960
+
+/-- Add the exact-`42` theorem to a final-status handoff to obtain numerical consequences. -/
+theorem RamseyTenR45FinalStatus.toFinalNumericalConsequences
+    (h : RamseyTenR45FinalStatus) (h42 : HasCliqueOrIndepSetBound 3 10 42) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle h42).toFinalNumericalConsequences
+
+/-- Add the exact-`42` theorem to a global consequence bundle to obtain numerical consequences. -/
+theorem RamseyTenR45GlobalConsequenceBundle.toFinalNumericalConsequences
+    (h : RamseyTenR45GlobalConsequenceBundle) (h42 : HasCliqueOrIndepSetBound 3 10 42) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle h42).toFinalNumericalConsequences
+
+/-- Add the exact-`42` theorem to a final consequence surface to obtain numerical consequences. -/
+theorem RamseyTenR45FinalConsequenceSurface.toFinalNumericalConsequences
+    (h : RamseyTenR45FinalConsequenceSurface)
+    (h42 : HasCliqueOrIndepSetBound 3 10 42) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle h42).toFinalNumericalConsequences
+
+/-- Select the low-row exact-`42` theorem from compact numerical consequences. -/
+theorem RamseyTenR45FinalNumericalConsequences.toThreeTenFortyTwo
+    (h : RamseyTenR45FinalNumericalConsequences) : HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Select the localized `R(4,5) <= 27` input from compact numerical consequences. -/
+theorem RamseyTenR45FinalNumericalConsequences.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45FinalNumericalConsequences) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Select the propagated `R(10,10) <= 39246` theorem from compact numerical consequences. -/
+theorem RamseyTenR45FinalNumericalConsequences.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45FinalNumericalConsequences) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Select the regular induced `10`-subgraph theorem from compact numerical consequences. -/
+theorem RamseyTenR45FinalNumericalConsequences.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45FinalNumericalConsequences)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960 H hcard
+
+/-- Select the admissible-bound theorem from compact numerical consequences. -/
+theorem RamseyTenR45FinalNumericalConsequences.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45FinalNumericalConsequences) : 10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Select the extremal-function lower bound from compact numerical consequences. -/
+theorem RamseyTenR45FinalNumericalConsequences.toTenLeF_40960
+    (h : RamseyTenR45FinalNumericalConsequences) : 10 ≤ F 40960 :=
+  h.f40960
+
+/-- Downstream final-consumer imports project to compact numerical consequences. -/
+theorem RamseyTenR45UnifiedFinalConsumerImport.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toUnifiedFinalTheoremBundle.toFinalNumericalConsequences
+
+/-- Unified final consequence surfaces project to compact numerical consequences. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toUnifiedFinalTheoremBundle.toFinalNumericalConsequences
+
+/-- Final downstream imports project to compact numerical consequences. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toUnifiedFinalTheoremBundle.toFinalNumericalConsequences
+
+/-- Compact final consumers project to compact numerical consequences. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toUnifiedFinalTheoremBundle.toFinalNumericalConsequences
+
+/-- Consumer-normalized imports project to compact numerical consequences. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toUnifiedFinalTheoremBundle.toFinalNumericalConsequences
+
+/-- Top-row downstream imports project to compact numerical consequences. -/
+theorem RamseyTenR45TopRowDownstreamImport.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toUnifiedFinalTheoremBundle.toFinalNumericalConsequences
+
+/-- Exact-`42` top-row final imports project to compact numerical consequences. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toUnifiedFinalTheoremBundle.toFinalNumericalConsequences
+
+/-- Top-row ready certificates project to compact numerical consequences. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toUnifiedFinalTheoremBundle.toFinalNumericalConsequences
+
+/-- Final-facing top-row handoffs project to compact numerical consequences. -/
+theorem RamseyThreeTenExact42TopRowFinalHandoff.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalHandoff G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toUnifiedFinalTheoremBundle.toFinalNumericalConsequences
+
+/-- Downstream imports with a profiled top row project to compact numerical consequences. -/
+theorem RamseyTenR45DownstreamImport.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle htop).toFinalNumericalConsequences
+
+/-- Downstream imports with common-sum/count-profile data project to numerical consequences. -/
+theorem RamseyTenR45DownstreamImport.toFinalNumericalConsequences_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile hcommon hcount)
+    |>.toFinalNumericalConsequences
+
+/-- Ready certificates with a profiled top row project to compact numerical consequences. -/
+theorem RamseyTenR45ReadyCertificate.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle htop).toFinalNumericalConsequences
+
+/-- Ready certificates with common-sum/count-profile data project to numerical consequences. -/
+theorem RamseyTenR45ReadyCertificate.toFinalNumericalConsequences_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile hcommon hcount)
+    |>.toFinalNumericalConsequences
+
+/-- Final bundles with a profiled top row project to compact numerical consequences. -/
+theorem RamseyTenR45FinalCertificateBundle.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle htop).toFinalNumericalConsequences
+
+/-- Final bundles with common-sum/count-profile data project to compact numerical consequences. -/
+theorem RamseyTenR45FinalCertificateBundle.toFinalNumericalConsequences_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile hcommon hcount)
+    |>.toFinalNumericalConsequences
+
+/-- Profiled middle-degree handoffs with a top row project to compact numerical consequences. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle htop).toFinalNumericalConsequences
+
+/-- Profiled middle-degree handoffs with common-sum/count-profile data project numerically. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toFinalNumericalConsequences_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile hcommon hcount)
+    |>.toFinalNumericalConsequences
+
+/-- Exact-`42` status, endpoints, and a top row project to compact numerical consequences. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle hendpoints htop).toFinalNumericalConsequences
+
+/-- Exact-`42` status and endpoints with profile components project numerically. -/
+theorem
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toFinalNumericalConsequences_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile hendpoints hcommon hcount)
+    |>.toFinalNumericalConsequences
+
+/-- Profiled exact-`42` surfaces, endpoints, and a top row project numerically. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle hendpoints htop).toFinalNumericalConsequences
+
+/-- Profiled exact-`42` surfaces with endpoints and profile components project numerically. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toFinalNumericalConsequences_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  (h.toUnifiedFinalTheoremBundle_ofCommonSumCountProfile hendpoints hcommon hcount)
+    |>.toFinalNumericalConsequences
+
+/-- Constructor exposing compact numerical consequences from a theorem bundle. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_unifiedFinalTheoremBundle
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Constructor exposing compact numerical consequences from a downstream final-consumer import. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_unifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Constructor exposing compact numerical consequences from a unified final consequence surface. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Constructor exposing compact numerical consequences from a final downstream import. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_finalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Constructor exposing compact numerical consequences from a compact final consumer. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Constructor exposing compact numerical consequences from a consumer-normalized route. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_consumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Constructor exposing compact numerical consequences from a top-row downstream import. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_topRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Constructor exposing compact numerical consequences from an exact-`42` top-row final import. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Compact numerical route to the low-row exact-`42` theorem. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_finalNumericalConsequences
+    (h : RamseyTenR45FinalNumericalConsequences) : HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toThreeTenFortyTwo
+
+/-- Compact numerical route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_finalNumericalConsequences
+    (h : RamseyTenR45FinalNumericalConsequences) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Compact numerical route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_finalNumericalConsequences
+    (h : RamseyTenR45FinalNumericalConsequences) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Compact numerical route to the regular induced `10`-subgraph theorem. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_finalNumericalConsequences
+    (h : RamseyTenR45FinalNumericalConsequences)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Compact numerical route to the admissible-bound theorem. -/
+theorem ten_mem_admissibleBounds_40960_of_finalNumericalConsequences
+    (h : RamseyTenR45FinalNumericalConsequences) : 10 ∈ admissibleBounds 40960 :=
+  h.toTenMemAdmissibleBounds_40960
+
+/-- Compact numerical route to the extremal-function lower bound. -/
+theorem ten_le_F_40960_of_finalNumericalConsequences
+    (h : RamseyTenR45FinalNumericalConsequences) : 10 ≤ F 40960 :=
+  h.toTenLeF_40960
+
+/-- Theorem bundles round-trip through compact numerical consequences on exact-`42`. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toFinalNumericalConsequences_toThreeTenFortyTwo_eq
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) :
+    h.toFinalNumericalConsequences.toThreeTenFortyTwo = h.toThreeTenFortyTwo := by
+  exact Subsingleton.elim _ _
+
+/-- Theorem bundles round-trip through compact numerical consequences on localized `R(4,5)`. -/
+theorem
+    RamseyTenR45UnifiedFinalTheoremBundle.toFinalNumericalConsequences_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) :
+    h.toFinalNumericalConsequences.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Theorem bundles round-trip through compact numerical consequences on `R(10,10)`. -/
+theorem
+    RamseyTenR45UnifiedFinalTheoremBundle.toFinalNumericalConsequences_toHasCliqueOrIndepSetBound_10_10_39246_eq
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) :
+    h.toFinalNumericalConsequences.toHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/-- Theorem bundles round-trip through compact numerical consequences on the admissible-bound result. -/
+theorem
+    RamseyTenR45UnifiedFinalTheoremBundle.toFinalNumericalConsequences_toTenMemAdmissibleBounds_40960_eq
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) :
+    h.toFinalNumericalConsequences.toTenMemAdmissibleBounds_40960 =
+      h.toTenMemAdmissibleBounds_40960 := by
+  exact Subsingleton.elim _ _
+
+/-- Theorem bundles round-trip through compact numerical consequences on the extremal lower bound. -/
+theorem RamseyTenR45UnifiedFinalTheoremBundle.toFinalNumericalConsequences_toTenLeF_40960_eq
+    (h : RamseyTenR45UnifiedFinalTheoremBundle) :
+    h.toFinalNumericalConsequences.toTenLeF_40960 = h.toTenLeF_40960 := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
