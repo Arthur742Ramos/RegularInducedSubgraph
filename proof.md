@@ -5821,6 +5821,16 @@ mK=|B|t-|D|r        [MOD 4].
 
 This is the deletion analogue of the packet identity `m delta=a|B|`: if `m` is odd, `K` is intrinsic,
 while if `m=0 [MOD 4]` the signed packet must satisfy `|B|t=|D|r`.
+Unpacked by `m [MOD 4]`, with `s=|B|` and `d=|D|`, the signed old-frame constraint is
+
+```text
+m odd:       K=m^{-1}(s t-d r);
+m=2:         s t-d r is even, and K is fixed modulo 2;
+m=0:         s t=d r, and K is not fixed by the old frame.        [MOD 4]
+```
+
+Thus every signed replacement quotient has the same first pruning layer as the append-only packet
+quotient: old-frame double-counting decides which chamber/size pairs can even carry a target.
 
 This proves the old-side half of the profitable signed packet with surplus.  The whole first-bit
 problem is therefore concentrated in the signed self-layer cleanup: pass from such a surplus signed
@@ -5864,6 +5874,9 @@ When the signed old balance is the full-frame one produced above, the two scalar
 For odd `m`, this eliminates `K` completely.  Thus an odd-size old witness leaves no signed target
 freedom: the chamber value `t`, the sizes of the positive and negative packets, and the two internal
 edge parities already determine whether a self-layer cleanup can satisfy global edge count.
+Reducing modulo `2`, `r` is even and `K=st [MOD 2]`; hence if `t` and `s` are both odd, then `d` must
+be even.  Thus an odd chamber cannot be repaired by an odd positive packet while deleting an odd number
+of old vertices.
 
 There is an even sharper labelled-packet version that does not first pigeonhole to one chamber.  Let
 `U=V(H)\W` and put `tau(b)=deg_W(b) [MOD 4]`.  If `m<n/32`, then `|U|>31m`.  It is enough to find
@@ -6321,6 +6334,36 @@ Indeed the kept old vertices have degree `r+delta_S-deg_D(w)`, while vertices of
 a sharper signed-atom repair problem.  A terminal counterexample must block both: no atom has
 `phi_S=0`, and no defective atom admits a smaller old correction `D` with the two displayed degree
 conditions.
+
+The signed atom has its own scalar tests.  If `s=|S|` and `d=|D|`, then edge-counting between `D` and
+the kept old vertices and between `D` and `S` gives
+
+```text
+c(m-d)=d r-2e(D),                         [MOD 4]
+s c=d delta_S+sum_{u in S} phi_S(u).       [MOD 4]
+```
+
+Using the defect-sum identity, the second equation is equivalently
+
+```text
+s c=s r+(s-m+d)delta_S-2e(S).              [MOD 4]
+```
+
+Thus a defective atom can be signed-repaired only if a residue `c` simultaneously satisfies these two
+linear congruences.  In particular, for odd `m-d` the first equation fixes `c`; for `m=d [MOD 4]` it
+requires `d r=2e(D)`.
+
+For a one-vertex correction `D={x}` the constraints are pointwise.  The constant `c` must be the bit
+`0` or `1` according as `x` is nonadjacent or adjacent to every kept old vertex.  Hence
+
+```text
+c(m-1)=r        [MOD 4],
+```
+
+so either `c=0,r=0`, or `c=1,r=m-1`.  Moreover every atom defect must lie in the adjacent pair
+`{c,c-1}`, because `1_{xs}=c-phi_S(s)`.  Thus any atom whose defect uses three residues, or whose
+two-residue support is not an adjacent pair compatible with the old residue, cannot be repaired by a
+single old deletion.
 
 There is still a small amount of unused Davenport slack in the class `C`.  Since
 

@@ -1596,8 +1596,14 @@ For the replacement version, an old-balanced `B subset P_t` has self-error
 In fully signed form the additional global scalar is
 `(m-|D|-|B|)K=(|B|-|D|)r+2e(D)-2e(B) [MOD 4]`.
 If the signed old balance holds on all of `W`, also `mK=|B|t-|D|r [MOD 4]`.
+Thus odd `m` determines `K`, `m=2` fixes only its parity after an evenness test, and `m=0` requires
+`|B|t=|D|r` with `K` free from old-frame counting.
 For odd `m`, this gives the intrinsic signed test
 `(m-|D|-|B|)(|B|t-|D|r)=m((|B|-|D|)r+2e(D)-2e(B)) [MOD 4]`.
+Thus odd `t` and odd `|B|` force even `|D|`.
+At the atom level, a defective old-balanced `S` with defect `phi_S` admits a signed repair only if
+`c(m-|D|)=|D|r-2e(D)` and `|S|c=|D|delta_S+sum_S phi_S [MOD 4]`.
+For `|D|=1`, this forces `c=0,r=0` or `c=1,r=m-1`, and all atom defects lie in `{c,c-1}`.
 
 ## 14. Pair-chamber orientation normal form
 

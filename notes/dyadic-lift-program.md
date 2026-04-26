@@ -503,6 +503,7 @@ Summing these equations gives the signed global scalar
 then the new residue `r+K` is even.
 Together with the full-frame old scalar `mK=s t-d r`, this yields
 `(m-d-s)(s t-d r)=m((s-d)r+2e(D)-2e(B)) [MOD 4]`, eliminating `K` when `m` is odd.
+Modulo `2`, odd `m` gives `r` even and `K=st`; thus odd `t` and odd `s` force even `d`.
 This signed packet form is still the cleanest loss-`32` obstruction.  Deletion lowers the zero-sum
 dimension only in the zero-target/congruent-`E` subcase, or after an additional theorem representing
 the affine old-coordinate target; it is not a standalone Olson dimension count.
@@ -521,6 +522,8 @@ deg_B(w)-deg_D(w) == constant      for every w in W.
 If the constant is `K`, summing over the old frame gives the signed old-frame scalar
 `mK=|B|t-|D|r [MOD 4]`; for odd `m`, `K` is determined by `|B|,|D|,t,r`, while for `m=0` the signed
 packet must satisfy `|B|t=|D|r`.
+The case table is: `m` odd gives `K=m^{-1}(s t-d r)`, `m=2` requires `s t-d r` even and fixes `K`
+modulo `2`, and `m=0` requires `s t=d r` with `K` free from the old frame.
 Thus the old side of a profitable replacement can be made honest with large positive surplus.  The
 remaining obstruction is exactly the signed self-layer cleanup: refine such a packet, without losing
 the surplus, until `deg_B(b)-deg_D(b)` is constant on the positive side.
@@ -851,6 +854,12 @@ deg_D(s)=c-phi_S(s)         for s in S,
 
 So append-only closure is the special case `D=empty`; a terminal obstruction must also rule out all
 smaller old corrections of defective atoms.
+The signed atom scalar tests are
+`c(m-d)=d r-2e(D)` and `s c=d delta_S+sum_{u in S}phi_S(u) [MOD 4]`, equivalently
+`s c=s r+(s-m+d)delta_S-2e(S) [MOD 4]`.  Thus `c` is fixed when `m-d` is odd, while `m=d` requires
+`d r=2e(D)`.
+For `|D|=1`, `c` is a bit, so either `c=0,r=0` or `c=1,r=m-1`; the defect values on `S` must lie in
+the adjacent pair `{c,c-1}`.
 
 The `h_0`-class has a little unused rank margin.  Since `|C|>25m/8`, Olson can be run on
 `m-1+a` fixed `Z/4Z` coordinates whenever `3(m-1+a)<|C|`.  Thus one may add at least one auxiliary

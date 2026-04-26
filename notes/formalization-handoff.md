@@ -1022,10 +1022,13 @@ Recommended attack:
    `(m-|D|-|B|)K=(|B|-|D|)r+2e(D)-2e(B) [MOD 4]`; if `m-|D|+|B|` is odd then `r+K` is even.
    Together with the full-frame old scalar, record the eliminated odd-`m` test
    `(m-|D|-|B|)(|B|t-|D|r)=m((|B|-|D|)r+2e(D)-2e(B)) [MOD 4]`.
+   Its mod-`2` corollary is: for odd `m`, odd `t` and odd `|B|` force even `|D|`.
 
    The safe formal replacement for the invalid arbitrary-target shortcut is a signed Olson packet.
    When the signed old side has common value `K` on all of `W`, include the double-count
    `mK=|B|t-|D|r [MOD 4]`.
+   Include the case table: odd `m` determines `K`, `m=2` requires `|B|t-|D|r` even and fixes `K`
+   modulo `2`, and `m=0` requires `|B|t=|D|r`.
    Record two target-zero chamber caps first.  In a packet-maximal witness of residue `r`, the independent
    number of `P_0={b:deg_W(b)=r}` is at most `3m`, and the clique number of
    `P_+={b:deg_W(b)=r+1}` is at most `3m`.  The dense cap uses Olson on
@@ -1388,6 +1391,12 @@ Recommended attack:
    Under these conditions `(W\D) union S` has common residue `r+delta_S-c`.  The append-only atom
    theorem is the `D=empty`, `c=0` case; a signed proof may instead show that every defective atom has
    a smaller old correction `D` satisfying this display.
+   Add scalar tests:
+   `c(m-|D|)=|D|r-2e(D)` and
+   `|S|c=|D|delta_S+sum_{s in S}phi_S(s) [MOD 4]`, equivalently
+   `|S|c=|S|r+(|S|-m+|D|)delta_S-2e(S) [MOD 4]`.
+   For `|D|=1`, record the pointwise specialization: `c` is `0` or `1`, so either `c=0,r=0` or
+   `c=1,r=m-1`, and every `phi_S(s)` lies in `{c,c-1}`.
 
    The class-size margin also allows augmented Olson statements.  Since `|C|>25m/8`, one may add
    `a` fixed `Z/4Z` coordinates to the `m-1` old-difference coordinates whenever
