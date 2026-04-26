@@ -5544,6 +5544,10 @@ defect is `t_i+k_i<=h-1`.  The `4,2,2,2` balance table is the extremal `h=4` cas
 With side slack `e_i=h-1-(t_i+k_i)`, one has `e_1+e_2=h-4`; hence every `h>4` split target has visible
 capacity slack that must be paid by additional split targets, partner-hit omissions, or the four-large-atom
 strict-defect branch.
+Every partner-free large target contains a canonical four-vertex core: choose `H_0` with
+`|H_0 cap C_i|=3-k_i`; the remaining `h-4` vertices are slack, with side-`i` slack count `e_{3-i}`.
+In the partner-hit large-target side, the full-pair petal satisfies the stricter inequality `t+k<=h-2`;
+for `h=4` it omits at least two vertices of the four-atom, and for `h>4` it adds another visible slack unit.
 With four atoms, the ternary-cycle profiles are only `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`; the first is
 already the coupled two-three-atom table.
 The all-ternary profiles have high outdegree: in `3,3,3,3`, deleting any atom splits at least two other

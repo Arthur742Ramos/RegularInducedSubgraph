@@ -2179,6 +2179,10 @@ Large-target pair collisions have a one-slack capacity identity: splitting a siz
 `d_i=h-t_i-k_i`, total deficit `h-2`, rebate `h-1`, and strict side constraints `t_i+k_i<=h-1`.
 The side slacks `e_i=h-1-(t_i+k_i)` satisfy `e_1+e_2=h-4`; only `h=4` is tight, while `h>4` must pay slack
 elsewhere or enter the all-large strict-defect branch.
+Partner-free large targets contain a four-vertex balanced core `|H_0 cap C_i|=3-k_i`; all other vertices are
+slack, distributed by the opposite side slacks.
+Partner-hit large-target petals are stricter: a full-pair petal with `t` vertices of the size-`h` atom and
+`k` whole opposite atoms must satisfy `t+k<=h-2`.
 After square discharge, the all-ternary no-leftover target-code branch is exhausted: it becomes signed-quotient
 scalar mismatch or extra-rebate/large-target.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has

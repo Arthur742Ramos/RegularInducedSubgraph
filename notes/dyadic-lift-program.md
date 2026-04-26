@@ -1265,6 +1265,10 @@ partner-free collision, `d_i=h-t_i-k_i`, so `d_1+d_2=h-2` and the rebate `h-1` l
 slack; `h=4` is the balanced `4,2,2,2` table.
 The side slacks `e_i=h-1-(t_i+k_i)` sum to `h-4`, so every `h>4` target carries visible capacity slack that
 must be paid elsewhere or routed to the all-large strict-defect branch.
+Equivalently every partner-free large target contains a four-vertex `4,2,2,2` balanced core; the other
+`h-4` vertices are exactly the recorded slack distribution.
+Partner-hit large-target petals obey the stricter side bound `t+k<=h-2`, contributing one extra slack unit
+beyond the partner-free capacity inequality.
 Consequently the all-ternary no-leftover target-code branch is exhausted after square discharge: surviving
 all-ternary endpoints are signed-quotient scalar mismatch or extra-rebate/large-target exits.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:

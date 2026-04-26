@@ -12656,6 +12656,47 @@ exceed the minimal one-unit deficits already used in the four-atom rebate circui
 large-target survivor must account for this slack through additional split targets, partner-hit omissions, or
 entry into the all-atoms-size-at-least-four strict-defect branch.
 
+The same equations extract a canonical four-vertex core from every partner-free large target.  Since
+
+```text
+t_i-(3-k_i)=e_{3-i} >= 0,
+```
+
+one may choose a subset `H_0 subset H` with
+
+```text
+|H_0 cap C_i|=3-k_i        (i=1,2),        |H_0|=4.
+```
+
+On `H_0` the collision is exactly the balanced `4,2,2,2` table.  The remaining `h-4` vertices of `H` are
+slack vertices: the number lying on side `i` is `e_{3-i}`.  Thus a partner-free large-target collision is a
+tight four-vertex core plus an explicit slack distribution; no new minimal cut geometry appears for `h>4`.
+
+This slack is deletion-hereditary at the atom-defect level.  If `z in H\H_0` lies on side `i`, then deleting
+`z` from the large atom changes
+
+```text
+h -> h-1,        t_i -> t_i-1,        e_{3-i} -> e_{3-i}-1,
+```
+
+and leaves all equations for the same two-petal circuit unchanged.  Iterating slack deletion reaches the
+four-vertex core.  Hence an `h>4` partner-free survivor cannot be justified by the split-cut equations alone:
+each slack vertex must be protected by some additional support-block obstruction, namely another split target,
+a partner-hit omission, or the all-large strict-defect branch.
+
+The partner-hit large-target side is stricter.  If the full-pair petal hits a size-`h` atom `H` in `t`
+vertices and carries `k` other opposite atoms whole, then it hits `r=1+k` opposite atoms and has `delta=h-t`
+on `H`.  The strict partner-hit rule `delta>=r+1` gives
+
+```text
+t+k <= h-2.
+```
+
+Thus a partner-hit petal consumes one more unit of large-target capacity than a partner-free petal.  For
+`h=4` this is the earlier statement that the full-pair petal must omit at least two vertices of the four-atom;
+for `h>4` it contributes an additional visible slack unit to be compensated by the other petals or by a
+second split target.
+
 Since there are only four atoms, the ternary-cycle meta-case has only the sorted profiles
 
 ```text

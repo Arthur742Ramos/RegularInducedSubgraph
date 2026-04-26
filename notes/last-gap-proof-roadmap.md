@@ -2112,6 +2112,8 @@ What remains justified after audit is:
       and folds back into the corner/F incidence tables;
       large-target pair collisions satisfy the capacity identity `d_i=h-t_i-k_i`, total deficit `h-2`, rebate
       `h-1`, strict side constraints `t_i+k_i<=h-1`, and side-slack sum `e_1+e_2=h-4`;
+      partner-free large targets contain a canonical four-vertex balanced core plus explicit slack vertices;
+      partner-hit large-target petals satisfy the stronger side bound `t+k<=h-2`;
       after square discharge, the no-leftover all-ternary target-code branch has only signed-quotient scalar
       mismatch or extra-rebate/large-target exits;
       near-threshold pure deletion templates are boundary diagnostics only; mixed near-threshold obstructions
