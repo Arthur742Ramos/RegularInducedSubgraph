@@ -18946,6 +18946,435 @@ theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.obligation
   · exact h.to_coverHolonomyNormalForm
 
 /--
+Graph-intrinsic quotient conservativity at the terminal first-bit frontier.  The quotient may
+forget historical path labels, but it must keep the lower profile, terminal residue, carrier
+row-action, and the deletion/self-layer equations unchanged on terminal packets.
+-/
+structure FirstBitTerminalGraphIntrinsicQuotientConservativity
+    {Packet Quotient LowerProfile Residue RowAction : Type*}
+    (terminalPackets : Finset Packet) (quotientOf : Packet → Quotient)
+    (lowerProfile : Packet → LowerProfile) (terminalResidue : Packet → Residue)
+    (carrierRowAction : Packet → RowAction)
+    (deletionEquation selfLayerEquation : Packet → Prop)
+    (quotientDeletionEquation quotientSelfLayerEquation : Quotient → Prop) : Prop where
+  lowerProfileConservative :
+    ∀ packet : Packet, packet ∈ terminalPackets →
+      ∀ packet' : Packet, packet' ∈ terminalPackets →
+        quotientOf packet = quotientOf packet' → lowerProfile packet = lowerProfile packet'
+  terminalResidueConservative :
+    ∀ packet : Packet, packet ∈ terminalPackets →
+      ∀ packet' : Packet, packet' ∈ terminalPackets →
+        quotientOf packet = quotientOf packet' → terminalResidue packet = terminalResidue packet'
+  carrierRowActionConservative :
+    ∀ packet : Packet, packet ∈ terminalPackets →
+      ∀ packet' : Packet, packet' ∈ terminalPackets →
+        quotientOf packet = quotientOf packet' → carrierRowAction packet = carrierRowAction packet'
+  deletionEquationConservative :
+    ∀ packet : Packet, packet ∈ terminalPackets →
+      deletionEquation packet ↔ quotientDeletionEquation (quotientOf packet)
+  selfLayerEquationConservative :
+    ∀ packet : Packet, packet ∈ terminalPackets →
+      selfLayerEquation packet ↔ quotientSelfLayerEquation (quotientOf packet)
+
+/-- Build graph-intrinsic quotient conservativity from its imported invariance fields. -/
+theorem firstBitTerminalGraphIntrinsicQuotientConservativity_of_assumptions
+    {Packet Quotient LowerProfile Residue RowAction : Type*}
+    {terminalPackets : Finset Packet} {quotientOf : Packet → Quotient}
+    {lowerProfile : Packet → LowerProfile} {terminalResidue : Packet → Residue}
+    {carrierRowAction : Packet → RowAction}
+    {deletionEquation selfLayerEquation : Packet → Prop}
+    {quotientDeletionEquation quotientSelfLayerEquation : Quotient → Prop}
+    (hlower :
+      ∀ packet : Packet, packet ∈ terminalPackets →
+        ∀ packet' : Packet, packet' ∈ terminalPackets →
+          quotientOf packet = quotientOf packet' → lowerProfile packet = lowerProfile packet')
+    (hresidue :
+      ∀ packet : Packet, packet ∈ terminalPackets →
+        ∀ packet' : Packet, packet' ∈ terminalPackets →
+          quotientOf packet = quotientOf packet' →
+            terminalResidue packet = terminalResidue packet')
+    (hrow :
+      ∀ packet : Packet, packet ∈ terminalPackets →
+        ∀ packet' : Packet, packet' ∈ terminalPackets →
+          quotientOf packet = quotientOf packet' →
+            carrierRowAction packet = carrierRowAction packet')
+    (hdeletion :
+      ∀ packet : Packet, packet ∈ terminalPackets →
+        deletionEquation packet ↔ quotientDeletionEquation (quotientOf packet))
+    (hself :
+      ∀ packet : Packet, packet ∈ terminalPackets →
+        selfLayerEquation packet ↔ quotientSelfLayerEquation (quotientOf packet)) :
+    FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+      lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+      quotientDeletionEquation quotientSelfLayerEquation where
+  lowerProfileConservative := hlower
+  terminalResidueConservative := hresidue
+  carrierRowActionConservative := hrow
+  deletionEquationConservative := hdeletion
+  selfLayerEquationConservative := hself
+
+section FirstBitTerminalGraphIntrinsicQuotientConservativity
+
+variable {Packet Quotient LowerProfile Residue RowAction : Type*}
+variable {terminalPackets : Finset Packet} {quotientOf : Packet → Quotient}
+variable {lowerProfile : Packet → LowerProfile} {terminalResidue : Packet → Residue}
+variable {carrierRowAction : Packet → RowAction}
+variable {deletionEquation selfLayerEquation : Packet → Prop}
+variable {quotientDeletionEquation quotientSelfLayerEquation : Quotient → Prop}
+
+/-- Equal graph-intrinsic quotient classes have the same lower profile on terminal packets. -/
+theorem FirstBitTerminalGraphIntrinsicQuotientConservativity.lowerProfile_eq
+    (h :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    {packet packet' : Packet} (hpacket : packet ∈ terminalPackets)
+    (hpacket' : packet' ∈ terminalPackets) (hquot : quotientOf packet = quotientOf packet') :
+    lowerProfile packet = lowerProfile packet' :=
+  h.lowerProfileConservative packet hpacket packet' hpacket' hquot
+
+/-- Equal graph-intrinsic quotient classes have the same terminal residue. -/
+theorem FirstBitTerminalGraphIntrinsicQuotientConservativity.terminalResidue_eq
+    (h :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    {packet packet' : Packet} (hpacket : packet ∈ terminalPackets)
+    (hpacket' : packet' ∈ terminalPackets) (hquot : quotientOf packet = quotientOf packet') :
+    terminalResidue packet = terminalResidue packet' :=
+  h.terminalResidueConservative packet hpacket packet' hpacket' hquot
+
+/-- Equal graph-intrinsic quotient classes have the same carrier row-action. -/
+theorem FirstBitTerminalGraphIntrinsicQuotientConservativity.carrierRowAction_eq
+    (h :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    {packet packet' : Packet} (hpacket : packet ∈ terminalPackets)
+    (hpacket' : packet' ∈ terminalPackets) (hquot : quotientOf packet = quotientOf packet') :
+    carrierRowAction packet = carrierRowAction packet' :=
+  h.carrierRowActionConservative packet hpacket packet' hpacket' hquot
+
+/-- The graph-intrinsic quotient preserves and reflects the terminal deletion equation. -/
+theorem FirstBitTerminalGraphIntrinsicQuotientConservativity.deletionEquation_iff
+    (h :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    deletionEquation packet ↔ quotientDeletionEquation (quotientOf packet) :=
+  h.deletionEquationConservative packet hpacket
+
+/-- The graph-intrinsic quotient preserves and reflects the terminal self-layer equation. -/
+theorem FirstBitTerminalGraphIntrinsicQuotientConservativity.selfLayerEquation_iff
+    (h :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    selfLayerEquation packet ↔ quotientSelfLayerEquation (quotientOf packet) :=
+  h.selfLayerEquationConservative packet hpacket
+
+/-- Push a terminal deletion equation down to the graph-intrinsic quotient. -/
+theorem FirstBitTerminalGraphIntrinsicQuotientConservativity.quotientDeletionEquation_of_deletionEquation
+    (h :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    deletionEquation packet → quotientDeletionEquation (quotientOf packet) :=
+  (h.deletionEquationConservative packet hpacket).1
+
+/-- Lift a quotient deletion equation back to any terminal packet representative. -/
+theorem FirstBitTerminalGraphIntrinsicQuotientConservativity.deletionEquation_of_quotientDeletionEquation
+    (h :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    quotientDeletionEquation (quotientOf packet) → deletionEquation packet :=
+  (h.deletionEquationConservative packet hpacket).2
+
+/-- Push a terminal self-layer equation down to the graph-intrinsic quotient. -/
+theorem FirstBitTerminalGraphIntrinsicQuotientConservativity.quotientSelfLayerEquation_of_selfLayerEquation
+    (h :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    selfLayerEquation packet → quotientSelfLayerEquation (quotientOf packet) :=
+  (h.selfLayerEquationConservative packet hpacket).1
+
+/-- Lift a quotient self-layer equation back to any terminal packet representative. -/
+theorem FirstBitTerminalGraphIntrinsicQuotientConservativity.selfLayerEquation_of_quotientSelfLayerEquation
+    (h :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    quotientSelfLayerEquation (quotientOf packet) → selfLayerEquation packet :=
+  (h.selfLayerEquationConservative packet hpacket).2
+
+end FirstBitTerminalGraphIntrinsicQuotientConservativity
+
+/-- Selectors for the memory-free prefix-fullness frontier. -/
+inductive FirstBitTerminalMemoryFreePrefixFullnessFrontierSelector : Type
+  | stoppedBitDyadicFrontier
+  | graphIntrinsicQuotient
+  | pathProvenance
+  | pathBookkeepingOrMissingCorner
+  | prefixFullnessOrMissingCorner
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalMemoryFreePrefixFullnessFrontierSelector
+
+/-- The proof obligation attached to each memory-free prefix-fullness selector. -/
+def obligation
+    (stoppedBitDyadicFrontier graphIntrinsicQuotient pathProvenance
+      pathBookkeepingOrMissingCorner prefixFullnessOrMissingCorner : Prop) :
+    FirstBitTerminalMemoryFreePrefixFullnessFrontierSelector → Prop
+  | stoppedBitDyadicFrontier => stoppedBitDyadicFrontier
+  | graphIntrinsicQuotient => graphIntrinsicQuotient
+  | pathProvenance => pathProvenance
+  | pathBookkeepingOrMissingCorner => pathBookkeepingOrMissingCorner
+  | prefixFullnessOrMissingCorner => prefixFullnessOrMissingCorner
+
+end FirstBitTerminalMemoryFreePrefixFullnessFrontierSelector
+
+/--
+Frontier package for the remaining terminal endpoint.  It combines the stopped-bit dyadic/holonomy
+surface with graph-intrinsic quotient conservativity, while keeping the final comparison explicit:
+path provenance must either supply historical bookkeeping or expose a missing-corner square.
+-/
+structure FirstBitTerminalMemoryFreePrefixFullnessFrontier
+    {Packet Quotient LowerProfile Residue RowAction : Type*}
+    (terminalPackets : Finset Packet) (quotientOf : Packet → Quotient)
+    (lowerProfile : Packet → LowerProfile) (terminalResidue : Packet → Residue)
+    (carrierRowAction : Packet → RowAction)
+    (deletionEquation selfLayerEquation : Packet → Prop)
+    (quotientDeletionEquation quotientSelfLayerEquation : Quotient → Prop)
+    (affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization coverHolonomyNormalForm
+      pathProvenance remainingObstruction historicalPathBookkeeping prefixFullness
+      missingCornerSquare : Prop) : Prop where
+  stoppedBitDyadicFrontier :
+    FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+      oddCosetPacketRealization coverHolonomyNormalForm
+  graphIntrinsicQuotient :
+    FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+      lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+      quotientDeletionEquation quotientSelfLayerEquation
+  pathProvenanceCert : pathProvenance
+  remainingObstructionPathProvenance : remainingObstruction → pathProvenance
+  pathProvenanceHistoricalOrMissingCorner :
+    pathProvenance → historicalPathBookkeeping ∨ missingCornerSquare
+  historicalPathBookkeepingPrefixFullness : historicalPathBookkeeping → prefixFullness
+
+section FirstBitTerminalMemoryFreePrefixFullnessFrontier
+
+variable {Packet Quotient LowerProfile Residue RowAction : Type*}
+variable {terminalPackets : Finset Packet} {quotientOf : Packet → Quotient}
+variable {lowerProfile : Packet → LowerProfile} {terminalResidue : Packet → Residue}
+variable {carrierRowAction : Packet → RowAction}
+variable {deletionEquation selfLayerEquation : Packet → Prop}
+variable {quotientDeletionEquation quotientSelfLayerEquation : Quotient → Prop}
+variable {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+  stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization coverHolonomyNormalForm
+  pathProvenance remainingObstruction historicalPathBookkeeping prefixFullness
+  missingCornerSquare : Prop}
+
+/-- Build the memory-free prefix-fullness frontier from stopped-bit, quotient, and path inputs. -/
+theorem firstBitTerminalMemoryFreePrefixFullnessFrontier_of_parts
+    (hstopped :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm)
+    (hquotient :
+      FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+    (hpath : pathProvenance)
+    (hremaining : remainingObstruction → pathProvenance)
+    (hbook : pathProvenance → historicalPathBookkeeping ∨ missingCornerSquare)
+    (hprefix : historicalPathBookkeeping → prefixFullness) :
+    FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+      lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+      quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+      oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+      historicalPathBookkeeping prefixFullness missingCornerSquare where
+  stoppedBitDyadicFrontier := hstopped
+  graphIntrinsicQuotient := hquotient
+  pathProvenanceCert := hpath
+  remainingObstructionPathProvenance := hremaining
+  pathProvenanceHistoricalOrMissingCorner := hbook
+  historicalPathBookkeepingPrefixFullness := hprefix
+
+/-- Project stopped support-circuit imports from the memory-free package. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.to_stoppedSupportCircuit
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare) :
+    stoppedSupportCircuit :=
+  h.stoppedBitDyadicFrontier.to_stoppedSupportCircuit
+
+/-- Project cover/holonomy normal-form imports from the memory-free package. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.to_coverHolonomyNormalForm
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare) :
+    coverHolonomyNormalForm :=
+  h.stoppedBitDyadicFrontier.to_coverHolonomyNormalForm
+
+/-- Project path provenance from the memory-free package. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.to_pathProvenance
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare) :
+    pathProvenance :=
+  h.pathProvenanceCert
+
+/-- Path provenance either supplies historical bookkeeping or identifies a missing-corner square. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.historicalPathBookkeeping_or_missingCorner
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare) :
+    historicalPathBookkeeping ∨ missingCornerSquare :=
+  h.pathProvenanceHistoricalOrMissingCorner h.pathProvenanceCert
+
+/-- The packaged frontier reaches prefix fullness unless a missing-corner square is exposed. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.prefixFullness_or_missingCorner
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare) :
+    prefixFullness ∨ missingCornerSquare := by
+  rcases h.pathProvenanceHistoricalOrMissingCorner h.pathProvenanceCert with hbook | hcorner
+  · exact Or.inl (h.historicalPathBookkeepingPrefixFullness hbook)
+  · exact Or.inr hcorner
+
+/-- A remaining obstruction is reduced to prefix fullness up to the explicit missing-corner branch. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.remainingObstruction_to_prefixFullness_or_missingCorner
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare)
+    (hobstruction : remainingObstruction) :
+    prefixFullness ∨ missingCornerSquare := by
+  rcases h.pathProvenanceHistoricalOrMissingCorner
+      (h.remainingObstructionPathProvenance hobstruction) with hbook | hcorner
+  · exact Or.inl (h.historicalPathBookkeepingPrefixFullness hbook)
+  · exact Or.inr hcorner
+
+/-- Without a missing-corner square, path provenance implements historical bookkeeping. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.historicalPathBookkeeping_of_not_missingCorner
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare)
+    (hnoCorner : ¬ missingCornerSquare) :
+    historicalPathBookkeeping := by
+  rcases h.pathProvenanceHistoricalOrMissingCorner h.pathProvenanceCert with hbook | hcorner
+  · exact hbook
+  · exact False.elim (hnoCorner hcorner)
+
+/-- If the missing-corner branch is ruled out, the remaining obstruction gives prefix fullness. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.prefixFullness_of_remainingObstruction_of_not_missingCorner
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare)
+    (hnoCorner : ¬ missingCornerSquare) (hobstruction : remainingObstruction) :
+    prefixFullness := by
+  rcases h.pathProvenanceHistoricalOrMissingCorner
+      (h.remainingObstructionPathProvenance hobstruction) with hbook | hcorner
+  · exact h.historicalPathBookkeepingPrefixFullness hbook
+  · exact False.elim (hnoCorner hcorner)
+
+/-- Project the terminal deletion equation comparison through the memory-free frontier. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.deletionEquation_iff_quotient
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    deletionEquation packet ↔ quotientDeletionEquation (quotientOf packet) :=
+  h.graphIntrinsicQuotient.deletionEquationConservative packet hpacket
+
+/-- Project the terminal self-layer equation comparison through the memory-free frontier. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.selfLayerEquation_iff_quotient
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    selfLayerEquation packet ↔ quotientSelfLayerEquation (quotientOf packet) :=
+  h.graphIntrinsicQuotient.selfLayerEquationConservative packet hpacket
+
+/-- Project the selected frontier obligation without hiding the missing-corner alternative. -/
+theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.obligation
+    (h :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare)
+    (selector : FirstBitTerminalMemoryFreePrefixFullnessFrontierSelector) :
+    FirstBitTerminalMemoryFreePrefixFullnessFrontierSelector.obligation
+      (FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm)
+      (FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+      pathProvenance (historicalPathBookkeeping ∨ missingCornerSquare)
+      (prefixFullness ∨ missingCornerSquare) selector := by
+  cases selector
+  · exact h.stoppedBitDyadicFrontier
+  · exact h.graphIntrinsicQuotient
+  · exact h.pathProvenanceCert
+  · exact h.historicalPathBookkeeping_or_missingCorner
+  · exact h.prefixFullness_or_missingCorner
+
+end FirstBitTerminalMemoryFreePrefixFullnessFrontier
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
