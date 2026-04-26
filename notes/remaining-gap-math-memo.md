@@ -1983,6 +1983,10 @@ If `C` is also above threshold, the mirrored signed label `2-deg_R` satisfies th
 templates on `C`.
 For a mixed selector, the deleted set has constant degree `alpha` into retained `R` and `alpha+2` into
 retained `C`.
+The mixed label is hereditary: on `U subset J`, use `epsilon_U=epsilon-deg_{J\U}`, reducing selectors to
+constancy of `epsilon_U-deg_E`.
+Constant-label modules for this two-level label are exits, so the mixed branch is selector-prime and
+label-rank constrained.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

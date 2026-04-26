@@ -2446,6 +2446,11 @@ Recommended attack:
     `b_C(v)=2-deg_R(v)` has no deletion core `C\E` with `|E|<=t-1`.
     Add the mixed deletion target form: for `W=(R\D_R) union (C\D_C)`, selectorhood is equivalent to
     `deg_D=alpha` on retained `R` and `deg_D=alpha+2` on retained `C`.
+    Add hereditary two-level relabeling: for `U subset J`, `epsilon_U(v)=epsilon(v)-deg_{J\U}(v)`, and
+    `W=U\E` is a selector iff `epsilon_U(v)-deg_E(v)` is constant on `W`.
+    Add two-level module exits: constant-`epsilon_U` modules lift selectors after a residue shift, so
+    terminal mixed subbuckets have no large constant-label twin/module classes and satisfy the
+    label-refined row-rank bound.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

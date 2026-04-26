@@ -1960,6 +1960,9 @@ What remains justified after audit is:
       templates on `C`;
       mixed selectors are exactly deletion sets whose degrees into retained `R` and retained `C` are
       constant residues separated by `2`;
+      the mixed equation is hereditary with two-level label `epsilon_U=epsilon-deg_{J\U}`;
+      constant-label modules for this two-level label are exits, extending selector-prime/rank constraints
+      to mixed subbuckets;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

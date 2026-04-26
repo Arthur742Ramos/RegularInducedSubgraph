@@ -1058,6 +1058,10 @@ other one.
 If the smaller class also exceeds `m`, its signed label `2-deg_R` must satisfy the same deletion templates.
 The remaining mixed case asks for a deletion set whose degrees into retained `R` and retained `C` are
 constant residues separated by `2`.
+This mixed equation is hereditary: on `U subset J`, the label becomes
+`epsilon_U=epsilon-deg_{J\U}`, and selectors are exactly constancy of `epsilon_U-deg_E` on `U\E`.
+Constant-label modules for `epsilon_U` are exits, giving the same selector-prime/rank constraints in mixed
+subbuckets.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

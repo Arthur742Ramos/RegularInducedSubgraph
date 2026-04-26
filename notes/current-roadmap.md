@@ -5348,6 +5348,12 @@ If `C` is also larger than `m`, the mirrored signed label `b_C=2-deg_R` satisfie
 deletion-template list on `C`.
 For mixed selectors `(R\D_R) union (C\D_C)`, the deleted set must be seen in two constant residues
 `alpha` and `alpha+2` on the retained parts of `R` and `C`.
+More generally, the mixed equation is hereditary with label
+`epsilon_U(v)=epsilon(v)-deg_{J\U}(v)` on any `U subset J`; selectors are exactly sets where
+`epsilon_U-deg_E` is constant.  The pure labels `b=-deg_C` and `b_C=2-deg_R` are restrictions of this
+two-level label.
+Constant-label modules in this two-level label lift selectors, so terminal mixed subbuckets are
+selector-prime and obey the same label-refined row-rank exit.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

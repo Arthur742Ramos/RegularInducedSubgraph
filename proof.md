@@ -11541,6 +11541,25 @@ Thus mixed repair is a two-level deletion target: the retained vertices must see
 constant residues separated by exactly `2`, according to their Gallai residue class.  The pure `R` and
 pure `C` deletion templates are just the boundary cases `D_C=C` and `D_R=R`.
 
+The mixed equation is hereditary in the same way as the one-class label.  For any `U subset J`, define
+
+```text
+epsilon_U(v)=epsilon(v)-deg_{J\U}(v)        [MOD 4]        (v in U).
+```
+
+Then a subset `W=U\E` is a selector in the original graph iff `epsilon_U(v)-deg_E(v)` is constant on `W`.
+Consequently the mixed near-threshold residual is a two-level deletion-core problem on `(J,epsilon)`: every
+subbucket `U` of size greater than `m` must contain, for each candidate residue, a currently bad vertex for
+the equation `deg_{U\W}(v)=epsilon_U(v)-lambda`.  The pure signed labels `b=-deg_C` on `R` and
+`b_C=2-deg_R` on `C` are the restrictions of this hereditary two-level label to the pure subbuckets.
+
+The same module exits apply to the two-level core.  If `M subset U` is a module and `epsilon_U` is constant
+on `M`, then any selector inside `M` for the shifted residue lifts to a selector in `U`, because every
+vertex of `M` has the same contribution from `U\M`.  Hence a terminal mixed residual is
+two-level-selector-prime: no false-twin, true-twin, or more general module with constant two-level label can
+have size greater than `m`.  In particular the label-refined row-rank bound applies to mixed subbuckets as
+well as to the pure `R` and `C` restrictions.
+
 The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
 theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with
 `vx` and `vy` edges of the original graph; then the degree of `v` in `K[W]` is exactly the carry
