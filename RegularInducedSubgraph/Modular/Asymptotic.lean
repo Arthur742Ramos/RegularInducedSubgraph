@@ -3226,14 +3226,18 @@ private lemma positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_
     exact ⟨hext, trivial⟩
 
 /--
-A non-singleton terminal bridge from a larger fixed-modulus host: if an exact `2^j`-subbucket is
-already regular and the host is larger, the dropped part of that same host is a genuine control block.
+Non-singleton terminal bridge from a larger fixed-modulus host: if an exact `2^j` subbucket has
+constant dropped-tail degree inside a larger fixed-modulus host, the dropped tail itself is the
+nonempty separated control block and the subbucket is the terminal cascade bucket.
 -/
-theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_regular_subbucket
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_droppedTailConstancy
     (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] {j : ℕ} {S u : Finset (Fin n)}
     (hcard : u.card = 2 ^ j) (huS : u ⊆ S) (hproper : u.card < S.card)
     (hhost : InducesModEqDegree G S (2 ^ j))
-    (hreg : ∃ d : ℕ, InducesRegularOfDegree G u d) :
+    (hdrop :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j]) :
     ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
       ∃ blocks : List (Finset (Fin n) × ℕ),
         2 ^ j ≤ (cascadeTerminal s chain).card ∧
@@ -3246,21 +3250,14 @@ theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_regular_subbuck
   cases
     Subsingleton.elim (‹DecidableRel G.Adj›)
       (fun a b => Classical.propDecidable (G.Adj a b))
-  rcases hreg with ⟨d, hreg⟩
-  have hmodU : InducesModEqDegree G u (2 ^ j) :=
-    inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G hreg
   have hhostU :
       ∀ v w : ↑(u : Set (Fin n)),
         (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
           (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
     intro v w
     exact hhost ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
-  have hdrop :
-      ∀ v w : ↑(u : Set (Fin n)),
-        (G.neighborFinset v ∩ (S \ u)).card ≡
-          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] :=
-    modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
-      (G := G) huS hhostU hmodU
+  have hmodU : InducesModEqDegree G u (2 ^ j) :=
+    inducesModEqDegree_of_modEq_hostDegree_and_dropDegree (G := G) huS hhostU hdrop
   have huNonempty : u.Nonempty := by
     exact Finset.card_pos.mp (by simpa [hcard] using Nat.pow_pos (by decide : 0 < 2) j)
   rcases huNonempty with ⟨v0, hv0⟩
@@ -3283,6 +3280,46 @@ theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_regular_subbuck
     refine ⟨?_, trivial⟩
     intro v
     simpa [e] using hdrop v ⟨v0, hv0⟩
+
+/--
+A regular exact subbucket supplies the dropped-tail constancy required by the direct terminal
+external-block construction.
+-/
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_regular_subbucket
+    (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] {j : ℕ} {S u : Finset (Fin n)}
+    (hcard : u.card = 2 ^ j) (huS : u ⊆ S) (hproper : u.card < S.card)
+    (hhost : InducesModEqDegree G S (2 ^ j))
+    (hreg : ∃ d : ℕ, InducesRegularOfDegree G u d) :
+    ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+      ∃ blocks : List (Finset (Fin n) × ℕ),
+        2 ^ j ≤ (cascadeTerminal s chain).card ∧
+        (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+        NonemptyControlBlockUnion blocks ∧
+        ControlBlocksSeparated s blocks ∧
+        HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+        HasConstantModExternalBlockDegrees G s (2 ^ j) blocks := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hreg with ⟨_d, hreg⟩
+  have hmodU : InducesModEqDegree G u (2 ^ j) :=
+    inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G hreg
+  have hhostU :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hhost ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  have hdrop :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] :=
+    modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+      (G := G) huS hhostU hmodU
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_droppedTailConstancy
+      (G := G) (j := j) (S := S) (u := u) hcard huS hproper hhost hdrop
 
 theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_cliqueOrIndepSetBound
     (G : SimpleGraph (Fin n)) {j K R : ℕ}
@@ -4148,17 +4185,24 @@ theorem
     (hasPolynomialCostFixedWitnessRegularSubbucketSelection_of_modEqSubbucketSelection hselect)
 
 /--
-A positive-exponent dropped-tail constancy selector is enough for the external-block bridge, via the
-host-degree/dropped-degree modular exact-subbucket reduction.
+A positive-exponent dropped-tail constancy selector is enough for the external-block bridge directly:
+the selected subbucket is terminal and the dropped tail is the nonempty control block.
 -/
 theorem
     hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_droppedTailConstancySelection
     {D : ℕ} (hD : 0 < D)
     (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelection D) :
-    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D :=
-  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_modEqSubbucketSelection
-    hD
-    (hasPolynomialCostFixedWitnessModEqSubbucketSelection_of_droppedTailConstancySelection hselect)
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D := by
+  classical
+  intro n j hj G hfixed
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases hfixed with ⟨S, hS, hmod⟩
+  rcases hselect G hS hmod with ⟨u, huS, hcard, hdrop⟩
+  have hproper : u.card < S.card :=
+    fixedWitnessSubbucket_card_lt_host_card_of_pos_exponent hD hj hS hcard
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_droppedTailConstancy
+      (G := G) (j := j) (S := S) (u := u) hcard huS hproper hmod hdrop
 
 /-- D=5 external-block bridge from a direct regular exact-subbucket selector. -/
 theorem
@@ -4287,10 +4331,19 @@ theorem
 theorem
     hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_droppedTailConstancySelectionFiveFromFive
     (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromFive) :
-    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive :=
-  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_modEqSubbucketSelectionFiveFromFive
-    (hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive_of_droppedTailConstancySelectionFiveFromFive
-      hselect)
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive := by
+  classical
+  intro n j hj G hfixed
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases hfixed with ⟨S, hS, hmod⟩
+  rcases hselect hj G hS hmod with ⟨u, huS, hcard, hdrop⟩
+  have hjpos : 0 < j := by omega
+  have hproper : u.card < S.card :=
+    fixedWitnessSubbucket_card_lt_host_card_of_pos_exponent
+      (D := 5) (j := j) (S := S) (u := u) (by decide : 0 < 5) hjpos hS hcard
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_droppedTailConstancy
+      (G := G) (j := j) (S := S) (u := u) hcard huS hproper hmod hdrop
 
 /--
 On the `j ≥ 5` tail, a regular exact subbucket is equivalent to the dropped-tail condition once the
