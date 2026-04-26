@@ -1220,6 +1220,11 @@ subgraph `Q[U]` gives an outside-only residue-`0` set of size `2|U|`.  Thus term
 `2|U|>=m-1`, any outside non-triangle triple that is cross-empty to all of `U` augments the selector,
 and any outside non-triangle triple cross-complete to all of `U` augments it when `|U|` is odd.  The
 surviving homogeneous quotient must therefore have mixed neighbourhoods into every near-half even class.
+The same statement holds for the triangle class with all residues shifted by one: edge pairs in triangle
+triples have internal residue `1`, so an even quotient subset gives a residue-`1` selector of size
+`2|U|`, with the same cross-empty and odd cross-complete augmentations inside the triangle class.
+Thus a mixed homogeneous quotient can survive only by balancing the non-triangle pair-residue `0` class
+against the triangle pair-residue `1` class.
 
 The zero-sum-free boundary `X` has length at most the Davenport extremal value `3(m-1)` in
 `C_4^(m-1)`.  This suggests the next split:

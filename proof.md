@@ -7247,6 +7247,22 @@ outside non-triangle coordinate must have a genuinely mixed neighbourhood into e
 quotient class (except for the complete case when `|U|` is even).  This is the homogeneous-quotient
 version of the finite-alphabet mixed-interaction barrier.
 
+The triangle-only quotient has the same form with residue shifted by one.  In a triangle triple, every
+two-vertex word is an edge pair of internal residue `1`.  Therefore, if a homogeneous quotient `Q` is
+formed on triangle triples and `Q[U]` is even, selecting an edge pair from every triple of `U` gives an
+outside-only residue-`1` set of size `2|U|`.  The same near-half augmentation applies inside the triangle
+class: a triangle triple cross-empty to `U` augments by an edge pair, while a cross-complete triangle
+triple augments when `|U|` is odd, shifting the common residue from `1` to `3`.  Hence terminality forces
+Gallai-half tightness separately on both pair-residue classes:
+
+```text
+non-triangle triples: pair residue 0,
+triangle triples:     pair residue 1.
+```
+
+A mixed homogeneous quotient can survive only by balancing these two pair-residue classes so that
+neither class contains a near-half even quotient selector with an augmenting same-class outside triple.
+
 The boundary side has one more structural feature: `X` is zero-sum-free in
 `C_4^(m-1)` and has length at most the exact Davenport extremal value `3(m-1)`.  Hence the terminal
 case splits naturally into two regimes.
