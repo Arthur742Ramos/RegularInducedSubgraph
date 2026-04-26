@@ -18049,6 +18049,464 @@ theorem RamseyTenR45ReadyCertificate.toTopRowSelectorHandoff_ofCommonSumCountPro
     finalStatus := h.finalStatus
     globalConsequences := h.globalConsequences }
 
+/-- A ready certificate supplies the final-facing top-row handoff directly. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowFinalHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalHandoff G s v :=
+  h.finalBundle.toTopRowFinalHandoff htop
+
+/-- A ready certificate supplies the final-facing top-row handoff from common-sum/count-profile data. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowFinalHandoff_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalHandoff G s v :=
+  h.finalBundle.toTopRowFinalHandoff_ofCommonSumCountProfile hcommon hcount
+
+/--
+Ready top-row certificate: a materialized exact-`42` top-row handoff packaged together with the
+Ramsey ready certificate and all final consequence projections needed by downstream consumers.
+-/
+structure RamseyThreeTenExact42TopRowReadyCertificate
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  readyCertificate : RamseyTenR45ReadyCertificate
+  endpointReady : RamseyTenR45EndpointReadyCertificate
+  finalBundle : RamseyTenR45FinalCertificateBundle
+  finalBundleSelector : RamseyTenR45FinalBundleSelectorSurface
+  topRowFinalHandoff : RamseyThreeTenExact42TopRowFinalHandoff G s v
+  topRowSelector : RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v
+  topRowSelectorHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v)
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Promote a ready certificate and top-row profile into the ready top-row certificate surface. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v := by
+  let hfinal := h.toTopRowFinalHandoff htop
+  exact
+    { readyCertificate := h
+      endpointReady := h.endpointReady
+      finalBundle := h.finalBundle
+      finalBundleSelector := h.selectorSurface
+      topRowFinalHandoff := hfinal
+      topRowSelector := hfinal.topRowSelector
+      topRowSelectorHandoff := hfinal.selectorHandoff
+      exact42Status := h.exact42Status
+      exact42Profile := h.exact42Profile
+      exact42WithMiddleSplits := h.exact42WithMiddleSplits
+      topRowProfile := RamseyThreeTenExact42TopRowFinalHandoff.toTopRowProfile hfinal
+      topRowCommonSum := RamseyThreeTenExact42TopRowFinalHandoff.toCommonSum hfinal
+      topRowCountProfile := RamseyThreeTenExact42TopRowFinalHandoff.toCountProfile hfinal
+      localLedgers := h.localLedgers
+      finalStatus := h.finalStatus
+      globalConsequences := h.globalConsequences
+      finalConsequences := h.finalConsequences
+      threeTenFortyTwo := h.threeTenFortyTwo
+      r45TwentySeven := h.r45TwentySeven
+      r10Ten39246 := h.r10Ten39246
+      regularTenAt40960 := h.regularTenAt40960
+      admissibleTenAt40960 := h.admissibleTenAt40960
+      f40960 := h.f40960 }
+
+/-- Ready top-row certificate from separate common-sum/count-profile top-row components. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowReadyCertificate_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.toTopRowReadyCertificate
+    (ramseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation_of_commonSum_countProfile
+      hcommon hcount)
+
+/-- A final top-row handoff can be consumed through the Ramsey ready-certificate API. -/
+theorem RamseyThreeTenExact42TopRowFinalHandoff.toReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalHandoff G s v) :
+    RamseyTenR45ReadyCertificate :=
+  h.finalBundle.toReadyCertificate
+
+/-- Repackage a final top-row handoff as the ready top-row certificate surface. -/
+theorem RamseyThreeTenExact42TopRowFinalHandoff.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalHandoff G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.toReadyCertificate.toTopRowReadyCertificate h.toTopRowProfile
+
+/-- Final certificate bundles produce ready top-row certificates. -/
+theorem RamseyTenR45FinalCertificateBundle.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.toReadyCertificate.toTopRowReadyCertificate htop
+
+/-- Final certificate bundles produce ready top-row certificates from common-sum/count-profile data. -/
+theorem RamseyTenR45FinalCertificateBundle.toTopRowReadyCertificate_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.toReadyCertificate.toTopRowReadyCertificate_ofCommonSumCountProfile hcommon hcount
+
+/-- Profiled middle-degree handoffs produce ready top-row certificates. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.toReadyCertificate.toTopRowReadyCertificate htop
+
+/-- Profiled middle-degree handoffs produce ready top-row certificates from top-row components. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toTopRowReadyCertificate_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  h.toReadyCertificate.toTopRowReadyCertificate_ofCommonSumCountProfile hcommon hcount
+
+/-- Exact-`42` status plus endpoint residuals produce a ready top-row certificate. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toTopRowReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  (h.toReadyCertificate hendpoints).toTopRowReadyCertificate htop
+
+/-- Exact-`42` status plus endpoint residuals produce a ready top-row certificate from components. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toTopRowReadyCertificate_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  (h.toReadyCertificate hendpoints).toTopRowReadyCertificate_ofCommonSumCountProfile hcommon hcount
+
+/-- Assumption-explicit ready top-row certificate from exact-`42` status and endpoint assumptions. -/
+theorem ramseyThreeTenExact42TopRowReadyCertificate_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  hstatus.toTopRowReadyCertificate ⟨h8, h9, h13⟩ htop
+
+/-- Assumption-explicit ready top-row certificate from separate common-sum/count-profile data. -/
+theorem ramseyThreeTenExact42TopRowReadyCertificate_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowReadyCertificate G s v :=
+  hstatus.toTopRowReadyCertificate_ofCommonSumCountProfile ⟨h8, h9, h13⟩ hcommon hcount
+
+/-- Select the Ramsey ready certificate from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45ReadyCertificate :=
+  h.readyCertificate
+
+/-- Select endpoint-ready data from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toEndpointReadyCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45EndpointReadyCertificate :=
+  h.endpointReady
+
+/-- Select the final certificate bundle from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toFinalCertificateBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45FinalCertificateBundle :=
+  h.finalBundle
+
+/-- Select the final-bundle selector surface from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toFinalBundleSelectorSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45FinalBundleSelectorSurface :=
+  h.finalBundleSelector
+
+/-- Select the final-facing top-row handoff from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toTopRowFinalHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyThreeTenExact42TopRowFinalHandoff G s v :=
+  h.topRowFinalHandoff
+
+/-- Select the top-row selector paired with middle-degree ledgers. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toTopRowSelectorWithLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v :=
+  h.topRowSelector
+
+/-- Select the local/global top-row selector handoff. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toTopRowSelectorHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v) :=
+  h.topRowSelectorHandoff
+
+/-- Select exact-`42` status with local ledgers from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the profiled exact-`42` surface from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toExact42ProfileSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select the exact-`42` profile paired with middle-degree split ledgers. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toExact42WithMiddleSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the profiled top-row branch from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the common-sum top-row obligation from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the count-profile top-row obligation from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Select the local middle-degree ledger bundle from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select final status from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toFinalStatus
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select global Ramsey-10 consequences from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toGlobalConsequenceBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select final consequences from the ready top-row certificate. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume a ready top-row certificate as the low-row `R(3,10) <= 42` consequence. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Consume a ready top-row certificate as the localized `R(4,5) <= 27` input. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume a ready top-row certificate as the current `R(10,10)` frontier. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume a ready top-row certificate as the dyadic regular-induced-subgraph theorem. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960 H hcard
+
+/-- Consume a ready top-row certificate as the admissible-bound conclusion. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume a ready top-row certificate as the extremal-function lower bound. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    10 ≤ F 40960 :=
+  h.f40960
+
+/-- Common-sum/count-profile route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  (ramseyThreeTenExact42TopRowReadyCertificate_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    hstatus h8 h9 h13 hcommon hcount).toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Common-sum/count-profile route to the current `R(10,10)` frontier. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  (ramseyThreeTenExact42TopRowReadyCertificate_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    hstatus h8 h9 h13 hcommon hcount).toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Common-sum/count-profile route to the regular induced `10`-subgraph consequence. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  (ramseyThreeTenExact42TopRowReadyCertificate_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    hstatus h8 h9 h13 hcommon hcount).toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Common-sum/count-profile route to the admissible-bound consequence. -/
+theorem ten_mem_admissibleBounds_40960_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  (ramseyThreeTenExact42TopRowReadyCertificate_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    hstatus h8 h9 h13 hcommon hcount).toTenMemAdmissibleBounds_40960
+
+/-- Common-sum/count-profile route to the extremal-function lower bound. -/
+theorem ten_le_F_40960_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    10 ≤ F 40960 :=
+  (ramseyThreeTenExact42TopRowReadyCertificate_of_exact42ProfileStatus_commonSum_countProfile_degreeEight_degreeNine_degreeThirteen
+    hstatus h8 h9 h13 hcommon hcount).toTenLeF_40960
+
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
