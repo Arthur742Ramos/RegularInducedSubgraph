@@ -25519,6 +25519,801 @@ theorem FirstBitTerminalScalarLowerSwapShadowFrontier.to_remainingScalarLowerSwa
 end FirstBitTerminalScalarLowerSwapShadowFrontier
 
 /--
+Universal outgoing-triple dichotomy at the terminal first-bit frontier.  For every retained
+`(m + 1)` target `T` and every outgoing triple `X`, the API records one of the four note-level
+branches: scalar-killed, small-active zero-filter, low-rank bounded with `m ≤ 16`, or rank-three
+high-active.  The ambient target-cover, mixed-core, scalar lower-swap, and four-active cover
+frontiers are only linked as assumptions; this package does not close terminality by itself.
+-/
+structure FirstBitTerminalUniversalTernaryDichotomyFrontier
+    {Vertex Triple Coord : Type*} [DecidableEq Vertex] [DecidableEq Triple]
+    [DecidableEq Coord]
+    (coreVertices : Finset Vertex) (activeCoordinates zeroFilter : Finset Coord)
+    (retainedTargets : Finset (Finset Vertex))
+    (outgoingTriples : Finset Vertex → Finset Triple)
+    (tripleSupport : Triple → Finset Vertex)
+    (m : ℕ)
+    (scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive :
+      Finset Vertex → Triple → Prop)
+    (targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      remainingUniversalDichotomyAssumptions : Prop) : Prop where
+  targetCoverCoherenceFrontierCert : targetCoverCoherenceFrontier
+  mixedTernaryCoreClosureFrontierCert : mixedTernaryCoreClosureFrontier
+  scalarLowerSwapShadowFrontierCert : scalarLowerSwapShadowFrontier
+  fourActiveSingletonOnlyCoverFrontierCert : fourActiveSingletonOnlyCoverFrontier
+  terminalScalars : FirstBitPacketTerminalScalarFrontierSurfaces
+  retainedTarget_subset_core :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → T ⊆ coreVertices
+  retainedTarget_card_eq_succ :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → T.card = m + 1
+  outgoingTriple_support_subset_core :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      tripleSupport X ⊆ coreVertices
+  outgoingTriple_support_card_eq_three :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      (tripleSupport X).card = 3
+  active_card_eq_four : activeCoordinates.card = 4
+  zeroFilter_subset_active : zeroFilter ⊆ activeCoordinates
+  universalOutgoingTripleDichotomy :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → T.card = m + 1 →
+      ∀ X : Triple, X ∈ outgoingTriples T →
+        scalarKilledTerminal T X ∨ smallActiveZeroFilter T X ∨
+          (m ≤ 16 ∧ lowRankBounded T X) ∨ rankThreeHighActive T X
+  remainingUniversalDichotomyAssumptionsCert : remainingUniversalDichotomyAssumptions
+
+/-- Build the universal outgoing-triple dichotomy frontier from its displayed assumptions. -/
+theorem firstBitTerminalUniversalTernaryDichotomyFrontier_of_parts
+    {Vertex Triple Coord : Type*} [DecidableEq Vertex] [DecidableEq Triple]
+    [DecidableEq Coord]
+    {coreVertices : Finset Vertex} {activeCoordinates zeroFilter : Finset Coord}
+    {retainedTargets : Finset (Finset Vertex)}
+    {outgoingTriples : Finset Vertex → Finset Triple}
+    {tripleSupport : Triple → Finset Vertex}
+    {m : ℕ}
+    {scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive :
+      Finset Vertex → Triple → Prop}
+    {targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      remainingUniversalDichotomyAssumptions : Prop}
+    (htarget : targetCoverCoherenceFrontier) (hmixed : mixedTernaryCoreClosureFrontier)
+    (hlowerSwap : scalarLowerSwapShadowFrontier)
+    (hfourActive : fourActiveSingletonOnlyCoverFrontier)
+    (hscalar : FirstBitPacketTerminalScalarFrontierSurfaces)
+    (hTsub : ∀ T : Finset Vertex, T ∈ retainedTargets → T ⊆ coreVertices)
+    (hTcard : ∀ T : Finset Vertex, T ∈ retainedTargets → T.card = m + 1)
+    (hXsub :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        tripleSupport X ⊆ coreVertices)
+    (hXcard :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        (tripleSupport X).card = 3)
+    (hactiveCard : activeCoordinates.card = 4)
+    (hzeroSub : zeroFilter ⊆ activeCoordinates)
+    (hdichotomy :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → T.card = m + 1 →
+        ∀ X : Triple, X ∈ outgoingTriples T →
+          scalarKilledTerminal T X ∨ smallActiveZeroFilter T X ∨
+            (m ≤ 16 ∧ lowRankBounded T X) ∨ rankThreeHighActive T X)
+    (hremaining : remainingUniversalDichotomyAssumptions) :
+    FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+      smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+      mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions where
+  targetCoverCoherenceFrontierCert := htarget
+  mixedTernaryCoreClosureFrontierCert := hmixed
+  scalarLowerSwapShadowFrontierCert := hlowerSwap
+  fourActiveSingletonOnlyCoverFrontierCert := hfourActive
+  terminalScalars := hscalar
+  retainedTarget_subset_core := hTsub
+  retainedTarget_card_eq_succ := hTcard
+  outgoingTriple_support_subset_core := hXsub
+  outgoingTriple_support_card_eq_three := hXcard
+  active_card_eq_four := hactiveCard
+  zeroFilter_subset_active := hzeroSub
+  universalOutgoingTripleDichotomy := hdichotomy
+  remainingUniversalDichotomyAssumptionsCert := hremaining
+
+section FirstBitTerminalUniversalTernaryDichotomyFrontier
+
+variable {Vertex Triple Coord : Type*} [DecidableEq Vertex] [DecidableEq Triple]
+variable [DecidableEq Coord]
+variable {coreVertices : Finset Vertex} {activeCoordinates zeroFilter : Finset Coord}
+variable {retainedTargets : Finset (Finset Vertex)}
+variable {outgoingTriples : Finset Vertex → Finset Triple}
+variable {tripleSupport : Triple → Finset Vertex}
+variable {m : ℕ}
+variable {scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive :
+  Finset Vertex → Triple → Prop}
+variable {targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+  scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+  remainingUniversalDichotomyAssumptions : Prop}
+
+/-- Project the target-cover coherence frontier used by the universal dichotomy. -/
+theorem FirstBitTerminalUniversalTernaryDichotomyFrontier.to_targetCoverCoherenceFrontier
+    (h :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions) :
+    targetCoverCoherenceFrontier :=
+  h.targetCoverCoherenceFrontierCert
+
+/-- Project the mixed ternary core-closure frontier used by the universal dichotomy. -/
+theorem FirstBitTerminalUniversalTernaryDichotomyFrontier.to_mixedTernaryCoreClosureFrontier
+    (h :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions) :
+    mixedTernaryCoreClosureFrontier :=
+  h.mixedTernaryCoreClosureFrontierCert
+
+/-- Project the scalar lower-swap shadow frontier feeding the universal dichotomy. -/
+theorem FirstBitTerminalUniversalTernaryDichotomyFrontier.to_scalarLowerSwapShadowFrontier
+    (h :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions) :
+    scalarLowerSwapShadowFrontier :=
+  h.scalarLowerSwapShadowFrontierCert
+
+/-- Project the four-active singleton-only cover frontier linked to the dichotomy. -/
+theorem FirstBitTerminalUniversalTernaryDichotomyFrontier.to_fourActiveSingletonOnlyCoverFrontier
+    (h :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions) :
+    fourActiveSingletonOnlyCoverFrontier :=
+  h.fourActiveSingletonOnlyCoverFrontierCert
+
+/-- A retained target is an `(m + 1)`-set inside the terminal core. -/
+theorem FirstBitTerminalUniversalTernaryDichotomyFrontier.retainedTarget_summary
+    (h :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions)
+    {T : Finset Vertex} (hT : T ∈ retainedTargets) :
+    T ⊆ coreVertices ∧ T.card = m + 1 :=
+  ⟨h.retainedTarget_subset_core T hT, h.retainedTarget_card_eq_succ T hT⟩
+
+/-- An outgoing triple has three supported vertices inside the terminal core. -/
+theorem FirstBitTerminalUniversalTernaryDichotomyFrontier.outgoingTriple_support_summary
+    (h :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions)
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) :
+    tripleSupport X ⊆ coreVertices ∧ (tripleSupport X).card = 3 :=
+  ⟨h.outgoingTriple_support_subset_core T hT X hX,
+    h.outgoingTriple_support_card_eq_three T hT X hX⟩
+
+/-- Apply the universal outgoing-triple dichotomy to a retained target and outgoing triple. -/
+theorem FirstBitTerminalUniversalTernaryDichotomyFrontier.universalDichotomy_of_mem
+    (h :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions)
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) :
+    scalarKilledTerminal T X ∨ smallActiveZeroFilter T X ∨
+      (m ≤ 16 ∧ lowRankBounded T X) ∨ rankThreeHighActive T X :=
+  h.universalOutgoingTripleDichotomy T hT (h.retainedTarget_card_eq_succ T hT) X hX
+
+/-- Project the arithmetic terminal scalar package carried by the dichotomy. -/
+theorem FirstBitTerminalUniversalTernaryDichotomyFrontier.to_terminalScalars
+    (h :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions) :
+    FirstBitPacketTerminalScalarFrontierSurfaces :=
+  h.terminalScalars
+
+/-- Project the remaining universal-dichotomy assumptions; the frontier is assumption-backed. -/
+theorem FirstBitTerminalUniversalTernaryDichotomyFrontier.to_remainingUniversalDichotomyAssumptions
+    (h :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions) :
+    remainingUniversalDichotomyAssumptions :=
+  h.remainingUniversalDichotomyAssumptionsCert
+
+end FirstBitTerminalUniversalTernaryDichotomyFrontier
+
+/--
+Rank-three bridge obstruction for the high-active branch of the universal dichotomy.  A rank-three
+support is available, the feasible complement-shadow packing saves exactly `|A| - 4`, and every
+one-saving bridge, thickening, or larger replacement route is either absent, blocked, or recorded as
+capacity-deficient.  The full-minor and singleton-shadow cover APIs remain visible as assumptions.
+-/
+structure FirstBitTerminalRankThreeBridgeObstructionFrontier
+    {Vertex Triple Coord Bridge Thickening Replacement : Type*}
+    [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord]
+    (activeCoordinates : Finset Coord)
+    (retainedTargets : Finset (Finset Vertex))
+    (outgoingTriples : Finset Vertex → Finset Triple)
+    (rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord)
+    (packingSaving bridgeClosingThreshold : Finset Vertex → Triple → ℕ)
+    (rankThreeHighActive feasibleComplementShadowPacking : Finset Vertex → Triple → Prop)
+    (oneSavingBridge : Finset Vertex → Triple → Bridge → Prop)
+    (thickeningBlocker : Finset Vertex → Triple → Thickening → Prop)
+    (replacementBlocker : Finset Vertex → Triple → Replacement → Prop)
+    (capacityDeficient : Finset Vertex → Triple → Prop)
+    (universalTernaryDichotomyFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier rankThreeBridgeObstruction
+      remainingRankThreeBridgeAssumptions : Prop) : Prop where
+  universalTernaryDichotomyFrontierCert : universalTernaryDichotomyFrontier
+  scalarLowerSwapShadowFrontierCert : scalarLowerSwapShadowFrontier
+  fourActiveSingletonOnlyCoverFrontierCert : fourActiveSingletonOnlyCoverFrontier
+  fullMinorCriticalFilteredCoverFrontierCert : fullMinorCriticalFilteredCoverFrontier
+  singletonShadowCollapseFrontierCert : singletonShadowCollapseFrontier
+  four_le_active_card : 4 ≤ activeCoordinates.card
+  rankThreeSupport_subset_active :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → rankThreeSupport T X ⊆ activeCoordinates
+  rankThreeSupport_card_eq_three :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → (rankThreeSupport T X).card = 3
+  complementShadowPacking_subset_active :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → complementShadowPacking T X ⊆ activeCoordinates
+  complementShadowPacking_disjoint_rankThreeSupport :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → Disjoint (complementShadowPacking T X) (rankThreeSupport T X)
+  complementShadowPacking_feasible :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → feasibleComplementShadowPacking T X
+  complementShadowPacking_saving_eq_active_minus_four :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → packingSaving T X = activeCoordinates.card - 4
+  packing_one_below_closingThreshold :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → packingSaving T X + 1 = bridgeClosingThreshold T X
+  oneSavingBridge_absent :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → ∀ bridge : Bridge, ¬ oneSavingBridge T X bridge
+  thickening_blocked :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → ∀ thickening : Thickening, thickeningBlocker T X thickening
+  replacementSupport_blocked :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → ∀ replacement : Replacement,
+        replacementBlocker T X replacement
+  capacityDeficientCert :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → capacityDeficient T X
+  rankThreeBridgeObstructionCert : rankThreeBridgeObstruction
+  remainingRankThreeBridgeAssumptionsCert : remainingRankThreeBridgeAssumptions
+
+/-- Build the rank-three bridge obstruction frontier from explicit obstruction data. -/
+theorem firstBitTerminalRankThreeBridgeObstructionFrontier_of_parts
+    {Vertex Triple Coord Bridge Thickening Replacement : Type*}
+    [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord]
+    {activeCoordinates : Finset Coord}
+    {retainedTargets : Finset (Finset Vertex)}
+    {outgoingTriples : Finset Vertex → Finset Triple}
+    {rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord}
+    {packingSaving bridgeClosingThreshold : Finset Vertex → Triple → ℕ}
+    {rankThreeHighActive feasibleComplementShadowPacking : Finset Vertex → Triple → Prop}
+    {oneSavingBridge : Finset Vertex → Triple → Bridge → Prop}
+    {thickeningBlocker : Finset Vertex → Triple → Thickening → Prop}
+    {replacementBlocker : Finset Vertex → Triple → Replacement → Prop}
+    {capacityDeficient : Finset Vertex → Triple → Prop}
+    {universalTernaryDichotomyFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier rankThreeBridgeObstruction
+      remainingRankThreeBridgeAssumptions : Prop}
+    (huniversal : universalTernaryDichotomyFrontier)
+    (hlowerSwap : scalarLowerSwapShadowFrontier)
+    (hfourActive : fourActiveSingletonOnlyCoverFrontier)
+    (hfullMinor : fullMinorCriticalFilteredCoverFrontier)
+    (hsingletonShadow : singletonShadowCollapseFrontier)
+    (hactiveCard : 4 ≤ activeCoordinates.card)
+    (hsupportSub :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → rankThreeSupport T X ⊆ activeCoordinates)
+    (hsupportCard :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → (rankThreeSupport T X).card = 3)
+    (hpackingSub :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → complementShadowPacking T X ⊆ activeCoordinates)
+    (hpackingDisjoint :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → Disjoint (complementShadowPacking T X)
+          (rankThreeSupport T X))
+    (hpackingFeasible :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → feasibleComplementShadowPacking T X)
+    (hsaving :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → packingSaving T X = activeCoordinates.card - 4)
+    (hbelow :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → packingSaving T X + 1 = bridgeClosingThreshold T X)
+    (hbridgeAbsent :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ bridge : Bridge, ¬ oneSavingBridge T X bridge)
+    (hthickening :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ thickening : Thickening,
+          thickeningBlocker T X thickening)
+    (hreplacement :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ replacement : Replacement,
+          replacementBlocker T X replacement)
+    (hcapacity :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → capacityDeficient T X)
+    (hobstruction : rankThreeBridgeObstruction)
+    (hremaining : remainingRankThreeBridgeAssumptions) :
+    FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+      outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+      rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+      replacementBlocker capacityDeficient universalTernaryDichotomyFrontier
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+      rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions where
+  universalTernaryDichotomyFrontierCert := huniversal
+  scalarLowerSwapShadowFrontierCert := hlowerSwap
+  fourActiveSingletonOnlyCoverFrontierCert := hfourActive
+  fullMinorCriticalFilteredCoverFrontierCert := hfullMinor
+  singletonShadowCollapseFrontierCert := hsingletonShadow
+  four_le_active_card := hactiveCard
+  rankThreeSupport_subset_active := hsupportSub
+  rankThreeSupport_card_eq_three := hsupportCard
+  complementShadowPacking_subset_active := hpackingSub
+  complementShadowPacking_disjoint_rankThreeSupport := hpackingDisjoint
+  complementShadowPacking_feasible := hpackingFeasible
+  complementShadowPacking_saving_eq_active_minus_four := hsaving
+  packing_one_below_closingThreshold := hbelow
+  oneSavingBridge_absent := hbridgeAbsent
+  thickening_blocked := hthickening
+  replacementSupport_blocked := hreplacement
+  capacityDeficientCert := hcapacity
+  rankThreeBridgeObstructionCert := hobstruction
+  remainingRankThreeBridgeAssumptionsCert := hremaining
+
+section FirstBitTerminalRankThreeBridgeObstructionFrontier
+
+variable {Vertex Triple Coord Bridge Thickening Replacement : Type*}
+variable [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord]
+variable {activeCoordinates : Finset Coord}
+variable {retainedTargets : Finset (Finset Vertex)}
+variable {outgoingTriples : Finset Vertex → Finset Triple}
+variable {rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord}
+variable {packingSaving bridgeClosingThreshold : Finset Vertex → Triple → ℕ}
+variable {rankThreeHighActive feasibleComplementShadowPacking : Finset Vertex → Triple → Prop}
+variable {oneSavingBridge : Finset Vertex → Triple → Bridge → Prop}
+variable {thickeningBlocker : Finset Vertex → Triple → Thickening → Prop}
+variable {replacementBlocker : Finset Vertex → Triple → Replacement → Prop}
+variable {capacityDeficient : Finset Vertex → Triple → Prop}
+variable {universalTernaryDichotomyFrontier scalarLowerSwapShadowFrontier
+  fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+  singletonShadowCollapseFrontier rankThreeBridgeObstruction
+  remainingRankThreeBridgeAssumptions : Prop}
+
+/-- Project the universal dichotomy frontier used by the rank-three obstruction. -/
+theorem FirstBitTerminalRankThreeBridgeObstructionFrontier.to_universalTernaryDichotomyFrontier
+    (h :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient universalTernaryDichotomyFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions) :
+    universalTernaryDichotomyFrontier :=
+  h.universalTernaryDichotomyFrontierCert
+
+/-- Project the full-minor critical filtered-cover frontier linked to the obstruction. -/
+theorem FirstBitTerminalRankThreeBridgeObstructionFrontier.to_fullMinorCriticalFilteredCoverFrontier
+    (h :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient universalTernaryDichotomyFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions) :
+    fullMinorCriticalFilteredCoverFrontier :=
+  h.fullMinorCriticalFilteredCoverFrontierCert
+
+/-- Project the singleton-shadow collapse frontier linked to the obstruction. -/
+theorem FirstBitTerminalRankThreeBridgeObstructionFrontier.to_singletonShadowCollapseFrontier
+    (h :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient universalTernaryDichotomyFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions) :
+    singletonShadowCollapseFrontier :=
+  h.singletonShadowCollapseFrontierCert
+
+/-- The rank-three support is a three-element subset of the active coordinates. -/
+theorem FirstBitTerminalRankThreeBridgeObstructionFrontier.rankThreeSupport_summary
+    (h :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient universalTernaryDichotomyFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions)
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X) :
+    rankThreeSupport T X ⊆ activeCoordinates ∧ (rankThreeSupport T X).card = 3 :=
+  ⟨h.rankThreeSupport_subset_active T hT X hX hrank,
+    h.rankThreeSupport_card_eq_three T hT X hX hrank⟩
+
+/-- The complement-shadow packing is feasible, active, disjoint from the rank-three support, and saves `|A|-4`. -/
+theorem FirstBitTerminalRankThreeBridgeObstructionFrontier.complementShadowPacking_summary
+    (h :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient universalTernaryDichotomyFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions)
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X) :
+    feasibleComplementShadowPacking T X ∧ complementShadowPacking T X ⊆ activeCoordinates ∧
+      Disjoint (complementShadowPacking T X) (rankThreeSupport T X) ∧
+        packingSaving T X = activeCoordinates.card - 4 ∧
+          packingSaving T X + 1 = bridgeClosingThreshold T X :=
+  ⟨h.complementShadowPacking_feasible T hT X hX hrank,
+    h.complementShadowPacking_subset_active T hT X hX hrank,
+    h.complementShadowPacking_disjoint_rankThreeSupport T hT X hX hrank,
+    h.complementShadowPacking_saving_eq_active_minus_four T hT X hX hrank,
+    h.packing_one_below_closingThreshold T hT X hX hrank⟩
+
+/-- All one-saving bridge routes are absent, while thickenings and replacements are blocked. -/
+theorem FirstBitTerminalRankThreeBridgeObstructionFrontier.bridgeBlocker_summary
+    (h :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient universalTernaryDichotomyFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions)
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X) :
+    (∀ bridge : Bridge, ¬ oneSavingBridge T X bridge) ∧
+      (∀ thickening : Thickening, thickeningBlocker T X thickening) ∧
+        (∀ replacement : Replacement, replacementBlocker T X replacement) ∧
+          capacityDeficient T X :=
+  ⟨h.oneSavingBridge_absent T hT X hX hrank,
+    h.thickening_blocked T hT X hX hrank,
+    h.replacementSupport_blocked T hT X hX hrank,
+    h.capacityDeficientCert T hT X hX hrank⟩
+
+/-- Project the rank-three bridge-obstruction marker. -/
+theorem FirstBitTerminalRankThreeBridgeObstructionFrontier.to_rankThreeBridgeObstruction
+    (h :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient universalTernaryDichotomyFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions) :
+    rankThreeBridgeObstruction :=
+  h.rankThreeBridgeObstructionCert
+
+/-- Project the retained rank-three bridge assumptions. -/
+theorem FirstBitTerminalRankThreeBridgeObstructionFrontier.to_remainingRankThreeBridgeAssumptions
+    (h :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient universalTernaryDichotomyFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions) :
+    remainingRankThreeBridgeAssumptions :=
+  h.remainingRankThreeBridgeAssumptionsCert
+
+end FirstBitTerminalRankThreeBridgeObstructionFrontier
+
+/--
+Closure wrapper for the terminal universal dichotomy plus rank-three one-defect obstruction.  The
+non-rank-three branches may be discharged by supplied case handlers, while the high-active rank-three
+branch is deliberately reported as a bridge obstruction unless an explicit remaining closure
+assumption resolves it.
+-/
+structure FirstBitTerminalRankThreeBridgeClosureFrontier
+    {Vertex Triple Coord Bridge Thickening Replacement : Type*}
+    [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord]
+    (coreVertices : Finset Vertex) (activeCoordinates zeroFilter : Finset Coord)
+    (retainedTargets : Finset (Finset Vertex))
+    (outgoingTriples : Finset Vertex → Finset Triple)
+    (tripleSupport : Triple → Finset Vertex)
+    (rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord)
+    (packingSaving bridgeClosingThreshold : Finset Vertex → Triple → ℕ)
+    (m : ℕ)
+    (scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+      terminalResolved rankThreeBridgeObstructed : Finset Vertex → Triple → Prop)
+    (feasibleComplementShadowPacking capacityDeficient : Finset Vertex → Triple → Prop)
+    (oneSavingBridge : Finset Vertex → Triple → Bridge → Prop)
+    (thickeningBlocker : Finset Vertex → Triple → Thickening → Prop)
+    (replacementBlocker : Finset Vertex → Triple → Replacement → Prop)
+    (targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+      rankThreeBridgeObstruction terminalRankThreeClosure
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions : Prop) : Prop where
+  universalDichotomyFrontierCert :
+    FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+      smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+      mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions
+  rankThreeBridgeObstructionFrontierCert :
+    FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+      outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+      rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+      replacementBlocker capacityDeficient
+      (FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions)
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+      rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions
+  scalarKilled_resolves :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      scalarKilledTerminal T X → terminalResolved T X
+  smallActiveZeroFilter_resolves :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      smallActiveZeroFilter T X → terminalResolved T X
+  lowRankBounded_resolves :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      m ≤ 16 → lowRankBounded T X → terminalResolved T X
+  rankThreeHighActive_obstructed :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → rankThreeBridgeObstructed T X
+  terminal_or_rankThreeBridgeObstruction :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      terminalResolved T X ∨ rankThreeBridgeObstructed T X
+  terminalRankThreeClosureCert : terminalRankThreeClosure
+  remainingRankThreeClosureAssumptionsCert : remainingRankThreeClosureAssumptions
+
+/-- Assemble the closure wrapper from the universal dichotomy, rank-three obstruction, and handlers. -/
+theorem firstBitTerminalRankThreeBridgeClosureFrontier_of_frontiers
+    {Vertex Triple Coord Bridge Thickening Replacement : Type*}
+    [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord]
+    {coreVertices : Finset Vertex} {activeCoordinates zeroFilter : Finset Coord}
+    {retainedTargets : Finset (Finset Vertex)}
+    {outgoingTriples : Finset Vertex → Finset Triple}
+    {tripleSupport : Triple → Finset Vertex}
+    {rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord}
+    {packingSaving bridgeClosingThreshold : Finset Vertex → Triple → ℕ}
+    {m : ℕ}
+    {scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+      terminalResolved rankThreeBridgeObstructed : Finset Vertex → Triple → Prop}
+    {feasibleComplementShadowPacking capacityDeficient : Finset Vertex → Triple → Prop}
+    {oneSavingBridge : Finset Vertex → Triple → Bridge → Prop}
+    {thickeningBlocker : Finset Vertex → Triple → Thickening → Prop}
+    {replacementBlocker : Finset Vertex → Triple → Replacement → Prop}
+    {targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+      rankThreeBridgeObstruction terminalRankThreeClosure
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions : Prop}
+    (huniversal :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions)
+    (hbridge :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient
+        (FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+          zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+          smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+          mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+          fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions)
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions)
+    (hscalar :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        scalarKilledTerminal T X → terminalResolved T X)
+    (hsmall :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        smallActiveZeroFilter T X → terminalResolved T X)
+    (hlow :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        m ≤ 16 → lowRankBounded T X → terminalResolved T X)
+    (hrank :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → rankThreeBridgeObstructed T X)
+    (hclosure : terminalRankThreeClosure)
+    (hremaining : remainingRankThreeClosureAssumptions) :
+    FirstBitTerminalRankThreeBridgeClosureFrontier coreVertices activeCoordinates zeroFilter
+      retainedTargets outgoingTriples tripleSupport rankThreeSupport complementShadowPacking
+      packingSaving bridgeClosingThreshold m scalarKilledTerminal smallActiveZeroFilter
+      lowRankBounded rankThreeHighActive terminalResolved rankThreeBridgeObstructed
+      feasibleComplementShadowPacking capacityDeficient oneSavingBridge thickeningBlocker
+      replacementBlocker targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+      rankThreeBridgeObstruction terminalRankThreeClosure remainingUniversalDichotomyAssumptions
+      remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions where
+  universalDichotomyFrontierCert := huniversal
+  rankThreeBridgeObstructionFrontierCert := hbridge
+  scalarKilled_resolves := hscalar
+  smallActiveZeroFilter_resolves := hsmall
+  lowRankBounded_resolves := hlow
+  rankThreeHighActive_obstructed := hrank
+  terminal_or_rankThreeBridgeObstruction := by
+    intro T hT X hX
+    have hcases :=
+      FirstBitTerminalUniversalTernaryDichotomyFrontier.universalDichotomy_of_mem
+        (h := huniversal) hT hX
+    rcases hcases with hscalarCase | hrest
+    · exact Or.inl (hscalar T hT X hX hscalarCase)
+    · rcases hrest with hsmallCase | hrankOrLow
+      · exact Or.inl (hsmall T hT X hX hsmallCase)
+      · rcases hrankOrLow with hlowCase | hrankCase
+        · exact Or.inl (hlow T hT X hX hlowCase.1 hlowCase.2)
+        · exact Or.inr (hrank T hT X hX hrankCase)
+  terminalRankThreeClosureCert := hclosure
+  remainingRankThreeClosureAssumptionsCert := hremaining
+
+section FirstBitTerminalRankThreeBridgeClosureFrontier
+
+variable {Vertex Triple Coord Bridge Thickening Replacement : Type*}
+variable [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord]
+variable {coreVertices : Finset Vertex} {activeCoordinates zeroFilter : Finset Coord}
+variable {retainedTargets : Finset (Finset Vertex)}
+variable {outgoingTriples : Finset Vertex → Finset Triple}
+variable {tripleSupport : Triple → Finset Vertex}
+variable {rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord}
+variable {packingSaving bridgeClosingThreshold : Finset Vertex → Triple → ℕ}
+variable {m : ℕ}
+variable {scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+  terminalResolved rankThreeBridgeObstructed : Finset Vertex → Triple → Prop}
+variable {feasibleComplementShadowPacking capacityDeficient : Finset Vertex → Triple → Prop}
+variable {oneSavingBridge : Finset Vertex → Triple → Bridge → Prop}
+variable {thickeningBlocker : Finset Vertex → Triple → Thickening → Prop}
+variable {replacementBlocker : Finset Vertex → Triple → Replacement → Prop}
+variable {targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+  scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+  fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+  rankThreeBridgeObstruction terminalRankThreeClosure
+  remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+  remainingRankThreeClosureAssumptions : Prop}
+
+/-- Project the universal dichotomy frontier from the closure package. -/
+theorem FirstBitTerminalRankThreeBridgeClosureFrontier.to_universalDichotomyFrontier
+    (h :
+      FirstBitTerminalRankThreeBridgeClosureFrontier coreVertices activeCoordinates zeroFilter
+        retainedTargets outgoingTriples tripleSupport rankThreeSupport complementShadowPacking
+        packingSaving bridgeClosingThreshold m scalarKilledTerminal smallActiveZeroFilter
+        lowRankBounded rankThreeHighActive terminalResolved rankThreeBridgeObstructed
+        feasibleComplementShadowPacking capacityDeficient oneSavingBridge thickeningBlocker
+        replacementBlocker targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction terminalRankThreeClosure remainingUniversalDichotomyAssumptions
+        remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions) :
+    FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+      smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+      mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions :=
+  h.universalDichotomyFrontierCert
+
+/-- Project the rank-three bridge obstruction frontier from the closure package. -/
+theorem FirstBitTerminalRankThreeBridgeClosureFrontier.to_rankThreeBridgeObstructionFrontier
+    (h :
+      FirstBitTerminalRankThreeBridgeClosureFrontier coreVertices activeCoordinates zeroFilter
+        retainedTargets outgoingTriples tripleSupport rankThreeSupport complementShadowPacking
+        packingSaving bridgeClosingThreshold m scalarKilledTerminal smallActiveZeroFilter
+        lowRankBounded rankThreeHighActive terminalResolved rankThreeBridgeObstructed
+        feasibleComplementShadowPacking capacityDeficient oneSavingBridge thickeningBlocker
+        replacementBlocker targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction terminalRankThreeClosure remainingUniversalDichotomyAssumptions
+        remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions) :
+    FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+      outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+      rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+      replacementBlocker capacityDeficient
+      (FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions)
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+      rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions :=
+  h.rankThreeBridgeObstructionFrontierCert
+
+/-- Every retained target/outgoing triple is terminally resolved or left as the one-defect bridge obstruction. -/
+theorem FirstBitTerminalRankThreeBridgeClosureFrontier.terminal_or_bridgeObstruction_of_mem
+    (h :
+      FirstBitTerminalRankThreeBridgeClosureFrontier coreVertices activeCoordinates zeroFilter
+        retainedTargets outgoingTriples tripleSupport rankThreeSupport complementShadowPacking
+        packingSaving bridgeClosingThreshold m scalarKilledTerminal smallActiveZeroFilter
+        lowRankBounded rankThreeHighActive terminalResolved rankThreeBridgeObstructed
+        feasibleComplementShadowPacking capacityDeficient oneSavingBridge thickeningBlocker
+        replacementBlocker targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction terminalRankThreeClosure remainingUniversalDichotomyAssumptions
+        remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions)
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) :
+    terminalResolved T X ∨ rankThreeBridgeObstructed T X :=
+  h.terminal_or_rankThreeBridgeObstruction T hT X hX
+
+/-- Project the closure marker; remaining assumptions still say whether the obstruction is discharged. -/
+theorem FirstBitTerminalRankThreeBridgeClosureFrontier.to_terminalRankThreeClosure
+    (h :
+      FirstBitTerminalRankThreeBridgeClosureFrontier coreVertices activeCoordinates zeroFilter
+        retainedTargets outgoingTriples tripleSupport rankThreeSupport complementShadowPacking
+        packingSaving bridgeClosingThreshold m scalarKilledTerminal smallActiveZeroFilter
+        lowRankBounded rankThreeHighActive terminalResolved rankThreeBridgeObstructed
+        feasibleComplementShadowPacking capacityDeficient oneSavingBridge thickeningBlocker
+        replacementBlocker targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction terminalRankThreeClosure remainingUniversalDichotomyAssumptions
+        remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions) :
+    terminalRankThreeClosure :=
+  h.terminalRankThreeClosureCert
+
+/-- Project the retained closure assumptions; the package is not an unconditional terminal proof. -/
+theorem FirstBitTerminalRankThreeBridgeClosureFrontier.to_remainingRankThreeClosureAssumptions
+    (h :
+      FirstBitTerminalRankThreeBridgeClosureFrontier coreVertices activeCoordinates zeroFilter
+        retainedTargets outgoingTriples tripleSupport rankThreeSupport complementShadowPacking
+        packingSaving bridgeClosingThreshold m scalarKilledTerminal smallActiveZeroFilter
+        lowRankBounded rankThreeHighActive terminalResolved rankThreeBridgeObstructed
+        feasibleComplementShadowPacking capacityDeficient oneSavingBridge thickeningBlocker
+        replacementBlocker targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction terminalRankThreeClosure remainingUniversalDichotomyAssumptions
+        remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions) :
+    remainingRankThreeClosureAssumptions :=
+  h.remainingRankThreeClosureAssumptionsCert
+
+end FirstBitTerminalRankThreeBridgeClosureFrontier
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
