@@ -6572,6 +6572,57 @@ Equivalently, no edge anchor captures a positive fraction of the graph by its tw
 neighbourhoods.  This is a much narrower form of the final selector problem: an induced-`C_4`-free,
 `K_4`-free, edge-robust graph with bounded independence and no large induced degree-two subgraph.
 
+The core also admits a maximal induced-matching skeleton.  Let `M` be a maximal induced matching in `H`.
+If `|M|>m/2`, then the `2|M|` endpoints induce degree one in `H`, hence a congruent outside-only set in
+the original direction graph, contradicting maximality of `W`.  Therefore
+
+```text
+|M| <= m/2.
+```
+
+By maximality of `M`, the vertices anti-complete to all endpoints of `M` form an independent set, hence
+have size at most `m`; otherwise an edge inside that residual could be added to `M`.  Consequently the
+irreducible core is covered by
+
+```text
+at most m/2 induced-matching edges,
+their endpoint neighbourhoods,
+and one independent residual of size at most m.
+```
+
+For each matching edge `ab`, its common neighbourhood has size at most two and its exclusive
+neighbourhoods have the edge-anchor structure above.  Thus the final missing charging problem can be
+stated without recursion: bound the total mass in the endpoint-exclusive neighbourhoods of a maximal
+induced matching in an induced-`C_4`-free, `K_4`-free graph with `alpha<=m`, using the fact that these
+neighbourhoods cannot contain a further large induced matching, odd-core, or independent trace family.
+
+The final local theorem can now be stated cleanly.  For each edge `e_i=a_i b_i in M`, assign every vertex
+outside the endpoint set and outside the independent residual to one incident matching edge and one side,
+and write the assigned exclusive classes as
+
+```text
+E_i^a subset N_H(a_i)\N_H(b_i),        E_i^b subset N_H(b_i)\N_H(a_i).
+```
+
+The common-neighbour assignments contribute only `O(m)` in total, since each matching edge has at most
+two common neighbours and `|M|<=m/2`.  For every `i`, the pair `E_i^a,E_i^b` is anti-complete in `H`,
+each side is triangle-free and induced-`C_4`-free, and
+
+```text
+alpha(E_i^a)+alpha(E_i^b) <= m.
+```
+
+What is still missing is the **endpoint-exclusive charging lemma**:
+
+```text
+sum_i (|E_i^a|+|E_i^b|) = O(m).
+```
+
+Once this lemma is proved, the all-target colour-`1` core is linearly bounded: endpoints contribute at
+most `m`, common neighbours at most `m`, the independent residual at most `m`, and the exclusive
+neighbourhoods by the displayed lemma.  This is the exact remaining mathematical endpoint of the
+`{0,1}`/`{3,2}` branch.
+
 Inside that remaining complement class there is still a useful triangle-anchor decomposition.  Let
 `abc` be a triangle in `H`, and for every outside vertex `v` put
 

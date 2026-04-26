@@ -1629,6 +1629,11 @@ Recommended attack:
    Add the edge-robust sharpening: every complement edge `ab` has common neighbourhood of size at most
    two and decomposes the graph into controlled exclusive layers plus `Z_ab`; any superlinear core must
    have large `Z_ab` for every edge.
+   Add the maximal induced-matching skeleton: a maximal induced matching has at most `m/2` edges; the
+   vertices anti-complete to all matching endpoints are independent and have size at most `m`; all
+   remaining vertices lie in endpoint neighbourhoods whose common/exclusive parts have the edge-anchor
+   structure.  The remaining formal target is the endpoint-exclusive charging lemma
+   `sum_i(|E_i^a|+|E_i^b|)=O(m)` for assigned exclusive classes of the matching edges.
    Within that complement class, formalize the triangle-anchor trace lemma: for a triangle `abc`, no
    outside vertex is adjacent to all three anchors; vertices with incomparable nonempty traces into
    `{a,b,c}` are anti-complete; the two-neighbour trace classes are independent; singleton trace classes

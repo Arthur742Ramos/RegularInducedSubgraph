@@ -1002,6 +1002,19 @@ neighbourhood size at most two, exclusive neighbourhoods anti-complete/triangle-
 and zero-neighbour layer `Z_ab`.  If some `Z_ab` is small, the core is linearly bounded by the controlled
 exclusive-layer and pendant-fibre estimates.  Thus a superlinear core must be edge-robust: `Z_ab` is
 large for every edge `ab`.
+Equivalently, choose a maximal induced matching `M` in the core.  Since an induced matching with more than
+`m/2` edges already gives an outside-only congruent set, `|M|<=m/2`; the vertices anti-complete to all
+endpoints of `M` are independent and have size at most `m`.  Hence the core is covered by the endpoint
+neighbourhoods of at most `m/2` matching edges plus an independent residual.  For each matching edge the
+common neighbourhood has size at most two and the exclusive neighbourhoods have the edge-anchor
+triangle-free/`C_4`-free structure.  The final charging problem is to bound the total mass in these
+endpoint-exclusive neighbourhoods.
+Equivalently, after assigning every non-residual vertex to one incident matching edge, one needs the
+endpoint-exclusive charging lemma
+`sum_i(|E_i^a|+|E_i^b|)=O(m)`, where
+`E_i^a subset N(a_i)\N(b_i)` and `E_i^b subset N(b_i)\N(a_i)`.  The endpoints, common neighbours, and
+independent residual already contribute only `O(m)`; this charging lemma would linearly bound the
+all-target colour-`1` core and close the remaining `{0,1}`/`{3,2}` local branch.
 Useful structure remains inside that class.  If `abc` is a triangle in the complement `H`, trace every
 outside vertex by `N_H(v) cap {a,b,c}`.  No trace has size three; incomparable nonempty traces are
 anti-complete, since an edge between them and an anchor edge induce a `C_4`.  Thus two-neighbour trace
