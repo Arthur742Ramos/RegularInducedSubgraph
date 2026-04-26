@@ -45963,6 +45963,595 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveReleaseCheckpointFacade.to
       h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard := by
   exact Subsingleton.elim _ _
 
+/--
+Proof-md final release certification facade for downstream checkpoint consumers.  This imports the
+archive release/checkpoint facade and keeps the release, checkpoint, distribution, citation, target,
+residual, and regular-induced-subgraph rows adjacent for final proof-md references.  All Ramsey rows
+remain the assumption-backed carried rows exposed by the archive release checkpoint; in particular,
+the localized `R(4,5) <= 27` row is not promoted to an unconditional theorem.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  archiveReleaseCheckpointFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalArchiveReleaseCheckpointFacade G s v
+  archiveDistributionConsumerFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v
+  archivePublicHandoffFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v
+  checkpointReleaseBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v
+  publicReleaseCitation : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v
+  finalPublicCitationCheckpoint :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v
+  downstreamTargetCheckpoint :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v
+  downstreamReleaseConsumerFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade G s v
+  publicDistributionFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v
+  publicDistributionBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v
+  finalReleaseConsumerBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v
+  finalReleaseConsumerObligationSurface :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v
+  finalReleasePublicTargetSurface :
+    RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v
+  finalPublicTargetBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v
+  finalConsumerCitationBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v
+  releaseArchiveFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchiveFacade G s v
+  releaseArchive : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v
+  releaseBundle : RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  proofMdTargetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  releaseCertifiedExact42Row : HasCliqueOrIndepSetBound 3 10 42
+  checkpointExact42Row : HasCliqueOrIndepSetBound 3 10 42
+  releaseCertifiedLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  checkpointLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  publicCitationLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  downstreamTargetLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  publicDistributionLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  downstreamConsumerCitationLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  releaseCertifiedPropagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  checkpointPropagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  publicDistributionPropagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  releaseCertifiedAdmissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  checkpointAdmissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  releaseCertifiedExtremalF40960Row : 10 ≤ F 40960
+  checkpointExtremalF40960Row : 10 ≤ F 40960
+  releaseCertifiedRegularTenAt40960Row :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  checkpointRegularTenAt40960Row :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  publicDistributionRegularTenAt40960Row :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Archive release/checkpoint facades materialize the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveReleaseCheckpointFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v := by
+  exact
+    { archiveReleaseCheckpointFacade := h
+      archiveDistributionConsumerFacade := h.toProofMdFinalArchiveDistributionConsumerFacade
+      archivePublicHandoffFacade := h.toProofMdFinalArchivePublicHandoffFacade
+      checkpointReleaseBundle := h.toProofMdFinalCheckpointReleaseBundle
+      publicReleaseCitation := h.toProofMdPublicReleaseCitation
+      finalPublicCitationCheckpoint := h.toProofMdFinalPublicCitationCheckpoint
+      downstreamTargetCheckpoint := h.toProofMdDownstreamTargetCheckpoint
+      downstreamReleaseConsumerFacade := h.toProofMdFinalDownstreamReleaseConsumerFacade
+      publicDistributionFacade := h.toProofMdFinalPublicDistributionFacade
+      publicDistributionBundle := h.toProofMdFinalPublicDistributionBundle
+      finalReleaseConsumerBundle := h.toProofMdFinalReleaseConsumerBundle
+      finalReleaseConsumerObligationSurface := h.toProofMdFinalReleaseConsumerObligationSurface
+      finalReleasePublicTargetSurface := h.toProofMdFinalReleasePublicTargetSurface
+      finalPublicTargetBundle := h.toProofMdFinalPublicTargetBundle
+      finalConsumerCitationBundle := h.toProofMdFinalConsumerCitationBundle
+      releaseArchiveFacade := h.toProofMdFinalReleaseArchiveFacade
+      releaseArchive := h.toProofMdFinalReleaseArchive
+      releaseBundle := h.toProofMdFinalReleaseBundle
+      targetRows := h.toCurrentFrontierTargetRows
+      proofMdTargetRows := h.toProofMdTargetRows
+      remainingAssumptionRows := h.toRemainingAssumptionRows
+      endpointResiduals := h.toEndpointResiduals
+      r45TwentySevenTable := h.toR45TwentySevenTable
+      releaseCertifiedExact42Row := h.toThreeTenFortyTwo
+      checkpointExact42Row := h.toCheckpointThreeTenFortyTwo
+      releaseCertifiedLocalizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      checkpointLocalizedR45Row := h.toCheckpointHasCliqueOrIndepSetBound_four_five_twenty_seven
+      publicCitationLocalizedR45Row :=
+        h.toPublicCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+      downstreamTargetLocalizedR45Row :=
+        h.toDownstreamTargetHasCliqueOrIndepSetBound_four_five_twenty_seven
+      publicDistributionLocalizedR45Row :=
+        h.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven
+      downstreamConsumerCitationLocalizedR45Row :=
+        h.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+      releaseCertifiedPropagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+      checkpointPropagatedR1010Row := h.toCheckpointHasCliqueOrIndepSetBound_10_10_39246
+      publicDistributionPropagatedR1010Row :=
+        h.toPublicDistributionHasCliqueOrIndepSetBound_10_10_39246
+      releaseCertifiedAdmissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+      checkpointAdmissibleTenAt40960Row := h.toCheckpointTenMemAdmissibleBounds_40960
+      releaseCertifiedExtremalF40960Row := h.toTenLeF_40960
+      checkpointExtremalF40960Row := h.toCheckpointTenLeF_40960
+      releaseCertifiedRegularTenAt40960Row := fun H hcard =>
+        h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+      checkpointRegularTenAt40960Row := fun H hcard =>
+        h.toCheckpointHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+      publicDistributionRegularTenAt40960Row := fun H hcard =>
+        h.toPublicDistributionHasRegularInducedSubgraphOfCard_ten_40960 H hcard }
+
+/-- Archive distribution/consumer facades materialize the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toProofMdFinalReleaseCertificationFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v :=
+  h.toProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade
+
+/-- Archive/public handoffs materialize the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalReleaseCertificationFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v :=
+  h.toProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade
+
+/-- Final checkpoint/release bundles materialize the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalReleaseCertificationFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v :=
+  h.toProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade
+
+/-- Public-release citations materialize the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalReleaseCertificationFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v :=
+  h.toProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade
+
+/-- Final downstream/release facades materialize the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalReleaseCertificationFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v :=
+  h.toProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade
+
+/-- Final public distribution facades materialize the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade.toProofMdFinalReleaseCertificationFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v :=
+  h.toProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade
+
+/-- Final-release consumer bundles materialize the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toProofMdFinalReleaseCertificationFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v :=
+  h.toProofMdFinalArchivePublicHandoffFacade.toProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade
+
+/-- Select the archive release/checkpoint facade from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdFinalArchiveReleaseCheckpointFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchiveReleaseCheckpointFacade G s v :=
+  h.archiveReleaseCheckpointFacade
+
+/-- Select the archive distribution/consumer facade from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdFinalArchiveDistributionConsumerFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v :=
+  h.archiveDistributionConsumerFacade
+
+/-- Select the checkpoint/release bundle from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdFinalCheckpointReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v :=
+  h.checkpointReleaseBundle
+
+/-- Select the final-release consumer bundle from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdFinalReleaseConsumerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v :=
+  h.finalReleaseConsumerBundle
+
+/-- Select the final-release obligation surface from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdFinalReleaseConsumerObligationSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v :=
+  h.finalReleaseConsumerObligationSurface
+
+/-- Select the final public target bundle from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdFinalPublicTargetBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.finalPublicTargetBundle
+
+/-- Select the public distribution facade from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdFinalPublicDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v :=
+  h.publicDistributionFacade
+
+/-- Select the public-release citation from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.publicReleaseCitation
+
+/-- Select target rows from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select proof-md target rows from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.proofMdTargetRows
+
+/-- Select remaining-assumption rows from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Select endpoint residuals from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the relaxed `27`-vertex R45 table from the final release certification facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Final release certification route to the exact-`42` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.releaseCertifiedExact42Row
+
+/-- Final release certification route to the checkpoint exact-`42` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.checkpointExact42Row
+
+/-- Final release certification route to the carried localized R45 row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.releaseCertifiedLocalizedR45Row
+
+/-- Final release certification route to the checkpoint localized R45 row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.checkpointLocalizedR45Row
+
+/-- Final release certification route to the public-citation localized R45 row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toPublicCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.publicCitationLocalizedR45Row
+
+/-- Final release certification route to the downstream-target localized R45 row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toDownstreamTargetHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.downstreamTargetLocalizedR45Row
+
+/-- Final release certification route to the public-distribution localized R45 row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.publicDistributionLocalizedR45Row
+
+/-- Final release certification route to the downstream-consumer citation localized R45 row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.downstreamConsumerCitationLocalizedR45Row
+
+/-- Final release certification route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.releaseCertifiedPropagatedR1010Row
+
+/-- Final release certification route to the checkpoint propagated `R(10,10)` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.checkpointPropagatedR1010Row
+
+/-- Final release certification route to the public-distribution propagated `R(10,10)` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toPublicDistributionHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.publicDistributionPropagatedR1010Row
+
+/-- Final release certification route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.releaseCertifiedAdmissibleTenAt40960Row
+
+/-- Final release certification route to the checkpoint admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.checkpointAdmissibleTenAt40960Row
+
+/-- Final release certification route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    10 ≤ F 40960 :=
+  h.releaseCertifiedExtremalF40960Row
+
+/-- Final release certification route to the checkpoint extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    10 ≤ F 40960 :=
+  h.checkpointExtremalF40960Row
+
+/-- Final release certification route to the regular induced `10`-subgraph consumer theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.releaseCertifiedRegularTenAt40960Row H hcard
+
+/-- Final release certification route to the checkpoint regular induced consumer theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.checkpointRegularTenAt40960Row H hcard
+
+/-- Final release certification route to the public-distribution regular induced consumer theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toPublicDistributionHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.publicDistributionRegularTenAt40960Row H hcard
+
+/-- Final release certification facades round-trip through archive release/checkpoint facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdFinalArchiveReleaseCheckpointFacade_toProofMdFinalReleaseCertificationFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade = h := by
+  exact Subsingleton.elim _ _
+
+/-- Archive release/checkpoint facades recover themselves through final release certification facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseCertificationFacade_toProofMdFinalArchiveReleaseCheckpointFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveReleaseCheckpointFacade G s v) :
+    h.toProofMdFinalReleaseCertificationFacade.toProofMdFinalArchiveReleaseCheckpointFacade = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize archive checkpoint bundles with release consumers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdFinalArchiveReleaseCheckpointFacade_toProofMdFinalReleaseConsumerBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toProofMdFinalArchiveReleaseCheckpointFacade.toProofMdFinalReleaseConsumerBundle =
+      h.toProofMdFinalReleaseConsumerBundle := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize target rows with proof-md target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCurrentFrontierTargetRows_toProofMdTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toCurrentFrontierTargetRows = h.toProofMdTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize proof-md target rows with remaining assumptions. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toProofMdTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toProofMdTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize checkpoint R45 rows with the certified R45 row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toCheckpointHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize public-citation R45 rows with the certified row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toPublicCitationHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toPublicCitationHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize downstream-target R45 rows with the certified row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toDownstreamTargetHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toDownstreamTargetHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize distribution R45 rows with the certified row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize checkpoint R1010 rows with the certified row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toCheckpointHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize distribution R1010 rows with the certified row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toPublicDistributionHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toPublicDistributionHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize checkpoint admissibility with the certified row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointTenMemAdmissibleBounds_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toCheckpointTenMemAdmissibleBounds_40960 =
+      h.toTenMemAdmissibleBounds_40960 := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize checkpoint F-bounds with the certified row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointTenLeF_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v) :
+    h.toCheckpointTenLeF_40960 = h.toTenLeF_40960 := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize checkpoint regular induced consumers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toCheckpointHasRegularInducedSubgraphOfCard_ten_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    h.toCheckpointHasRegularInducedSubgraphOfCard_ten_40960 H hcard =
+      h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard := by
+  exact Subsingleton.elim _ _
+
+/-- Final release certification facades normalize distribution regular induced consumers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade.toPublicDistributionHasRegularInducedSubgraphOfCard_ten_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseCertificationFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    h.toPublicDistributionHasRegularInducedSubgraphOfCard_ten_40960 H hcard =
+      h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
