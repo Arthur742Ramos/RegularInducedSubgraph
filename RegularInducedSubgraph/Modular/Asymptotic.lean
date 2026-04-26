@@ -4403,6 +4403,78 @@ lemma boundaryTripleBit_le_one (τ : Fin 8) (i : Fin 3) : boundaryTripleBit τ i
   omega
 
 /--
+Exact augmentation equation for one outside basis column.  The `base` column records the degree
+already supplied outside the four-vertex fiber pattern, so the internal fiber degrees need not be
+regular on their own.
+-/
+def ExactOneWordAugmentationEquation (d : ℕ) (base internal : Fin 4 → ℕ) : Prop :=
+  ∀ a : Fin 4, base a + internal a = d
+
+/--
+Exact augmentation equation for two outside basis columns.  This is the same bookkeeping surface
+with two boundary-import columns split apart.
+-/
+def ExactTwoWordAugmentationEquation
+    (d : ℕ) (base₀ base₁ internal : Fin 4 → ℕ) : Prop :=
+  ∀ a : Fin 4, base₀ a + base₁ a + internal a = d
+
+/-- A base column that exactly fills the internal deficit gives a one-word augmentation equation. -/
+theorem exactOneWordAugmentationEquation_of_baseCompensation
+    {d : ℕ} {base internal : Fin 4 → ℕ}
+    (hle : ∀ a : Fin 4, internal a ≤ d)
+    (hbase : ∀ a : Fin 4, base a = d - internal a) :
+    ExactOneWordAugmentationEquation d base internal := by
+  intro a
+  have ha_le := hle a
+  rw [hbase a]
+  omega
+
+/--
+The regular homogeneous four-vertex equation is the zero-base special case of the one-word exact
+augmentation equation.
+-/
+theorem exactOneWordAugmentationEquation_of_regularHomogeneous
+    {d : ℕ} {internal : Fin 4 → ℕ}
+    (hregular : ∀ a : Fin 4, internal a = d) :
+    ExactOneWordAugmentationEquation d (fun _ => 0) internal := by
+  intro a
+  rw [hregular a]
+  omega
+
+/-- A second base column that fills the remaining deficit gives a two-word augmentation equation. -/
+theorem exactTwoWordAugmentationEquation_of_baseCompensation
+    {d : ℕ} {base₀ base₁ internal : Fin 4 → ℕ}
+    (hle : ∀ a : Fin 4, base₀ a + internal a ≤ d)
+    (hbase₁ : ∀ a : Fin 4, base₁ a = d - (base₀ a + internal a)) :
+    ExactTwoWordAugmentationEquation d base₀ base₁ internal := by
+  intro a
+  have ha_le := hle a
+  rw [hbase₁ a]
+  omega
+
+/--
+The regular homogeneous four-vertex equation is also the zero-base special case of the two-word
+exact augmentation equation.
+-/
+theorem exactTwoWordAugmentationEquation_of_regularHomogeneous
+    {d : ℕ} {internal : Fin 4 → ℕ}
+    (hregular : ∀ a : Fin 4, internal a = d) :
+    ExactTwoWordAugmentationEquation d (fun _ => 0) (fun _ => 0) internal := by
+  intro a
+  rw [hregular a]
+  omega
+
+/-- Combining two split outside columns recovers the one-column exact augmentation surface. -/
+theorem exactTwoWordAugmentationEquation_of_combinedBase
+    {d : ℕ} {base₀ base₁ internal : Fin 4 → ℕ}
+    (h :
+      ExactOneWordAugmentationEquation d (fun a : Fin 4 => base₀ a + base₁ a) internal) :
+    ExactTwoWordAugmentationEquation d base₀ base₁ internal := by
+  intro a
+  have ha := h a
+  omega
+
+/--
 Equation form of a mixed `2+2` augmented-fiber atom: two boundary vertices with edge-status `e`
 and two retained vertices of types `τ, σ` with retained edge-status `ε` form a `d`-regular
 four-set exactly when these four degree equations hold.
@@ -4532,6 +4604,58 @@ boundary-pair edge status, and the two trace types contribute their bits in row 
 -/
 def retainedTracePairResidue (e : ℕ) (τ σ : Fin 8) (i : Fin 3) : ℕ :=
   e + boundaryTripleBit τ i + boundaryTripleBit σ i
+
+/-- The two retained boundary bits in one boundary row, without the boundary-pair edge. -/
+def retainedTraceBitColumn (τ σ : Fin 8) (i : Fin 3) : ℕ :=
+  boundaryTripleBit τ i + boundaryTripleBit σ i
+
+/-- Re-express a retained trace residue as a boundary edge plus its bit-column contribution. -/
+theorem retainedTracePairResidue_eq_edge_add_bitColumn
+    (e : ℕ) (τ σ : Fin 8) (i : Fin 3) :
+    retainedTracePairResidue e τ σ i = e + retainedTraceBitColumn τ σ i := by
+  unfold retainedTracePairResidue retainedTraceBitColumn
+  omega
+
+/--
+Non-pair-uniform complement equation for two retained trace columns: row-by-row, the two bit
+columns add to the same constant `K`.  No uniformity of either column is assumed.
+-/
+def RetainedTraceBitColumnComplementEquation
+    (K : ℕ) (τ σ τ' σ' : Fin 8) : Prop :=
+  ∀ i : Fin 3, retainedTraceBitColumn τ σ i + retainedTraceBitColumn τ' σ' i = K
+
+/-- The complement equation makes the sum of the two retained trace degrees row-independent. -/
+theorem retainedTraceBitColumnComplement_totalDegree_eq
+    {K e e' : ℕ} {τ σ τ' σ' : Fin 8}
+    (hcomp : RetainedTraceBitColumnComplementEquation K τ σ τ' σ') (i : Fin 3) :
+    retainedTracePairResidue e τ σ i + retainedTracePairResidue e' τ' σ' i =
+      e + e' + K := by
+  have hrow := hcomp i
+  unfold RetainedTraceBitColumnComplementEquation retainedTracePairResidue retainedTraceBitColumn at hrow ⊢
+  omega
+
+/--
+Total-degree congruence induced by a non-pair-uniform bit-column complement equation.  This is the
+modular table row used by the retained-trace endpoint when two columns compensate each other.
+-/
+def RetainedTraceComplementTotalDegreeCongruence
+    (K e e' q : ℕ) (τ σ τ' σ' : Fin 8) : Prop :=
+  ∀ i : Fin 3,
+    retainedTracePairResidue e τ σ i + retainedTracePairResidue e' τ' σ' i ≡
+      e + e' + K [MOD q]
+
+/-- The row-wise complement equation gives the total-degree congruence for every modulus. -/
+theorem retainedTraceComplementTotalDegreeCongruence_of_bitColumnComplement
+    {K e e' q : ℕ} {τ σ τ' σ' : Fin 8}
+    (hcomp : RetainedTraceBitColumnComplementEquation K τ σ τ' σ') :
+    RetainedTraceComplementTotalDegreeCongruence K e e' q τ σ τ' σ' := by
+  intro i
+  have hrow :=
+    retainedTraceBitColumnComplement_totalDegree_eq
+      (K := K) (e := e) (e' := e') (τ := τ) (σ := σ) (τ' := τ') (σ' := σ')
+      hcomp i
+  simpa [hrow] using
+    (Nat.ModEq.refl (e + e' + K) : (e + e' + K) ≡ e + e' + K [MOD q])
 
 /-- Pair-uniform retained trace columns have the same two retained bits in every boundary row. -/
 def PairUniformRetainedTraceClass (τ σ : Fin 8) : Prop :=
@@ -5531,6 +5655,203 @@ def HomogeneousMixedCarrySmallKernelConsistentResidual
     (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) : Prop :=
   HomogeneousMixedCarrySmallKernel Q U tau m ∧
     ∃ c : ℕ, ∃ T : Finset ι, HomogeneousMixedOddWordCarrySolution Q U tau T c
+
+/--
+A core containing the support of every twisted-kernel direction.  This abstracts the union `J` of
+all kernel coordinates that can move a consistent carry solution.
+-/
+def HomogeneousMixedCarryKernelSupportCore
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (J : Finset ι) : Prop :=
+  J ⊆ U ∧
+    ∀ H : Finset ι, HomogeneousMixedTwistedKernelVector Q U tau H → H ⊆ J
+
+/-- The actual support union of all twisted-kernel directions inside `U`. -/
+def HomogeneousMixedCarryKernelSupportUnion
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) : Finset ι := by
+  classical
+  exact U.filter (fun i => ∃ H : Finset ι, HomogeneousMixedTwistedKernelVector Q U tau H ∧ i ∈ H)
+
+/-- The kernel-support union is a support core. -/
+theorem homogeneousMixedCarryKernelSupportUnion_isCore
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) :
+    HomogeneousMixedCarryKernelSupportCore Q U tau
+      (HomogeneousMixedCarryKernelSupportUnion Q U tau) := by
+  classical
+  constructor
+  · intro i hi
+    unfold HomogeneousMixedCarryKernelSupportUnion at hi
+    exact (Finset.mem_filter.mp hi).1
+  · intro H hH i hi
+    have hiU : i ∈ U := hH.1 hi
+    unfold HomogeneousMixedCarryKernelSupportUnion
+    exact Finset.mem_filter.mpr ⟨hiU, ⟨H, hH, hi⟩⟩
+
+/-- Every support core contains the kernel-support union. -/
+theorem homogeneousMixedCarryKernelSupportUnion_subset_core
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J : Finset ι} {tau : ι → ℕ}
+    (hJ : HomogeneousMixedCarryKernelSupportCore Q U tau J) :
+    HomogeneousMixedCarryKernelSupportUnion Q U tau ⊆ J := by
+  classical
+  intro i hi
+  unfold HomogeneousMixedCarryKernelSupportUnion at hi
+  rcases (Finset.mem_filter.mp hi).2 with ⟨H, hH, hiH⟩
+  exact hJ.2 H hH hiH
+
+/-- Support-compressed core: the moving kernel coordinates are bounded by the terminal slack. -/
+def HomogeneousMixedCarrySupportCompressedCore
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) (J : Finset ι) : Prop :=
+  HomogeneousMixedCarryKernelSupportCore Q U tau J ∧ J.card ≤ 2 * (m - U.card)
+
+/-- Fixed-one coordinates of a solution outside the moving kernel-support core. -/
+def HomogeneousMixedCarryFixedOneOutsideSupport
+    {ι : Type*} [DecidableEq ι] (U J T : Finset ι) : Finset ι :=
+  U ∩ (T \ J)
+
+/--
+The small-core residual left after support compression: a consistent solution, a compressed kernel
+core `J`, and at most half the terminal slack occupied by fixed-one coordinates outside `J`.
+-/
+def HomogeneousMixedCarrySmallCoreResidual
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ)
+    (J T : Finset ι) (c : ℕ) : Prop :=
+  HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m ∧
+    HomogeneousMixedCarrySupportCompressedCore Q U tau m J ∧
+      HomogeneousMixedOddWordCarrySolution Q U tau T c ∧
+        (HomogeneousMixedCarryFixedOneOutsideSupport U J T).card ≤ (m - U.card) / 2
+
+/-- Forgetting support compression recovers the original small-kernel consistent residual. -/
+theorem HomogeneousMixedCarrySmallCoreResidual.residual
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J T : Finset ι} {tau : ι → ℕ} {m c : ℕ}
+    (h : HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c) :
+    HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m :=
+  h.1
+
+/-- Extract the compressed kernel-support core from the small-core residual. -/
+theorem HomogeneousMixedCarrySmallCoreResidual.supportCompressedCore
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J T : Finset ι} {tau : ι → ℕ} {m c : ℕ}
+    (h : HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c) :
+    HomogeneousMixedCarrySupportCompressedCore Q U tau m J :=
+  h.2.1
+
+/-- Extract the `|J| ≤ 2(m-|U|)` support-compression bound. -/
+theorem HomogeneousMixedCarrySmallCoreResidual.support_card_le
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J T : Finset ι} {tau : ι → ℕ} {m c : ℕ}
+    (h : HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c) :
+    J.card ≤ 2 * (m - U.card) :=
+  h.2.1.2
+
+/-- Extract the carried odd-word solution from the small-core residual. -/
+theorem HomogeneousMixedCarrySmallCoreResidual.solution
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J T : Finset ι} {tau : ι → ℕ} {m c : ℕ}
+    (h : HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c) :
+    HomogeneousMixedOddWordCarrySolution Q U tau T c :=
+  h.2.2.1
+
+/-- Extract the fixed-one support bound outside the moving core. -/
+theorem HomogeneousMixedCarrySmallCoreResidual.fixedOne_card_le
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J T : Finset ι} {tau : ι → ℕ} {m c : ℕ}
+    (h : HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c) :
+    (HomogeneousMixedCarryFixedOneOutsideSupport U J T).card ≤ (m - U.card) / 2 :=
+  h.2.2.2
+
+/--
+Abstract reduction surface for the soluble small-kernel branch: every consistent residual has a
+compressed core and bounded fixed-one outside support.
+-/
+def HasHomogeneousMixedCarrySupportCompressionReduction : Prop :=
+  ∀ {ι : Type*} [Fintype ι] [DecidableEq ι]
+      (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ),
+    HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m →
+      ∃ J T : Finset ι, ∃ c : ℕ, HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c
+
+/-- Apply the support-compression reduction to isolate the small-core residual. -/
+theorem homogeneousMixedCarrySmallCoreResidual_of_supportCompressionReduction
+    (hcompress : HasHomogeneousMixedCarrySupportCompressionReduction)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ} {m : ℕ}
+    (hres : HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m) :
+    ∃ J T : Finset ι, ∃ c : ℕ, HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c :=
+  hcompress Q U tau m hres
+
+/-- Half-degree sum used by the Arf obstruction on an even twisted-kernel vector. -/
+def HomogeneousMixedCarryHalfDegreeSum
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U H : Finset ι) : ℕ :=
+  ∑ i in H, (Q.neighborFinset i ∩ U).card / 2
+
+/--
+Arf-style dual certificate for affine inconsistency: an even twisted-kernel vector whose quotient
+half-degree sum is odd.
+-/
+def HomogeneousMixedEvenTwistedKernelArfCertificate
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (H : Finset ι) : Prop :=
+  HomogeneousMixedTwistedKernelVector Q U tau H ∧
+    Even H.card ∧ Odd (HomogeneousMixedCarryHalfDegreeSum Q U H)
+
+/-- The affine-inconsistency residual expressed by an even twisted-kernel Arf certificate. -/
+def HomogeneousMixedCarryArfCertificateResidual
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) : Prop :=
+  ∃ H : Finset ι, HomogeneousMixedEvenTwistedKernelArfCertificate Q U tau H
+
+/-- Bidirectional abstract surface identifying affine inconsistency with the Arf certificate. -/
+def HomogeneousMixedCarryAffineInconsistencyArfSurface
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) : Prop :=
+  HomogeneousMixedCarryAffineInconsistency Q U tau ↔
+    HomogeneousMixedCarryArfCertificateResidual Q U tau
+
+/-- Extract an Arf certificate from affine inconsistency using the abstract surface. -/
+theorem HomogeneousMixedCarryAffineInconsistencyArfSurface.certificate_of_inconsistency
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ}
+    (hsurface : HomogeneousMixedCarryAffineInconsistencyArfSurface Q U tau)
+    (hinc : HomogeneousMixedCarryAffineInconsistency Q U tau) :
+    HomogeneousMixedCarryArfCertificateResidual Q U tau :=
+  hsurface.1 hinc
+
+/-- Read an affine inconsistency from an Arf certificate using the abstract surface. -/
+theorem HomogeneousMixedCarryAffineInconsistencyArfSurface.inconsistency_of_certificate
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ}
+    (hsurface : HomogeneousMixedCarryAffineInconsistencyArfSurface Q U tau)
+    (hcert : HomogeneousMixedCarryArfCertificateResidual Q U tau) :
+    HomogeneousMixedCarryAffineInconsistency Q U tau :=
+  hsurface.2 hcert
+
+/-- Global surface asserting that affine inconsistency always yields the even-kernel Arf residual. -/
+def HasHomogeneousMixedCarryAffineArfCertificateReduction : Prop :=
+  ∀ {ι : Type*} [Fintype ι] [DecidableEq ι]
+      (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ),
+    HomogeneousMixedCarryAffineInconsistency Q U tau →
+      HomogeneousMixedCarryArfCertificateResidual Q U tau
+
+/-- Global bidirectional Arf surface for homogeneous mixed carry. -/
+def HasHomogeneousMixedCarryAffineInconsistencyArfSurface : Prop :=
+  ∀ {ι : Type*} [Fintype ι] [DecidableEq ι]
+      (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ),
+    HomogeneousMixedCarryAffineInconsistencyArfSurface Q U tau
+
+/-- A bidirectional Arf surface supplies the certificate reduction direction. -/
+theorem hasHomogeneousMixedCarryAffineArfCertificateReduction_of_arfSurface
+    (hsurface : HasHomogeneousMixedCarryAffineInconsistencyArfSurface) :
+    HasHomogeneousMixedCarryAffineArfCertificateReduction := by
+  intro ι _ _ Q U tau hinc
+  exact
+    HomogeneousMixedCarryAffineInconsistencyArfSurface.certificate_of_inconsistency
+      (hsurface Q U tau) hinc
 
 /-- Terminal trichotomy for the homogeneous mixed carry branch. -/
 def HomogeneousMixedCarryTerminalTrichotomy
@@ -7501,6 +7822,77 @@ theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSu
 /-- Corrected-complement bridge using the aggregate frontier package plus homogeneous carry surface. -/
 theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_aggregateFrontierSurfacesWithHomogeneousCarry
     (h : ModFourAggregateFrontierSurfacesWithHomogeneousCarry)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ 14 * m :=
+  correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_aggregateFrontierSurfaces
+    h.trace h.coreLength h.pendant h.zeroTrace G htriangle hC4 halpha hnoLayer
+
+/--
+Aggregate frontier package naming the sharpened homogeneous carry endpoint: terminal trichotomy,
+support-compressed soluble branch, and Arf-certificate affine branch.
+-/
+structure ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry : Prop where
+  trace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace
+  coreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound
+  pendant : HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging
+  zeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion
+  terminalCarry : HasHomogeneousMixedCarryTerminalTrichotomyReduction
+  supportCompression : HasHomogeneousMixedCarrySupportCompressionReduction
+  affineArf : HasHomogeneousMixedCarryAffineArfCertificateReduction
+
+/-- Build the sharpened aggregate package from graph-facing surfaces and the two refined residual reductions. -/
+theorem modFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry_of_reductions
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion)
+    (hsupport : HasHomogeneousMixedCarrySupportCompressionReduction)
+    (harf : HasHomogeneousMixedCarryAffineArfCertificateReduction) :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry := by
+  exact
+    { trace := htrace
+      coreLength := hcoreLength
+      pendant := hpendant
+      zeroTrace := hzeroTrace
+      terminalCarry := homogeneousMixedCarryTerminalTrichotomyReduction
+      supportCompression := hsupport
+      affineArf := harf }
+
+/-- Apply the packaged support-compression surface to a soluble small-kernel residual. -/
+theorem ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry.smallCoreResidual
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ} {m : ℕ}
+    (hres : HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m) :
+    ∃ J T : Finset ι, ∃ c : ℕ, HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c :=
+  h.supportCompression Q U tau m hres
+
+/-- Apply the packaged Arf surface to an affine-inconsistency residual. -/
+theorem ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry.arfCertificate
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ}
+    (hinc : HomogeneousMixedCarryAffineInconsistency Q U tau) :
+    HomogeneousMixedCarryArfCertificateResidual Q U tau :=
+  h.affineArf Q U tau hinc
+
+/-- Forget the refined homogeneous residual fields and recover the aggregate layer cap. -/
+theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithCompressedHomogeneousCarry
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry) :
+    TriangleFreeInducedC4FreeModFourLayerCap 14 :=
+  triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfaces
+    h.trace h.coreLength h.pendant h.zeroTrace
+
+/--
+Corrected-complement bridge using the aggregate frontier package with the compressed homogeneous
+carry obstruction explicitly named.
+-/
+theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_aggregateFrontierSurfacesWithCompressedHomogeneousCarry
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry)
     {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
     (htriangle : IsTriangleFreeOn G S)
     (hC4 : IsInducedC4FreeOn G S)
