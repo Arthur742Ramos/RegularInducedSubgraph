@@ -2050,7 +2050,7 @@ The two-atom collision branch remains genuine: minimality gives positive margina
 individual gain.
 By zero-gain saturation, a pair pivot cannot meet another packed atom; it can only exchange with a leftover
 singleton.  With no leftover singletons, pair atoms are collision endpoints; three-atoms have no
-zero-gain/equality-absorption boundary lift and survive only by strict absorption or collision.
+zero-gain/equality-absorption boundary lift and no negative pure absorption, hence are collision-only.
 With `L=0`, zero-gain supports are exactly the packed atoms; the zero-gain orbit is trivial.
 The leftover count is a budget: zero-gain exchanges need one leftover singleton, equality pure absorption at
 `B_j` needs `|B_j|-1`, and without that budget only strict absorption or lift-collision remains.
@@ -2063,6 +2063,17 @@ Their positive gain is the shared packed-atom rebate
 `g(S)=sum_C g(C)+sum_H(c_H(S)-1)_+(|H|-1)`, forcing at least one packed atom to be split between petals.
 Equivalently, pair collisions are two- or three-petal rebate circuits: all proper subfamilies have rebate
 bounded by individual deficits, while the full family exceeds them.
+For pair atoms, each forced split-petal has strict deficit `d_i>=1`, so a two-petal collision needs shared
+rebate at least three.
+No-leftover size-three atoms obey the same finite rebate-collision template: no zero-gain boundary lift and
+no strict absorption are available, so every deletion is collision-only.
+Thus four-four is the first collision-free no-leftover branch; `L=0` and `|A|<=15` force a small-atom
+collision circuit.
+In the four-pair no-leftover collision core, deletion from endpoint `a` gives exactly the two supports
+`{a} union T` and `{a} union T^c` for complementary transversals of the other three pairs; the two endpoints
+of one pair must have distinct labels, or complementary supports partition all four pairs.
+Equivalently it is an antipodal-free orientation of transversal pairs in `{0,1}^4` with a selected
+distance-three edge in every coordinate-bit facet: the finite two-sheet hidden-cover model.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

@@ -5460,8 +5460,8 @@ contribution of members, not positive individual gain, so collision cannot be di
 In a zero-gain-saturated packing, a pair-atom pivot that meets another packed atom would create a larger
 block, so surviving pivots are only same-size exchanges with leftover singletons.  With no leftover
 singletons, pair-atom deletions have no pivot option and are collision endpoints.
-Likewise, three-atoms with no leftover singleton have no zero-gain or equality-absorption boundary lift; they
-survive only by strict absorption or collision.
+Likewise, three-atoms with no leftover singleton have no zero-gain or equality-absorption boundary lift and
+no negative pure absorption, so they are collision-only; strict absorption starts at atom size at least four.
 With `L=0`, zero-gain locality is rigid: the only zero-gain supports are the packed atoms themselves, so the
 zero-gain orbit is trivial.
 More generally, leftover singletons are a budget: zero-gain shortened-block exchanges require `L>=1`, and
@@ -5477,6 +5477,21 @@ Its positive gain is exactly shared packed-atom penalty rebate:
 `g(S)=sum_C g(C)+sum_H(c_H(S)-1)_+(|H|-1)`, so at least one packed atom must be split between forced petals.
 Equivalently pair collisions are rebate circuits: for deficits `d_i=-g(C_i)`, every proper subfamily has
 rebate at most its deficit sum, while the full two- or three-petal family exceeds it.
+For pair atoms, zero-gain saturation makes every forced split-petal strictly deficient (`d_i>=1`), so a
+two-petal collision needs shared rebate at least three: a size-at-least-four split atom or several split
+atoms.
+The same finite rebate-circuit template controls no-leftover size-three atoms: their zero-gain boundary
+lifts need leftovers and strict absorption is unavailable, so every deletion is collision-only with the same
+`s=2/3` projected four-atom templates.
+Thus four-four is the first collision-free no-leftover branch: if `L=0` and `|A|<=15`, some atom has size at
+most three and forces a finite small-atom collision circuit.
+In the smallest no-leftover collision core, all four atoms are pairs; deleting an endpoint forces exactly two
+supports `{a} union T` and `{a} union T^c` for complementary transversals of the other three pairs.  The two
+endpoints of one pair cannot use the same complementary-transversal label, or the complementary supports
+partition all four pairs and close.
+Equivalently this core is an antipodal-free orientation of transversal pairs in `{0,1}^4`: every
+coordinate-bit facet contains a selected distance-three edge (`v_i=1111+e_i` in the antipodal quotient),
+which is the finite two-sheet hidden-cover model behind the host non-overlap table.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

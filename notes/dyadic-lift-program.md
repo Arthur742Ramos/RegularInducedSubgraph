@@ -1124,8 +1124,8 @@ Collision stars remain genuine here: minimality gives positive marginal contribu
 gain.
 Zero-gain saturation removes pivots meeting another packed atom; pair pivots can only exchange with leftover
 singletons; with no leftover singletons, pair-atom deletions are collision endpoints.
-Three-atoms without leftover singletons have no zero-gain or equality-absorption boundary lift, so they
-survive only by strict absorption or collision.
+Three-atoms without leftover singletons have no zero-gain or equality-absorption boundary lift and no
+negative pure absorption, so they are collision-only; strict absorption starts at atom size at least four.
 With `L=0`, zero-gain supports are only the packed atoms themselves; the zero-gain orbit is trivial.
 In general the leftover count is a budget: zero-gain exchanges need one leftover singleton, while equality
 pure absorption at atom `B_j` needs `|B_j|-1`; without that budget, only strict absorption or lift-collision
@@ -1139,6 +1139,18 @@ The gain is shared packed-atom penalty rebate:
 `g(S)=sum_C g(C)+sum_H(c_H(S)-1)_+(|H|-1)`, so some packed atom is split between forced petals.
 Equivalently, with deficits `d_i=-g(C_i)`, every proper subfamily has rebate at most its deficit sum, but
 the full two- or three-petal circuit exceeds it.
+For pair atoms, forced split-petals have strict deficit `d_i>=1`; hence any two-petal pair collision needs
+shared rebate at least three.
+No-leftover size-three atoms have the same finite rebate-collision template: zero-gain boundary lifts need
+leftovers and strict absorption is unavailable, so every deletion is collision-only.
+Thus four-four is the first collision-free no-leftover branch; for `L=0`, `|A|<=15` forces a size-at-most
+three atom and hence a finite small-atom collision circuit.
+The four-pair no-leftover collision core is explicit: each endpoint has supports `{a} union T` and
+`{a} union T^c` for complementary transversals of the other three pairs, and paired endpoints must use
+distinct transversal labels or two complementary supports close.
+In cube language it is an antipodal-free orientation of transversal pairs in `{0,1}^4` whose every
+coordinate-bit facet contains a selected distance-three edge; this is the finite two-sheet hidden-cover
+normal form.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

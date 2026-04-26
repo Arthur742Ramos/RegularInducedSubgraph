@@ -2021,8 +2021,8 @@ What remains justified after audit is:
       positive individual gain;
       zero-gain saturation leaves pair pivots only as same-size exchanges with leftover singletons, so
       pair atoms with no leftover singleton are collision endpoints;
-      three-atoms without leftover singletons have no zero-gain/equality-absorption boundary lift and survive
-      only by strict absorption or collision;
+      three-atoms without leftover singletons have no zero-gain/equality-absorption boundary lift and no
+      negative pure absorption, hence are collision-only;
       with no leftovers, zero-gain supports are only the packed atoms and the zero-gain orbit is trivial;
       leftover count is a budget: zero-gain exchanges need one leftover singleton, and equality pure
       absorption at `B_j` needs `|B_j|-1`;
@@ -2032,6 +2032,16 @@ What remains justified after audit is:
       `g(S)=sum_C g(C)+sum_H(c_H(S)-1)_+(|H|-1)`, forcing a packed atom split between petals;
       equivalently they are two- or three-petal rebate circuits whose proper subfamilies remain
       deficit-bounded;
+      for pair atoms, every forced split-petal has strict deficit `d_i>=1`, so two-petal pair collisions
+      need shared rebate at least three;
+      no-leftover size-three atoms have the same finite rebate-collision templates, because zero-gain
+      boundary lifts need leftovers and strict absorption is unavailable;
+      four-four is the first collision-free no-leftover branch; `L=0` and `|A|<=15` force a small-atom
+      collision circuit;
+      the four-pair no-leftover collision core is a complementary-transversal labeling: each endpoint has
+      supports `{a} union T` and `{a} union T^c`, and paired endpoints must have distinct labels;
+      equivalently it is an antipodal-free orientation of transversal pairs in `{0,1}^4` with a selected
+      distance-three edge in every coordinate-bit facet;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

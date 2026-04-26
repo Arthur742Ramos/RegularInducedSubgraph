@@ -2520,7 +2520,7 @@ Recommended attack:
     contradicts zero-gain saturation; surviving pair pivots are same-size exchanges with leftover singletons,
     so pair atoms with no leftover singleton are collision endpoints.
     Record the no-leftover small-atom endpoint: pair atoms have no pivot option, and three-atoms have no
-    zero-gain/equality-absorption boundary lift; both survive only by strict absorption or collision.
+    zero-gain/equality-absorption boundary lift or negative pure absorption; both are collision-only.
     Add no-leftover zero-gain rigidity: with `L=0`, zero-gain supports are exactly the packed atoms and the
     zero-gain orbit is trivial.
     Record leftover-budget rules: zero-gain shortened-block exchanges require `L>=1`; equality pure
@@ -2536,6 +2536,19 @@ Recommended attack:
     atom between forced petals.
     Package pair collisions as rebate circuits: with deficits `d_i=-g(C_i)`, every proper subfamily has
     rebate at most the corresponding deficit sum, while the full two- or three-petal family exceeds it.
+    Prove the pair-atom strict-deficit strengthening: a forced split-petal has a cross-atom full lift with
+    the same gain, so zero-gain saturation forces `d_i>=1`; two-petal pair collisions need rebate at least
+    three.
+    Extend the same finite rebate-collision template to no-leftover size-three atoms: zero-gain boundary
+    lifts require leftovers and strict absorption is unavailable, so every deletion is collision-only.
+    Derive the collision-free cutoff: in a no-leftover packing with `|A|<=15`, some atom has size at most
+    three and therefore forces a finite small-atom collision circuit; four-four is only the first
+    collision-free branch.
+    Formalize the four-pair collision core: endpoint deletion forces complementary transversal supports
+    `{a} union T` and `{a} union T^c` on the other three pairs; equal labels on the two endpoints of one pair
+    give two disjoint support blocks partitioning all four pairs.
+    Repackage this core as an antipodal-free orientation of full transversals in `{0,1}^4`, with each
+    coordinate-bit facet containing a selected distance-three edge (`v_i=1111+e_i` in the antipodal quotient).
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

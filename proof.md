@@ -12176,9 +12176,10 @@ deleted vertex with that singleton.
 
 With no leftover singletons, zero-gain boundary motion disappears but collision does not.  A pair atom with
 `L=0` has no pivot option, so every deletion from that atom is a genuine lift-collision endpoint.  A
-three-atom with `L=0` has no zero-gain or equality-absorption option; its deletion repairs are again strict
-absorption when the lift table permits it, or lift-collision.  Thus no-leftover packings are not excluded by
-small atoms; rather, their terminality is entirely collision/strict-absorption driven.
+three-atom with `L=0` has no zero-gain or equality-absorption option, and the lift table has no negative
+pure absorption at size three; hence it is collision-only.  Strict absorption starts at atoms of size at
+least four.  Thus no-leftover packings are not excluded by small atoms; rather, their terminality is
+collision-driven at sizes two and three, and collision/strict-absorption driven from size four onward.
 
 When `L=0`, zero-gain locality becomes rigidity.  A zero-gain support can meet at most one packed atom and
 must have the same size as that atom; with no leftover vertices available, it is exactly that packed atom.
@@ -12281,6 +12282,87 @@ their two individual deficits.  For three petals, every pair rebate is still bou
 deficits, and only the full three-petal rebate crosses the deficit sum.  Hence a surviving pair collision is
 either a two-petal split-atom overpay or a genuine three-petal rebate circuit; there is no larger or diffuse
 pair-atom collision mode.
+
+For pair atoms, saturation improves the deficit side of this circuit.  If `B={a,b}` and a forced petal
+`C_i` participates in a split packed atom, then its only full lift is `C_i union {a}`.  This full lift is a
+support crossing the original pair atom `B` and another packed atom.  Its full gain equals its projected
+gain, because `|B|=2`; terminality makes this gain nonpositive, and zero-gain saturation forbids it from
+being zero since it is cross-atom.  Therefore every forced split-petal in a pair-collision circuit has
+
+```text
+d_i=-g^-(C_i) >= 1.
+```
+
+In particular a two-petal pair collision needs total shared rebate at least three.  Thus it must either split
+a packed atom of size at least four, or split several packed atoms whose combined `|H|-1` rebate is at least
+three.  The same lower bound applies to any three-petal circuit on the forced subpair: the full circuit can
+turn positive only after the shared packed-atom rebate beats at least two units of forced-petal deficit.
+
+The size-three no-leftover case has the same collision template, but no pivot side.  Let `B` be a packed
+atom of size three and delete `a in B`, with `L=0`.  The projected packing `P^-` still has four packed atoms,
+one of them the shortened pair `B\{a}`.  The four-case lift table has no negative pure absorption at this
+size, and its zero-gain cases are the shortened-block unit exchange and equality pure absorption; both are
+forbidden by zero-gain locality without leftover singletons.  Hence any positive projected repair with a
+disjoint full lift would close.  Terminality therefore forces every deletion repair at a size-three
+no-leftover atom to be a lift-collision family.  Since the projected system again has only four atoms, the
+same finite list and rebate-circuit inequalities apply:
+
+```text
+s=2:  (pi,delta)=(3,0), (4,0), or (4,1);
+s=3:  (pi,delta)=(4,0),
+```
+
+with at least two petals forced through the deleted vertex and with all proper subfamilies nonpositive.  Thus
+atoms of size two and three are now fully normalized: pair atoms have local leftover pivots or finite
+rebate-collision circuits, while no-leftover three-atoms have only finite rebate-collision circuits.
+
+Consequently the four-four no-leftover case is the first **collision-free** no-leftover branch, not the first
+no-leftover branch.  If `L=0` and `|A|<=15`, then some atom has size at most three, so deletion from that atom
+is forced into one of the finite rebate-collision circuits above.  A no-leftover endpoint with no small-atom
+collision must have all four atoms of size at least four; the minimal such endpoint is exactly the four-four
+case, where strict absorption first appears alongside collision.
+
+The smallest no-leftover collision core is completely explicit.  Suppose all four atoms are pairs,
+`B_0,B_1,B_2,B_3`, and delete `a in B_0`, with partner `b`.  The strict-deficit bound says a two-petal
+pair-collision needs rebate at least three.  Since each other atom has size two, this means the two forced
+petals split all three other pair atoms.  Zero-gain saturation also forbids either petal from containing
+`b`, because that would make its projected gain zero and hence its full lift a cross-atom zero-gain support.
+Therefore the only possible deletion repair is
+
+```text
+S_a(T)={a} union T,        S_a(T^c)={a} union T^c,
+```
+
+where `T` is a transversal choosing one vertex from each of `B_1,B_2,B_3`, and `T^c` is the complementary
+transversal.  The unlifted transversals `T` and `T^c` are absent; otherwise the projected repair would have
+a disjoint full lift.  Thus every vertex in a four-pair no-leftover endpoint carries a complementary
+transversal label on the other three pairs.
+
+The two endpoints of the same pair cannot carry the same complementary-transversal label.  If `a,b in B_0`
+both used `{T,T^c}`, then the two supports `{a} union T` and `{b} union T^c` would be disjoint and would
+partition all four pair atoms into two support blocks, closing the target.  Hence the four-pair collision
+core is a finite hidden-transversal coloring: each pair receives two distinct complementary-transversal
+labels on the opposite three pairs, and any equality of the two labels inside one pair is already a
+two-block selector.
+
+Equivalently, label the two vertices of each pair `B_i` by bits and identify a full transversal with a
+vertex of the cube `{0,1}^4`.  Terminality forbids containing both antipodal transversals, because they
+partition the four pairs.  Thus, after completing absent antipodal pairs arbitrarily, the present
+transversals define an orientation `s` of the antipodal quotient `{0,1}^4/<1111>`, a three-cube.  The
+endpoint condition at coordinate `i` says that in the facet `x_i=epsilon` there is a selected pair of
+transversals differing in all three other coordinates.  In the quotient this is an edge in direction
+
+```text
+v_i = 1111 + e_i.
+```
+
+Thus the four-pair collision core is exactly a Boolean orientation of the antipodal quotient in which every
+coordinate-bit facet contains a selected `v_i`-edge, but no antipodal pair is selected twice.  In a gauge
+using coordinate `4` as the sheet coordinate, the directions are `e_1,e_2,e_3,111`; the first three
+conditions demand both signs of sheet-change in each coordinate direction, while the fourth demands both
+constant-sheet values on long diagonals.  This is precisely the finite two-sheet hidden-cover model that
+appears in the host-frontier non-overlap table, now derived purely from the rank-three small-atom collision
+branch.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
@@ -12523,7 +12605,9 @@ large-outside ternary target avoidance:
   opposite high-active endpoints; pure high-active target-avoidance for all four residues forces m>=10,
   and if no rank-three support appears then m<=16; uniformly in T,X, terminality is scalar-killed,
   small-active zero-filter, low-rank bounded, or rank-three high-active; the low-rank bounded line is in the
-  finite Ramsey window 3<=m<=16, and the rank-three case is a positive-gain bridge blocker;
+  finite Ramsey window 3<=m<=16, and the rank-three case is a positive-gain bridge blocker whose small
+  atom collisions are finite rebate circuits; the four-pair collision core is the antipodal
+  hidden-transversal orientation model;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;
