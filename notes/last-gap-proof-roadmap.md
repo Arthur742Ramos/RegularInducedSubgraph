@@ -1784,6 +1784,9 @@ What remains justified after audit is:
       repairable regular four-block, giving `|A_g|<=|T_2|+R(4,4)-1` whenever `{0,3}` lies in the repair
       spectrum; any larger exact-basis fiber therefore has a missing Ramsey extreme, which is equivalent
       to anti-Horn exclusions `deg_D(b_g) != rho-(r-omega(g))+c` for every usable small old deletion `D`;
+      in the unit-shift case all nonzero singleton/pair repairs meet a kernel of size at most three, so
+      outside that kernel the direction type is invisible to co-regular tests and the residual is exactly
+      anchored persistence/no-split versus a chamber-flat silent edge;
       Fano itself needs four kept-pair
       witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual

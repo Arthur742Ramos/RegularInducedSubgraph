@@ -6898,6 +6898,27 @@ Equivalently, in the unit branch there is a kernel `K_g subset W` with `|K_g|<=3
 singleton or pair deletion disjoint from `K_g` has zero shift against the direction.  The star case has
 `|K_g|<=1`, and the only non-star possibility is the triangle case.
 
+This is the exact old-witness persistence form of the anti-Horn residual.  Outside `K_g`, every usable
+small deletion `D` with constant `c` satisfies
+
+```text
+deg_D(b_g)=c.
+```
+
+Thus an isolated old singleton is missed by the direction type, a complete old singleton is hit by it, an
+anticomplete old pair is missed twice, a split old pair is hit once, and a complete old pair is hit twice.
+In other words, away from the kernel the new direction type is invisible to all one- and two-vertex
+co-regular witness tests: it has exactly the same count on each such deletion as the surviving old
+witness vertices.
+
+Therefore a unit-shift large fiber has only two possible exits.  If the family of co-regular singleton and
+pair tests outside `K_g` separates the realized outgoing defects, anchored witness persistence plus
+componentwise no-split forces the outgoing realized set to be a singleton.  If it does not separate them,
+then two realized defects have identical values on every such test; their elementary difference is a
+chamber-flat silent edge, and the one-corner lift route applies.  This is the promised `host-opppair123`
+anti-Horn form: after deleting the kernel, failure of the old-side repair spectrum is exactly failure of a
+realized no-split test, not a new arithmetic obstruction.
+
 In the `sigma_g=2` branch the pair table simplifies further.  A split pair (`c=1`) has shifts
 `a-1 in {3,0,1}`, so it never contributes shift `2`.  The only nonzero repairs are:
 

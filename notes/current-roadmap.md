@@ -5018,6 +5018,11 @@ spectrum contains both `{0,3}`, terminality gives the explicit cap `|A_g|<=|T_2|
 If a larger fiber survives, one Ramsey extreme `rho` is missing from `Rep(g)`; every usable small old
 deletion `D` with constant `c` then satisfies the anti-Horn exclusion
 `deg_D(b_g) != rho-(r-omega(g))+c [MOD 4]`.
+The shift-addition law makes the unit branch local: all nonzero singleton/pair repairs meet a kernel
+`K_g` with `|K_g|<=3`, and every usable deletion outside `K_g` has zero shift, `deg_D(b_g)=c`.
+Thus off the kernel the direction type is invisible to co-regular one/two-witness tests; those tests
+either separate realized outgoing defects and invoke anchored persistence/no-split, or leave a
+chamber-flat silent edge for the one-corner lift.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

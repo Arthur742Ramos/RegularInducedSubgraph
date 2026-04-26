@@ -2115,6 +2115,11 @@ Recommended attack:
     Add the anti-Horn residual for a missing extreme.  If `d=r-omega(g)` and `rho in {0,3}` is not in
     `Rep(g)`, then every usable old deletion `D` with constant `c` satisfies
     `deg_D(b_g) != rho-d+c [MOD 4]`; for `|D|<=2` this is a forbidden adjacency count in `{0,1,2}`.
+    Formalize the shift-addition corollary for very large fibers.  Since two disjoint small deletions have
+    additive shifts, a unit-shift terminal branch has a kernel `K_g` of size at most three meeting every
+    nonzero-shift singleton/pair repair.  For every usable deletion `D` disjoint from `K_g`, one has
+    `deg_D(b_g)=c`.  This is the formal bridge from missing repair spectra to anchored persistence/no-split:
+    co-regular tests outside `K_g` either separate outgoing defects or leave a chamber-flat silent edge.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

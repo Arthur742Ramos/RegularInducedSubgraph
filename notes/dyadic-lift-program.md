@@ -797,6 +797,12 @@ old-side repair spectrum missing one Ramsey extreme.
 Writing `d=r-omega(g)`, a missing extreme `rho in {0,3}` is equivalent on every usable small deletion
 `D` with constant `c` to the anti-Horn exclusion `deg_D(b_g) != rho-d+c [MOD 4]`.
 For singleton and pair deletions this forbids one concrete adjacency count to the direction type.
+The shift-addition law sharpens this: in a very large unit-shift branch, all nonzero singleton/pair
+repairs meet a kernel `K_g` of size at most three.  Outside `K_g`, every usable small deletion has zero
+shift, i.e. `deg_D(b_g)=c`.  Thus the direction type is invisible to all co-regular one- and two-witness
+tests off the kernel; if those tests separate realized outgoing defects, anchored persistence plus
+componentwise no-split gives the singleton conclusion, and if they do not, the remaining pair is a
+chamber-flat silent edge for the one-corner lift.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard
