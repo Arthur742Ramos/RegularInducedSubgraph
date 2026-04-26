@@ -991,6 +991,11 @@ would create the new shift `2`.
 So the large branch splits: unit `sigma_g` forces the nonzero-shift singleton/pair repairs into an
 intersecting family, while `sigma_g=2` is the only branch where disjoint nonzero repairs can add back to
 zero.
+For unit `sigma_g`, the pair family is therefore a star or a triangle: if a nonzero singleton exists all
+nonzero pairs contain it; otherwise pairwise-intersecting two-subsets are either all incident to one old
+vertex or lie in the three edges of one old triangle.
+For `sigma_g=2`, split pairs never contribute.  The nonzero pair repairs are exactly anticomplete old
+pairs with both vertices in `N_W(b_g)` or complete old pairs with both vertices outside `N_W(b_g)`.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has

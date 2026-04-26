@@ -1513,6 +1513,10 @@ Recommended attack:
    their shifts.  Hence in the large-fiber branch two disjoint unit-shift deletions are impossible.
    Record the branch split: unit `sigma_g` makes nonzero singleton/pair repairs intersect; `sigma_g=2`
    is the only case where disjoint nonzero repairs can add to zero.
+   For unit `sigma_g`, formalize the standard pair-family classification: the nonzero pair repairs are
+   a star, or (if no nonzero singleton exists) contained in one old triangle.
+   For `sigma_g=2`, split old pairs contribute no nonzero shift; only anticomplete pairs inside
+   `N_W(b_g)` and complete pairs outside `N_W(b_g)` contribute.
 
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is

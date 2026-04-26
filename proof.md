@@ -6675,6 +6675,24 @@ that singleton if it exists.  If `sigma_g=2`, unit-shift repairs are absent, whi
 opposite-shift repairs may add back to zero.  The `sigma_g=2` branch is therefore the only large-fiber
 case in which disjoint small repairs can survive the addition law.
 
+For unit `sigma_g` the pair part is therefore completely structured.  If a nonzero-shift singleton
+exists, every nonzero-shift usable pair contains it.  If no such singleton exists, the nonzero-shift
+usable pairs form an intersecting family of two-subsets of `W`; hence they are either all incident to a
+single old vertex, or they are exactly contained in the three edges of one old triangle.  Thus the
+unit-shift branch reduces to a star/triangle obstruction inside `W`, while the `sigma_g=2` branch is the
+only branch with potentially spread-out disjoint pair repairs.
+
+In the `sigma_g=2` branch the pair table simplifies further.  A split pair (`c=1`) has shifts
+`a-1 in {3,0,1}`, so it never contributes shift `2`.  The only nonzero repairs are:
+
+```text
+c=0: anticomplete old pair with a=2, i.e. both deleted vertices lie in N_W(b_g);
+c=2: complete old pair with a=0, i.e. both deleted vertices avoid N_W(b_g).
+```
+
+Thus the opposite-shift branch is not arbitrary: every surviving nonzero pair repair is either an
+old-anticomplete pair fully inside the direction neighbourhood or an old-complete pair fully outside it.
+
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
 `deg_D(b)` constant on the four vertices.  The signed condition

@@ -1617,6 +1617,9 @@ Disjoint usable deletions add shifts while total size is below four, so two disj
 repairs are impossible in this very-large-fiber branch.
 Hence unit-shift branches force an intersecting family of nonzero singleton/pair repairs, while
 `sigma=2` is the only branch where disjoint nonzero repairs can survive by summing to zero.
+For unit `sigma`, those nonzero pair repairs are a star or are contained in one old triangle.
+For `sigma=2`, the only nonzero pair repairs are anticomplete old pairs inside `N_W(b_g)` or complete
+old pairs outside `N_W(b_g)`.
 The `25m/8` class margin also gives, for `m>24`, an augmented atom with `|S|=delta_S=0`, so
 `sum_S phi_S=-2e(S)`.
 
