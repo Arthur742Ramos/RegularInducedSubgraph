@@ -18791,6 +18791,164 @@ theorem RamseyThreeTenExact42TopRowFinalImport.toCountProfile
     RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
   h.topRowCountProfile
 
+/-- Repackage the final import as the local top-row/profile ledger certificate. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toProfileCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v where
+  topRowProfile := h.topRowProfile
+  localLedgers := h.localLedgers
+
+/-- Raw common-sum bounds from a final import's top-row selector. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toCommonSumBounds
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    65 ≤ Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72 :=
+  h.topRowSelector.toCommonSumBounds
+
+/-- Raw singleton/duplicated/triple count-profile bounds from a final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toCountProfileBounds
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27 ∧
+      5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          2 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card ∧
+        1 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            3 ≤ (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card :=
+  h.topRowSelector.toCountProfileBounds
+
+/-- Select the degree-`8` endpoint assumption from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDegreeEightEndpointAssumption
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix :=
+  h.degreeEightEndpoint
+
+/-- Select the degree-`9` endpoint assumption from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDegreeNineEndpointAssumption
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven :=
+  h.degreeNineEndpoint
+
+/-- Select the degree-`13` endpoint assumption from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDegreeThirteenEndpointAssumption
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven :=
+  h.degreeThirteenEndpoint
+
+/-- Select the degree-`10` split certificate from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDegreeTenSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.degreeTenSplits
+
+/-- Select the degree-`11` split certificate from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDegreeElevenSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.degreeElevenSplits
+
+/-- Select the degree-`12` split certificate from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDegreeTwelveSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.degreeTwelveSplits
+
+/-- Select the uniform middle-degree split certificate from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toMiddleDegreeSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.middleDegreeSplits
+
+/-- Select the exact-`42` profile local/global handoff from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toExact42ProfileHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45LocalLedgerHandoff RamseyThreeTenExact42ThreeRowProfileSurface where
+  ledger := h.exact42Profile
+  r45TwentySevenTable := h.r45TwentySevenTable
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+
+/-- Select the degree-`10` split local/global handoff from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDegreeTenSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven where
+  ledger := h.degreeTenSplits
+  r45TwentySevenTable := h.r45TwentySevenTable
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+
+/-- Select the degree-`11` split local/global handoff from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDegreeElevenSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven where
+  ledger := h.degreeElevenSplits
+  r45TwentySevenTable := h.r45TwentySevenTable
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+
+/-- Select the degree-`12` split local/global handoff from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDegreeTwelveSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven where
+  ledger := h.degreeTwelveSplits
+  r45TwentySevenTable := h.r45TwentySevenTable
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+
+/-- Select the uniform middle-degree split local/global handoff from the final import. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toMiddleDegreeSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven where
+  ledger := h.middleDegreeSplits
+  r45TwentySevenTable := h.r45TwentySevenTable
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+
 /-- Select the relaxed `R(4,5) <= 27` table from the final import. -/
 theorem RamseyThreeTenExact42TopRowFinalImport.toR45TwentySevenTable
     {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
@@ -19684,6 +19842,160 @@ theorem RamseyTenR45TopRowDownstreamImport.toTenLeF_40960
     {v : ↑(s : Set α)}
     (h : RamseyTenR45TopRowDownstreamImport G s v) : 10 ≤ F 40960 :=
   h.f40960
+
+/-- Profiled exact-`42` surfaces plus endpoint residuals produce downstream final imports. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.toProfileStatusWithMiddleDegreeLocalLedgers.toTopRowFinalImport hendpoints htop
+
+/-- Profiled exact-`42` surfaces plus endpoint residuals import common-sum/count-profile top rows. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toTopRowFinalImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.toProfileStatusWithMiddleDegreeLocalLedgers
+    |>.toTopRowFinalImport_ofCommonSumCountProfile hendpoints hcommon hcount
+
+/-- Endpoint/exact-`42` profile bridges produce downstream final imports. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.toReadyCertificate.toTopRowFinalImport htop
+
+/-- Endpoint/exact-`42` profile bridges import common-sum/count-profile top rows. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface.toTopRowFinalImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.toReadyCertificate.toTopRowFinalImport_ofCommonSumCountProfile hcommon hcount
+
+/-- Constructor for final imports from a profiled exact-`42` surface and endpoint residuals. -/
+theorem ramseyThreeTenExact42TopRowFinalImport_of_exact42Profile_and_endpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  hexact42.toTopRowFinalImport hendpoints htop
+
+/-- Common-sum/count-profile constructor from a profiled exact-`42` surface and endpoint residuals. -/
+theorem ramseyThreeTenExact42TopRowFinalImport_of_exact42Profile_commonSum_countProfile_and_endpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  hexact42.toTopRowFinalImport_ofCommonSumCountProfile hendpoints hcommon hcount
+
+/-- Assumption-explicit final import from endpoint assumptions and a profiled exact-`42` surface. -/
+theorem ramseyThreeTenExact42TopRowFinalImport_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  hexact42.toTopRowFinalImport ⟨h8, h9, h13⟩ htop
+
+/-- Common-sum/count-profile final import from endpoint assumptions and a profiled exact-`42` surface. -/
+theorem ramseyThreeTenExact42TopRowFinalImport_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_commonSum_countProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  hexact42.toTopRowFinalImport_ofCommonSumCountProfile ⟨h8, h9, h13⟩ hcommon hcount
+
+/-- Final imports expose the endpoint-only downstream surface. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toEndpointDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45EndpointDownstreamImport :=
+  h.endpointReady.toEndpointDownstreamImport
+
+/-- Final imports expose the one-import Ramsey/R45 downstream surface. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45DownstreamImport :=
+  h.readyCertificate.toDownstreamImport
+
+/-- Final imports can be consumed as top-row downstream imports. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toTopRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.toDownstreamImport.toTopRowDownstreamImport h.topRowProfile
+
+/-- A one-import downstream surface plus a profiled top row produces the exact-`42` final import. -/
+theorem RamseyTenR45DownstreamImport.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.readyCertificate.toTopRowFinalImport htop
+
+/-- A one-import downstream surface imports common-sum/count-profile top-row data. -/
+theorem RamseyTenR45DownstreamImport.toTopRowFinalImport_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.readyCertificate.toTopRowFinalImport_ofCommonSumCountProfile hcommon hcount
+
+/-- Top-row downstream imports can be repackaged as exact-`42` final imports. -/
+theorem RamseyTenR45TopRowDownstreamImport.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.readyCertificate.toTopRowFinalImport h.topRowProfile
+
+/-- Constructor exposing the top-row downstream surface from a final import. -/
+theorem ramseyTenR45TopRowDownstreamImport_of_topRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.toTopRowDownstreamImport
+
+/-- Constructor exposing the exact-`42` final import from a top-row downstream surface. -/
+theorem ramseyThreeTenExact42TopRowFinalImport_of_topRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.toTopRowFinalImport
 
 
 
