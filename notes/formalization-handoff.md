@@ -287,9 +287,30 @@ hasPolynomialCostFixedWitnessTerminalRegularization_of_modEqSubbucketSelection
 hasPolynomialCostFixedWitnessTerminalRegularization_of_droppedTailConstancySelection
 ```
 
-So the terminal task can now be attacked directly as exact subbucket selection inside the chosen
-large fixed-modulus host, or equivalently as dropped-tail residue constancy on that selected
-subbucket, without asking for the stronger terminal external-block/cascade witness.
+So the terminal-regularization task can now be attacked directly as exact subbucket selection inside
+the chosen large fixed-modulus host, or equivalently as dropped-tail residue constancy on that selected
+subbucket, without asking for the stronger terminal external-block/cascade witness.  For the viable
+D=5 external-block frontier, Lean also has a nonzero-exponent upgrade from these selectors back to
+external-block data:
+
+```lean
+hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_regularSubbucketSelection
+hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_modEqSubbucketSelection
+hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_droppedTailConstancySelection
+HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive
+HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive
+HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromFive
+hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_regularSubbucketSelectionFiveFromFive
+hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_modEqSubbucketSelectionFiveFromFive
+hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_droppedTailConstancySelectionFiveFromFive
+hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_regularSubbucketSelectionFromFive
+hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_modEqSubbucketSelectionFromFive
+hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_droppedTailConstancySelectionFromFive
+```
+
+Thus the external-block terminal side is now reduced to the q=16 Ramsey certificate plus a genuine
+`j >= 5` exact subbucket/dropped-tail selector, while the already checked `j = 1,2,3` slices stay
+outside the remaining tail obligation.
 
 Thus the terminal regularization frontier can be pushed past any checked finite dyadic prefix by
 increasing the fixed polynomial exponent.  Concretely, Lean now regularizes all fixed-witness

@@ -3909,6 +3909,256 @@ theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_droppedTailConsta
   hasPolynomialCostFixedWitnessTerminalRegularization_of_modEqSubbucketSelection
     (hasPolynomialCostFixedWitnessModEqSubbucketSelection_of_droppedTailConstancySelection hselect)
 
+private lemma fixedWitnessSubbucket_card_lt_host_card_of_pos_exponent
+    {D j n : ℕ} {S u : Finset (Fin n)}
+    (hD : 0 < D) (hj : 0 < j)
+    (hS : (2 ^ j) ^ D * 2 ^ j ≤ S.card) (hcard : u.card = 2 ^ j) :
+    u.card < S.card := by
+  have hqpos : 0 < 2 ^ j := Nat.pow_pos (by decide : 0 < 2)
+  have hq : 1 < 2 ^ j := by
+    cases j with
+    | zero =>
+        omega
+    | succ j =>
+        have hpow : 1 ≤ 2 ^ j := Nat.succ_le_of_lt (Nat.pow_pos (by decide : 0 < 2))
+        calc
+          1 < 2 := by decide
+          _ ≤ 2 * 2 ^ j := by
+            simpa [Nat.mul_comm] using Nat.mul_le_mul_left 2 hpow
+          _ = 2 ^ Nat.succ j := by simp [Nat.pow_succ, Nat.mul_comm]
+  rcases Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hD) with ⟨d, rfl⟩
+  have hfactor : 1 < (2 ^ j) ^ (d + 1) := by
+    have hpowPos : 0 < (2 ^ j) ^ d := Nat.pow_pos hqpos
+    have hq_le_factor : 2 ^ j ≤ (2 ^ j) ^ d * 2 ^ j := by
+      simpa [Nat.one_mul] using
+        Nat.mul_le_mul_right (2 ^ j) (Nat.succ_le_of_lt hpowPos)
+    simpa [Nat.pow_succ] using lt_of_lt_of_le hq hq_le_factor
+  have hmul : 2 ^ j < (2 ^ j) ^ (d + 1) * 2 ^ j := by
+    have hmul' := Nat.mul_lt_mul_of_pos_right hfactor hqpos
+    simpa [Nat.one_mul] using hmul'
+  calc
+    u.card = 2 ^ j := hcard
+    _ < (2 ^ j) ^ (d + 1) * 2 ^ j := hmul
+    _ ≤ S.card := hS
+
+/--
+A positive-exponent exact regular-subbucket selector upgrades to the positive-dyadic external-block
+self-bridge: the selected regular `q`-bucket is the terminal bucket, and the strictly larger fixed
+witness leaves a nonempty dropped block.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_regularSubbucketSelection
+    {D : ℕ} (hD : 0 < D)
+    (hselect : HasPolynomialCostFixedWitnessRegularSubbucketSelection D) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D := by
+  classical
+  intro n j hj G hfixed
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases hfixed with ⟨S, hS, hmod⟩
+  rcases hselect G hS hmod with ⟨u, huS, hcard, hreg⟩
+  have hproper : u.card < S.card :=
+    fixedWitnessSubbucket_card_lt_host_card_of_pos_exponent hD hj hS hcard
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_regular_subbucket
+      (G := G) (j := j) (S := S) (u := u) hcard huS hproper hmod hreg
+
+/-- A positive-exponent modular exact-subbucket selector is enough for the external-block bridge. -/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_modEqSubbucketSelection
+    {D : ℕ} (hD : 0 < D)
+    (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelection D) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_regularSubbucketSelection
+    hD
+    (hasPolynomialCostFixedWitnessRegularSubbucketSelection_of_modEqSubbucketSelection hselect)
+
+/--
+A positive-exponent dropped-tail constancy selector is enough for the external-block bridge, via the
+host-degree/dropped-degree modular exact-subbucket reduction.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_droppedTailConstancySelection
+    {D : ℕ} (hD : 0 < D)
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelection D) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge D :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_modEqSubbucketSelection
+    hD
+    (hasPolynomialCostFixedWitnessModEqSubbucketSelection_of_droppedTailConstancySelection hselect)
+
+/-- D=5 external-block bridge from a direct regular exact-subbucket selector. -/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_regularSubbucketSelection
+    (hselect : HasPolynomialCostFixedWitnessRegularSubbucketSelection 5) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_regularSubbucketSelection
+    (by decide : 0 < 5) hselect
+
+/-- D=5 external-block bridge from a modular exact-subbucket selector. -/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_modEqSubbucketSelection
+    (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelection 5) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_modEqSubbucketSelection
+    (by decide : 0 < 5) hselect
+
+/-- D=5 external-block bridge from a dropped-tail constancy selector. -/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_droppedTailConstancySelection
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelection 5) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_of_droppedTailConstancySelection
+    (by decide : 0 < 5) hselect
+
+/--
+Tail-only regular exact-subbucket selector for the D=5 external-block frontier.  The small positive
+dyadic moduli `j = 1,2,3` and the exact `j = 4` Ramsey slice are handled separately, so this starts
+at `j >= 5`.
+-/
+def HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive : Prop :=
+  ∀ {n j : ℕ} (hj : 5 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+      InducesModEqDegree G S (2 ^ j) →
+        ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+          ∃ d : ℕ, InducesRegularOfDegree G u d
+
+/-- Tail-only modular exact-subbucket selector for the D=5 external-block frontier. -/
+def HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive : Prop :=
+  ∀ {n j : ℕ} (hj : 5 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+      InducesModEqDegree G S (2 ^ j) →
+        ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+          InducesModEqDegree G u (2 ^ j)
+
+/-- Tail-only dropped-tail constancy selector for the D=5 external-block frontier. -/
+def HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromFive : Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 5 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+      ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+        InducesModEqDegree G S (2 ^ j) →
+          ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+            ∀ v w : ↑(u : Set (Fin n)),
+              (G.neighborFinset v ∩ (S \ u)).card ≡
+                (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j]
+
+/-- A modular tail selector gives a regular tail selector. -/
+theorem
+    hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive_of_modEqSubbucketSelectionFiveFromFive
+    (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive := by
+  intro n j hj G S hS hmod
+  rcases hselect hj G hS hmod with ⟨u, huS, hcard, huMod⟩
+  rcases
+    inducesRegularOfDegree_of_card_eq_modulus_of_inducesModEqDegree G hcard huMod with
+    ⟨d, hreg⟩
+  exact ⟨u, huS, hcard, d, hreg⟩
+
+/-- A dropped-tail constancy tail selector gives a modular tail selector. -/
+theorem
+    hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive_of_droppedTailConstancySelectionFiveFromFive
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromFive) :
+    HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive := by
+  classical
+  intro n j hj G S hS hmod
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases hselect hj G hS hmod with ⟨u, huS, hcard, hdrop⟩
+  have hhost :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hmod ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  exact
+    ⟨u, huS, hcard,
+      inducesModEqDegree_of_modEq_hostDegree_and_dropDegree (G := G) huS hhost hdrop⟩
+
+/-- A dropped-tail constancy tail selector gives a regular tail selector. -/
+theorem
+    hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive_of_droppedTailConstancySelectionFiveFromFive
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromFive) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive :=
+  hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive_of_modEqSubbucketSelectionFiveFromFive
+    (hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive_of_droppedTailConstancySelectionFiveFromFive
+      hselect)
+
+/-- The `j >= 5` regular subbucket selector proves the `j >= 5` external-block tail. -/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_regularSubbucketSelectionFiveFromFive
+    (hselect : HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive := by
+  classical
+  intro n j hj G hfixed
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases hfixed with ⟨S, hS, hmod⟩
+  rcases hselect hj G hS hmod with ⟨u, huS, hcard, hreg⟩
+  have hjpos : 0 < j := by omega
+  have hproper : u.card < S.card :=
+    fixedWitnessSubbucket_card_lt_host_card_of_pos_exponent
+      (D := 5) (j := j) (S := S) (u := u) (by decide : 0 < 5) hjpos hS hcard
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_regular_subbucket
+      (G := G) (j := j) (S := S) (u := u) hcard huS hproper hmod hreg
+
+/-- The `j >= 5` modular exact-subbucket selector proves the `j >= 5` external-block tail. -/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_modEqSubbucketSelectionFiveFromFive
+    (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_regularSubbucketSelectionFiveFromFive
+    (hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive_of_modEqSubbucketSelectionFiveFromFive
+      hselect)
+
+/-- The `j >= 5` dropped-tail constancy selector proves the `j >= 5` external-block tail. -/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_droppedTailConstancySelectionFiveFromFive
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromFive) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_modEqSubbucketSelectionFiveFromFive
+    (hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive_of_droppedTailConstancySelectionFiveFromFive
+      hselect)
+
+/--
+The D=5 external-block bridge is reduced to the certified q=16 Ramsey slice plus a `j >= 5`
+regular exact-subbucket selector.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_regularSubbucketSelectionFromFive
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (hselect : HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_fromFive
+    h16
+    (hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_regularSubbucketSelectionFiveFromFive
+      hselect)
+
+/--
+The D=5 external-block bridge is reduced to the certified q=16 Ramsey slice plus a `j >= 5`
+modular exact-subbucket selector.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_modEqSubbucketSelectionFromFive
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_regularSubbucketSelectionFromFive
+    h16
+    (hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromFive_of_modEqSubbucketSelectionFiveFromFive
+      hselect)
+
+/--
+The D=5 external-block bridge is reduced to the certified q=16 Ramsey slice plus a `j >= 5`
+dropped-tail constancy selector.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_droppedTailConstancySelectionFromFive
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromFive) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_modEqSubbucketSelectionFromFive
+    h16
+    (hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromFive_of_droppedTailConstancySelectionFiveFromFive
+      hselect)
+
 /--
 Terminal regularization is monotone in the polynomial exponent: a larger exponent asks for a larger
 fixed-modulus witness, so any smaller-exponent theorem applies by witness monotonicity.
