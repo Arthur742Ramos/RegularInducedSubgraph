@@ -1507,7 +1507,7 @@ Recommended attack:
    `{0,1}` and `{3,2}` branches require a congruent-degree selector argument after complementing to
    induced-`C_4`-free graphs with clique number at most `3`; colouring alone is not enough.  The safe
    replacement invariant is: in any terminal complement of this branch, every induced `Delta<=2`
-   subgraph has size at most `11m/5`, by the same path/cycle argument used for the girth-five remnant.
+   subgraph has size at most `11m/5`, by the same degree-two path/cycle argument.
 
    For the C4 branch, the augmented boundary rules give an internal cap: if
    `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and the other seven
@@ -1558,31 +1558,21 @@ Recommended attack:
    cannot both contain independent pairs, so one is also clique-bounded; support five reduces to a `4m`
    clique-bounded part plus one possible nonlinear type class with `alpha<=2`, induced-`C_4`-free, clique
    number at most `m`, and no outside-only congruent induced subgraph larger than `m`.  Complementing
-   that type class gives a triangle-free, C4-free graph `H` with `alpha(H)<=m`; since
-   `deg_G[S](v)=|S|-1-deg_H[S](v)`, mod-4 congruent induced sets are preserved by complement up to a
-   constant shift.  Thus the one-type remnant is the mod-4 selector restricted to girth-at-least-five
-   graphs.  Terminality further implies `induced_matching(H)<=m/2` and induced circumference at most
-   `m`: an induced matching has all selected degrees `1`, and an induced cycle has all selected degrees
-   `2`.  Strengthen this to the following formal target: every induced subgraph `F` of `H` with
-   `Delta(F)<=2` has `|F|<=11m/5`.  If `t` vertices of `F` lie on cycle components, then `t<=m`; the
-   path components have `independence + induced-matching-covered vertices >= p`, while each cycle of
-   length `r` contributes at least `4r/5` with equality only at `C_5`.  Since terminality caps both the
-   independent set and induced-matching endpoints by `m`, `|F|-t/5<=2m`, hence `|F|<=11m/5`.
-   If `F` is chosen maximum by cardinality, every outside vertex either hits a degree-`2` vertex of `F`,
-   or has at least three neighbours on `F`; otherwise it can be added while preserving `Delta<=2`.  In
-   the latter case those neighbours are pairwise at distance at least three along `F`.  Also formalize
-   the local exchange that two outside vertices cannot have the same sole spine-neighbour
-   `u in D_2(F)`, since replacing `u` by both leaves enlarges `F`.
-   Also formalize the maximum-induced-matching cover for the girth-five remnant.  If `U` is the endpoint
-   set of a maximum induced matching, then `|U|<=m`; vertices outside `N[U]` are independent; each matched
-   endpoint-pair supports at most `m` private neighbours; and all remaining vertices form a pair-incidence
-   cloud over `U`, with at most one vertex per endpoint pair and adjacency only between traces that are
-   disjoint and avoid opposite ends of a matching edge.
+   that type class gives a triangle-free, induced-`2K_2`-free graph `H`; this corrects the earlier false
+   "C4 is self-complementary" wording.  Since `deg_G[S](v)=|S|-1-deg_H[S](v)`, mod-4 congruent induced
+   sets are preserved by complement up to a constant shift.
+
+   Formalize the structure of triangle-free `2K_2`-free graphs: bipartite connected components are chain
+   graphs, while non-bipartite connected components are blow-ups of `C_5`.  For a `C_5` blow-up with
+   class sizes `a_1,...,a_5`, summing the nonconsecutive-pair independence inequalities gives
+   `2|H_j|<=5 alpha(H_j)`.  Also formalize the three-consecutive-class selector: capacities `A,B,C`
+   contain selected sizes `x,y,z` with `y=x+z [MOD 4]` and total at least `A+B+C-3`, so terminality forces
+   every cyclic triple to have size at most `m+3`.
    For support at most four, either a full square face triggers the face-C4 condition, or the support is
    a cube forest of at most four type classes.  In the cube-forest case, formalize the parity compression:
    at most one type of each parity is nonlinear, and if two nonlinear opposite-parity types survive they
    must be adjacent in the cube.  If the adjacent edge shares a zero coordinate, its union is already an
-   `alpha<=2`, induced-`C_4`-free instance and complements to the one-type girth-five selector.  Therefore
+   `alpha<=2`, induced-`C_4`-free instance and complements to the one-type chain/C5 selector.  Therefore
    the only possible new small-support residual is the top edge `111`--`110` up to symmetry, where each
    lower-type vertex has clique neighbourhood in the all-hit type; all other classes are clique-bounded.
    This top edge reduces further: if the lower type has an independent pair, the all-hit side is covered

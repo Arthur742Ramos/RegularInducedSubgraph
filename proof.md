@@ -6327,7 +6327,7 @@ use congruent-degree structure, not just chromatic structure.
 One piece of congruent-degree structure survives in this corrected `2K_2` branch.  Let `H` be the
 complement of a terminal `{0,1}` direction.  Then `H` is induced-`C_4`-free, has clique number at most
 `3`, has `alpha(H)<=m`, and cannot contain an induced subgraph `F` with `Delta(F)<=2` and
-`|F|>11m/5`.  The proof is the same path/cycle count used below: independent sets in `H`, induced
+`|F|>11m/5`.  The proof is the same degree-two path/cycle count: independent sets in `H`, induced
 matchings in `H`, and unions of cycle components of `H` complement back to outside-only sets whose
 degrees are constant modulo `4`.  Thus the failed colouring route is replaced by a terminal
 induced-degree-two exclusion in an induced-`C_4`-free, `K_4`-free graph.
@@ -6484,7 +6484,7 @@ one also has the structural independence bound
 
 because bipartite chain components have order at most twice their independence contribution, while a
 `C_5` blow-up satisfies `2|H_j|<=5 alpha(H_j)` by summing the five nonconsecutive-pair inequalities.
-Thus the former "girth-five" one-type residual is replaced by an explicit triangle-free `2K_2`-free
+Thus the former one-type residual is replaced by an explicit triangle-free `2K_2`-free
 structure theorem, plus the sharper three-consecutive-part selector inside every non-bipartite
 component.
 
@@ -6505,10 +6505,10 @@ of size at most `m`.
 At first this leaves only one adjacent-type residual.  If the adjacent types share a zero
 coordinate, their union lies in a single miss class `M_x`, so the whole union has independence number at
 most two; since the ambient direction is induced-`C_4`-free, complementing this union gives exactly the
-same girth-five selector already isolated above.  If the adjacent types share no zero coordinate, then
+same chain/C5 selector already isolated above.  If the adjacent types share no zero coordinate, then
 up to symmetry the pair is `111`--`110`: the lower type lies in one miss class, and every vertex of that
 lower type has a clique neighbourhood in the all-hit type by the one-corner rule.  Thus the
-support-at-most-four branch reduces to the one-type girth-five selector or to this top-edge incidence
+support-at-most-four branch reduces to the one-type chain/C5 selector or to this top-edge incidence
 problem, plus at most `2m` clique-bounded spill.
 
 The top-edge incidence problem also collapses to one-type selector surfaces.  Write the lower type as
@@ -6517,7 +6517,7 @@ The top-edge incidence problem also collapses to one-type selector surfaces.  Wr
 `B\(N_B(a_1) union N_B(a_2))` must also be a clique: two nonadjacent vertices there, together with
 `a_1,a_2`, would be an independent four-set, forbidden by repaired residue `0`.  Hence `|B|<=3m`.
 The only unbounded part is then `A`, which is an `alpha<=2`, induced-`C_4`-free one-type instance and
-therefore complements to the girth-five selector above.  If `A` has no independent pair, it is a clique
+therefore complements to the chain/C5 selector above.  If `A` has no independent pair, it is a clique
 and contributes at most `m`; the only unbounded part is `B`, an `alpha<=3`, induced-`C_4`-free one-type
 instance, equivalently after complement a `2K_2`-free, `K_4`-free selector with the same
 induced-`Delta<=2` exclusion recorded for the corrected `{0,1}` branch.  Here a genuine chromatic import
@@ -6529,7 +6529,7 @@ chi <= binom(omega+1,2).
 
 Since the complement has `omega<=3` and independence number at most `m`, this all-hit case has size at
 most `6m`.  Thus small cube-forest support introduces no new two-type obstruction and is linearly capped
-apart from the already isolated girth-five one-type selector.
+apart from the already isolated chain/C5 one-type selector.
 
 The only way three clique-bounded spill classes can coexist with a nonlinear class is the cube-star
 shape with the nonlinear type at the centre and three same-parity leaves.  This star has an additional
@@ -6545,8 +6545,8 @@ L_j = N_{L_j}(a) union N_{L_j}(b),
 and each of the two neighbourhoods is a clique by the one-corner rule whenever the centre is a miss for
 the corresponding coordinate.  Thus the last possible `3m` spill is not arbitrary: every independent
 pair in the nonlinear centre two-covers at least two leaves by clique neighbourhoods.  The remaining
-closure problem is to convert this pair-covering constraint, together with the girth-five selector bound
-on `T`, into a strict improvement over the crude `3m+11m/5` estimate.
+closure problem is to convert this pair-covering constraint, together with the chain/C5 selector bound
+on `T`, into a strict improvement over the crude `3m+5m/2` estimate.
 
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with

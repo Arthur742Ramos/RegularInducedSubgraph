@@ -931,8 +931,8 @@ The tempting `2K_2` chromatic shortcut is false: the join of two `C_5`'s is `2K_
 `{0,1}` and `{3,2}` branches cannot be capped by an additive `chi<=omega+O(1)` theorem.  After
 complementing, the real residual is a mod-`4` selector for induced-`C_4`-free graphs with clique number
 at most `3` and independence number at most `m`, so any closure must use congruent-degree structure
-rather than colouring alone.  In a terminal complement `H` of this branch, the same path/cycle selector
-used below forbids every induced `Delta<=2` subgraph larger than `11m/5`: independent sets, induced
+rather than colouring alone.  In a terminal complement `H` of this branch, the same degree-two
+path/cycle selector forbids every induced `Delta<=2` subgraph larger than `11m/5`: independent sets, induced
 matchings, and cycle-component unions in `H` complement back to outside-only congruent sets.  For the C4
 branch, the augmented boundary rules give a direct shape cap: if
 `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and all other seven
@@ -977,7 +977,7 @@ joined.  If the five class sizes are `a_1,...,a_5`, then summing the nonconsecut
 inequalities gives `2|H_j|<=5 alpha(H_j)`.  Moreover any three consecutive classes with capacities
 `A,B,C` contain a congruent-degree induced subgraph of size at least `A+B+C-3` by choosing
 `x<=A,y<=B,z<=C` with `y=x+z [MOD 4]`.  Thus terminality imposes
-`a_i+a_{i+1}+a_{i+2}<=m+3` for every cyclic triple.  The former girth-five one-type residual is therefore
+`a_i+a_{i+1}+a_{i+2}<=m+3` for every cyclic triple.  The former one-type residual is therefore
 an explicit chain/C5-blow-up structure, with global size at most `(5/2)m` and stronger local triple
 constraints in non-bipartite components.  For support at most four, either a full square face triggers
 the face-C4 condition or the support is a cube forest of at most four such type classes.
