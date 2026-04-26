@@ -5513,9 +5513,13 @@ The partner-hit templates are exactly: two petals covering `b` plus two opposite
 `b` plus all three opposite atoms.
 This is a family-union cover: the individual support through the full pair `B` must be strictly deficient,
 omitting at least `r+1` vertices if it hits `r` opposite atoms; the other petals compensate those omissions.
+Hence partner-hit collisions are impossible over all-pair opposite atoms: some hit atom has at least two
+omitted vertices and is split by a compensating petal, so it has size at least three.
 For a partner-free label, the split atoms have total rebate at least three.  Minimal patterns are one
 size-at-least-four atom, one size-three atom plus another split atom, or three pair atoms; the last is the
 four-pair square-breaker core.
+Therefore, after square-breaker discharge, every pair-atom collision detects a split atom of size at least
+three; pair atoms are no longer independent no-leftover obstructions.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

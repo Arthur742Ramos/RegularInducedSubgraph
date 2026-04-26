@@ -2090,8 +2090,12 @@ Partner-hit pair collisions are exactly the four high-cover templates: `b` plus 
 all three, the same with one omission, or a three-petal cover of `b` plus all three.
 The high-cover is by the family union; the individual full-pair support is strictly deficient
 (`delta>=r+1` when it hits `r` opposite atoms), and the other petals compensate.
+Thus partner-hit collisions force a size-at-least-three split atom and cannot occur over all-pair opposite
+atoms.
 Partner-free labels have split-atom rebate at least three; the minimal patterns are one size-at-least-four
 atom, one size-three atom plus another split atom, or three pair atoms.
+After the four-pair square-breaker is discharged, every pair-atom collision detects a split atom of size at
+least three.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

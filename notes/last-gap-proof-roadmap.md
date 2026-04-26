@@ -2056,8 +2056,11 @@ What remains justified after audit is:
       the same with one omission, or a three-petal cover of `b` plus all three;
       those are family-union covers; the individual full-pair support has strict deficit
       `delta>=r+1` on `r` hit opposite atoms, compensated by the other petals;
+      partner-hit therefore forces a size-at-least-three split atom and is impossible over all-pair opposite
+      atoms;
       partner-free split atoms have total rebate at least three, with minimal patterns: one size-at-least-four
       atom, one size-three plus another split atom, or three pair atoms;
+      after square-breaker discharge, every pair-atom collision detects a split atom of size at least three;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

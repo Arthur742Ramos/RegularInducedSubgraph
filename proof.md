@@ -12496,6 +12496,20 @@ Otherwise that single support would have nonnegative full gain, and zero gain is
 support in a saturated packing.  Thus every partner-hit high-cover circuit is a compensation pattern: the
 other petals must cover the omissions forced on the `b`-petal.
 
+This compensation forces a genuinely larger split atom.  If the full-pair petal hits `r` opposite atoms, then
+`delta>=r+1`; since it hits each of those atoms, by pigeonhole some hit atom contributes at least two omitted
+vertices.  That atom has size at least three.  In the high-cover family, all but at most one of the omissions
+of the full-pair petal are covered by the other petals, so the same atom is split between the full-pair petal
+and a compensating petal.  Therefore partner-hit collisions are impossible when all opposite atoms are pairs,
+and every partner-hit collision belongs to the "finite rebate circuit splitting an atom of size at least
+three" branch.
+
+Combining the partner-free and partner-hit analyses gives the current pair-atom endpoint.  Once the
+four-pair square-breaker core is discharged, every pair-atom collision splits an opposite atom of size at
+least three.  Thus a pair atom is no longer an independent no-leftover obstruction: either it participates in
+the local leftover pivot orbit, it is part of the four-pair one-corner square, or its deletion collision is a
+detector for a larger split atom in the same four-atom packing.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

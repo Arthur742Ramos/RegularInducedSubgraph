@@ -1166,8 +1166,12 @@ Partner-hit pair collisions are four high-cover templates: `b` plus two opposite
 the same with one omission, or a three-petal cover of `b` plus all three.
 The high-cover statement is for the family union; the individual support through the full pair is strictly
 deficient, with `delta>=r+1` if it hits `r` opposite atoms.
+Thus a partner-hit collision forces a size-at-least-three split atom; it cannot occur over all-pair opposite
+atoms.
 Partner-free labels have split-atom rebate at least three: minimally one size-at-least-four atom, one
 size-three plus another split atom, or three pair atoms (the square-breaker core).
+After the square-breaker core is discharged, every pair-atom collision detects a split atom of size at least
+three.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

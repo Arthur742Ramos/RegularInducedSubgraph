@@ -2568,9 +2568,14 @@ Recommended attack:
     two-petal `b` plus all three, two-petal one-omission, and three-petal `b` plus all three.
     Add the partner-hit individual-deficit rule: the high-cover is by the family union, while the full-pair
     petal itself must satisfy `delta>=r+1` if it hits `r` opposite atoms.
+    Derive the partner-hit large-atom consequence: some hit atom has at least two omissions and is covered by
+    a compensating petal, so partner-hit collisions force a split atom of size at least three and cannot occur
+    over all-pair opposite atoms.
     Add the split-rebate lower bound for partner-free labels: the split atoms have
     `sum(|H|-1)>=3`, so the minimal patterns are one size-at-least-four atom, one size-three atom plus
     another split atom, or three pair atoms.
+    Conclude the pair-atom endpoint after square-breaker discharge: every remaining pair collision splits an
+    opposite atom of size at least three, so pair atoms only detect larger split atoms.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.
