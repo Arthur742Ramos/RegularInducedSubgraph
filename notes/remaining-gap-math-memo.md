@@ -2081,6 +2081,9 @@ The star is rigid: all selected transversals are supports, all antipodes are abs
 through the hidden center is a one-corner `0001/0111` square, so the core routes to the host square-breaker.
 After discharging that square-breaker, the no-leftover rank-three branch starts with finite rebate circuits
 splitting an atom of size at least three, or with all atoms size at least four.
+Partner-free pair collisions are hidden bipartition colorings of the three opposite atoms; equal labels on
+the two endpoints close by two disjoint supports.  Partner-hit pair collisions are the finite high-cover
+templates.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

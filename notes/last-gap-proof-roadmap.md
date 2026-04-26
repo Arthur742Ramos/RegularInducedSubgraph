@@ -2048,6 +2048,8 @@ What remains justified after audit is:
       the host square-breaker;
       after square-breaker discharge, remaining no-leftover rank-three endpoints have a finite rebate circuit
       splitting an atom of size at least three, or all atoms have size at least four;
+      partner-free pair collisions are hidden bipartition colorings of the three opposite atoms with distinct
+      endpoint labels; partner-hit collisions are the finite high-cover templates;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

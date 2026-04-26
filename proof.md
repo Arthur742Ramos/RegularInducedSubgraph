@@ -12408,6 +12408,34 @@ work can therefore start after the small-collision alternatives: either a finite
 atom of size at least three remains, or all atoms have size at least four and the first collision-free case
 is the four-four unit-absorption/lift-collision branch.
 
+For later use, separate the pair-collision circuits by whether they touch the partner `b`.  In the
+`b`-free subbranch, the projected family can hit at most the other three packed atoms.  Positivity therefore
+forces the atom template
+
+```text
+s=2,        pi=3,        delta=0.
+```
+
+Thus the two projected petals are a complementary bipartition `C | M\C` of the union `M` of the other three
+packed atoms, and the only available full supports are
+
+```text
+{a} union C,        {a} union (M\C).
+```
+
+The unlifted parts `C` and `M\C` are absent.  At least one of the three other atoms is split between the two
+parts, and the strict-deficit strengthening says the total split-atom rebate is at least three.  Deleting
+the partner `b` gives another complementary bipartition label on the same `M`; if the two endpoint labels
+coincide, then `{a} union C` and `{b} union (M\C)` are disjoint supports whose two blocks partition all four
+atoms, closing the target.  Hence the `b`-free pair-collision branch is a hidden bipartition coloring of the
+three opposite atoms, with distinct colors on the two endpoints of each pair atom.
+
+If a collision petal contains `b`, the template list is finite but high-cover: with two petals it is one of
+`(pi,delta)=(3,0),(4,0),(4,1)` and with three petals it is `(4,0)`, where the hit atoms include the singleton
+`b`.  Equivalently, the support containing `a` and `b` also covers all, or all but one, of two or three
+opposite packed atoms.  These are the only pair-collision circuits not represented by the partner-free
+hidden-bipartition coloring.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

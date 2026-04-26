@@ -2558,6 +2558,9 @@ Recommended attack:
     Record the discharge consequence: once the support-local one-corner square-breaker is excluded, the
     four-pair no-leftover collision core is gone; remaining no-leftover rank-three cases either split an
     atom of size at least three in a finite rebate circuit or have all atoms size at least four.
+    Split pair collisions into partner-free and partner-hit cases.  In the partner-free branch prove
+    `s=2,pi=3,delta=0`, yielding complementary bipartition labels `C|M\C` on the opposite three atoms;
+    equal labels on the two endpoints close.  Record partner-hit as the finite high-cover template list.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

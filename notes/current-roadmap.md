@@ -5501,6 +5501,10 @@ routes back to the same host square-breaker.
 After square-breaker discharge, the remaining no-leftover rank-three work starts with finite rebate circuits
 splitting an atom of size at least three, or with all atoms size at least four and the four-four
 unit-absorption/lift-collision branch.
+Partner-free pair collisions are exactly hidden bipartition colorings: deleting `a` gives supports
+`{a} union C` and `{a} union (M\C)` for a complementary bipartition of the other three atoms, with endpoint
+labels distinct or else two supports partition all four atoms.  The only non-bipartition pair-collision
+templates are the finite partner-hit high-cover cases.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

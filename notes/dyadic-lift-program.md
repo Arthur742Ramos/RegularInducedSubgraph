@@ -1157,6 +1157,9 @@ The star forces all selected transversals and exposes a one-corner `0001/0111` s
 through the hidden center, so this finite core is the same host square-breaker in small-atom form.
 Once that square-breaker is discharged, only finite rebate circuits splitting an atom of size at least three
 or the all-atoms-size-at-least-four no-leftover branch remain.
+Partner-free pair collisions are hidden bipartition colorings of the three opposite atoms:
+`{a} union C` and `{a} union (M\C)`, with distinct endpoint labels; partner-hit collisions are the remaining
+finite high-cover templates.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.
