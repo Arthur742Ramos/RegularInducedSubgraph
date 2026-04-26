@@ -1406,4 +1406,383 @@ theorem targetStatement_of_proofMdLargeSupportColoringCurrentFrontierNoLeftoverS
     TargetStatement :=
   h.targetStatement_viaExternalBlock
 
+/--
+Current-frontier assumptions needed after the current selector endpoint has supplied the first-bit
+large-support package.  This separates the non-first-bit frontier obligations from the endpoint
+itself so final consumers can pass a small packet plus a public-release selector facade.
+-/
+structure ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket : Type where
+  sevenVertexBooleanCertificate :
+    ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
+  ramseyTenSmallTable : RamseyTenSmallTable
+  cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607
+  cliqueOrIndepSetBoundTail :
+    ∀ {j : ℕ}, 5 ≤ j →
+      ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+        2 * R + 1 ≤ (2 ^ j) ^ 5 * 2 ^ j
+  higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven
+
+/-- Extract the current-frontier assumption packet from the canonical certificate. -/
+def ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.ofCurrentFrontierCertificate
+    (h : ProofMdLargeSupportColoringCurrentFrontierCertificate) :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket where
+  sevenVertexBooleanCertificate := h.sevenVertexBooleanCertificate
+  ramseyTenSmallTable := h.ramseyTenSmallTable
+  cliqueOrIndepSetBound16 := h.cliqueOrIndepSetBound16
+  cliqueOrIndepSetBoundTail := h.cliqueOrIndepSetBoundTail
+  higherBitSelectors := h.higherBitSelectors
+
+/-- Extract the current-frontier assumption packet from the consumer bundle. -/
+def ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.ofCurrentFrontierConsumerBundle
+    (h : ProofMdLargeSupportColoringCurrentFrontierConsumerBundle) :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket where
+  sevenVertexBooleanCertificate := h.sevenVertexBooleanCertificate
+  ramseyTenSmallTable := h.ramseyTenSmallTable
+  cliqueOrIndepSetBound16 := h.cliqueOrIndepSetBound16
+  cliqueOrIndepSetBoundTail := h.cliqueOrIndepSetBoundTail
+  higherBitSelectors := h.higherBitSelectors
+
+/-- Extract the current-frontier assumption packet from a current-frontier handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.ofCurrentFrontierHandoffFacade
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket :=
+  ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.ofCurrentFrontierCertificate
+    h.toCurrentFrontierCertificate
+
+/-- Extract the current-frontier assumption packet from a selector-endpoint handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.ofCurrentFrontierSelectorEndpointHandoffFacade
+    (h : ProofMdLargeSupportColoringCurrentFrontierSelectorEndpointHandoffFacade) :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket :=
+  ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.ofCurrentFrontierHandoffFacade
+    h.toCurrentFrontierHandoffFacade
+
+/-- Extract the current-frontier assumption packet from the no-leftover selector handoff. -/
+def ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.ofCurrentFrontierNoLeftoverSelectorHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket :=
+  ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.ofCurrentFrontierSelectorEndpointHandoffFacade
+    h.toCurrentFrontierSelectorEndpointHandoffFacade
+
+/-- Combine a current-selector endpoint with the frontier packet to recover the canonical certificate. -/
+def ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.toCurrentFrontierCertificate
+    (h : ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket)
+    (selectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint) :
+    ProofMdLargeSupportColoringCurrentFrontierCertificate where
+  sevenVertexBooleanCertificate := h.sevenVertexBooleanCertificate
+  firstBit := selectorEndpoint.certificate
+  ramseyTenSmallTable := h.ramseyTenSmallTable
+  cliqueOrIndepSetBound16 := h.cliqueOrIndepSetBound16
+  cliqueOrIndepSetBoundTail := h.cliqueOrIndepSetBoundTail
+  higherBitSelectors := h.higherBitSelectors
+
+/-- Combine a current-selector endpoint with the frontier packet to recover the consumer bundle. -/
+def ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.toCurrentFrontierConsumerBundle
+    (h : ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket)
+    (selectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint) :
+    ProofMdLargeSupportColoringCurrentFrontierConsumerBundle where
+  sevenVertexBooleanCertificate := h.sevenVertexBooleanCertificate
+  firstBit := selectorEndpoint.facadeBundle.releaseFacade
+  ramseyTenSmallTable := h.ramseyTenSmallTable
+  cliqueOrIndepSetBound16 := h.cliqueOrIndepSetBound16
+  cliqueOrIndepSetBoundTail := h.cliqueOrIndepSetBoundTail
+  higherBitSelectors := h.higherBitSelectors
+
+/-- The frontier packet plus the current-selector endpoint close the target statement. -/
+theorem targetStatement_of_proofMdLargeSupportColoringCurrentFrontierAssumptionPacket_and_currentSelectorEndpoint
+    (h : ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket)
+    (selectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint) :
+    TargetStatement :=
+  targetStatement_of_proofMdLargeSupportColoringCurrentFrontierCertificate
+    (h.toCurrentFrontierCertificate selectorEndpoint)
+
+/-- The frontier packet plus the current-selector endpoint close the target through external blocks. -/
+theorem targetStatement_of_proofMdLargeSupportColoringCurrentFrontierAssumptionPacket_and_currentSelectorEndpoint_viaExternalBlock
+    (h : ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket)
+    (selectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint) :
+    TargetStatement :=
+  targetStatement_of_proofMdLargeSupportColoringCurrentFrontierCertificate_viaExternalBlock
+    (h.toCurrentFrontierCertificate selectorEndpoint)
+
+/--
+Public-release final consumer facade.  It is the final small handoff surface for downstream code that
+wants the current selector endpoint, the external-block route, the current-frontier/no-leftover packets,
+and both target wrappers packaged together.
+-/
+structure ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+    (terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop) :
+    Type where
+  selectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint
+  publicReleaseBundle : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  currentFrontierAssumptions : ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket
+  noLeftoverAssumptions :
+    ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  currentFrontierSelectorHandoff :
+    ProofMdLargeSupportColoringCurrentFrontierSelectorEndpointHandoffFacade
+  externalBlockSelectorHandoff :
+    ProofMdLargeSupportColoringExternalBlockSelectorEndpointHandoffFacade
+  noLeftoverSelectorHandoff :
+    ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  targetStatement : TargetStatement
+  targetStatement_viaExternalBlock : TargetStatement
+
+/-- Build the public-release final consumer facade from the no-leftover selector handoff. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.ofNoLeftoverSelectorHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision where
+  selectorEndpoint := h.toCurrentSelectorEndpoint
+  publicReleaseBundle := h.toCurrentSelectorEndpoint.toPublicFinalArchiveReleaseBundle
+  currentFrontierAssumptions :=
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket.ofCurrentFrontierNoLeftoverSelectorHandoffFacade h
+  noLeftoverAssumptions := h.noLeftoverAssumptions
+  currentFrontierSelectorHandoff := h.toCurrentFrontierSelectorEndpointHandoffFacade
+  externalBlockSelectorHandoff := h.toExternalBlockSelectorEndpointHandoffFacade
+  noLeftoverSelectorHandoff := h
+  targetStatement := h.targetStatement
+  targetStatement_viaExternalBlock := h.targetStatement_viaExternalBlock
+
+/-- Attach no-leftover assumptions and expose a selector-endpoint handoff as the final consumer facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierSelectorEndpointHandoffFacade.toPublicReleaseFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierSelectorEndpointHandoffFacade)
+    (noLeftoverAssumptions :
+      ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.ofNoLeftoverSelectorHandoffFacade
+    (h.toNoLeftoverSelectorHandoffFacade noLeftoverAssumptions)
+
+/-- Attach no-leftover assumptions and expose a current-frontier handoff as the final consumer facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierHandoffFacade.toPublicReleaseFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade)
+    (noLeftoverAssumptions :
+      ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toSelectorEndpointHandoffFacade.toPublicReleaseFinalConsumerFacade noLeftoverAssumptions
+
+/-- Attach no-leftover assumptions and expose a consumer bundle as the final consumer facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierConsumerBundle.toPublicReleaseFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierConsumerBundle)
+    (noLeftoverAssumptions :
+      ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toSelectorEndpointHandoffFacade.toPublicReleaseFinalConsumerFacade noLeftoverAssumptions
+
+/-- Attach no-leftover assumptions and expose a certificate as the final consumer facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierCertificate.toPublicReleaseFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierCertificate)
+    (noLeftoverAssumptions :
+      ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toSelectorEndpointHandoffFacade.toPublicReleaseFinalConsumerFacade noLeftoverAssumptions
+
+/-- Recover the current selector endpoint from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toCurrentSelectorEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitLargeSupportColoringCurrentSelectorEndpoint :=
+  h.selectorEndpoint
+
+/-- Recover the public/final/archive/release bundle from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toPublicFinalArchiveReleaseBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle :=
+  h.publicReleaseBundle
+
+/-- Recover the current-frontier assumption packet from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toCurrentFrontierAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket :=
+  h.currentFrontierAssumptions
+
+/-- Recover the no-leftover assumption packet from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toNoLeftoverDeletionAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverAssumptions
+
+/-- Recover the current-frontier selector handoff from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toCurrentFrontierSelectorEndpointHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringCurrentFrontierSelectorEndpointHandoffFacade :=
+  h.currentFrontierSelectorHandoff
+
+/-- Recover the external-block selector handoff from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toExternalBlockSelectorEndpointHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringExternalBlockSelectorEndpointHandoffFacade :=
+  h.externalBlockSelectorHandoff
+
+/-- Recover the external-block handoff facade from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toExternalBlockHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringExternalBlockHandoffFacade :=
+  h.externalBlockSelectorHandoff.toExternalBlockHandoffFacade
+
+/-- Recover the no-leftover selector handoff from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toNoLeftoverSelectorHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverSelectorHandoff
+
+/-- Selector assumptions exposed by the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.firstBitSelectors
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitCurrentSelectorAssumptions :=
+  h.selectorEndpoint.toCurrentSelectorAssumptions
+
+/-- Large-support loss-`32` selector exposed by the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.largeEvenDegreeModFourLoss32
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    HasLargeEvenDegreeModFourLoss32InducedSubgraph :=
+  h.selectorEndpoint.largeEvenDegreeModFourLoss32
+
+/-- Full loss-`32` selector exposed by the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.evenDegreeModFourLoss32
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  h.selectorEndpoint.evenDegreeModFourLoss32
+
+/-- Loss-`64` parity lift exposed by the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.parityToModFourLoss64FixedWitnessLift
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    HasParityToModFourLoss64FixedWitnessLift :=
+  h.selectorEndpoint.parityToModFourLoss64FixedWitnessLift
+
+/-- Project strict cross-atom defect control from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toTerminalStrictCrossAtomDefect
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalStrictCrossAtomDefect :=
+  h.noLeftoverAssumptions.toTerminalStrictCrossAtomDefect
+
+/-- Project the no-leftover four-four-atom deletion dichotomy from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toNoLeftoverFourFourAtomDeletionDichotomy
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverFourFourAtomDeletionDichotomy :=
+  h.noLeftoverAssumptions.toNoLeftoverFourFourAtomDeletionDichotomy
+
+/-- Project the no-leftover unit-strict-absorption/lift-collision consequence. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toNoLeftoverUnitStrictAbsorptionOrLiftCollision
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverAssumptions.toNoLeftoverUnitStrictAbsorptionOrLiftCollision
+
+/-- The final consumer facade closes the target statement. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- The final consumer facade also closes the target through external blocks. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseFinalConsumerFacade_viaExternalBlock
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement_viaExternalBlock
 end RegularInducedSubgraph
