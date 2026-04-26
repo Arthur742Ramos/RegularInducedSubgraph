@@ -1179,6 +1179,8 @@ Thus no no-leftover small-collision endpoint survives below `|A|=10`; the first 
 The former is a one-large-atom cut system; the latter is a coupled two-three-atom split system.
 For partner-free `4,2,2,2` cuts, a side carrying `k` auxiliary pair atoms contains `3-k` vertices of the
 four-atom.
+For partner-free `3,3,2,2`, either both three-atoms split with weighted side sizes `4` and `3`, or one
+three-atom and the pair split with a forced `1/2` split around the unsplit three-atom.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

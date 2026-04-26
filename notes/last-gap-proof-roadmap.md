@@ -2067,6 +2067,8 @@ What remains justified after audit is:
       these are respectively a one-large-atom cut system and a coupled two-three-atom split system;
       partner-free `4,2,2,2` cuts are balanced: `k` auxiliary pair atoms on one side forces `3-k` vertices
       of the four-atom;
+      partner-free `3,3,2,2` cuts are balanced: either both three-atoms split with side weights `4/3`, or one
+      three-atom and the pair split with a forced `1/2` split around the unsplit three-atom;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

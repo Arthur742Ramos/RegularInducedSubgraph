@@ -12564,6 +12564,24 @@ omit two of its vertices, again forcing compensation through the other petals.  
 projects to atom sizes `2,3,2,2`; if the other three-atom is not split, the projected collision is the
 already-discharged four-pair square core.  Hence profile `3,3,2,2` is a coupled two-three-atom split system.
 
+The partner-free `3,3,2,2` labels have two balance types.  Let the two three-atoms be `G,H` and the remaining
+opposite pair be `P`.
+
+If both `G` and `H` are split, the rebate is `4`.  A side carrying `t` vertices of `G`, `u` vertices of `H`,
+and `k` whole pair atoms among `P` has deficit
+
+```text
+d = 5-(t+u+k),
+```
+
+so the two side deficits are `1` and `2` in some order.  Equivalently the weighted side sizes `t+u+k` are
+`4` and `3`.
+
+If instead one three-atom `G` and the pair `P` are split while the other three-atom `H` is assigned whole to
+one side, the rebate is exactly `3`, so both side deficits are `1`.  The side carrying the whole atom `H`
+contains exactly one vertex of `G`, and the other side contains the other two vertices of `G`; each side
+contains one vertex of the split pair `P`.  Thus the second first-profile table is also finite and balanced.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

@@ -2584,6 +2584,8 @@ Recommended attack:
     two-three-atom split system whose three-atom deletions route to the other three-atom or to the square core.
     Add the balanced-cut table for partner-free `4,2,2,2`: a side carrying `k` auxiliary pair atoms contains
     exactly `3-k` vertices of the four-atom.
+    Add the partner-free `3,3,2,2` balance table: split both three-atoms gives weighted side sizes `4` and
+    `3`; split one three-atom plus the pair gives a forced `1/2` split around the unsplit three-atom.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

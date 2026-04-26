@@ -5529,6 +5529,9 @@ Profile `4,2,2,2` is a one-large-atom cut system: every pair collision splits th
 a pair, and three-atom deletion routes to the other three-atom or the square core.
 In the partner-free `4,2,2,2` table the cut is balanced: a side carrying `k` of the two auxiliary pair atoms
 contains exactly `3-k` vertices of the four-atom.
+Partner-free `3,3,2,2` has two balance tables: if both three-atoms split, weighted side sizes are `4` and
+`3`; if one three-atom and the pair split, the side carrying the unsplit three-atom contains one vertex of
+the split three-atom, while the other side contains two.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

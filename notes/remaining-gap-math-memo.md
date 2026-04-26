@@ -2103,6 +2103,8 @@ profiles are `4,2,2,2` and `3,3,2,2`.
 The `4,2,2,2` profile is a one-large-atom cut system; `3,3,2,2` is a coupled two-three-atom split system.
 In the partner-free `4,2,2,2` cut table, a side with `k` auxiliary pair atoms has `3-k` vertices of the
 four-atom.
+In partner-free `3,3,2,2`, both three-atoms split with weighted side sizes `4` and `3`, or one three-atom
+and the pair split with the unsplit three-atom side carrying one vertex of the split three-atom.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,
