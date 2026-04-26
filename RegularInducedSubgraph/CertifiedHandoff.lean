@@ -40670,6 +40670,510 @@ theorem CertifiedProofMdCurrentFrontierFinalReleaseTargetStatementConsumerCertif
       finalReleaseFacade.toTargetStatement :=
   rfl
 
+/-!
+## Final release proof-md citation facade
+
+The final release target-statement consumer certificate is the consumer-facing endpoint for this
+file's current frontier.  The citation layer below packages that certificate with the terminal
+endpoint packets already projected by it, an explicit first-bit checkpoint/public-closure slot, and
+an arbitrary terminal no-leftover release certificate supplied by downstream users.
+-/
+
+/--
+Citation packet for the terminal endpoints carried by the final release target-statement consumer.
+The structure is intentionally type-parametric so it can cite the concrete final-release projections
+while remaining usable by downstream facades that rename or wrap the endpoint packets.
+-/
+structure CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate
+    (FinalReleaseTargetStatementConsumerCertificate
+      LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      LargeTargetCapacityEndpointExhaustion
+      LargeTargetProtectedCoreFrontier
+      AllLargeAbsorptionOverlapAnchoredCollision
+      FirstBitFinalClosure : Type) : Type where
+  toFinalReleaseTargetStatementConsumerCertificate :
+    FinalReleaseTargetStatementConsumerCertificate
+  toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+    LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+  toLargeTargetCapacityEndpointExhaustion : LargeTargetCapacityEndpointExhaustion
+  toProtectedCoreFrontier : LargeTargetProtectedCoreFrontier
+  toAllLargeAbsorptionOverlapAnchoredCollision : AllLargeAbsorptionOverlapAnchoredCollision
+  toFirstBitFinalClosure : FirstBitFinalClosure
+  toTargetStatement : TargetStatement
+
+/-- The terminal endpoint citation packet exports the final release target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate
+    {FinalReleaseTargetStatementConsumerCertificate
+      LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      LargeTargetCapacityEndpointExhaustion
+      LargeTargetProtectedCoreFrontier
+      AllLargeAbsorptionOverlapAnchoredCollision
+      FirstBitFinalClosure : Type}
+    (h : CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      LargeTargetCapacityEndpointExhaustion
+      LargeTargetProtectedCoreFrontier
+      AllLargeAbsorptionOverlapAnchoredCollision
+      FirstBitFinalClosure) :
+    TargetStatement :=
+  h.toTargetStatement
+
+/--
+First-bit checkpoint bundle for final-release consumers.  It keeps the public closure artifact
+separate from the proof-md first-bit closure row while normalizing the target statement through the
+same final release target-statement consumer certificate.
+-/
+structure CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle
+    (FirstBitCheckpointPublicClosure
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FirstBitFinalClosure
+      FirstBitCoCut
+      FinalTargetConsumerCertificate : Type) : Type where
+  toTerminalEndpointCitationCertificate : TerminalEndpointCitationCertificate
+  toFinalReleaseTargetStatementConsumerCertificate :
+    FinalReleaseTargetStatementConsumerCertificate
+  toFirstBitFinalClosure : FirstBitFinalClosure
+  toFirstBitCoCut : FirstBitCoCut
+  toFirstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure
+  toFinalTargetConsumerCertificate : FinalTargetConsumerCertificate
+  toTargetStatement : TargetStatement
+
+/-- The first-bit checkpoint bundle exports the final release target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle
+    {FirstBitCheckpointPublicClosure
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FirstBitFinalClosure
+      FirstBitCoCut
+      FinalTargetConsumerCertificate : Type}
+    (h : CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle
+      FirstBitCheckpointPublicClosure
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FirstBitFinalClosure
+      FirstBitCoCut
+      FinalTargetConsumerCertificate) :
+    TargetStatement :=
+  h.toTargetStatement
+
+/--
+Final proof-md citation facade pairing the target-statement consumer with a terminal no-leftover
+release certificate and the first-bit checkpoint/public-closure bundle.
+-/
+structure CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade
+    (TerminalNoLeftoverReleaseCertificate
+      FirstBitCheckpointPublicClosure
+      FirstBitCheckpointConsumerBundle
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FinalTargetConsumerCertificate : Type) : Type where
+  toTerminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate
+  toFirstBitCheckpointConsumerBundle : FirstBitCheckpointConsumerBundle
+  toTerminalEndpointCitationCertificate : TerminalEndpointCitationCertificate
+  toFinalReleaseTargetStatementConsumerCertificate :
+    FinalReleaseTargetStatementConsumerCertificate
+  toFirstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure
+  toFinalTargetConsumerCertificate : FinalTargetConsumerCertificate
+  toTargetStatement : TargetStatement
+
+/-- Short alias for downstream no-leftover citation facades over the final release consumer. -/
+abbrev CertifiedProofMdCurrentFrontierFinalReleaseNoLeftoverCitationFacade :=
+  CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade
+
+/-- Build the final proof-md citation facade from a first-bit checkpoint bundle. -/
+def certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_firstBitCheckpointConsumerBundle
+    {TerminalNoLeftoverReleaseCertificate
+      FirstBitCheckpointPublicClosure
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FirstBitFinalClosure
+      FirstBitCoCut
+      FinalTargetConsumerCertificate : Type}
+    (firstBitCheckpointConsumerBundle :
+      CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle
+        FirstBitCheckpointPublicClosure
+        TerminalEndpointCitationCertificate
+        FinalReleaseTargetStatementConsumerCertificate
+        FirstBitFinalClosure
+        FirstBitCoCut
+        FinalTargetConsumerCertificate)
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate) :
+    CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade
+      TerminalNoLeftoverReleaseCertificate
+      FirstBitCheckpointPublicClosure
+      (CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle
+        FirstBitCheckpointPublicClosure
+        TerminalEndpointCitationCertificate
+        FinalReleaseTargetStatementConsumerCertificate
+        FirstBitFinalClosure
+        FirstBitCoCut
+        FinalTargetConsumerCertificate)
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FinalTargetConsumerCertificate where
+  toTerminalNoLeftoverReleaseCertificate := terminalNoLeftoverReleaseCertificate
+  toFirstBitCheckpointConsumerBundle := firstBitCheckpointConsumerBundle
+  toTerminalEndpointCitationCertificate :=
+    firstBitCheckpointConsumerBundle.toTerminalEndpointCitationCertificate
+  toFinalReleaseTargetStatementConsumerCertificate :=
+    firstBitCheckpointConsumerBundle.toFinalReleaseTargetStatementConsumerCertificate
+  toFirstBitCheckpointPublicClosure :=
+    firstBitCheckpointConsumerBundle.toFirstBitCheckpointPublicClosure
+  toFinalTargetConsumerCertificate :=
+    firstBitCheckpointConsumerBundle.toFinalTargetConsumerCertificate
+  toTargetStatement := firstBitCheckpointConsumerBundle.toTargetStatement
+
+/-- The final proof-md citation facade exports the certified final target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade
+    {TerminalNoLeftoverReleaseCertificate
+      FirstBitCheckpointPublicClosure
+      FirstBitCheckpointConsumerBundle
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FinalTargetConsumerCertificate : Type}
+    (h : CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade
+      TerminalNoLeftoverReleaseCertificate
+      FirstBitCheckpointPublicClosure
+      FirstBitCheckpointConsumerBundle
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FinalTargetConsumerCertificate) :
+    TargetStatement :=
+  h.toTargetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_firstBitCheckpointConsumerBundle_toTerminalNoLeftoverReleaseCertificate
+    {TerminalNoLeftoverReleaseCertificate
+      FirstBitCheckpointPublicClosure
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FirstBitFinalClosure
+      FirstBitCoCut
+      FinalTargetConsumerCertificate : Type}
+    (firstBitCheckpointConsumerBundle :
+      CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle
+        FirstBitCheckpointPublicClosure
+        TerminalEndpointCitationCertificate
+        FinalReleaseTargetStatementConsumerCertificate
+        FirstBitFinalClosure
+        FirstBitCoCut
+        FinalTargetConsumerCertificate)
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_firstBitCheckpointConsumerBundle
+      firstBitCheckpointConsumerBundle terminalNoLeftoverReleaseCertificate).toTerminalNoLeftoverReleaseCertificate =
+      terminalNoLeftoverReleaseCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_firstBitCheckpointConsumerBundle_toFirstBitCheckpointConsumerBundle
+    {TerminalNoLeftoverReleaseCertificate
+      FirstBitCheckpointPublicClosure
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FirstBitFinalClosure
+      FirstBitCoCut
+      FinalTargetConsumerCertificate : Type}
+    (firstBitCheckpointConsumerBundle :
+      CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle
+        FirstBitCheckpointPublicClosure
+        TerminalEndpointCitationCertificate
+        FinalReleaseTargetStatementConsumerCertificate
+        FirstBitFinalClosure
+        FirstBitCoCut
+        FinalTargetConsumerCertificate)
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_firstBitCheckpointConsumerBundle
+      firstBitCheckpointConsumerBundle terminalNoLeftoverReleaseCertificate).toFirstBitCheckpointConsumerBundle =
+      firstBitCheckpointConsumerBundle :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_firstBitCheckpointConsumerBundle_toTargetStatement
+    {TerminalNoLeftoverReleaseCertificate
+      FirstBitCheckpointPublicClosure
+      TerminalEndpointCitationCertificate
+      FinalReleaseTargetStatementConsumerCertificate
+      FirstBitFinalClosure
+      FirstBitCoCut
+      FinalTargetConsumerCertificate : Type}
+    (firstBitCheckpointConsumerBundle :
+      CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle
+        FirstBitCheckpointPublicClosure
+        TerminalEndpointCitationCertificate
+        FinalReleaseTargetStatementConsumerCertificate
+        FirstBitFinalClosure
+        FirstBitCoCut
+        FinalTargetConsumerCertificate)
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_firstBitCheckpointConsumerBundle
+      firstBitCheckpointConsumerBundle terminalNoLeftoverReleaseCertificate).toTargetStatement =
+      firstBitCheckpointConsumerBundle.toTargetStatement :=
+  rfl
+
+section FinalReleaseProofMdCitationFacadeConcreteApi
+
+variable {FirstBitCheckpointPublicClosure TerminalNoLeftoverReleaseCertificate : Type}
+variable (targetStatementConsumerCertificate :
+  CertifiedProofMdCurrentFrontierFinalReleaseConsumerCertificate
+    TypedFGraphBranchHandoff
+    ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    FourExceptionResidualBinaryNormalizationExtensionBundle
+    Basis WithHoles PositiveAtom
+    AnchoredPacking TraceTwinFree packingSize
+    WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+    terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+    terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+    terminalFourExceptionRemainingTwoTwoSkeletons
+    terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+    terminalFourExceptionAffineTableRowColumnSwitchNormalization
+    terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+    terminalFourExceptionSignedDegreeQuotientClosureFoldback
+    terminalFourExceptionShortenedPairHitQTwoFoldback
+    terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+    terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+    terminalLargeTargetTotalDeficitRebateOneSlack
+    terminalLargeTargetSideSlackSumHMinusFour
+    terminalLargeTargetHFourTightTable
+    terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+    terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+    terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+    terminalAllTernaryEndpointExhaustion
+    terminalNearThresholdBoundaryDiagnostics
+    terminalLargeTargetProtectedCoreFrontierReduction
+    terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+    terminalLargeTargetProtectedCoreAllLargePromotion
+    terminalLargeTargetProtectedCoreStrictDefectTransfer
+    terminalAllLargeAbsorptionOverlapCongestionBound
+    terminalAllLargeAbsorptionAnchoredCollisionBranch
+    terminalAllLargeAbsorptionProtectedCoreLift
+    terminalAllLargeAbsorptionNoResidualLargeTarget)
+
+/-- Promote a final release target-statement consumer to the terminal endpoint citation packet. -/
+def certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate :=
+  CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate.mk
+    targetStatementConsumerCertificate
+    targetStatementConsumerCertificate.toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+    targetStatementConsumerCertificate.toLargeTargetCapacityEndpointExhaustion
+    targetStatementConsumerCertificate.toProtectedCoreFrontier
+    targetStatementConsumerCertificate.toAllLargeAbsorptionOverlapAnchoredCollision
+    targetStatementConsumerCertificate.toFirstBitFinalClosure
+    targetStatementConsumerCertificate.toTargetStatement
+
+/-- Build the first-bit checkpoint bundle from the final release target-statement consumer. -/
+def certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :=
+  CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle.mk
+    (certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate)
+    targetStatementConsumerCertificate
+    targetStatementConsumerCertificate.toFirstBitFinalClosure
+    targetStatementConsumerCertificate.toFirstBitFinalClosure.toFirstBitCoCut
+    firstBitCheckpointPublicClosure
+    targetStatementConsumerCertificate.toFinalTargetConsumerCertificate
+    targetStatementConsumerCertificate.toTargetStatement
+
+/-- Build the final proof-md citation facade directly from the final target-statement consumer. -/
+def certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_targetStatementConsumerCertificate
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate)
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :=
+  certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_firstBitCheckpointConsumerBundle
+    (certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate firstBitCheckpointPublicClosure)
+    terminalNoLeftoverReleaseCertificate
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate.of_targetStatementConsumerCertificate_toFinalReleaseTargetStatementConsumerCertificate :
+    (certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate).toFinalReleaseTargetStatementConsumerCertificate =
+      targetStatementConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate.of_targetStatementConsumerCertificate_toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+    (certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate).toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff =
+      targetStatementConsumerCertificate.toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate.of_targetStatementConsumerCertificate_toLargeTargetCapacityEndpointExhaustion :
+    (certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate).toLargeTargetCapacityEndpointExhaustion =
+      targetStatementConsumerCertificate.toLargeTargetCapacityEndpointExhaustion :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate.of_targetStatementConsumerCertificate_toProtectedCoreFrontier :
+    (certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate).toProtectedCoreFrontier =
+      targetStatementConsumerCertificate.toProtectedCoreFrontier :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate.of_targetStatementConsumerCertificate_toAllLargeAbsorptionOverlapAnchoredCollision :
+    (certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate).toAllLargeAbsorptionOverlapAnchoredCollision =
+      targetStatementConsumerCertificate.toAllLargeAbsorptionOverlapAnchoredCollision :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate.of_targetStatementConsumerCertificate_toFirstBitFinalClosure :
+    (certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate).toFirstBitFinalClosure =
+      targetStatementConsumerCertificate.toFirstBitFinalClosure :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate.of_targetStatementConsumerCertificate_toTargetStatement :
+    (certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate).toTargetStatement =
+      targetStatementConsumerCertificate.toTargetStatement :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle.of_targetStatementConsumerCertificate_toTerminalEndpointCitationCertificate
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate firstBitCheckpointPublicClosure).toTerminalEndpointCitationCertificate =
+      certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+        targetStatementConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle.of_targetStatementConsumerCertificate_toFinalReleaseTargetStatementConsumerCertificate
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate firstBitCheckpointPublicClosure).toFinalReleaseTargetStatementConsumerCertificate =
+      targetStatementConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle.of_targetStatementConsumerCertificate_toFirstBitFinalClosure
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate firstBitCheckpointPublicClosure).toFirstBitFinalClosure =
+      targetStatementConsumerCertificate.toFirstBitFinalClosure :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle.of_targetStatementConsumerCertificate_toFirstBitCoCut
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate firstBitCheckpointPublicClosure).toFirstBitCoCut =
+      targetStatementConsumerCertificate.toFirstBitFinalClosure.toFirstBitCoCut :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle.of_targetStatementConsumerCertificate_toFirstBitCheckpointPublicClosure
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate firstBitCheckpointPublicClosure).toFirstBitCheckpointPublicClosure =
+      firstBitCheckpointPublicClosure :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle.of_targetStatementConsumerCertificate_toFinalTargetConsumerCertificate
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate firstBitCheckpointPublicClosure).toFinalTargetConsumerCertificate =
+      targetStatementConsumerCertificate.toFinalTargetConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle.of_targetStatementConsumerCertificate_toTargetStatement
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate firstBitCheckpointPublicClosure).toTargetStatement =
+      targetStatementConsumerCertificate.toTargetStatement :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_targetStatementConsumerCertificate_toTerminalNoLeftoverReleaseCertificate
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate)
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate terminalNoLeftoverReleaseCertificate
+      firstBitCheckpointPublicClosure).toTerminalNoLeftoverReleaseCertificate =
+      terminalNoLeftoverReleaseCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_targetStatementConsumerCertificate_toFirstBitCheckpointConsumerBundle
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate)
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate terminalNoLeftoverReleaseCertificate
+      firstBitCheckpointPublicClosure).toFirstBitCheckpointConsumerBundle =
+      certifiedProofMdCurrentFrontierFinalReleaseFirstBitCheckpointConsumerBundle_of_targetStatementConsumerCertificate
+        targetStatementConsumerCertificate firstBitCheckpointPublicClosure :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_targetStatementConsumerCertificate_toTerminalEndpointCitationCertificate
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate)
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate terminalNoLeftoverReleaseCertificate
+      firstBitCheckpointPublicClosure).toTerminalEndpointCitationCertificate =
+      certifiedProofMdCurrentFrontierFinalReleaseTerminalEndpointCitationCertificate_of_targetStatementConsumerCertificate
+        targetStatementConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_targetStatementConsumerCertificate_toFinalReleaseTargetStatementConsumerCertificate
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate)
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate terminalNoLeftoverReleaseCertificate
+      firstBitCheckpointPublicClosure).toFinalReleaseTargetStatementConsumerCertificate =
+      targetStatementConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_targetStatementConsumerCertificate_toFirstBitCheckpointPublicClosure
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate)
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate terminalNoLeftoverReleaseCertificate
+      firstBitCheckpointPublicClosure).toFirstBitCheckpointPublicClosure =
+      firstBitCheckpointPublicClosure :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_targetStatementConsumerCertificate_toFinalTargetConsumerCertificate
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate)
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate terminalNoLeftoverReleaseCertificate
+      firstBitCheckpointPublicClosure).toFinalTargetConsumerCertificate =
+      targetStatementConsumerCertificate.toFinalTargetConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_targetStatementConsumerCertificate_toTargetStatement
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate)
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate terminalNoLeftoverReleaseCertificate
+      firstBitCheckpointPublicClosure).toTargetStatement =
+      targetStatementConsumerCertificate.toTargetStatement :=
+  rfl
+
+/-- The direct final citation facade target is the final release target-statement consumer target. -/
+theorem CertifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade.of_targetStatementConsumerCertificate_targetStatement_eq_consumer
+    (terminalNoLeftoverReleaseCertificate : TerminalNoLeftoverReleaseCertificate)
+    (firstBitCheckpointPublicClosure : FirstBitCheckpointPublicClosure) :
+    (certifiedProofMdCurrentFrontierFinalReleaseProofMdCitationFacade_of_targetStatementConsumerCertificate
+      targetStatementConsumerCertificate terminalNoLeftoverReleaseCertificate
+      firstBitCheckpointPublicClosure).toTargetStatement =
+      targetStatement_of_certifiedProofMdCurrentFrontierFinalReleaseTargetStatementConsumerCertificate
+        targetStatementConsumerCertificate :=
+  rfl
+
+end FinalReleaseProofMdCitationFacadeConcreteApi
+
 end CurrentFrontierFinalReleaseFacadeApi
 end FinalObligationDashboard
 
