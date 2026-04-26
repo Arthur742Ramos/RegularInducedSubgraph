@@ -10053,12 +10053,120 @@ theorem not_firstBitCoordinateSubboxAvailableCutCertificate_of_capacity_le_one
   intro hcut
   exact firstBitCoordinateSubboxTwoSidedAvailable_false_of_capacity_le_one hcap hcut.available
 
+/-- The coefficient carried by an available-cut certificate is nonzero. -/
+theorem FirstBitCoordinateSubboxAvailableCutCertificate.coeff_ne_zero
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit) :
+    coeff ≠ (0 : Fin 4) :=
+  h.available.1
+
+/-- An available-cut certificate has capacity exactly `3` or exactly `2`. -/
+theorem FirstBitCoordinateSubboxAvailableCutCertificate.capacity_eq_three_or_two
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit) :
+    capacity = 3 ∨ capacity = 2 := by
+  rcases h.available.2 with hthree | htwo
+  · exact Or.inl hthree
+  · exact Or.inr htwo.1
+
+/-- Available cuts only occur at capacities at most `3`. -/
+theorem FirstBitCoordinateSubboxAvailableCutCertificate.capacity_le_three
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit) :
+    capacity ≤ 3 := by
+  rcases h.capacity_eq_three_or_two with hthree | htwo <;> omega
+
+/-- Available cuts only occur at capacities at least `2`. -/
+theorem FirstBitCoordinateSubboxAvailableCutCertificate.one_lt_capacity
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit) :
+    1 < capacity := by
+  rcases h.capacity_eq_three_or_two with hthree | htwo <;> omega
+
+/-- If an available-cut certificate has capacity `2`, its coefficient is the self-opposite one. -/
+theorem FirstBitCoordinateSubboxAvailableCutCertificate.coeff_eq_two_of_capacity_two
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit)
+    (hcap : capacity = 2) :
+    coeff = (2 : Fin 4) := by
+  rcases h.available.2 with hthree | htwo
+  · have hfalse : False := by omega
+    exact False.elim hfalse
+  · exact htwo.2
+
+/-- A non-self-opposite available coefficient forces the full capacity-`3` coordinate. -/
+theorem FirstBitCoordinateSubboxAvailableCutCertificate.capacity_eq_three_of_coeff_ne_two
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit)
+    (hcoeff : coeff ≠ (2 : Fin 4)) :
+    capacity = 3 := by
+  rcases h.available.2 with hthree | htwo
+  · exact hthree
+  · exact False.elim (hcoeff htwo.2)
+
+/-- Every available-cut certificate is either full capacity or the capacity-`2` self-opposite cut. -/
+theorem FirstBitCoordinateSubboxAvailableCutCertificate.fullCapacity_or_coeff_two
+    {capacity d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit) :
+    capacity = 3 ∨ coeff = (2 : Fin 4) := by
+  rcases h.available.2 with hthree | htwo
+  · exact Or.inl hthree
+  · exact Or.inr htwo.2
+
+/-- A full-coordinate available cut is the capacity-`3` specialization of available-cut certificates. -/
+def FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate
+    (coeff : Fin 4) (d effectiveDeficit : ℕ) : Prop :=
+  FirstBitCoordinateSubboxAvailableCutCertificate 3 coeff d effectiveDeficit
+
+/-- Build a full-coordinate certificate from a nonzero coefficient. -/
+theorem firstBitCoordinateSubboxFullCoordinateAvailableCutCertificate_of_nonzero
+    {d : ℕ} {coeff : Fin 4} (hcoeff : coeff ≠ (0 : Fin 4)) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate coeff d d :=
+  firstBitCoordinateSubboxAvailableCutCertificate_of_available
+    (firstBitCoordinateSubboxTwoSidedAvailable_three hcoeff)
+
+/-- Project full-coordinate availability from the specialized certificate. -/
+theorem FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate.to_available
+    {d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate coeff d effectiveDeficit) :
+    FirstBitCoordinateSubboxTwoSidedAvailable 3 coeff :=
+  FirstBitCoordinateSubboxAvailableCutCertificate.to_available h
+
+/-- The coefficient in a full-coordinate available cut is nonzero. -/
+theorem FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate.coeff_ne_zero
+    {d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate coeff d effectiveDeficit) :
+    coeff ≠ (0 : Fin 4) :=
+  h.to_available.1
+
+/-- Full-coordinate cuts also preserve the original deficit. -/
+theorem FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate.effectiveDeficit_eq
+    {d effectiveDeficit : ℕ} {coeff : Fin 4}
+    (h : FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate coeff d effectiveDeficit) :
+    effectiveDeficit = d :=
+  FirstBitCoordinateSubboxAvailableCutCertificate.effectiveDeficit_eq h
+
 /-- Available-cut positive-atom collapse keeps the original deficit and carries any residual index along. -/
 def FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse
     (WithHoles PositiveAtom : ℕ → ℕ → Prop) : Prop :=
   ∀ {capacity d effectiveDeficit rho : ℕ} {coeff : Fin 4},
     FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit →
       WithHoles effectiveDeficit rho → PositiveAtom d rho
+
+/-- Full-coordinate specialization of the available-cut positive-atom collapse. -/
+def FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse
+    (WithHoles PositiveAtom : ℕ → ℕ → Prop) : Prop :=
+  ∀ {d effectiveDeficit rho : ℕ} {coeff : Fin 4},
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate coeff d effectiveDeficit →
+      WithHoles effectiveDeficit rho → PositiveAtom d rho
+
+/-- Any available-cut collapse can be restricted to full-coordinate cuts. -/
+theorem FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse.to_fullCoordinate
+    {WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (hcollapse : FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse WithHoles PositiveAtom := by
+  intro d effectiveDeficit rho coeff hcut hholes
+  exact hcollapse hcut hholes
 
 /-- If collapse is stated directly with the original deficit, it gives the available-cut surface. -/
 theorem firstBitCoordinateSubboxAvailableCutPositiveAtomCollapse_of_originalDeficit
@@ -10073,6 +10181,20 @@ theorem firstBitCoordinateSubboxAvailableCutPositiveAtomCollapse_of_originalDefi
     simpa [hcut.keeps_deficit] using hholes
   exact hcollapse hcut.available hholes'
 
+/-- If full-coordinate collapse is stated at the original deficit, it gives the full-coordinate surface. -/
+theorem firstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse_of_originalDeficit
+    {WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (hcollapse :
+      ∀ {d rho : ℕ} {coeff : Fin 4},
+        coeff ≠ (0 : Fin 4) → WithHoles d rho → PositiveAtom d rho) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse WithHoles PositiveAtom := by
+  intro d effectiveDeficit rho coeff hcut hholes
+  have hholes' : WithHoles d rho := by
+    simpa [FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate.effectiveDeficit_eq hcut]
+      using hholes
+  exact hcollapse
+    (FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate.coeff_ne_zero hcut) hholes'
+
 /-- Apply an available-cut collapse surface when the deficit is already the original one. -/
 theorem FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse.positiveAtom_of_available
     {WithHoles PositiveAtom : ℕ → ℕ → Prop}
@@ -10084,6 +10206,37 @@ theorem FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse.positiveAtom_of
   hcollapse
     (firstBitCoordinateSubboxAvailableCutCertificate_of_available
       (d := d) havailable) hholes
+
+/-- Apply an available-cut collapse on a full capacity-`3` coordinate. -/
+theorem FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse.positiveAtom_of_capacity_three
+    {WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (hcollapse : FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom)
+    {d rho : ℕ} {coeff : Fin 4} (hcoeff : coeff ≠ (0 : Fin 4))
+    (hholes : WithHoles d rho) :
+    PositiveAtom d rho :=
+  hcollapse.positiveAtom_of_available
+    (firstBitCoordinateSubboxTwoSidedAvailable_three hcoeff) hholes
+
+/-- Apply an available-cut collapse on the capacity-`2` self-opposite coordinate. -/
+theorem FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse.positiveAtom_of_capacity_two
+    {WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (hcollapse : FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom)
+    {d rho : ℕ} (hholes : WithHoles d rho) :
+    PositiveAtom d rho :=
+  hcollapse.positiveAtom_of_available
+    firstBitCoordinateSubboxTwoSidedAvailable_two hholes
+
+/-- Apply a full-coordinate collapse surface when the deficit is already the original one. -/
+theorem FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse.positiveAtom_of_nonzero
+    {WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (hcollapse :
+      FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse WithHoles PositiveAtom)
+    {d rho : ℕ} {coeff : Fin 4} (hcoeff : coeff ≠ (0 : Fin 4))
+    (hholes : WithHoles d rho) :
+    PositiveAtom d rho :=
+  hcollapse
+    (firstBitCoordinateSubboxFullCoordinateAvailableCutCertificate_of_nonzero
+      (d := d) hcoeff) hholes
 
 /--
 Holed-boundary positive-atom wrapper on available coordinate cuts: the near-top basis transfers to
@@ -10114,6 +10267,43 @@ theorem FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers.positiveAtom_of_ba
     (hbasis : Basis effectiveDeficit rho) :
     PositiveAtom d rho :=
   h.availableCutCollapse hcut (h.basisWithHoles hbasis)
+
+/-- Project the full-coordinate collapse surface from the available-cut wrapper. -/
+theorem FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers.to_fullCoordinateCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse
+      WithHoles PositiveAtom :=
+  h.availableCutCollapse.to_fullCoordinate
+
+/-- Use a full capacity-`3` coordinate cut directly from a basis certificate. -/
+theorem FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers.positiveAtom_of_capacity_three
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom)
+    {d rho : ℕ} {coeff : Fin 4} (hcoeff : coeff ≠ (0 : Fin 4))
+    (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.availableCutCollapse.positiveAtom_of_capacity_three hcoeff
+    (h.basisWithHoles hbasis)
+
+/-- Use the capacity-`2` self-opposite coordinate cut directly from a basis certificate. -/
+theorem FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers.positiveAtom_of_capacity_two
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom)
+    {d rho : ℕ} (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.availableCutCollapse.positiveAtom_of_capacity_two (h.basisWithHoles hbasis)
+
+/-- Use a specialized full-coordinate available-cut certificate from the wrapper. -/
+theorem FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers.positiveAtom_of_fullCoordinateCut
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom)
+    {d effectiveDeficit rho : ℕ} {coeff : Fin 4}
+    (hcut : FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate
+      coeff d effectiveDeficit)
+    (hbasis : Basis effectiveDeficit rho) :
+    PositiveAtom d rho :=
+  h.to_fullCoordinateCollapse hcut (h.basisWithHoles hbasis)
 
 /--
 Final-facing import bundle for the available-cut positive-atom route.  It keeps the exact-boundary
@@ -10151,6 +10341,42 @@ theorem FirstBitTerminalAvailableCutPositiveAtomBoundaryImports.positiveAtom_of_
     (hbasis : Basis effectiveDeficit rho) :
     PositiveAtom d rho :=
   h.availableCut.positiveAtom_of_basis hcut hbasis
+
+/-- Project the full-coordinate collapse surface through the final-facing boundary imports. -/
+theorem FirstBitTerminalAvailableCutPositiveAtomBoundaryImports.to_fullCoordinateCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse
+      WithHoles PositiveAtom :=
+  h.availableCut.to_fullCoordinateCollapse
+
+/-- Apply the capacity-`3` full-coordinate positive-atom route through boundary imports. -/
+theorem FirstBitTerminalAvailableCutPositiveAtomBoundaryImports.positiveAtom_of_capacity_three
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom)
+    {d rho : ℕ} {coeff : Fin 4} (hcoeff : coeff ≠ (0 : Fin 4))
+    (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.availableCut.positiveAtom_of_capacity_three hcoeff hbasis
+
+/-- Apply the capacity-`2` self-opposite positive-atom route through boundary imports. -/
+theorem FirstBitTerminalAvailableCutPositiveAtomBoundaryImports.positiveAtom_of_capacity_two
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom)
+    {d rho : ℕ} (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.availableCut.positiveAtom_of_capacity_two hbasis
+
+/-- Apply a full-coordinate available-cut certificate through boundary imports. -/
+theorem FirstBitTerminalAvailableCutPositiveAtomBoundaryImports.positiveAtom_of_fullCoordinateCut
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom)
+    {d effectiveDeficit rho : ℕ} {coeff : Fin 4}
+    (hcut : FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate
+      coeff d effectiveDeficit)
+    (hbasis : Basis effectiveDeficit rho) :
+    PositiveAtom d rho :=
+  h.availableCut.positiveAtom_of_fullCoordinateCut hcut hbasis
 
 /--
 Final packet wrapper enriched with the available-cut positive-atom import.  This is only a wiring
@@ -10218,6 +10444,50 @@ theorem
     (hbasis : Basis effectiveDeficit rho) :
     PositiveAtom d rho :=
   h.availableCutPositiveAtom.positiveAtom_of_basis hcut hbasis
+
+/-- Project the full-coordinate collapse surface from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.to_fullCoordinateCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse
+      WithHoles PositiveAtom :=
+  h.availableCutPositiveAtom.to_fullCoordinateCollapse
+
+/-- Apply the full capacity-`3` coordinate route from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.positiveAtom_of_capacity_three
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom)
+    {d rho : ℕ} {coeff : Fin 4} (hcoeff : coeff ≠ (0 : Fin 4))
+    (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.availableCutPositiveAtom.positiveAtom_of_capacity_three hcoeff hbasis
+
+/-- Apply the capacity-`2` self-opposite route from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.positiveAtom_of_capacity_two
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom)
+    {d rho : ℕ} (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.availableCutPositiveAtom.positiveAtom_of_capacity_two hbasis
+
+/-- Apply a full-coordinate available-cut certificate from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.positiveAtom_of_fullCoordinateCut
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom)
+    {d effectiveDeficit rho : ℕ} {coeff : Fin 4}
+    (hcut : FirstBitCoordinateSubboxFullCoordinateAvailableCutCertificate
+      coeff d effectiveDeficit)
+    (hbasis : Basis effectiveDeficit rho) :
+    PositiveAtom d rho :=
+  h.availableCutPositiveAtom.positiveAtom_of_fullCoordinateCut hcut hbasis
 
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
