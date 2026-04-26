@@ -2868,4 +2868,422 @@ theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseCurrentFronti
       h.externalBlockHandoff :=
   rfl
 
+/--
+Final-public downstream target-obligation layer.  This consumes the final-public checkpoint and
+names the exact selector/current-frontier obligations that downstream consumers need: the current
+selector endpoint, the no-leftover/current-frontier packet, the external-block handoff, and the
+target wrappers obtained by reusing the checkpoint and public citation bundle.
+-/
+structure ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+    (terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop) :
+    Type where
+  downstreamCheckpoint :
+    ProofMdLargeSupportColoringFinalPublicCheckpointFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  downstreamTargetObligations :
+    ProofMdLargeSupportColoringFinalPublicTargetObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  downstreamCitationBundle :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  downstreamFinalConsumerFacade :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  downstreamPublicReleaseBundle : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  endpointForCurrentSelector : FirstBitLargeSupportColoringCurrentSelectorEndpoint
+  packetForNoLeftoverCurrentFrontier :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  packetForCurrentFrontier :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket
+  packetForNoLeftoverDeletion :
+    ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  handoffForExternalBlock : ProofMdLargeSupportColoringExternalBlockHandoffFacade
+  targetStatement_fromCheckpoint : TargetStatement
+  targetStatement_fromCheckpointExternalBlock : TargetStatement
+  targetStatement_fromFinalTargetWrapper : TargetStatement
+  targetStatement_fromCurrentSelectorEndpoint : TargetStatement
+  targetStatement_fromCurrentSelectorEndpoint_viaExternalBlock : TargetStatement
+  targetStatement_fromExternalBlockHandoff : TargetStatement
+
+/-- Build the downstream target-obligation layer from the final-public checkpoint. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicCheckpointFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision where
+  downstreamCheckpoint := h
+  downstreamTargetObligations := h.toFinalPublicTargetObligationPacket
+  downstreamCitationBundle := h.toPublicReleaseCurrentFrontierCitationBundle
+  downstreamFinalConsumerFacade := h.finalConsumerFacade
+  downstreamPublicReleaseBundle := h.publicReleaseBundle
+  endpointForCurrentSelector := h.currentSelectorEndpoint
+  packetForNoLeftoverCurrentFrontier := h.noLeftoverCurrentFrontierPacket
+  packetForCurrentFrontier :=
+    h.noLeftoverCurrentFrontierPacket.toCurrentFrontierAssumptionPacket
+  packetForNoLeftoverDeletion :=
+    h.noLeftoverCurrentFrontierPacket.toNoLeftoverDeletionAssumptionPacket
+  handoffForExternalBlock := h.externalBlockHandoff
+  targetStatement_fromCheckpoint :=
+    targetStatement_of_proofMdLargeSupportColoringFinalPublicCheckpointFacade h
+  targetStatement_fromCheckpointExternalBlock :=
+    targetStatement_of_proofMdLargeSupportColoringFinalPublicCheckpointFacade_viaExternalBlock h
+  targetStatement_fromFinalTargetWrapper :=
+    targetStatement_of_proofMdLargeSupportColoringFinalPublicTargetObligationPacket
+      h.targetObligations
+  targetStatement_fromCurrentSelectorEndpoint :=
+    targetStatement_of_proofMdLargeSupportColoringFinalPublicTargetObligationPacket_viaNoLeftoverCurrentSelector
+      h.targetObligations
+  targetStatement_fromCurrentSelectorEndpoint_viaExternalBlock :=
+    targetStatement_of_proofMdLargeSupportColoringFinalPublicTargetObligationPacket_viaNoLeftoverCurrentSelectorExternalBlock
+      h.targetObligations
+  targetStatement_fromExternalBlockHandoff :=
+    targetStatement_of_proofMdLargeSupportColoringFinalPublicTargetObligationPacket_viaExternalBlockHandoff
+      h.targetObligations
+
+/-- Expose the downstream target-obligation layer from the final-public checkpoint. -/
+def ProofMdLargeSupportColoringFinalPublicCheckpointFacade.toDownstreamTargetObligationLayer
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicCheckpointFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade h
+
+/-- Build the downstream target-obligation layer directly from the public citation bundle. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toFinalPublicCheckpointFacade.toDownstreamTargetObligationLayer
+
+/-- Expose the downstream target-obligation layer from the public citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toFinalPublicDownstreamTargetObligationLayer
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofCurrentFrontierCitationBundle h
+
+/-- Expose the downstream target-obligation layer from the public-release final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toFinalPublicDownstreamTargetObligationLayer
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toFinalPublicCheckpointFacade.toDownstreamTargetObligationLayer
+
+/-- Recover the final-public checkpoint from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toFinalPublicCheckpointFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringFinalPublicCheckpointFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.downstreamCheckpoint
+
+/-- Recover the final target-obligation packet from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toFinalPublicTargetObligationPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringFinalPublicTargetObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.downstreamTargetObligations
+
+/-- Recover the public citation bundle from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toPublicReleaseCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.downstreamCitationBundle
+
+/-- Recover the public-release final consumer facade from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toPublicReleaseFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.downstreamFinalConsumerFacade
+
+/-- Recover the public/final/archive/release bundle from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toPublicFinalArchiveReleaseBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle :=
+  h.downstreamPublicReleaseBundle
+
+/-- Recover the current selector endpoint from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toCurrentSelectorEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitLargeSupportColoringCurrentSelectorEndpoint :=
+  h.endpointForCurrentSelector
+
+/-- Recover the no-leftover/current-frontier packet from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toNoLeftoverCurrentFrontierPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.packetForNoLeftoverCurrentFrontier
+
+/-- Recover the external-block handoff from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toExternalBlockHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringExternalBlockHandoffFacade :=
+  h.handoffForExternalBlock
+
+/-- Recover the current-frontier assumption packet from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toCurrentFrontierAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket :=
+  h.packetForCurrentFrontier
+
+/-- Recover the no-leftover deletion packet from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toNoLeftoverDeletionAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.packetForNoLeftoverDeletion
+
+/-- Selector assumptions exposed by the downstream target-obligation layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.firstBitSelectors
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitCurrentSelectorAssumptions :=
+  h.endpointForCurrentSelector.toCurrentSelectorAssumptions
+
+/-- Project strict cross-atom defect control from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toTerminalStrictCrossAtomDefect
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalStrictCrossAtomDefect :=
+  h.packetForNoLeftoverDeletion.toTerminalStrictCrossAtomDefect
+
+/-- Project the no-leftover four-four-atom deletion dichotomy from the downstream layer. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toNoLeftoverFourFourAtomDeletionDichotomy
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverFourFourAtomDeletionDichotomy :=
+  h.packetForNoLeftoverDeletion.toNoLeftoverFourFourAtomDeletionDichotomy
+
+/-- Project the no-leftover unit-strict-absorption/lift-collision consequence. -/
+def ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.toNoLeftoverUnitStrictAbsorptionOrLiftCollision
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.packetForNoLeftoverDeletion.toNoLeftoverUnitStrictAbsorptionOrLiftCollision
+
+/-- The downstream layer closes the final target by checkpoint reuse. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement_fromCheckpoint
+
+/-- The downstream layer closes the final target through the final target wrapper. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer_viaFinalTargetWrapper
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement_fromFinalTargetWrapper
+
+/-- The downstream layer closes the final target through the current selector endpoint. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer_viaCurrentSelectorEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement_fromCurrentSelectorEndpoint
+
+/-- The downstream layer closes the external-block target through the current selector endpoint. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer_viaCurrentSelectorEndpointExternalBlock
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement_fromCurrentSelectorEndpoint_viaExternalBlock
+
+/-- The downstream layer closes the final target through the external-block handoff. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer_viaExternalBlockHandoff
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement_fromExternalBlockHandoff
+
+/-- The downstream layer closes the final target through the checkpoint external-block route. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer_viaCheckpointExternalBlock
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement_fromCheckpointExternalBlock
+
+/-- The final-public checkpoint closes the target through the downstream target-obligation layer. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFinalPublicCheckpointFacade_viaDownstreamTargetObligationLayer
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicCheckpointFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  targetStatement_of_proofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+    h.toDownstreamTargetObligationLayer
+
+/-- The public citation bundle closes the target through the downstream target-obligation layer. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle_viaFinalPublicDownstreamTargetObligationLayer
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  targetStatement_of_proofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+    h.toFinalPublicDownstreamTargetObligationLayer
+
+/-- The public citation bundle closes the current-selector external-block target through the downstream layer. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle_viaFinalPublicDownstreamTargetObligationLayerCurrentSelectorExternalBlock
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  targetStatement_of_proofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer_viaCurrentSelectorEndpointExternalBlock
+    h.toFinalPublicDownstreamTargetObligationLayer
+
+@[simp] theorem ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade_downstreamCheckpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicCheckpointFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade h).downstreamCheckpoint =
+      h :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade_endpointForCurrentSelector
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicCheckpointFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade h).endpointForCurrentSelector =
+      h.currentSelectorEndpoint :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade_packetForNoLeftoverCurrentFrontier
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicCheckpointFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade h).packetForNoLeftoverCurrentFrontier =
+      h.noLeftoverCurrentFrontierPacket :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade_handoffForExternalBlock
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringFinalPublicCheckpointFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer.ofFinalPublicCheckpointFacade h).handoffForExternalBlock =
+      h.externalBlockHandoff :=
+  rfl
+
 end RegularInducedSubgraph
