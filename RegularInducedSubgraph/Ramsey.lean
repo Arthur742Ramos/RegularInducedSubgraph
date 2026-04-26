@@ -42456,6 +42456,431 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface.toRema
       h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
   exact Subsingleton.elim _ _
 
+/--
+Final public target bundle for proof-md current-frontier consumers.  It is a citation-facing
+package around the final-release public target surface, keeping explicit assumption rows and
+downstream consumer citation handles next to the carried R45 rows.  The `27`-vertex R45 row is
+still an assumption-backed frontier row exposed through the checklist/target-row projections.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  finalReleasePublicTargetSurface :
+    RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v
+  finalReleaseConsumerBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v
+  obligationSurface :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v
+  downstreamTargetCheckpoint :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v
+  finalPublicCitationCheckpoint :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v
+  downstreamConsumerCitationBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v
+  publicReleaseCitation : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v
+  explicitAssumptionRows :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v
+  remainingObligationChecklist :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalReleaseSurfaceR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  downstreamConsumerCitationR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  publicCitationR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  checklistR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  targetRowsR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  remainingAssumptionR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  exact42Obligation : HasCliqueOrIndepSetBound 3 10 42
+  propagatedR1010Obligation : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Obligation : 10 ∈ admissibleBounds 40960
+  extremalF40960Obligation : 10 ≤ F 40960
+  regularTenAt40960Obligation :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final-release public target surfaces materialize the final public proof-md target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface.toProofMdFinalPublicTargetBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v where
+  finalReleasePublicTargetSurface := h
+  finalReleaseConsumerBundle := h.toProofMdFinalReleaseConsumerBundle
+  obligationSurface := h.toProofMdFinalReleaseConsumerObligationSurface
+  downstreamTargetCheckpoint := h.toProofMdDownstreamTargetCheckpoint
+  finalPublicCitationCheckpoint := h.toProofMdFinalPublicCitationCheckpoint
+  downstreamConsumerCitationBundle := h.toProofMdFinalConsumerCitationBundle
+  publicReleaseCitation := h.toProofMdPublicReleaseCitation
+  explicitAssumptionRows := h.toProofMdExplicitR45ObligationRows
+  remainingObligationChecklist := h.toProofMdR45RemainingObligationChecklist
+  targetRows := h.toCurrentFrontierTargetRows
+  remainingAssumptionRows := h.toRemainingAssumptionRows
+  endpointResiduals := h.toEndpointResiduals
+  r45TwentySevenTable := h.toR45TwentySevenTable
+  finalReleaseSurfaceR45Obligation := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  downstreamConsumerCitationR45Obligation :=
+    h.toProofMdFinalConsumerCitationBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  publicCitationR45Obligation := h.toPublicCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+  checklistR45Obligation := h.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven
+  targetRowsR45Obligation := h.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+  remainingAssumptionR45Obligation :=
+    h.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven
+  exact42Obligation := h.toThreeTenFortyTwo
+  propagatedR1010Obligation := h.toHasCliqueOrIndepSetBound_10_10_39246
+  admissibleTenAt40960Obligation := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Obligation := h.toTenLeF_40960
+  regularTenAt40960Obligation := fun H hcard =>
+    h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Final-release consumer bundles materialize the final public proof-md target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toProofMdFinalPublicTargetBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.toProofMdFinalReleasePublicTargetSurface.toProofMdFinalPublicTargetBundle
+
+/-- Final-release obligation surfaces materialize the final public proof-md target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toProofMdFinalPublicTargetBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.toProofMdFinalReleasePublicTargetSurface.toProofMdFinalPublicTargetBundle
+
+/-- Public-release citations materialize the final public proof-md target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalPublicTargetBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.toProofMdFinalReleasePublicTargetSurface.toProofMdFinalPublicTargetBundle
+
+/-- Explicit R45 assumption rows materialize the final public proof-md target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows.toProofMdFinalPublicTargetBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.toProofMdFinalReleasePublicTargetSurface.toProofMdFinalPublicTargetBundle
+
+/-- Select the final-release public target surface from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdFinalReleasePublicTargetSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v :=
+  h.finalReleasePublicTargetSurface
+
+/-- Select the final-release consumer bundle from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdFinalReleaseConsumerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v :=
+  h.finalReleaseConsumerBundle
+
+/-- Select the final-release obligation surface from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdFinalReleaseConsumerObligationSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v :=
+  h.obligationSurface
+
+/-- Select the downstream target checkpoint from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdDownstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v :=
+  h.downstreamTargetCheckpoint
+
+/-- Select the final public citation checkpoint from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdFinalPublicCitationCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v :=
+  h.finalPublicCitationCheckpoint
+
+/-- Select the downstream consumer citation bundle from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdFinalConsumerCitationBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v :=
+  h.downstreamConsumerCitationBundle
+
+/-- Select the public-release citation from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.publicReleaseCitation
+
+/-- Select the explicit R45 assumption rows from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdExplicitR45ObligationRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v :=
+  h.explicitAssumptionRows
+
+/-- Select the remaining-obligation checklist from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.remainingObligationChecklist
+
+/-- Select target rows from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select remaining-assumption rows from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Select endpoint residuals from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the relaxed `27`-vertex table from the final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Final public target bundle route to the final-release-surface R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.finalReleaseSurfaceR45Obligation
+
+/-- Final public target bundle route to the downstream-consumer citation R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.downstreamConsumerCitationR45Obligation
+
+/-- Final public target bundle route to the public-citation R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toPublicCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.publicCitationR45Obligation
+
+/-- Final public target bundle route to the checklist-localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.checklistR45Obligation
+
+/-- Final public target bundle route to the target-row localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.targetRowsR45Obligation
+
+/-- Final public target bundle route to the remaining-assumption localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.remainingAssumptionR45Obligation
+
+/-- Final public target bundle route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Obligation
+
+/-- Final public target bundle route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Obligation
+
+/-- Final public target bundle route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Obligation
+
+/-- Final public target bundle route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Obligation
+
+/-- Final public target bundle route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Obligation H hcard
+
+/-- Flat constructor exposing final public target bundles from final-release public target surfaces. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle_of_finalReleasePublicTargetSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.toProofMdFinalPublicTargetBundle
+
+/-- Flat constructor exposing final public target bundles from public-release citations. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle_of_publicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.toProofMdFinalPublicTargetBundle
+
+/-- Flat constructor exposing final public target bundles from explicit R45 assumption rows. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle_of_explicitR45ObligationRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.toProofMdFinalPublicTargetBundle
+
+/-- Final public target bundles round-trip through final-release public target surfaces. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdFinalReleasePublicTargetSurface_toProofMdFinalPublicTargetBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    h.toProofMdFinalReleasePublicTargetSurface.toProofMdFinalPublicTargetBundle = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final-release public target surfaces round-trip through final public target bundles. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface.toProofMdFinalPublicTargetBundle_toProofMdFinalReleasePublicTargetSurface_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v) :
+    h.toProofMdFinalPublicTargetBundle.toProofMdFinalReleasePublicTargetSurface = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final public target bundles normalize target rows with remaining assumptions. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toCurrentFrontierTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    h.toCurrentFrontierTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final public target bundles normalize explicit rows back to public-release citations. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdExplicitR45ObligationRows_toProofMdPublicReleaseCitation_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    h.toProofMdExplicitR45ObligationRows.toProofMdPublicReleaseCitation =
+      h.toProofMdPublicReleaseCitation := by
+  exact Subsingleton.elim _ _
+
+/-- Final public target bundles normalize public-release citations to downstream consumer citations. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdPublicReleaseCitation_toProofMdFinalConsumerCitationBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    h.toProofMdPublicReleaseCitation.toProofMdFinalConsumerCitationBundle =
+      h.toProofMdFinalConsumerCitationBundle := by
+  exact Subsingleton.elim _ _
+
+/-- Final public target bundles normalize downstream-consumer R45 with the final-release surface row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    h.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final public target bundles normalize public-citation R45 with the final-release surface row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toPublicCitationHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    h.toPublicCitationHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final public target bundles normalize checklist R45 with the final-release surface row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    h.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final public target bundles normalize target-row R45 with the final-release surface row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    h.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final public target bundles normalize remaining-assumption R45 with the final-release surface row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    h.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
