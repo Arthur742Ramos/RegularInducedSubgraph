@@ -1910,6 +1910,11 @@ What remains justified after audit is:
       self-layer scalar equations;
       for `r`-swaps, `Theta_X=kappa-psi_T+deg_X` prescribes bounded old-vertex multiplicities `0..r`,
       followed by shifted self-layer equations on `Y`;
+      at `r=3` the target is always arithmetically legal, giving a large-outside ternary branch, while
+      absence of three outside vertices squeezes the two Gallai residue classes into
+      `m-2<=|C|<=|R|<=m+3`;
+      in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
+      obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

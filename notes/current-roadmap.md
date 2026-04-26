@@ -5270,6 +5270,13 @@ self-layer scalar equations.
 For general `r`, `Theta_X=kappa-psi_T+deg_X` prescribes, when possible, the exact multiplicity
 `0..r` of incoming neighbors at each old vertex; the residual is a finite bounded-target packet problem
 followed by shifted self-layer failure.
+For `r=3`, every residue has a representative in `{0,1,2,3}`, so the large-outside branch is a ternary
+target/self-layer problem: no outside triple realizes the prescribed hit counts, or every realizing triple
+fails a shifted scalar equation.  If no retained `(m+1)`-set has three outside vertices in `R`, then
+`|R|<=m+3` and the Gallai split is near-threshold: `m-2<=|C|<=|R|<=m+3`.
+Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
+Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
+`R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

@@ -1925,6 +1925,11 @@ For two-swaps, the viable target is a `{0,1,2}`-valued partition of old vertices
 two shifted scalar equations.
 For `r`-swaps, `Theta_X=kappa-psi_T+deg_X` prescribes bounded multiplicities `0..r`; after realizing that
 template, terminality is shifted self-layer failure.
+At `r=3` the target is always arithmetically legal, so the large-outside branch is ternary realization or
+ternary self-layer failure; otherwise the Gallai residue split is near-threshold with
+`m-2<=|C|<=|R|<=m+3`.
+If `|R|=m+s`, `s<=3`, terminality inside `R` is the finite list that `b-deg_D` is nonconstant on `R\D`
+for every `|D|<=s-1`.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

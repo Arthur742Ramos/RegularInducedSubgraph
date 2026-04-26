@@ -11093,6 +11093,54 @@ either the old-vertex multiplicity template is unrealizable by an outside packet
 realization fails the shifted self-layer.  This is the raw labeled analogue of the finite atom-quotient
 packet repair branch.
 
+The first universally viable outgoing size is `3`.  For `|X|=3`, every residue modulo `4` has a
+representative in `{0,1,2,3}`, so the old-vertex multiplicity template is always arithmetically legal:
+each old vertex asks to see exactly `0`, `1`, `2`, or `3` of the incoming vertices.  Hence, whenever
+`|R\T|>=3`, a terminal residual must block every ternary repair by one of two concrete mechanisms:
+
+```text
+ternary target failure: no outside triple realizes the prescribed 0/1/2/3 trace-counts on T\X;
+ternary self-layer failure: every realizing triple fails one of the three shifted scalar equations.
+```
+
+Thus the large-outside branch of the first-bit residual is a ternary packet-realization problem.  If this
+branch is unavailable for a larger residue class `R`, then every `(m+1)`-set `T subset R` has
+`|R\T|<=2`, so
+
+```text
+|R| <= m+3.
+```
+
+Since the Gallai core has `|J|>2m` and `R` is the larger of the two `0/2` classes, the complementary
+near-threshold branch has both residue classes squeezed into a bounded window around `m`:
+
+```text
+m-2 <= |C| <= |R| <= m+3.
+```
+
+Consequently the first-bit selector splits into a large-outside ternary target/self-layer branch and a
+near-threshold two-residue branch with only bounded surplus over the critical size.
+
+The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
+`1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
+`|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff
+
+```text
+b(v)-deg_D(v)        [MOD 4]
+```
+
+is constant on `R\D`.  Therefore terminality in the near-threshold branch is exactly the finite list:
+
+```text
+s=1:  b is nonconstant on R;
+s=2:  for every x in R, b(v)-1_{vx} is nonconstant on R\{x};
+s=3:  for every {x1,x2} subset R, b(v)-1_{vx1}-1_{vx2} is nonconstant on R\{x1,x2}.
+```
+
+These are the deletion-side versions of the one- and two-swap templates.  Thus the first-bit residual now
+has only two forms: a large-outside ternary packet problem, or a bounded near-threshold deletion-template
+problem on a residue class of size `m+1`, `m+2`, or `m+3`.
+
 The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
 theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with
 `vx` and `vy` edges of the original graph; then the degree of `v` in `K[W]` is exactly the carry

@@ -2370,6 +2370,12 @@ Recommended attack:
     Add the general `r`-swap template: `Theta_X=kappa-psi_T+deg_X` must have representatives in
     `{0,...,r}` prescribing old-vertex incoming multiplicities; every realizing `Y` must satisfy the
     shifted self-layer equations.
+    Add the ternary/near-threshold split: for `r=3` every residue is representable, so the large-outside
+    branch is ternary target realization plus shifted self-layer; if `|R\T|<3` for all `|T|=m+1`, then
+    `|R|<=m+3` and, since `|J|>2m`, `m-2<=|C|<=|R|<=m+3`.
+    Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
+    exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
+    `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

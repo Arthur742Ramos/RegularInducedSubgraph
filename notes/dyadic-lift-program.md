@@ -997,6 +997,11 @@ For two-swaps, the target is a `{0,1,2}`-valued three-way trace partition for an
 shifted scalar equations.
 For `r`-swaps, `Theta_X=kappa-psi_T+deg_X` prescribes bounded old-vertex multiplicities `0..r`; the
 residual is finite target-packet realization plus shifted self-layer.
+At `r=3` the multiplicity target is always arithmetically legal, giving a ternary target/self-layer branch;
+if there are never three outside vertices, the `0/2` Gallai residue classes are both within bounded
+distance of `m`.
+In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
+vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard
