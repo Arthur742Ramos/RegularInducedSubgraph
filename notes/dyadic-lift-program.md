@@ -1105,6 +1105,7 @@ supports crossing two, three, or four atoms have size at most `6`, `9`, or `12`.
 Deletion in this first no-leftover core is exactly unit strict absorption or lift-collision.
 The unit strict absorption side has three atom templates: `s=1,pi=2,delta=0`; `s=1,pi=3,delta=1`; or
 `s=2,pi=3,delta=0` on the three atoms opposite the deleted vertex.
+These templates are cap-tight maximum-size cross-defect events.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
 In the one-support case the exact lift accounting has two types: hitting the shortened block makes the
@@ -1126,6 +1127,7 @@ singletons, so saturated packings with no leftover singletons have no pair atoms
 Lift-locality further excludes three-atoms without leftover singletons, so no-leftover saturated packings
 have all four atoms of size at least four; in particular `|A|>=16`, with the first no-leftover core forced
 to be four four-atoms.
+With `L=0`, zero-gain supports are only the packed atoms themselves; the zero-gain orbit is trivial.
 In general the leftover count is a budget: zero-gain exchanges need one leftover singleton, while equality
 pure absorption at atom `B_j` needs `|B_j|-1`; without that budget, only strict absorption or lift-collision
 can remain.

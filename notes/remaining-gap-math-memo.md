@@ -2030,6 +2030,7 @@ their sizes across two/three/four atoms are at most `6/9/12`.
 Deletion in this first no-leftover core is exactly unit strict absorption or lift-collision.
 Unit strict absorption has only three atom templates on the other three atoms:
 `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)`.
+These templates are cap-tight maximum-size cross-defect events.
 Deleting a packed-block vertex creates a one-short projected packing, so criticality forces a minimal
 deletion-only positive-gain repair family whose full lifts are blocked by nonpositive total gain.
 For a one-support repair, exact lift accounting splits into shortened-block repair (thickened lift keeps the
@@ -2051,6 +2052,7 @@ By zero-gain saturation, a pair pivot cannot meet another packed atom; it can on
 singleton.  Saturated packings with no leftover singletons therefore have no pair atoms.
 Lift-locality also excludes three-atoms without leftover singletons, so no-leftover saturated packings have
 four atoms of size at least four and `|A|>=16`; the first no-leftover core is four four-atoms.
+With `L=0`, zero-gain supports are exactly the packed atoms; the zero-gain orbit is trivial.
 The leftover count is a budget: zero-gain exchanges need one leftover singleton, equality pure absorption at
 `B_j` needs `|B_j|-1`, and without that budget only strict absorption or lift-collision remains.
 Pair atoms are local pair-exchange components: both endpoint deletions pivot through leftover singletons, and

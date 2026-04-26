@@ -2495,6 +2495,7 @@ Recommended attack:
     unit strict absorption (`h=0,t=1,g^-=1`) or lift-collision.
     Formalize the unit strict absorption taxonomy from `g^-=pi-s-delta=1`: the only templates are
     `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)` on the three atoms opposite the deleted vertex.
+    Record that these are cap-tight maximum-size cross-defect events.
     Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
     short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
     total gain.
@@ -2519,6 +2520,8 @@ Recommended attack:
     so saturated packings with no leftover singletons have no pair atoms.
     Derive the no-leftover cutoff: if `L=0`, pair atoms are excluded by pivot saturation and three-atoms are
     excluded by lift-locality, so all four atoms have size at least four and `|A|>=16`.
+    Add no-leftover zero-gain rigidity: with `L=0`, zero-gain supports are exactly the packed atoms and the
+    zero-gain orbit is trivial.
     Record leftover-budget rules: zero-gain shortened-block exchanges require `L>=1`; equality pure
     absorption at atom `B_j` requires `L>=|B_j|-1`; otherwise repairs are strict absorption or lift-collision.
     Formalize pair-exchange components: for a pair atom `{a,b}`, endpoint deletions force pivot pairs

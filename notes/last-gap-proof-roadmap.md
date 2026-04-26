@@ -2002,7 +2002,7 @@ What remains justified after audit is:
       no-leftover four-four-atom core;
       deletion in that first no-leftover core is exactly unit strict absorption or lift-collision;
       unit strict absorption has only the three atom templates
-      `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)`;
+      `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)`, all cap-tight;
       deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
       are blocked;
       one-support deletion repair has exact lift accounting: shortened-block repairs have blocked positive
@@ -2021,6 +2021,7 @@ What remains justified after audit is:
       saturated packings with no leftover singletons have no pair atoms;
       lift-locality also excludes three-atoms without leftover singletons, so no-leftover saturated packings
       have `|A|>=16`, with the first no-leftover core forced to be four four-atoms;
+      with no leftovers, zero-gain supports are only the packed atoms and the zero-gain orbit is trivial;
       leftover count is a budget: zero-gain exchanges need one leftover singleton, and equality pure
       absorption at `B_j` needs `|B_j|-1`;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers

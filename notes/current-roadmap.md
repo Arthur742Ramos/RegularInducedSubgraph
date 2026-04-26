@@ -5436,6 +5436,7 @@ In that first no-leftover core, deletion repair has only two terminal forms: uni
 (`h=0,t=1,g^-=1`, full gain `-1`) or deleted-vertex lift-collision.
 Unit strict absorption has exactly three atom templates on the other three four-atoms: one support covers
 two whole atoms; one support covers all but one vertex of three atoms; or two supports cover all three atoms.
+These absorption templates are cap-tight maximum-size cross-defect events.
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
 vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
 positive-gain repair family whose every full lift has nonpositive total gain.
@@ -5462,6 +5463,8 @@ Lift-locality also excludes three-atoms when there are no leftover singletons: t
 boundary lifts would require leftover vertices.  Thus no-leftover saturated packings have four atoms of size
 at least four and `|A|>=16`; for `|A|<=15`, every deficit-one packing has a leftover singleton, while the
 first no-leftover core at `|A|=16` must be four four-atoms.
+With `L=0`, zero-gain locality is rigid: the only zero-gain supports are the packed atoms themselves, so the
+zero-gain orbit is trivial.
 More generally, leftover singletons are a budget: zero-gain shortened-block exchanges require `L>=1`, and
 equality pure absorption at atom `B_j` requires `L>=|B_j|-1`; otherwise deletion repair is strict absorption
 with positive slack or genuine lift-collision.
