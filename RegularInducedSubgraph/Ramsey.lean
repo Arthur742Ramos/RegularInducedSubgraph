@@ -3160,6 +3160,91 @@ structure RamseyElevenNarrowTargetTable : Prop where
   r9_10 : HasCliqueOrIndepSetBound 9 10 3290
 
 /--
+One recurrence layer below the narrow `R(9,10)` target.  The two obligations here replace the
+single high-row assumption `R(9,10) <= 3290`: `R(7,10) <= 823` and `R(8,9) <= 822` first give
+`R(8,10) <= 1645` and `R(9,9) <= 1643`, hence `R(9,10) <= 3288`.
+-/
+structure RamseyNineTenTwoStepNarrowTable : Prop where
+  r7_10 : HasCliqueOrIndepSetBound 7 10 823
+  r8_9 : HasCliqueOrIndepSetBound 8 9 822
+
+/-- The two-step narrow table gives the needed `R(9,10)` predecessor with two vertices of slack. -/
+theorem ramseyNineTenTwoStepNarrowTable_predecessor_bounds
+    (h : RamseyNineTenTwoStepNarrowTable) :
+    HasCliqueOrIndepSetBound 8 10 1645 ∧
+      HasCliqueOrIndepSetBound 9 9 1643 ∧
+        HasCliqueOrIndepSetBound 9 10 3288 := by
+  have h8_10 : HasCliqueOrIndepSetBound 8 10 1645 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 9)
+      (N₁ := 823) (N₂ := 822) (N := 1645)
+      (by decide) (by decide) h.r7_10 h.r8_9 (by norm_num)
+  have h9_9 : HasCliqueOrIndepSetBound 9 9 1643 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 8) (b := 8)
+      (N₁ := 822) (N₂ := 822) (N := 1643)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h.r8_9 (HasCliqueOrIndepSetBound.symm h.r8_9) (by norm_num)
+  have h9_10 : HasCliqueOrIndepSetBound 9 10 3288 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 8) (b := 9)
+      (N₁ := 1645) (N₂ := 1643) (N := 3288)
+      (by decide) (by decide) h8_10 h9_9 (by norm_num)
+  exact ⟨h8_10, h9_9, h9_10⟩
+
+theorem hasCliqueOrIndepSetBound_9_10_of_ramseyNineTenTwoStepNarrowTable
+    (h : RamseyNineTenTwoStepNarrowTable) :
+    HasCliqueOrIndepSetBound 9 10 3288 :=
+  (ramseyNineTenTwoStepNarrowTable_predecessor_bounds h).2.2
+
+/--
+Narrow `R(10,11)` data with the `R(9,10)` predecessor decomposed one step lower.  Relative to
+`RamseyElevenNarrowTargetTable`, this replaces the direct `R(9,10) <= 3290` row by the lower-row
+pair `R(7,10) <= 823` and `R(8,9) <= 822`.
+-/
+structure RamseyElevenTwoStepNarrowTable : Prop where
+  r8_11 : HasCliqueOrIndepSetBound 8 11 12658
+  r7_10 : HasCliqueOrIndepSetBound 7 10 823
+  r8_9 : HasCliqueOrIndepSetBound 8 9 822
+
+theorem ramseyElevenNarrowTargetTable_of_twoStepNarrowTable
+    (h : RamseyElevenTwoStepNarrowTable) :
+    RamseyElevenNarrowTargetTable where
+  r8_11 := h.r8_11
+  r9_10 := HasCliqueOrIndepSetBound.mono
+    (hasCliqueOrIndepSetBound_9_10_of_ramseyNineTenTwoStepNarrowTable
+      { r7_10 := h.r7_10, r8_9 := h.r8_9 })
+    (by decide : 3288 ≤ 3290)
+
+/--
+The two-step lower-row narrow table propagates past the finite-field threshold with eight vertices of
+slack: it proves `R(10,11) <= 22520`, stronger than the `22528` selector target.
+-/
+theorem hasCliqueOrIndepSetBound_10_11_22520_of_ramseyElevenTwoStepNarrowTable
+    (h : RamseyElevenTwoStepNarrowTable) :
+    HasCliqueOrIndepSetBound 10 11 22520 := by
+  have h9_10 : HasCliqueOrIndepSetBound 9 10 3288 :=
+    hasCliqueOrIndepSetBound_9_10_of_ramseyNineTenTwoStepNarrowTable
+      { r7_10 := h.r7_10, r8_9 := h.r8_9 }
+  have h9_11 : HasCliqueOrIndepSetBound 9 11 15945 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 8) (b := 10)
+      (N₁ := 12658) (N₂ := 3288) (N := 15945)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h.r8_11 h9_10 (by norm_num)
+  have h10_10 : HasCliqueOrIndepSetBound 10 10 6575 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 9) (b := 9)
+      (N₁ := 3288) (N₂ := 3288) (N := 6575)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h9_10 (HasCliqueOrIndepSetBound.symm h9_10) (by norm_num)
+  exact HasCliqueOrIndepSetBound.step_mono (a := 9) (b := 10)
+    (N₁ := 15945) (N₂ := 6575) (N := 22520)
+    (by decide) (by decide) h9_11 h10_10 (by norm_num)
+
+theorem hasCliqueOrIndepSetBound_10_11_of_ramseyElevenTwoStepNarrowTable
+    (h : RamseyElevenTwoStepNarrowTable) :
+    HasCliqueOrIndepSetBound 10 11 22528 :=
+  HasCliqueOrIndepSetBound.mono
+    (hasCliqueOrIndepSetBound_10_11_22520_of_ramseyElevenTwoStepNarrowTable h)
+    (by decide : 22520 ≤ 22528)
+
+/--
 The focused two-entry table is strictly enough for the target obstruction:
 `R(8,11) <= 12658` and `R(9,10) <= 3290` propagate to `R(10,11) <= 22528`.
 -/
@@ -3193,6 +3278,21 @@ theorem ramseyElevenNarrowTargetTable_arithmetic_gap :
       22528 - 22526 = 2 ∧
         ((12658 + 3291) + (3291 + 3291)) - 22528 = 3 ∧
           60410 - 22528 = 37882 := by
+  decide
+
+/--
+Arithmetic ledger for the two-step lower-row obstruction.  The new lower-row targets improve the
+current refined recurrence rows `R(7,10) <= 3248` and `R(8,9) <= 4224` to `823` and `822`; this
+would give `R(9,10) <= 3288`, two better than the direct narrow target and eight vertices under the
+`22528` selector threshold.
+-/
+theorem ramseyElevenTwoStepNarrowTable_arithmetic_gap :
+    3248 - 823 = 2425 ∧
+      4224 - 822 = 3402 ∧
+        1645 + 1643 = 3288 ∧
+          15918 - 3288 = 12630 ∧
+            22528 - 22520 = 8 ∧
+              3290 - 3288 = 2 := by
   decide
 
 /--
