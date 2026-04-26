@@ -5437,6 +5437,10 @@ In that four-four no-leftover subcase, deletion repair has only two terminal for
 Unit strict absorption has exactly three atom templates on the other three four-atoms: one support covers
 two whole atoms; one support covers all but one vertex of three atoms; or two supports cover all three atoms.
 These absorption templates are cap-tight maximum-size cross-defect events.
+Two unit absorptions through distinct vertices of the same four-atom cannot have disjoint opposite traces:
+their projected gains add to `2`, the two lifted vertices add `2`, and the shared four-atom penalty is paid
+once, giving full gain `2+2-3=1`.  Thus all-large unit absorption is a finite pairwise-intersecting cover
+system on the three opposite atoms.
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
 vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
 positive-gain repair family whose every full lift has nonpositive total gain.

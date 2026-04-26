@@ -12040,6 +12040,24 @@ lifts to a support of size `12` crossing all four atoms, exactly the four-atom c
 two-support cover of the three opposite atoms with one support thickened by `a`.  Hence every nonclosing
 absorption in the four-four no-leftover subcase is a maximum-size strict cross-defect event.
 
+Two unit absorptions through the same four-atom cannot be independent.  Let `a,b in B_0` be distinct deleted
+vertices, and let `R_a^-` and `R_b^-` be unit pure-absorption projected repair families for the two deletions,
+both avoiding the shortened block and both having projected gain `1`.  If the two projected families are
+vertex-disjoint in the opposite union `A\B_0`, then their full absorption lifts through `a` and `b` are
+disjoint.  The combined family has projected gain `2`, uses two vertices of `B_0`, and pays the `B_0` block
+penalty only once, so its full gain is
+
+```text
+2 + 2 - (|B_0|-1) = 1        because |B_0|=4.
+```
+
+This is a positive bridge, impossible in a terminal endpoint.  Therefore, in the all-four strict-absorption
+branch, the unit-absorption witnesses attached to the four vertices of a fixed atom form a pairwise
+intersecting cover system on the three opposite atoms: any two witnesses must intersect in the opposite union
+or else the shared atom penalty turns two individually negative absorptions into one positive family.  Thus
+the all-large unit-absorption branch is finite intersection data on the three cap-tight templates, not a
+diffuse large-cover phenomenon.
+
 Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
 `P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
 `B_j\{a}` lowers the saving by exactly one, so the projected packing in `A\{a}` has saving `|A|-5`, one

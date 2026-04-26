@@ -2003,6 +2003,9 @@ What remains justified after audit is:
       deletion in that four-four no-leftover subcase is exactly unit strict absorption or lift-collision;
       unit strict absorption has only the three atom templates
       `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)`, all cap-tight;
+      two unit absorptions through distinct vertices of the same four-atom must intersect in the opposite
+      union, since disjoint traces would combine to gain `2+2-(4-1)=1`; hence the all-large absorption side is
+      finite pairwise-intersecting cover data;
       deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
       are blocked;
       one-support deletion repair has exact lift accounting: shortened-block repairs have blocked positive

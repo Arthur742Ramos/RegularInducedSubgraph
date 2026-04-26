@@ -2031,6 +2031,9 @@ Deletion in this four-four no-leftover subcase is exactly unit strict absorption
 Unit strict absorption has only three atom templates on the other three atoms:
 `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)`.
 These templates are cap-tight maximum-size cross-defect events.
+Two unit absorptions through distinct vertices of the same four-atom must intersect in the opposite union;
+otherwise their shared atom penalty is paid once and the combined gain is `2+2-(4-1)=1`.  Thus all-large unit
+absorption is finite pairwise-intersecting cover data.
 Deleting a packed-block vertex creates a one-short projected packing, so criticality forces a minimal
 deletion-only positive-gain repair family whose full lifts are blocked by nonpositive total gain.
 For a one-support repair, exact lift accounting splits into shortened-block repair (thickened lift keeps the

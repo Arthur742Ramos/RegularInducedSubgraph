@@ -1106,6 +1106,9 @@ Deletion in this four-four no-leftover subcase is exactly unit strict absorption
 The unit strict absorption side has three atom templates: `s=1,pi=2,delta=0`; `s=1,pi=3,delta=1`; or
 `s=2,pi=3,delta=0` on the three atoms opposite the deleted vertex.
 These templates are cap-tight maximum-size cross-defect events.
+Two unit absorptions through different vertices of the same four-atom must intersect in the opposite union:
+if their opposite traces were disjoint, their combined full gain would be `2+2-(4-1)=1`.  Hence the all-large
+unit-absorption branch is a finite pairwise-intersecting cover system.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
 In the one-support case the exact lift accounting has two types: hitting the shortened block makes the

@@ -2496,6 +2496,9 @@ Recommended attack:
     Formalize the unit strict absorption taxonomy from `g^-=pi-s-delta=1`: the only templates are
     `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)` on the three atoms opposite the deleted vertex.
     Record that these are cap-tight maximum-size cross-defect events.
+    Add the shared-atom absorption lemma: two unit pure-absorption witnesses through distinct vertices of the
+    same four-atom with disjoint opposite traces combine to full gain `2+2-(4-1)=1`; therefore terminal
+    all-large unit absorptions form pairwise-intersecting cover systems.
     Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
     short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
     total gain.
