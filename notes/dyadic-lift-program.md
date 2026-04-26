@@ -1074,9 +1074,17 @@ sum is `2(m-2)`, this low-rank pure high-active case has `m<=16`.  For `m>=17`, 
 forced.
 Thus for every retained `T` and outgoing triple `X`, the terminal is scalar-killed, small-active
 zero-filter capacity, low-rank bounded (`m<=16`), or rank-three high-active.
+The low-rank bounded line is confined to the finite Ramsey window
+`3<=m<=16` and `32m+1<=n<R_4(m+1)`, since a monochromatic mod-`4` clique is a selector.
 A rank-three high-active support leaves exactly one excess unit missing after adding a feasible complement
 packing, so that branch is a one-defect bridge obstruction: all one-saving bridges, thickenings, or larger
 replacement supports are blocked.
+In gain form, every deficit-one packing `P` satisfies `gain_P(C)<=0` for all supports `C`, where
+`gain_P(C)=|C|-1-sum_{B_i cap C != empty}(|B_i|-1)`.
+Hence leftover singletons are support-independent, packed blocks cannot be thickened, and any cross support
+meeting block set `I` has size at most `1+sum_{I}(|B_i|-1)`.
+For active deletion, vertices inside packed blocks force deletion-only positive bridges in the projected
+packing; all full lifts of those bridges are blocked by nonpositive gain.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

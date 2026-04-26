@@ -2002,8 +2002,16 @@ If all four high-active residues avoid rank-three supports, then `|A_k|<=7` for 
 `sum |A_k|=2(m-2)`, so `m<=16`; for `m>=17` a rank-three support is forced.
 Equivalently, for every retained `T` and outgoing triple `X`, terminality is scalar-killed, small-active
 zero-filter capacity, low-rank bounded (`m<=16`), or rank-three high-active.
+The low-rank bounded line is finite: a monochromatic mod-`4` clique is a selector, so
+`3<=m<=16` and `32m+1<=n<R_4(m+1)`.
 Any rank-three support plus a feasible complement packing saves exactly `|A|-4`, so rank-three high-active
 is a one-defect bridge obstruction: all one-saving bridges/thickenings/replacements are blocked.
+Equivalently every support has nonpositive replacement gain against every deficit-one packing
+`P`: `gain_P(C)=|C|-1-sum_{B_i cap C != empty}(|B_i|-1)<=0`.
+This makes leftover singletons support-independent, forbids thickening packed blocks, and caps any support
+crossing packed blocks `I` by `1+sum_I(|B_i|-1)`.
+Deleting a packed-block vertex creates a one-short projected packing, so criticality forces a deletion-only
+positive bridge whose full lifts are blocked by nonpositive gain.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

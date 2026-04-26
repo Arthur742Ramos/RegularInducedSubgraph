@@ -5314,6 +5314,8 @@ support in some residue.
 Uniformly for every retained `(m+1)`-set `T` and outgoing triple `X`, the terminal is therefore:
 scalar-killed residue, small-active zero-filter capacity, low-rank high-active with `m<=16`, or a
 high-active rank-three projected support.
+The low-rank bounded line lies in a finite Ramsey window: coloring each pair by its matrix entry modulo
+`4`, any monochromatic clique is a selector, so a survivor has `n<R_4(m+1)` with `3<=m<=16`.
 After coordinate switching, `h` is `{0,1}`-valued; realization is three outside columns vanishing on the
 zero coordinates and disjointly covering the one coordinates.
 Thus the target branch is a critical filtered three-cover: zero coordinates filter admissible columns, and
@@ -5402,6 +5404,13 @@ needs a non-singleton; the pair-only pattern is exactly a triangle on three acti
 A rank-three support `B` plus any feasible complement-shadow packing has saving exactly `|A|-4`, one below
 the closing threshold.  Hence the rank-three high-active branch is a one-defect bridge problem: all
 one-saving bridges or thickened/replacement supports are absent or capacity-deficient.
+Equivalently, for every deficit-one packing `P`, every support `C` has replacement gain
+`gain_P(C)=|C|-1-sum_{B_i in P:C cap B_i nonempty}(|B_i|-1)<=0`; positive gain would close.
+Consequences: leftover singletons are support-independent; supports meeting one packed block have size at
+most that block; supports meeting blocks `I` have size at most `1+sum_{i in I}(|B_i|-1)`.
+Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
+vertex inside a packed block creates a one-short projected packing and forces a deletion-only positive
+bridge whose every full lift has nonpositive gain.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

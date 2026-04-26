@@ -2460,9 +2460,18 @@ Recommended attack:
     `|A_k|<=7` for all high-active residues, hence `m<=16`.
     Package this as a universal `X`-dichotomy for every retained `T` and outgoing triple `X`: scalar-killed,
     small-active zero-filter, low-rank bounded, or rank-three high-active.
+    Add the finite Ramsey window for the low-rank bounded line: a monochromatic clique in the mod-`4`
+    edge-coloring is a selector, so `3<=m<=16` and `32m+1<=n<R_4(m+1)`.
     Formalize rank-three support contraction: a support `B` of size `r>=3` plus a complement-shadow packing
     saves `|A|-4`, so terminality is exactly absence/capacity-deficiency of all one-saving bridges,
     thickenings, or larger replacements.
+    Define the replacement gain
+    `gain_P(C)=|C|-1-sum_{B_i in P, C cap B_i nonempty}(|B_i|-1)` and prove terminality is
+    `gain_P(C)<=0` for every deficit-one packing `P` and support `C`.
+    Derive the local caps: leftover singletons support-independent; one-block crossings have size at most
+    the block; crossings over block set `I` have size at most `1+sum_I(|B_i|-1)`.
+    Formalize deletion-only bridges: deleting a packed-block vertex makes the projected packing one short,
+    forcing a positive-gain bridge in the shadow whose full lifts all have nonpositive gain.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

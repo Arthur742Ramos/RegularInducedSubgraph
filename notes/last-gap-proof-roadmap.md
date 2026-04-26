@@ -1976,8 +1976,14 @@ What remains justified after audit is:
       `|A_k|<=7` give `m<=16`; for `m>=17` a rank-three support is forced;
       uniformly in every retained `T` and outgoing triple `X`, terminality is scalar-killed, small-active
       zero-filter, low-rank bounded, or rank-three high-active;
+      the low-rank bounded line is confined to the finite Ramsey window
+      `3<=m<=16`, `32m+1<=n<R_4(m+1)`;
       a rank-three support plus a feasible complement packing is exactly one excess unit short, reducing
       that branch to a one-defect bridge obstruction;
+      in gain form, every support has nonpositive replacement gain against every deficit-one packing;
+      this gives local caps: leftover singletons independent, no packed-block thickening, and bounded
+      cross-block supports;
+      deleting a packed-block vertex forces a deletion-only positive bridge whose full lifts are blocked;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;

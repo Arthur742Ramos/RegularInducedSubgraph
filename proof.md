@@ -11332,6 +11332,23 @@ Consequently the ternary terminal can be stated uniformly in the outgoing triple
 For `m>=17`, the third line disappears.  This is the current universal `X`-dichotomy for the first-bit
 terminal obstruction.
 
+The low-rank bounded line is also finite in the ambient size.  Color each unordered pair by its matrix
+entry modulo `4`.  A monochromatic clique of size `s` has every principal row sum equal to `(s-1)` times
+the common color, hence is a mod-`4` selector.  Therefore a counterexample with maximum selector size `m`
+must satisfy
+
+```text
+n < R_4(m+1).
+```
+
+Thus the low-rank line is restricted to the finite Ramsey window
+
+```text
+3 <= m <= 16,        32m+1 <= n < R_4(m+1),
+```
+
+with `m<=2` already excluded by the pair selector and `R_4(3)`.
+
 If both opposite residues `k` and `k+2` are in the high-active full-minor target-avoidance branch on a
 shared coordinate certificate, the singleton-shadow collapse gives an antipodal trace core.  On that shared
 coordinate set, the outside trace multiset contains
@@ -11812,6 +11829,47 @@ merges a singleton into an existing packed block, and every replacement of `B` b
 is absent or capacity-deficient.  Thus the large-core rank-three branch has the same shape as the earlier
 one-defect host obstruction, now inside the active support clutter.
 
+This bridge obstruction has a precise gain form.  Let `P={B_1,...,B_t}` be any disjoint non-singleton
+support packing with total saving `|A|-4`; together with the leftover singleton vertices it is a four-block
+near-partition of `A`.  For any support `C in F_Z`, define its replacement gain against `P` by
+
+```text
+gain_P(C)=|C|-1 - sum_{i:C cap B_i nonempty} (|B_i|-1).
+```
+
+If `gain_P(C)>=1`, replacing the intersected packed blocks by `C` and leaving uncovered vertices as
+singletons raises the total saving to at least `|A|-3`, so it closes.  Hence terminality is exactly
+
+```text
+gain_P(C)<=0        for every deficit-one packing P and every support C in F_Z.
+```
+
+This packages all one-saving bridges: supports on two leftover singletons, thickenings of a packed block
+by enough outside vertices, and unions or profitable replacements of packed blocks.  The rank-three
+high-active endpoint is therefore a positive-gain bridge blocker for every deficit-one packing.
+
+Unwinding `gain_P(C)<=0` gives the usable local caps.  If `C` meets no packed block, then `|C|<=1`, so the
+leftover singleton set is support-independent.  If `C` meets exactly one packed block `B_i`, then
+`|C|<=|B_i|`; in particular no packed block can be thickened by a new singleton.  If `C` meets packed
+blocks indexed by `I`, then
+
+```text
+|C| <= 1 + sum_{i in I}(|B_i|-1).
+```
+
+For two packed blocks this forbids a support containing their full union; for one block plus two new
+singletons it forbids replacing the block by a same-size-or-larger cross support.  Thus a deficit-one
+packing induces a genuine bridge-free block system, not merely a maximum packing.
+
+Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
+`P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
+`B_j\{a}` lowers the saving by exactly one, so the projected packing in `A\{a}` has saving `|A|-5`, one
+short of the shadow threshold.  Full minor-criticality therefore supplies a projected support `C'` with
+positive gain against this projected packing.  Terminality of `A` says that every lift of `C'` back to a
+support of `A` has nonpositive gain against `P`.  Thus each vertex inside a packed block has a
+deletion-only bridge: it exists after that vertex is removed, but all of its full lifts are blocked in the
+original endpoint.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff
@@ -12052,8 +12110,8 @@ large-outside ternary target avoidance:
   kappa covers for fixed T,X obey active/filter complement coherence with antipodal trace cores for
   opposite high-active endpoints; pure high-active target-avoidance for all four residues forces m>=10,
   and if no rank-three support appears then m<=16; uniformly in T,X, terminality is scalar-killed,
-  small-active zero-filter, low-rank bounded, or rank-three high-active, and the rank-three case is a
-  one-defect bridge obstruction;
+  small-active zero-filter, low-rank bounded, or rank-three high-active; the low-rank bounded line is in the
+  finite Ramsey window 3<=m<=16, and the rank-three case is a positive-gain bridge blocker;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;
