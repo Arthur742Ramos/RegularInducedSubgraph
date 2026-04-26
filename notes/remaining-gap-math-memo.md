@@ -2133,8 +2133,13 @@ An `F` trace between two size-three atoms is transpose-rigid after unit-edge dis
 with trace matrix a permutation or complement, so the atom-pair is cross-regular of degree `1` or `2`.
 If an `F` edge joins two atoms of the same internal type, their union is a forbidden two-atom selector; hence
 all surviving `F` edges cross the empty/triangle type split.
-The `F`-containing all-ternary endpoint is consequently a typed bipartite `F` graph with omitted-coordinate
-labels on corner edges: `deg_F=0` forces all three omissions, and `deg_F=1` forces two distinct omissions.
+Monochrome size-three traces are all-zero or all-one after parity discharge, so surviving `M` edges are also
+quotient-regular type-crossing edges.  But an `M` edge would force both remaining atom-pairs at each endpoint
+to be `F`, contradicting type crossing; hence no `M` edge survives.  The `F`-containing all-ternary endpoint
+is a typed bipartite `F` graph with omitted-coordinate labels on corner edges: `deg_F=0` forces all three
+omissions, and `deg_F=1` forces two distinct omissions.
+Its type-count shapes are empty, minority-centered substar, or `K_{2,2}` subgraph according as the
+empty/triangle split is `0/4`, `1/3`, or `2/2`.
 The pure all-edge minimum has only star or triangle phase in the four-word parity tetrahedron, plus `2+1`
 multiplicity on each size-three edge target.
 In a symmetric all-ternary cycle, mutual edge targets pass the transpose test only when the edge contains an

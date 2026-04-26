@@ -12817,20 +12817,45 @@ meeting exactly two atoms, a positive-gain forbidden support.  Hence every survi
 atom to a triangular atom.  In particular the `F`-edge graph is bipartite in the internal type split: it has
 no same-type edge and no odd `F` cycle.
 
+The same observation applies to monochrome size-three traces.  If the three columns of the trace matrix from
+`G` to `H` are all the same word `w`, then the row labels are constant rows determined by the bits of `w`.
+After parity-mixed/unit-edge discharge, those row labels must lie in one parity class, so `w` is either
+`000` or `111`.  Thus an `M` edge between size-three atoms is a constant all-zero or all-one matrix,
+cross-regular of degree `0` or `3`; if it joins two atoms of the same internal type, their union is again a
+forbidden two-atom selector.  Surviving `M` edges also cross the empty/triangle type split.
+
+But a surviving `M` edge is incompatible with the all-ternary high-outdegree conditions.  If `GH` is
+monochrome, then at `G` the other two incident atom-pairs must both be `F`, and the same is true at `H`;
+otherwise some source coordinate is split only once.  Since `G` and `H` have opposite internal type, the two
+remaining atoms would have to be simultaneously opposite to `G` and opposite to `H`, impossible.  Hence no
+monochrome size-three edge survives in the symmetric all-ternary endpoint.
+
 Thus the whole `F`-containing all-ternary branch has a finite graph form.  On the four size-three atoms, draw
-an `F` edge for every fully split atom-pair and label every remaining corner edge by the coordinate `i` it
-omits.  The `F` graph is bipartite across the empty/triangle type split, and the high-outdegree condition at
-a vertex `G` says:
+quotient-regular `F` edges and label every remaining corner edge by the coordinate `i` it omits.  The `F`
+graph is bipartite across the empty/triangle type split, and the high-outdegree condition at a vertex `G`
+says:
 
 ```text
-deg_F(G) >= 2:  no condition on the remaining corner edge;
+deg_F(G) >= 2:  no condition on the remaining edge;
 deg_F(G) = 1:   the two corner edges at G have distinct omitted coordinates;
 deg_F(G) = 0:   the three corner edges at G omit all three coordinates.
 ```
 
 Consequently the previous pure all-edge Latin model is exactly the `deg_F=0` case at every vertex; every
-other all-ternary endpoint is a typed bipartite `F`-graph with these local omission labels and quotient-regular
-`F` edges.
+other all-ternary endpoint is a typed bipartite `F` graph with these local omission labels on the corner
+edges.
+
+By internal type count this leaves only three `F`-graph shapes:
+
+```text
+k=0 or 4 triangular atoms:  no F edges;
+k=1 or 3 triangular atoms:  a substar centered at the unique minority-type atom;
+k=2 triangular atoms:       a subgraph of K_{2,2} across the type split.
+```
+
+The uniform-type line is therefore exactly the pure corner/Latin line.  All nonempty `F` lines contain a
+quotient-regular cross-type atom-pair and are governed by the displayed omitted-coordinate constraints on the
+remaining corner edges.
 
 It remains useful to split the pure all-edge minimum by phase.  Fix one parity tetrahedron, say the even
 words.  An edge target `E_i` is specified by the constant value of coordinate `i`; its two labels are the two
@@ -13224,7 +13249,8 @@ large-outside ternary target avoidance:
   hidden-transversal orientation model, forced to a 1+3 star with a one-corner square through its center;
   ternary-cycle parity codes reduce to finite target-type incidences; the all-edge all-ternary endpoint is a
   half-edge Latin K_{2,2} design, cross-residue-flat inside each atom, leaving only the signed-K_4 scalar
-  equation r_G-S_G;
+  equation r_G-S_G; fully split all-ternary pairs are mutual permutation/complement traces, monochrome pairs
+  are excluded, and the remaining F-containing branch is a typed bipartite F-graph;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

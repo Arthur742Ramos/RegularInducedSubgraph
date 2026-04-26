@@ -2623,9 +2623,15 @@ Recommended attack:
     matrix or its complement, so `F` atom-pairs are mutual and cross-regular of degree `1` or `2`.
     Add the `F`-edge terminality rule: same internal type on an `F` edge makes the two-atom union a selector,
     so every surviving `F` edge crosses the empty/triangle type split.
-    Package the `F`-containing branch as a typed bipartite graph with omitted-coordinate labels on non-`F`
-    corner edges: local constraints are none for `deg_F>=2`, distinct omissions for `deg_F=1`, and all three
+    Add monochrome trace rigidity: after parity discharge, a size-three `M` trace is all-zero or all-one,
+    hence quotient-regular and type-crossing if it survives.
+    Prove monochrome-edge exclusion in the symmetric all-ternary endpoint: an `M` edge forces the other two
+    incident edges at both endpoints to be `F`, contradicting the type-crossing rule.
+    Package the `F`-containing branch as a typed bipartite `F` graph with omitted-coordinate labels on corner
+    edges: local constraints are none for `deg_F>=2`, distinct omissions for `deg_F=1`, and all three
     omissions for `deg_F=0`.
+    Record the type-count cases for the `F` graph: empty in uniform type, a substar centered at the unique
+    minority atom in `1/3` type, and a subgraph of `K_{2,2}` in `2/2` type.
     For the all-edge permutation minimum, formalize the phase split: the three parity edges form either a
     star through one parity word or the triangle avoiding one parity word, and each size-three edge target
     has only a `2+1` label multiplicity choice.

@@ -5574,10 +5574,15 @@ is the pure all-edge minimum.
 Terminality forces every `F` edge to join opposite internal types: if two empty atoms or two triangular atoms
 were `F`-adjacent, their union would be a two-atom selector.  Hence the `F`-edge graph is bipartite in the
 empty/triangle type split.
-The `F`-containing all-ternary branch is therefore a finite typed graph: `F` edges cross the type split,
-corner edges carry omitted-coordinate labels, and at a vertex the local condition is automatic for
-`deg_F>=2`, requires two distinct corner omissions for `deg_F=1`, and requires all three omissions for
-`deg_F=0`.
+Monochrome size-three traces similarly become all-zero or all-one after parity discharge; surviving `M` edges
+are quotient-regular and also cross the type split.
+In the symmetric all-ternary endpoint, however, an `M` edge would force both remaining atom-pairs at each
+endpoint to be `F`, contradicting type crossing; hence no monochrome edge survives.  The `F`-containing
+branch is therefore a finite typed graph: quotient-regular `F` edges cross the type split, corner edges carry
+omitted-coordinate labels, and at a vertex the local condition is automatic for `deg_F>=2`, requires two
+distinct corner omissions for `deg_F=1`, and requires all three omissions for `deg_F=0`.
+By type count, the `F` graph is empty for uniform type, a substar centered at the unique minority atom for
+`1/3` type, and a subgraph of `K_{2,2}` for `2/2` type.
 The pure all-edge minimum further splits into only two phase types inside the parity tetrahedron: the three
 edge supports either share one parity word (star phase) or form the triangle avoiding one parity word
 (triangle phase), with only the `2+1` multiplicity choice left on each size-three edge target.
