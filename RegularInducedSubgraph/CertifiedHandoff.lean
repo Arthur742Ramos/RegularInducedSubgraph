@@ -28105,6 +28105,1489 @@ theorem CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCol
       h.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toTargetStatement :=
   rfl
 
+/-!
+## Final consumer no-leftover small-collision size-cutoff handoff
+
+The partner-free / partner-hit split leaves the last small-collision cutoff as an explicit
+proof-md frontier.  This layer records the isolated `3,2,2,2` deletion projection to four
+pair atoms, routes that projection through the existing one-corner square core, and exposes
+the post-square-breaker cutoff: no no-leftover small-collision endpoint with `|A| <= 9`
+survives, so the first profiles are `4,2,2,2` and `3,3,2,2`.
+-/
+
+/--
+Terminal certificate for the isolated `3,2,2,2` deletion bridge.  The four-pair
+complementary-transversal Boolean-orientation core is the already public small-atom core; the
+remaining fields name the documented deletion projection and its square-breaker discharge.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+    (terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern : Prop) :
+    Type where
+  fourPairComplementaryTransversalBooleanOrientationCore :
+    CertifiedProofMdCurrentFrontierTerminalFourPairComplementaryTransversalBooleanOrientationCoreCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+  threeTwoTwoTwoDeletionProjectsFourPairAtoms :
+    terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+  threeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore :
+    terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+  threeTwoTwoTwoSquareBreakerDischargeEliminatesPattern :
+    terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+
+/-- Terminal certificate for the post-square-breaker no-leftover small-collision cutoff. -/
+structure CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+    (terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop) :
+    Type where
+  threeTwoTwoTwoDeletionSquareCore :
+    CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+  noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged :
+    terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+  noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :
+    terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+
+/-- Build the isolated `3,2,2,2` deletion square-core certificate from terminal inputs. -/
+def certifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate_of_assumptions
+    {terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern : Prop}
+    (fourPairComplementaryTransversalBooleanOrientationCore :
+      CertifiedProofMdCurrentFrontierTerminalFourPairComplementaryTransversalBooleanOrientationCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore)
+    (threeTwoTwoTwoDeletionProjectsFourPairAtoms :
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms)
+    (threeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore :
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore)
+    (threeTwoTwoTwoSquareBreakerDischargeEliminatesPattern :
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern) :
+    CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern where
+  fourPairComplementaryTransversalBooleanOrientationCore :=
+    fourPairComplementaryTransversalBooleanOrientationCore
+  threeTwoTwoTwoDeletionProjectsFourPairAtoms :=
+    threeTwoTwoTwoDeletionProjectsFourPairAtoms
+  threeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore :=
+    threeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+  threeTwoTwoTwoSquareBreakerDischargeEliminatesPattern :=
+    threeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+
+/-- Build the no-leftover small-collision size-cutoff certificate from terminal inputs. -/
+def certifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate_of_assumptions
+    {terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop}
+    (threeTwoTwoTwoDeletionSquareCore :
+      CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern)
+    (noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged :
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged)
+    (noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo where
+  threeTwoTwoTwoDeletionSquareCore := threeTwoTwoTwoDeletionSquareCore
+  noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged :=
+    noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+  noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+    noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+
+section NoLeftoverSmallCollisionSizeCutoffTerminalApi
+
+variable {terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+  terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+  terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+  terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+  terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop}
+
+/-- Project the existing four-pair square-core certificate from the deletion bridge. -/
+def CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate.toFourPairComplementaryTransversalBooleanOrientationCoreCertificate
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern) :
+    CertifiedProofMdCurrentFrontierTerminalFourPairComplementaryTransversalBooleanOrientationCoreCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore :=
+  h.fourPairComplementaryTransversalBooleanOrientationCore
+
+/-- Project the existing four-pair square-core assumption from the deletion bridge. -/
+def CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate.toFourPairComplementaryTransversalBooleanOrientationCore
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern) :
+    terminalFourPairComplementaryTransversalBooleanOrientationCore :=
+  h.toFourPairComplementaryTransversalBooleanOrientationCoreCertificate.toFourPairComplementaryTransversalBooleanOrientationCore
+
+/-- Project the `3,2,2,2` deletion-to-four-pair-atoms assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate.toThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern) :
+    terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms :=
+  h.threeTwoTwoTwoDeletionProjectsFourPairAtoms
+
+/-- Project the one-corner square-core routing assumption for the projected four pair atoms. -/
+def CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate.toThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern) :
+    terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore :=
+  h.threeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+
+/-- Project the square-breaker discharge of the isolated `3,2,2,2` pattern. -/
+def CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate.toThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern) :
+    terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern :=
+  h.threeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+
+/-- Project the isolated `3,2,2,2` deletion bridge from the cutoff certificate. -/
+def CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate.toThreeTwoTwoTwoDeletionSquareCore
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern :=
+  h.threeTwoTwoTwoDeletionSquareCore
+
+/-- Project the existing four-pair square-core assumption through the cutoff certificate. -/
+def CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate.toFourPairComplementaryTransversalBooleanOrientationCore
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    terminalFourPairComplementaryTransversalBooleanOrientationCore :=
+  h.toThreeTwoTwoTwoDeletionSquareCore.toFourPairComplementaryTransversalBooleanOrientationCore
+
+/-- Project the post-square-breaker `|A| <= 9` no-endpoint cutoff. -/
+def CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate.toNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged :=
+  h.noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+
+/-- Project the first-profile list `4,2,2,2` or `3,3,2,2`. -/
+def CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate.toNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  h.noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate.of_assumptions_toThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+    (fourPairComplementaryTransversalBooleanOrientationCore :
+      CertifiedProofMdCurrentFrontierTerminalFourPairComplementaryTransversalBooleanOrientationCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore)
+    (threeTwoTwoTwoDeletionProjectsFourPairAtoms :
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms)
+    (threeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore :
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore)
+    (threeTwoTwoTwoSquareBreakerDischargeEliminatesPattern :
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern) :
+    (certifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate_of_assumptions
+      fourPairComplementaryTransversalBooleanOrientationCore
+      threeTwoTwoTwoDeletionProjectsFourPairAtoms
+      threeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      threeTwoTwoTwoSquareBreakerDischargeEliminatesPattern).toThreeTwoTwoTwoDeletionProjectsFourPairAtoms =
+      threeTwoTwoTwoDeletionProjectsFourPairAtoms :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate.of_assumptions_toNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+    (threeTwoTwoTwoDeletionSquareCore :
+      CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern)
+    (noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged :
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged)
+    (noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    (certifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate_of_assumptions
+      threeTwoTwoTwoDeletionSquareCore
+      noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo).toNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged =
+      noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate.of_assumptions_toNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+    (threeTwoTwoTwoDeletionSquareCore :
+      CertifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern)
+    (noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged :
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged)
+    (noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    (certifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate_of_assumptions
+      threeTwoTwoTwoDeletionSquareCore
+      noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo).toNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo =
+      noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  rfl
+
+end NoLeftoverSmallCollisionSizeCutoffTerminalApi
+
+variable {terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+  terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+  terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+  terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+  terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop}
+
+/--
+Extension bundle connecting the partner-free / partner-hit split extension bundle with the
+small-collision size-cutoff certificate.
+-/
+structure CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle
+    (terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop) :
+    Type where
+  partnerFreePartnerHitPairCollisionSplitExtensionBundle :
+    CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+  smallCollisionSizeCutoff :
+    CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+
+/-- Build the small-collision size-cutoff extension bundle from its two public packets. -/
+def certifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle_of_packets
+    (partnerFreePartnerHitPairCollisionSplitExtensionBundle :
+      CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton)
+    (smallCollisionSizeCutoff :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo where
+  partnerFreePartnerHitPairCollisionSplitExtensionBundle :=
+    partnerFreePartnerHitPairCollisionSplitExtensionBundle
+  smallCollisionSizeCutoff := smallCollisionSizeCutoff
+
+section SmallCollisionSizeCutoffExtensionBundleApi
+
+/-- Project the partner split extension bundle from the size-cutoff extension bundle. -/
+def CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle.toPartnerFreePartnerHitPairCollisionSplitExtensionBundle
+    (h : CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton :=
+  h.partnerFreePartnerHitPairCollisionSplitExtensionBundle
+
+/-- Project the small-collision size-cutoff certificate from its extension bundle. -/
+def CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle.toSmallCollisionSizeCutoff
+    (h : CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  h.smallCollisionSizeCutoff
+
+end SmallCollisionSizeCutoffExtensionBundleApi
+
+/--
+Small-collision size-cutoff public facade.  It connects the cutoff certificate directly to
+the small-atom collision public-release surface before the partner split endpoint is adjoined.
+-/
+structure CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffPublicFacade
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop)
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop)
+    (terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop)
+    (terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop)
+    (terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode : Prop)
+    (terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore : Prop)
+    (terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop) :
+    Type where
+  finalConsumerSmallAtomCollisionCorePublicReleaseHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+  smallCollisionSizeCutoff :
+    CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+
+/--
+Final consumer handoff after adjoining the no-leftover small-collision size cutoff to the
+partner-free / partner-hit pair-collision split surface.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop)
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop)
+    (terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop)
+    (terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop)
+    (terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode : Prop)
+    (terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore : Prop)
+    (terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop)
+    (terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop) :
+    Type where
+  partnerFreePartnerHitPairCollisionSplitHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+  smallCollisionSizeCutoff :
+    CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+
+section FinalConsumerNoLeftoverSmallCollisionSizeCutoffApi
+
+/-- Promote the small-atom public-release surface to the size-cutoff public facade. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toSmallCollisionSizeCutoffPublicFacade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore)
+    (smallCollisionSizeCutoff :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffPublicFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo where
+  finalConsumerSmallAtomCollisionCorePublicReleaseHandoff := h
+  smallCollisionSizeCutoff := smallCollisionSizeCutoff
+
+/-- Promote the partner split handoff by adjoining the size-cutoff certificate. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton)
+    (smallCollisionSizeCutoff :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo where
+  partnerFreePartnerHitPairCollisionSplitHandoff := h
+  smallCollisionSizeCutoff := smallCollisionSizeCutoff
+
+/-- Promote the partner split handoff from raw terminal cutoff assumptions. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff_of_terminalAssumptions
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton)
+    (threeTwoTwoTwoDeletionProjectsFourPairAtoms :
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms)
+    (threeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore :
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore)
+    (threeTwoTwoTwoSquareBreakerDischargeEliminatesPattern :
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern)
+    (noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged :
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged)
+    (noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  h.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+    (certifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate_of_assumptions
+      (certifiedProofMdCurrentFrontierTerminalThreeTwoTwoTwoDeletionSquareCoreCertificate_of_assumptions
+        h.toSmallAtomCollisionCoreObligations.toFourPairComplementaryTransversalBooleanOrientationCoreCertificate
+        threeTwoTwoTwoDeletionProjectsFourPairAtoms
+        threeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        threeTwoTwoTwoSquareBreakerDischargeEliminatesPattern)
+      noLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      noLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo)
+
+/-- Promote the pair-collision rebate handoff using the size-cutoff extension bundle. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode)
+    (extensionBundle :
+      CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  (h.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+    extensionBundle.toPartnerFreePartnerHitPairCollisionSplitExtensionBundle).toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      extensionBundle.toSmallCollisionSizeCutoff
+
+/-- Project the small-atom public-release handoff from the size-cutoff public facade. -/
+def CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffPublicFacade.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffPublicFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore :=
+  h.finalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+
+/-- Project the cutoff certificate from the size-cutoff public facade. -/
+def CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffPublicFacade.toSmallCollisionSizeCutoff
+    (h : CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffPublicFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  h.smallCollisionSizeCutoff
+
+/-- Project the partner split handoff from the final size-cutoff handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton :=
+  h.partnerFreePartnerHitPairCollisionSplitHandoff
+
+/-- Project the cutoff certificate from the final size-cutoff handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff.toSmallCollisionSizeCutoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  h.smallCollisionSizeCutoff
+
+/-- Project the small-atom public-release handoff from the final size-cutoff handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore :=
+  h.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+
+/-- Package the final size-cutoff handoff as the small-atom public facade plus partner split. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff.toSmallCollisionSizeCutoffPublicFacade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffPublicFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  h.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toSmallCollisionSizeCutoffPublicFacade
+    h.toSmallCollisionSizeCutoff
+
+/-- Project the target statement through the partner split handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff.toTargetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    TargetStatement :=
+  h.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toTargetStatement
+
+/-- The size-cutoff handoff exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    TargetStatement :=
+  h.toTargetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff_partnerSplitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton)
+    (smallCollisionSizeCutoff :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    (h.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      smallCollisionSizeCutoff).toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff =
+      h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff_cutoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton)
+    (smallCollisionSizeCutoff :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverSmallCollisionSizeCutoffCertificate
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    (h.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      smallCollisionSizeCutoff).toSmallCollisionSizeCutoff =
+      smallCollisionSizeCutoff :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff_targetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo) :
+    h.toTargetStatement =
+      h.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toTargetStatement :=
+  rfl
+
+end FinalConsumerNoLeftoverSmallCollisionSizeCutoffApi
+
 end FinalConsumerPartnerFreePartnerHitPairCollisionSplitApi
 
 end FinalObligationDashboard
