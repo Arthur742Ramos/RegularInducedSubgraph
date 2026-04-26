@@ -1759,7 +1759,11 @@ What remains justified after audit is:
       `|P| - nu(Gamma(P))` from the packing-intersection graph, minimum covers are matching covers plus
       complement-four witnesses, and a six-packing is already Fano minus one line with a three-witness
       minimum core; the leave graph always has even degrees, so five-packings have only six-cycle or
-      two-triangle leaves; Fano itself needs four kept-pair witnesses; dualizing to the seven Fano
+      two-triangle leaves; anchored full-Fano traces are only empty/full, and anchored
+      Fano-minus-one-line traces are only the missing line, its complement, empty, and full, so both
+      large anchored packings force trace twins and the irreducible anchored quotient has size at most
+      five; Fano itself
+      needs four kept-pair witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual
       star forests (`K_{1,2}+2K_2`, the two five-edge star forests, or `K_{1,6}`), each dual star being
       a cluster of bad kept pairs in the complement of its center line;
