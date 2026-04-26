@@ -1080,6 +1080,11 @@ Rank-three support is a single-column trace pinning: an outside vertex matches t
 two zero `q`-classes and has at least three deviations on the adjacent active pair.
 Different residue endpoints are mostly column-separated: adjacent zero-pinnings conflict on the shared zero
 class, and opposite zero-pinnings would create forbidden full active supports.
+One-sided rank-three supports transfer to adjacent residues: if all deviations lie in the shared active
+`q`-class, the same column is adjacent-admissible with complementary support there.  Otherwise the support is
+bi-active oriented.
+The transferable branch is a paired atom-defect cut: both `C` and the adjacent complement `M\C` must obey
+their own four-atom bridge inequalities, so neither side can be a pure two-atom union.
 A rank-three high-active support leaves exactly one excess unit missing after adding a feasible complement
 packing, so that branch is a one-defect bridge obstruction: all one-saving bridges, thickenings, or larger
 replacement supports are blocked.
@@ -1087,14 +1092,23 @@ In gain form, every deficit-one packing `P` satisfies `gain_P(C)<=0` for all sup
 `gain_P(C)=|C|-1-sum_{B_i cap C != empty}(|B_i|-1)`.
 Each deficit-one packing is a four-atom partition of the active set, and every pure union of two atoms is a
 forbidden support.
+Equivalently all supports satisfy `delta_P(C)>=pi_P(C)-1`; zero-gain supports are tight atom-defect
+replacements.
 Hence leftover singletons are support-independent, packed blocks cannot be thickened, and any cross support
 meeting block set `I` has size at most `1+sum_{I}(|B_i|-1)`.
 Gain-zero replacements preserve the one-defect packing, so the blocker is taken zero-gain-saturated: all
 positive-gain exclusions persist throughout the zero-gain orbit.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
-In the one-support case the repair must hit the shortened block with projected gain exactly `1`; its
-unlifted copy is zero-gain and its thickened lift is blocked.
+In the one-support case the exact lift accounting has two types: hitting the shortened block makes the
+thickened lift keep the same positive projected gain and be blocked; missing it lets a thickened-only lift
+pay the large-block absorption penalty `|B_j|-2`.
+So size-two blocks cannot absorb such repairs, and size-three blocks absorb only unit gain.
+For a whole projected repair family with gain `g^-`, lift gains are exactly
+`g^-`, `g^- - 1`, `g^-`, or `g^- + 2 - |B_j|` depending on shortened-block contact and whether the lift uses
+the deleted vertex.
+If no disjoint full lift exists, at least two projected supports are forced through the deleted vertex; this
+lift-collision is the only nongain obstruction.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

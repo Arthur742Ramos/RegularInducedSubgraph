@@ -2008,19 +2008,32 @@ Rank-three support means single-column trace pinning: one outside vertex matches
 two zero `q`-classes and deviates at least three times on the adjacent active pair.
 Zero-pinned columns are residue-separated: adjacent residues conflict on their shared zero class, while
 opposite zero-pinning gives forbidden full active supports.
+One-sided rank-three supports transfer to the adjacent residue as complementary supports on the shared active
+`q`-class; nontransferable rank-three supports are bi-active oriented.
+The one-sided branch is a paired atom-defect cut: `C` and the adjacent complement `M\C` each satisfy their
+own four-atom bridge inequality, so neither side is a pure two-atom union.
 Any rank-three support plus a feasible complement packing saves exactly `|A|-4`, so rank-three high-active
 is a one-defect bridge obstruction: all one-saving bridges/thickenings/replacements are blocked.
 Equivalently every support has nonpositive replacement gain against every deficit-one packing
 `P`: `gain_P(C)=|C|-1-sum_{B_i cap C != empty}(|B_i|-1)<=0`.
 Each deficit-one packing is a four-atom partition, and every pure union of two atoms is a forbidden support.
+Equivalently `gain_P(C)=pi_P(C)-1-delta_P(C)`, so all supports obey
+`delta_P(C)>=pi_P(C)-1`; zero-gain supports are exactly tight atom-defect replacements.
 This makes leftover singletons support-independent, forbids thickening packed blocks, and caps any support
 crossing packed blocks `I` by `1+sum_I(|B_i|-1)`.
 Gain-zero replacements preserve the deficit-one packing, so the bridge blocker can be taken zero-gain
 saturated; terminal exclusions hold on the entire zero-gain orbit.
 Deleting a packed-block vertex creates a one-short projected packing, so criticality forces a minimal
 deletion-only positive-gain repair family whose full lifts are blocked by nonpositive total gain.
-For a one-support repair, it must hit the shortened block with projected gain exactly `1`; the unlifted copy
-is zero-gain in the original packing, and its thickened lift is blocked.
+For a one-support repair, exact lift accounting splits into shortened-block repair (thickened lift keeps the
+same positive gain and is blocked; unlifted lift has gain one less) and large-block absorption (thickened
+lift pays `|B_j|-2`).
+Hence size-two packed blocks cannot absorb positive one-support repairs, and size-three blocks absorb only
+unit projected gain.
+For a projected repair family with gain `g^-`, the full lift gain is one of
+`g^-`, `g^- - 1`, `g^-`, or `g^- + 2 - |B_j|`, determined by shortened-block contact and use of `a`.
+The only nongain lift obstruction is collision: at least two projected supports are forced through the
+deleted vertex.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

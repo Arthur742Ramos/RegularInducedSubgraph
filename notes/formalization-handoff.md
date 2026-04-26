@@ -2466,6 +2466,12 @@ Recommended attack:
     switch pattern on the two zero `q`-classes and has at least three deviations on the active pair.
     Add the column-separation lemma: adjacent residue zero-pinnings conflict on the shared zero `q`-class,
     and opposite zero-pinnings imply forbidden full active supports in high-active terminal endpoints.
+    Add the adjacent-transfer lemma: a one-sided rank-three support in the shared active `q`-class is
+    admissible for the adjacent residue with complementary support; otherwise the support is bi-active
+    oriented.
+    Formalize the paired cut endpoint: for a transferable support `C subset M`, both `C` and `M\C` satisfy
+    atom-defect inequalities in adjacent four-atom bridge blockers, forbidding pure two-atom unions on either
+    side.
     Formalize rank-three support contraction: a support `B` of size `r>=3` plus a complement-shadow packing
     saves `|A|-4`, so terminality is exactly absence/capacity-deficiency of all one-saving bridges,
     thickenings, or larger replacements.
@@ -2474,6 +2480,8 @@ Recommended attack:
     `gain_P(C)<=0` for every deficit-one packing `P` and support `C`.
     Record the four-atom normalization `t+L=4` for deficit-one packings and prove that every pure union of
     two atoms is a forbidden support.
+    Add atom-defect form: `gain_P(C)=pi_P(C)-1-delta_P(C)`, so every support has
+    `delta_P(C)>=pi_P(C)-1` and zero-gain supports are exactly tight atom-defect replacements.
     Derive the local caps: leftover singletons support-independent; one-block crossings have size at most
     the block; crossings over block set `I` have size at most `1+sum_I(|B_i|-1)`.
     Add zero-gain saturation: gain-zero replacements preserve deficit one, so choose `P` lexicographically
@@ -2482,8 +2490,16 @@ Recommended attack:
     Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
     short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
     total gain.
-    Add the one-support deletion lemma: such a repair must hit the shortened block with projected gain `1`;
-    the unlifted copy is zero-gain in the original packing and the thickened lift is blocked.
+    Add exact one-support deletion lift accounting.  If the projected support hits the shortened block, its
+    thickened lift has the same projected gain and is blocked while its unlifted lift has gain one less.  If
+    it misses the shortened block, the thickened lift pays the large-block absorption penalty `|B_j|-2`.
+    Derive the absorption cutoff: size-two packed blocks cannot absorb positive one-support repairs, and
+    size-three blocks absorb only unit projected gain.
+    Generalize to repair families: if `h` records contact with `B_j\{a}` and `t` records a lift using `a`,
+    the full gain is `g^- + t - (1_{h or t}(|B_j|-1)-h(|B_j|-2))`, i.e. the four cases
+    `g^-`, `g^- - 1`, `g^-`, `g^- + 2 - |B_j|`.
+    Add lift-collision alternative: a projected repair family has no disjoint full lift only if at least two
+    projected supports are forced to lift through the deleted vertex.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

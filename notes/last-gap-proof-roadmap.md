@@ -1982,19 +1982,30 @@ What remains justified after audit is:
       and at least three deviations on the active pair;
       such zero-pinned columns are residue-separated, since adjacent pins conflict on the shared zero class
       and opposite pins imply forbidden full active supports;
+      one-sided rank-three supports transfer to the adjacent residue as complementary supports on the shared
+      active `q`-class, while nontransferable supports are bi-active oriented;
+      the transferable branch is a paired atom-defect cut in two adjacent four-atom bridge blockers;
       a rank-three support plus a feasible complement packing is exactly one excess unit short, reducing
       that branch to a one-defect bridge obstruction;
       in gain form, every support has nonpositive replacement gain against every deficit-one packing;
       each deficit-one packing is a four-atom partition, and every pure union of two atoms is a forbidden
       support;
+      equivalently all supports satisfy the atom-defect inequality `delta_P(C)>=pi_P(C)-1`, with zero-gain
+      supports exactly tight;
       this gives local caps: leftover singletons independent, no packed-block thickening, and bounded
       cross-block supports;
       gain-zero replacements preserve deficit one, so the blocker is taken zero-gain-saturated across its
       replacement orbit;
       deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
       are blocked;
-      in the one-support repair case, the repair hits the shortened block with projected gain exactly `1`,
-      its unlifted copy is zero-gain, and its thickened lift is blocked;
+      one-support deletion repair has exact lift accounting: shortened-block repairs have blocked positive
+      thickened lifts, while large-block absorption repairs pay the penalty `|B_j|-2`;
+      consequently size-two packed blocks cannot absorb positive one-support repairs, and size-three blocks
+      absorb only unit projected gain;
+      the same lift accounting holds for full repair families with gains
+      `g^-`, `g^- - 1`, `g^-`, or `g^- + 2 - |B_j|`;
+      absence of a disjoint full lift is exactly lift-collision by at least two supports forced through the
+      deleted vertex;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;

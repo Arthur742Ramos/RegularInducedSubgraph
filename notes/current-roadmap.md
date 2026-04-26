@@ -5322,6 +5322,12 @@ are cyclic rotations of this two-class trace pinning.
 The pinning is residue-separated: adjacent residues prescribe opposite values on their shared zero
 `q`-class, while opposite zero-pinnings would make the full active set a support in each endpoint, forbidden
 by the terminal support-size cap.
+Adjacent covers also have a one-sided transfer: a rank-three support lying wholly in the shared active
+`q`-class is admissible for the adjacent residue with complementary support in that class.  Hence every
+rank-three support is either bi-active oriented or one-sided and simultaneously constrained by two adjacent
+bridge blockers.
+In the one-sided case, the support `C` and its adjacent complement `M\C` must both satisfy atom-defect
+inequalities in their respective four-atom partitions; neither side may be a pure union of two atoms.
 After coordinate switching, `h` is `{0,1}`-valued; realization is three outside columns vanishing on the
 zero coordinates and disjointly covering the one coordinates.
 Thus the target branch is a critical filtered three-cover: zero coordinates filter admissible columns, and
@@ -5414,6 +5420,9 @@ Equivalently, for every deficit-one packing `P`, every support `C` has replaceme
 `gain_P(C)=|C|-1-sum_{B_i in P:C cap B_i nonempty}(|B_i|-1)<=0`; positive gain would close.
 Each deficit-one packing partitions `A` into exactly four atoms (packed non-singleton blocks plus leftover
 singletons), and every pure union of two atoms is a forbidden support.
+Equivalently, every support satisfies the atom-defect inequality
+`delta_P(C)>=pi_P(C)-1`, where `pi_P(C)` is the number of atoms met and `delta_P(C)` is the number of omitted
+vertices from packed atoms met; zero-gain supports are exactly the tight cases.
 Consequences: leftover singletons are support-independent; supports meeting one packed block have size at
 most that block; supports meeting blocks `I` have size at most `1+sum_{i in I}(|B_i|-1)`.
 Gain-zero replacements preserve the deficit-one packing; choose a zero-gain-saturated packing
@@ -5421,9 +5430,17 @@ lexicographically maximal in block-size profile, so every zero-gain move is term
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
 vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
 positive-gain repair family whose every full lift has nonpositive total gain.
-For one-support deletion repairs, the support must hit the shortened block and have projected gain exactly
-`1`; its unlifted copy is zero-gain in the original packing, and its thickened lift by the deleted vertex is
-blocked.
+For one-support deletion repairs, the exact lift accounting splits into shortened-block repair and
+large-block absorption.  If the projected support hits the shortened block, its thickened lift has the same
+positive gain and is blocked, while its unlifted lift has gain one less.  If it misses the shortened block,
+the thickened lift pays the absorption penalty `|B_j|-2`.
+Thus size-two packed blocks cannot absorb positive one-support repairs, and size-three blocks absorb only
+unit projected gain.
+For a full projected repair family with gain `g^-`, the lift gain is one of
+`g^-`, `g^- - 1`, `g^-`, or `g^- + 2 - |B_j|` according as it misses/hits the shortened block and omits/uses
+the deleted vertex; this four-case formula is the exact multi-support deletion endpoint.
+The only remaining lift obstruction is collision: a projected repair family has no disjoint full lift only
+when at least two projected supports are forced to lift through the same deleted vertex.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

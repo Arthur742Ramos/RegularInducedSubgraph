@@ -11378,6 +11378,35 @@ Against the residue-`0` endpoint this makes the support equal to the full active
 large high-active branch, zero-pinned rank-three witnesses for distinct residues are column-separated,
 except for degenerate adjacent residues whose shared zero class is empty.
 
+There is also a one-sided transfer between adjacent residues.  In the `k=0` row, if the zero-pinned support
+has no deviations on `N_2`, so `C subset N_1`, then the same outside vertex is admissible for the `k=1`
+filtered cover: it is still pinned correctly on the zero classes `N_2 union N_3`, and its new active support
+is exactly
+
+```text
+N_1 \ C.
+```
+
+Thus a one-sided support in the shared active class transfers to the adjacent residue as its complement in
+that class.  Cyclically, every rank-three support has an orientation split: either it meets both active
+`q`-classes of its residue, or it is one-sided and produces a complementary adjacent-residue support.  A
+terminal high-active endpoint must therefore keep every large one-sided support compatible with the
+four-atom bridge blocker in two adjacent filtered covers at once.
+
+In the one-sided case the two bridge blockers give a paired cut inequality.  Let `M` be the shared active
+`q`-class, let `C subset M` be the support in the first cover, and let `M\C` be the transferred support in
+the adjacent cover.  For any deficit-one packings `P` and `P^+` in the two covers,
+
+```text
+delta_P(C) >= pi_P(C)-1,
+delta_{P^+}(M\C) >= pi_{P^+}(M\C)-1.
+```
+
+Thus neither side of the cut can be a pure union of two atoms in its own four-atom partition.  Equivalently,
+every transferable one-sided rank-three column is a complementary atom-defect cut across two adjacent
+four-atom systems.  The nontransferable branch is precisely the bi-active oriented branch, where every
+rank-three support pays defects inside both active `q`-classes of a single residue.
+
 If both opposite residues `k` and `k+2` are in the high-active full-minor target-avoidance branch on a
 shared coordinate certificate, the singleton-shadow collapse gives an antipodal trace core.  On that shared
 coordinate set, the outside trace multiset contains
@@ -11898,6 +11927,30 @@ third packed atom, thereby paying the replacement penalty for that whole third a
 blocker is not only bridge-free on vertices; it is bridge-free on the four atoms of every deficit-one
 packing.
 
+Equivalently, let `pi_P(C)` be the number of atoms of this four-atom partition met by `C`, and let
+
+```text
+delta_P(C)=sum_{packed atoms B_i met by C} (|B_i|-|C cap B_i|).
+```
+
+The gain identity becomes
+
+```text
+gain_P(C)=pi_P(C)-1-delta_P(C).
+```
+
+Thus every support satisfies the atom-defect inequality
+
+```text
+delta_P(C) >= pi_P(C)-1.
+```
+
+This is often sharper than the size caps.  A support meeting two atoms must omit at least one vertex from a
+packed atom it meets; a support meeting three atoms must omit at least two vertices in total from the packed
+atoms it meets; and a four-atom support must carry at least three such omissions.  Zero-gain supports are
+exactly the tight cases `delta_P(C)=pi_P(C)-1`, so zero-gain saturation is saturation under tight atom-defect
+replacements.
+
 Unwinding `gain_P(C)<=0` gives the usable local caps.  If `C` meets no packed block, then `|C|<=1`, so the
 leftover singleton set is support-independent.  If `C` meets exactly one packed block `B_i`, then
 `|C|<=|B_i|`; in particular no packed block can be thickened by a new singleton.  If `C` meets packed
@@ -11928,19 +11981,88 @@ families.  Terminality of `A` says that every full lift of that minimal repair f
 gain against `P`.  Thus each vertex inside a packed block has a deletion-only bridge family: it exists after
 that vertex is removed, but all of its full lifts are blocked in the original endpoint.
 
-For a single-support deletion repair this is exact.  Let `P^-` be the projected packing after deleting
-`a in B_j`, and let `C'` be a projected support with `gain_{P^-}(C')>0`.  If `C'` misses `B_j\{a}`, then it
-has the same positive gain against `P`, so it would close the original endpoint.  If `C'` hits `B_j\{a}`,
-then the unlifted support has
+For a single-support deletion repair the lift accounting is exact.  Let `P^-` be the projected packing after
+deleting `a in B_j`, and let `C'` be a projected support with `g^-=gain_{P^-}(C')>0`.  A lift of `C'` to the
+original active set may be the unlifted set `C'`, the thickened set `C' union {a}`, or only one of these,
+depending on which original trace columns exist.  If `C'` hits `B_j\{a}`, then the available lifts have gains
 
 ```text
-gain_P(C') = gain_{P^-}(C')-1.
+gain_P(C')             = g^- - 1,
+gain_P(C' union {a})   = g^-.
 ```
 
-Thus terminality forces `gain_{P^-}(C')=1`; the unlifted support is a zero-gain replacement, and the
-thickened lift `C' union {a}` is absent or capacity-deficient because it has the same positive gain against
-`P` as `C'` had against `P^-`.  Deletion repair is therefore not arbitrary: every one-support repair is a
-unit-gain bridge through the shortened atom, with its lift blocked.
+Thus any available thickened lift is a positive bridge and is blocked; if `g^->1`, any available unlifted
+lift is also positive, while if `g^-=1` the unlifted lift is exactly zero-gain.  If instead `C'` misses
+`B_j\{a}`, then
+
+```text
+gain_P(C')             = g^-,
+gain_P(C' union {a})   = g^- + 2 - |B_j|.
+```
+
+So an available unlifted lift is blocked, while a thickened-only lift can hide inside a large packed block
+by paying the `|B_j|-2` absorption penalty.  Deletion repair is therefore split into two exact lift types:
+a shortened-block repair, whose thickened lift is a forbidden positive bridge, and a large-block absorption
+repair, where the deleted vertex can absorb the projected gain.
+
+The absorption alternative has a sharp size cutoff.  If `C'` misses `B_j\{a}` and is realized only by the
+thickened lift, terminality requires
+
+```text
+g^- <= |B_j|-2.
+```
+
+Thus a size-two packed block cannot absorb any positive projected one-support repair, and a size-three block
+can absorb only unit projected gain.  Higher projected gain forces the repair to hit the shortened block or
+to have all positive full lifts absent.  Consequently every deletion-only obstruction at a two-atom is of
+the shortened-block type, while large-block absorption can occur only at atoms of size at least three.
+
+In atom-defect language, the shortened-block thickening removes the defect contributed by the deleted vertex
+and violates `delta_P(C)>=pi_P(C)-1`; the large-block absorption case survives only because adding `a` also
+turns a previously unhit packed atom into a hit packed atom, adding the compensating penalty `|B_j|-1`.
+
+The same bookkeeping works for a whole deletion repair family.  Let `R^-` be a disjoint projected repair
+family in `A\{a}` with total projected gain `g^->0` against `P^-`.  Put
+
+```text
+h=1  iff some member of R^- meets B_j\{a},
+t=1  iff a chosen full lift uses the deleted vertex a.
+```
+
+Since full lifts are disjoint, at most one lifted member contains `a`.  The total full gain against `P` is
+
+```text
+g^- + t - (1_{h or t}(|B_j|-1) - h(|B_j|-2)).
+```
+
+Equivalently the four cases are
+
+```text
+h=0,t=0:  g^-,
+h=1,t=0:  g^- - 1,
+h=1,t=1:  g^-,
+h=0,t=1:  g^- + 2 - |B_j|.
+```
+
+Thus every positive-gain projected repair family must be lift-blocked in exactly one of these ways: an
+available no-absorption lift with gain `g^-` closes, a shortened-block unlift loses only one gain unit, a
+shortened-block thickening keeps the full projected gain, and a pure absorption lift is possible only when
+`g^-<=|B_j|-2`.  This is the precise multi-support deletion endpoint.
+
+There is only one additional lift obstruction: collision at the deleted vertex.  Each projected support in
+`R^-` comes from at least one original column, hence has an unlifted lift, a thickened lift through `a`, or
+both.  If the projected family has no disjoint full lift at all, then at least two of its members are
+`a`-forced, meaning their only available original lifts contain `a`.  Thus deletion-only repair now has three
+explicit terminal mechanisms:
+
+```text
+positive full lift blocked by gain;
+nonpositive full lift allowed by the four-case formula;
+or lift-collision because two projected supports are forced through the same deleted vertex.
+```
+
+In particular, any projected repair family with at most one `a`-forced member has a disjoint full lift and is
+controlled entirely by the four-case gain formula above.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
