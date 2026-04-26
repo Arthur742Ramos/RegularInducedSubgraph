@@ -15355,6 +15355,681 @@ theorem FirstBitTerminalPrincipalBucketFrontierCertificate.obligation
   · exact h.hereditaryDense
   · exact h.hereditaryCodense
 
+
+/-- Cardinality surface for a critical first-bit loss-`32` host, `|H| = 32m + 1`. -/
+def FirstBitTerminalCriticalLoss32HostCardinality
+    {Target : Type*} (H : Finset Target) (m : ℕ) : Prop :=
+  H.card = 32 * m + 1
+
+/--
+Selector-bound surface for a critical loss-`32` counterexample: every selector certified inside
+`H` still has size at most `32m`.
+-/
+def FirstBitTerminalCriticalLoss32SelectorBound
+    {Target : Type*} (H : Finset Target) (m : ℕ)
+    (selectorWitness : Finset Target → Prop) : Prop :=
+  ∀ S : Finset Target, S ⊆ H → selectorWitness S → S.card ≤ 32 * m
+
+/--
+Assumption-explicit certificate for a critical first-bit loss-`32` counterexample.  The package
+records the terminal host `H` of size `32m + 1`, its residue core, the selector obstruction at
+loss `32`, and the lower-envelope loss accounting used by pruning arguments.  It is purely a
+frontier surface: every mathematical assertion is a field of the certificate.
+-/
+structure FirstBitTerminalCriticalLoss32CounterexampleCertificate
+    {Target : Type*} (principalBucket H residueCore : Finset Target)
+    (m residueCoreFloor criticalBudget : ℕ)
+    (selectorWitness : Finset Target → Prop) (lossAccount : Finset Target → ℕ) : Prop where
+  hostSubsetPrincipalBucket : H ⊆ principalBucket
+  hostCardinality : FirstBitTerminalCriticalLoss32HostCardinality H m
+  residueCoreSubsetHost : residueCore ⊆ H
+  residueCoreLarge : residueCoreFloor ≤ residueCore.card
+  selectorBound : FirstBitTerminalCriticalLoss32SelectorBound H m selectorWitness
+  lossBudget : ∀ S : Finset Target, S ⊆ H → lossAccount S ≤ criticalBudget
+  criticalLowerEnvelope : ∀ S : Finset Target, S ⊆ H → H.card ≤ S.card + lossAccount S
+
+/-- Build a critical loss-`32` counterexample certificate from its named assumptions. -/
+theorem firstBitTerminalCriticalLoss32CounterexampleCertificate_of_assumptions
+    {Target : Type*} {principalBucket H residueCore : Finset Target}
+    {m residueCoreFloor criticalBudget : ℕ}
+    {selectorWitness : Finset Target → Prop} {lossAccount : Finset Target → ℕ}
+    (hsubset : H ⊆ principalBucket)
+    (hcard : FirstBitTerminalCriticalLoss32HostCardinality H m)
+    (hcore : residueCore ⊆ H)
+    (hlarge : residueCoreFloor ≤ residueCore.card)
+    (hselector : FirstBitTerminalCriticalLoss32SelectorBound H m selectorWitness)
+    (hbudget : ∀ S : Finset Target, S ⊆ H → lossAccount S ≤ criticalBudget)
+    (henvelope : ∀ S : Finset Target, S ⊆ H → H.card ≤ S.card + lossAccount S) :
+    FirstBitTerminalCriticalLoss32CounterexampleCertificate
+      principalBucket H residueCore m residueCoreFloor criticalBudget selectorWitness lossAccount where
+  hostSubsetPrincipalBucket := hsubset
+  hostCardinality := hcard
+  residueCoreSubsetHost := hcore
+  residueCoreLarge := hlarge
+  selectorBound := hselector
+  lossBudget := hbudget
+  criticalLowerEnvelope := henvelope
+
+/-- Project the terminal host inclusion from a critical loss-`32` certificate. -/
+theorem FirstBitTerminalCriticalLoss32CounterexampleCertificate.to_hostSubsetPrincipalBucket
+    {Target : Type*} {principalBucket H residueCore : Finset Target}
+    {m residueCoreFloor criticalBudget : ℕ}
+    {selectorWitness : Finset Target → Prop} {lossAccount : Finset Target → ℕ}
+    (h : FirstBitTerminalCriticalLoss32CounterexampleCertificate
+      principalBucket H residueCore m residueCoreFloor criticalBudget selectorWitness lossAccount) :
+    H ⊆ principalBucket :=
+  h.hostSubsetPrincipalBucket
+
+/-- Project the critical `32m + 1` cardinality equation. -/
+theorem FirstBitTerminalCriticalLoss32CounterexampleCertificate.to_hostCardinality
+    {Target : Type*} {principalBucket H residueCore : Finset Target}
+    {m residueCoreFloor criticalBudget : ℕ}
+    {selectorWitness : Finset Target → Prop} {lossAccount : Finset Target → ℕ}
+    (h : FirstBitTerminalCriticalLoss32CounterexampleCertificate
+      principalBucket H residueCore m residueCoreFloor criticalBudget selectorWitness lossAccount) :
+    FirstBitTerminalCriticalLoss32HostCardinality H m :=
+  h.hostCardinality
+
+/-- Project the residue-core inclusion into the critical host. -/
+theorem FirstBitTerminalCriticalLoss32CounterexampleCertificate.to_residueCoreSubsetHost
+    {Target : Type*} {principalBucket H residueCore : Finset Target}
+    {m residueCoreFloor criticalBudget : ℕ}
+    {selectorWitness : Finset Target → Prop} {lossAccount : Finset Target → ℕ}
+    (h : FirstBitTerminalCriticalLoss32CounterexampleCertificate
+      principalBucket H residueCore m residueCoreFloor criticalBudget selectorWitness lossAccount) :
+    residueCore ⊆ H :=
+  h.residueCoreSubsetHost
+
+/-- Apply the selector bound carried by a critical loss-`32` certificate. -/
+theorem FirstBitTerminalCriticalLoss32CounterexampleCertificate.selector_card_le
+    {Target : Type*} {principalBucket H residueCore S : Finset Target}
+    {m residueCoreFloor criticalBudget : ℕ}
+    {selectorWitness : Finset Target → Prop} {lossAccount : Finset Target → ℕ}
+    (h : FirstBitTerminalCriticalLoss32CounterexampleCertificate
+      principalBucket H residueCore m residueCoreFloor criticalBudget selectorWitness lossAccount)
+    (hS : S ⊆ H) (hselector : selectorWitness S) :
+    S.card ≤ 32 * m :=
+  h.selectorBound S hS hselector
+
+/-- Apply the loss-accounting envelope from a critical loss-`32` certificate. -/
+theorem FirstBitTerminalCriticalLoss32CounterexampleCertificate.host_card_le_selected_add_loss
+    {Target : Type*} {principalBucket H residueCore S : Finset Target}
+    {m residueCoreFloor criticalBudget : ℕ}
+    {selectorWitness : Finset Target → Prop} {lossAccount : Finset Target → ℕ}
+    (h : FirstBitTerminalCriticalLoss32CounterexampleCertificate
+      principalBucket H residueCore m residueCoreFloor criticalBudget selectorWitness lossAccount)
+    (hS : S ⊆ H) :
+    H.card ≤ S.card + lossAccount S :=
+  h.criticalLowerEnvelope S hS
+
+/-- A residue core omits the named residue class. -/
+def FirstBitTerminalStableResidueCoreOmission
+    {Target : Type*} (residueCore : Finset Target)
+    (residue : Target → Fin 4) (omittedResidue : Fin 4) : Prop :=
+  ∀ target : Target, target ∈ residueCore → residue target ≠ omittedResidue
+
+/--
+Stable residue-core pruning certificate.  It records the omitted residue on the retained core, an
+explicit pruned subcore, and the fact that every core reachable by the supplied stability relation
+continues to omit the same residue inside the principal bucket.
+-/
+structure FirstBitTerminalStableResidueCoreOmissionCertificate
+    {Target : Type*} (principalBucket residueCore prunedCore : Finset Target)
+    (residue : Target → Fin 4) (omittedResidue : Fin 4)
+    (stableUnder : Finset Target → Finset Target → Prop) : Prop where
+  residueCoreSubsetPrincipalBucket : residueCore ⊆ principalBucket
+  prunedCoreSubsetResidueCore : prunedCore ⊆ residueCore
+  residueCoreOmission :
+    FirstBitTerminalStableResidueCoreOmission residueCore residue omittedResidue
+  prunedCoreOmission :
+    FirstBitTerminalStableResidueCoreOmission prunedCore residue omittedResidue
+  stableOmission : ∀ C : Finset Target, stableUnder residueCore C → C ⊆ principalBucket →
+    FirstBitTerminalStableResidueCoreOmission C residue omittedResidue
+
+/-- Build a stable residue-core omission certificate from its named assumptions. -/
+theorem firstBitTerminalStableResidueCoreOmissionCertificate_of_assumptions
+    {Target : Type*} {principalBucket residueCore prunedCore : Finset Target}
+    {residue : Target → Fin 4} {omittedResidue : Fin 4}
+    {stableUnder : Finset Target → Finset Target → Prop}
+    (hcore : residueCore ⊆ principalBucket)
+    (hpruned : prunedCore ⊆ residueCore)
+    (homit : FirstBitTerminalStableResidueCoreOmission residueCore residue omittedResidue)
+    (hprunedOmit : FirstBitTerminalStableResidueCoreOmission prunedCore residue omittedResidue)
+    (hstable : ∀ C : Finset Target, stableUnder residueCore C → C ⊆ principalBucket →
+      FirstBitTerminalStableResidueCoreOmission C residue omittedResidue) :
+    FirstBitTerminalStableResidueCoreOmissionCertificate
+      principalBucket residueCore prunedCore residue omittedResidue stableUnder where
+  residueCoreSubsetPrincipalBucket := hcore
+  prunedCoreSubsetResidueCore := hpruned
+  residueCoreOmission := homit
+  prunedCoreOmission := hprunedOmit
+  stableOmission := hstable
+
+/-- Apply stable residue omission to a target in the retained residue core. -/
+theorem FirstBitTerminalStableResidueCoreOmissionCertificate.residue_ne_of_mem_core
+    {Target : Type*} {principalBucket residueCore prunedCore : Finset Target}
+    {residue : Target → Fin 4} {omittedResidue : Fin 4}
+    {stableUnder : Finset Target → Finset Target → Prop}
+    (h : FirstBitTerminalStableResidueCoreOmissionCertificate
+      principalBucket residueCore prunedCore residue omittedResidue stableUnder)
+    {target : Target} (htarget : target ∈ residueCore) :
+    residue target ≠ omittedResidue :=
+  h.residueCoreOmission target htarget
+
+/-- Apply stable residue omission to a target in the pruned subcore. -/
+theorem FirstBitTerminalStableResidueCoreOmissionCertificate.residue_ne_of_mem_prunedCore
+    {Target : Type*} {principalBucket residueCore prunedCore : Finset Target}
+    {residue : Target → Fin 4} {omittedResidue : Fin 4}
+    {stableUnder : Finset Target → Finset Target → Prop}
+    (h : FirstBitTerminalStableResidueCoreOmissionCertificate
+      principalBucket residueCore prunedCore residue omittedResidue stableUnder)
+    {target : Target} (htarget : target ∈ prunedCore) :
+    residue target ≠ omittedResidue :=
+  h.prunedCoreOmission target htarget
+
+/-- Project stable residue omission to any core related by the stability relation. -/
+theorem FirstBitTerminalStableResidueCoreOmissionCertificate.stable_residue_ne_of_mem
+    {Target : Type*} {principalBucket residueCore prunedCore C : Finset Target}
+    {residue : Target → Fin 4} {omittedResidue : Fin 4}
+    {stableUnder : Finset Target → Finset Target → Prop}
+    (h : FirstBitTerminalStableResidueCoreOmissionCertificate
+      principalBucket residueCore prunedCore residue omittedResidue stableUnder)
+    (hstable : stableUnder residueCore C) (hC : C ⊆ principalBucket)
+    {target : Target} (htarget : target ∈ C) :
+    residue target ≠ omittedResidue :=
+  h.stableOmission C hstable hC target htarget
+
+/-- Maximum-core comparison surface inside the terminal principal bucket. -/
+def FirstBitTerminalMaximumCoreScore
+    {Target : Type*} (principalBucket core : Finset Target)
+    (coreScore : Finset Target → ℕ) : Prop :=
+  ∀ candidate : Finset Target, candidate ⊆ principalBucket →
+    coreScore candidate ≤ coreScore core
+
+/-- Exchange equation for swapping a core target with a boundary target. -/
+def FirstBitTerminalMaximumCoreExchangeEquation
+    {Target : Type*} (vertexWeight : Target → ℕ)
+    (exchangeLoss exchangeGain : Target → Target → ℕ) (x y : Target) : Prop :=
+  vertexWeight x + exchangeGain x y = vertexWeight y + exchangeLoss x y
+
+/--
+Maximum-core exchange certificate.  It packages the maximum-core comparison and the per-swap
+exchange equations/inequalities needed by terminal residue-core pruning, without asserting that any
+particular exchange is available unconditionally.
+-/
+structure FirstBitTerminalMaximumCoreExchangeCertificate
+    {Target : Type*} (principalBucket core exchangeBoundary : Finset Target)
+    (coreScore : Finset Target → ℕ) (vertexWeight : Target → ℕ)
+    (exchangeAllowed : Target → Target → Prop)
+    (exchangeLoss exchangeGain : Target → Target → ℕ) (exchangeSlack : ℕ) : Prop where
+  coreSubsetPrincipalBucket : core ⊆ principalBucket
+  exchangeBoundarySubsetPrincipalBucket : exchangeBoundary ⊆ principalBucket
+  maximumCore : FirstBitTerminalMaximumCoreScore principalBucket core coreScore
+  exchangeEquation : ∀ x : Target, x ∈ core → ∀ y : Target, y ∈ exchangeBoundary →
+    exchangeAllowed x y →
+      FirstBitTerminalMaximumCoreExchangeEquation vertexWeight exchangeLoss exchangeGain x y
+  exchangeSlackBound : ∀ x : Target, x ∈ core → ∀ y : Target, y ∈ exchangeBoundary →
+    exchangeAllowed x y → exchangeLoss x y ≤ exchangeGain x y + exchangeSlack
+
+/-- Build a maximum-core exchange certificate from its named assumptions. -/
+theorem firstBitTerminalMaximumCoreExchangeCertificate_of_assumptions
+    {Target : Type*} {principalBucket core exchangeBoundary : Finset Target}
+    {coreScore : Finset Target → ℕ} {vertexWeight : Target → ℕ}
+    {exchangeAllowed : Target → Target → Prop}
+    {exchangeLoss exchangeGain : Target → Target → ℕ} {exchangeSlack : ℕ}
+    (hcore : core ⊆ principalBucket)
+    (hboundary : exchangeBoundary ⊆ principalBucket)
+    (hmax : FirstBitTerminalMaximumCoreScore principalBucket core coreScore)
+    (heq : ∀ x : Target, x ∈ core → ∀ y : Target, y ∈ exchangeBoundary →
+      exchangeAllowed x y →
+        FirstBitTerminalMaximumCoreExchangeEquation vertexWeight exchangeLoss exchangeGain x y)
+    (hslack : ∀ x : Target, x ∈ core → ∀ y : Target, y ∈ exchangeBoundary →
+      exchangeAllowed x y → exchangeLoss x y ≤ exchangeGain x y + exchangeSlack) :
+    FirstBitTerminalMaximumCoreExchangeCertificate principalBucket core exchangeBoundary
+      coreScore vertexWeight exchangeAllowed exchangeLoss exchangeGain exchangeSlack where
+  coreSubsetPrincipalBucket := hcore
+  exchangeBoundarySubsetPrincipalBucket := hboundary
+  maximumCore := hmax
+  exchangeEquation := heq
+  exchangeSlackBound := hslack
+
+/-- Compare any candidate core against the certified maximum core. -/
+theorem FirstBitTerminalMaximumCoreExchangeCertificate.coreScore_le
+    {Target : Type*} {principalBucket core exchangeBoundary candidate : Finset Target}
+    {coreScore : Finset Target → ℕ} {vertexWeight : Target → ℕ}
+    {exchangeAllowed : Target → Target → Prop}
+    {exchangeLoss exchangeGain : Target → Target → ℕ} {exchangeSlack : ℕ}
+    (h : FirstBitTerminalMaximumCoreExchangeCertificate principalBucket core exchangeBoundary
+      coreScore vertexWeight exchangeAllowed exchangeLoss exchangeGain exchangeSlack)
+    (hcandidate : candidate ⊆ principalBucket) :
+    coreScore candidate ≤ coreScore core :=
+  h.maximumCore candidate hcandidate
+
+/-- Project a maximum-core exchange equation for one allowed swap. -/
+theorem FirstBitTerminalMaximumCoreExchangeCertificate.exchange_equation_of_allowed
+    {Target : Type*} {principalBucket core exchangeBoundary : Finset Target}
+    {coreScore : Finset Target → ℕ} {vertexWeight : Target → ℕ}
+    {exchangeAllowed : Target → Target → Prop}
+    {exchangeLoss exchangeGain : Target → Target → ℕ} {exchangeSlack : ℕ}
+    (h : FirstBitTerminalMaximumCoreExchangeCertificate principalBucket core exchangeBoundary
+      coreScore vertexWeight exchangeAllowed exchangeLoss exchangeGain exchangeSlack)
+    {x y : Target} (hx : x ∈ core) (hy : y ∈ exchangeBoundary) (hallowed : exchangeAllowed x y) :
+    FirstBitTerminalMaximumCoreExchangeEquation vertexWeight exchangeLoss exchangeGain x y :=
+  h.exchangeEquation x hx y hy hallowed
+
+/-- Project the exchange slack bound for one allowed swap. -/
+theorem FirstBitTerminalMaximumCoreExchangeCertificate.exchange_loss_le_gain_add_slack
+    {Target : Type*} {principalBucket core exchangeBoundary : Finset Target}
+    {coreScore : Finset Target → ℕ} {vertexWeight : Target → ℕ}
+    {exchangeAllowed : Target → Target → Prop}
+    {exchangeLoss exchangeGain : Target → Target → ℕ} {exchangeSlack : ℕ}
+    (h : FirstBitTerminalMaximumCoreExchangeCertificate principalBucket core exchangeBoundary
+      coreScore vertexWeight exchangeAllowed exchangeLoss exchangeGain exchangeSlack)
+    {x y : Target} (hx : x ∈ core) (hy : y ∈ exchangeBoundary) (hallowed : exchangeAllowed x y) :
+    exchangeLoss x y ≤ exchangeGain x y + exchangeSlack :=
+  h.exchangeSlackBound x hx y hy hallowed
+
+/--
+Selector-block quotient anti-merge certificate.  It records that each selector block lives inside the
+principal bucket, target residues agree with the block residue, quotient-equal conflicting blocks are
+not mergeable, and residue conflicts expose an anti-merge witness.
+-/
+structure FirstBitTerminalSelectorBlockQuotientAntiMergeCertificate
+    {Target Block Quotient : Type*} (principalBucket : Finset Target)
+    (selectorBlocks : Finset Block) (blockMembers : Block → Finset Target)
+    (targetResidue : Target → Fin 4) (blockResidue : Block → Fin 4)
+    (blockQuotient : Block → Quotient)
+    (mergeAllowed antiMergeWitness : Block → Block → Prop) : Prop where
+  blockMembersSubsetPrincipalBucket : ∀ block : Block, block ∈ selectorBlocks →
+    blockMembers block ⊆ principalBucket
+  blockResidue_eq_of_mem : ∀ block : Block, block ∈ selectorBlocks →
+    ∀ target : Target, target ∈ blockMembers block → targetResidue target = blockResidue block
+  quotientAntiMerge : ∀ left : Block, left ∈ selectorBlocks →
+    ∀ right : Block, right ∈ selectorBlocks → left ≠ right →
+      blockQuotient left = blockQuotient right → ¬ mergeAllowed left right
+  antiMergeWitness_of_residue_ne : ∀ left : Block, left ∈ selectorBlocks →
+    ∀ right : Block, right ∈ selectorBlocks → left ≠ right →
+      blockResidue left ≠ blockResidue right → antiMergeWitness left right
+
+/-- Build a selector-block quotient anti-merge certificate from its named assumptions. -/
+theorem firstBitTerminalSelectorBlockQuotientAntiMergeCertificate_of_assumptions
+    {Target Block Quotient : Type*} {principalBucket : Finset Target}
+    {selectorBlocks : Finset Block} {blockMembers : Block → Finset Target}
+    {targetResidue : Target → Fin 4} {blockResidue : Block → Fin 4}
+    {blockQuotient : Block → Quotient}
+    {mergeAllowed antiMergeWitness : Block → Block → Prop}
+    (hsubset : ∀ block : Block, block ∈ selectorBlocks → blockMembers block ⊆ principalBucket)
+    (hresidue : ∀ block : Block, block ∈ selectorBlocks →
+      ∀ target : Target, target ∈ blockMembers block → targetResidue target = blockResidue block)
+    (hanti : ∀ left : Block, left ∈ selectorBlocks →
+      ∀ right : Block, right ∈ selectorBlocks → left ≠ right →
+        blockQuotient left = blockQuotient right → ¬ mergeAllowed left right)
+    (hwitness : ∀ left : Block, left ∈ selectorBlocks →
+      ∀ right : Block, right ∈ selectorBlocks → left ≠ right →
+        blockResidue left ≠ blockResidue right → antiMergeWitness left right) :
+    FirstBitTerminalSelectorBlockQuotientAntiMergeCertificate
+      principalBucket selectorBlocks blockMembers targetResidue blockResidue blockQuotient
+      mergeAllowed antiMergeWitness where
+  blockMembersSubsetPrincipalBucket := hsubset
+  blockResidue_eq_of_mem := hresidue
+  quotientAntiMerge := hanti
+  antiMergeWitness_of_residue_ne := hwitness
+
+/-- Targets in a selector block inherit the block residue. -/
+theorem FirstBitTerminalSelectorBlockQuotientAntiMergeCertificate.targetResidue_eq_blockResidue
+    {Target Block Quotient : Type*} {principalBucket : Finset Target}
+    {selectorBlocks : Finset Block} {blockMembers : Block → Finset Target}
+    {targetResidue : Target → Fin 4} {blockResidue : Block → Fin 4}
+    {blockQuotient : Block → Quotient}
+    {mergeAllowed antiMergeWitness : Block → Block → Prop}
+    (h : FirstBitTerminalSelectorBlockQuotientAntiMergeCertificate
+      principalBucket selectorBlocks blockMembers targetResidue blockResidue blockQuotient
+      mergeAllowed antiMergeWitness)
+    {block : Block} (hblock : block ∈ selectorBlocks)
+    {target : Target} (htarget : target ∈ blockMembers block) :
+    targetResidue target = blockResidue block :=
+  h.blockResidue_eq_of_mem block hblock target htarget
+
+/-- Quotient-equal distinct selector blocks are not mergeable. -/
+theorem FirstBitTerminalSelectorBlockQuotientAntiMergeCertificate.not_mergeAllowed_of_quotient_eq
+    {Target Block Quotient : Type*} {principalBucket : Finset Target}
+    {selectorBlocks : Finset Block} {blockMembers : Block → Finset Target}
+    {targetResidue : Target → Fin 4} {blockResidue : Block → Fin 4}
+    {blockQuotient : Block → Quotient}
+    {mergeAllowed antiMergeWitness : Block → Block → Prop}
+    (h : FirstBitTerminalSelectorBlockQuotientAntiMergeCertificate
+      principalBucket selectorBlocks blockMembers targetResidue blockResidue blockQuotient
+      mergeAllowed antiMergeWitness)
+    {left right : Block} (hleft : left ∈ selectorBlocks) (hright : right ∈ selectorBlocks)
+    (hne : left ≠ right) (hquot : blockQuotient left = blockQuotient right) :
+    ¬ mergeAllowed left right :=
+  h.quotientAntiMerge left hleft right hright hne hquot
+
+/-- Distinct selector blocks with different residues expose an anti-merge witness. -/
+theorem FirstBitTerminalSelectorBlockQuotientAntiMergeCertificate.antiMergeWitness_of_residue_ne'
+    {Target Block Quotient : Type*} {principalBucket : Finset Target}
+    {selectorBlocks : Finset Block} {blockMembers : Block → Finset Target}
+    {targetResidue : Target → Fin 4} {blockResidue : Block → Fin 4}
+    {blockQuotient : Block → Quotient}
+    {mergeAllowed antiMergeWitness : Block → Block → Prop}
+    (h : FirstBitTerminalSelectorBlockQuotientAntiMergeCertificate
+      principalBucket selectorBlocks blockMembers targetResidue blockResidue blockQuotient
+      mergeAllowed antiMergeWitness)
+    {left right : Block} (hleft : left ∈ selectorBlocks) (hright : right ∈ selectorBlocks)
+    (hne : left ≠ right) (hresidue : blockResidue left ≠ blockResidue right) :
+    antiMergeWitness left right :=
+  h.antiMergeWitness_of_residue_ne left hleft right hright hne hresidue
+
+/-- One-vertex extension shadows from the terminal principal bucket. -/
+structure FirstBitTerminalOneVertexExtensionShadowCertificate
+    {Target Vertex OneShadow : Type*} (principalBucket : Finset Target)
+    (candidateVertices : Finset Vertex) (oneVertexShadow : Target → Vertex → OneShadow)
+    (oneShadowBucket : Finset OneShadow) (extensionAllowed : Target → Vertex → Prop)
+    (shadowObstruction : OneShadow → Prop) : Prop where
+  oneShadow_mem : ∀ target : Target, target ∈ principalBucket →
+    ∀ vertex : Vertex, vertex ∈ candidateVertices → extensionAllowed target vertex →
+      oneVertexShadow target vertex ∈ oneShadowBucket
+  oneShadow_obstruction : ∀ target : Target, target ∈ principalBucket →
+    ∀ vertex : Vertex, vertex ∈ candidateVertices → extensionAllowed target vertex →
+      shadowObstruction (oneVertexShadow target vertex)
+
+/-- Build a one-vertex extension-shadow certificate from its named assumptions. -/
+theorem firstBitTerminalOneVertexExtensionShadowCertificate_of_assumptions
+    {Target Vertex OneShadow : Type*} {principalBucket : Finset Target}
+    {candidateVertices : Finset Vertex} {oneVertexShadow : Target → Vertex → OneShadow}
+    {oneShadowBucket : Finset OneShadow} {extensionAllowed : Target → Vertex → Prop}
+    {shadowObstruction : OneShadow → Prop}
+    (hmem : ∀ target : Target, target ∈ principalBucket →
+      ∀ vertex : Vertex, vertex ∈ candidateVertices → extensionAllowed target vertex →
+        oneVertexShadow target vertex ∈ oneShadowBucket)
+    (hobstruction : ∀ target : Target, target ∈ principalBucket →
+      ∀ vertex : Vertex, vertex ∈ candidateVertices → extensionAllowed target vertex →
+        shadowObstruction (oneVertexShadow target vertex)) :
+    FirstBitTerminalOneVertexExtensionShadowCertificate principalBucket candidateVertices
+      oneVertexShadow oneShadowBucket extensionAllowed shadowObstruction where
+  oneShadow_mem := hmem
+  oneShadow_obstruction := hobstruction
+
+/-- Project one-vertex shadow membership. -/
+theorem FirstBitTerminalOneVertexExtensionShadowCertificate.oneShadow_mem_of_allowed
+    {Target Vertex OneShadow : Type*} {principalBucket : Finset Target}
+    {candidateVertices : Finset Vertex} {oneVertexShadow : Target → Vertex → OneShadow}
+    {oneShadowBucket : Finset OneShadow} {extensionAllowed : Target → Vertex → Prop}
+    {shadowObstruction : OneShadow → Prop}
+    (h : FirstBitTerminalOneVertexExtensionShadowCertificate principalBucket candidateVertices
+      oneVertexShadow oneShadowBucket extensionAllowed shadowObstruction)
+    {target : Target} (htarget : target ∈ principalBucket)
+    {vertex : Vertex} (hvertex : vertex ∈ candidateVertices) (hallowed : extensionAllowed target vertex) :
+    oneVertexShadow target vertex ∈ oneShadowBucket :=
+  h.oneShadow_mem target htarget vertex hvertex hallowed
+
+/-- Project one-vertex shadow obstruction. -/
+theorem FirstBitTerminalOneVertexExtensionShadowCertificate.oneShadow_obstruction_of_allowed
+    {Target Vertex OneShadow : Type*} {principalBucket : Finset Target}
+    {candidateVertices : Finset Vertex} {oneVertexShadow : Target → Vertex → OneShadow}
+    {oneShadowBucket : Finset OneShadow} {extensionAllowed : Target → Vertex → Prop}
+    {shadowObstruction : OneShadow → Prop}
+    (h : FirstBitTerminalOneVertexExtensionShadowCertificate principalBucket candidateVertices
+      oneVertexShadow oneShadowBucket extensionAllowed shadowObstruction)
+    {target : Target} (htarget : target ∈ principalBucket)
+    {vertex : Vertex} (hvertex : vertex ∈ candidateVertices) (hallowed : extensionAllowed target vertex) :
+    shadowObstruction (oneVertexShadow target vertex) :=
+  h.oneShadow_obstruction target htarget vertex hvertex hallowed
+
+/-- Two-vertex extension shadows from the terminal principal bucket. -/
+structure FirstBitTerminalTwoVertexExtensionShadowCertificate
+    {Target Vertex TwoShadow : Type*} (principalBucket : Finset Target)
+    (candidateVertices : Finset Vertex) (twoVertexShadow : Target → Vertex → Vertex → TwoShadow)
+    (twoShadowBucket : Finset TwoShadow) (pairExtensionAllowed : Target → Vertex → Vertex → Prop)
+    (shadowObstruction : TwoShadow → Prop) : Prop where
+  twoShadow_mem : ∀ target : Target, target ∈ principalBucket →
+    ∀ left : Vertex, left ∈ candidateVertices → ∀ right : Vertex, right ∈ candidateVertices →
+      left ≠ right → pairExtensionAllowed target left right →
+        twoVertexShadow target left right ∈ twoShadowBucket
+  twoShadow_obstruction : ∀ target : Target, target ∈ principalBucket →
+    ∀ left : Vertex, left ∈ candidateVertices → ∀ right : Vertex, right ∈ candidateVertices →
+      left ≠ right → pairExtensionAllowed target left right →
+        shadowObstruction (twoVertexShadow target left right)
+
+/-- Build a two-vertex extension-shadow certificate from its named assumptions. -/
+theorem firstBitTerminalTwoVertexExtensionShadowCertificate_of_assumptions
+    {Target Vertex TwoShadow : Type*} {principalBucket : Finset Target}
+    {candidateVertices : Finset Vertex} {twoVertexShadow : Target → Vertex → Vertex → TwoShadow}
+    {twoShadowBucket : Finset TwoShadow} {pairExtensionAllowed : Target → Vertex → Vertex → Prop}
+    {shadowObstruction : TwoShadow → Prop}
+    (hmem : ∀ target : Target, target ∈ principalBucket →
+      ∀ left : Vertex, left ∈ candidateVertices → ∀ right : Vertex, right ∈ candidateVertices →
+        left ≠ right → pairExtensionAllowed target left right →
+          twoVertexShadow target left right ∈ twoShadowBucket)
+    (hobstruction : ∀ target : Target, target ∈ principalBucket →
+      ∀ left : Vertex, left ∈ candidateVertices → ∀ right : Vertex, right ∈ candidateVertices →
+        left ≠ right → pairExtensionAllowed target left right →
+          shadowObstruction (twoVertexShadow target left right)) :
+    FirstBitTerminalTwoVertexExtensionShadowCertificate principalBucket candidateVertices
+      twoVertexShadow twoShadowBucket pairExtensionAllowed shadowObstruction where
+  twoShadow_mem := hmem
+  twoShadow_obstruction := hobstruction
+
+/-- Project two-vertex shadow membership. -/
+theorem FirstBitTerminalTwoVertexExtensionShadowCertificate.twoShadow_mem_of_allowed
+    {Target Vertex TwoShadow : Type*} {principalBucket : Finset Target}
+    {candidateVertices : Finset Vertex} {twoVertexShadow : Target → Vertex → Vertex → TwoShadow}
+    {twoShadowBucket : Finset TwoShadow} {pairExtensionAllowed : Target → Vertex → Vertex → Prop}
+    {shadowObstruction : TwoShadow → Prop}
+    (h : FirstBitTerminalTwoVertexExtensionShadowCertificate principalBucket candidateVertices
+      twoVertexShadow twoShadowBucket pairExtensionAllowed shadowObstruction)
+    {target : Target} (htarget : target ∈ principalBucket)
+    {left : Vertex} (hleft : left ∈ candidateVertices)
+    {right : Vertex} (hright : right ∈ candidateVertices) (hne : left ≠ right)
+    (hallowed : pairExtensionAllowed target left right) :
+    twoVertexShadow target left right ∈ twoShadowBucket :=
+  h.twoShadow_mem target htarget left hleft right hright hne hallowed
+
+/-- Project two-vertex shadow obstruction. -/
+theorem FirstBitTerminalTwoVertexExtensionShadowCertificate.twoShadow_obstruction_of_allowed
+    {Target Vertex TwoShadow : Type*} {principalBucket : Finset Target}
+    {candidateVertices : Finset Vertex} {twoVertexShadow : Target → Vertex → Vertex → TwoShadow}
+    {twoShadowBucket : Finset TwoShadow} {pairExtensionAllowed : Target → Vertex → Vertex → Prop}
+    {shadowObstruction : TwoShadow → Prop}
+    (h : FirstBitTerminalTwoVertexExtensionShadowCertificate principalBucket candidateVertices
+      twoVertexShadow twoShadowBucket pairExtensionAllowed shadowObstruction)
+    {target : Target} (htarget : target ∈ principalBucket)
+    {left : Vertex} (hleft : left ∈ candidateVertices)
+    {right : Vertex} (hright : right ∈ candidateVertices) (hne : left ≠ right)
+    (hallowed : pairExtensionAllowed target left right) :
+    shadowObstruction (twoVertexShadow target left right) :=
+  h.twoShadow_obstruction target htarget left hleft right hright hne hallowed
+
+/-- Selector names for the principal-bucket frontier plus critical/exchange/shadow imports. -/
+inductive FirstBitTerminalPrincipalBucketShadowFrontierSelector : Type
+  | principalBucketFrontier
+  | criticalLoss32
+  | stableResidueCoreOmission
+  | maximumCoreExchange
+  | selectorBlockAntiMerge
+  | oneVertexExtensionShadow
+  | twoVertexExtensionShadow
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalPrincipalBucketShadowFrontierSelector
+
+/-- The proof obligation attached to each shadow-frontier selector. -/
+def obligation
+    (principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop) :
+    FirstBitTerminalPrincipalBucketShadowFrontierSelector → Prop
+  | principalBucketFrontier => principalBucketFrontier
+  | criticalLoss32 => criticalLoss32
+  | stableResidueCoreOmission => stableResidueCoreOmission
+  | maximumCoreExchange => maximumCoreExchange
+  | selectorBlockAntiMerge => selectorBlockAntiMerge
+  | oneVertexExtensionShadow => oneVertexExtensionShadow
+  | twoVertexExtensionShadow => twoVertexExtensionShadow
+
+end FirstBitTerminalPrincipalBucketShadowFrontierSelector
+
+/--
+Combined import surface tying the principal-bucket frontier to critical loss-`32`, residue-core
+omission, maximum-core exchange, selector-block anti-merge, and one-/two-vertex extension shadows.
+Each component is still supplied as an explicit assumption.
+-/
+structure FirstBitTerminalPrincipalBucketShadowFrontierImports
+    (principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop) : Prop where
+  principalBucketFrontierCert : principalBucketFrontier
+  criticalLoss32Cert : criticalLoss32
+  stableResidueCoreOmissionCert : stableResidueCoreOmission
+  maximumCoreExchangeCert : maximumCoreExchange
+  selectorBlockAntiMergeCert : selectorBlockAntiMerge
+  oneVertexExtensionShadowCert : oneVertexExtensionShadow
+  twoVertexExtensionShadowCert : twoVertexExtensionShadow
+
+/-- Build the combined shadow-frontier import surface from independent parts. -/
+theorem firstBitTerminalPrincipalBucketShadowFrontierImports_of_parts
+    {principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop}
+    (hprincipal : principalBucketFrontier)
+    (hcritical : criticalLoss32)
+    (hstable : stableResidueCoreOmission)
+    (hexchange : maximumCoreExchange)
+    (hantiMerge : selectorBlockAntiMerge)
+    (hone : oneVertexExtensionShadow)
+    (htwo : twoVertexExtensionShadow) :
+    FirstBitTerminalPrincipalBucketShadowFrontierImports
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow where
+  principalBucketFrontierCert := hprincipal
+  criticalLoss32Cert := hcritical
+  stableResidueCoreOmissionCert := hstable
+  maximumCoreExchangeCert := hexchange
+  selectorBlockAntiMergeCert := hantiMerge
+  oneVertexExtensionShadowCert := hone
+  twoVertexExtensionShadowCert := htwo
+
+/-- Project the principal-bucket frontier component from the combined shadow-frontier imports. -/
+theorem FirstBitTerminalPrincipalBucketShadowFrontierImports.to_principalBucketFrontier
+    {principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop}
+    (h : FirstBitTerminalPrincipalBucketShadowFrontierImports
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow) :
+    principalBucketFrontier :=
+  h.principalBucketFrontierCert
+
+/-- Project the critical loss-`32` component from the combined shadow-frontier imports. -/
+theorem FirstBitTerminalPrincipalBucketShadowFrontierImports.to_criticalLoss32
+    {principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop}
+    (h : FirstBitTerminalPrincipalBucketShadowFrontierImports
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow) :
+    criticalLoss32 :=
+  h.criticalLoss32Cert
+
+/-- Project the stable residue-core omission component from the combined shadow-frontier imports. -/
+theorem FirstBitTerminalPrincipalBucketShadowFrontierImports.to_stableResidueCoreOmission
+    {principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop}
+    (h : FirstBitTerminalPrincipalBucketShadowFrontierImports
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow) :
+    stableResidueCoreOmission :=
+  h.stableResidueCoreOmissionCert
+
+/-- Project the maximum-core exchange component from the combined shadow-frontier imports. -/
+theorem FirstBitTerminalPrincipalBucketShadowFrontierImports.to_maximumCoreExchange
+    {principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop}
+    (h : FirstBitTerminalPrincipalBucketShadowFrontierImports
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow) :
+    maximumCoreExchange :=
+  h.maximumCoreExchangeCert
+
+/-- Project the selector-block anti-merge component from the combined shadow-frontier imports. -/
+theorem FirstBitTerminalPrincipalBucketShadowFrontierImports.to_selectorBlockAntiMerge
+    {principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop}
+    (h : FirstBitTerminalPrincipalBucketShadowFrontierImports
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow) :
+    selectorBlockAntiMerge :=
+  h.selectorBlockAntiMergeCert
+
+/-- Project the one-vertex extension-shadow component from the combined shadow-frontier imports. -/
+theorem FirstBitTerminalPrincipalBucketShadowFrontierImports.to_oneVertexExtensionShadow
+    {principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop}
+    (h : FirstBitTerminalPrincipalBucketShadowFrontierImports
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow) :
+    oneVertexExtensionShadow :=
+  h.oneVertexExtensionShadowCert
+
+/-- Project the two-vertex extension-shadow component from the combined shadow-frontier imports. -/
+theorem FirstBitTerminalPrincipalBucketShadowFrontierImports.to_twoVertexExtensionShadow
+    {principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop}
+    (h : FirstBitTerminalPrincipalBucketShadowFrontierImports
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow) :
+    twoVertexExtensionShadow :=
+  h.twoVertexExtensionShadowCert
+
+/-- Project the obligation named by a shadow-frontier selector. -/
+theorem FirstBitTerminalPrincipalBucketShadowFrontierImports.obligation
+    {principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow : Prop}
+    (h : FirstBitTerminalPrincipalBucketShadowFrontierImports
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow)
+    (selector : FirstBitTerminalPrincipalBucketShadowFrontierSelector) :
+    FirstBitTerminalPrincipalBucketShadowFrontierSelector.obligation
+      principalBucketFrontier criticalLoss32 stableResidueCoreOmission maximumCoreExchange
+      selectorBlockAntiMerge oneVertexExtensionShadow twoVertexExtensionShadow selector := by
+  cases selector
+  · exact h.principalBucketFrontierCert
+  · exact h.criticalLoss32Cert
+  · exact h.stableResidueCoreOmissionCert
+  · exact h.maximumCoreExchangeCert
+  · exact h.selectorBlockAntiMergeCert
+  · exact h.oneVertexExtensionShadowCert
+  · exact h.twoVertexExtensionShadowCert
+
+/--
+Generic bundle tying an existing co-cut/mixed-core/principal-bucket import package to the new
+critical/exchange/shadow frontier imports.
+-/
+structure FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports
+    (coCutMixedPrincipalImports principalBucketShadowFrontier : Prop) : Prop where
+  coCutMixedPrincipal : coCutMixedPrincipalImports
+  shadowFrontier : principalBucketShadowFrontier
+
+/-- Build the co-cut/mixed-core/principal-bucket shadow bundle from its two parts. -/
+theorem firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports_of_parts
+    {coCutMixedPrincipalImports principalBucketShadowFrontier : Prop}
+    (hbase : coCutMixedPrincipalImports) (hshadow : principalBucketShadowFrontier) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier where
+  coCutMixedPrincipal := hbase
+  shadowFrontier := hshadow
+
+/-- Forget the shadow frontier and recover the co-cut/mixed-core/principal-bucket imports. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports.to_baseImports
+    {coCutMixedPrincipalImports principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier) :
+    coCutMixedPrincipalImports :=
+  h.coCutMixedPrincipal
+
+/-- Project the critical/exchange/shadow frontier imports from the co-cut/mixed bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports.to_shadowFrontier
+    {coCutMixedPrincipalImports principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier) :
+    principalBucketShadowFrontier :=
+  h.shadowFrontier
+
 /-- Co-cut/self-layer plus mixed target-core imports bundled with principal-bucket frontier imports. -/
 structure FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
     {Old Shadow Target Bucket RowSig CoRowSig : Type*}
