@@ -918,6 +918,15 @@ forbids the one type that completes the boundary triple to its regular residue. 
 triple gives cap `14`: type `000` is forbidden by repaired residue `0`, all other types are cliques and
 repaired residue `3` bounds them by two vertices.  A triangle gives the complementary cap `14`.
 
+Combining the corrected spectrum-hole logic with the full-spectrum cap gives the current large-fiber
+normal form.  For `|C_i|>max(R(4,4),5m+2)`, the repair spectrum has at most two residues and contains
+neither complementary pair `{0,3}` nor `{1,2}`.  Hence a very large direction has spectrum contained in
+one of `{0,1}`, `{0,2}`, `{3,1}`, `{3,2}`, or is a singleton.  This sparse-transversal statement replaces
+the earlier false singleton-rigidity claim.
+The four two-residue cases are respectively: `alpha<=3` plus `2K_2`-free; `alpha<=3` plus induced
+`C_4`-free; `omega<=3` plus `2K_2`-free; and `omega<=3` plus induced-`C_4`-free.  Up to complement,
+only the first two sparse hereditary branches remain, plus the augmented boundary-type constraints.
+
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it
 induces the required `d_i`-regular graph, where

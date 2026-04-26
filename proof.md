@@ -6274,6 +6274,41 @@ rule bounds every type hitting at least one boundary vertex by `2`.  Thus the ca
 case is complementary: type `111` is forbidden by the repaired residue `3`, and the repaired residue `0`
 one-corner rule bounds every remaining type by `2`, again giving cap `14`.
 
+Putting the spectrum-hole and full-spectrum bounds together gives a useful large-fiber normal form.  Let
+
+```text
+M_0=max(R(4,4), 5m+2).
+```
+
+If `|C_i|>M_0`, then `Rep(g_i)` has at most two residues, and it cannot contain either complementary
+pair `{0,3}` or `{1,2}`.  Indeed, three residues contain one of those two pairs; `{0,3}` is Ramsey-small,
+while `{1,2}` is pseudo-split and hence has size at most about `2m+5`.  Four residues are covered by the
+augmented full-spectrum cap above.  Thus every very large exact-basis direction has one of the four
+two-residue types
+
+```text
+{0,1}, {0,2}, {3,1}, {3,2}
+```
+
+or a singleton spectrum.  This is the corrected replacement for the earlier false singleton-rigidity
+claim: large directions are not forced to have `Rep={d}`, but their repair spectrum is forced to be a
+sparse transversal of the two complementary pairs.
+
+The four two-residue spectra have a concrete hereditary meaning:
+
+```text
+{0,1}:  alpha(C_i)<=3 and C_i is 2K_2-free;
+{0,2}:  alpha(C_i)<=3 and C_i is induced-C_4-free;
+{3,1}:  omega(C_i)<=3 and C_i is 2K_2-free;
+{3,2}:  omega(C_i)<=3 and C_i is induced-C_4-free.
+```
+
+The complement operation swaps the first and last cases, and swaps the two middle cases.  Therefore the
+large exact-basis endpoint has been reduced to two sparse hereditary branches up to complement:
+`alpha<=3` plus `2K_2`-free, and `alpha<=3` plus induced-`C_4`-free, together with the augmented
+boundary-type constraints.  Any final closure of the exact-basis branch can target these two classes
+rather than an arbitrary direction graph.
+
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with
 the same old-neighbourhood residue `omega(g_i)`.

@@ -1482,6 +1482,25 @@ Recommended attack:
    `000`, all other types are cliques, and repaired residue `3` bounds them by two vertices, giving
    `|C_i|<=14`.  The triangle case is complementary and also gives `|C_i|<=14`.
 
+   Large-fiber normal form to formalize after the above corrections: if
+   `|C_i|>max(R(4,4),5m+2)`, then `Rep(g_i)` has at most two residues and contains neither `{0,3}` nor
+   `{1,2}`.  Three residues always contain one of those complementary pairs; four residues are excluded
+   by the full-spectrum augmented cap.  Thus a very large direction has spectrum contained in one of
+   `{0,1}`, `{0,2}`, `{3,1}`, `{3,2}`, or is a singleton.  This is the correct replacement for the false
+   singleton-spectrum rigidity.
+
+   The two-residue spectra translate to hereditary branches:
+
+   ```text
+   {0,1}: alpha(C_i)<=3 and 2K_2-free;
+   {0,2}: alpha(C_i)<=3 and induced-C_4-free;
+   {3,1}: omega(C_i)<=3 and 2K_2-free;
+   {3,2}: omega(C_i)<=3 and induced-C_4-free.
+   ```
+
+   Complementation swaps the first/last and middle two cases, so only two sparse branches remain up to
+   complement before the augmented boundary-type constraints are added.
+
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified
    `d_i`-regular four-vertex graph with
