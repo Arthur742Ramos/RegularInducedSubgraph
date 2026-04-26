@@ -12440,6 +12440,79 @@ theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_triple
       ramseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation_triple_count hupper
     omega
 
+/-- The top `65..71` ledger keeps its exact common-sum row bounds. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation_common_sum_bounds
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation G s v) :
+    65 ≤ Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 71 := by
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation at h
+  exact ⟨h.1, h.2.1⟩
+
+/-- The upper `72` ledger keeps its exact common-sum equality. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation_common_sum_eq_seventy_two
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation G s v) :
+    Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 72 := by
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation at h
+  exact h.1
+
+/-- Any top-row exact-`42` branch has common-sum between `65` and `72`. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_common_sum_bounds
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation G s v) :
+    65 ≤ Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72 := by
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation at h
+  rcases h with htop | hupper
+  · have hbounds :=
+      ramseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation_common_sum_bounds htop
+    exact ⟨hbounds.1, by omega⟩
+  · have hsum :=
+      ramseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation_common_sum_eq_seventy_two
+        hupper
+    constructor <;> omega
+
+/-- Top-row ledger profile collecting the singleton, duplicated, and triple-overlap consequences. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_count_profile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation G s v) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27 ∧
+      5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          2 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card ∧
+        1 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            3 ≤ (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card := by
+  exact
+    ⟨ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_singleton_count_le_twenty_seven h,
+      ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_duplicated_count_ge_five h,
+      ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_triple_count_pos h⟩
+
 /-- Residual packager for the finer split exact-`42` degree-`9` branch interface. -/
 theorem ramseyThreeTenDegreeWindow_residual_degree_nine_split_named_branch_obligation
     {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
@@ -12558,6 +12631,286 @@ theorem hasCliqueOrIndepSetBound_3_10_42_of_exact42_split_named_branch_surface
     HasCliqueOrIndepSetBound 3 10 42 :=
   hasCliqueOrIndepSetBound_3_10_42_of_3_8_28_regular8_exact_distribution_singleton_cap_and_exact42_split_named_degree_nine_branches
     h.r3_8 h.regular8 h.degreeWindow42Split
+
+/--
+Low-row exact-`42` degree-`9` branch obligation.  This packages the lower boundary
+with the first two central ledger rows, leaving higher rows to separate obligations.
+-/
+def RamseyThreeTenDegreeWindowExact42DegreeNineLowRowBranchObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  RamseyThreeTenDegreeWindowExact42DegreeNineLowerBoundaryObligation G s v ∨
+    RamseyThreeTenDegreeWindowExact42DegreeNineCentralLowRowObligation G s v
+
+/-- High-row exact-`42` degree-`9` branch obligation: the `49..64` central bands. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineHighRowBranchObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  RamseyThreeTenDegreeWindowExact42DegreeNineCentralHighRowObligation G s v
+
+/-- Top-row exact-`42` degree-`9` branch obligation: the `65..72` ledgers. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineTopRowBranchObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  RamseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation G s v
+
+/-- A three-row exact-`42` branch interface: low row, high row, or top row. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  RamseyThreeTenDegreeWindowExact42DegreeNineLowRowBranchObligation G s v ∨
+    RamseyThreeTenDegreeWindowExact42DegreeNineHighRowBranchObligation G s v ∨
+      RamseyThreeTenDegreeWindowExact42DegreeNineTopRowBranchObligation G s v
+
+/-- Three-row exact-`42` branch obligations for every degree-`9` vertex. -/
+def RamseyThreeTenDegreeWindowExact42ThreeRowBranches
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α) : Prop :=
+  ∀ v : ↑(s : Set α),
+    (G.induce (s : Set α)).degree v = 9 →
+      RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation G s v
+
+/-- The split four-way exact-`42` branch interface coarsens to the three-row interface. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation_of_splitNamedBranch
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineSplitNamedBranchObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation G s v := by
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineSplitNamedBranchObligation at h
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineLowRowBranchObligation
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineHighRowBranchObligation
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopRowBranchObligation
+  rcases h with hlower | hcentralLow | hcentralHigh | htop
+  · left
+    left
+    exact hlower
+  · left
+    right
+    exact hcentralLow
+  · right
+    left
+    exact hcentralHigh
+  · right
+    right
+    exact htop
+
+/-- The three-row exact-`42` branch interface refines back to the split four-way interface. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineSplitNamedBranchObligation_of_threeRowBranch
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineSplitNamedBranchObligation G s v := by
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation at h
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineLowRowBranchObligation at h
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineHighRowBranchObligation at h
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopRowBranchObligation at h
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineSplitNamedBranchObligation
+  rcases h with hlow | hhigh | htop
+  · rcases hlow with hlower | hcentralLow
+    · left
+      exact hlower
+    · right
+      left
+      exact hcentralLow
+  · right
+    right
+    left
+    exact hhigh
+  · right
+    right
+    right
+    exact htop
+
+/-- The three-row and split exact-`42` branch interfaces are equivalent at one vertex. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation_iff_splitNamedBranch
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)} :
+    RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation G s v ↔
+      RamseyThreeTenDegreeWindowExact42DegreeNineSplitNamedBranchObligation G s v := by
+  constructor
+  · exact ramseyThreeTenDegreeWindowExact42DegreeNineSplitNamedBranchObligation_of_threeRowBranch
+  · exact ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation_of_splitNamedBranch
+
+/-- The split branch cover coarsens to the three-row branch cover. -/
+theorem ramseyThreeTenDegreeWindowExact42ThreeRowBranches_of_splitNamedBranches
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    (h : RamseyThreeTenDegreeWindowExact42SplitNamedBranches G s) :
+    RamseyThreeTenDegreeWindowExact42ThreeRowBranches G s := by
+  intro v hdegv
+  exact
+    ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation_of_splitNamedBranch
+      (h v hdegv)
+
+/-- The three-row branch cover refines back to the split branch cover. -/
+theorem ramseyThreeTenDegreeWindowExact42SplitNamedBranches_of_threeRowBranches
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    (h : RamseyThreeTenDegreeWindowExact42ThreeRowBranches G s) :
+    RamseyThreeTenDegreeWindowExact42SplitNamedBranches G s := by
+  intro v hdegv
+  exact
+    ramseyThreeTenDegreeWindowExact42DegreeNineSplitNamedBranchObligation_of_threeRowBranch
+      (h v hdegv)
+
+/-- The three-row and split exact-`42` branch covers are equivalent. -/
+theorem ramseyThreeTenDegreeWindowExact42ThreeRowBranches_iff_splitNamedBranches
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α} :
+    RamseyThreeTenDegreeWindowExact42ThreeRowBranches G s ↔
+      RamseyThreeTenDegreeWindowExact42SplitNamedBranches G s := by
+  constructor
+  · exact ramseyThreeTenDegreeWindowExact42SplitNamedBranches_of_threeRowBranches
+  · exact ramseyThreeTenDegreeWindowExact42ThreeRowBranches_of_splitNamedBranches
+
+/-- Residual packager for the three-row exact-`42` degree-`9` branch interface. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_three_row_branch_obligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation G s v := by
+  exact
+    ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation_of_splitNamedBranch
+      (ramseyThreeTenDegreeWindow_residual_degree_nine_split_named_branch_obligation
+        (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv)
+
+/-- Three-row exact-`42` residual branch obligations for all degree-`9` vertices. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_three_row_branches
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    RamseyThreeTenDegreeWindowExact42ThreeRowBranches G s := by
+  intro v hdegv
+  exact
+    ramseyThreeTenDegreeWindow_residual_degree_nine_three_row_branch_obligation
+      (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv
+
+/--
+Final-facing three-row exact-`42` surface: the low, high, and top rows can now be
+requested independently while remaining equivalent to the split branch surface.
+-/
+structure RamseyThreeTenExact42ThreeRowBranchSurface : Prop where
+  r3_8 : HasCliqueOrIndepSetBound 3 8 28
+  regular8 :
+    ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+      s.card = 36 →
+      (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8) →
+      RamseyThreeNineRegular8ExactDistributionSingletonCapObligation G s
+  degreeWindow42Rows :
+    ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+      s.card = 42 →
+      (∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10) →
+      RamseyThreeTenDegreeWindowExact42ThreeRowBranches G s →
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t
+
+/-- A split exact-`42` surface induces the coarser three-row surface. -/
+theorem RamseyThreeTenExact42ThreeRowBranchSurface_of_splitNamedBranchSurface
+    (h : RamseyThreeTenExact42SplitNamedBranchSurface) :
+    RamseyThreeTenExact42ThreeRowBranchSurface where
+  r3_8 := h.r3_8
+  regular8 := h.regular8
+  degreeWindow42Rows := by
+    intro α _ G s hcard hdegree hrows
+    exact h.degreeWindow42Split G s hcard hdegree
+      (ramseyThreeTenDegreeWindowExact42SplitNamedBranches_of_threeRowBranches hrows)
+
+/-- A three-row exact-`42` surface refines back to the split branch surface. -/
+theorem RamseyThreeTenExact42SplitNamedBranchSurface_of_threeRowBranchSurface
+    (h : RamseyThreeTenExact42ThreeRowBranchSurface) :
+    RamseyThreeTenExact42SplitNamedBranchSurface where
+  r3_8 := h.r3_8
+  regular8 := h.regular8
+  degreeWindow42Split := by
+    intro α _ G s hcard hdegree hsplit
+    exact h.degreeWindow42Rows G s hcard hdegree
+      (ramseyThreeTenDegreeWindowExact42ThreeRowBranches_of_splitNamedBranches hsplit)
+
+/-- The three-row exact-`42` surface proves `R(3,10) <= 42`. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_exact42_three_row_branch_surface
+    (h : RamseyThreeTenExact42ThreeRowBranchSurface) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  hasCliqueOrIndepSetBound_3_10_42_of_exact42_split_named_branch_surface
+    (RamseyThreeTenExact42SplitNamedBranchSurface_of_threeRowBranchSurface h)
+
+/--
+Combined bridge carrying both the `R(4,5)` endpoint residuals and the split
+exact-`42` surface.  The fields stay separate: the exact-`42` surface does not
+claim any off-diagonal endpoint.
+-/
+structure RamseyTenR45EndpointResidualsWithExact42SplitSurface : Prop where
+  endpoints : RamseyTenR45EndpointResiduals
+  exact42Split : RamseyThreeTenExact42SplitNamedBranchSurface
+
+/-- The combined split-surface bridge exposes its endpoint residual component. -/
+theorem RamseyTenR45EndpointResidualsWithExact42SplitSurface.toEndpointResiduals
+    (h : RamseyTenR45EndpointResidualsWithExact42SplitSurface) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpoints
+
+/-- The combined split-surface bridge exposes its exact-`42` component. -/
+theorem RamseyTenR45EndpointResidualsWithExact42SplitSurface.toExact42SplitSurface
+    (h : RamseyTenR45EndpointResidualsWithExact42SplitSurface) :
+    RamseyThreeTenExact42SplitNamedBranchSurface :=
+  h.exact42Split
+
+/-- The endpoint half of the split-surface bridge supplies the relaxed `R(4,5)` table. -/
+theorem RamseyTenR45EndpointResidualsWithExact42SplitSurface.toR45TwentySevenTable
+    (h : RamseyTenR45EndpointResidualsWithExact42SplitSurface) :
+    RamseyTenR45TwentySevenTable :=
+  RamseyTenR45EndpointResiduals.toR45TwentySevenTable h.endpoints
+
+/-- The exact-`42` half of the split-surface bridge supplies the low-row `R(3,10)` input. -/
+theorem RamseyTenR45EndpointResidualsWithExact42SplitSurface.toThreeTenFortyTwo
+    (h : RamseyTenR45EndpointResidualsWithExact42SplitSurface) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  hasCliqueOrIndepSetBound_3_10_42_of_exact42_split_named_branch_surface h.exact42Split
+
+/--
+Combined bridge carrying both the `R(4,5)` endpoint residuals and the three-row
+exact-`42` surface.
+-/
+structure RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface : Prop where
+  endpoints : RamseyTenR45EndpointResiduals
+  exact42Rows : RamseyThreeTenExact42ThreeRowBranchSurface
+
+/-- A split-surface bridge induces the three-row bridge. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface_of_splitSurfaceBridge
+    (h : RamseyTenR45EndpointResidualsWithExact42SplitSurface) :
+    RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface where
+  endpoints := h.endpoints
+  exact42Rows :=
+    RamseyThreeTenExact42ThreeRowBranchSurface_of_splitNamedBranchSurface h.exact42Split
+
+/-- A three-row bridge refines back to the split-surface bridge. -/
+theorem RamseyTenR45EndpointResidualsWithExact42SplitSurface_of_threeRowSurfaceBridge
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface) :
+    RamseyTenR45EndpointResidualsWithExact42SplitSurface where
+  endpoints := h.endpoints
+  exact42Split :=
+    RamseyThreeTenExact42SplitNamedBranchSurface_of_threeRowBranchSurface h.exact42Rows
+
+/-- The endpoint half of the three-row bridge supplies the relaxed `R(4,5)` table. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface.toR45TwentySevenTable
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface) :
+    RamseyTenR45TwentySevenTable :=
+  RamseyTenR45EndpointResiduals.toR45TwentySevenTable h.endpoints
+
+/-- The exact-`42` half of the three-row bridge supplies the low-row `R(3,10)` input. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface.toThreeTenFortyTwo
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  hasCliqueOrIndepSetBound_3_10_42_of_exact42_three_row_branch_surface h.exact42Rows
 
 /-- Arithmetic ledger for the `R(3,10) <= 42` degree-window reduction. -/
 theorem ramseyThreeTenDegreeWindow_reduction_gap :
