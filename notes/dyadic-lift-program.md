@@ -893,6 +893,10 @@ As type constraints, a boundary pair `{x,y}` of status `e` forbids retained edge
 `d_i-e=2`.  For a boundary vertex `x`, terminality gives: if `d_i=0`, the miss class has no independent
 triple; if `d_i=3`, the hit class has no triangle; if `d_i=1`, each hitter's non-neighbours in the miss
 class are independent; if `d_i=2`, each misser's neighbours in the hit class are a clique.
+In the signed form, replace `d_i` by each residue `s in Rep(g_i)`.  Repaired extreme residues therefore
+act before Ramsey: `0 in Rep(g_i)` gives independence number at most `2` in every boundary-miss class,
+and `3 in Rep(g_i)` gives clique number at most `2` in every boundary-hit class, while the `2+2`
+boundary-pair restrictions use `q=s-e`.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it

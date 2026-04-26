@@ -6241,6 +6241,24 @@ These are purely finite graph constraints.  A terminal exact-basis proof can now
 quotient: either one of these constraints forces a large outside-only congruent set, or the quotient has
 enough regular cross-type squares/triples to build an appendable atom.
 
+For signed repair the same constraints should be read residue-by-residue.  Fix any
+`s in Rep(g_i)`.  The `2+2` rule for a boundary pair of status `e` uses `q=s-e` instead of
+`q=d_i-e`:
+
+```text
+q=0:  type-00 pairs may not have retained edge-status e;
+q=1:  type-10/type-01 pairs may not have retained edge-status e;
+q=2:  type-11 pairs may not have retained edge-status e;
+q=3:  no 2+2 regular square exists for this boundary pair.
+```
+
+The `1+3` rule is likewise obtained by replacing `d_i` with `s`.  Thus `0 in Rep(g_i)` forces every
+boundary-miss class to have independence number at most `2`, while `3 in Rep(g_i)` forces every
+boundary-hit class to have clique number at most `2`; the middle residues impose the one-corner
+isolated-hitter and path-middle constraints.  This spectrum-parametric form is stronger than the earlier
+Ramsey-only use of `Rep(g_i)`: repaired extreme residues constrain pairs and triples through the fixed
+boundary triple even when the retained fiber is far below `R(4,4)`.
+
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with
 the same old-neighbourhood residue `omega(g_i)`.

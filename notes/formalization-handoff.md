@@ -1455,6 +1455,13 @@ Recommended attack:
    non-neighbours in the miss class are independent when `d_i=1`, and each misser's neighbours in the
    hit class form a clique when `d_i=2`.
 
+   In signed form these tables are residue-parametric: replace `d_i` by any repaired residue
+   `s in Rep(g_i)`.  For `2+2`, use `q=s-e`; `q=0,1,2` give the type-`00`, type-`10/01`, and type-`11`
+   restrictions respectively, while `q=3` has no square solution.  For `1+3`, residue `0` bounds
+   independence in every boundary-miss class by `2`, residue `3` bounds clique number in every
+   boundary-hit class by `2`, and residues `1,2` give the isolated-hitter/path-middle one-corner
+   constraints.
+
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified
    `d_i`-regular four-vertex graph with
