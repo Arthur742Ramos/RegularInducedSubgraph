@@ -3033,6 +3033,87 @@ theorem full_neighbor_counts_eq_of_degree_twelve_nonadjacent_card_twenty_seven_d
       G hcard hnoK4 hnoI5 huv_ne huv hdegv
   exact ⟨by omega, hledger.2.1, hledger.2.2.1⟩
 
+/-- A degree-`10` non-neighbor of a degree-`9` endpoint has the reusable full ledger. -/
+theorem degree_ten_nonadjacent_degree_nine_endpoint_split_ledgers
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 10) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 2 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 ∧
+      G.degree u =
+        (G.neighborFinset u ∩ G.neighborFinset v).card +
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (G.Adj u)).card ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8 ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 5 := by
+  have hledger :=
+    nonadjacent_degree_nine_endpoint_full_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hcap :=
+    common_neighbor_card_le_five_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  exact ⟨by omega, hledger.2.1, hledger.2.2.1, hledger.2.2.2, hledger.1, hcap⟩
+
+/-- A degree-`11` non-neighbor of a degree-`9` endpoint has the reusable full ledger. -/
+theorem degree_eleven_nonadjacent_degree_nine_endpoint_split_ledgers
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 11) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 3 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 ∧
+      G.degree u =
+        (G.neighborFinset u ∩ G.neighborFinset v).card +
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (G.Adj u)).card ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8 ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 5 := by
+  have hledger :=
+    nonadjacent_degree_nine_endpoint_full_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hcap :=
+    common_neighbor_card_le_five_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  exact ⟨by omega, hledger.2.1, hledger.2.2.1, hledger.2.2.2, hledger.1, hcap⟩
+
+/-- A degree-`12` non-neighbor of a degree-`9` endpoint has the reusable full ledger. -/
+theorem degree_twelve_nonadjacent_degree_nine_endpoint_split_ledgers
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 12) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 4 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 ∧
+      G.degree u =
+        (G.neighborFinset u ∩ G.neighborFinset v).card +
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (G.Adj u)).card ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8 ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 5 := by
+  have hledger :=
+    nonadjacent_degree_nine_endpoint_full_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hcap :=
+    common_neighbor_card_le_five_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  exact ⟨by omega, hledger.2.1, hledger.2.2.1, hledger.2.2.2, hledger.1, hcap⟩
+
 
 /--
 In the `27`-vertex residual, a neighbor of a degree-`13` endpoint has exactly four common
@@ -13503,6 +13584,114 @@ theorem ten_le_F_40960_of_degreeEightEndpoint
     10 ≤ F 40960 :=
   ten_le_F_40960_of_ramseyTenR45TwentySevenTable
     (ramseyTenR45TwentySevenTable_of_degreeEightEndpoint hendpoint)
+
+/--
+Compact final Ramsey-10 status exported by the relaxed `R(4,5) <= 27` route: it keeps the finite
+Ramsey input, the propagated `R(10,10)` bound, and the dyadic regular-induced-subgraph consequence
+in one handoff object.
+-/
+structure RamseyTenR45FinalStatus : Prop where
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard G 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- The relaxed Ramsey-10 table gives the final status certificate for downstream handoffs. -/
+theorem RamseyTenR45TwentySevenTable.toFinalStatus
+    (h : RamseyTenR45TwentySevenTable) : RamseyTenR45FinalStatus := by
+  refine
+    { r45TwentySeven := h.r45
+      r10Ten39246 := hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable h
+      regularTenAt40960 := ?_
+      admissibleTenAt40960 := ten_mem_admissibleBounds_40960_of_ramseyTenR45TwentySevenTable h
+      f40960 := ten_le_F_40960_of_ramseyTenR45TwentySevenTable h }
+  intro V _ _ G hcard
+  exact hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45TwentySevenTable h G hcard
+
+/-- Exact `R(4,5) <= 27` endpoint packaged as the final Ramsey-10 status certificate. -/
+theorem ramseyTenR45FinalStatus_of_noRamseyFourFiveCounterexampleOnTwentySeven
+    (h : NoRamseyFourFiveCounterexampleOnTwentySeven) : RamseyTenR45FinalStatus :=
+  RamseyTenR45TwentySevenTable.toFinalStatus
+    (ramseyTenR45TwentySevenTable_of_noRamseyFourFiveCounterexampleOnTwentySeven h)
+
+/-- Degree-window residual packaged as the final Ramsey-10 status certificate. -/
+theorem ramseyTenR45FinalStatus_of_degreeWindow
+    (hwindow : NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven) :
+    RamseyTenR45FinalStatus :=
+  RamseyTenR45TwentySevenTable.toFinalStatus
+    (ramseyTenR45TwentySevenTable_of_degreeWindow hwindow)
+
+/-- Refined residual packaged as the final Ramsey-10 status certificate. -/
+theorem ramseyTenR45FinalStatus_of_refined
+    (hrefined : NoRamseyFourFiveRefinedCounterexampleOnTwentySeven) :
+    RamseyTenR45FinalStatus :=
+  RamseyTenR45TwentySevenTable.toFinalStatus
+    (ramseyTenR45TwentySevenTable_of_refined hrefined)
+
+/-- Degree-`9` endpoint residual packaged as the final Ramsey-10 status certificate. -/
+theorem ramseyTenR45FinalStatus_of_degreeNineEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45FinalStatus :=
+  RamseyTenR45TwentySevenTable.toFinalStatus
+    (ramseyTenR45TwentySevenTable_of_degreeNineEndpoint hendpoint)
+
+/-- Degree-`13` endpoint residual packaged as the final Ramsey-10 status certificate. -/
+theorem ramseyTenR45FinalStatus_of_degreeThirteenEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45FinalStatus :=
+  RamseyTenR45TwentySevenTable.toFinalStatus
+    (ramseyTenR45TwentySevenTable_of_degreeThirteenEndpoint hendpoint)
+
+/-- Sharp degree-`8` endpoint residual packaged via monotonicity as the final status certificate. -/
+theorem ramseyTenR45FinalStatus_of_degreeEightEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix) :
+    RamseyTenR45FinalStatus :=
+  RamseyTenR45TwentySevenTable.toFinalStatus
+    (ramseyTenR45TwentySevenTable_of_degreeEightEndpoint hendpoint)
+
+/--
+Endpoint-residual certificate retaining the three remaining finite assumptions while also exporting
+the small/relaxed Ramsey tables and final dyadic consequence package.
+-/
+structure RamseyTenR45EndpointResidualCertificate : Prop where
+  degreeEight : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix
+  degreeNine : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven
+  degreeThirteen : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven
+  smallTable : RamseyTenSmallTable
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  noRamseyFourFiveCounterexampleOnTwentySeven : NoRamseyFourFiveCounterexampleOnTwentySeven
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  finalStatus : RamseyTenR45FinalStatus
+
+/-- The endpoint-residual bridge converted into the expanded handoff certificate. -/
+theorem RamseyTenR45EndpointResiduals.toCertificate
+    (h : RamseyTenR45EndpointResiduals) : RamseyTenR45EndpointResidualCertificate :=
+  { degreeEight := h.degreeEight
+    degreeNine := h.degreeNine
+    degreeThirteen := h.degreeThirteen
+    smallTable := RamseyTenR45EndpointResiduals.toSmallTable h
+    r45TwentySevenTable := ramseyTenR45TwentySevenTable_of_endpointResiduals h
+    noRamseyFourFiveCounterexampleOnTwentySeven :=
+      RamseyTenR45EndpointResiduals.toNoRamseyFourFiveCounterexampleOnTwentySeven h
+    r45TwentySeven := RamseyTenR45EndpointResiduals.toHasCliqueOrIndepSetBound_four_five_twenty_seven h
+    r10Ten39246 := RamseyTenR45EndpointResiduals.toHasCliqueOrIndepSetBound_10_10_39246 h
+    finalStatus :=
+      RamseyTenR45TwentySevenTable.toFinalStatus
+        (ramseyTenR45TwentySevenTable_of_endpointResiduals h) }
+
+/-- Recover the concise endpoint-residual bridge from the expanded certificate. -/
+theorem RamseyTenR45EndpointResidualCertificate.toEndpointResiduals
+    (h : RamseyTenR45EndpointResidualCertificate) : RamseyTenR45EndpointResiduals :=
+  ⟨h.degreeEight, h.degreeNine, h.degreeThirteen⟩
+
+/-- Endpoint residuals packaged as the final Ramsey-10 status certificate. -/
+theorem RamseyTenR45EndpointResiduals.toFinalStatus
+    (h : RamseyTenR45EndpointResiduals) : RamseyTenR45FinalStatus :=
+  (RamseyTenR45EndpointResiduals.toCertificate h).finalStatus
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
