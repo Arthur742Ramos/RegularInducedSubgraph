@@ -1052,24 +1052,24 @@ Recommended attack:
    deg_W(b)+deg_B(b)=h_0(b)-deg_R(b)-deg_{C\B}(b).
    ```
 
-   Hence the terminal formal lemma may be an old-balanced co-cut lemma: find nonempty old-balanced
-   `B subset C` such that `deg_R(b)+deg_{C\B}(b)` is constant on `B`.  In the even-specific route,
-   `|C|>25m/8`, so the class is only barely above the old-coordinate Davenport threshold.
-   Equivalently, with `q_C(b)=deg_C(b)+deg_R(b)`, find old-balanced `B subset C` and a residue
-   `lambda` such that
+   Hence the terminal formal lemma is a value-coupled old-balanced co-cut lemma: find nonempty
+   old-balanced `B subset C`, with old increment `delta_B`, such that
+   `deg_R(b)+deg_{C\B}(b)=H-r-delta_B` on `B`.  In the even-specific route, `|C|>25m/8`, so the
+   class is only barely above the old-coordinate Davenport threshold.  Equivalently, with
+   `q_C(b)=deg_C(b)+deg_R(b)`, find old-balanced `B subset C` such that
 
    ```text
-   deg_B(b)=q_C(b)-lambda       for every b in B.
+   deg_B(b)=q_C(b)-(H-r-delta_B)       for every b in B.
    ```
 
    On this class the labels satisfy `q_C(b)=h_0-deg_W(b)`, so the formal lemma should include the
-   coupling between the prescribed residue and the old-neighbourhood vector.
+   coupling between the prescribed residue, the old-neighbourhood vector, and `delta_B`.
 
    The signed version should be stated separately.  For `D subset W`, `E=W\D`, and `B subset C`,
    the old side asks for `deg_B(w)-deg_D(w)=K` on `E`, while the new side is
 
    ```text
-   deg_R(b)+deg_{C\B}(b)+deg_D(b)=Lambda       for every b in B,
+   deg_R(b)+deg_{C\B}(b)+deg_D(b)=H-r-K        for every b in B,
    |B|>|D|.
    ```
 
@@ -1081,7 +1081,7 @@ Recommended attack:
 
    ```text
    deg_X(w)=deg_C(w)-K                 for every w in W,
-   deg_X(b)=Lambda-deg_R(b)            for every b in C\X,
+   deg_X(b)=H-r-K-deg_R(b)             for every b in C\X,
    X != C.
    ```
 
@@ -1091,15 +1091,15 @@ Recommended attack:
    A sharper formal endpoint chooses `B subset C` maximal among old-balanced subsets and sets
    `X=C\B`.  Then `X` is zero-sum-free in `(Z/4Z)^(W\{w_0})`, hence `|X|<=3(m-1)` and
    `|B|>|C|-3(m-1)>m/8`.  Since `B` is old-balanced, the old equation for `X` is automatic; the only
-   remaining condition is constancy on `B` of
+   remaining condition is the value-coupled label equation
 
    ```text
-   eta_X(b)=deg_X(b)+deg_R(b).
+   eta_X(b)=deg_X(b)+deg_R(b)=H-r-delta_B.
    ```
 
    Thus the last obstruction can be formalized as a zero-sum-free boundary exchange lemma: some
-   maximal old-balanced complement must have constant `eta_X`, or else one can exchange vertices
-   across the zero-sum-free boundary to get a profitable packet.
+   maximal old-balanced complement must satisfy this value-coupled `eta_X` equation, or else one can
+   exchange vertices across the zero-sum-free boundary to get a profitable packet.
 
    The exchange lemma has the following local equations.  Given `C=B disjoint_union X`, move
    `Y subset B` to the discard side and `Z subset X` to the retained side.  The old-balance condition is
@@ -1119,10 +1119,20 @@ Recommended attack:
    `Z` from the zero-sum-free boundary.
 
    For a minimal formal counterexample, choose `B` lexicographically: maximum cardinality among
-   old-balanced subsets of `C`, then maximum largest `eta_X`-fiber.  Then no balanced exchange
+   old-balanced subsets of `C`, then maximum largest fiber of `theta_X=eta_X+delta_B`.  Then no balanced exchange
    `(Y,Z)` has `|Z|>|Y|`, and no balanced exchange with `|Z|=|Y|` improves the largest updated
-   `eta`-fiber.  This label-stable zero-sum-free boundary is the strongest local obstruction to state
+   `theta`-fiber.  This value-stable zero-sum-free boundary is the strongest local obstruction to state
    before proving the exchange lemma.
+
+   Do not record a separate zero-sum-free claim for the `eta_X`-fibers.  If
+   `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` changes the discard set
+   from `X` to `X union (B\S)`.  The needed label is
+
+   ```text
+   eta_{X union (B\S)}(s)=eta_X(s)+deg_{B\S}(s),
+   ```
+
+   so the pure-discard case is recursive and closes only when this updated label is constant.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

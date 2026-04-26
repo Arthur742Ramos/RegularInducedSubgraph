@@ -479,22 +479,25 @@ deg_W(b)+deg_B(b) = h_0(b)-deg_R(b)-deg_{C\B}(b).
 Thus on `C` the desired final label is equivalent to
 
 ```text
-deg_R(b)+deg_{C\B}(b) == constant       for b in B,
+deg_R(b)+deg_{C\B}(b) == H-r-delta_B       for b in B,
 ```
 
-plus old-balance of `B` on `W`.  The terminal object is therefore an old-balanced co-cut lemma for a
-class just larger than `3m`, not a raw internal-degree synchronization problem.
+plus old-balance of `B` on `W`, where `H` is the common `h_0` value on `C` and `delta_B` is the
+common old increment of `B`.  Mere constancy of the co-cut label is insufficient; the constant is
+coupled to the old increment.  The terminal object is therefore a value-coupled old-balanced co-cut
+lemma for a class just larger than `3m`, not a raw internal-degree synchronization problem.
 
 Equivalently, with `q_C(b)=deg_C(b)+deg_R(b)`, one needs an old-balanced `B subset C` and a residue
-`lambda` such that
+whose old increment is `delta_B` such that
 
 ```text
-deg_B(b) == q_C(b)-lambda       for b in B.
+deg_B(b) == q_C(b)-(H-r-delta_B)       for b in B.
 ```
 
-The labels are not arbitrary: on the class `C`, `q_C(b)=h_0-deg_W(b)`.  The missing theorem must use
-this coupling between prescribed residue and old-neighbourhood vector; a black-box labelled
-mod-`4` induced-subgraph result at this density would be stronger than what is currently available.
+The labels are not arbitrary: on the class `C`, `q_C(b)=h_0-deg_W(b)`, and the prescribed shift uses
+the same old increment `delta_B` being balanced.  The missing theorem must use this coupling between
+prescribed residue and old-neighbourhood vector; a black-box labelled mod-`4` induced-subgraph result
+at this density would be stronger than what is currently available.
 
 With old deletion allowed, the same class endpoint becomes a signed co-cut.  For `D subset W`,
 `E=W\D`, and `B subset C`, the old side is
@@ -506,7 +509,7 @@ deg_B(w)-deg_D(w) == K       for w in E,
 while the new side is equivalent, on the `h_0`-class, to
 
 ```text
-deg_R(b)+deg_{C\B}(b)+deg_D(b) == Lambda       for b in B,
+deg_R(b)+deg_{C\B}(b)+deg_D(b) == H-r-K        for b in B,
 |B|>|D|.
 ```
 
@@ -519,7 +522,7 @@ The append-only version can be expressed through the discarded set `X=C\B`:
 
 ```text
 deg_X(w) == deg_C(w)-K              for w in W,
-deg_X(b) == Lambda-deg_R(b)         for b in C\X,
+deg_X(b) == H-r-K-deg_R(b)          for b in C\X,
 X != C.
 ```
 
@@ -541,8 +544,9 @@ The old-coordinate equation is automatic for this `X`; only the co-cut label
 eta_X(b)=deg_X(b)+deg_R(b)
 ```
 
-must be made constant on `B`.  Hence the terminal obstruction is a zero-sum-free discarded boundary
-whose co-cut label is nonconstant on every maximal old-balanced complement.
+must equal `H-r-delta_B` on `B`.  Hence the terminal obstruction is a zero-sum-free discarded boundary
+whose co-cut label is either nonconstant or has the wrong value on every maximal old-balanced
+complement.
 
 The local exchange equations are explicit.  From `C=B disjoint_union X`, move `Y subset B` into the
 discard and `Z subset X` into the retained set.  Old-balance is preserved iff
@@ -563,18 +567,30 @@ constant on `B'=(B\Y) union Z`.  A pure discard (`Z=empty`) only recurses inside
 has to use vertices of the zero-sum-free boundary `X`.
 
 The extremal boundary should be chosen lexicographically: first maximize `|B|` among old-balanced
-subsets of `C`, then maximize the largest `eta_X`-fiber on `B`.  Such a boundary has no
+subsets of `C`, then maximize the largest fiber on `B` of the corrected label
+`theta_X=eta_X+delta_B`.  Such a boundary has no
 old-vector-balanced exchange with `|Z|>|Y|`, and no equal-size exchange that improves the largest
-updated label fiber.  Hence the terminal obstruction can be stated as a label-stable zero-sum-free
+updated `theta`-fiber.  Hence the terminal obstruction can be stated as a value-stable zero-sum-free
 boundary:
 
 ```text
 X zero-sum-free;
 no balanced exchange imports more from X than it exports from B;
-no equal-size balanced exchange improves the eta fiber structure.
+no equal-size balanced exchange improves the theta fiber structure.
 ```
 
 This is the strongest finite local target reached so far.
+
+Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
+`S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard
+from `X` to `X union (B\S)`, so the relevant label is
+
+```text
+eta_{X union (B\S)}(s)=eta_X(s)+deg_{B\S}(s).
+```
+
+The pure-discard case therefore recurses; it closes only when this updated label is constant.  The
+terminal obstruction is not a five-piece zero-sum-free decomposition by `eta_X`-fibers.
 
 The same endpoint has a useful one-large-class coloring normal form.  In a labelled graph
 `(H,alpha)`, a random four-coloring has the following property: for each vertex, the congruence

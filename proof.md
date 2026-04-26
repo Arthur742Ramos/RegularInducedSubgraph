@@ -5515,13 +5515,15 @@ Therefore, once `h_0` is constant on `C`, the final self-layer condition is equi
 co-cut condition
 
 ```text
-deg_R(b)+deg_{C\B}(b)=constant              for every b in B,
+deg_R(b)+deg_{C\B}(b)=H-r-delta_B           for every b in B,
 ```
 
-together with old-balance of `B` on `W`.  This is stronger than the earlier vague "self-layer"
+together with old-balance of `B` on `W`, where `H` is the common value of `h_0` on `C` and
+`delta_B` is the common value of `deg_B(w)` on `W`.  The value is coupled to the old increment; mere
+constancy of the co-cut label is not enough.  This is stronger than the earlier vague "self-layer"
 wording: after the first large class is chosen, internal edges of `B` disappear from the target and
-only the discarded side `R union (C\B)` remains.  The open lemma is now an old-balanced co-cut lemma
-for a class `C` of size just above `3m`.
+only the discarded side `R union (C\B)` remains, but its constant must equal `H-r-delta_B`.  The open
+lemma is now a value-coupled old-balanced co-cut lemma for a class `C` of size just above `3m`.
 
 Equivalently, put
 
@@ -5532,12 +5534,12 @@ q_C(b)=deg_C(b)+deg_R(b).
 Then the co-cut condition is the labelled induced-degree condition
 
 ```text
-deg_B(b)=q_C(b)-lambda                         for every b in B,
+deg_B(b)=q_C(b)-(H-r-delta_B)                  for every b in B,
 ```
 
-for some residue `lambda`, together with the zero-sum old-coordinate condition on `B`.  Thus the
+together with the zero-sum old-coordinate condition on `B` and its increment `delta_B`.  Thus the
 terminal theorem is not an unlabelled mod-`4` selector on `C`; it is a prescribed-residue selector
-whose labels are tied to the old-neighbourhood vector by `q_C(b)=h_0-deg_W(b)`.  Any closing lemma
+whose prescribed residue depends on the same old-coordinate sum that must be zero.  Any closing lemma
 must use this coupling between the labels and the old coordinates, because a black-box prescribed
 mod-`4` induced-subgraph theorem with enough linear size is not available at the required `>3m`
 threshold.
@@ -5560,7 +5562,7 @@ deg_E(b)+deg_B(b)
 Thus the fully signed terminal condition is
 
 ```text
-deg_R(b)+deg_{C\B}(b)+deg_D(b)=Lambda       for every b in B,
+deg_R(b)+deg_{C\B}(b)+deg_D(b)=H-r-K        for every b in B,
 |B|>|D|.
 ```
 
@@ -5571,11 +5573,11 @@ guarantee `|B|>|D|`.  A proof must either close the append-only co-cut lemma on 
 co-cut packet while preserving positive surplus.
 
 The append-only co-cut can be written as a discard-corrector problem.  Put `X=C\B`.  Then
-`W union B` is a larger congruent witness exactly when there are residues `K,Lambda` such that
+`W union B` is a larger congruent witness exactly when there is a residue `K` such that
 
 ```text
 deg_X(w)=deg_C(w)-K                         for every w in W,
-deg_X(b)=Lambda-deg_R(b)                    for every b in C\X,
+deg_X(b)=H-r-K-deg_R(b)                     for every b in C\X,
 X != C.
 ```
 
@@ -5597,13 +5599,14 @@ The old-coordinate equation for the discard set is now automatic, because `B=C\X
 The only remaining condition is
 
 ```text
-eta_X(b):=deg_X(b)+deg_R(b)          is constant on B.
+eta_X(b):=deg_X(b)+deg_R(b) = H-r-delta_B          on B.
 ```
 
 Thus a terminal counterexample has a very rigid boundary form: every maximal old-balanced retained
 set leaves a zero-sum-free discarded boundary `X` of size at most `3m-3`, and the co-cut label
-`eta_X` is nonconstant on the retained side.  Proving that such a zero-sum-free boundary can always be
-exchanged away would close the endpoint.
+`eta_X` either is nonconstant on the retained side or has the wrong constant value relative to
+`delta_B`.  Proving that such a zero-sum-free boundary can always be exchanged away, with the value
+coupling preserved, would close the endpoint.
 
 The required exchange can be stated exactly.  Starting from an old-balanced split `C=B disjoint_union X`,
 move `Y subset B` to the discard side and `Z subset X` to the retained side:
@@ -5625,28 +5628,69 @@ eta_{X'}(u)=eta_X(u)-deg_Z(u)+deg_Y(u)       for u in B\Y,
 eta_{X'}(z)=deg_{X\Z}(z)+deg_Y(z)+deg_R(z)   for z in Z.
 ```
 
+For the value-coupled problem one must also update the old increment.  If `delta_B=deg_B(w_0)`, then
+
+```text
+delta_{B'}=delta_B+deg_Z(w_0)-deg_Y(w_0).
+```
+
+Thus the invariant label is really
+
+```text
+theta_X(v)=eta_X(v)+delta_B,
+```
+
+and after the exchange
+
+```text
+theta_{X'}(u)=theta_X(u)-deg_Z(u)+deg_Y(u)+deg_Z(w_0)-deg_Y(w_0)
+                                                    for u in B\Y,
+theta_{X'}(z)=deg_{X\Z}(z)+deg_Y(z)+deg_R(z)+delta_{B'}
+                                                    for z in Z.
+```
+
+The target value for `theta` is the fixed residue `H-r`.
+
 Thus the boundary-exchange lemma is finite and local: if `eta_X` is nonconstant on a maximal
 old-balanced `B`, find an old-vector-balanced exchange `(Y,Z)` with `B'` nonempty for which the two
-displayed formulae are constant on `B'`.  The case `Z=empty` is a pure further discard and is just the
+displayed `theta` formulae equal `H-r` on `B'`.  The case `Z=empty` is a pure further discard and is just the
 same co-cut problem inside `B`; the genuinely new possibility must use the zero-sum-free boundary
 vertices in `X`.
 
 For the extremal obstruction, choose `B` with maximum cardinality among old-balanced subsets of `C`,
-and, subject to that, maximize the largest fiber of `eta_X` on `B`.  Then the boundary satisfies two
-additional no-exchange rules.  First, there is no old-vector-balanced exchange `(Y,Z)` with
-`|Z|>|Y|`; otherwise `B'` would be a larger old-balanced retained set.  Second, among exchanges with
-`|Z|=|Y|`, none can increase the largest constant fiber of the updated label `eta_{X'}`.  Therefore a
-minimal counterexample to the co-cut lemma is not just a zero-sum-free boundary; it is a
-cardinality-maximal, label-stable zero-sum-free boundary.  This is the strongest local form presently
-available:
+and, subject to that, maximize the largest fiber of the corrected label
+
+```text
+theta_X(b)=eta_X(b)+delta_B
+```
+
+on `B`; the desired value is now the fixed residue `H-r`.  Then the boundary satisfies two additional
+no-exchange rules.  First, there is no old-vector-balanced exchange `(Y,Z)` with `|Z|>|Y|`; otherwise
+`B'` would be a larger old-balanced retained set.  Second, among exchanges with `|Z|=|Y|`, none can
+increase the largest `theta`-fiber of the updated boundary.  Therefore a minimal counterexample to
+the co-cut lemma is not just a zero-sum-free boundary; it is a cardinality-maximal,
+value-stable zero-sum-free boundary.  This is the strongest local form presently available:
 
 ```text
 X is zero-sum-free,
 no balanced exchange imports more vertices from X than it exports from B,
-no equal-size balanced exchange improves the largest eta-fiber.
+no equal-size balanced exchange improves the largest theta-fiber.
 ```
 
 Any proof of the terminal lemma may now target this extremal boundary directly.
+
+One must not overstate the fiber obstruction.  If `S subset B` is old-balanced and `eta_X` is
+constant on `S`, this does not by itself append `S` to `W`: the vertices in `B\S` have moved to the
+discard side and contribute the additional term `deg_{B\S}(s)` on `S`.  Thus a pure discard is truly
+recursive.  It closes only when the updated label
+
+```text
+eta_{X union (B\S)}(s)=eta_X(s)+deg_{B\S}(s)
+```
+
+is constant on `S`.  This correction is important: the terminal obstruction is not a simple
+five-piece zero-sum-free decomposition by `eta_X`-fibers.  The exchange lemma has to control the
+co-cut term created by every discarded part.
 
 There is a complementary one-large-class coloring view which isolates the same obstruction without
 requiring a full coloring theorem.  For a labelled graph `(H,alpha)` and a color
