@@ -6768,6 +6768,494 @@ def PositiveAtomTraceFiniteTablePackage
   PositiveAtomTraceOmissionTableCertificate internal classes ∨
     PositiveAtomTraceOmissionObstruction classes
 
+/--
+External positive-atom template candidates: omitted triples whose external trace column is constant on
+all occupied trace classes.
+-/
+def PositiveAtomExternalCandidate
+    (O : Finset (Fin 7)) (classes : Finset PositiveAtomTraceClass) : Prop :=
+  PositiveAtomOmittedTriple O ∧ PositiveAtomOmittedTripleEqualizesTraceClasses O classes
+
+/-- The finite external candidate set `C_ext` cut out by occupied trace classes. -/
+noncomputable def positiveAtomExternalCandidateSet
+    (classes : Finset PositiveAtomTraceClass) : Finset (Finset (Fin 7)) := by
+  classical
+  exact positiveAtomOmittedTriples.filter fun O =>
+    PositiveAtomOmittedTripleEqualizesTraceClasses O classes
+
+/-- Membership in the finite external candidate set. -/
+theorem mem_positiveAtomExternalCandidateSet_iff
+    {O : Finset (Fin 7)} {classes : Finset PositiveAtomTraceClass} :
+    O ∈ positiveAtomExternalCandidateSet classes ↔
+      PositiveAtomExternalCandidate O classes := by
+  classical
+  simp [positiveAtomExternalCandidateSet, PositiveAtomExternalCandidate,
+    PositiveAtomOmittedTriple]
+
+/-- Pairwise-subsingleton form of the bound `|C_ext| ≤ 1`. -/
+def PositiveAtomExternalCandidateSubsingleton
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∀ {O O' : Finset (Fin 7)},
+    PositiveAtomExternalCandidate O classes →
+      PositiveAtomExternalCandidate O' classes → O = O'
+
+/-- The pairwise-subsingleton certificate implies the literal finite-set cardinal bound. -/
+theorem positiveAtomExternalCandidateSet_card_le_one_of_subsingleton
+    {classes : Finset PositiveAtomTraceClass}
+    (hsub : PositiveAtomExternalCandidateSubsingleton classes) :
+    (positiveAtomExternalCandidateSet classes).card ≤ 1 := by
+  classical
+  rw [Finset.card_le_one]
+  intro O hO O' hO'
+  exact hsub (mem_positiveAtomExternalCandidateSet_iff.mp hO)
+    (mem_positiveAtomExternalCandidateSet_iff.mp hO')
+
+/-- Modulo-four equality of two `Fin 4` labels is literal equality. -/
+lemma finFour_eq_of_val_modEq {a b : Fin 4} (h : a.val ≡ b.val [MOD 4]) :
+    a = b := by
+  apply Fin.ext
+  rw [Nat.ModEq, Nat.mod_eq_of_lt a.2, Nat.mod_eq_of_lt b.2] at h
+  exact h
+
+/-- A signed pair equation between equal trace subsets forces their labels to be equal. -/
+theorem PositiveAtomTraceClass.mu_eq_of_same_trace_pairEquation
+    {O : Finset (Fin 7)} {c d : PositiveAtomTraceClass}
+    (htrace : c.trace = d.trace)
+    (hpair : PositiveAtomOmittedTriplePairEquation O c d) :
+    c.mu = d.mu := by
+  have hpair' := hpair
+  unfold PositiveAtomOmittedTriplePairEquation at hpair'
+  have hcount : d.omittedCount O = c.omittedCount O := by
+    simp [PositiveAtomTraceClass.omittedCount, htrace]
+  have hsum :
+      c.omittedCount O + d.mu.val ≡ c.omittedCount O + c.mu.val [MOD 4] := by
+    simpa [hcount] using hpair'
+  have hmod : d.mu.val ≡ c.mu.val [MOD 4] :=
+    Nat.ModEq.add_left_cancel' (c.omittedCount O) hsum
+  exact (finFour_eq_of_val_modEq hmod).symm
+
+/-- Two occupied classes with the same trace subset and different labels kill every external template. -/
+theorem not_positiveAtomExternalCandidate_of_duplicateTraceLabel
+    {O : Finset (Fin 7)} {classes : Finset PositiveAtomTraceClass}
+    {c d : PositiveAtomTraceClass}
+    (hc : c ∈ classes) (hd : d ∈ classes)
+    (htrace : c.trace = d.trace) (hmu : c.mu ≠ d.mu) :
+    ¬ PositiveAtomExternalCandidate O classes := by
+  intro hO
+  have hpair :=
+    positiveAtomOmittedTriplePairwiseEqualizes_of_equalizes hO.2 c hc d hd
+  exact hmu (PositiveAtomTraceClass.mu_eq_of_same_trace_pairEquation htrace hpair)
+
+/-- A trace alphabet has a duplicate-label conflict when one trace subset carries two labels. -/
+def PositiveAtomDuplicateTraceLabelConflict
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∃ c ∈ classes, ∃ d ∈ classes, c.trace = d.trace ∧ c.mu ≠ d.mu
+
+/-- Duplicate trace labels rule out every external candidate. -/
+theorem PositiveAtomDuplicateTraceLabelConflict.not_externalCandidate
+    {classes : Finset PositiveAtomTraceClass}
+    (hconflict : PositiveAtomDuplicateTraceLabelConflict classes)
+    {O : Finset (Fin 7)} :
+    ¬ PositiveAtomExternalCandidate O classes := by
+  rcases hconflict with ⟨c, hc, d, hd, htrace, hmu⟩
+  exact not_positiveAtomExternalCandidate_of_duplicateTraceLabel hc hd htrace hmu
+
+/-- Duplicate trace labels make the finite external candidate set empty. -/
+theorem positiveAtomExternalCandidateSet_eq_empty_of_duplicateTraceLabelConflict
+    {classes : Finset PositiveAtomTraceClass}
+    (hconflict : PositiveAtomDuplicateTraceLabelConflict classes) :
+    positiveAtomExternalCandidateSet classes = ∅ := by
+  classical
+  apply Finset.eq_empty_iff_forall_not_mem.mpr
+  intro O hO
+  exact hconflict.not_externalCandidate (mem_positiveAtomExternalCandidateSet_iff.mp hO)
+
+/-- The membership bit decoded by a singleton trace. -/
+def positiveAtomSingletonTraceCount (O : Finset (Fin 7)) (r : Fin 7) : ℕ :=
+  if r ∈ O then 1 else 0
+
+/-- The membership bit decoded by a co-singleton trace in an omitted triple. -/
+def positiveAtomCoSingletonTraceCount (O : Finset (Fin 7)) (r : Fin 7) : ℕ :=
+  if r ∈ O then 2 else 3
+
+lemma positiveAtomSingletonTraceCount_le_one (O : Finset (Fin 7)) (r : Fin 7) :
+    positiveAtomSingletonTraceCount O r ≤ 1 := by
+  unfold positiveAtomSingletonTraceCount
+  split <;> omega
+
+lemma positiveAtomCoSingletonTraceCount_le_three (O : Finset (Fin 7)) (r : Fin 7) :
+    positiveAtomCoSingletonTraceCount O r ≤ 3 := by
+  unfold positiveAtomCoSingletonTraceCount
+  split <;> omega
+
+/-- The empty trace has zero omitted-neighbour count for every omitted template. -/
+lemma PositiveAtomTraceClass.omittedCount_empty
+    {O : Finset (Fin 7)} {c : PositiveAtomTraceClass}
+    (hc : c.trace = ∅) :
+    c.omittedCount O = 0 := by
+  simp [PositiveAtomTraceClass.omittedCount, hc]
+
+/-- A singleton trace decodes the membership bit of the omitted triple. -/
+lemma PositiveAtomTraceClass.omittedCount_singleton
+    {O : Finset (Fin 7)} {c : PositiveAtomTraceClass} {r : Fin 7}
+    (hc : c.trace = ({r} : Finset (Fin 7))) :
+    c.omittedCount O = positiveAtomSingletonTraceCount O r := by
+  classical
+  unfold positiveAtomSingletonTraceCount
+  by_cases hr : r ∈ O <;> simp [PositiveAtomTraceClass.omittedCount, hc, hr]
+
+/-- The full seven-point trace has omitted-neighbour count three on every omitted triple. -/
+lemma PositiveAtomTraceClass.omittedCount_full
+    {O : Finset (Fin 7)} {c : PositiveAtomTraceClass}
+    (hO : PositiveAtomOmittedTriple O)
+    (hc : c.trace = positiveAtomSevenPointReservoir) :
+    c.omittedCount O = 3 := by
+  have hset : c.trace ∩ O = O := by
+    ext x
+    constructor
+    · intro hx
+      exact (Finset.mem_inter.mp hx).2
+    · intro hx
+      exact Finset.mem_inter.mpr ⟨by simp [hc, positiveAtomSevenPointReservoir], hx⟩
+  rw [PositiveAtomTraceClass.omittedCount, hset, PositiveAtomOmittedTriple.card hO]
+
+/-- A co-singleton trace decodes the complementary membership bit of the omitted triple. -/
+lemma PositiveAtomTraceClass.omittedCount_coSingleton
+    {O : Finset (Fin 7)} {c : PositiveAtomTraceClass} {r : Fin 7}
+    (hO : PositiveAtomOmittedTriple O)
+    (hc : c.trace = positiveAtomSevenPointReservoir.erase r) :
+    c.omittedCount O = positiveAtomCoSingletonTraceCount O r := by
+  classical
+  have hset : c.trace ∩ O = O.erase r := by
+    ext x
+    by_cases hxr : x = r
+    · simp [hc, positiveAtomSevenPointReservoir, hxr]
+    · simp [hc, positiveAtomSevenPointReservoir, hxr, and_comm, and_left_comm, and_assoc]
+  unfold positiveAtomCoSingletonTraceCount
+  by_cases hr : r ∈ O
+  · rw [PositiveAtomTraceClass.omittedCount, hset, Finset.card_erase_of_mem hr,
+      PositiveAtomOmittedTriple.card hO]
+    simp [hr]
+  · have herase : O.erase r = O := by
+      ext x
+      by_cases hxr : x = r <;> simp [hxr, hr]
+    rw [PositiveAtomTraceClass.omittedCount, hset, herase, PositiveAtomOmittedTriple.card hO]
+    simp [hr]
+
+/-- Empty plus one singleton gives the signed singleton decoder equation for `C_ext`. -/
+theorem positiveAtomExternalCandidate_empty_singleton_decoder
+    {O : Finset (Fin 7)} {classes : Finset PositiveAtomTraceClass}
+    {cEmpty cSingleton : PositiveAtomTraceClass} {r : Fin 7}
+    (hO : PositiveAtomExternalCandidate O classes)
+    (hEmpty : cEmpty ∈ classes) (hSingleton : cSingleton ∈ classes)
+    (hEmptyTrace : cEmpty.trace = ∅)
+    (hSingletonTrace : cSingleton.trace = ({r} : Finset (Fin 7))) :
+    cSingleton.mu.val ≡ positiveAtomSingletonTraceCount O r + cEmpty.mu.val [MOD 4] := by
+  have hpair :=
+    positiveAtomOmittedTriplePairwiseEqualizes_of_equalizes hO.2 cEmpty hEmpty
+      cSingleton hSingleton
+  have hEmptyCount := PositiveAtomTraceClass.omittedCount_empty (O := O) hEmptyTrace
+  have hSingletonCount :=
+    PositiveAtomTraceClass.omittedCount_singleton (O := O) hSingletonTrace
+  simpa [hEmptyCount, hSingletonCount] using hpair
+
+/-- Full plus one co-singleton gives the dual signed decoder equation for `C_ext`. -/
+theorem positiveAtomExternalCandidate_full_coSingleton_decoder
+    {O : Finset (Fin 7)} {classes : Finset PositiveAtomTraceClass}
+    {cFull cCo : PositiveAtomTraceClass} {r : Fin 7}
+    (hO : PositiveAtomExternalCandidate O classes)
+    (hFull : cFull ∈ classes) (hCo : cCo ∈ classes)
+    (hFullTrace : cFull.trace = positiveAtomSevenPointReservoir)
+    (hCoTrace : cCo.trace = positiveAtomSevenPointReservoir.erase r) :
+    3 + cCo.mu.val ≡ positiveAtomCoSingletonTraceCount O r + cFull.mu.val [MOD 4] := by
+  have hpair :=
+    positiveAtomOmittedTriplePairwiseEqualizes_of_equalizes hO.2 cFull hFull cCo hCo
+  have hFullCount := PositiveAtomTraceClass.omittedCount_full (O := O) hO.1 hFullTrace
+  have hCoCount := PositiveAtomTraceClass.omittedCount_coSingleton (O := O) hO.1 hCoTrace
+  simpa [hFullCount, hCoCount] using hpair
+
+/-- Trace profiles agree on all occupied traces. -/
+def PositiveAtomTraceProfileEqual
+    (classes : Finset PositiveAtomTraceClass) (O O' : Finset (Fin 7)) : Prop :=
+  ∀ c ∈ classes, c.omittedCount O = c.omittedCount O'
+
+/-- Occupied traces separate omitted triples when equal trace profiles force equal triples. -/
+def PositiveAtomTraceFamilySeparatesOmittedTriples
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∀ {O O' : Finset (Fin 7)},
+    PositiveAtomOmittedTriple O → PositiveAtomOmittedTriple O' →
+      PositiveAtomTraceProfileEqual classes O O' → O = O'
+
+/-- A trace anchor has a candidate-independent omitted-neighbour count. -/
+def PositiveAtomTraceFamilyHasAnchor
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∃ anchor ∈ classes, ∃ value : ℕ,
+    ∀ O : Finset (Fin 7), PositiveAtomOmittedTriple O → anchor.omittedCount O = value
+
+/-- Omitted counts against a triple are always at most three. -/
+theorem PositiveAtomTraceClass.omittedCount_le_three_of_omittedTriple
+    (c : PositiveAtomTraceClass) {O : Finset (Fin 7)}
+    (hO : PositiveAtomOmittedTriple O) :
+    c.omittedCount O ≤ 3 := by
+  calc
+    c.omittedCount O = (c.trace ∩ O).card := rfl
+    _ ≤ O.card := Finset.card_le_card (by
+      intro x hx
+      exact (Finset.mem_inter.mp hx).2)
+    _ = 3 := PositiveAtomOmittedTriple.card hO
+
+/-- Two naturals in `{0,1,2,3}` which are equal modulo four are equal. -/
+lemma nat_eq_of_le_three_of_modEq_four {a b : ℕ}
+    (ha : a ≤ 3) (hb : b ≤ 3) (h : a ≡ b [MOD 4]) :
+    a = b := by
+  interval_cases a <;> interval_cases b <;> simp at h ⊢
+
+/-- Anchored external candidates have identical trace profiles. -/
+theorem positiveAtomTraceProfileEqual_of_externalCandidates_of_anchor
+    {classes : Finset PositiveAtomTraceClass}
+    {O O' : Finset (Fin 7)} {anchor : PositiveAtomTraceClass} {value : ℕ}
+    (hanchor : anchor ∈ classes)
+    (hanchorCount : ∀ T : Finset (Fin 7),
+      PositiveAtomOmittedTriple T → anchor.omittedCount T = value)
+    (hO : PositiveAtomExternalCandidate O classes)
+    (hO' : PositiveAtomExternalCandidate O' classes) :
+    PositiveAtomTraceProfileEqual classes O O' := by
+  intro c hc
+  have hpairO :=
+    positiveAtomOmittedTriplePairwiseEqualizes_of_equalizes hO.2 anchor hanchor c hc
+  have hpairO' :=
+    positiveAtomOmittedTriplePairwiseEqualizes_of_equalizes hO'.2 anchor hanchor c hc
+  have hleft :
+      anchor.omittedCount O + c.mu.val ≡
+        anchor.omittedCount O' + c.mu.val [MOD 4] := by
+    simp [hanchorCount O hO.1, hanchorCount O' hO'.1]
+  have hsum :
+      c.omittedCount O + anchor.mu.val ≡
+        c.omittedCount O' + anchor.mu.val [MOD 4] :=
+    hpairO.symm.trans (hleft.trans hpairO')
+  have hcountMod : c.omittedCount O ≡ c.omittedCount O' [MOD 4] :=
+    Nat.ModEq.add_right_cancel (Nat.ModEq.refl anchor.mu.val) hsum
+  exact nat_eq_of_le_three_of_modEq_four
+    (c.omittedCount_le_three_of_omittedTriple hO.1)
+    (c.omittedCount_le_three_of_omittedTriple hO'.1) hcountMod
+
+/-- Anchored separation is the named certificate surface for `|C_ext| ≤ 1`. -/
+theorem positiveAtomExternalCandidateSubsingleton_of_anchor_separation
+    {classes : Finset PositiveAtomTraceClass}
+    (hanchor : PositiveAtomTraceFamilyHasAnchor classes)
+    (hseparates : PositiveAtomTraceFamilySeparatesOmittedTriples classes) :
+    PositiveAtomExternalCandidateSubsingleton classes := by
+  intro O O' hO hO'
+  rcases hanchor with ⟨anchor, hanchorMem, value, hanchorCount⟩
+  exact hseparates hO.1 hO'.1
+    (positiveAtomTraceProfileEqual_of_externalCandidates_of_anchor
+      hanchorMem hanchorCount hO hO')
+
+/-- The occupied trace alphabet contains the empty trace and all seven singleton traces. -/
+def PositiveAtomTraceFamilyHasEmptyAndSingletons
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∃ cEmpty ∈ classes, cEmpty.trace = ∅ ∧
+    ∃ singleton : Fin 7 → PositiveAtomTraceClass,
+      ∀ r : Fin 7, singleton r ∈ classes ∧
+        (singleton r).trace = ({r} : Finset (Fin 7))
+
+/-- Empty trace supplies an anchor for all omitted triples. -/
+theorem positiveAtomTraceFamilyHasAnchor_of_empty_singletons
+    {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceFamilyHasEmptyAndSingletons classes) :
+    PositiveAtomTraceFamilyHasAnchor classes := by
+  rcases h with ⟨cEmpty, hEmpty, hEmptyTrace, _singleton, _hsingleton⟩
+  exact ⟨cEmpty, hEmpty, 0, fun O _hO =>
+    PositiveAtomTraceClass.omittedCount_empty (O := O) hEmptyTrace⟩
+
+/-- Empty plus all singleton traces separates the omitted triples. -/
+theorem positiveAtomTraceFamilySeparatesOmittedTriples_of_empty_singletons
+    {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceFamilyHasEmptyAndSingletons classes) :
+    PositiveAtomTraceFamilySeparatesOmittedTriples classes := by
+  classical
+  intro O O' _hO _hO' hprofile
+  rcases h with ⟨_cEmpty, _hEmpty, _hEmptyTrace, singleton, hsingleton⟩
+  ext r
+  have hcounts := hprofile (singleton r) (hsingleton r).1
+  have hOcount :=
+    PositiveAtomTraceClass.omittedCount_singleton (O := O) (c := singleton r)
+      (r := r) (hsingleton r).2
+  have hO'count :=
+    PositiveAtomTraceClass.omittedCount_singleton (O := O') (c := singleton r)
+      (r := r) (hsingleton r).2
+  have hbit : positiveAtomSingletonTraceCount O r = positiveAtomSingletonTraceCount O' r := by
+    simpa [hOcount, hO'count] using hcounts
+  by_cases hrO : r ∈ O
+  · by_cases hrO' : r ∈ O'
+    · simp [hrO, hrO']
+    · have hfalse : False := by
+        simpa [positiveAtomSingletonTraceCount, hrO, hrO'] using hbit
+      exact False.elim hfalse
+  · by_cases hrO' : r ∈ O'
+    · have hfalse : False := by
+        simpa [positiveAtomSingletonTraceCount, hrO, hrO'] using hbit
+      exact False.elim hfalse
+    · simp [hrO, hrO']
+
+/-- Empty plus all singleton traces leaves at most one external template. -/
+theorem positiveAtomExternalCandidateSubsingleton_of_empty_singletons
+    {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceFamilyHasEmptyAndSingletons classes) :
+    PositiveAtomExternalCandidateSubsingleton classes :=
+  positiveAtomExternalCandidateSubsingleton_of_anchor_separation
+    (positiveAtomTraceFamilyHasAnchor_of_empty_singletons h)
+    (positiveAtomTraceFamilySeparatesOmittedTriples_of_empty_singletons h)
+
+/-- The occupied trace alphabet contains the full trace and all seven co-singleton traces. -/
+def PositiveAtomTraceFamilyHasFullAndCoSingletons
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∃ cFull ∈ classes, cFull.trace = positiveAtomSevenPointReservoir ∧
+    ∃ coSingleton : Fin 7 → PositiveAtomTraceClass,
+      ∀ r : Fin 7, coSingleton r ∈ classes ∧
+        (coSingleton r).trace = positiveAtomSevenPointReservoir.erase r
+
+/-- Full trace supplies an anchor for all omitted triples. -/
+theorem positiveAtomTraceFamilyHasAnchor_of_full_coSingletons
+    {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceFamilyHasFullAndCoSingletons classes) :
+    PositiveAtomTraceFamilyHasAnchor classes := by
+  rcases h with ⟨cFull, hFull, hFullTrace, _coSingleton, _hcoSingleton⟩
+  exact ⟨cFull, hFull, 3, fun O hO =>
+    PositiveAtomTraceClass.omittedCount_full (O := O) hO hFullTrace⟩
+
+/-- Full plus all co-singleton traces separates the omitted triples. -/
+theorem positiveAtomTraceFamilySeparatesOmittedTriples_of_full_coSingletons
+    {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceFamilyHasFullAndCoSingletons classes) :
+    PositiveAtomTraceFamilySeparatesOmittedTriples classes := by
+  classical
+  intro O O' hO hO' hprofile
+  rcases h with ⟨_cFull, _hFull, _hFullTrace, coSingleton, hcoSingleton⟩
+  ext r
+  have hcounts := hprofile (coSingleton r) (hcoSingleton r).1
+  have hOcount :=
+    PositiveAtomTraceClass.omittedCount_coSingleton (O := O) (c := coSingleton r)
+      (r := r) hO (hcoSingleton r).2
+  have hO'count :=
+    PositiveAtomTraceClass.omittedCount_coSingleton (O := O') (c := coSingleton r)
+      (r := r) hO' (hcoSingleton r).2
+  have hbit : positiveAtomCoSingletonTraceCount O r = positiveAtomCoSingletonTraceCount O' r := by
+    simpa [hOcount, hO'count] using hcounts
+  by_cases hrO : r ∈ O
+  · by_cases hrO' : r ∈ O'
+    · simp [hrO, hrO']
+    · have hfalse : False := by
+        simpa [positiveAtomCoSingletonTraceCount, hrO, hrO'] using hbit
+      exact False.elim hfalse
+  · by_cases hrO' : r ∈ O'
+    · have hfalse : False := by
+        simpa [positiveAtomCoSingletonTraceCount, hrO, hrO'] using hbit
+      exact False.elim hfalse
+    · simp [hrO, hrO']
+
+/-- Full plus all co-singleton traces leaves at most one external template. -/
+theorem positiveAtomExternalCandidateSubsingleton_of_full_coSingletons
+    {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceFamilyHasFullAndCoSingletons classes) :
+    PositiveAtomExternalCandidateSubsingleton classes :=
+  positiveAtomExternalCandidateSubsingleton_of_anchor_separation
+    (positiveAtomTraceFamilyHasAnchor_of_full_coSingletons h)
+    (positiveAtomTraceFamilySeparatesOmittedTriples_of_full_coSingletons h)
+
+/-- Abstract internal positive-atom candidate predicate attached to an omitted triple. -/
+def PositiveAtomInternalCandidate
+    (Internal : Finset (Fin 7) → Prop) (O : Finset (Fin 7)) : Prop :=
+  PositiveAtomOmittedTriple O ∧ Internal O
+
+/-- The positive-atom reroot intersection predicate `C_ext ∩ C_int`. -/
+def PositiveAtomRerootIntersectionCandidate
+    (Internal : Finset (Fin 7) → Prop)
+    (classes : Finset PositiveAtomTraceClass) (O : Finset (Fin 7)) : Prop :=
+  PositiveAtomExternalCandidate O classes ∧ Internal O
+
+/-- Certificate that the external and internal positive-atom candidate sets intersect. -/
+structure PositiveAtomRerootIntersectionCertificate
+    (Internal : Finset (Fin 7) → Prop)
+    (classes : Finset PositiveAtomTraceClass) : Prop where
+  omitted : Finset (Fin 7)
+  external : PositiveAtomExternalCandidate omitted classes
+  internal : Internal omitted
+
+/-- Obstruction form: the external candidate set is disjoint from the internal candidate set. -/
+def PositiveAtomRerootIntersectionObstruction
+    (Internal : Finset (Fin 7) → Prop)
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  ∀ O : Finset (Fin 7), PositiveAtomExternalCandidate O classes → ¬ Internal O
+
+/-- Finite reroot package: either the intersection is witnessed or it is explicitly obstructed. -/
+def PositiveAtomRerootIntersectionFinitePackage
+    (Internal : Finset (Fin 7) → Prop)
+    (classes : Finset PositiveAtomTraceClass) : Prop :=
+  PositiveAtomRerootIntersectionCertificate Internal classes ∨
+    PositiveAtomRerootIntersectionObstruction Internal classes
+
+/-- The disjointness obstruction is the negation of an intersection certificate. -/
+theorem positiveAtomRerootIntersectionObstruction_iff_not_certificate
+    {Internal : Finset (Fin 7) → Prop} {classes : Finset PositiveAtomTraceClass} :
+    PositiveAtomRerootIntersectionObstruction Internal classes ↔
+      ¬ PositiveAtomRerootIntersectionCertificate Internal classes := by
+  constructor
+  · intro hobs hcert
+    exact hobs hcert.omitted hcert.external hcert.internal
+  · intro hnot O hExternal hInternal
+    exact hnot ⟨O, hExternal, hInternal⟩
+
+/-- The existing internal four-set line is an internal candidate predicate. -/
+def PositiveAtomFourSetInternalCandidate
+    (internal : Fin 7 → ℕ) (O : Finset (Fin 7)) : Prop :=
+  PositiveAtomOmittedTriple O ∧ PositiveAtomInternalFourSetEquation internal O
+
+/-- A full trace/omission table certificate gives a `C_ext ∩ C_int` reroot certificate. -/
+theorem PositiveAtomTraceOmissionTableCertificate.to_rerootIntersectionCertificate
+    {internal : Fin 7 → ℕ} {classes : Finset PositiveAtomTraceClass}
+    (h : PositiveAtomTraceOmissionTableCertificate internal classes) :
+    PositiveAtomRerootIntersectionCertificate
+      (fun O => PositiveAtomInternalFourSetEquation internal O) classes where
+  omitted := h.omitted
+  external := ⟨h.omitted_mem, h.traceEqualizes⟩
+  internal := h.internalEqualizes
+
+/-- Transfer surface from a near-top basis statement to the corresponding basis-with-holes statement. -/
+def FirstBitNearTopBasisWithHolesTransfer
+    (Basis WithHoles : ℕ → ℕ → Prop) : Prop :=
+  ∀ {d rho : ℕ}, Basis d rho → WithHoles d rho
+
+/-- Four-block near-top collapse surface: when `d + rho ≤ 1`, holes still force a positive atom. -/
+def FirstBitSmallEffectiveDeficitFourBlockCollapseForcesPositiveAtom
+    (WithHoles PositiveAtom : ℕ → ℕ → Prop) : Prop :=
+  ∀ {d rho : ℕ}, d + rho ≤ 1 → WithHoles d rho → PositiveAtom d rho
+
+/-- Named wrapper package for the small-effective-deficit near-top positive-atom route. -/
+structure FirstBitSmallEffectiveDeficitNearTopPositiveAtomWrappers
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop) : Prop where
+  basisWithHoles : FirstBitNearTopBasisWithHolesTransfer Basis WithHoles
+  fourBlockCollapse :
+    FirstBitSmallEffectiveDeficitFourBlockCollapseForcesPositiveAtom WithHoles PositiveAtom
+
+/-- Basis-with-holes transfer plus the `d + rho ≤ 1` four-block collapse forces the positive atom. -/
+theorem FirstBitSmallEffectiveDeficitNearTopPositiveAtomWrappers.positiveAtom_of_basis
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitSmallEffectiveDeficitNearTopPositiveAtomWrappers Basis WithHoles PositiveAtom)
+    {d rho : ℕ} (hsmall : d + rho ≤ 1) (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.fourBlockCollapse hsmall (h.basisWithHoles hbasis)
+
+/-- Direct constructor for the small-effective-deficit wrapper package. -/
+theorem firstBitSmallEffectiveDeficitNearTopPositiveAtomWrappers_of_surfaces
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (htransfer : FirstBitNearTopBasisWithHolesTransfer Basis WithHoles)
+    (hcollapse :
+      FirstBitSmallEffectiveDeficitFourBlockCollapseForcesPositiveAtom WithHoles PositiveAtom) :
+    FirstBitSmallEffectiveDeficitNearTopPositiveAtomWrappers Basis WithHoles PositiveAtom where
+  basisWithHoles := htransfer
+  fourBlockCollapse := hcollapse
+
 /-- A repaired-residue spectrum is full when it contains all four regular four-vertex residues. -/
 def ContainsAllFourResidues (spectrum : Finset ℕ) : Prop :=
   0 ∈ spectrum ∧ 1 ∈ spectrum ∧ 2 ∈ spectrum ∧ 3 ∈ spectrum
@@ -9263,6 +9751,63 @@ theorem
       FirstBitTerminalPositiveAtomTraceResidualImports :=
   FirstBitTerminalPacketResidualOutcomeWithPositiveAtomTrace.positiveAtomTraceResidual
     h.to_positiveAtomTrace
+
+/-- Final-facing residual import for positive-atom reroots as the intersection `C_ext ∩ C_int`. -/
+structure FirstBitTerminalPositiveAtomRerootIntersectionResidualImports
+    (Internal : Finset (Fin 7) → Prop) : Prop where
+  finiteIntersection :
+    ∀ classes : Finset PositiveAtomTraceClass,
+      PositiveAtomRerootIntersectionFinitePackage Internal classes
+
+/-- Combine the trace-table residual with the reroot-intersection residual. -/
+structure FirstBitTerminalPositiveAtomTraceAndRerootIntersectionImports
+    (Internal : Finset (Fin 7) → Prop) : Prop where
+  trace : FirstBitTerminalPositiveAtomTraceResidualImports
+  rerootIntersection : FirstBitTerminalPositiveAtomRerootIntersectionResidualImports Internal
+
+/-- Project the trace-table residual from the combined positive-atom import package. -/
+theorem FirstBitTerminalPositiveAtomTraceAndRerootIntersectionImports.to_trace
+    {Internal : Finset (Fin 7) → Prop}
+    (h : FirstBitTerminalPositiveAtomTraceAndRerootIntersectionImports Internal) :
+    FirstBitTerminalPositiveAtomTraceResidualImports :=
+  h.trace
+
+/-- Project the reroot-intersection residual from the combined positive-atom import package. -/
+theorem FirstBitTerminalPositiveAtomTraceAndRerootIntersectionImports.to_rerootIntersection
+    {Internal : Finset (Fin 7) → Prop}
+    (h : FirstBitTerminalPositiveAtomTraceAndRerootIntersectionImports Internal) :
+    FirstBitTerminalPositiveAtomRerootIntersectionResidualImports Internal :=
+  h.rerootIntersection
+
+/-- Final packet branch wrappers with the positive-atom endpoint stated as `C_ext ∩ C_int`. -/
+structure FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot
+    (Internal : Finset (Fin 7) → Prop) : Prop where
+  exactBasis :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound
+  nearBasis : FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+  mixedType : FirstBitTerminalMixedTypeHomogeneousCarryImports
+  positiveAtomReroot : FirstBitTerminalPositiveAtomRerootIntersectionResidualImports Internal
+
+/--
+Upgrade a four-way final wrapper by replacing the positive-atom trace slot with a reroot-intersection
+slot.
+-/
+theorem firstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot_of_finalWrappers
+    {Internal : Finset (Fin 7) → Prop}
+    (hfinal : FirstBitTerminalPacketFinalBranchWrappers)
+    (hr : FirstBitTerminalPositiveAtomRerootIntersectionResidualImports Internal) :
+    FirstBitTerminalPacketFinalBranchWrappersWithPositiveAtomReroot Internal where
+  exactBasis := hfinal.exactBasis
+  nearBasis := hfinal.nearBasis
+  mixedType := hfinal.mixedType
+  positiveAtomReroot := hr
+
+/-- Project the old trace-table residual from the reroot-enriched final wrapper. -/
+theorem FirstBitTerminalPositiveAtomTraceAndRerootIntersectionImports.tracePackage
+    {Internal : Finset (Fin 7) → Prop}
+    (h : FirstBitTerminalPositiveAtomTraceAndRerootIntersectionImports Internal) :
+    FirstBitTerminalPositiveAtomTraceResidualImports :=
+  h.trace
 
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
