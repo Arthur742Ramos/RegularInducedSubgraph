@@ -8304,6 +8304,213 @@ theorem firstBitExactBasisTerminalBranch_card_le_add_eight_of_branchSplit_anchor
   firstBitExactBasisTerminalBranchAnchorOneEndpointPackage_card_le_add_eight hbound
     (firstBitExactBasisTerminalBranchAnchorOneEndpointPackage_of_branchSplit hcollapse hbranch) hcaps
 
+/--
+Final-facing exact-basis closure surface for the first-bit terminal packet.  The `h = 1`
+anchor-collapse import is kept separate from the pseudo-split endpoint-size import.
+-/
+structure FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces : Prop where
+  anchorOneCollapse : HasFirstBitAnchorOneEndpointCollapseSurface
+  pseudoSplitBound : HasFirstBitPseudoSplitEndpointBoundEightSurface
+
+/-- Bundle the two exact-basis closure imports into the collapsed endpoint-bound surface. -/
+theorem firstBitTerminalExactBasisCollapsedEndpointBoundSurfaces_of_surfaces
+    (hcollapse : HasFirstBitAnchorOneEndpointCollapseSurface)
+    (hbound : HasFirstBitPseudoSplitEndpointBoundEightSurface) :
+    FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces where
+  anchorOneCollapse := hcollapse
+  pseudoSplitBound := hbound
+
+/-- A collapsed exact-basis package is bounded by `m + 8` from the separated closure surfaces. -/
+theorem FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces.card_le_add_eight_of_anchorOnePackage
+    (h : FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces)
+    {V : Type*} {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hpackage : FirstBitExactBasisTerminalBranchAnchorOneEndpointPackage G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    S.card ≤ m + 8 :=
+  firstBitExactBasisTerminalBranchAnchorOneEndpointPackage_card_le_add_eight
+    h.pseudoSplitBound hpackage hcaps
+
+/--
+Terminal branch-split wrapper: exact-basis endpoint maps plus the `h = 1` collapse and pseudo-split
+bound surfaces give the packet bound, without importing any near-basis or mixed-type boundary case.
+-/
+theorem FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces.card_le_add_eight_of_branchSplit
+    (h : FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces)
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hbranch : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    S.card ≤ m + 8 :=
+  firstBitExactBasisTerminalBranch_card_le_add_eight_of_branchSplit_anchorOne
+    h.anchorOneCollapse h.pseudoSplitBound hbranch hcaps
+
+/-- Bound certificate exported from the exact-basis terminal branch into the packet quotient frontier. -/
+structure FirstBitTerminalExactBasisCollapsedEndpointBoundCertificate
+    {α V : Type*} [DecidableEq α]
+    (Usable : Finset α → ℕ → Fin 4 → Prop) (Δ : Finset (Fin 4)) (σ : Fin 4)
+    (G : SimpleGraph V) (S : Finset V) (m : ℕ) : Prop where
+  branchSplit : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S
+  sideCaps : FirstBitPseudoSplitEndpointSideCaps G S m
+  card_le : S.card ≤ m + 8
+
+/-- Build the terminal exact-basis bound certificate from the separated closure surfaces. -/
+theorem firstBitTerminalExactBasisCollapsedEndpointBoundCertificate_of_surfaces
+    (h : FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces)
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hbranch : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    FirstBitTerminalExactBasisCollapsedEndpointBoundCertificate Usable Δ σ G S m where
+  branchSplit := hbranch
+  sideCaps := hcaps
+  card_le :=
+    FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces.card_le_add_eight_of_branchSplit
+      h hbranch hcaps
+
+/--
+First-bit packet quotient frontier enriched with the final-facing collapsed exact-basis endpoint
+bound.  This only wires available surfaces; it leaves the non-exact-basis boundary imports external.
+-/
+structure FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound : Prop where
+  quotient : FirstBitPacketQuotientFrontierSurfacesWithTerminalScalars
+  exactBasisBound : FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces
+
+/-- Forget the endpoint-bound field and recover the packet quotient plus scalar frontier. -/
+theorem FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound.to_quotientWithScalars
+    (h : FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound) :
+    FirstBitPacketQuotientFrontierSurfacesWithTerminalScalars :=
+  h.quotient
+
+/-- Forget scalar and endpoint fields and recover the packet quotient frontier. -/
+theorem FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound.to_quotient
+    (h : FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound) :
+    FirstBitPacketQuotientFrontierSurfaces :=
+  h.quotient.quotient
+
+/-- Recover the arithmetic terminal scalar package from the endpoint-bound packet frontier. -/
+theorem FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound.to_terminalScalars
+    (h : FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound) :
+    FirstBitPacketTerminalScalarFrontierSurfaces :=
+  h.quotient.terminalScalars
+
+/-- Apply the collapsed exact-basis endpoint bound through the packet quotient frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound.terminalBranch_card_le_add_eight
+    (h : FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound)
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hbranch : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    S.card ≤ m + 8 :=
+  FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces.card_le_add_eight_of_branchSplit
+    h.exactBasisBound hbranch hcaps
+
+/-- Add the collapsed exact-basis endpoint-bound surfaces to a packet quotient frontier. -/
+theorem firstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound_of_quotient
+    (hquotient : FirstBitPacketQuotientFrontierSurfaces)
+    (hexact : FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces) :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound where
+  quotient := firstBitPacketQuotientFrontierSurfacesWithTerminalScalars_of_quotient hquotient
+  exactBasisBound := hexact
+
+/-- Build the packet quotient plus collapsed endpoint-bound package from target elimination. -/
+theorem firstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound_of_targetElimination
+    (htarget : HasFirstBitPacketTargetEliminationReduction)
+    (hexact : FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces) :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound :=
+  firstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound_of_quotient
+    (firstBitPacketQuotientFrontierSurfaces_of_targetElimination htarget) hexact
+
+/-- Named import slot for near-basis boundary work not included in the exact-basis closure. -/
+structure FirstBitTerminalNearBasisBoundaryImportPackage (NearBasisBoundary : Prop) : Prop where
+  importSurface : NearBasisBoundary
+
+/-- Named import slot for mixed-type boundary work not included in the exact-basis closure. -/
+structure FirstBitTerminalMixedTypeBoundaryImportPackage (MixedTypeBoundary : Prop) : Prop where
+  importSurface : MixedTypeBoundary
+
+/-- The two non-exact-basis residual imports are recorded separately. -/
+structure FirstBitPacketTerminalResidualBoundaryImports
+    (NearBasisBoundary MixedTypeBoundary : Prop) : Prop where
+  nearBasis : FirstBitTerminalNearBasisBoundaryImportPackage NearBasisBoundary
+  mixedType : FirstBitTerminalMixedTypeBoundaryImportPackage MixedTypeBoundary
+
+/-- Bundle near-basis and mixed-type boundary imports while keeping their names distinct. -/
+theorem firstBitPacketTerminalResidualBoundaryImports_of_imports
+    {NearBasisBoundary MixedTypeBoundary : Prop}
+    (hnear : NearBasisBoundary) (hmixed : MixedTypeBoundary) :
+    FirstBitPacketTerminalResidualBoundaryImports NearBasisBoundary MixedTypeBoundary where
+  nearBasis := ⟨hnear⟩
+  mixedType := ⟨hmixed⟩
+
+/--
+Packet frontier with residuals separated: the exact-basis branch is closed up to the `m + 8` wrapper,
+while near-basis and mixed-type boundary imports remain explicit fields.
+-/
+structure FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals
+    (NearBasisBoundary MixedTypeBoundary : Prop) : Prop where
+  exactBasis :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound
+  residualImports :
+    FirstBitPacketTerminalResidualBoundaryImports NearBasisBoundary MixedTypeBoundary
+
+/-- Construct the separated residual packet frontier from its three independent parts. -/
+theorem firstBitPacketQuotientFrontierWithSeparatedTerminalResiduals_of_parts
+    {NearBasisBoundary MixedTypeBoundary : Prop}
+    (hexact : FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound)
+    (hnear : NearBasisBoundary) (hmixed : MixedTypeBoundary) :
+    FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals
+      NearBasisBoundary MixedTypeBoundary where
+  exactBasis := hexact
+  residualImports :=
+    firstBitPacketTerminalResidualBoundaryImports_of_imports hnear hmixed
+
+/-- Project the exact-basis packet frontier from the separated residual package. -/
+theorem FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals.to_exactBasis
+    {NearBasisBoundary MixedTypeBoundary : Prop}
+    (h :
+      FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals
+        NearBasisBoundary MixedTypeBoundary) :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound :=
+  h.exactBasis
+
+/-- Project the near-basis boundary import from the separated residual package. -/
+theorem FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals.to_nearBasisImport
+    {NearBasisBoundary MixedTypeBoundary : Prop}
+    (h :
+      FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals
+        NearBasisBoundary MixedTypeBoundary) :
+    NearBasisBoundary :=
+  h.residualImports.nearBasis.importSurface
+
+/-- Project the mixed-type boundary import from the separated residual package. -/
+theorem FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals.to_mixedTypeImport
+    {NearBasisBoundary MixedTypeBoundary : Prop}
+    (h :
+      FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals
+        NearBasisBoundary MixedTypeBoundary) :
+    MixedTypeBoundary :=
+  h.residualImports.mixedType.importSurface
+
+/-- The separated residual frontier exposes the exact-basis `m + 8` terminal bound. -/
+theorem
+    FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals.exactBasis_terminalBranch_card_le_add_eight
+    {NearBasisBoundary MixedTypeBoundary : Prop}
+    (h :
+      FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals
+        NearBasisBoundary MixedTypeBoundary)
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hbranch : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    S.card ≤ m + 8 :=
+  FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound.terminalBranch_card_le_add_eight
+    h.exactBasis hbranch hcaps
+
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
   ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
