@@ -1972,6 +1972,8 @@ What remains justified after audit is:
       pure high-active target-avoidance for all four residues requires adjacent-pair lower bounds on the
       four `q=deg_X-psi_T` classes and hence `m>=10`; for `m<=9` some residue is scalar-killed or
       small-active zero-filter capacity;
+      if all high-active residues avoid rank-three projected supports, then `sum |A_k|=2(m-2)` and
+      `|A_k|<=7` give `m<=16`; for `m>=17` a rank-three support is forced;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;

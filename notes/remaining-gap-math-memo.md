@@ -1998,6 +1998,8 @@ appropriate active side of each center.  Different certificates restrict complem
 If all four residues are high-active target-avoidance, adjacent-pair lower bounds on the four
 `q=deg_X-psi_T` classes force `m>=10`; for `m<=9` at least one residue is scalar-killed or small-active
 zero-filter capacity.
+If all four high-active residues avoid rank-three supports, then `|A_k|<=7` for every residue and
+`sum |A_k|=2(m-2)`, so `m<=16`; for `m>=17` a rank-three support is forced.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

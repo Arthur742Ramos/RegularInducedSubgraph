@@ -11308,6 +11308,17 @@ Summing gives `|S|>=8`, i.e. `m>=10` for `|T|=m+1` and `|X|=3`.  Thus for `m<=9`
 has at least one residue outside the high-active branch: it is either scalar-killed or a small-active
 zero-filter capacity endpoint.
 
+The same rotation table gives a large-core rank-three forcing.  Let `a_k=|A_k|`; then
+
+```text
+a_0+a_1+a_2+a_3=2|S|=2(m-2).
+```
+
+If every residue is high-active and none of the four covers has a projected support of size at least `3`,
+then the pair-only/singleton endpoint table gives `a_k<=7` for all `k`.  Hence `2(m-2)<=28`, so
+`m<=16`.  Therefore, for `m>=17`, a pure high-active target-avoidance terminal necessarily has a
+rank-three projected support in at least one residue.
+
 If both opposite residues `k` and `k+2` are in the high-active full-minor target-avoidance branch on a
 shared coordinate certificate, the singleton-shadow collapse gives an antipodal trace core.  On that shared
 coordinate set, the outside trace multiset contains
@@ -12006,7 +12017,8 @@ large-outside ternary target avoidance:
   pair-only endpoints stop at |A|=7, zero-filter repairs privately bridge Delta=|A|-3-mu_Z, and the four
   kappa covers for fixed T,X obey active/filter complement coherence with antipodal trace cores for
   opposite high-active endpoints; pure high-active target-avoidance for all four residues forces m>=10,
-  while small-active target avoidance is a finite zero-filter blocker with essential single-zero repairs;
+  and if no rank-three support appears then m<=16, while small-active target avoidance is a finite
+  zero-filter blocker with essential single-zero repairs;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

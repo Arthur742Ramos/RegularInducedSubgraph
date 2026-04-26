@@ -5308,6 +5308,9 @@ on each certificate separately and complements on intersections.
 If all four residues are high-active target-avoidance, the four `q=deg_X-psi_T` color classes satisfy
 adjacent-pair lower bounds `|N_i|+|N_{i+1}|>=4`; hence pure high-active target-avoidance needs `m>=10`, and
 for `m<=9` some residue is scalar-killed or small-active zero-filter capacity.
+Also `sum_k |A_k|=2(m-2)`; if all four high-active residues avoid rank-three supports, then all
+`|A_k|<=7`, so `m<=16`.  Thus for `m>=17`, pure high-active target avoidance forces a rank-three projected
+support in some residue.
 After coordinate switching, `h` is `{0,1}`-valued; realization is three outside columns vanishing on the
 zero coordinates and disjointly covering the one coordinates.
 Thus the target branch is a critical filtered three-cover: zero coordinates filter admissible columns, and

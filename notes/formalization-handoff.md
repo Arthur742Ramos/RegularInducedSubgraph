@@ -2456,6 +2456,8 @@ Recommended attack:
     Formalize the small-core cutoff: if all four residues are high-active target-avoidance then
     `|N_i|+|N_{i+1}|>=4` for the four `q=deg_X-psi_T` classes, so `m>=10`; otherwise some residue is
     scalar-killed or small-active zero-filter capacity.
+    Add the large-core rank-three forcing: `sum_k |A_k|=2(m-2)` and no rank-three support implies
+    `|A_k|<=7` for all high-active residues, hence `m<=16`.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

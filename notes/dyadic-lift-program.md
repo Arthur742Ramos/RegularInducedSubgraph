@@ -1069,6 +1069,9 @@ same complementary restriction on their intersections.
 Pure high-active target-avoidance for all four residues forces adjacent-pair lower bounds on the four
 `q=deg_X-psi_T` color classes, so it can occur only when `m>=10`; for `m<=9` some residue is scalar-killed
 or small-active zero-filter capacity.
+If no residue has a rank-three projected support, the active dimensions are all at most seven; since their
+sum is `2(m-2)`, this low-rank pure high-active case has `m<=16`.  For `m>=17`, a rank-three support is
+forced.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.
