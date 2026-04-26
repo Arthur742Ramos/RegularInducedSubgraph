@@ -6562,6 +6562,18 @@ lower type has a clique neighbourhood in the all-hit type by the one-corner rule
 support-at-most-four branch reduces to the one-type girth-five selector or to this single top-edge
 incidence problem, plus at most `2m` clique-bounded spill.
 
+The top-edge incidence problem also collapses to one-type selector surfaces.  Write the lower type as
+`A=110` and the all-hit type as `B=111`.  If `A` contains an independent pair `a_1,a_2`, then each
+`N_B(a_i)` is a clique and hence has size at most `m`.  The common non-neighbour set
+`B\(N_B(a_1) union N_B(a_2))` must also be a clique: two nonadjacent vertices there, together with
+`a_1,a_2`, would be an independent four-set, forbidden by repaired residue `0`.  Hence `|B|<=3m`.
+The only unbounded part is then `A`, which is an `alpha<=2`, induced-`C_4`-free one-type instance and
+therefore complements to the girth-five selector above.  If `A` has no independent pair, it is a clique
+and contributes at most `m`; the only unbounded part is `B`, an `alpha<=3`, induced-`C_4`-free one-type
+instance, equivalently after complement a `2K_2`-free, `K_4`-free selector with the same
+induced-`Delta<=2` exclusion recorded for the corrected `{0,1}` branch.  Thus small cube-forest support
+introduces no new two-type obstruction.
+
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with
 the same old-neighbourhood residue `omega(g_i)`.

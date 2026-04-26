@@ -1584,7 +1584,10 @@ Recommended attack:
    must be adjacent in the cube.  If the adjacent edge shares a zero coordinate, its union is already an
    `alpha<=2`, induced-`C_4`-free instance and complements to the one-type girth-five selector.  Therefore
    the only new small-support residual is the top edge `111`--`110` up to symmetry, where each lower-type
-   vertex has clique neighbourhood in the all-hit type; all other classes are clique-bounded.
+   vertex has clique neighbourhood in the all-hit type; all other classes are clique-bounded.  This top
+   edge reduces further: if the lower type has an independent pair, the all-hit side is covered by two
+   clique neighbourhoods plus a common non-neighbour clique, so has size at most `3m`; if the lower type
+   is a clique, it is `m`-bounded and the all-hit one-type branch is the only unbounded part.
 
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified

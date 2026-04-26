@@ -1008,6 +1008,11 @@ independence at most two and is induced-`C_4`-free.  The only new adjacent-edge 
 `111`--`110` up to symmetry, where every lower-type vertex has clique neighbourhood in the all-hit type.
 Thus the small-support branch has only the one-type selector or this top-edge incidence residual, plus
 clique-bounded spill.
+The top-edge residual is not genuinely two-type: with lower type `A=110` and all-hit type `B=111`, an
+independent pair in `A` forces `|B|<=3m` because the two clique neighbourhoods plus the common
+non-neighbour clique cover `B`; if `A` is a clique, then `A` is `m`-bounded and only the all-hit one-type
+branch remains.  Therefore small cube-forest support reduces entirely to the one-type girth-five
+selector or to the corrected all-hit `{0,1}`/`2K_2` complement selector, plus clique-bounded spill.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it
