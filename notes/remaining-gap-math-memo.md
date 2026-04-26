@@ -1559,6 +1559,9 @@ The exact quotient only needs cross-regular residues `c_{jk}` satisfying
 `|B_j|c_{jk}=|B_k|c_{kj}`; equivalently, the row values
 `R_j=a_j+d_j+sum_{k != j}c_{jk}` must be constant, and that common value must equal the single
 old-increment target `r+sum_k delta_k`.
+Summing the row equations gives the global scalar
+`S r+(S-m)Delta=2e(B) [MOD 4]`, with `S=sum s_j`, `Delta=sum delta_j`, and
+`2e(B)=sum_j s_jd_j+sum_{j != k}s_jc_{jk}`; hence if `m+S` is odd, the enlarged target residue is even.
 The old increments satisfy `m delta_j=a_j|B_j| [MOD 4]`, so they are also part of the packet quotient
 arithmetic rather than free labels.
 The old witness itself satisfies `mr=2e(W) [MOD 4]`; hence odd `m` forces `r` even.
@@ -1568,8 +1571,8 @@ Thus for `m=0`, size-`2` packets must lie in even chambers, and for `m=2`, odd-s
 even chambers.
 The one-packet specialization is `m(a+d-r)=a|B| [MOD 4]` for an internally regular packet in chamber
 `a`.
-For `m=0 [MOD 4]`, this is just `a|B|=0`; once old-balance and internal regularity are present, the
-target imposes no further condition.
+For `m=0 [MOD 4]`, this is just `a|B|=0` arithmetically, while the packet still has to realize the
+prescribed old increment `delta=a+d-r`.
 For two packets this is just `(s_a-s_b)c_{ab}=s_b((a+d_a)-(b+d_b))` together with the target
 `c_{ab}=r+delta_a+delta_b-a-d_a`.
 Equivalently, after target substitution:
@@ -1586,6 +1589,10 @@ Same-chamber same-external-profile packets may be merged whenever their two cros
 If they appear in an appendable packet system, their row difference is exactly the difference of those
 two residues, so row compatibility forces coalescence.  Thus an appendable primitive packet system uses
 at most one packet from each such profile.
+For the replacement version, an old-balanced `B subset P_t` has self-error
+`eta_B(b)=t+deg_B(b)-r-delta`.  Deleting `D subset W` and writing `lambda=r+delta-R` requires
+`deg_D=lambda` on `W\D` and `deg_D(b)=eta_B(b)+lambda` on `B`, with scalar checks
+`sum_B(eta_B+lambda)=|D|delta` and `lambda(m-|D|)=|D|r-2e(D) [MOD 4]`.
 
 ## 14. Pair-chamber orientation normal form
 

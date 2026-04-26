@@ -4808,6 +4808,9 @@ packet analogue of the bounded-word augmentation table.  For a finite packet sys
 The exact quotient replaces the uniform term by cross-regular residues `c_{jk}`, with
 `|B_j|c_{jk}=|B_k|c_{kj}`; then `R_j=a_j+d_j+sum_{k != j}c_{jk}` must first be independent of `j`, and
 only then must hit the single scalar target `r+sum_k delta_k`.
+Summing the packet rows gives the global scalar
+`S r+(S-m)Delta=2e(B) [MOD 4]`, with `S=sum s_j`, `Delta=sum delta_j`, and
+`2e(B)=sum_j s_jd_j+sum_{j != k}s_jc_{jk}`; if `m+S` is odd, the enlarged target residue is even.
 Each old increment also satisfies `m delta_j=a_j|B_j| [MOD 4]` by double-counting between `W` and the
 packet.
 The old witness satisfies `mr=2e(W) [MOD 4]`, so odd `m` forces `r` even.
@@ -4816,8 +4819,8 @@ in chamber `0`; for `m=2 [MOD 4]`, chamber/size products must be even and determ
 Equivalently, for `m=0` the size-`2` packets must lie in even chambers, while for `m=2` every odd-size
 packet must lie in an even chamber.
 The one-packet test is `m(a+d-r)=a|B| [MOD 4]` for an internally regular packet in chamber `a`.
-For `m=0 [MOD 4]`, this reduces to the admissible chamber/size condition `a|B|=0`; the target adds no
-condition after old-balance.
+For `m=0 [MOD 4]`, this reduces to the admissible chamber/size condition `a|B|=0`, while the packet must
+still realize the prescribed old increment `delta=a+d-r`.
 For two packets this reduces to `(s_a-s_b)c_{ab}=s_b((a+d_a)-(b+d_b))` plus the target
 `c_{ab}=r+delta_a+delta_b-a-d_a`.
 After substitution this is the single congruence
@@ -4833,6 +4836,10 @@ residues give sign reversal modulo `4`.
 Same-chamber same-external-profile packets coalesce in this normal form whenever their two cross-degree
 residues agree; row compatibility forces that equality in any appendable system, so an appendable
 primitive packet system uses at most one packet from each such profile.
+The replacement route has an equally exact self-error form.  For an old-balanced `B subset P_t`, put
+`eta_B(b)=t+deg_B(b)-r-delta`; deleting `D subset W` and writing `lambda=r+delta-R` requires
+`deg_D=lambda` on `W\D` and `deg_D(b)=eta_B(b)+lambda` on `B`, together with
+`sum_B(eta_B+lambda)=|D|delta` and `lambda(m-|D|)=|D|r-2e(D) [MOD 4]`.
 
 ## Supporting work that is useful but not on the critical path
 

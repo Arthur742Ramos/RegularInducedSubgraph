@@ -391,12 +391,17 @@ The one-packet chamber test is
 `a+d=r+delta` and `m delta=a|B|`, equivalently `m(a+d-r)=a|B| [MOD 4]`.  The zero-shift independent
 and `+1` clique caps are the cases where Olson supplies the required old increment and internal residue.
 In particular, if `m=0 [MOD 4]`, this reduces to `a|B|=0`; once an old-balanced internally regular
-packet exists in an admissible chamber/size pair, the target residue adds no condition.  If `m` is odd,
+packet exists in an admissible chamber/size pair with prescribed increment `delta=a+d-r`, the target
+residue adds no further arithmetic condition.  If `m` is odd,
 `a=0` requires `d=r`, unit `a` determines `|B|`, and `a=2` fixes only the parity of `|B|`.
 Equivalently, with `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the system is the row-difference
 condition `R_j=R_l` for all active packets plus the single scalar target
 `R_j=r+sum_k delta_k`.  Terminality must therefore block either quotient self-layer compatibility or the
 last old-increment target.
+Summing the row equations gives the global scalar
+`S r+(S-m)Delta=2e(B) [MOD 4]`, where `S=sum s_j`, `Delta=sum delta_j`, and
+`2e(B)=sum_j s_j d_j+sum_{j != k}s_j c_{jk}`.  In particular, if the enlarged size `m+S` is odd, its
+target residue `r+Delta` must be even.
 For two packets this eliminates to scalar congruences.  With sizes `s_a,s_b` and
 `A=(a+d_a)-(b+d_b)`, row equality gives `c_{ba}=c_{ab}+A`; edge-count symmetry becomes
 `(s_a-s_b)c_{ab}=s_b A [MOD 4]`, and the final target is
@@ -451,6 +456,12 @@ deg_D(b) == t+deg_B(b)-R    for packet vertices b.
 
 The case `D=empty` is precisely the affine packet lemma; nonempty `D` is the replacement slack that
 the loss-`32` constant may allow.
+Equivalently, with `eta_B(b)=t+deg_B(b)-r-delta` and `lambda=r+delta-R`, the equations are
+`deg_D(w)=lambda` on `W\D` and `deg_D(b)=eta_B(b)+lambda` on `B`.  Since `B` is old-balanced, a deletion
+of size `d` must also satisfy
+`sum_{b in B}(eta_B(b)+lambda)=d delta` and `lambda(m-d)=d r-2e(D) [MOD 4]`.
+For `|D|=1`, this forces the deleted vertex to be all-zero or all-one on the kept old witness and forces
+`eta_B(b)+lambda` to be an actual bit for every packet vertex.
 
 The sharper way to spend this slack is more constrained than the first deletion-first formulation
 suggested.  If `D subset W` and `E=W\D`, then the old-coordinate equation for a replacement packet is

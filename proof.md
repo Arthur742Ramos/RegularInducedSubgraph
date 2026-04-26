@@ -5465,11 +5465,12 @@ Unpacked by `m [MOD 4]`:
 m odd:       if a=0 then d=r; if a is a unit then s=a^{-1}m(a+d-r);
              if a=2 then d=r [MOD 2] and s is fixed modulo 2;
 m=2:         2(a+d-r)=as, so a odd forces s even and a=0 forces d=r [MOD 2];
-m=0:         as=0, and then every internally regular packet with an old-balanced increment appends.
+m=0:         as=0, and the packet must realize the specific old increment delta=a+d-r.
 ```
 
 Thus when `m=0 [MOD 4]`, all the difficulty is finding old-balanced internally regular packets in
-admissible chamber/size pairs; the target residue imposes no further condition.
+admissible chamber/size pairs with the prescribed increment `delta=a+d-r`; the target residue imposes no
+further arithmetic condition.
 
 The cross-uniform formula is the special case `c_{jk}=epsilon_{jk}|B_k|`.  Thus the honest finite
 residual is a cross-regular packet quotient with edge-count symmetry, and the cross-uniform packet
@@ -5499,6 +5500,25 @@ either the row-difference equations
 
 or the final scalar old-increment equation.  This is the packet analogue of separating quotient-degree
 parity from the last Arf/carry bit in the odd-word branch.
+
+There is also a global edge-count check obtained by summing the row equations with weights
+`s_j=|B_j|`.  Put `S=sum_j s_j` and `Delta=sum_j delta_j`.  Since
+`sum_j s_j a_j=m Delta`, the packet rows imply
+
+```text
+S r + (S-m)Delta = 2e(B)        [MOD 4],
+```
+
+where
+
+```text
+2e(B)=sum_j s_j d_j + sum_{j != k} s_j c_{jk}        [MOD 4].
+```
+
+Equivalently, the enlarged witness of size `m+S` and residue `R=r+Delta` satisfies
+`(m+S)R=2e(W union B) [MOD 4]`.  Hence if `m+S` is odd, the target residue `R` must be even.  This
+global scalar is automatic for a true extension, but in the quotient algebra it is a fast consistency
+check on the row/target data.
 
 For two packets this can be eliminated completely.  Let `B_a subset P_a` and `B_b subset P_b` have sizes
 `s_a,s_b`, internal residues `d_a,d_b`, old increments `delta_a,delta_b`, and cross residues
@@ -5700,6 +5720,38 @@ also be phrased as a labelled deletion problem on the old witness: a large old-b
 with room to spare, and maximality must force either the append-only self-layer target or a nonempty
 old deletion `D` whose two correction lines leave more vertices gained than lost.  This is the
 replacement version of the terminal self-layer problem.
+
+It is useful to eliminate `R`.  Define the self-error of `B` by
+
+```text
+eta_B(b)=t+deg_B(b)-r-delta        [MOD 4].
+```
+
+Writing `lambda=r+delta-R`, the replacement equations become
+
+```text
+deg_D(w)=lambda                    for every w in W\D,
+deg_D(b)=eta_B(b)+lambda           for every b in B.        [MOD 4]
+```
+
+Because `B` is old-balanced, every deleted old vertex also has `deg_B(x)=delta`.  Hence any replacement
+deletion of size `d=|D|` must satisfy the two scalar checks
+
+```text
+sum_{b in B}(eta_B(b)+lambda)=d delta,             [MOD 4]
+lambda(m-d)=d r-2e(D).                             [MOD 4]
+```
+
+The first is edge-counting between `D` and `B`; the second is edge-counting between `D` and `W\D`.
+Thus a profitable nonappend replacement is not just an arbitrary correction set: it must have constant
+degree `lambda` into the kept old witness and must realize the shifted self-error vector of the large
+packet.
+
+For `|D|=1` this is especially rigid.  The unique deleted vertex must be either nonadjacent to every
+kept old vertex (`lambda=0`, forcing `r=0`) or adjacent to every kept old vertex (`lambda=1`, forcing
+`m-1=r [MOD 4]`), and for every `b in B` the value `eta_B(b)+lambda` must be an actual bit `0` or `1`.
+Thus one-vertex repair only handles two adjacent self-error classes; all other terminal error patterns
+require either an append-only subpacket or a genuinely multi-vertex deletion.
 
 There is an important correction to the tempting "delete first, then Olson" shortcut.  Fix
 `D subset W`, put `E=W\D`, and choose a basepoint `e_0 in E`.  The old-coordinate replacement

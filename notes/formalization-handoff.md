@@ -976,6 +976,13 @@ Recommended attack:
    The affine packet lemma is the `D=empty`, `R=r+delta` special case; the nonempty-`D` version is the
    replacement slack available only because the required constant is `1/32` rather than the sharper
    arbitrary-selector `1/16`.
+   Add the equivalent self-error form:
+   `eta_B(b)=t+deg_B(b)-r-delta`, `lambda=r+delta-R`,
+   `deg_D(w)=lambda` on `W\D`, and `deg_D(b)=eta_B(b)+lambda` on `B`.
+   Formalize the two scalar checks
+   `sum_{b in B}(eta_B(b)+lambda)=|D|delta [MOD 4]` and
+   `lambda(m-|D|)=|D|r-2e(D) [MOD 4]`.  The `|D|=1` repair case is only possible when the deleted vertex
+   is all-zero or all-one on the kept old witness and the shifted self-errors are actual bits.
 
    For a weaker formal endpoint, deletion can lower the number of old coordinates only after one
    accounts for its affine target.  If `D subset W`, `E=W\D`, and `e_0 in E`, the old-side
@@ -1047,11 +1054,15 @@ Recommended attack:
    requires `as=0`, so odd `s` forces `a=0` and `s=2` forces `a` even.
    Formalize the single-packet test: an internally regular `B subset P_a` of size `s` and residue `d`
    appends iff `a+d=r+delta` and `m delta=as`, equivalently `m(a+d-r)=as [MOD 4]`.
-   Include the special cases: for `m=0`, the test is only `as=0`; for odd `m`, `a=0` requires `d=r`,
+   Include the special cases: for `m=0`, the arithmetic test is `as=0` and the packet must realize
+   `delta=a+d-r`; for odd `m`, `a=0` requires `d=r`,
    unit `a` determines `s`, and `a=2` determines `s` modulo `2`.
    Also formalize the row-difference split: with
    `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the first condition is `R_j=R_l` for all packets and the
    final condition is the scalar target `R_j=r+sum_k delta_k`.
+   Add the global scalar check:
+   `S r+(S-m)Delta=2e(B) [MOD 4]`, with
+   `2e(B)=sum_j s_j d_j+sum_{j != k}s_j c_{jk}`; if `m+S` is odd, the target residue is even.
    For two packets, record the eliminated form: with `A=(a+d_a)-(b+d_b)`, row equality gives
    `c_{ba}=c_{ab}+A`, edge-count symmetry gives `(s_a-s_b)c_{ab}=s_b A [MOD 4]`, and the target is
    `c_{ab}=r+delta_a+delta_b-a-d_a`.
