@@ -1971,6 +1971,8 @@ What remains justified after audit is:
       four `q=deg_X-psi_T` classes and hence `m>=10`; for `m<=9` some residue is scalar-killed or
       small-active zero-filter capacity;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
+      small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
+      essential through a uniquely breached repair triple;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       every zero-relaxed cover must use at least one such private column;
       active-coordinate near-covers forbid every one-coordinate lift that toggles the active coordinate

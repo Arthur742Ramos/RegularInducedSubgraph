@@ -1998,6 +1998,8 @@ If all four residues are high-active target-avoidance, adjacent-pair lower bound
 zero-filter capacity.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
+Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,
+and each zero coordinate is the unique hit of some repair triple.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.
 Every zero-relaxed cover uses at least one private support or private empty class.
 Active-coordinate relaxation gives a projected cover of `A\{a}`; every lift putting `a` into exactly one
