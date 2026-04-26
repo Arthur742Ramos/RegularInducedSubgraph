@@ -31266,6 +31266,773 @@ theorem FirstBitTerminalSmallAtomCollisionCorePublicAPI.to_remainingSmallAtomCol
 end FirstBitTerminalSmallAtomCollisionCorePublicAPI
 
 /--
+Endpoint markers for the four-pair star/square-breaker discharge.  The markers name the
+Boolean quotient `1+3` star classification, its hidden center, the selected/absent
+transversal support facts, and the final route from the four-pair core to the host
+one-corner square-breaker.
+-/
+structure FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces
+    (booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge : Prop) : Prop where
+  booleanQuotientForcedOnePlusThreeStarCert :
+    booleanQuotientForcedOnePlusThreeStar
+  uniqueHiddenCenterCert : uniqueHiddenCenter
+  selectedTransversalsAreActualSupportsCert :
+    selectedTransversalsAreActualSupports
+  selectedAntipodesAbsentCert : selectedAntipodesAbsent
+  centerTwoFaceOneCornerSquaresCert : centerTwoFaceOneCornerSquares
+  fourPairCoreRoutesToHostSquareBreakerCert :
+    fourPairCoreRoutesToHostSquareBreaker
+  supportLocalSquareBreakerDischargeCert :
+    supportLocalSquareBreakerDischarge
+
+/-- Build the four-pair star/square-breaker endpoint surface list from its markers. -/
+theorem firstBitTerminalFourPairStarSquareBreakerEndpointSurfaces_of_parts
+    {booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge : Prop}
+    (hstar : booleanQuotientForcedOnePlusThreeStar)
+    (hcenter : uniqueHiddenCenter)
+    (hsupports : selectedTransversalsAreActualSupports)
+    (habsent : selectedAntipodesAbsent)
+    (hsquares : centerTwoFaceOneCornerSquares)
+    (hrouting : fourPairCoreRoutesToHostSquareBreaker)
+    (hdischarge : supportLocalSquareBreakerDischarge) :
+    FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge where
+  booleanQuotientForcedOnePlusThreeStarCert := hstar
+  uniqueHiddenCenterCert := hcenter
+  selectedTransversalsAreActualSupportsCert := hsupports
+  selectedAntipodesAbsentCert := habsent
+  centerTwoFaceOneCornerSquaresCert := hsquares
+  fourPairCoreRoutesToHostSquareBreakerCert := hrouting
+  supportLocalSquareBreakerDischargeCert := hdischarge
+
+section FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces
+
+variable {booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+  selectedTransversalsAreActualSupports selectedAntipodesAbsent
+  centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+  supportLocalSquareBreakerDischarge : Prop}
+
+variable (h :
+  FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces
+    booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+    selectedTransversalsAreActualSupports selectedAntipodesAbsent
+    centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+    supportLocalSquareBreakerDischarge)
+
+/-- Project the Boolean quotient star-classification marker. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces.to_booleanQuotientForcedOnePlusThreeStar :
+    booleanQuotientForcedOnePlusThreeStar :=
+  h.booleanQuotientForcedOnePlusThreeStarCert
+
+/-- Project the unique hidden-center marker. -/
+theorem FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces.to_uniqueHiddenCenter :
+    uniqueHiddenCenter :=
+  h.uniqueHiddenCenterCert
+
+/-- Project the actual-support marker for selected transversals. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces.to_selectedTransversalsAreActualSupports :
+    selectedTransversalsAreActualSupports :=
+  h.selectedTransversalsAreActualSupportsCert
+
+/-- Project the absent-antipode marker. -/
+theorem FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces.to_selectedAntipodesAbsent :
+    selectedAntipodesAbsent :=
+  h.selectedAntipodesAbsentCert
+
+/-- Project the one-corner square marker through center two-faces. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces.to_centerTwoFaceOneCornerSquares :
+    centerTwoFaceOneCornerSquares :=
+  h.centerTwoFaceOneCornerSquaresCert
+
+/-- Project the host square-breaker routing marker. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces.to_fourPairCoreRoutesToHostSquareBreaker :
+    fourPairCoreRoutesToHostSquareBreaker :=
+  h.fourPairCoreRoutesToHostSquareBreakerCert
+
+/-- Project the support-local square-breaker discharge marker. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces.to_supportLocalSquareBreakerDischarge :
+    supportLocalSquareBreakerDischarge :=
+  h.supportLocalSquareBreakerDischargeCert
+
+end FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces
+
+/--
+Public API for the four-pair no-leftover collision endpoint after the small-atom collision
+core.  It reuses the small-atom core API, records the forced `1+3` star with a unique hidden
+center, promotes selected transversals to actual supports while excluding their antipodes, and
+routes every center two-face to the support-local one-corner host square-breaker.
+-/
+structure FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI
+    {Core Pair Atom Transversal Center Face Square HostBreaker : Type*}
+    [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+    (pairAtoms : Core → Finset Pair)
+    (atomPartition : Core → Finset Atom)
+    (atomSize : Core → Atom → ℕ)
+    (selectedTransversals absentTransversals : Core → Finset Transversal)
+    (transversalAntipode : Core → Transversal → Transversal)
+    (hiddenCenter : Core → Center)
+    (centerTwoFaces : Core → Finset Face)
+    (oneCornerSquareOfFace : Core → Face → Square)
+    (hostSquareBreakerOfSquare : Core → Square → HostBreaker)
+    (fourPairNoLeftoverCore : Core → Prop)
+    (onePlusThreeStarColoring : Core → Center → Prop)
+    (actualTransversalSupport : Core → Transversal → Prop)
+    (oneCornerSquareBreaker : Core → Square → Prop)
+    (supportLocalSquareBreakerDischarged : Core → Prop)
+    (hostSquareBreakerDischarged : Core → HostBreaker → Prop)
+    (fourPairCoreDischarged : Core → Prop)
+    (rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge : Prop) : Prop where
+  smallAtomCollisionCoreAPI :
+    FirstBitTerminalSmallAtomCollisionCorePublicAPI
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+  endpointSurfaces :
+    FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge
+  fourPairCore_pairs_card_fourCert :
+    ∀ core : Core, fourPairNoLeftoverCore core → (pairAtoms core).card = 4
+  selectedTransversals_card_eightCert :
+    ∀ core : Core, fourPairNoLeftoverCore core → (selectedTransversals core).card = 8
+  absentAntipodalTransversals_card_eightCert :
+    ∀ core : Core, fourPairNoLeftoverCore core → (absentTransversals core).card = 8
+  booleanQuotient_forces_onePlusThreeStarCert :
+    ∀ core : Core, fourPairNoLeftoverCore core →
+      onePlusThreeStarColoring core (hiddenCenter core)
+  unique_hiddenCenterCert :
+    ∀ core : Core, fourPairNoLeftoverCore core → ∀ center : Center,
+      onePlusThreeStarColoring core center → center = hiddenCenter core
+  selectedTransversal_actualSupportCert :
+    ∀ core : Core, fourPairNoLeftoverCore core → ∀ transversal : Transversal,
+      transversal ∈ selectedTransversals core → actualTransversalSupport core transversal
+  selectedTransversal_antipode_absentCert :
+    ∀ core : Core, fourPairNoLeftoverCore core → ∀ transversal : Transversal,
+      transversal ∈ selectedTransversals core →
+        transversalAntipode core transversal ∈ absentTransversals core
+  centerTwoFace_oneCornerSquareCert :
+    ∀ core : Core, fourPairNoLeftoverCore core → ∀ face : Face,
+      face ∈ centerTwoFaces core → oneCornerSquareBreaker core (oneCornerSquareOfFace core face)
+  supportLocalSquareBreaker_hostDischargedCert :
+    ∀ core : Core, fourPairNoLeftoverCore core → supportLocalSquareBreakerDischarged core →
+      ∀ face : Face, face ∈ centerTwoFaces core →
+        hostSquareBreakerDischarged core
+          (hostSquareBreakerOfSquare core (oneCornerSquareOfFace core face))
+  hostSquareBreaker_dischargeCert :
+    ∀ core : Core, fourPairNoLeftoverCore core →
+      (∀ face : Face, face ∈ centerTwoFaces core →
+        hostSquareBreakerDischarged core
+          (hostSquareBreakerOfSquare core (oneCornerSquareOfFace core face))) →
+        fourPairCoreDischarged core
+
+/-- Build the four-pair star/square-breaker public API from the small-atom API and endpoint facts. -/
+theorem firstBitTerminalFourPairStarSquareBreakerDischargePublicAPI_of_parts
+    {Core Pair Atom Transversal Center Face Square HostBreaker : Type*}
+    [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+    {pairAtoms : Core → Finset Pair}
+    {atomPartition : Core → Finset Atom}
+    {atomSize : Core → Atom → ℕ}
+    {selectedTransversals absentTransversals : Core → Finset Transversal}
+    {transversalAntipode : Core → Transversal → Transversal}
+    {hiddenCenter : Core → Center}
+    {centerTwoFaces : Core → Finset Face}
+    {oneCornerSquareOfFace : Core → Face → Square}
+    {hostSquareBreakerOfSquare : Core → Square → HostBreaker}
+    {fourPairNoLeftoverCore : Core → Prop}
+    {onePlusThreeStarColoring : Core → Center → Prop}
+    {actualTransversalSupport : Core → Transversal → Prop}
+    {oneCornerSquareBreaker : Core → Square → Prop}
+    {supportLocalSquareBreakerDischarged : Core → Prop}
+    {hostSquareBreakerDischarged : Core → HostBreaker → Prop}
+    {fourPairCoreDischarged : Core → Prop}
+    {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge : Prop}
+    (hsmall :
+      FirstBitTerminalSmallAtomCollisionCorePublicAPI
+        rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+        twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+        collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+        booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions)
+    (hstar : booleanQuotientForcedOnePlusThreeStar)
+    (hcenter : uniqueHiddenCenter)
+    (hsupports : selectedTransversalsAreActualSupports)
+    (habsent : selectedAntipodesAbsent)
+    (hsquares : centerTwoFaceOneCornerSquares)
+    (hrouting : fourPairCoreRoutesToHostSquareBreaker)
+    (hdischargeMarker : supportLocalSquareBreakerDischarge)
+    (hpairs :
+      ∀ core : Core, fourPairNoLeftoverCore core → (pairAtoms core).card = 4)
+    (hselectedEight :
+      ∀ core : Core, fourPairNoLeftoverCore core → (selectedTransversals core).card = 8)
+    (habspresentEight :
+      ∀ core : Core, fourPairNoLeftoverCore core → (absentTransversals core).card = 8)
+    (hstarForced :
+      ∀ core : Core, fourPairNoLeftoverCore core →
+        onePlusThreeStarColoring core (hiddenCenter core))
+    (hunique :
+      ∀ core : Core, fourPairNoLeftoverCore core → ∀ center : Center,
+        onePlusThreeStarColoring core center → center = hiddenCenter core)
+    (hactual :
+      ∀ core : Core, fourPairNoLeftoverCore core → ∀ transversal : Transversal,
+        transversal ∈ selectedTransversals core → actualTransversalSupport core transversal)
+    (hantipode :
+      ∀ core : Core, fourPairNoLeftoverCore core → ∀ transversal : Transversal,
+        transversal ∈ selectedTransversals core →
+          transversalAntipode core transversal ∈ absentTransversals core)
+    (honeCorner :
+      ∀ core : Core, fourPairNoLeftoverCore core → ∀ face : Face,
+        face ∈ centerTwoFaces core → oneCornerSquareBreaker core (oneCornerSquareOfFace core face))
+    (hhost :
+      ∀ core : Core, fourPairNoLeftoverCore core → supportLocalSquareBreakerDischarged core →
+        ∀ face : Face, face ∈ centerTwoFaces core →
+          hostSquareBreakerDischarged core
+            (hostSquareBreakerOfSquare core (oneCornerSquareOfFace core face)))
+    (hdischarge :
+      ∀ core : Core, fourPairNoLeftoverCore core →
+        (∀ face : Face, face ∈ centerTwoFaces core →
+          hostSquareBreakerDischarged core
+            (hostSquareBreakerOfSquare core (oneCornerSquareOfFace core face))) →
+          fourPairCoreDischarged core) :
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge where
+  smallAtomCollisionCoreAPI := hsmall
+  endpointSurfaces :=
+    firstBitTerminalFourPairStarSquareBreakerEndpointSurfaces_of_parts
+      hstar hcenter hsupports habsent hsquares hrouting hdischargeMarker
+  fourPairCore_pairs_card_fourCert := hpairs
+  selectedTransversals_card_eightCert := hselectedEight
+  absentAntipodalTransversals_card_eightCert := habspresentEight
+  booleanQuotient_forces_onePlusThreeStarCert := hstarForced
+  unique_hiddenCenterCert := hunique
+  selectedTransversal_actualSupportCert := hactual
+  selectedTransversal_antipode_absentCert := hantipode
+  centerTwoFace_oneCornerSquareCert := honeCorner
+  supportLocalSquareBreaker_hostDischargedCert := hhost
+  hostSquareBreaker_dischargeCert := hdischarge
+
+section FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI
+
+variable {Core Pair Atom Transversal Center Face Square HostBreaker : Type*}
+variable [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+variable {pairAtoms : Core → Finset Pair}
+variable {atomPartition : Core → Finset Atom}
+variable {atomSize : Core → Atom → ℕ}
+variable {selectedTransversals absentTransversals : Core → Finset Transversal}
+variable {transversalAntipode : Core → Transversal → Transversal}
+variable {hiddenCenter : Core → Center}
+variable {centerTwoFaces : Core → Finset Face}
+variable {oneCornerSquareOfFace : Core → Face → Square}
+variable {hostSquareBreakerOfSquare : Core → Square → HostBreaker}
+variable {fourPairNoLeftoverCore : Core → Prop}
+variable {onePlusThreeStarColoring : Core → Center → Prop}
+variable {actualTransversalSupport : Core → Transversal → Prop}
+variable {oneCornerSquareBreaker : Core → Square → Prop}
+variable {supportLocalSquareBreakerDischarged : Core → Prop}
+variable {hostSquareBreakerDischarged : Core → HostBreaker → Prop}
+variable {fourPairCoreDischarged : Core → Prop}
+variable {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+  twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+  collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+  booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+  booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+  selectedTransversalsAreActualSupports selectedAntipodesAbsent
+  centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+  supportLocalSquareBreakerDischarge : Prop}
+
+variable (h :
+  FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI pairAtoms atomPartition
+    atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+    centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+    onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+    supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+    rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+    twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+    collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+    booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+    booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+    selectedTransversalsAreActualSupports selectedAntipodesAbsent
+    centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+    supportLocalSquareBreakerDischarge)
+
+/-- Project the small-atom collision core API reused by this endpoint. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_smallAtomCollisionCorePublicAPI :
+    FirstBitTerminalSmallAtomCollisionCorePublicAPI
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions :=
+  h.smallAtomCollisionCoreAPI
+
+/-- Project the new endpoint surface markers. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_endpointSurfaces :
+    FirstBitTerminalFourPairStarSquareBreakerEndpointSurfaces
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge :=
+  h.endpointSurfaces
+
+/-- Reuse the pair-collision rebate frontier through the small-atom core API. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_rankThreePairCollisionRebateCircuitFrontier :
+    rankThreePairCollisionRebateCircuitFrontier :=
+  h.smallAtomCollisionCoreAPI.to_rankThreePairCollisionRebateCircuitFrontier
+
+/-- Reuse the complementary-transversal labels marker through the small-atom core API. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_fourPairComplementaryTransversalLabels :
+    fourPairComplementaryTransversalLabels :=
+  h.smallAtomCollisionCoreAPI.to_fourPairComplementaryTransversalLabels
+
+/-- Reuse the Boolean antipodal quotient orientation marker through the small-atom core API. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_booleanAntipodalQuotientOrientationFacade :
+    booleanAntipodalQuotientOrientationFacade :=
+  h.smallAtomCollisionCoreAPI.to_booleanAntipodalQuotientOrientationFacade
+
+/-- Project the endpoint's forced `1+3` star marker. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_booleanQuotientForcedOnePlusThreeStar :
+    booleanQuotientForcedOnePlusThreeStar :=
+  h.endpointSurfaces.to_booleanQuotientForcedOnePlusThreeStar
+
+/-- Project the endpoint's unique hidden-center marker. -/
+theorem FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_uniqueHiddenCenter :
+    uniqueHiddenCenter :=
+  h.endpointSurfaces.to_uniqueHiddenCenter
+
+/-- Project the marker saying selected transversals are actual supports. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_selectedTransversalsAreActualSupports :
+    selectedTransversalsAreActualSupports :=
+  h.endpointSurfaces.to_selectedTransversalsAreActualSupports
+
+/-- Project the marker saying selected antipodes are absent. -/
+theorem FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_selectedAntipodesAbsent :
+    selectedAntipodesAbsent :=
+  h.endpointSurfaces.to_selectedAntipodesAbsent
+
+/-- Project the center two-face one-corner square marker. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_centerTwoFaceOneCornerSquares :
+    centerTwoFaceOneCornerSquares :=
+  h.endpointSurfaces.to_centerTwoFaceOneCornerSquares
+
+/-- Project the host square-breaker routing marker. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_fourPairCoreRoutesToHostSquareBreaker :
+    fourPairCoreRoutesToHostSquareBreaker :=
+  h.endpointSurfaces.to_fourPairCoreRoutesToHostSquareBreaker
+
+/-- Project the support-local square-breaker discharge marker. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.to_supportLocalSquareBreakerDischarge :
+    supportLocalSquareBreakerDischarge :=
+  h.endpointSurfaces.to_supportLocalSquareBreakerDischarge
+
+/-- A four-pair endpoint has exactly four visible pair atoms. -/
+theorem FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.pairs_card_four
+    {core : Core} (hcore : fourPairNoLeftoverCore core) :
+    (pairAtoms core).card = 4 :=
+  h.fourPairCore_pairs_card_fourCert core hcore
+
+/-- The star orientation selects exactly eight transversals. -/
+theorem FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.selectedTransversals_card_eight
+    {core : Core} (hcore : fourPairNoLeftoverCore core) :
+    (selectedTransversals core).card = 8 :=
+  h.selectedTransversals_card_eightCert core hcore
+
+/-- The antipodal mates of the selected star transversals form the eight absent transversals. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.absentAntipodalTransversals_card_eight
+    {core : Core} (hcore : fourPairNoLeftoverCore core) :
+    (absentTransversals core).card = 8 :=
+  h.absentAntipodalTransversals_card_eightCert core hcore
+
+/-- The Boolean quotient orientation of a four-pair core is forced to the `1+3` star at its center. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.onePlusThreeStar_of_fourPairCore
+    {core : Core} (hcore : fourPairNoLeftoverCore core) :
+    onePlusThreeStarColoring core (hiddenCenter core) :=
+  h.booleanQuotient_forces_onePlusThreeStarCert core hcore
+
+/-- The hidden center of the forced star is unique. -/
+theorem FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.unique_hiddenCenter
+    {core : Core} (hcore : fourPairNoLeftoverCore core) {center : Center}
+    (hstar : onePlusThreeStarColoring core center) :
+    center = hiddenCenter core :=
+  h.unique_hiddenCenterCert core hcore center hstar
+
+/-- Every selected transversal in the star orientation is an actual support. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.selectedTransversal_actualSupport
+    {core : Core} (hcore : fourPairNoLeftoverCore core) {transversal : Transversal}
+    (htransversal : transversal ∈ selectedTransversals core) :
+    actualTransversalSupport core transversal :=
+  h.selectedTransversal_actualSupportCert core hcore transversal htransversal
+
+/-- The antipode of every selected transversal is absent from the endpoint. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.selectedTransversal_antipode_absent
+    {core : Core} (hcore : fourPairNoLeftoverCore core) {transversal : Transversal}
+    (htransversal : transversal ∈ selectedTransversals core) :
+    transversalAntipode core transversal ∈ absentTransversals core :=
+  h.selectedTransversal_antipode_absentCert core hcore transversal htransversal
+
+/-- Every two-face through the hidden center carries the one-corner square pattern. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.centerTwoFace_oneCornerSquare
+    {core : Core} (hcore : fourPairNoLeftoverCore core) {face : Face}
+    (hface : face ∈ centerTwoFaces core) :
+    oneCornerSquareBreaker core (oneCornerSquareOfFace core face) :=
+  h.centerTwoFace_oneCornerSquareCert core hcore face hface
+
+/-- Support-local square-breaker discharge supplies the host breaker on every center two-face. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.hostSquareBreakerDischarged_of_supportLocal
+    {core : Core} (hcore : fourPairNoLeftoverCore core)
+    (hlocal : supportLocalSquareBreakerDischarged core) {face : Face}
+    (hface : face ∈ centerTwoFaces core) :
+    hostSquareBreakerDischarged core
+      (hostSquareBreakerOfSquare core (oneCornerSquareOfFace core face)) :=
+  h.supportLocalSquareBreaker_hostDischargedCert core hcore hlocal face hface
+
+/-- Host square-breaker discharge routes the four-pair core to its discharged endpoint. -/
+theorem FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.discharge_of_hostSquareBreaker
+    {core : Core} (hcore : fourPairNoLeftoverCore core)
+    (hhost :
+      ∀ face : Face, face ∈ centerTwoFaces core →
+        hostSquareBreakerDischarged core
+          (hostSquareBreakerOfSquare core (oneCornerSquareOfFace core face))) :
+    fourPairCoreDischarged core :=
+  h.hostSquareBreaker_dischargeCert core hcore hhost
+
+/-- Support-local one-corner square-breaker discharge eliminates the four-pair collision core. -/
+theorem
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI.discharge_of_supportLocalSquareBreaker
+    {core : Core} (hcore : fourPairNoLeftoverCore core)
+    (hlocal : supportLocalSquareBreakerDischarged core) :
+    fourPairCoreDischarged core :=
+  h.discharge_of_hostSquareBreaker hcore
+    (fun face hface => h.hostSquareBreakerDischarged_of_supportLocal hcore hlocal hface)
+
+end FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI
+
+/--
+Post-square-breaker remainder for no-leftover rank-three work.  Once the support-local
+one-corner square-breaker has discharged the four-pair core, the only remaining work is the
+finite rebate-circuit branch splitting an atom of size at least three, or the all-atoms-large
+branch with every atom of size at least four.
+-/
+structure FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade
+    {Core Pair Atom Transversal Center Face Square HostBreaker Circuit : Type*}
+    [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+    (pairAtoms : Core → Finset Pair)
+    (atomPartition : Core → Finset Atom)
+    (atomSize : Core → Atom → ℕ)
+    (selectedTransversals absentTransversals : Core → Finset Transversal)
+    (transversalAntipode : Core → Transversal → Transversal)
+    (hiddenCenter : Core → Center)
+    (centerTwoFaces : Core → Finset Face)
+    (oneCornerSquareOfFace : Core → Face → Square)
+    (hostSquareBreakerOfSquare : Core → Square → HostBreaker)
+    (fourPairNoLeftoverCore : Core → Prop)
+    (onePlusThreeStarColoring : Core → Center → Prop)
+    (actualTransversalSupport : Core → Transversal → Prop)
+    (oneCornerSquareBreaker : Core → Square → Prop)
+    (supportLocalSquareBreakerDischarged : Core → Prop)
+    (hostSquareBreakerDischarged : Core → HostBreaker → Prop)
+    (fourPairCoreDischarged : Core → Prop)
+    (remainingNoLeftoverRankThreeWork allAtomsSizeAtLeastFour : Core → Prop)
+    (finiteRebateCircuit : Core → Circuit → Prop)
+    (rebateCircuitSplitAtom : Core → Circuit → Atom → Prop)
+    (rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge postSquareBreakerFiniteRebateCircuitRemainder :
+      Prop) : Prop where
+  dischargeAPI :
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge
+  postSquareBreakerFiniteRebateCircuitRemainderCert :
+    postSquareBreakerFiniteRebateCircuitRemainder
+  remaining_after_supportLocalSquareBreakerCert :
+    ∀ core : Core, remainingNoLeftoverRankThreeWork core →
+      supportLocalSquareBreakerDischarged core →
+        (∃ circuit : Circuit, finiteRebateCircuit core circuit ∧
+          ∃ atom : Atom, atom ∈ atomPartition core ∧
+            rebateCircuitSplitAtom core circuit atom ∧ 3 ≤ atomSize core atom) ∨
+          allAtomsSizeAtLeastFour core
+  remaining_after_fourPairDischargeCert :
+    ∀ core : Core, remainingNoLeftoverRankThreeWork core →
+      fourPairCoreDischarged core →
+        (∃ circuit : Circuit, finiteRebateCircuit core circuit ∧
+          ∃ atom : Atom, atom ∈ atomPartition core ∧
+            rebateCircuitSplitAtom core circuit atom ∧ 3 ≤ atomSize core atom) ∨
+          allAtomsSizeAtLeastFour core
+  allAtomsSizeAtLeastFour_summaryCert :
+    ∀ core : Core, allAtomsSizeAtLeastFour core → ∀ atom : Atom,
+      atom ∈ atomPartition core → 4 ≤ atomSize core atom
+
+/-- Build the post-square-breaker no-leftover rank-three remainder facade. -/
+theorem firstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade_of_parts
+    {Core Pair Atom Transversal Center Face Square HostBreaker Circuit : Type*}
+    [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+    {pairAtoms : Core → Finset Pair}
+    {atomPartition : Core → Finset Atom}
+    {atomSize : Core → Atom → ℕ}
+    {selectedTransversals absentTransversals : Core → Finset Transversal}
+    {transversalAntipode : Core → Transversal → Transversal}
+    {hiddenCenter : Core → Center}
+    {centerTwoFaces : Core → Finset Face}
+    {oneCornerSquareOfFace : Core → Face → Square}
+    {hostSquareBreakerOfSquare : Core → Square → HostBreaker}
+    {fourPairNoLeftoverCore : Core → Prop}
+    {onePlusThreeStarColoring : Core → Center → Prop}
+    {actualTransversalSupport : Core → Transversal → Prop}
+    {oneCornerSquareBreaker : Core → Square → Prop}
+    {supportLocalSquareBreakerDischarged : Core → Prop}
+    {hostSquareBreakerDischarged : Core → HostBreaker → Prop}
+    {fourPairCoreDischarged : Core → Prop}
+    {remainingNoLeftoverRankThreeWork allAtomsSizeAtLeastFour : Core → Prop}
+    {finiteRebateCircuit : Core → Circuit → Prop}
+    {rebateCircuitSplitAtom : Core → Circuit → Atom → Prop}
+    {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge postSquareBreakerFiniteRebateCircuitRemainder :
+      Prop}
+    (hapi :
+      FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI pairAtoms atomPartition
+        atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+        centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+        onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+        supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+        rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+        twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+        collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+        booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+        booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+        selectedTransversalsAreActualSupports selectedAntipodesAbsent
+        centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+        supportLocalSquareBreakerDischarge)
+    (hremainder : postSquareBreakerFiniteRebateCircuitRemainder)
+    (hsupportLocal :
+      ∀ core : Core, remainingNoLeftoverRankThreeWork core →
+        supportLocalSquareBreakerDischarged core →
+          (∃ circuit : Circuit, finiteRebateCircuit core circuit ∧
+            ∃ atom : Atom, atom ∈ atomPartition core ∧
+              rebateCircuitSplitAtom core circuit atom ∧ 3 ≤ atomSize core atom) ∨
+            allAtomsSizeAtLeastFour core)
+    (hfourPair :
+      ∀ core : Core, remainingNoLeftoverRankThreeWork core →
+        fourPairCoreDischarged core →
+          (∃ circuit : Circuit, finiteRebateCircuit core circuit ∧
+            ∃ atom : Atom, atom ∈ atomPartition core ∧
+              rebateCircuitSplitAtom core circuit atom ∧ 3 ≤ atomSize core atom) ∨
+            allAtomsSizeAtLeastFour core)
+    (hallLarge :
+      ∀ core : Core, allAtomsSizeAtLeastFour core → ∀ atom : Atom,
+        atom ∈ atomPartition core → 4 ≤ atomSize core atom) :
+    FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      remainingNoLeftoverRankThreeWork allAtomsSizeAtLeastFour finiteRebateCircuit
+      rebateCircuitSplitAtom rankThreePairCollisionRebateCircuitFrontier
+      pairForcedPetalStrictDeficit twoPetalRebateAtLeastThree
+      sizeThreeNoLeftoverCollisionOnlyTemplates collisionFreeCutoffAtFourFour
+      fourPairComplementaryTransversalLabels booleanAntipodalQuotientOrientationFacade
+      remainingSmallAtomCollisionCoreAssumptions booleanQuotientForcedOnePlusThreeStar
+      uniqueHiddenCenter selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge postSquareBreakerFiniteRebateCircuitRemainder where
+  dischargeAPI := hapi
+  postSquareBreakerFiniteRebateCircuitRemainderCert := hremainder
+  remaining_after_supportLocalSquareBreakerCert := hsupportLocal
+  remaining_after_fourPairDischargeCert := hfourPair
+  allAtomsSizeAtLeastFour_summaryCert := hallLarge
+
+section FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade
+
+variable {Core Pair Atom Transversal Center Face Square HostBreaker Circuit : Type*}
+variable [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+variable {pairAtoms : Core → Finset Pair}
+variable {atomPartition : Core → Finset Atom}
+variable {atomSize : Core → Atom → ℕ}
+variable {selectedTransversals absentTransversals : Core → Finset Transversal}
+variable {transversalAntipode : Core → Transversal → Transversal}
+variable {hiddenCenter : Core → Center}
+variable {centerTwoFaces : Core → Finset Face}
+variable {oneCornerSquareOfFace : Core → Face → Square}
+variable {hostSquareBreakerOfSquare : Core → Square → HostBreaker}
+variable {fourPairNoLeftoverCore : Core → Prop}
+variable {onePlusThreeStarColoring : Core → Center → Prop}
+variable {actualTransversalSupport : Core → Transversal → Prop}
+variable {oneCornerSquareBreaker : Core → Square → Prop}
+variable {supportLocalSquareBreakerDischarged : Core → Prop}
+variable {hostSquareBreakerDischarged : Core → HostBreaker → Prop}
+variable {fourPairCoreDischarged : Core → Prop}
+variable {remainingNoLeftoverRankThreeWork allAtomsSizeAtLeastFour : Core → Prop}
+variable {finiteRebateCircuit : Core → Circuit → Prop}
+variable {rebateCircuitSplitAtom : Core → Circuit → Atom → Prop}
+variable {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+  twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+  collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+  booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+  booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+  selectedTransversalsAreActualSupports selectedAntipodesAbsent
+  centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+  supportLocalSquareBreakerDischarge postSquareBreakerFiniteRebateCircuitRemainder : Prop}
+
+variable (h :
+  FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade pairAtoms atomPartition
+    atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+    centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+    onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+    supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+    remainingNoLeftoverRankThreeWork allAtomsSizeAtLeastFour finiteRebateCircuit
+    rebateCircuitSplitAtom rankThreePairCollisionRebateCircuitFrontier
+    pairForcedPetalStrictDeficit twoPetalRebateAtLeastThree
+    sizeThreeNoLeftoverCollisionOnlyTemplates collisionFreeCutoffAtFourFour
+    fourPairComplementaryTransversalLabels booleanAntipodalQuotientOrientationFacade
+    remainingSmallAtomCollisionCoreAssumptions booleanQuotientForcedOnePlusThreeStar
+    uniqueHiddenCenter selectedTransversalsAreActualSupports selectedAntipodesAbsent
+    centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+    supportLocalSquareBreakerDischarge postSquareBreakerFiniteRebateCircuitRemainder)
+
+/-- Project the four-pair star/square-breaker discharge API from the remainder facade. -/
+theorem
+    FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade.to_dischargePublicAPI :
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge :=
+  h.dischargeAPI
+
+/-- Project the post-square-breaker finite-rebate-circuit remainder marker. -/
+theorem
+    FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade.to_postSquareBreakerFiniteRebateCircuitRemainder :
+    postSquareBreakerFiniteRebateCircuitRemainder :=
+  h.postSquareBreakerFiniteRebateCircuitRemainderCert
+
+/-- Reuse the pair-collision rebate frontier through the post-square-breaker facade. -/
+theorem
+    FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade.to_rankThreePairCollisionRebateCircuitFrontier :
+    rankThreePairCollisionRebateCircuitFrontier :=
+  h.dischargeAPI.to_rankThreePairCollisionRebateCircuitFrontier
+
+/--
+After support-local square-breaker discharge, remaining no-leftover rank-three work is a
+finite split-atom rebate circuit or the all-atoms-large branch.
+-/
+theorem
+    FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade.remaining_after_supportLocalSquareBreaker
+    {core : Core} (hwork : remainingNoLeftoverRankThreeWork core)
+    (hlocal : supportLocalSquareBreakerDischarged core) :
+    (∃ circuit : Circuit, finiteRebateCircuit core circuit ∧
+      ∃ atom : Atom, atom ∈ atomPartition core ∧
+        rebateCircuitSplitAtom core circuit atom ∧ 3 ≤ atomSize core atom) ∨
+      allAtomsSizeAtLeastFour core :=
+  h.remaining_after_supportLocalSquareBreakerCert core hwork hlocal
+
+/--
+After the four-pair core is discharged, the remaining no-leftover branch is the same finite
+rebate-circuit/all-atoms-large dichotomy.
+-/
+theorem
+    FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade.remaining_after_fourPairDischarge
+    {core : Core} (hwork : remainingNoLeftoverRankThreeWork core)
+    (hdischarged : fourPairCoreDischarged core) :
+    (∃ circuit : Circuit, finiteRebateCircuit core circuit ∧
+      ∃ atom : Atom, atom ∈ atomPartition core ∧
+        rebateCircuitSplitAtom core circuit atom ∧ 3 ≤ atomSize core atom) ∨
+      allAtomsSizeAtLeastFour core :=
+  h.remaining_after_fourPairDischargeCert core hwork hdischarged
+
+/-- In the all-atoms-large branch every atom has size at least four. -/
+theorem
+    FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade.allAtomsSizeAtLeastFour_summary
+    {core : Core} (hlarge : allAtomsSizeAtLeastFour core) {atom : Atom}
+    (hatom : atom ∈ atomPartition core) :
+    4 ≤ atomSize core atom :=
+  h.allAtomsSizeAtLeastFour_summaryCert core hlarge atom hatom
+
+end FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
