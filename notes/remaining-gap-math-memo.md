@@ -1596,6 +1596,8 @@ For the replacement version, an old-balanced `B subset P_t` has self-error
 In fully signed form the additional global scalar is
 `(m-|D|-|B|)K=(|B|-|D|)r+2e(D)-2e(B) [MOD 4]`.
 If the signed old balance holds on all of `W`, also `mK=|B|t-|D|r [MOD 4]`.
+For odd `m`, this gives the intrinsic signed test
+`(m-|D|-|B|)(|B|t-|D|r)=m((|B|-|D|)r+2e(D)-2e(B)) [MOD 4]`.
 
 ## 14. Pair-chamber orientation normal form
 

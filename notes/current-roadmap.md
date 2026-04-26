@@ -4843,6 +4843,8 @@ The replacement route has an equally exact self-error form.  For an old-balanced
 In fully signed form `deg_B-deg_D=K` on `W\D` and `deg_B-deg_D=r+K-t` on `B`; summing gives
 `(m-|D|-|B|)K=(|B|-|D|)r+2e(D)-2e(B) [MOD 4]`.
 If the signed old balance holds on all of `W`, the old-frame scalar is `mK=|B|t-|D|r [MOD 4]`.
+For odd `m`, these combine to the intrinsic test
+`(m-|D|-|B|)(|B|t-|D|r)=m((|B|-|D|)r+2e(D)-2e(B)) [MOD 4]`.
 
 ## Supporting work that is useful but not on the critical path
 

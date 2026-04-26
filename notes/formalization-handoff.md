@@ -1020,6 +1020,8 @@ Recommended attack:
    This is necessary and sufficient for `(W\D) union B` to contradict maximality of `W`.
    Add the signed global scalar:
    `(m-|D|-|B|)K=(|B|-|D|)r+2e(D)-2e(B) [MOD 4]`; if `m-|D|+|B|` is odd then `r+K` is even.
+   Together with the full-frame old scalar, record the eliminated odd-`m` test
+   `(m-|D|-|B|)(|B|t-|D|r)=m((|B|-|D|)r+2e(D)-2e(B)) [MOD 4]`.
 
    The safe formal replacement for the invalid arbitrary-target shortcut is a signed Olson packet.
    When the signed old side has common value `K` on all of `W`, include the double-count

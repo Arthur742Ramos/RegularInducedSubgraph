@@ -5855,6 +5855,16 @@ Equivalently the new set has size `m-d+s` and residue `r+K`, so if `m-d+s` is od
 even.  Thus signed old-coordinate balance plus positive surplus is still not enough: the self-layer
 cleanup must also land on this scalar edge-count class.
 
+When the signed old balance is the full-frame one produced above, the two scalar checks combine to
+
+```text
+(m-d-s)(s t-d r)=m((s-d)r+2e(D)-2e(B))        [MOD 4].
+```
+
+For odd `m`, this eliminates `K` completely.  Thus an odd-size old witness leaves no signed target
+freedom: the chamber value `t`, the sizes of the positive and negative packets, and the two internal
+edge parities already determine whether a self-layer cleanup can satisfy global edge count.
+
 There is an even sharper labelled-packet version that does not first pigeonhole to one chamber.  Let
 `U=V(H)\W` and put `tau(b)=deg_W(b) [MOD 4]`.  If `m<n/32`, then `|U|>31m`.  It is enough to find
 a nonempty `B subset U` and a residue `delta` such that
