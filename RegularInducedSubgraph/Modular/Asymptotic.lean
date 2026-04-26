@@ -4525,6 +4525,160 @@ lemma boundaryTripleBit_zero (i : Fin 3) : boundaryTripleBit (0 : Fin 8) i = 0 :
 lemma boundaryTripleBit_seven (i : Fin 3) : boundaryTripleBit (7 : Fin 8) i = 1 := by
   fin_cases i <;> decide
 
+
+/--
+Residue of the boundary side of a retained two-vertex trace column.  The parameter `e` is the
+boundary-pair edge status, and the two trace types contribute their bits in row `i`.
+-/
+def retainedTracePairResidue (e : ℕ) (τ σ : Fin 8) (i : Fin 3) : ℕ :=
+  e + boundaryTripleBit τ i + boundaryTripleBit σ i
+
+/-- Pair-uniform retained trace columns have the same two retained bits in every boundary row. -/
+def PairUniformRetainedTraceClass (τ σ : Fin 8) : Prop :=
+  ∀ i : Fin 3,
+    boundaryTripleBit τ i + boundaryTripleBit σ i =
+      boundaryTripleBit τ (0 : Fin 3) + boundaryTripleBit σ (0 : Fin 3)
+
+/-- Both retained trace columns miss every boundary vertex. -/
+def RetainedTracePairAllZero (τ σ : Fin 8) : Prop :=
+  ∀ i : Fin 3, boundaryTripleBit τ i = 0 ∧ boundaryTripleBit σ i = 0
+
+/-- Both retained trace columns hit every boundary vertex. -/
+def RetainedTracePairAllOne (τ σ : Fin 8) : Prop :=
+  ∀ i : Fin 3, boundaryTripleBit τ i = 1 ∧ boundaryTripleBit σ i = 1
+
+/-- The two retained trace columns are bitwise complements on the boundary. -/
+def RetainedTracePairComplement (τ σ : Fin 8) : Prop :=
+  ∀ i : Fin 3, boundaryTripleBit τ i + boundaryTripleBit σ i = 1
+
+/-- The three finite pair-uniform trace classes left by the equality endpoint. -/
+inductive RetainedTraceClassKind where
+  | allZero
+  | complement
+  | allOne
+
+namespace RetainedTraceClassKind
+
+/-- Boundary-row sum attached to each retained trace class. -/
+def boundarySum : RetainedTraceClassKind → ℕ
+  | allZero => 0
+  | complement => 1
+  | allOne => 2
+
+/-- Realization of a retained trace class by two concrete boundary types. -/
+def Realizes (κ : RetainedTraceClassKind) (τ σ : Fin 8) : Prop :=
+  match κ with
+  | allZero => RetainedTracePairAllZero τ σ
+  | complement => RetainedTracePairComplement τ σ
+  | allOne => RetainedTracePairAllOne τ σ
+
+end RetainedTraceClassKind
+
+/-- The tiny congruence table for pair-uniform retained trace classes. -/
+theorem retainedTracePairResidue_eq_kind_table
+    {κ : RetainedTraceClassKind} {e : ℕ} {τ σ : Fin 8}
+    (hκ : RetainedTraceClassKind.Realizes κ τ σ) (i : Fin 3) :
+    retainedTracePairResidue e τ σ i = e + RetainedTraceClassKind.boundarySum κ := by
+  cases κ with
+  | allZero =>
+      rcases hκ i with ⟨hτ, hσ⟩
+      rw [retainedTracePairResidue, RetainedTraceClassKind.boundarySum, hτ, hσ]
+      omega
+  | complement =>
+      have hsum := hκ i
+      rw [retainedTracePairResidue, RetainedTraceClassKind.boundarySum]
+      omega
+  | allOne =>
+      rcases hκ i with ⟨hτ, hσ⟩
+      rw [retainedTracePairResidue, RetainedTraceClassKind.boundarySum, hτ, hσ]
+      omega
+
+/-- Any named retained trace class is pair-uniform. -/
+theorem pairUniformRetainedTraceClass_of_kind
+    {κ : RetainedTraceClassKind} {τ σ : Fin 8}
+    (hκ : RetainedTraceClassKind.Realizes κ τ σ) :
+    PairUniformRetainedTraceClass τ σ := by
+  intro i
+  have hi := retainedTracePairResidue_eq_kind_table (κ := κ) (e := 0) hκ i
+  have h0 := retainedTracePairResidue_eq_kind_table (κ := κ) (e := 0) hκ (0 : Fin 3)
+  simp [retainedTracePairResidue] at hi h0
+  omega
+
+/-- Pair-uniform binary trace columns are exactly all-zero, all-one, or complementary. -/
+theorem pairUniformRetainedTraceClass_classifies
+    {τ σ : Fin 8} (huniform : PairUniformRetainedTraceClass τ σ) :
+    ∃ κ : RetainedTraceClassKind, RetainedTraceClassKind.Realizes κ τ σ := by
+  have hτ0le : boundaryTripleBit τ (0 : Fin 3) ≤ 1 := boundaryTripleBit_le_one τ 0
+  have hσ0le : boundaryTripleBit σ (0 : Fin 3) ≤ 1 := boundaryTripleBit_le_one σ 0
+  interval_cases boundaryTripleBit τ (0 : Fin 3) <;>
+    interval_cases boundaryTripleBit σ (0 : Fin 3)
+  · refine ⟨RetainedTraceClassKind.allZero, ?_⟩
+    intro i
+    have hsum : boundaryTripleBit τ i + boundaryTripleBit σ i = 0 := by
+      simpa using huniform i
+    have hτle : boundaryTripleBit τ i ≤ 1 := boundaryTripleBit_le_one τ i
+    have hσle : boundaryTripleBit σ i ≤ 1 := boundaryTripleBit_le_one σ i
+    constructor <;> omega
+  · refine ⟨RetainedTraceClassKind.complement, ?_⟩
+    intro i
+    simpa using huniform i
+  · refine ⟨RetainedTraceClassKind.complement, ?_⟩
+    intro i
+    simpa using huniform i
+  · refine ⟨RetainedTraceClassKind.allOne, ?_⟩
+    intro i
+    have hsum : boundaryTripleBit τ i + boundaryTripleBit σ i = 2 := by
+      simpa using huniform i
+    have hτle : boundaryTripleBit τ i ≤ 1 := boundaryTripleBit_le_one τ i
+    have hσle : boundaryTripleBit σ i ≤ 1 := boundaryTripleBit_le_one σ i
+    constructor <;> omega
+
+/-- A finite trace-hole certificate: the named class has its table residue missing from the spectrum. -/
+def RetainedTraceFiniteHole (spectrum : Finset ℕ) (e : ℕ) (τ σ : Fin 8) : Prop :=
+  ∃ κ : RetainedTraceClassKind,
+    RetainedTraceClassKind.Realizes κ τ σ ∧ e + RetainedTraceClassKind.boundarySum κ ∉ spectrum
+
+/-- Expand the finite trace-hole certificate into the three concrete table rows. -/
+theorem retainedTraceFiniteHole_iff_cases
+    {spectrum : Finset ℕ} {e : ℕ} {τ σ : Fin 8} :
+    RetainedTraceFiniteHole spectrum e τ σ ↔
+      (RetainedTracePairAllZero τ σ ∧ e ∉ spectrum) ∨
+        (RetainedTracePairComplement τ σ ∧ e + 1 ∉ spectrum) ∨
+          (RetainedTracePairAllOne τ σ ∧ e + 2 ∉ spectrum) := by
+  constructor
+  · rintro ⟨κ, hκ, hmiss⟩
+    cases κ with
+    | allZero =>
+        exact Or.inl ⟨hκ, by simpa [RetainedTraceClassKind.boundarySum] using hmiss⟩
+    | complement =>
+        exact Or.inr (Or.inl ⟨hκ, by simpa [RetainedTraceClassKind.boundarySum] using hmiss⟩)
+    | allOne =>
+        exact Or.inr (Or.inr ⟨hκ, by simpa [RetainedTraceClassKind.boundarySum] using hmiss⟩)
+  · intro h
+    rcases h with hzero | hrest
+    · exact ⟨RetainedTraceClassKind.allZero, hzero.1, by simpa [RetainedTraceClassKind.boundarySum] using hzero.2⟩
+    · rcases hrest with hcomp | hone
+      · exact ⟨RetainedTraceClassKind.complement, hcomp.1, by simpa [RetainedTraceClassKind.boundarySum] using hcomp.2⟩
+      · exact ⟨RetainedTraceClassKind.allOne, hone.1, by simpa [RetainedTraceClassKind.boundarySum] using hone.2⟩
+
+/-- The exact equality residual before classification: a pair-uniform trace whose row residues are absent. -/
+def ExactEqualityRetainedTraceResidual (spectrum : Finset ℕ) (e : ℕ) (τ σ : Fin 8) : Prop :=
+  PairUniformRetainedTraceClass τ σ ∧ ∀ i : Fin 3, retainedTracePairResidue e τ σ i ∉ spectrum
+
+/-- The equality residual reduces to one of the three finite trace-hole rows. -/
+theorem retainedTraceFiniteHole_of_exactEqualityResidual
+    {spectrum : Finset ℕ} {e : ℕ} {τ σ : Fin 8}
+    (h : ExactEqualityRetainedTraceResidual spectrum e τ σ) :
+    RetainedTraceFiniteHole spectrum e τ σ := by
+  rcases h with ⟨huniform, hmissing⟩
+  rcases pairUniformRetainedTraceClass_classifies huniform with ⟨κ, hκ⟩
+  refine ⟨κ, hκ, ?_⟩
+  intro hmem
+  have hrow := retainedTracePairResidue_eq_kind_table (κ := κ) (e := e) hκ (0 : Fin 3)
+  have hmem' : retainedTracePairResidue e τ σ (0 : Fin 3) ∈ spectrum := by
+    simpa [hrow] using hmem
+  exact hmissing (0 : Fin 3) hmem'
+
 /-- A repaired-residue spectrum is full when it contains all four regular four-vertex residues. -/
 def ContainsAllFourResidues (spectrum : Finset ℕ) : Prop :=
   0 ∈ spectrum ∧ 1 ∈ spectrum ∧ 2 ∈ spectrum ∧ 3 ∈ spectrum
@@ -5241,6 +5395,48 @@ theorem homogeneousSamePairResidueResidual_of_oddBoundaryDeficit
     HomogeneousSamePairResidueClosedOrBoundaryResidual n m :=
   Or.inr (Or.inr h)
 
+
+/-- The even boundary deficit pins the quotient class to the predecessor of the target. -/
+theorem GallaiPairWordEvenBoundaryDeficit.eq_pred
+    {n m : ℕ} (h : GallaiPairWordEvenBoundaryDeficit n m) : n = m - 1 :=
+  h.2.1
+
+/-- The odd boundary deficit pins the quotient class to the predecessor of the target. -/
+theorem GallaiPairWordOddBoundaryDeficit.eq_pred
+    {n m : ℕ} (h : GallaiPairWordOddBoundaryDeficit n m) : n = m - 1 :=
+  h.2.1
+
+/-- Boundary deficits are exactly the non-closing same-residue endpoint. -/
+theorem homogeneousSamePairResidueResidual_eq_pred
+    {n m : ℕ} (h : HomogeneousSamePairResidueClosedOrBoundaryResidual n m)
+    (hnotClose : ¬ GallaiPairWordSelectorCloses n m) :
+    n = m - 1 ∧ (Even m ∨ Odd m) := by
+  rcases h with hclose | hboundary
+  · exact (hnotClose hclose).elim
+  · rcases hboundary with heven | hodd
+    · exact ⟨heven.eq_pred, Or.inl heven.1⟩
+    · exact ⟨hodd.eq_pred, Or.inr hodd.1⟩
+
+/-- If the same-residue endpoint is not a boundary deficit, it has already closed. -/
+theorem gallaiPairWordSelectorCloses_of_closedOrBoundaryResidual_of_not_eq_pred
+    {n m : ℕ} (h : HomogeneousSamePairResidueClosedOrBoundaryResidual n m)
+    (hne : n ≠ m - 1) : GallaiPairWordSelectorCloses n m := by
+  rcases h with hclose | hboundary
+  · exact hclose
+  · rcases hboundary with heven | hodd
+    · exact (hne heven.eq_pred).elim
+    · exact (hne hodd.eq_pred).elim
+
+/-- Below the Davenport predecessor, failure to close is recorded as a strict size shortfall. -/
+def GallaiPairWordBelowBoundary (n m : ℕ) : Prop :=
+  n ≤ m - 1 ∧ gallaiPairWordHalfSelectorSize n ≤ m
+
+/-- A non-closing class under the predecessor bound falls below the boundary selector size. -/
+theorem gallaiPairWordBelowBoundary_of_not_selectorCloses
+    {n m : ℕ} (hn : n ≤ m - 1) (hnotClose : ¬ GallaiPairWordSelectorCloses n m) :
+    GallaiPairWordBelowBoundary n m := by
+  exact ⟨hn, Nat.le_of_not_gt hnotClose⟩
+
 /--
 Odd-word carry equation on a homogeneous quotient class.  The quotient graph is `Q`, `U` is the
 parity class, `tau` records independent (`0`) versus triangle (`1`) whole-triple type, and `T`
@@ -5327,6 +5523,80 @@ def HasHomogeneousMixedCarryKernelOrInconsistencyReduction : Prop :=
   ∀ {ι : Type*} [Fintype ι] [DecidableEq ι]
       (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ),
     HomogeneousMixedCarryClosedByKernelOrInconsistency Q U tau m
+
+
+/-- The named residual after excluding both large kernels and affine inconsistency. -/
+def HomogeneousMixedCarrySmallKernelConsistentResidual
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) : Prop :=
+  HomogeneousMixedCarrySmallKernel Q U tau m ∧
+    ∃ c : ℕ, ∃ T : Finset ι, HomogeneousMixedOddWordCarrySolution Q U tau T c
+
+/-- Terminal trichotomy for the homogeneous mixed carry branch. -/
+def HomogeneousMixedCarryTerminalTrichotomy
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) : Prop :=
+  HomogeneousMixedCarryLargeKernelClosure Q U tau m ∨
+    HomogeneousMixedCarryAffineInconsistency Q U tau ∨
+      HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m
+
+/-- The trichotomy is the classical split of the large-kernel and affine-inconsistency surfaces. -/
+theorem homogeneousMixedCarryTerminalTrichotomy_of_classical
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) :
+    HomogeneousMixedCarryTerminalTrichotomy Q U tau m := by
+  classical
+  by_cases hlarge : HomogeneousMixedCarryLargeKernelClosure Q U tau m
+  · exact Or.inl hlarge
+  · by_cases hinc : HomogeneousMixedCarryAffineInconsistency Q U tau
+    · exact Or.inr (Or.inl hinc)
+    · refine Or.inr (Or.inr ⟨?_, ?_⟩)
+      · intro H hH
+        exact Nat.le_of_not_gt (by
+          intro hgt
+          exact hlarge ⟨H, hH, hgt⟩)
+      · by_contra hnone
+        exact hinc (by
+          intro c hT
+          exact hnone ⟨c, hT⟩)
+
+/-- Surface asserting that every homogeneous mixed endpoint closes by a large twisted kernel. -/
+def HasHomogeneousMixedCarryLargeKernelReduction : Prop :=
+  ∀ {ι : Type*} [Fintype ι] [DecidableEq ι]
+      (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ),
+    HomogeneousMixedCarryLargeKernelClosure Q U tau m
+
+/-- Surface asserting that every homogeneous mixed endpoint has affine inconsistency. -/
+def HasHomogeneousMixedCarryAffineInconsistencyReduction : Prop :=
+  ∀ {ι : Type*} [Fintype ι] [DecidableEq ι]
+      (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ),
+    HomogeneousMixedCarryAffineInconsistency Q U tau
+
+/-- Surface exposing the full terminal trichotomy, including the small-kernel consistent residual. -/
+def HasHomogeneousMixedCarryTerminalTrichotomyReduction : Prop :=
+  ∀ {ι : Type*} [Fintype ι] [DecidableEq ι]
+      (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ),
+    HomogeneousMixedCarryTerminalTrichotomy Q U tau m
+
+/-- Large-kernel closure alone feeds the existing homogeneous carry reduction. -/
+theorem hasHomogeneousMixedCarryKernelOrInconsistencyReduction_of_largeKernelReduction
+    (hlarge : HasHomogeneousMixedCarryLargeKernelReduction) :
+    HasHomogeneousMixedCarryKernelOrInconsistencyReduction := by
+  intro ι _ _ Q U tau m
+  exact homogeneousMixedCarryClosed_of_largeKernel (hlarge Q U tau m)
+
+/-- Affine inconsistency alone feeds the existing homogeneous carry reduction. -/
+theorem hasHomogeneousMixedCarryKernelOrInconsistencyReduction_of_affineInconsistencyReduction
+    (hinc : HasHomogeneousMixedCarryAffineInconsistencyReduction) :
+    HasHomogeneousMixedCarryKernelOrInconsistencyReduction := by
+  intro ι _ _ Q U tau m
+  exact homogeneousMixedCarryClosed_of_affineInconsistency (hinc Q U tau m)
+
+/-- The split surface is available as a reusable terminal classification wrapper. -/
+theorem homogeneousMixedCarryTerminalTrichotomyReduction :
+    HasHomogeneousMixedCarryTerminalTrichotomyReduction := by
+  intro ι _ _ Q U tau m
+  exact homogeneousMixedCarryTerminalTrichotomy_of_classical Q U tau m
 
 /--
 Selector-facing support-size-six parity-compression branch: if one even and one odd boundary type are
@@ -7187,6 +7457,39 @@ structure ModFourAggregateFrontierSurfacesWithHomogeneousCarry : Prop where
   pendant : HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging
   zeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion
   homogeneousCarry : HasHomogeneousMixedCarryKernelOrInconsistencyReduction
+
+
+/-- Build the aggregate package when the homogeneous carry branch is discharged by large kernels. -/
+theorem modFourAggregateFrontierSurfacesWithHomogeneousCarry_of_largeKernelReduction
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion)
+    (hlarge : HasHomogeneousMixedCarryLargeKernelReduction) :
+    ModFourAggregateFrontierSurfacesWithHomogeneousCarry := by
+  exact
+    { trace := htrace
+      coreLength := hcoreLength
+      pendant := hpendant
+      zeroTrace := hzeroTrace
+      homogeneousCarry :=
+        hasHomogeneousMixedCarryKernelOrInconsistencyReduction_of_largeKernelReduction hlarge }
+
+/-- Build the aggregate package when the homogeneous carry branch is discharged by affine inconsistency. -/
+theorem modFourAggregateFrontierSurfacesWithHomogeneousCarry_of_affineInconsistencyReduction
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion)
+    (hinc : HasHomogeneousMixedCarryAffineInconsistencyReduction) :
+    ModFourAggregateFrontierSurfacesWithHomogeneousCarry := by
+  exact
+    { trace := htrace
+      coreLength := hcoreLength
+      pendant := hpendant
+      zeroTrace := hzeroTrace
+      homogeneousCarry :=
+        hasHomogeneousMixedCarryKernelOrInconsistencyReduction_of_affineInconsistencyReduction hinc }
 
 /-- Forget the homogeneous quotient algebra field and recover the existing aggregate layer cap. -/
 theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithHomogeneousCarry
