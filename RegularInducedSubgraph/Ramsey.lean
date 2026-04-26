@@ -20759,6 +20759,399 @@ theorem ten_le_F_40960_of_finalDownstreamImport
     10 ≤ F 40960 :=
   h.toTenLeF_40960
 
+/--
+Compact final consumer surface for modular Ramsey/R45/RamseyTen code.  It keeps exactly the
+profiled exact-`42` status, a final top-row handoff, and the global consequence bundle carrying
+the localized `R(4,5)` input, the propagated `R(10,10)` bound, and the regular/admissible/`F`
+conclusions.
+-/
+structure RamseyTenR45Exact42TopRowFinalConsumerSurface
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  topRowFinalHandoff : RamseyThreeTenExact42TopRowFinalHandoff G s v
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+
+/-- Exact-`42` status plus a final top-row handoff give the compact final consumer surface. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (htop : RamseyThreeTenExact42TopRowFinalHandoff G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v where
+  exact42Status := h
+  topRowFinalHandoff := htop
+  globalConsequences := htop.toGlobalConsequenceBundle
+
+/-- Final top-row handoffs can materialize the compact consumer surface directly. -/
+theorem RamseyThreeTenExact42TopRowFinalHandoff.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalHandoff G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.ofExact42ProfileAndLocalLedgers
+    h.finalBundle.exact42Profile h.finalBundle.localLedgers).toFinalConsumerSurface h
+
+/-- The one-stop final downstream API exposes the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v where
+  exact42Status := h.exact42Status
+  topRowFinalHandoff := h.topRowFinalHandoff
+  globalConsequences := h.globalConsequences
+
+/-- Exact-`42` final imports expose the compact final consumer surface. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  h.toFinalDownstreamImport.toFinalConsumerSurface
+
+/-- Top-row ready certificates expose the compact final consumer surface. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  h.toFinalDownstreamImport.toFinalConsumerSurface
+
+/-- Top-row downstream imports expose the compact final consumer surface. -/
+theorem RamseyTenR45TopRowDownstreamImport.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  h.toFinalDownstreamImport.toFinalConsumerSurface
+
+/-- Attach a profiled top-row branch to a downstream import and expose the compact consumer API. -/
+theorem RamseyTenR45DownstreamImport.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport htop).toFinalConsumerSurface
+
+/-- Attach common-sum/count-profile top-row data to a downstream import and expose consumers. -/
+theorem RamseyTenR45DownstreamImport.toFinalConsumerSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hcommon hcount).toFinalConsumerSurface
+
+/-- Ready certificates expose the compact final consumer surface after a top-row profile branch. -/
+theorem RamseyTenR45ReadyCertificate.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport htop).toFinalConsumerSurface
+
+/-- Ready certificates expose the compact final consumer surface from top-row profile components. -/
+theorem RamseyTenR45ReadyCertificate.toFinalConsumerSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hcommon hcount).toFinalConsumerSurface
+
+/-- Final certificate bundles expose the compact final consumer surface after a top-row branch. -/
+theorem RamseyTenR45FinalCertificateBundle.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport htop).toFinalConsumerSurface
+
+/-- Final certificate bundles expose compact consumers from common-sum/count-profile top rows. -/
+theorem RamseyTenR45FinalCertificateBundle.toFinalConsumerSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45FinalCertificateBundle)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hcommon hcount).toFinalConsumerSurface
+
+/-- Profiled middle-degree handoffs expose compact consumers after a top-row branch. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport htop).toFinalConsumerSurface
+
+/-- Profiled middle-degree handoffs expose compact consumers from profile components. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toFinalConsumerSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hcommon hcount).toFinalConsumerSurface
+
+/-- Exact-`42` status plus endpoint residuals and a top-row branch expose compact consumers. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toFinalConsumerSurface_ofEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport hendpoints htop).toFinalConsumerSurface
+
+/-- Exact-`42` status plus endpoint residuals and profile components expose compact consumers. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toFinalConsumerSurface_ofEndpointResidualsCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  (h.toFinalDownstreamImport_ofCommonSumCountProfile hendpoints hcommon hcount).toFinalConsumerSurface
+
+/-- Select exact-`42` status from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the final top-row handoff from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toTopRowFinalHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyThreeTenExact42TopRowFinalHandoff G s v :=
+  h.topRowFinalHandoff
+
+/-- Select the materialized top-row selector from the compact consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toTopRowSelectorWithLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v :=
+  h.topRowFinalHandoff.toTopRowSelectorWithLocalLedgers
+
+/-- Select the top-row selector handoff from the compact consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toTopRowSelectorHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v) :=
+  h.topRowFinalHandoff.toTopRowSelectorHandoff
+
+/-- Select the final certificate bundle from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toFinalCertificateBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45FinalCertificateBundle :=
+  h.topRowFinalHandoff.toFinalCertificateBundle
+
+/-- Select the global consequence bundle from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toGlobalConsequenceBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select the final-consequence surface from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45FinalConsequenceSurface :=
+  h.topRowFinalHandoff.toFinalConsequenceSurface
+
+/-- Select final Ramsey-10 status from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toFinalStatus
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45FinalStatus :=
+  h.toFinalConsequenceSurface.toFinalStatus
+
+/-- Select the relaxed `R(4,5) <= 27` table from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.topRowFinalHandoff.toR45TwentySevenTable
+
+/-- Select the profiled top-row branch from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowFinalHandoff.toTopRowProfile
+
+/-- Select the common-sum top-row obligation from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowFinalHandoff.toCommonSum
+
+/-- Select the count-profile top-row obligation from the compact final consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowFinalHandoff.toCountProfile
+
+/-- Consume the compact final consumer surface as the low-row exact-`42` result. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Status.toThreeTenFortyTwo
+
+/-- Consume the compact final consumer surface as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.globalConsequences.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Consume the compact final consumer surface as the propagated `R(10,10) <= 39246` bound. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.globalConsequences.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Consume the compact final consumer surface as the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.globalConsequences.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Consume the compact final consumer surface as the admissible-bound conclusion. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.globalConsequences.toTenMemAdmissibleBounds_40960
+
+/-- Consume the compact final consumer surface as the extremal-function lower bound. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    10 ≤ F 40960 :=
+  h.globalConsequences.toTenLeF_40960
+
+/-- Compact-consumer route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Compact-consumer route to the propagated `R(10,10) <= 39246` bound. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Compact-consumer route to the regular induced `10`-subgraph theorem. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Compact-consumer route to the admissible-bound conclusion. -/
+theorem ten_mem_admissibleBounds_40960_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.toTenMemAdmissibleBounds_40960
+
+/-- Compact-consumer route to the extremal-function lower bound. -/
+theorem ten_le_F_40960_of_finalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    10 ≤ F 40960 :=
+  h.toTenLeF_40960
+
+/-- Re-importing the selected exact-`42` final import reaches the same final downstream surface. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toTopRowFinalImport_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    h.toTopRowFinalImport.toFinalDownstreamImport = h := by
+  exact Subsingleton.elim _ _
+
+/-- Re-importing the selected top-row downstream import reaches the same final downstream surface. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toTopRowDownstreamImport_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    h.toTopRowDownstreamImport.toFinalDownstreamImport = h := by
+  exact Subsingleton.elim _ _
+
+/-- Re-importing the selected top-row ready certificate reaches the same final downstream surface. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toTopRowReadyCertificate_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    h.toTopRowReadyCertificate.toFinalDownstreamImport = h := by
+  exact Subsingleton.elim _ _
+
+/-- Re-importing the selected top-row final handoff reaches the same final downstream surface. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toTopRowFinalHandoff_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    h.toTopRowFinalHandoff.toFinalDownstreamImport = h := by
+  exact Subsingleton.elim _ _
+
+/-- Re-attaching the selected top-row profile to the selected downstream import is idempotent. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toDownstreamImport_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    h.toDownstreamImport.toFinalDownstreamImport h.toTopRowProfile = h := by
+  exact Subsingleton.elim _ _
+
 
 
 
