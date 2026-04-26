@@ -1042,6 +1042,8 @@ Active criticality projects to `A\{a}` with the same empty capacity; zero critic
 private columns `p_z` and must meet the new allowed interval.
 Inclusion-minimality gives full minor-criticality: every proper active/filter shadow `(A',Z')` is
 filtered-cover feasible.
+The singleton shadows force `e_Z>=2` and all active singletons present in every genuinely high-active
+full-minor endpoint.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.
@@ -1064,6 +1066,8 @@ pair+singleton deletion witness forces both thickened pairs and the deleted sing
 all missing pairs are essential blockers.
 The co-singleton core's pair layer is an intersecting edge family on `K_4`, hence a star/triangle subfamily.
 The size-three cases are exactly star or triangle; their complements are the three essential pair blockers.
+With full minor-criticality, the true `|A|=4` endpoint is singleton-only: all non-singleton supports are
+absent and essential.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

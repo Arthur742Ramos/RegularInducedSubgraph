@@ -5326,6 +5326,9 @@ zero-relaxation uses `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)` and the enlarged s
 allowed interval.
 Since the original coordinate certificate is inclusion-minimal, this extends to every proper shadow
 `(A',Z')`: the full `(A,Z)` fails, but every proper active/filter shadow satisfies the filtered-cover table.
+Taking `A'={a}`, `Z'=Z` collapses every genuinely high-active full-minor endpoint to `e_Z>=2` with all
+singletons `{a}` present.  Thus the surviving high-active branch is singleton-complete and not
+partitionable into at most three supports, while every proper shadow is partitionable.
 For `|A|<=3`, this is the explicit finite table: `empty` needs three empty-support columns; one active
 coordinate needs one singleton plus two empty columns; two active coordinates need either the pair plus two
 empty columns or two singletons plus one empty column; three active coordinates need triple, pair+singleton,
@@ -5355,6 +5358,8 @@ The `|A|=4` co-singleton pair layer is an intersecting family in `K_4`, hence co
 triangle and has size at most three.
 If the pair layer has size three, it is either a star or a triangle; the complementary three missing pairs
 are precisely the pair-partition blockers.  Smaller pair layers are subtemplates with extra blockers.
+After full minor-criticality, the genuine `|A|=4` endpoint is singleton-only: all four singletons are
+present, `c_Z(empty)>=2`, and every pair/triple/full support is absent and essential.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

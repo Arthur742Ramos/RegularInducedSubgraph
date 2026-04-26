@@ -2425,6 +2425,8 @@ Recommended attack:
     `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)`.
     Strengthen to full minor-criticality: for every proper shadow `(A',Z')`, with counts
     `c_{Z'}^{A'}(B)`, the filtered-cover criterion succeeds.
+    Add the singleton-shadow collapse: for `|A|>=2`, full minor-criticality with `A'={a}`, `Z'=Z` forces
+    `c_Z(empty)>=2` and all singleton supports `{a}` present.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.
@@ -2454,6 +2456,8 @@ Recommended attack:
     triangle and has size at most three.
     Add the star/triangle pair templates: size-three pair layers are either a star or triangle, and the
     complementary three missing pairs are the pair-partition blockers; smaller layers add blockers.
+    Add the full-minor `|A|=4` collapse: the only surviving four-active endpoint is singleton-only, with all
+    pair/triple/full supports absent and essential.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

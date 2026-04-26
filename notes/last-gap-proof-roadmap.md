@@ -1945,6 +1945,8 @@ What remains justified after audit is:
       a minimal blocker certificate makes every retained missing support essential;
       active deletions and zero-filter relaxations must fill the corresponding spectrum interval;
       in fact every proper active/filter shadow is feasible by inclusion-minimality;
+      singleton shadows force `e_Z>=2` and a complete singleton layer in any genuinely high-active
+      full-minor endpoint;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       every zero-relaxed cover must use at least one such private column;
@@ -1961,6 +1963,7 @@ What remains justified after audit is:
       layer has all missing pairs essential;
       in the co-singleton `|A|=4` core the pair layer is an intersecting `K_4` edge family;
       size-three pair layers are star/triangle templates with complementary pair blockers;
+      after full minor-criticality the genuine four-active endpoint is singleton-only;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on

@@ -11405,6 +11405,19 @@ Then the same filtered-cover criterion succeeds for `(A',Z')`: if `A'=empty`, th
 `c_{Z'}^{A'}(empty)`.  Thus the high-active obstruction is a **full minor-critical** filtered cover:
 the full coordinate set fails, and every proper active/filter shadow succeeds.
 
+Taking the proper shadow `A'={a}`, `Z'=Z` gives an immediate collapse.  If `|A|>=2`, then for every
+`a in A`
+
+```text
+c_Z(empty)>=2,        {a} in F_Z.
+```
+
+Therefore every genuinely high-active full-minor endpoint has `e_Z>=2` and a complete singleton layer.
+The `e_Z=1`, `e_Z=0`, and no-singleton co-singleton templates below are only one-coordinate-critical
+pre-minor normal forms; they cannot survive the full inclusion-minimal certificate.  In the actual
+full-minor high-active endpoint, `A` is not partitionable into at most three members of a support family
+which already contains every singleton, while every proper active/filter shadow is partitionable.
+
 For `|A|<=3` this criterion is the following table:
 
 ```text
@@ -11559,6 +11572,13 @@ missing pairs inside `A\{i}` are exactly the blockers for the three complementar
 is the triangle on `A\{i}`, then the three missing pairs through `i` play the same role.  Smaller pair
 layers are subfamilies of these two patterns with additional missing-pair blockers.  Hence the `|A|=4`
 co-singleton core is finite up to choosing a star/triangle pair template and deleting some of its pairs.
+
+After imposing full minor-criticality, however, the genuine `|A|=4` endpoint is simpler.  The singleton
+shadow collapse gives all four singletons and `c_Z(empty)>=2`.  A full support, any triple, or any pair
+would then partition `A` using at most three nonempty blocks, so all non-singleton supports are absent.
+Thus the full-minor four-active target obstruction is exactly the singleton-only support family on `A`,
+with every missing pair/triple/full support essential through the obvious partition using that missing
+support and singleton complements.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
