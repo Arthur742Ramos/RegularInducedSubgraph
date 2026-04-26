@@ -603,4 +603,301 @@ theorem targetStatement_of_proofMdLargeSupportColoringCurrentFrontierConsumerBun
   targetStatement_of_proofMdLargeSupportColoringExternalBlockConsumerBundle
     h.toExternalBlockConsumerBundle
 
+/--
+Public/final/archive/release facade bundle for downstream first-bit consumers.  The fields are
+deliberately redundant: consumers can keep their preferred facade tag while sharing the same current
+selector assumptions and canonical large-support coloring certificate.
+-/
+structure FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle : Type where
+  certificate : FirstBitLargeSupportColoringCertificate
+  publicFacade : FirstBitLargeSupportColoringPublicFacade
+  finalFacade : FirstBitLargeSupportColoringFinalFacade
+  archiveFacade : FirstBitLargeSupportColoringArchiveFacade
+  releaseFacade : FirstBitLargeSupportColoringReleaseFacade
+  selectors : FirstBitCurrentSelectorAssumptions
+
+/-- Build the public/final/archive/release facade bundle from the canonical certificate. -/
+def FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.ofCertificate
+    (h : FirstBitLargeSupportColoringCertificate) :
+    FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle where
+  certificate := h
+  publicFacade := h.asPublicFacade
+  finalFacade := h.asFinalFacade
+  archiveFacade := h.asArchiveFacade
+  releaseFacade := h.asReleaseFacade
+  selectors := h.toCurrentSelectorAssumptions
+
+/-- Expose the public/final/archive/release facade bundle from the canonical certificate. -/
+def FirstBitLargeSupportColoringCertificate.toPublicFinalArchiveReleaseBundle
+    (h : FirstBitLargeSupportColoringCertificate) :
+    FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle :=
+  FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.ofCertificate h
+
+/-- Forget a facade tag and recover the public/final/archive/release facade bundle. -/
+def FirstBitLargeSupportColoringFacade.toPublicFinalArchiveReleaseBundle
+    {kind : FirstBitLargeSupportColoringFacadeKind}
+    (h : FirstBitLargeSupportColoringFacade kind) :
+    FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle :=
+  h.toCertificate.toPublicFinalArchiveReleaseBundle
+
+/-- Selector assumptions carried by the public/final/archive/release facade bundle. -/
+def FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.toCurrentSelectorAssumptions
+    (h : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle) :
+    FirstBitCurrentSelectorAssumptions :=
+  h.selectors
+
+/-- Large-support loss-`32` selector carried by the facade bundle. -/
+def FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.toLargeEvenDegreeModFourLoss32
+    (h : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle) :
+    HasLargeEvenDegreeModFourLoss32InducedSubgraph :=
+  h.selectors.largeEvenDegreeModFourLoss32
+
+/-- Full loss-`32` selector carried by the facade bundle. -/
+def FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.toEvenDegreeModFourLoss32
+    (h : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  h.selectors.evenDegreeModFourLoss32
+
+/-- Loss-`64` parity lift carried by the facade bundle. -/
+def FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.toParityToModFourLoss64FixedWitnessLift
+    (h : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle) :
+    HasParityToModFourLoss64FixedWitnessLift :=
+  h.selectors.parityToModFourLoss64FixedWitnessLift
+
+@[simp] theorem FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.ofCertificate_certificate
+    (h : FirstBitLargeSupportColoringCertificate) :
+    (FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.ofCertificate h).certificate = h :=
+  rfl
+
+@[simp] theorem FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.ofCertificate_releaseFacade
+    (h : FirstBitLargeSupportColoringCertificate) :
+    (FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.ofCertificate h).releaseFacade =
+      h.asReleaseFacade :=
+  rfl
+
+@[simp] theorem FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.ofCertificate_selectors
+    (h : FirstBitLargeSupportColoringCertificate) :
+    (FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.ofCertificate h).selectors =
+      h.toCurrentSelectorAssumptions :=
+  rfl
+
+/--
+Checklist of the selector wrappers obtained from the large-support first-bit coloring input.  This is
+a compact downstream surface for code that only needs the loss-`32` and loss-`64` consequences.
+-/
+structure FirstBitLargeSupportColoringWrapperChecklist : Prop where
+  largeEvenDegreeModFourLoss32 : HasLargeEvenDegreeModFourLoss32InducedSubgraph
+  evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph
+  parityToModFourLoss64FixedWitnessLift : HasParityToModFourLoss64FixedWitnessLift
+
+/-- Build the wrapper checklist directly from a large-support bounded coloring theorem. -/
+def FirstBitLargeSupportColoringWrapperChecklist.ofLargeEvenDegreeModFourCongruentDegreeColoringBound
+    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    (hcolor : HasLargeEvenDegreeModFourCongruentDegreeColoringBound C) :
+    FirstBitLargeSupportColoringWrapperChecklist where
+  largeEvenDegreeModFourLoss32 :=
+    hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
+      hCpos hC hcolor
+  evenDegreeModFourLoss32 :=
+    hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourCongruentDegreeColoringBound
+      hCpos hC hcolor
+  parityToModFourLoss64FixedWitnessLift :=
+    hasParityToModFourLoss64FixedWitnessLift_of_largeEvenDegreeModFourCongruentDegreeColoringBound
+      hCpos hC hcolor
+
+/-- Build the wrapper checklist from the canonical large-support first-bit certificate. -/
+def FirstBitLargeSupportColoringWrapperChecklist.ofCertificate
+    (h : FirstBitLargeSupportColoringCertificate) :
+    FirstBitLargeSupportColoringWrapperChecklist :=
+  FirstBitLargeSupportColoringWrapperChecklist.ofLargeEvenDegreeModFourCongruentDegreeColoringBound
+    h.colorCount_pos h.colorCount_le32 h.coloringBound
+
+/-- Build the wrapper checklist from current selector assumptions. -/
+def FirstBitCurrentSelectorAssumptions.toWrapperChecklist
+    (h : FirstBitCurrentSelectorAssumptions) :
+    FirstBitLargeSupportColoringWrapperChecklist where
+  largeEvenDegreeModFourLoss32 := h.largeEvenDegreeModFourLoss32
+  evenDegreeModFourLoss32 := h.evenDegreeModFourLoss32
+  parityToModFourLoss64FixedWitnessLift := h.parityToModFourLoss64FixedWitnessLift
+
+/-- Expose the wrapper checklist from the canonical large-support first-bit certificate. -/
+def FirstBitLargeSupportColoringCertificate.toWrapperChecklist
+    (h : FirstBitLargeSupportColoringCertificate) :
+    FirstBitLargeSupportColoringWrapperChecklist :=
+  FirstBitLargeSupportColoringWrapperChecklist.ofCertificate h
+
+/-- Forget a facade tag and expose the wrapper checklist. -/
+def FirstBitLargeSupportColoringFacade.toWrapperChecklist
+    {kind : FirstBitLargeSupportColoringFacadeKind}
+    (h : FirstBitLargeSupportColoringFacade kind) :
+    FirstBitLargeSupportColoringWrapperChecklist :=
+  h.toCertificate.toWrapperChecklist
+
+/-- Expose the wrapper checklist from the public/final/archive/release facade bundle. -/
+def FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle.toWrapperChecklist
+    (h : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle) :
+    FirstBitLargeSupportColoringWrapperChecklist :=
+  h.selectors.toWrapperChecklist
+
+/--
+External-block handoff facade pairing the consumer bundle with the public facade bundle, the
+loss-wrapper checklist, and the target proof obtained from the packaged assumptions.
+-/
+structure ProofMdLargeSupportColoringExternalBlockHandoffFacade : Type where
+  consumer : ProofMdLargeSupportColoringExternalBlockConsumerBundle
+  firstBitBundle : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  wrapperChecklist : FirstBitLargeSupportColoringWrapperChecklist
+  targetStatement : TargetStatement
+
+/-- Promote an external-block consumer bundle to the downstream handoff facade. -/
+def ProofMdLargeSupportColoringExternalBlockConsumerBundle.toHandoffFacade
+    (h : ProofMdLargeSupportColoringExternalBlockConsumerBundle) :
+    ProofMdLargeSupportColoringExternalBlockHandoffFacade where
+  consumer := h
+  firstBitBundle := h.firstBit.toPublicFinalArchiveReleaseBundle
+  wrapperChecklist := h.firstBit.toWrapperChecklist
+  targetStatement := targetStatement_of_proofMdLargeSupportColoringExternalBlockConsumerBundle h
+
+/-- Promote the canonical external-block certificate to the downstream handoff facade. -/
+def ProofMdLargeSupportColoringExternalBlockCertificate.toHandoffFacade
+    (h : ProofMdLargeSupportColoringExternalBlockCertificate) :
+    ProofMdLargeSupportColoringExternalBlockHandoffFacade :=
+  (ProofMdLargeSupportColoringExternalBlockConsumerBundle.ofExternalBlockCertificate h).toHandoffFacade
+
+/-- Recover the canonical external-block certificate from the handoff facade. -/
+def ProofMdLargeSupportColoringExternalBlockHandoffFacade.toExternalBlockCertificate
+    (h : ProofMdLargeSupportColoringExternalBlockHandoffFacade) :
+    ProofMdLargeSupportColoringExternalBlockCertificate :=
+  h.consumer.toExternalBlockCertificate
+
+/-- First-bit selector assumptions exposed by the external-block handoff facade. -/
+def ProofMdLargeSupportColoringExternalBlockHandoffFacade.firstBitSelectors
+    (h : ProofMdLargeSupportColoringExternalBlockHandoffFacade) :
+    FirstBitCurrentSelectorAssumptions :=
+  h.firstBitBundle.toCurrentSelectorAssumptions
+
+/-- Large-support loss-`32` selector exposed by the external-block handoff facade. -/
+def ProofMdLargeSupportColoringExternalBlockHandoffFacade.largeEvenDegreeModFourLoss32
+    (h : ProofMdLargeSupportColoringExternalBlockHandoffFacade) :
+    HasLargeEvenDegreeModFourLoss32InducedSubgraph :=
+  h.wrapperChecklist.largeEvenDegreeModFourLoss32
+
+/-- Full loss-`32` selector exposed by the external-block handoff facade. -/
+def ProofMdLargeSupportColoringExternalBlockHandoffFacade.evenDegreeModFourLoss32
+    (h : ProofMdLargeSupportColoringExternalBlockHandoffFacade) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  h.wrapperChecklist.evenDegreeModFourLoss32
+
+/-- Loss-`64` parity lift exposed by the external-block handoff facade. -/
+def ProofMdLargeSupportColoringExternalBlockHandoffFacade.parityToModFourLoss64FixedWitnessLift
+    (h : ProofMdLargeSupportColoringExternalBlockHandoffFacade) :
+    HasParityToModFourLoss64FixedWitnessLift :=
+  h.wrapperChecklist.parityToModFourLoss64FixedWitnessLift
+
+/-- The external-block handoff facade closes the target statement from its packaged assumptions. -/
+theorem targetStatement_of_proofMdLargeSupportColoringExternalBlockHandoffFacade
+    (h : ProofMdLargeSupportColoringExternalBlockHandoffFacade) :
+    TargetStatement :=
+  h.targetStatement
+
+@[simp] theorem ProofMdLargeSupportColoringExternalBlockConsumerBundle.toHandoffFacade_consumer
+    (h : ProofMdLargeSupportColoringExternalBlockConsumerBundle) :
+    h.toHandoffFacade.consumer = h :=
+  rfl
+
+/--
+Current-frontier handoff facade.  It retains the current-frontier consumer bundle, the induced
+external-block consumer facade, and the shared first-bit projection surfaces used by both routes.
+-/
+structure ProofMdLargeSupportColoringCurrentFrontierHandoffFacade : Type where
+  consumer : ProofMdLargeSupportColoringCurrentFrontierConsumerBundle
+  currentFrontierCertificate : ProofMdLargeSupportColoringCurrentFrontierCertificate
+  externalBlockConsumer : ProofMdLargeSupportColoringExternalBlockConsumerBundle
+  externalBlockFacade : ProofMdLargeSupportColoringExternalBlockHandoffFacade
+  firstBitBundle : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  wrapperChecklist : FirstBitLargeSupportColoringWrapperChecklist
+  targetStatement : TargetStatement
+  targetStatement_viaExternalBlock : TargetStatement
+
+/-- Promote a current-frontier consumer bundle to the downstream handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierConsumerBundle.toHandoffFacade
+    (h : ProofMdLargeSupportColoringCurrentFrontierConsumerBundle) :
+    ProofMdLargeSupportColoringCurrentFrontierHandoffFacade where
+  consumer := h
+  currentFrontierCertificate := h.toCurrentFrontierCertificate
+  externalBlockConsumer := h.toExternalBlockConsumerBundle
+  externalBlockFacade :=
+    ProofMdLargeSupportColoringExternalBlockConsumerBundle.toHandoffFacade
+      h.toExternalBlockConsumerBundle
+  firstBitBundle := h.firstBit.toPublicFinalArchiveReleaseBundle
+  wrapperChecklist := h.firstBit.toWrapperChecklist
+  targetStatement := targetStatement_of_proofMdLargeSupportColoringCurrentFrontierConsumerBundle h
+  targetStatement_viaExternalBlock :=
+    targetStatement_of_proofMdLargeSupportColoringCurrentFrontierConsumerBundle_viaExternalBlock h
+
+/-- Promote the canonical current-frontier certificate to the downstream handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierCertificate.toHandoffFacade
+    (h : ProofMdLargeSupportColoringCurrentFrontierCertificate) :
+    ProofMdLargeSupportColoringCurrentFrontierHandoffFacade :=
+  (ProofMdLargeSupportColoringCurrentFrontierConsumerBundle.ofCurrentFrontierCertificate h).toHandoffFacade
+
+/-- Recover the canonical current-frontier certificate from the handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierHandoffFacade.toCurrentFrontierCertificate
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    ProofMdLargeSupportColoringCurrentFrontierCertificate :=
+  h.currentFrontierCertificate
+
+/-- Recover the external-block consumer surface from the current-frontier handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierHandoffFacade.toExternalBlockConsumerBundle
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    ProofMdLargeSupportColoringExternalBlockConsumerBundle :=
+  h.externalBlockConsumer
+
+/-- Recover the external-block handoff facade from the current-frontier handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierHandoffFacade.toExternalBlockHandoffFacade
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    ProofMdLargeSupportColoringExternalBlockHandoffFacade :=
+  h.externalBlockFacade
+
+/-- First-bit selector assumptions exposed by the current-frontier handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierHandoffFacade.firstBitSelectors
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    FirstBitCurrentSelectorAssumptions :=
+  h.firstBitBundle.toCurrentSelectorAssumptions
+
+/-- Large-support loss-`32` selector exposed by the current-frontier handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierHandoffFacade.largeEvenDegreeModFourLoss32
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    HasLargeEvenDegreeModFourLoss32InducedSubgraph :=
+  h.wrapperChecklist.largeEvenDegreeModFourLoss32
+
+/-- Full loss-`32` selector exposed by the current-frontier handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierHandoffFacade.evenDegreeModFourLoss32
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  h.wrapperChecklist.evenDegreeModFourLoss32
+
+/-- Loss-`64` parity lift exposed by the current-frontier handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierHandoffFacade.parityToModFourLoss64FixedWitnessLift
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    HasParityToModFourLoss64FixedWitnessLift :=
+  h.wrapperChecklist.parityToModFourLoss64FixedWitnessLift
+
+/-- The current-frontier handoff facade closes the target statement from its packaged assumptions. -/
+theorem targetStatement_of_proofMdLargeSupportColoringCurrentFrontierHandoffFacade
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- The current-frontier handoff facade also closes the target through the external-block route. -/
+theorem targetStatement_of_proofMdLargeSupportColoringCurrentFrontierHandoffFacade_viaExternalBlock
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade) :
+    TargetStatement :=
+  h.targetStatement_viaExternalBlock
+
+@[simp] theorem ProofMdLargeSupportColoringCurrentFrontierConsumerBundle.toHandoffFacade_consumer
+    (h : ProofMdLargeSupportColoringCurrentFrontierConsumerBundle) :
+    h.toHandoffFacade.consumer = h :=
+  rfl
+
 end RegularInducedSubgraph
