@@ -15,7 +15,7 @@ section Threshold
 
 /--
 Discrete modular form of the power-sequence target: on the subsequence `b^k`, every linear-size
-target `M * k` should eventually admit a modular witness.
+target `M * k` should eventually produce a modular witness.
 -/
 def EventualNatPowerModularDomination (b : ℕ) : Prop :=
   ∀ M : ℕ, ∃ K : ℕ, ∀ ⦃k : ℕ⦄, K ≤ k →
@@ -14629,6 +14629,1594 @@ theorem
       L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
       bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack selector :=
   h.mixedTargetCore.obligation selector
+
+/-- Cut-homogeneity of the internal principal bucket seen by the terminal first-bit frontier. -/
+def FirstBitTerminalPrincipalBucketCutHomogeneous
+    {Target : Type*} (principalBucket : Finset Target) (cutResidue : Target → Fin 4)
+    (homogeneousResidue : Fin 4) : Prop :=
+  ∀ target : Target, target ∈ principalBucket → cutResidue target = homogeneousResidue
+
+/-- The principal bucket is a subbucket of the mixed target layer at scale `L`. -/
+def FirstBitTerminalPrincipalBucketMixedLayerSubbucket
+    {Target : Type*} (principalBucket : Finset Target)
+    (Tmix : ℕ → Finset Target) (L : ℕ) : Prop :=
+  principalBucket ⊆ Tmix L
+
+/-- Principal mod-`4` selector inside the chosen terminal bucket. -/
+def FirstBitTerminalPrincipalBucketMod4Selector
+    {Target : Type*} (principalBucket selected : Finset Target)
+    (entryResidue : Target → Target → Fin 4) (selectorResidue : Fin 4) : Prop :=
+  selected ⊆ principalBucket ∧
+    ∀ x : Target, x ∈ selected → ∀ y : Target, y ∈ selected →
+      entryResidue x y = selectorResidue
+
+/-- Deletion rigidity import for a terminal principal bucket. -/
+def FirstBitTerminalPrincipalBucketDeletionRigidity
+    {Target : Type*} (principalBucket : Finset Target)
+    (deleteCost : Target → ℕ) (rigidityFloor : ℕ) : Prop :=
+  ∀ target : Target, target ∈ principalBucket → rigidityFloor ≤ deleteCost target
+
+/-- Row-twin exits for equal row signatures inside the terminal principal bucket. -/
+def FirstBitTerminalPrincipalBucketRowTwinExitCertificate
+    {Target RowSig : Type*} (principalBucket : Finset Target)
+    (rowSignature : Target → RowSig) (rowTwinExit : Target → Target → Prop) : Prop :=
+  ∀ x : Target, x ∈ principalBucket → ∀ y : Target, y ∈ principalBucket → x ≠ y →
+    rowSignature x = rowSignature y → rowTwinExit x y
+
+/-- Co-twin exits for equal complementary row signatures inside the terminal principal bucket. -/
+def FirstBitTerminalPrincipalBucketCoTwinExitCertificate
+    {Target CoRowSig : Type*} (principalBucket : Finset Target)
+    (coRowSignature : Target → CoRowSig) (coTwinExit : Target → Target → Prop) : Prop :=
+  ∀ x : Target, x ∈ principalBucket → ∀ y : Target, y ∈ principalBucket → x ≠ y →
+    coRowSignature x = coRowSignature y → coTwinExit x y
+
+/-- Selector-prime module import: every proper nonempty selector module has an exit. -/
+def FirstBitTerminalPrincipalBucketModuleSelectorPrimeCertificate
+    {Target : Type*} (principalBucket : Finset Target)
+    (selectorModule moduleExit : Finset Target → Prop) : Prop :=
+  ∀ moduleSet : Finset Target, moduleSet ⊆ principalBucket → moduleSet.Nonempty →
+    moduleSet.card < principalBucket.card → selectorModule moduleSet → moduleExit moduleSet
+
+/-- Placeholder import for a lower bound on the `F₂` row rank of the principal bucket. -/
+def FirstBitTerminalPrincipalBucketF2RowRankLowerBoundCertificate
+    {Target : Type*} (principalBucket : Finset Target)
+    (f2RowRank : Finset Target → ℕ) (rankFloor : ℕ) : Prop :=
+  rankFloor ≤ f2RowRank principalBucket
+
+/-- Hereditary dense-side import for every large enough subbucket. -/
+def FirstBitTerminalPrincipalBucketHereditaryDenseCertificate
+    {Target : Type*} (principalBucket : Finset Target)
+    (denseWitness : Finset Target → Prop) (hereditaryFloor : ℕ) : Prop :=
+  ∀ subbucket : Finset Target, subbucket ⊆ principalBucket →
+    hereditaryFloor ≤ subbucket.card → denseWitness subbucket
+
+/-- Hereditary codense-side import for every large enough subbucket. -/
+def FirstBitTerminalPrincipalBucketHereditaryCodenseCertificate
+    {Target : Type*} (principalBucket : Finset Target)
+    (codenseWitness : Finset Target → Prop) (hereditaryFloor : ℕ) : Prop :=
+  ∀ subbucket : Finset Target, subbucket ⊆ principalBucket →
+    hereditaryFloor ≤ subbucket.card → codenseWitness subbucket
+
+/-- Selector names for terminal principal-bucket frontier imports. -/
+inductive FirstBitTerminalPrincipalBucketFrontierSelector : Type
+  | cutHomogeneous
+  | mod4Selector
+  | deletionRigidity
+  | rowTwinExit
+  | coTwinExit
+  | moduleSelectorPrime
+  | f2RowRankLowerBound
+  | hereditaryDense
+  | hereditaryCodense
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalPrincipalBucketFrontierSelector
+
+/-- The proof obligation attached to each terminal principal-bucket frontier selector. -/
+def obligation
+    {Target RowSig CoRowSig : Type*}
+    (principalBucket selected : Finset Target)
+    (cutResidue : Target → Fin 4) (homogeneousResidue : Fin 4)
+    (entryResidue : Target → Target → Fin 4) (selectorResidue : Fin 4)
+    (deleteCost : Target → ℕ) (rigidityFloor : ℕ)
+    (rowSignature : Target → RowSig) (rowTwinExit : Target → Target → Prop)
+    (coRowSignature : Target → CoRowSig) (coTwinExit : Target → Target → Prop)
+    (selectorModule moduleExit : Finset Target → Prop)
+    (f2RowRank : Finset Target → ℕ) (rankFloor : ℕ)
+    (denseWitness codenseWitness : Finset Target → Prop)
+    (hereditaryFloor : ℕ) :
+    FirstBitTerminalPrincipalBucketFrontierSelector → Prop
+  | cutHomogeneous =>
+      FirstBitTerminalPrincipalBucketCutHomogeneous
+        principalBucket cutResidue homogeneousResidue
+  | mod4Selector =>
+      FirstBitTerminalPrincipalBucketMod4Selector
+        principalBucket selected entryResidue selectorResidue
+  | deletionRigidity =>
+      FirstBitTerminalPrincipalBucketDeletionRigidity
+        principalBucket deleteCost rigidityFloor
+  | rowTwinExit =>
+      FirstBitTerminalPrincipalBucketRowTwinExitCertificate
+        principalBucket rowSignature rowTwinExit
+  | coTwinExit =>
+      FirstBitTerminalPrincipalBucketCoTwinExitCertificate
+        principalBucket coRowSignature coTwinExit
+  | moduleSelectorPrime =>
+      FirstBitTerminalPrincipalBucketModuleSelectorPrimeCertificate
+        principalBucket selectorModule moduleExit
+  | f2RowRankLowerBound =>
+      FirstBitTerminalPrincipalBucketF2RowRankLowerBoundCertificate
+        principalBucket f2RowRank rankFloor
+  | hereditaryDense =>
+      FirstBitTerminalPrincipalBucketHereditaryDenseCertificate
+        principalBucket denseWitness hereditaryFloor
+  | hereditaryCodense =>
+      FirstBitTerminalPrincipalBucketHereditaryCodenseCertificate
+        principalBucket codenseWitness hereditaryFloor
+
+end FirstBitTerminalPrincipalBucketFrontierSelector
+
+/--
+Assumption-explicit certificate for the terminal principal-bucket frontier.  It records the
+cut-homogeneous bucket, the internal principal mod-`4` selector, deletion rigidity, twin/co-twin
+exits, selector-prime module exits, an imported `F₂` row-rank lower bound, and hereditary
+dense/codense constraints without asserting any of them unconditionally.
+-/
+structure FirstBitTerminalPrincipalBucketFrontierCertificate
+    {Target RowSig CoRowSig : Type*}
+    (principalBucket selected : Finset Target)
+    (cutResidue : Target → Fin 4) (homogeneousResidue : Fin 4)
+    (entryResidue : Target → Target → Fin 4) (selectorResidue : Fin 4)
+    (deleteCost : Target → ℕ) (rigidityFloor : ℕ)
+    (rowSignature : Target → RowSig) (rowTwinExit : Target → Target → Prop)
+    (coRowSignature : Target → CoRowSig) (coTwinExit : Target → Target → Prop)
+    (selectorModule moduleExit : Finset Target → Prop)
+    (f2RowRank : Finset Target → ℕ) (rankFloor : ℕ)
+    (denseWitness codenseWitness : Finset Target → Prop)
+    (hereditaryFloor : ℕ) : Prop where
+  cutHomogeneous :
+    FirstBitTerminalPrincipalBucketCutHomogeneous
+      principalBucket cutResidue homogeneousResidue
+  mod4Selector :
+    FirstBitTerminalPrincipalBucketMod4Selector
+      principalBucket selected entryResidue selectorResidue
+  deletionRigidity :
+    FirstBitTerminalPrincipalBucketDeletionRigidity
+      principalBucket deleteCost rigidityFloor
+  rowTwinExit :
+    FirstBitTerminalPrincipalBucketRowTwinExitCertificate
+      principalBucket rowSignature rowTwinExit
+  coTwinExit :
+    FirstBitTerminalPrincipalBucketCoTwinExitCertificate
+      principalBucket coRowSignature coTwinExit
+  moduleSelectorPrime :
+    FirstBitTerminalPrincipalBucketModuleSelectorPrimeCertificate
+      principalBucket selectorModule moduleExit
+  f2RowRankLowerBound :
+    FirstBitTerminalPrincipalBucketF2RowRankLowerBoundCertificate
+      principalBucket f2RowRank rankFloor
+  hereditaryDense :
+    FirstBitTerminalPrincipalBucketHereditaryDenseCertificate
+      principalBucket denseWitness hereditaryFloor
+  hereditaryCodense :
+    FirstBitTerminalPrincipalBucketHereditaryCodenseCertificate
+      principalBucket codenseWitness hereditaryFloor
+
+/-- Construct the terminal principal-bucket frontier certificate from explicit assumptions. -/
+theorem firstBitTerminalPrincipalBucketFrontierCertificate_of_assumptions
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (hcut :
+      FirstBitTerminalPrincipalBucketCutHomogeneous
+        principalBucket cutResidue homogeneousResidue)
+    (hselector :
+      FirstBitTerminalPrincipalBucketMod4Selector
+        principalBucket selected entryResidue selectorResidue)
+    (hdelete :
+      FirstBitTerminalPrincipalBucketDeletionRigidity
+        principalBucket deleteCost rigidityFloor)
+    (hrow :
+      FirstBitTerminalPrincipalBucketRowTwinExitCertificate
+        principalBucket rowSignature rowTwinExit)
+    (hco :
+      FirstBitTerminalPrincipalBucketCoTwinExitCertificate
+        principalBucket coRowSignature coTwinExit)
+    (hmodule :
+      FirstBitTerminalPrincipalBucketModuleSelectorPrimeCertificate
+        principalBucket selectorModule moduleExit)
+    (hrank :
+      FirstBitTerminalPrincipalBucketF2RowRankLowerBoundCertificate
+        principalBucket f2RowRank rankFloor)
+    (hdense :
+      FirstBitTerminalPrincipalBucketHereditaryDenseCertificate
+        principalBucket denseWitness hereditaryFloor)
+    (hcodense :
+      FirstBitTerminalPrincipalBucketHereditaryCodenseCertificate
+        principalBucket codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketFrontierCertificate
+      principalBucket selected
+      cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor where
+  cutHomogeneous := hcut
+  mod4Selector := hselector
+  deletionRigidity := hdelete
+  rowTwinExit := hrow
+  coTwinExit := hco
+  moduleSelectorPrime := hmodule
+  f2RowRankLowerBound := hrank
+  hereditaryDense := hdense
+  hereditaryCodense := hcodense
+
+/-- Project cut-homogeneity from a principal-bucket frontier certificate. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.to_cutHomogeneous
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketCutHomogeneous
+      principalBucket cutResidue homogeneousResidue :=
+  h.cutHomogeneous
+
+/-- Project the principal mod-`4` selector from a frontier certificate. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.to_mod4Selector
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketMod4Selector
+      principalBucket selected entryResidue selectorResidue :=
+  h.mod4Selector
+
+/-- Project deletion rigidity from a frontier certificate. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.to_deletionRigidity
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketDeletionRigidity
+      principalBucket deleteCost rigidityFloor :=
+  h.deletionRigidity
+
+/-- Project row-twin exits from a frontier certificate. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.to_rowTwinExit
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketRowTwinExitCertificate
+      principalBucket rowSignature rowTwinExit :=
+  h.rowTwinExit
+
+/-- Project co-twin exits from a frontier certificate. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.to_coTwinExit
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketCoTwinExitCertificate
+      principalBucket coRowSignature coTwinExit :=
+  h.coTwinExit
+
+/-- Project selector-prime module exits from a frontier certificate. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.to_moduleSelectorPrime
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketModuleSelectorPrimeCertificate
+      principalBucket selectorModule moduleExit :=
+  h.moduleSelectorPrime
+
+/-- Project the imported `F₂` row-rank lower bound from a frontier certificate. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.to_f2RowRankLowerBound
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketF2RowRankLowerBoundCertificate
+      principalBucket f2RowRank rankFloor :=
+  h.f2RowRankLowerBound
+
+/-- Project hereditary density from a frontier certificate. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.to_hereditaryDense
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketHereditaryDenseCertificate
+      principalBucket denseWitness hereditaryFloor :=
+  h.hereditaryDense
+
+/-- Project hereditary codensity from a frontier certificate. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.to_hereditaryCodense
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketHereditaryCodenseCertificate
+      principalBucket codenseWitness hereditaryFloor :=
+  h.hereditaryCodense
+
+/-- Apply cut-homogeneity to one target in the principal bucket. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.cutResidue_eq_of_mem
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    {target : Target} (htarget : target ∈ principalBucket) :
+    cutResidue target = homogeneousResidue :=
+  h.cutHomogeneous target htarget
+
+/-- The selected principal submatrix lies inside the principal bucket. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.selected_subset_principalBucket
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    selected ⊆ principalBucket :=
+  h.mod4Selector.1
+
+/-- Apply the selected principal mod-`4` submatrix residue assumption to one entry. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.entryResidue_eq_of_mem_selected
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    {x y : Target} (hx : x ∈ selected) (hy : y ∈ selected) :
+    entryResidue x y = selectorResidue :=
+  h.mod4Selector.2 x hx y hy
+
+/-- Apply deletion rigidity to one target in the principal bucket. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.rigidityFloor_le_deleteCost
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    {target : Target} (htarget : target ∈ principalBucket) :
+    rigidityFloor ≤ deleteCost target :=
+  h.deletionRigidity target htarget
+
+/-- Produce a row-twin exit from equal row signatures inside the principal bucket. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.rowTwinExit_of_signature_eq
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    {x y : Target} (hx : x ∈ principalBucket) (hy : y ∈ principalBucket) (hxy : x ≠ y)
+    (hsig : rowSignature x = rowSignature y) :
+    rowTwinExit x y :=
+  h.rowTwinExit x hx y hy hxy hsig
+
+/-- Produce a co-twin exit from equal complementary row signatures inside the principal bucket. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.coTwinExit_of_signature_eq
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    {x y : Target} (hx : x ∈ principalBucket) (hy : y ∈ principalBucket) (hxy : x ≠ y)
+    (hsig : coRowSignature x = coRowSignature y) :
+    coTwinExit x y :=
+  h.coTwinExit x hx y hy hxy hsig
+
+/-- Apply the selector-prime module exit import to a proper nonempty selector module. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.moduleExit_of_selectorModule
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    {moduleSet : Finset Target} (hsubset : moduleSet ⊆ principalBucket)
+    (hne : moduleSet.Nonempty) (hproper : moduleSet.card < principalBucket.card)
+    (hmodule : selectorModule moduleSet) :
+    moduleExit moduleSet :=
+  h.moduleSelectorPrime moduleSet hsubset hne hproper hmodule
+
+/-- Apply the imported `F₂` row-rank lower bound. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.rankFloor_le_f2RowRank
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    rankFloor ≤ f2RowRank principalBucket :=
+  h.f2RowRankLowerBound
+
+/-- Apply hereditary density to a large enough subbucket. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.dense_of_subbucket
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    {subbucket : Finset Target} (hsubset : subbucket ⊆ principalBucket)
+    (hlarge : hereditaryFloor ≤ subbucket.card) :
+    denseWitness subbucket :=
+  h.hereditaryDense subbucket hsubset hlarge
+
+/-- Apply hereditary codensity to a large enough subbucket. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.codense_of_subbucket
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    {subbucket : Finset Target} (hsubset : subbucket ⊆ principalBucket)
+    (hlarge : hereditaryFloor ≤ subbucket.card) :
+    codenseWitness subbucket :=
+  h.hereditaryCodense subbucket hsubset hlarge
+
+/-- Project the obligation named by a terminal principal-bucket frontier selector. -/
+theorem FirstBitTerminalPrincipalBucketFrontierCertificate.obligation
+    {Target RowSig CoRowSig : Type*}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    (selector : FirstBitTerminalPrincipalBucketFrontierSelector) :
+    FirstBitTerminalPrincipalBucketFrontierSelector.obligation
+      principalBucket selected cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor selector := by
+  cases selector
+  · exact h.cutHomogeneous
+  · exact h.mod4Selector
+  · exact h.deletionRigidity
+  · exact h.rowTwinExit
+  · exact h.coTwinExit
+  · exact h.moduleSelectorPrime
+  · exact h.f2RowRankLowerBound
+  · exact h.hereditaryDense
+  · exact h.hereditaryCodense
+
+/-- Co-cut/self-layer plus mixed target-core imports bundled with principal-bucket frontier imports. -/
+structure FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*}
+    (A : Finset Old) (T2 PureT2 : Finset Shadow)
+    (SparseTarget DenseTarget : Finset Target)
+    (pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ)
+    (targetDamage : Old → ℕ) (pureProfile : Shadow → ℕ)
+    (pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ)
+    (Damage : Old → Target → ℕ) (Polar : Target → ℕ)
+    (Tmix : ℕ → Finset Target)
+    (L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ)
+    (bucketOf : Target → Bucket) (homogeneousBucket : Bucket)
+    (bucketProfile : Bucket → ℕ) (bucketSlack dyadicBucketSlack : ℕ)
+    (principalBucket selected : Finset Target)
+    (cutResidue : Target → Fin 4) (homogeneousResidue : Fin 4)
+    (entryResidue : Target → Target → Fin 4) (selectorResidue : Fin 4)
+    (deleteCost : Target → ℕ) (rigidityFloor : ℕ)
+    (rowSignature : Target → RowSig) (rowTwinExit : Target → Target → Prop)
+    (coRowSignature : Target → CoRowSig) (coTwinExit : Target → Target → Prop)
+    (selectorModule moduleExit : Finset Target → Prop)
+    (f2RowRank : Finset Target → ℕ) (rankFloor : ℕ)
+    (denseWitness codenseWitness : Finset Target → Prop)
+    (hereditaryFloor : ℕ) : Prop where
+  coCutSelfLayerMixedTargetCore :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+  principalBucketFrontier :
+    FirstBitTerminalPrincipalBucketFrontierCertificate
+      principalBucket selected
+      cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor
+
+/-- Build co-cut/mixed-core/principal-bucket imports from independent parts. -/
+theorem firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports_of_parts
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (hcore :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack)
+    (hprincipal :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+      principalBucket selected
+      cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor where
+  coCutSelfLayerMixedTargetCore := hcore
+  principalBucketFrontier := hprincipal
+
+/-- Build co-cut/mixed-core/principal-bucket imports from explicit assumptions. -/
+theorem firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports_of_assumptions
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (hpair :
+      FirstBitTerminalCoCutAllPairsAveragedPairExchangeInequality
+        T2 pairExchangeDamage pairExchangeBudget)
+    (hbiquadratic :
+      FirstBitTerminalCoCutBiquadraticDomination T2 coCutCharge biquadraticScale)
+    (halmost :
+      FirstBitTerminalGlobalAlmostConstantPureT2Vertices
+        T2 PureT2 pureProfile almostConstantSlack)
+    (hdamage :
+      FirstBitTerminalCoCutTargetDamageBudget A targetDamage targetDamageBudget)
+    (hprofile :
+      FirstBitTerminalTargetDamageProfileBudget A Tmix Damage L damageProfileBudget)
+    (hsparse :
+      FirstBitTerminalSparseTargetDamageBound A SparseTarget Damage sparseDamageBound)
+    (hdenseTarget :
+      FirstBitTerminalDenseTargetDamageBound A DenseTarget Damage denseDamageBudget)
+    (hlow :
+      FirstBitTerminalScaleLowPolarityControl Tmix Polar L lowPolarityScale)
+    (hbucket :
+      FirstBitTerminalHomogeneousBucketComparison
+        (Tmix L) bucketOf bucketProfile bucketSlack)
+    (hdyadic :
+      FirstBitTerminalDyadicHomogeneousBucketLocalization
+        Tmix bucketOf homogeneousBucket bucketProfile L dyadicBucketSlack)
+    (hcut :
+      FirstBitTerminalPrincipalBucketCutHomogeneous
+        principalBucket cutResidue homogeneousResidue)
+    (hselector :
+      FirstBitTerminalPrincipalBucketMod4Selector
+        principalBucket selected entryResidue selectorResidue)
+    (hdelete :
+      FirstBitTerminalPrincipalBucketDeletionRigidity
+        principalBucket deleteCost rigidityFloor)
+    (hrow :
+      FirstBitTerminalPrincipalBucketRowTwinExitCertificate
+        principalBucket rowSignature rowTwinExit)
+    (hco :
+      FirstBitTerminalPrincipalBucketCoTwinExitCertificate
+        principalBucket coRowSignature coTwinExit)
+    (hmodule :
+      FirstBitTerminalPrincipalBucketModuleSelectorPrimeCertificate
+        principalBucket selectorModule moduleExit)
+    (hrank :
+      FirstBitTerminalPrincipalBucketF2RowRankLowerBoundCertificate
+        principalBucket f2RowRank rankFloor)
+    (hdense :
+      FirstBitTerminalPrincipalBucketHereditaryDenseCertificate
+        principalBucket denseWitness hereditaryFloor)
+    (hcodense :
+      FirstBitTerminalPrincipalBucketHereditaryCodenseCertificate
+        principalBucket codenseWitness hereditaryFloor) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+      principalBucket selected
+      cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor :=
+  firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports_of_parts
+    (firstBitTerminalCoCutSelfLayerMixedTargetCoreImports_of_assumptions
+      hpair hbiquadratic halmost hdamage hprofile hsparse hdenseTarget hlow hbucket hdyadic)
+    (firstBitTerminalPrincipalBucketFrontierCertificate_of_assumptions
+      hcut hselector hdelete hrow hco hmodule hrank hdense hcodense)
+
+/-- Project co-cut/self-layer plus mixed target-core imports from the principal-bucket bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports.to_coreImports
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack :=
+  h.coCutSelfLayerMixedTargetCore
+
+/-- Project principal-bucket frontier imports from the combined bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports.to_principalBucketFrontier
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPrincipalBucketFrontierCertificate
+      principalBucket selected
+      cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor :=
+  h.principalBucketFrontier
+
+/-- Project mixed target-core imports from the combined principal-bucket bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports.to_mixedTargetCore
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalMixedTargetCoreCertificate
+      A SparseTarget DenseTarget Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack :=
+  h.coCutSelfLayerMixedTargetCore.mixedTargetCore
+
+/-- Apply a principal-bucket frontier obligation from the combined import bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports.principalBucket_obligation
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    (selector : FirstBitTerminalPrincipalBucketFrontierSelector) :
+    FirstBitTerminalPrincipalBucketFrontierSelector.obligation
+      principalBucket selected cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor selector :=
+  h.principalBucketFrontier.obligation selector
+
+/-- Localize a principal-bucket member to the mixed target-core homogeneous bucket. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports.bucketOf_eq_of_mem_principalBucket
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor)
+    (hsubset : FirstBitTerminalPrincipalBucketMixedLayerSubbucket principalBucket Tmix L)
+    {target : Target} (htarget : target ∈ principalBucket) :
+    bucketOf target = homogeneousBucket :=
+  h.coCutSelfLayerMixedTargetCore.mixedTargetCore.bucketOf_eq_of_mem_tmix (hsubset htarget)
+
+/-- Final-facing wrapper adding principal-bucket frontier imports to the mixed target-core surface. -/
+structure
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 PureT2 : Finset Shadow)
+    (SparseTarget DenseTarget : Finset Target)
+    (pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ)
+    (targetDamage : Old → ℕ) (pureProfile : Shadow → ℕ)
+    (pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ)
+    (Damage : Old → Target → ℕ) (Polar : Target → ℕ)
+    (Tmix : ℕ → Finset Target)
+    (L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ)
+    (bucketOf : Target → Bucket) (homogeneousBucket : Bucket)
+    (bucketProfile : Bucket → ℕ) (bucketSlack dyadicBucketSlack : ℕ)
+    (principalBucket selected : Finset Target)
+    (cutResidue : Target → Fin 4) (homogeneousResidue : Fin 4)
+    (entryResidue : Target → Target → Fin 4) (selectorResidue : Fin 4)
+    (deleteCost : Target → ℕ) (rigidityFloor : ℕ)
+    (rowSignature : Target → RowSig) (rowTwinExit : Target → Target → Prop)
+    (coRowSignature : Target → CoRowSig) (coTwinExit : Target → Target → Prop)
+    (selectorModule moduleExit : Finset Target → Prop)
+    (f2RowRank : Finset Target → ℕ) (rankFloor : ℕ)
+    (denseWitness codenseWitness : Finset Target → Prop)
+    (hereditaryFloor : ℕ)
+    (Q : Old → Finset Shadow)
+    (RepairSpectrum : Finset (Fin 4)) (R44 : ℕ)
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (appendResidue : Fin 4)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop) : Prop where
+  finalMixedTargetCore :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+      Basis WithHoles PositiveAtom
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint
+  principalBucketFrontier :
+    FirstBitTerminalPrincipalBucketFrontierCertificate
+      principalBucket selected
+      cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor
+
+/-- Build the final principal-bucket frontier wrapper from the final mixed-core wrapper and frontier. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier_of_parts
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hprincipal :
+      FirstBitTerminalPrincipalBucketFrontierCertificate
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier
+      Basis WithHoles PositiveAtom
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+      principalBucket selected
+      cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  finalMixedTargetCore := hfinal
+  principalBucketFrontier := hprincipal
+
+/-- Forget principal-bucket fields and recover the final mixed target-core wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier.to_finalMixedTargetCore
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+      Basis WithHoles PositiveAtom
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.finalMixedTargetCore
+
+/-- Project the principal-bucket frontier certificate from the final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier.to_principalBucketFrontier
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPrincipalBucketFrontierCertificate
+      principalBucket selected
+      cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor :=
+  h.principalBucketFrontier
+
+/-- Apply a principal-bucket frontier obligation from the final-facing wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier.principalBucket_obligation
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (selector : FirstBitTerminalPrincipalBucketFrontierSelector) :
+    FirstBitTerminalPrincipalBucketFrontierSelector.obligation
+      principalBucket selected cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor selector :=
+  h.principalBucketFrontier.obligation selector
+
+/-- Localize a principal-bucket member to the final mixed target-core homogeneous bucket. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier.bucketOf_eq_of_mem_principalBucket
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hsubset : FirstBitTerminalPrincipalBucketMixedLayerSubbucket principalBucket Tmix L)
+    {target : Target} (htarget : target ∈ principalBucket) :
+    bucketOf target = homogeneousBucket :=
+  h.finalMixedTargetCore.mixedTargetCore.bucketOf_eq_of_mem_tmix (hsubset htarget)
+
+/-- Export the co-cut/mixed-core/principal-bucket import bundle from the final-facing wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier.to_coCutSelfLayerMixedTargetCorePrincipalBucketImports
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket RowSig CoRowSig : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {principalBucket selected : Finset Target}
+    {cutResidue : Target → Fin 4} {homogeneousResidue : Fin 4}
+    {entryResidue : Target → Target → Fin 4} {selectorResidue : Fin 4}
+    {deleteCost : Target → ℕ} {rigidityFloor : ℕ}
+    {rowSignature : Target → RowSig} {rowTwinExit : Target → Target → Prop}
+    {coRowSignature : Target → CoRowSig} {coTwinExit : Target → Target → Prop}
+    {selectorModule moduleExit : Finset Target → Prop}
+    {f2RowRank : Finset Target → ℕ} {rankFloor : ℕ}
+    {denseWitness codenseWitness : Finset Target → Prop}
+    {hereditaryFloor : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerMixedTargetCoreAndPrincipalBucketFrontier
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        principalBucket selected
+        cutResidue homogeneousResidue entryResidue selectorResidue
+        deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+        selectorModule moduleExit f2RowRank rankFloor
+        denseWitness codenseWitness hereditaryFloor
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+      principalBucket selected
+      cutResidue homogeneousResidue entryResidue selectorResidue
+      deleteCost rigidityFloor rowSignature rowTwinExit coRowSignature coTwinExit
+      selectorModule moduleExit f2RowRank rankFloor
+      denseWitness codenseWitness hereditaryFloor where
+  coCutSelfLayerMixedTargetCore := h.finalMixedTargetCore.to_coCutSelfLayerMixedTargetCore
+  principalBucketFrontier := h.principalBucketFrontier
 
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
