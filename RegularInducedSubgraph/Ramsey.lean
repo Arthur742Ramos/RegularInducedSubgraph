@@ -30785,6 +30785,619 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdHandoffManifes
       h.toFinalNumericalConsequences := by
   exact Subsingleton.elim _ _
 
+/--
+Final public proof-md export for downstream importers.  It packages the stable dashboard together
+with the reader handoff manifest and exposes every terminal import, checklist, facade, row, and
+numerical consequence that the dashboard normalizes to.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalPublicExport
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  dashboard : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v
+  handoffManifest : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v
+  finalConsumerHandoff : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v
+  publicAuditSummary : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v
+  coverageCertificate : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v
+  auditChecklist : RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v
+  consumerExport : RamseyTenR45CurrentFrontierProofMdConsumerExport G s v
+  finalLedger : RamseyTenR45CurrentFrontierProofMdFinalLedger G s v
+  finalManifest : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  normalizationRoute : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  publicFacade : RamseyTenR45CurrentFrontierPublicFacade G s v
+  unifiedFinalConsumerImport : RamseyTenR45UnifiedFinalConsumerImport G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+
+/-- Final dashboards materialize the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdFinalPublicExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v where
+  dashboard := h
+  handoffManifest := h.toProofMdHandoffManifest
+  finalConsumerHandoff := h.toProofMdFinalConsumerHandoff
+  publicAuditSummary := h.toProofMdPublicAuditSummary
+  coverageCertificate := h.toProofMdCoverageCertificate
+  auditChecklist := h.toProofMdAuditChecklist
+  consumerExport := h.toProofMdConsumerExport
+  finalLedger := h.toProofMdFinalLedger
+  finalManifest := h.toProofMdFinalManifest
+  proofMdImport := h.toProofMdImport
+  proofMdNormalizationChecklist := h.toProofMdNormalizationChecklist
+  normalizationRoute := h.toCurrentFrontierNormalizationRoute
+  theoremChecklist := h.toCurrentFrontierTheoremChecklist
+  targetRows := h.toCurrentFrontierTargetRows
+  numericalConsequences := h.toFinalNumericalConsequences
+  publicFacade := h.toCurrentFrontierPublicFacade
+  unifiedFinalConsumerImport := h.toUnifiedFinalConsumerImport
+  finalDownstreamImport := h.toFinalDownstreamImport
+  consumerNormalization := h.toConsumerNormalization
+  topRowFinalImport := h.toTopRowFinalImport
+  exact42Row := h.toThreeTenFortyTwo
+  localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960Row := fun H hcard =>
+    h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+  admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Row := h.toTenLeF_40960
+
+/-- Handoff manifests materialize the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalPublicExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v :=
+  h.toProofMdFinalDashboard.toProofMdFinalPublicExport
+
+/-- Final consumer handoffs materialize the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalPublicExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v :=
+  h.toProofMdFinalDashboard.toProofMdFinalPublicExport
+
+/-- Select the stable dashboard from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v :=
+  h.dashboard
+
+/-- Select the reader-facing handoff manifest from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v :=
+  h.handoffManifest
+
+/-- Select the final consumer handoff from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalConsumerHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v :=
+  h.finalConsumerHandoff
+
+/-- Select the public audit summary from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdPublicAuditSummary
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v :=
+  h.publicAuditSummary
+
+/-- Select the coverage certificate from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v :=
+  h.coverageCertificate
+
+/-- Select the audit checklist from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdAuditChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v :=
+  h.auditChecklist
+
+/-- Select the consumer export from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdConsumerExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdConsumerExport G s v :=
+  h.consumerExport
+
+/-- Select the final ledger from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalLedger G s v :=
+  h.finalLedger
+
+/-- Select the final manifest from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.finalManifest
+
+/-- Select the proof-md import from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.proofMdImport
+
+/-- Select the proof-md normalization checklist from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.proofMdNormalizationChecklist
+
+/-- Select the normalization route from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.normalizationRoute
+
+/-- Select the theorem checklist from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.theoremChecklist
+
+/-- Select target rows from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select compact numerical consequences from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select the public facade from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toCurrentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierPublicFacade G s v :=
+  h.publicFacade
+
+/-- Select the unified final-consumer import from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toUnifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.unifiedFinalConsumerImport
+
+/-- Select the final downstream import from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the consumer-normalization import from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.consumerNormalization
+
+/-- Select the exact-`42` top-row final import from the final public proof-md export. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalImport
+
+/-- Final public export route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Final public export route to the localized current-frontier `R(4,5) <= 27` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Final public export route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Final public export route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Final public export route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Final public export route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Flat constructor exposing final public exports from final dashboards. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalPublicExport_of_proofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v :=
+  h.toProofMdFinalPublicExport
+
+/-- Flat constructor exposing final public exports from handoff manifests. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalPublicExport_of_proofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v :=
+  h.toProofMdFinalPublicExport
+
+/-- Final dashboards round-trip through final public exports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdFinalPublicExport_toProofMdFinalDashboard_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdFinalPublicExport.toProofMdFinalDashboard = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final dashboards normalize through final public exports on handoff manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdFinalPublicExport_toProofMdHandoffManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdFinalPublicExport.toProofMdHandoffManifest =
+      h.toProofMdHandoffManifest := by
+  exact Subsingleton.elim _ _
+/-- Handoff manifests round-trip through final public exports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalPublicExport_toProofMdHandoffManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalPublicExport.toProofMdHandoffManifest = h := by
+  exact Subsingleton.elim _ _
+
+/-- Handoff manifests normalize through final public exports on dashboards. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalPublicExport_toProofMdFinalDashboard_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalPublicExport.toProofMdFinalDashboard =
+      h.toProofMdFinalDashboard := by
+  exact Subsingleton.elim _ _
+/-- Final handoffs round-trip through final public exports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalPublicExport_toProofMdFinalConsumerHandoff_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalPublicExport.toProofMdFinalConsumerHandoff = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on handoff manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdHandoffManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdHandoffManifest = h.toProofMdHandoffManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on final handoffs. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdFinalConsumerHandoff_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdFinalConsumerHandoff =
+      h.toProofMdFinalConsumerHandoff := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on public audit summaries. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdPublicAuditSummary_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdPublicAuditSummary =
+      h.toProofMdPublicAuditSummary := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on coverage certificates. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdCoverageCertificate_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdCoverageCertificate =
+      h.toProofMdCoverageCertificate := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on audit checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdAuditChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdAuditChecklist = h.toProofMdAuditChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on consumer exports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdConsumerExport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdConsumerExport = h.toProofMdConsumerExport := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on final ledgers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdFinalLedger_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdFinalLedger = h.toProofMdFinalLedger := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on final manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdFinalManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdFinalManifest = h.toProofMdFinalManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on proof-md imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdImport = h.toProofMdImport := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on proof-md normalization checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toProofMdNormalizationChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toProofMdNormalizationChecklist =
+      h.toProofMdNormalizationChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on normalization routes. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toCurrentFrontierNormalizationRoute_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toCurrentFrontierNormalizationRoute =
+      h.toCurrentFrontierNormalizationRoute := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on numerical consequences. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on public facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toCurrentFrontierPublicFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toCurrentFrontierPublicFacade =
+      h.toCurrentFrontierPublicFacade := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on unified final-consumer imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toUnifiedFinalConsumerImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toUnifiedFinalConsumerImport =
+      h.toUnifiedFinalConsumerImport := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on final downstream imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toFinalDownstreamImport = h.toFinalDownstreamImport := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on consumer normalization imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toConsumerNormalization_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toConsumerNormalization = h.toConsumerNormalization := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through dashboards on top-row final imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalDashboard_toTopRowFinalImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalDashboard.toTopRowFinalImport = h.toTopRowFinalImport := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through handoff manifests on dashboards. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest_toProofMdFinalDashboard_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdHandoffManifest.toProofMdFinalDashboard = h.toProofMdFinalDashboard := by
+  exact Subsingleton.elim _ _
+/-- Final public exports normalize through handoff manifests on final handoffs. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest_toProofMdFinalConsumerHandoff_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdHandoffManifest.toProofMdFinalConsumerHandoff =
+      h.toProofMdFinalConsumerHandoff := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through handoff manifests on public audit summaries. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest_toProofMdPublicAuditSummary_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdHandoffManifest.toProofMdPublicAuditSummary =
+      h.toProofMdPublicAuditSummary := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through handoff manifests on coverage certificates. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest_toProofMdCoverageCertificate_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdHandoffManifest.toProofMdCoverageCertificate =
+      h.toProofMdCoverageCertificate := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through handoff manifests on audit checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest_toProofMdAuditChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdHandoffManifest.toProofMdAuditChecklist = h.toProofMdAuditChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through handoff manifests on proof-md imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest_toProofMdImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdHandoffManifest.toProofMdImport = h.toProofMdImport := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through handoff manifests on normalization routes. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest_toCurrentFrontierNormalizationRoute_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdHandoffManifest.toCurrentFrontierNormalizationRoute =
+      h.toCurrentFrontierNormalizationRoute := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through handoff manifests on target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdHandoffManifest.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports normalize through handoff manifests on numerical consequences. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdHandoffManifest_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdHandoffManifest.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
