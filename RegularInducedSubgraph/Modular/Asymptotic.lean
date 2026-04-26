@@ -6426,6 +6426,150 @@ def HasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition : Prop :=
                         S.card ≤ coreSize + pendantSize + bipartiteSize
 
 /--
+Concrete bipartite-remainder certificate used by the mod-four terminal layer split: the remainder is
+contained in the terminal packet and admits a two-class coloring whose fibers are independent.
+-/
+def HasModFourBipartiteRemainderCertificate
+    {n : ℕ} (G : SimpleGraph (Fin n)) (S B : Finset (Fin n)) : Prop :=
+  B ⊆ S ∧
+    ∃ side : Fin n → Fin 2,
+      ∀ r : Fin 2, G.IsIndepSet ((B.filter fun v => side v = r) : Set (Fin n))
+
+/-- A certified bipartite remainder has size at most `2m` under the packet independence bound. -/
+theorem modFourBipartiteRemainder_card_le_two_mul
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S B : Finset (Fin n)}
+    (halpha : HasIndependenceBoundOn G S m)
+    (hbipartite : HasModFourBipartiteRemainderCertificate G S B) :
+    B.card ≤ 2 * m := by
+  classical
+  rcases hbipartite with ⟨hBS, side, hside⟩
+  have hsmall : ∀ r : Fin 2, (B.filter fun v => side v = r).card ≤ m := by
+    intro r
+    exact
+      halpha (B.filter fun v => side v = r)
+        (by
+          intro v hv
+          exact hBS (Finset.mem_filter.mp hv).1)
+        (hside r)
+  simpa using
+    (finset_card_le_fintype_card_mul_of_fiber_bound (β := Fin 2) B side hsmall)
+
+/--
+Shortest-odd-core trace surface for the mod-four terminal layer proof: every terminal
+triangle-free/induced-`C₄`-free packet has a family of odd core residues whose nonempty selected
+subfamilies never have total residue `0 mod 4`.
+-/
+def HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          HasNoNonemptyModFourDegreeTwoLayerOn G S →
+            ∃ coreCount : ℕ, ∃ residue : Fin coreCount → ℕ,
+              (∀ i : Fin coreCount, residue i = 1 ∨ residue i = 3) ∧
+                HasNoNonemptyOddCoreResidueSubfamilyModFourZero
+                  (Finset.univ : Finset (Fin coreCount)) residue
+
+/--
+Core-length accounting surface for the mod-four terminal layer proof.  Once the shortest odd-core
+trace is fixed, the total length of the retained cores is bounded by `11m/5`.
+-/
+def HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    {coreCount : ℕ} (residue : Fin coreCount → ℕ),
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          HasNoNonemptyModFourDegreeTwoLayerOn G S →
+            (∀ i : Fin coreCount, residue i = 1 ∨ residue i = 3) →
+              HasNoNonemptyOddCoreResidueSubfamilyModFourZero
+                (Finset.univ : Finset (Fin coreCount)) residue →
+                  ∃ coreSize : ℕ, 5 * coreSize ≤ 11 * m
+
+/--
+Pendant-fibre charging surface for the mod-four terminal layer proof: every selected odd core is
+charged at cost at most `3m`.
+-/
+def HasTriangleFreeInducedC4FreeModFourPendantFiberCharging : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    {coreCount : ℕ} (residue : Fin coreCount → ℕ),
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          HasNoNonemptyModFourDegreeTwoLayerOn G S →
+            (∀ i : Fin coreCount, residue i = 1 ∨ residue i = 3) →
+              HasNoNonemptyOddCoreResidueSubfamilyModFourZero
+                (Finset.univ : Finset (Fin coreCount)) residue →
+                  ∃ pendantSize : ℕ, pendantSize ≤ coreCount * (3 * m)
+
+/--
+Zero-trace recursion surface for the mod-four terminal layer proof.  After the odd cores and their
+pendant fibres are charged, the remaining terminal packet is represented by one bipartite remainder.
+-/
+def HasTriangleFreeInducedC4FreeModFourZeroTraceRecursion : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    {coreCount : ℕ} (residue : Fin coreCount → ℕ),
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          HasNoNonemptyModFourDegreeTwoLayerOn G S →
+            (∀ i : Fin coreCount, residue i = 1 ∨ residue i = 3) →
+              HasNoNonemptyOddCoreResidueSubfamilyModFourZero
+                (Finset.univ : Finset (Fin coreCount)) residue →
+                  ∀ {coreSize pendantSize : ℕ},
+                    5 * coreSize ≤ 11 * m →
+                      pendantSize ≤ coreCount * (3 * m) →
+                        ∃ bipartiteLayer : Finset (Fin n),
+                          S.card ≤ coreSize + pendantSize + bipartiteLayer.card ∧
+                            HasModFourBipartiteRemainderCertificate G S bipartiteLayer
+
+/--
+Bipartite-remainder cap surface for the mod-four terminal layer proof: the zero-trace terminal
+remainder costs at most `2m`.
+-/
+def HasTriangleFreeInducedC4FreeModFourBipartiteRemainderCap : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S B : Finset (Fin n)},
+    HasIndependenceBoundOn G S m →
+      HasModFourBipartiteRemainderCertificate G S B →
+        B.card ≤ 2 * m
+
+/--
+The bipartite-remainder cap is discharged by the concrete two-class independent-cover
+certificate.
+-/
+theorem hasTriangleFreeInducedC4FreeModFourBipartiteRemainderCap :
+    HasTriangleFreeInducedC4FreeModFourBipartiteRemainderCap := by
+  intro n m G S B halpha hbipartite
+  exact modFourBipartiteRemainder_card_le_two_mul G halpha hbipartite
+
+/--
+The graph-facing terminal frontier surfaces assemble into the existing core-decomposition
+certificate.  This isolates the remaining graph work into shortest odd cores, pendant-fibre
+charging, zero-trace recursion, and the bipartite remainder cap.
+-/
+theorem hasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition_of_frontierSurfaces
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceRecursion) :
+    HasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition := by
+  intro n m G S htriangle hC4 halpha hnoLayer
+  rcases htrace G htriangle hC4 halpha hnoLayer with
+    ⟨coreCount, residue, hresidue, hnoResidue⟩
+  rcases hcoreLength G residue htriangle hC4 halpha hnoLayer hresidue hnoResidue with
+    ⟨coreSize, hcoreSize⟩
+  rcases hpendant G residue htriangle hC4 halpha hnoLayer hresidue hnoResidue with
+    ⟨pendantSize, hpendantBound⟩
+  rcases hzeroTrace G residue htriangle hC4 halpha hnoLayer hresidue hnoResidue
+      hcoreSize hpendantBound with
+    ⟨bipartiteLayer, hcover, hbipartiteCert⟩
+  have hbipartite : bipartiteLayer.card ≤ 2 * m :=
+    hasTriangleFreeInducedC4FreeModFourBipartiteRemainderCap G halpha hbipartiteCert
+  exact
+    ⟨coreCount, coreSize, pendantSize, bipartiteLayer.card, residue, hresidue,
+      hnoResidue, hcoreSize, hpendantBound, hbipartite, hcover⟩
+
+/--
 The core-decomposition surface proves a concrete `14m` mod-four layer cap.  Internally this is the
 documented `66m/5` estimate, rounded up to an integer coefficient.
 -/
@@ -6468,6 +6612,36 @@ theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_coreDecomposition
   exact
     triangleFreeInducedC4FreeModFourLayer_card_le_fourteen_mul_of_coreDecomposition
       hdecomp G htriangle hC4 halpha hnoLayer
+
+/-- The frontier-surface split is wired directly into the rounded `14m` terminal-layer cap. -/
+theorem triangleFreeInducedC4FreeModFourLayer_card_le_fourteen_mul_of_frontierSurfaces
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceRecursion)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ 14 * m := by
+  exact
+    triangleFreeInducedC4FreeModFourLayer_card_le_fourteen_mul_of_coreDecomposition
+      (hasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition_of_frontierSurfaces
+        htrace hcoreLength hpendant hzeroTrace)
+      G htriangle hC4 halpha hnoLayer
+
+/-- Package the graph-facing frontier-surface split as the rounded mod-four terminal-layer cap. -/
+theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_frontierSurfaces
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceRecursion) :
+    TriangleFreeInducedC4FreeModFourLayerCap 14 := by
+  exact
+    triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_coreDecomposition
+      (hasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition_of_frontierSurfaces
+        htrace hcoreLength hpendant hzeroTrace)
 
 /-- An exact induced `2`-regular set of `0 mod 4` cardinality is a mod-four degree-two layer. -/
 theorem isModFourDegreeTwoLayer_of_inducesRegularOfDegree_two
@@ -6550,6 +6724,27 @@ theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_coreD
   exact
     correctedZeroOneThreeTwoComplement_card_le_of_modFour_layerCap
       (triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_coreDecomposition hdecomp)
+      G htriangle hC4 halpha hnoLayer
+
+/--
+Corrected-complement bridge using the graph-facing split of the mod-four terminal frontier rather
+than the monolithic core-decomposition surface.
+-/
+theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_frontierSurfaces
+    (htrace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace)
+    (hcoreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound)
+    (hpendant : HasTriangleFreeInducedC4FreeModFourPendantFiberCharging)
+    (hzeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceRecursion)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ 14 * m := by
+  exact
+    correctedZeroOneThreeTwoComplement_card_le_of_modFour_layerCap
+      (triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_frontierSurfaces
+        htrace hcoreLength hpendant hzeroTrace)
       G htriangle hC4 halpha hnoLayer
 
 /--
