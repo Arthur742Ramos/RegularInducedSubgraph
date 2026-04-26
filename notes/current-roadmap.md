@@ -5588,6 +5588,8 @@ Its scalar shadow is one-exception-per-nonflat-atom: atoms of `F`-degree `0` or 
 The nonflat profiles are finite: in `1/3` type, a substar of size `1,2,3` gives respectively `2,3,3`
 nonflat atoms; in `2/2` type, one edge gives `2`, two adjacent edges give `3`, and a matching or at least
 three edges gives `4`.  The remaining datum is only this bounded exceptional-row scalar packet.
+After the saturated row/pair/one-corner host closures, the two- and three-exception packets discharge; only
+the four-exception `2/2` cases remain, namely a matching, a three-edge `K_{2,2}` subgraph, or all `K_{2,2}`.
 The pure all-edge minimum further splits into only two phase types inside the parity tetrahedron: the three
 edge supports either share one parity word (star phase) or form the triangle avoiding one parity word
 (triangle phase), with only the `2+1` multiplicity choice left on each size-three edge target.

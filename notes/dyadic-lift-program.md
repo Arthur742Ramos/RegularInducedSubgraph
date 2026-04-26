@@ -1226,6 +1226,9 @@ single exceptional row differing by `2 mod 4` from the other two rows.
 The exceptional-row packet has size only `2`, `3`, or `4`: substar sizes `1,2,3` in `1/3` type give
 `2,3,3`, while in `2/2` type one edge gives `2`, adjacent two-edge paths give `3`, and matchings or denser
 subgraphs give `4`.
+The size `2` and `3` packets route to the row/pair/one-corner host closures; the only residual
+`F`-containing all-ternary cases are four-exception `2/2` packets: matching, three-edge `K_{2,2}`, or full
+`K_{2,2}`.
 The pure all-edge minimum has only star phase (three edge supports share a parity word) or triangle phase
 (three edge supports avoid one parity word), plus the `2+1` multiplicities on the size-three edge targets.
 For a symmetric all-ternary cycle, transposing the two-atom trace matrix forces every mutual edge target to

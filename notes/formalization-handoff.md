@@ -2637,6 +2637,8 @@ Recommended attack:
     Add the finite nonflat profile table: `1/3` substars of size `1,2,3` give `2,3,3` nonflat atoms; in
     `2/2` type, one edge gives `2`, adjacent two-edge paths give `3`, and matchings or denser subgraphs give
     `4`.
+    Record the local-host discharge: two-exception packets are pair-chamber certificates, three-exception
+    packets are one-corner ternary certificates, so only four-exception `2/2` `F` graphs remain.
     For the all-edge permutation minimum, formalize the phase split: the three parity edges form either a
     star through one parity word or the triangle avoiding one parity word, and each size-three edge target
     has only a `2+1` label multiplicity choice.

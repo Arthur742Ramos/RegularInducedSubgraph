@@ -12889,6 +12889,18 @@ Thus every `F`-containing endpoint is a bounded one-exception scalar packet over
 atoms.  It is no longer a ternary target-code problem: the target code is fixed, and only the exceptional-row
 scalar packet remains.
 
+The two- and three-exception lines are local-host lines.  If only two atoms are nonflat, the two exceptional
+rows form the pair-chamber separation certificate.  If three atoms are nonflat, their exceptional rows form
+the ternary one-corner certificate, because every pairwise target code is already fixed and the only moving
+data are the three `2 mod 4` scalar flips.  Thus, after the saturated row/pair/one-corner closures, the only
+`F`-containing all-ternary residual is the four-exception line:
+
+```text
+2/2 type split with either a matching, a 3-edge K_{2,2} subgraph, or K_{2,2} itself.
+```
+
+This is a finite four-row scalar packet on top of a typed bipartite quotient-regular skeleton.
+
 It remains useful to split the pure all-edge minimum by phase.  Fix one parity tetrahedron, say the even
 words.  An edge target `E_i` is specified by the constant value of coordinate `i`; its two labels are the two
 even words with that coordinate value.  For the permutation edge-triangle `E_1,E_2,E_3`, the three label

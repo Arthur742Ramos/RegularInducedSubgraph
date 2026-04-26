@@ -2144,6 +2144,8 @@ Atoms of `F`-degree `0` or `3` are cross-flat; atoms of `F`-degree `1` or `2` ha
 with cross-degree shifted by `2 mod 4`.
 The exceptional-row packet is finite: its nonflat atom count is `2`, `3`, or `4` according to the substar or
 `K_{2,2}` subgraph shape.
+The `2`- and `3`-exception packets are local row/pair/one-corner certificates and discharge under the host
+closures; only four-exception `2/2` packets remain.
 The pure all-edge minimum has only star or triangle phase in the four-word parity tetrahedron, plus `2+1`
 multiplicity on each size-three edge target.
 In a symmetric all-ternary cycle, mutual edge targets pass the transpose test only when the edge contains an
