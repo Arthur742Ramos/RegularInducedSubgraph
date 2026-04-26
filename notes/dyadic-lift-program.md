@@ -940,6 +940,34 @@ beyond the retained-only conditions.  Thus an arbitrary induced-`C_4`-free, `K_4
 `alpha<=m` and the degree-two terminal exclusion can occupy one boundary type.  The final step must prove
 a mod-`4` selector for this hereditary class or use global target-stability/maximal-witness data beyond the
 local augmented-fiber tables.
+In the one-boundary-type case, target-stability becomes explicit.  Partition the retained fiber by
+`A_j={theta=L+j}`.  For a same-old-vector boundary copy `z` whose adjacency to the retained type is the
+constant `epsilon`, every singleton exchange importing `z` and exporting `y` gives
+`epsilon=0 => |N_G(y) cap A_{-1}|<=|N_G(y) cap A_0|+1`, while
+`epsilon=1 => |A_1\N_G(y)|<=|A_0\N_G(y)|+1`.  Hence a residual with both a boundary miss and a boundary
+hit has labelled domination of the two adjacent off-target layers by the target layer; this is the
+global information absent from the local hereditary tables.
+Two-boundary-copy exchanges control the opposite layer.  If `z_1,z_2` have constant retained adjacencies
+with sum `t` and `Y={y_1,y_2}` is the exported retained pair, then
+`theta'(u)=theta(u)+deg_Y(u)-t`, so target-stability gives
+`sum_k |{u in A_{t-k}: deg_Y(u)=k, t-k !=0}| <= sum_{k!=t}|{u in A_0:deg_Y(u)=k}|+O(1)`.
+For two boundary hits this says
+`|A_1 cap (N(y_1) triangle N(y_2))|+|A_2 \ (N(y_1) union N(y_2))|`
+is paid for by target vertices outside the common neighbourhood of the pair; hence mass in the opposite
+layer `A_2` must be nearly dominated by every retained pair.  The two-miss case is dual and controls
+`A_{-2}` through common neighbourhoods.
+This closes the empty-target same-type degeneration.  If `A_0=empty` and the retained boundary type has
+both a miss and two hits, the singleton miss makes `A_{-1}` a clique in the complement and hence size
+`<=3`; the singleton hit makes `A_1` independent in the complement and hence size `<=m`; the two-hit
+pair inequality forces every retained pair to dominate `A_2` in the original graph, so each vertex of
+`A_2` has complement-degree at most one and `|A_2|<=m` by the induced-degree-two exclusion.  Therefore a
+large one-type residual must have nonempty target layer `A_0`.
+Inside `A_0`, partition further by total retained degree modulo four:
+`D_q={u in A_0: deg_B(u)=q}`.  Any four-set `S subset D_q` is a pure-discard closing atom exactly when
+it induces the regular four-vertex graph of degree `q-delta_B`; terminality forbids that one pattern in
+that slice.  The remaining target-layer obstruction is therefore a four-coloured graph, each colour
+forbidding one specified regular four-pattern, coupled to the off-target layers by the singleton and
+pair target-stability inequalities.
 Useful structure remains inside that class.  If `abc` is a triangle in the complement `H`, trace every
 outside vertex by `N_H(v) cap {a,b,c}`.  No trace has size three; incomparable nonempty traces are
 anti-complete, since an edge between them and an anchor edge induce a `C_4`.  Thus two-neighbour trace

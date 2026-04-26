@@ -6341,6 +6341,99 @@ closure cannot be another finite boundary-type compression of the existing table
 a mod-`4` congruent-degree selector for this induced-`C_4`-free, `K_4`-free class, or import genuinely
 global target-stability/maximal-witness information from the exact-basis construction.
 
+The latter global information has a concrete four-layer form in the single-boundary-type residual.  Keep
+the notation `L=H-r`, and partition the retained direction fiber by the target label
+
+```text
+A_j={u in B : theta_X(u)=L+j},        j in Z/4Z.
+```
+
+Suppose a boundary copy `z in X_i` has constant adjacency `epsilon in {0,1}` to the retained type under
+consideration; this is exactly the situation when all retained vertices have one boundary type.  For the
+same-old-vector singleton exchange importing `z` and exporting any `y in B`, target-stability gives
+
+```text
+epsilon=0:   |N_G(y) cap A_{-1}| <= |N_G(y) cap A_0|+1,
+epsilon=1:   |A_1 \ N_G(y)|      <= |A_0 \ N_G(y)|+1,
+```
+
+where `G` is the original direction graph, indices are modulo `4`, and the `+1` absorbs the exported or
+imported vertex.  These are not hereditary restrictions; they are no-improving-swap inequalities forced
+by the maximal target choice.  Thus in a one-type `{0,1}`/`{3,2}` residual with both a boundary miss and
+a boundary hit, the off-target layer `A_{-1}` is neighbourhood-dominated by the target layer `A_0`, while
+`A_1` is co-neighbourhood-dominated by `A_0`.  The remaining proof can now target this labelled
+induced-`C_4`-free, `K_4`-free graph rather than an unlabelled hereditary graph.
+
+Two-boundary-copy exchanges reach the opposite label layer.  Import boundary copies `z_1,z_2` with
+constant retained adjacencies `epsilon_1,epsilon_2` and put `t=epsilon_1+epsilon_2`.  Export a retained
+pair `Y={y_1,y_2}` with the same old-vector sum.  For `u in B\Y`,
+
+```text
+theta'(u)=theta(u)+deg_Y(u)-t.
+```
+
+Therefore target-stability gives the uniform inequality
+
+```text
+sum_{k=0}^2 |{u in A_{t-k}: deg_Y(u)=k, t-k != 0}|
+   <= sum_{k != t} |{u in A_0: deg_Y(u)=k}| + O(1),
+```
+
+where the `O(1)` accounts only for the two exported/imported vertices.  In particular:
+
+```text
+t=0: |A_{-1} cap (N(y_1) triangle N(y_2))|
+     + |A_{-2} cap N(y_1) cap N(y_2)|
+     <= |A_0 cap (N(y_1) union N(y_2))| + O(1);
+
+t=2: |A_1 cap (N(y_1) triangle N(y_2))|
+     + |A_2 \ (N(y_1) union N(y_2))|
+     <= |A_0 \ (N(y_1) cap N(y_2))| + O(1).
+```
+
+Thus a same-type residual with two boundary hits cannot hide most of its mass in `A_2` unless every
+retained pair nearly dominates that mass; dually, two boundary misses force `A_{-2}` into common
+neighbourhoods paid for by the target layer.  This second-order labelled domination is the first
+constraint on the label opposite the target and is the natural target-stability replacement for the
+failed unlabelled colouring route.
+
+It already closes the empty-target degeneration.  Suppose `A_0=empty` and the retained boundary type has
+both a miss and two hits, as in the model type `110` up to complement.  The singleton miss inequality
+forces `A_{-1}` to be anti-complete to `B` in `G`, hence `A_{-1}` is a clique in the complement `H` and
+has size at most `3`.  The singleton hit inequality forces `A_1` to be complete to `B` in `G`, hence
+`A_1` is independent in `H` and has size at most `m`.  Finally, the two-hit pair inequality has no target
+side to pay for missed vertices; exact target-stability therefore forces every retained pair to dominate
+`A_2` in `G`.  Equivalently, every vertex of `A_2` has at most one neighbour in the complement `H`, so
+`H[A_2]` has maximum degree at most one and is capped by the induced-degree-two terminal exclusion.  Thus
+
+```text
+A_0=empty        =>        |B| <= 2m+O(1)
+```
+
+in the one-type residual.  Any large surviving `{0,1}`/`{3,2}` branch must therefore have a nonempty
+target layer `A_0`; the final obstruction is not an unlabelled hereditary graph but a labelled graph
+whose off-target layers are dominated by, or paid for by, the target layer.
+
+On the target layer the pure-discard test becomes especially explicit.  Let
+
+```text
+D_q={u in A_0 : deg_B(u)=q [MOD 4]}.
+```
+
+For any four-set `S subset D_q` in one exact direction, the complement `B\S` is still old-balanced and
+`delta_{B\S}=delta_B`.  Since `theta_X=L` on `S`, the pure-discard equation reduces to
+
+```text
+deg_S(s)=q-delta_B        for every s in S.
+```
+
+Thus a terminal target layer has the following residue-sliced forbidden-pattern property: each degree
+slice `D_q` avoids the single four-vertex regular graph of degree `q-delta_B`.  This is weaker than
+Ramsey, because one slice may only forbid independent fours, another only `2K_2`, another only `C_4`, and
+another only cliques.  But it is now localized: the remaining nonempty-target obstruction is a
+four-coloured target layer with one specified forbidden regular pattern in each colour, together with the
+singleton and pair target-stability domination inequalities on the off-target layers.
+
 Inside that remaining complement class there is still a useful triangle-anchor decomposition.  Let
 `abc` be a triangle in `H`, and for every outside vertex `v` put
 

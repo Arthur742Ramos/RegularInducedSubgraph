@@ -1595,6 +1595,20 @@ Recommended attack:
    `Rep={0,1}` mixed rules impose no extra same-type restriction beyond the retained-only
    `alpha<=3`, `2K_2`-free branch.  The remaining formal target is therefore a genuine mod-`4` selector
    for the induced-`C_4`-free, `K_4`-free complement class, or a separate global target-stability lemma.
+   Formalize the singleton-swap label-gradient lemma: with `A_j={theta=L+j}` and a same-old-vector
+   boundary copy whose retained-type adjacency is the constant `epsilon`, target-stability gives
+   `epsilon=0 => |N(y) cap A_{-1}|<=|N(y) cap A_0|+1` and
+   `epsilon=1 => |A_1\N(y)|<=|A_0\N(y)|+1` for every retained export `y`.
+   Also formalize the two-boundary-copy label-gradient lemma: if the imported boundary pair has constant
+   adjacency sum `t` to the retained type and the exported retained pair is `Y`, then
+   `theta'(u)=theta(u)+deg_Y(u)-t` and
+   `sum_k |{u in A_{t-k}: deg_Y(u)=k, t-k !=0}| <= sum_{k!=t}|{u in A_0:deg_Y(u)=k}|+O(1)`.
+   Deduce the empty-target corollary for a type with a miss and two hits: if `A_0=empty`, then
+   `|A_{-1}|<=3`, `|A_1|<=m`, and `H[A_2]` has maximum degree at most one, so the same-type residual is
+   at most `2m+O(1)`.
+   For the nonempty target layer, formalize the pure-discard slice criterion: in
+   `D_q={u in A_0: deg_B(u)=q [MOD 4]}`, any four-set closes by pure discard exactly when it induces the
+   regular four-vertex graph of degree `q-delta_B`; terminality forbids that pattern in `D_q`.
    Within that complement class, formalize the triangle-anchor trace lemma: for a triangle `abc`, no
    outside vertex is adjacent to all three anchors; vertices with incomparable nonempty traces into
    `{a,b,c}` are anti-complete; the two-neighbour trace classes are independent; singleton trace classes
