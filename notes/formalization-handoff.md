@@ -2256,6 +2256,9 @@ Recommended attack:
     `R_i(B)=e_i+sum_{j in B,j!=i}c_ij`.  For two bundles, the union is quotient-solvable iff the
     cross-bundle correction sums are `-R(B1)` and `-R(B2)` on the two sides.  Terminality is affine
     avoidance of this cancellation vector.
+    Add the one-atom repair profile: for atom `y` outside pure-Q bundle `B`, `B union {y}` is solvable iff
+    `c_iy=-R_i(B)` for all `i in B` and `e_y+sum_i c_yi==0 mod 4`.  Terminality forces every outside atom
+    to avoid that affine profile.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

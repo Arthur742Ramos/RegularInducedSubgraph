@@ -5148,6 +5148,8 @@ variation, cross-irregularity, or pure weighted-quotient unsolvability.
 In the pure `Q` case each bundle has a nonzero quotient residual vector `R(B)`, and the union is dangerous
 exactly when the cross-bundle correction vector equals `-R` on both sides; terminality is affine
 avoidance of that cancellation target.
+For a single outside atom `y`, `B union {y}` is dangerous exactly when `c_iy=-R_i(B)` for all `i in B`
+and `e_y+sum_i c_yi=0`; every outside atom must avoid this affine repair profile.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

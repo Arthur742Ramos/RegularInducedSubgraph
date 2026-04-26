@@ -913,6 +913,8 @@ Each of `B1`, `B2`, and `B1 union B2` is blocked by one of three certificates: n
 nonconstant cross-correction, or pure weighted `Z/4` quotient unsolvability.
 For pure quotient blocks, define residuals `R_i=e_i+sum c_ij`; two blocked bundles combine unless the
 cross-bundle correction vector avoids the affine target `-R` on both sides.
+The one-atom repair profile is also explicit: an outside atom `y` repairs `B` iff its incoming
+corrections are `-R_i(B)` on all atoms of `B` and its outgoing row sum cancels `e_y`.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

@@ -10196,6 +10196,19 @@ C_j(B_1) == -R_j(B_2)        for every j in B_2.
 Thus the pure two-bundle obstruction is affine avoidance: both individual bundles have nonzero residual
 vectors, and the cross-bundle correction vectors avoid the unique affine target that would cancel them.
 
+The same residual language gives a one-atom repair test.  Let `B` be a pure `Q` bundle and let `y` be an
+atom outside it, with internal defect `e_y`.  The enlarged bundle `B union {y}` is dangerous exactly when
+
+```text
+c_{iy} == -R_i(B)        for every i in B,
+e_y + sum_{i in B}c_{yi} == 0        [MOD 4].
+```
+
+Thus every outside atom avoids a unique affine repair profile for `B`: either at least one incoming
+correction to an atom of `B` misses `-R_i(B)`, or the outgoing row sum from `y` misses `-e_y`.  In a
+terminal pure-quotient branch, this pointwise repair avoidance must hold for every tight threshold
+bundle and every atom outside it.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

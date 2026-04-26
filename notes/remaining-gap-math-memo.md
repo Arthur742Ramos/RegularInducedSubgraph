@@ -1845,6 +1845,8 @@ Each of `B1`, `B2`, and `B1 union B2` is blocked by defect variation, cross-irre
 weighted-quotient unsolvability.
 In the pure quotient case, blocked bundles have nonzero residual vectors `R`; the union is dangerous
 exactly when cross-bundle corrections cancel these residuals, so terminality is affine avoidance.
+An outside atom repairs a blocked bundle exactly when its incoming corrections equal `-R` and its outgoing
+row sum cancels its own defect; terminality forbids this affine profile.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no
