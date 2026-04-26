@@ -4990,6 +4990,12 @@ For three templates, `Gamma(P)` is `P_3` or `K_3`; minimum terminality is one fo
 a matched edge plus one bad complement-four pair for the unmatched triple.  Two templates are immediate:
 one forced witness if adjacent, two one-at-a-time witnesses if disjoint.
 The size-three geometries are only path, centered `K_3`, and triangular `K_3`.
+Unanchored ambiguity uses relative traces against a reference occupied trace.  Adjacent templates force
+relative trace twins; full and near-Fano relative equations force all occupied traces equal, so no large
+unanchored packing survives the relative quotient.
+For the terminal co-cut endpoint, singleton target-stability says every same-old-vector boundary import
+has correction gain at most target loss:
+`|A_{y,z}|+1_{z target}<=|D_{y,z}|+1_{y in T}`.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

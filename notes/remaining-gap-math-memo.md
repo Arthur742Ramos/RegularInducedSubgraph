@@ -1727,6 +1727,10 @@ patterns are the three two-witness pairs `{u_i v_i, v_j v_k}`.
 Three-template cores are `P_3` or `K_3` in `Gamma(P)` and have one forced complement pair plus one
 unmatched complement-four witness; two-template cores are immediate.
 The three-template geometry is path, centered `K_3`, or triangular `K_3`.
+Unanchored ambiguity is reduced by relative traces `1_p-1_{p_0}`; full and near-Fano relative systems
+force all occupied traces equal, so large unanchored packings collapse before the internal table.
+In the co-cut endpoint, singleton same-old-vector swaps satisfy
+`|A_{y,z}|+1_{z target}<=|D_{y,z}|+1_{y in T}`, so every target gain is paid for by target loss.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

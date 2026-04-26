@@ -758,6 +758,10 @@ imported vertex if it lands at `L`; define losses as target vertices moved away 
 exported vertex if it was target.  Target-stability is precisely `gain(y,z)<=loss(y,z)` for every
 same-old-vector singleton import.  Hence every target-correct boundary import must be paid for by a
 lost target vertex.
+Equivalently, if `A_{y,z}` is the set of off-target retained vertices corrected by swapping out `y` and
+in `z`, and `D_{y,z}` is the set of target vertices knocked off target, then
+`|A_{y,z}|+1_{z lands on target}<=|D_{y,z}|+1_{y in T}`.  Boundary vertices in each old-vector class are
+therefore dominated by their signed cut across the current target fiber.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard
@@ -1617,6 +1621,11 @@ templates have one forced witness and disjoint templates need two.
 The three-template geometries are just path, centered `K_3`, and triangular `K_3`:
 `{a,x_1,x_2},{a,b,c},{b,y_1,y_2}`; three triples sharing `a`; or
 `{a,b,x},{a,c,y},{b,c,z}`.
+Unanchored ambiguity is handled by choosing an occupied reference trace `p_0` and using relative columns
+`1_p-1_{p_0}`.  Adjacent templates force equal relative columns, so after relative-twin quotienting the
+candidate set is again a packing.  Full Fano relative equations force all traces equal by nonsingularity
+of the Fano incidence matrix; six-line near-Fano equations have nullspace
+`<-2 1_{L_0}+1_{R_i\L_0}>`, which has no nonzero `{ -1,0,1 }` multiple.
 For `P` Fano, the exact graph shadow is that the internal witness graph is not covered by any Fano line;
 all three-edge witness graphs are line-covered.
 Equivalently, dualize to the seven Fano lines: each kept-pair witness joins the two lines disjoint from

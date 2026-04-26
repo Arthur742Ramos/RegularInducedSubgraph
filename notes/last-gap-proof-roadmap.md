@@ -1769,6 +1769,10 @@ What remains justified after audit is:
       the tetrahedral and one-disjoint-pair shapes force twins; its minimum terminal cores are exactly
       the three two-witness patterns `{u_i v_i, v_j v_k}`; sizes three and two are governed directly by
       `Gamma(P)=P_3/K_3` (path, centered `K_3`, triangular `K_3`) or a single adjacent/disjoint pair;
+      unanchored ambiguity is handled by relative traces against a reference occupied trace, and full or
+      near-Fano relative equations force all traces equal, so no large unanchored packing survives;
+      on the terminal co-cut side, singleton same-old-vector imports obey the target-stability inequality
+      `|A_{y,z}|+1_{z target}<=|D_{y,z}|+1_{y in T}`;
       Fano itself needs four kept-pair
       witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual

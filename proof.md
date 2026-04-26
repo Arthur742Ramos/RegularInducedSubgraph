@@ -6200,6 +6200,25 @@ would become target-correct after import must either be paid for by exporting a 
 vertex or by knocking some already target-correct retained vertex off target.  This is the counting form
 of the singleton-swap obstruction.
 
+Equivalently, for each same-old-vector pair `(y,z)` define
+
+```text
+A_{y,z}={u in B\{y}: theta_X(u) != L and theta_X(u)+1_{uy}-1_{uz}=L},
+D_{y,z}={u in B\{y}: theta_X(u) = L and theta_X(u)+1_{uy}-1_{uz} != L}.
+```
+
+Then target-stability gives
+
+```text
+|A_{y,z}| + 1_{z becomes target} <= |D_{y,z}| + 1_{y in T}.
+```
+
+Thus any import that is itself target-correct, or that corrects many off-target retained vertices, must
+flip at least as many current target vertices off target.  In a minimal counterexample the boundary
+vertices in each old-vector class are therefore dominated by the signed cut they induce across the
+current target fiber `T`; no boundary vertex can have a strictly positive correction surplus against all
+exports in its old-vector class.
+
 One must not overstate the fiber obstruction.  If `S subset B` is old-balanced and `eta_X` is
 constant on `S`, this does not by itself append `S` to `W`: the vertices in `B\S` have moved to the
 discard side and contribute the additional term `deg_{B\S}(s)` on `S`, and the old increment changes
@@ -9028,6 +9047,23 @@ triangular K_3:{a,b,x}, {a,c,y}, {b,c,z}.
 
 The first has two possible matched edges in `Gamma(P)`, while each `K_3` shape has three.  These are the
 only remaining anchored external template geometries before internal `E_3` signs are applied.
+
+The unanchored case has the same packing spine after a relative normalization.  Fix an occupied trace
+`p_0`.  If `O,O'` are both external candidates, then every occupied trace `p` satisfies
+
+```text
+(1_p-1_{p_0}) dot (1_O-1_{O'}) = 0        [MOD 4].
+```
+
+For adjacent templates this says the two swapped points have the same **relative trace column**
+`(1_p(x)-1_{p_0}(x))_p`.  Thus, after quotienting relative trace twins, the unanchored candidate set is
+again a triple packing.  The large-packing collapse is even stronger: if this relative equation holds for
+all seven Fano lines, the Fano incidence matrix is nonsingular over the rationals, so
+`1_p=1_{p_0}` for every occupied `p`.  If it holds for the six lines of `F\{L_0}`, the nullspace is
+spanned by the vector `-2 1_{L_0}+1_{R_i\L_0}`, which has no nonzero `{ -1,0,1 }` multiple; again
+`1_p=1_{p_0}`.  Hence full and near-Fano unanchored ambiguity either makes all occupied traces identical
+(so the external side is all triples unless labels conflict) or collapses by relative twins.  No genuine
+large unanchored external packing survives the relative quotient.
 
 For `P=F` this lower bound has an exact Fano-plane form.  A kept-pair witness `e` kills precisely the
 Fano lines disjoint from `e`; therefore a witness graph `H` kills all Fano omitted triples iff no Fano
