@@ -3582,6 +3582,38 @@ theorem ramseyThreeEightDegreeWindow_residual_constraints
       simpa [hxw] using hw_s
     simpa [commonNbrs] using Nat.eq_zero_of_not_pos hnotPos
 
+/-- The neighborhood of a degree-`7` vertex in the exact `28`-vertex residual is independent. -/
+theorem ramseyThreeEightDegreeWindow_residual_degree_seven_neighborhood_independent
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 7) :
+    G.IsNIndepSet 7 (s.filter fun w => G.Adj (v : α) w) := by
+  classical
+  let Nv : Finset α := s.filter fun w => G.Adj (v : α) w
+  have hdeg_eq : (G.induce (s : Set α)).degree v = Nv.card := by
+    simpa [Nv] using degree_induce_finset_eq_card_filter_adj G s v
+  have hNvCard : Nv.card = 7 := by
+    rw [← hdeg_eq]
+    exact hdegv
+  rw [SimpleGraph.isNIndepSet_iff]
+  constructor
+  · rw [SimpleGraph.isIndepSet_iff]
+    intro a ha b hb hab
+    by_contra habAdj
+    have hva : G.Adj (v : α) a := (Finset.mem_filter.mp ha).2
+    have hvb : G.Adj (v : α) b := (Finset.mem_filter.mp hb).2
+    exact hnoK3 ⟨{(v : α), a, b}, ?_,
+      SimpleGraph.is3Clique_triple_iff.mpr ⟨hva, hvb, habAdj⟩⟩
+    intro y hy
+    rcases Finset.mem_insert.mp hy with rfl | hy
+    · exact v.2
+    rcases Finset.mem_insert.mp hy with rfl | hy
+    · exact (Finset.mem_filter.mp ha).1
+    have hyb : y = b := by simpa [Finset.mem_singleton] using hy
+    simpa [hyb] using (Finset.mem_filter.mp hb).1
+  · simpa [Nv] using hNvCard
+
 /--
 In a triangle-free/no-independent-`8` exact `R(3,8)` residual, a degree-`7` vertex
 dominates its non-neighbors at distance two.
@@ -3643,6 +3675,207 @@ theorem ramseyThreeEightDegreeWindow_residual_degree_seven_dominates
     · exact hx
     · exact (Finset.mem_filter.mp hyNv).1
   exact hnoI8 ⟨insert x Nv, hInsertSub, hI8⟩
+
+/--
+In the exact `28`-vertex residual, a vertex of induced degree `d` has exactly `27 - d`
+non-neighbors inside the residual set.
+-/
+theorem ramseyThreeEightDegreeWindow_residual_nonNeighbor_card_eq_card_sub_degree
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 28) {v : ↑(s : Set α)} {d : ℕ}
+    (hdegv : (G.induce (s : Set α)).degree v = d) :
+    ((s.erase (v : α)).filter (fun w => ¬ G.Adj (v : α) w)).card = 27 - d := by
+  classical
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun w => ¬ G.Adj (v : α) w
+  have hneighbor :
+      s.filter (fun w => G.Adj (v : α) w) =
+        (s.erase (v : α)).filter (G.Adj (v : α)) := by
+    ext w
+    by_cases hwv : w = (v : α)
+    · subst w
+      simp
+    · simp [hwv]
+  have hpart :
+      ((s.erase (v : α)).filter (G.Adj (v : α))).card + nonNbrsV.card =
+        (s.erase (v : α)).card := by
+    simpa [nonNbrsV] using
+      (Finset.card_filter_add_card_filter_not (s := s.erase (v : α)) (p := G.Adj (v : α)))
+  have hneighborCard : ((s.erase (v : α)).filter (G.Adj (v : α))).card = d := by
+    rw [← hneighbor]
+    rw [← degree_induce_finset_eq_card_filter_adj G s v]
+    exact hdegv
+  have htotal : (s.erase (v : α)).card = 27 := by
+    rw [Finset.card_erase_of_mem v.2, hcard]
+  simpa [nonNbrsV] using (by omega : nonNbrsV.card = 27 - d)
+
+/-- A degree-`7` vertex in the exact `28`-vertex residual has exactly `20` non-neighbors. -/
+theorem ramseyThreeEightDegreeWindow_residual_degree_seven_nonNeighbor_card_eq_twenty
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 28) {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 7) :
+    ((s.erase (v : α)).filter (fun w => ¬ G.Adj (v : α) w)).card = 20 := by
+  simpa using
+    (ramseyThreeEightDegreeWindow_residual_nonNeighbor_card_eq_card_sub_degree
+      (G := G) (s := s) hcard (v := v) (d := 7) hdegv)
+
+/-- Complement-degree identity for the exact `28`-vertex residual. -/
+theorem ramseyThreeEightDegreeWindow_residual_complement_degree_eq_card_sub_degree
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 28) (v : ↑(s : Set α)) :
+    ((Gᶜ).induce (s : Set α)).degree v =
+      27 - (G.induce (s : Set α)).degree v := by
+  classical
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun w => ¬ G.Adj (v : α) w
+  have hcompl :
+      s.filter (fun w => (Gᶜ).Adj (v : α) w) = nonNbrsV := by
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hws, hcomp⟩
+      rcases (SimpleGraph.compl_adj _ _ _).1 hcomp with ⟨hvw_ne, hvw_not⟩
+      exact Finset.mem_filter.mpr
+        ⟨Finset.mem_erase.mpr ⟨hvw_ne.symm, hws⟩, hvw_not⟩
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwErase, hvw_not⟩
+      rcases Finset.mem_erase.mp hwErase with ⟨hw_ne_v, hws⟩
+      exact Finset.mem_filter.mpr
+        ⟨hws, (SimpleGraph.compl_adj _ _ _).2 ⟨hw_ne_v.symm, hvw_not⟩⟩
+  have hdegCompl : ((Gᶜ).induce (s : Set α)).degree v = nonNbrsV.card := by
+    rw [degree_induce_finset_eq_card_filter_adj (G := Gᶜ) (s := s) (v := v)]
+    rw [hcompl]
+  rw [hdegCompl]
+  exact
+    ramseyThreeEightDegreeWindow_residual_nonNeighbor_card_eq_card_sub_degree
+      (G := G) (s := s) hcard (v := v)
+      (d := (G.induce (s : Set α)).degree v) rfl
+
+/-- The complement of an exact `28`-vertex degree-window residual has degrees in `[20,25]`. -/
+theorem ramseyThreeEightDegreeWindow_residual_complement_degree_window
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 28)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        2 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 8) :
+    ∀ v : ↑(s : Set α),
+      20 ≤ ((Gᶜ).induce (s : Set α)).degree v ∧
+        ((Gᶜ).induce (s : Set α)).degree v ≤ 25 := by
+  intro v
+  have hcompl :=
+    ramseyThreeEightDegreeWindow_residual_complement_degree_eq_card_sub_degree G s hcard v
+  have hv := hdegree v
+  omega
+
+/-- Handshaking identity for any exact finite residual: the induced degree sum is twice an edge count. -/
+theorem ramseyThreeEightDegreeWindow_residual_degree_sum_eq_two_mul_edge_count
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α) :
+    ∃ e : ℕ,
+      (∑ v : ↑(s : Set α), (G.induce (s : Set α)).degree v) = 2 * e := by
+  classical
+  refine ⟨_, ?_⟩
+  simpa using (G.induce (s : Set α)).sum_degrees_eq_twice_card_edges
+
+/--
+Count form of degree-`7` domination: every non-neighbor of a degree-`7` vertex has a
+nonempty common-neighborhood with it inside the residual.
+-/
+theorem ramseyThreeEightDegreeWindow_residual_degree_seven_common_neighbor_card_pos
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI8 : ¬ ∃ t ⊆ s, G.IsNIndepSet 8 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 7)
+    {x : α} (hx : x ∈ s) (hxv : ¬ G.Adj (v : α) x) :
+    1 ≤
+      (((s.erase (v : α)).erase x).filter
+        (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card := by
+  classical
+  rcases ramseyThreeEightDegreeWindow_residual_degree_seven_dominates
+      (G := G) (s := s) hnoK3 hnoI8 (v := v) hdegv hx hxv with
+    ⟨w, hw, hvw, hxw⟩
+  have hwCommon :
+      w ∈ ((s.erase (v : α)).erase x).filter
+        (fun w => G.Adj (v : α) w ∧ G.Adj x w) := by
+    exact Finset.mem_filter.mpr
+      ⟨Finset.mem_erase.mpr
+        ⟨hxw.ne.symm, Finset.mem_erase.mpr ⟨hvw.ne.symm, hw⟩⟩,
+        ⟨hvw, hxw⟩⟩
+  exact Nat.succ_le_of_lt (Finset.card_pos.mpr ⟨w, hwCommon⟩)
+
+/--
+Certificate form for the exact `28`-vertex residual: a degree-`7` vertex with an anti-complete
+non-neighbor eliminates the residual.
+-/
+theorem ramseyThreeEightDegreeWindow_residual_eliminated_of_degree_seven_anticomplete
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 7 ∧
+          ∃ x ∈ s, ¬ G.Adj (v : α) x ∧
+            ∀ w ∈ s, G.Adj (v : α) w → ¬ G.Adj x w) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 8 t := by
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 8 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  have hnoI8 : ¬ ∃ t ⊆ s, G.IsNIndepSet 8 t := by
+    intro hI8
+    exact hdone (Or.inr hI8)
+  rcases hcert with ⟨v, hdegv, x, hx, hxv, hanti⟩
+  rcases ramseyThreeEightDegreeWindow_residual_degree_seven_dominates
+      (G := G) (s := s) hnoK3 hnoI8 (v := v) hdegv hx hxv with
+    ⟨w, hw, hvw, hxw⟩
+  exact False.elim ((hanti w hw hvw) hxw)
+
+/--
+Refined `R(3,8) <= 28` reduction: the residual may be assumed to satisfy the degree window,
+the induced complement degree window, and the degree-`7` domination constraint.
+-/
+theorem hasCliqueOrIndepSetBound_3_8_28_of_refined_degree_window
+    (hrefined :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 28 →
+        (∀ v : ↑(s : Set α),
+          2 ≤ (G.induce (s : Set α)).degree v ∧
+            (G.induce (s : Set α)).degree v < 8) →
+        (∀ v : ↑(s : Set α),
+          20 ≤ ((Gᶜ).induce (s : Set α)).degree v ∧
+            ((Gᶜ).induce (s : Set α)).degree v ≤ 25) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 7 →
+            ∀ {x : α}, x ∈ s → ¬ G.Adj (v : α) x →
+              ∃ w ∈ s, G.Adj (v : α) w ∧ G.Adj x w) →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 8 t) :
+    HasCliqueOrIndepSetBound 3 8 28 := by
+  refine hasCliqueOrIndepSetBound_3_8_28_of_degree_window ?_
+  intro α _ G s hcard hdegree
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 8 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  have hnoI8 : ¬ ∃ t ⊆ s, G.IsNIndepSet 8 t := by
+    intro hI8
+    exact hdone (Or.inr hI8)
+  have hcompl :
+      ∀ v : ↑(s : Set α),
+        20 ≤ ((Gᶜ).induce (s : Set α)).degree v ∧
+          ((Gᶜ).induce (s : Set α)).degree v ≤ 25 :=
+    ramseyThreeEightDegreeWindow_residual_complement_degree_window G s hcard hdegree
+  have hdom :
+      ∀ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 7 →
+          ∀ {x : α}, x ∈ s → ¬ G.Adj (v : α) x →
+            ∃ w ∈ s, G.Adj (v : α) w ∧ G.Adj x w := by
+    intro v hdegv x hx hxv
+    exact ramseyThreeEightDegreeWindow_residual_degree_seven_dominates
+      (G := G) (s := s) hnoK3 hnoI8 (v := v) hdegv hx hxv
+  exact hrefined G s hcard hdegree hcompl hdom
 
 /--
 Degree-window reduction for the low target `R(3,10) <= 42`: with the sharp
@@ -3837,6 +4070,33 @@ theorem ramseyThreeNineRegular8_residual_degree_eight_dominates
     · exact hx
     · exact (Finset.mem_filter.mp hyNv).1
   exact hnoI9 ⟨insert x Nv, hInsertSub, hI9⟩
+
+/--
+Count form of domination in the exact `36`-vertex `8`-regular residual: every non-neighbor
+has a nonempty common-neighborhood with the base vertex.
+-/
+theorem ramseyThreeNineRegular8_residual_nonNeighbor_common_neighbor_card_pos
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hdegree :
+      ∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI9 : ¬ ∃ t ⊆ s, G.IsNIndepSet 9 t)
+    (v : ↑(s : Set α)) {x : α} (hx : x ∈ s) (hxv : ¬ G.Adj (v : α) x) :
+    1 ≤
+      (((s.erase (v : α)).erase x).filter
+        (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card := by
+  classical
+  rcases ramseyThreeNineRegular8_residual_degree_eight_dominates
+      (G := G) (s := s) hdegree hnoK3 hnoI9 v hx hxv with
+    ⟨w, hw, hvw, hxw⟩
+  have hwCommon :
+      w ∈ ((s.erase (v : α)).erase x).filter
+        (fun w => G.Adj (v : α) w ∧ G.Adj x w) := by
+    exact Finset.mem_filter.mpr
+      ⟨Finset.mem_erase.mpr
+        ⟨hxw.ne.symm, Finset.mem_erase.mpr ⟨hvw.ne.symm, hw⟩⟩,
+        ⟨hvw, hxw⟩⟩
+  exact Nat.succ_le_of_lt (Finset.card_pos.mpr ⟨w, hwCommon⟩)
 
 /--
 Certificate form for the exact `36`-vertex residual: a single vertex with an anti-complete
