@@ -925,6 +925,9 @@ With a seed, zero-profile packets preserve the target and reduce to a seeded shi
 without a seed, the branch is exactly affine subset-sum avoidance of `-R(B)` in the profile sumset.
 Sequence Kneser gives the inverse form: for `H=Stab(Sigma_B(A))`, the target coset is missing and at most
 `|(Z/4)^B/H|-2` outside atom profiles lie outside `H`.
+Refining the dyadic quotient through an index-two flag, every target-avoid counterexample either descends
+after an odd seed or stops at a parity character that is zero on all remaining zero-prefix packets and
+nonzero on the residual target.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

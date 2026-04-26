@@ -10316,6 +10316,28 @@ Thus affine target avoidance is possible only with a proper period subgroup `H` 
 `|G_B/H|-2` outside atom profiles lie in `H`, while the target coset `-R(B)+H` is absent from the profile
 sumset.  This is the inverse-Kneser normal form of the target-avoid branch.
 
+Because `G_B` is a `2`-group, this inverse form can be sharpened into a binary flag.  Choose a maximal
+subgroup chain
+
+```text
+G_B=H_0 > H_1 > ... > H_s=H
+```
+
+whose successive quotients have order `2` and whose last quotient still sees the missing coset.  At a
+level `H_i > H_{i+1}`, write `tau_i` for the current residual target in `H_i`.  If no available zero-prefix
+profile packet has odd image in `H_i/H_{i+1}` while `tau_i` has odd image, then the target is separated by
+the parity character `H_i -> H_i/H_{i+1}`.  If such a packet exists, fix a minimal odd seed `Y_i`; then
+
+```text
+tau_{i+1}=tau_i-P_B(Y_i) in H_{i+1},
+```
+
+and every further repair must be a zero-prefix packet for the quotient `H_i/H_{i+1}`.  Iterating, a target
+avoidance counterexample is therefore a finite binary descent in which each level either supplies a seed
+and passes to the next index-two subgroup, or stops at a parity character that is invisible to all
+remaining zero-prefix packets but nonzero on the residual target.  In particular, the affine-avoidance
+branch is a first-bit obstruction in a quotient flag, not an unstructured subset-sum failure.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

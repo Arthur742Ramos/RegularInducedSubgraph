@@ -5164,6 +5164,10 @@ all fail the shifted self-layer.  If no seed exists, the residual is pure affine
 `-R(B)` is absent from the profile sumset `Sigma_B(A)`.
 By sequence Kneser, target avoidance has a period subgroup `H=Stab(Sigma_B(A))`; the target coset is
 missing and all but at most `|(Z/4)^B/H|-2` outside atom profiles lie in `H`.
+Since the profile group is dyadic, this can be refined along an index-two subgroup flag: each level either
+has an odd seed that moves the residual target into the next subgroup, or a parity character separates the
+target from all remaining zero-prefix profile packets.  Thus the target-avoid branch is a first-bit
+quotient obstruction.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

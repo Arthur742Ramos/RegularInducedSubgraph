@@ -2274,6 +2274,9 @@ Recommended attack:
     Add the inverse-Kneser form of target avoidance: with `H=Stab(Sigma_B(A))`, the missing target means
     the coset `-R(B)+H` is absent; sequence Kneser gives
     `|Sigma_B(A)|>=|H|(1+N_out)`, hence `N_out<=|(Z/4)^B/H|-2`.
+    Add the dyadic flag refinement: choose an index-two subgroup chain to the period subgroup.  At each
+    quotient bit, either a minimal odd seed moves the residual target into the next subgroup, or the
+    quotient character separates the residual target from all remaining zero-prefix profile packets.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

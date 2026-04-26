@@ -1853,7 +1853,9 @@ What remains justified after audit is:
       zero-profile packets preserve the target and leave a seeded shifted self-layer problem, while
       without one `-R(B)` is absent from the profile subset-sum set; inverse Kneser then supplies a
       period subgroup whose target coset is missing and which contains all but boundedly many outside
-      atom profiles;
+      atom profiles; along a dyadic index-two flag this is a first-bit descent, where each level either
+      has an odd seed moving the residual target down one subgroup or a parity character separating the
+      target from all remaining zero-prefix packets;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

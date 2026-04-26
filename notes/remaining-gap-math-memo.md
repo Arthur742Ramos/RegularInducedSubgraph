@@ -1858,6 +1858,8 @@ without a seed, `-R(B)` is absent from the profile subset-sum set.
 Inverse Kneser turns target avoidance into a period-subgroup certificate: for
 `H=Stab(Sigma_B(A))`, the target coset is missing and all but at most `|(Z/4)^B/H|-2` atom profiles lie
 inside `H`.
+Along an index-two flag to `H`, the obstruction becomes a binary descent: an odd seed descends the residual
+target one level, or a parity character separates the target from all remaining zero-prefix packets.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no
