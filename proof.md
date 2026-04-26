@@ -12784,6 +12784,27 @@ A monochrome ternary target cannot occur in `3,3,2,2`, and a monochrome pair can
 endpoint is also finite, with the only all-edge minima again given by a permutation of the three omitted
 coordinates.
 
+Fully split size-three targets have a transpose rigidity that removes another source of branching.  Consider
+the `3x3` trace matrix between two size-three atoms `G,H`.  Suppose the column labels, viewed from source
+`G`, contain three distinct words of one parity class.  After unit-edge discharge, the row labels viewed from
+source `H` must also lie in one parity class.  If the row support had size `1` or `2`, say the rows were
+`r,r,s`, then the column parity condition would force `s` to be the all-constant word; the columns would take
+at most the two values `(0,0,p)` and `(1,1,p)`, contradicting full split.  Hence the row support also has
+size `3`.
+
+Moreover the only `3x3` matrices whose three rows and three columns are distinct words in one parity class
+are, up to row and column permutation,
+
+```text
+permutation matrix,              for the odd parity class;
+complement of a permutation,     for the even parity class.
+```
+
+Thus an `F` target is mutual `F`, and the atom-pair is cross-regular: every vertex has cross-degree `1` in
+the permutation case and cross-degree `2` in the complement-permutation case.  Consequently any incidence
+pattern containing an `F` edge has a quotient-regular atom-pair; the only non-quotient all-ternary endpoint
+is the pure all-edge minimum considered next.
+
 It remains useful to split the pure all-edge minimum by phase.  Fix one parity tetrahedron, say the even
 words.  An edge target `E_i` is specified by the constant value of coordinate `i`; its two labels are the two
 even words with that coordinate value.  For the permutation edge-triangle `E_1,E_2,E_3`, the three label

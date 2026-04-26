@@ -5567,6 +5567,10 @@ and monochrome targets as `M`, the only high-outdegree patterns are `FFF`, `FFX`
 The pair profiles have the same finite table: in `3,3,3,2` the patterns are `FFP_x`, `F E_i P_j`
 with `i!=j`, or `E_iE_jP_k` with all omissions distinct; in `3,3,2,2` they are `F P_i P_j`
 with `i!=j` or `E_iP_jP_k` with all omissions distinct.
+Fully split ternary targets are transpose-rigid: after unit-edge discharge, an `F` trace between two
+size-three atoms is mutual `F`, and the `3x3` trace matrix is a permutation matrix or its complement.
+Thus every `F` atom-pair is cross-regular with degree `1` or `2`; the only non-quotient all-ternary endpoint
+is the pure all-edge minimum.
 The pure all-edge minimum further splits into only two phase types inside the parity tetrahedron: the three
 edge supports either share one parity word (star phase) or form the triangle avoiding one parity word
 (triangle phase), with only the `2+1` multiplicity choice left on each size-three edge target.

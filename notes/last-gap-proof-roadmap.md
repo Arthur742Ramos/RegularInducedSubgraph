@@ -2088,6 +2088,7 @@ What remains justified after audit is:
       exactly `2`, or all `3` source cuts; in `3,3,3,3` this leaves only `FFF`, `FFX`, `F E_i E_j`
       (`i!=j`), or the pure edge-triangle `E_1E_2E_3`; the pair profiles similarly reduce to `FFP_x`,
       `F E_iP_j`, `E_iE_jP_k`, `F P_iP_j`, or `E_iP_jP_k` with the indicated omissions distinct; the pure
+      `F` atom-pairs are mutual permutation/complement traces and hence quotient-regular;
       all-edge minimum has only star or triangle phase plus `2+1` target multiplicities, and the symmetric
       transpose test excludes triangle phase in a genuine all-ternary cycle; after unit-edge discharge, this
       becomes a half-edge Latin `K_{2,2}` design with one omitted row and column on each atom-pair, whose

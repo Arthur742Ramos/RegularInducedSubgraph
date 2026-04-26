@@ -2618,6 +2618,9 @@ Recommended attack:
     Extend the same enumeration to pair profiles: `3,3,3,2` gives `FFP_x`, `F E_iP_j` with `i!=j`, or
     `E_iE_jP_k` with all omissions distinct; `3,3,2,2` gives `F P_iP_j` with `i!=j` or `E_iP_jP_k`
     with all omissions distinct.
+    Formalize fully split transpose rigidity: a `3x3` trace with three same-parity column labels and
+    same-parity row labels cannot have row support size `1` or `2`; row support size `3` forces a permutation
+    matrix or its complement, so `F` atom-pairs are mutual and cross-regular of degree `1` or `2`.
     For the all-edge permutation minimum, formalize the phase split: the three parity edges form either a
     star through one parity word or the triangle avoiding one parity word, and each size-three edge target
     has only a `2+1` label multiplicity choice.
