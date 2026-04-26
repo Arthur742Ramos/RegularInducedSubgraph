@@ -24436,6 +24436,653 @@ theorem RamseyTenR45UnifiedFinalTheoremBundle.toFinalNumericalConsequences_toTen
     h.toFinalNumericalConsequences.toTenLeF_40960 = h.toTenLeF_40960 := by
   exact Subsingleton.elim _ _
 
+/--
+Current-frontier consumer surface for downstream files that want one import carrying the theorem-only
+numerical consequences together with the normalized exact-`42`/top-row/local-ledger data from which
+they were obtained.  The `R(4,5) <= 27` fields remain the localized endpoint-certificate consequence
+transported by the existing Ramsey/R45 APIs, not a new unconditional theorem.
+-/
+structure RamseyTenR45CurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  finalConsumerImport : RamseyTenR45UnifiedFinalConsumerImport G s v
+  theoremBundle : RamseyTenR45UnifiedFinalTheoremBundle
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  unifiedFinalConsequenceSurface : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  finalConsumerSurface : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  topRowReady : RamseyThreeTenExact42TopRowReadyCertificate G s v
+  topRowDownstreamImport : RamseyTenR45TopRowDownstreamImport G s v
+  downstreamImport : RamseyTenR45DownstreamImport
+  readyCertificate : RamseyTenR45ReadyCertificate
+  endpointImport : RamseyTenR45EndpointDownstreamImport
+  endpointReady : RamseyTenR45EndpointReadyCertificate
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointCertificate : RamseyTenR45EndpointResidualCertificate
+  middleDegreeCertificate : RamseyTenR45MiddleDegreeEndpointCertificate
+  finalBundle : RamseyTenR45FinalCertificateBundle
+  finalBundleSelector : RamseyTenR45FinalBundleSelectorSurface
+  topRowFinalHandoff : RamseyThreeTenExact42TopRowFinalHandoff G s v
+  topRowSelector : RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v
+  topRowSelectorHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v)
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  exact42ProfileHandoff :
+    RamseyTenR45LocalLedgerHandoff RamseyThreeTenExact42ThreeRowProfileSurface
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  degreeTenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Materialize the current-frontier consumer surface from the unified final-consumer import. -/
+theorem RamseyTenR45UnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v := by
+  let hfinal := h.toFinalDownstreamImport
+  exact
+    { finalConsumerImport := h
+      theoremBundle := h.toUnifiedFinalTheoremBundle
+      numericalConsequences := h.toFinalNumericalConsequences
+      unifiedFinalConsequenceSurface := h.toUnifiedFinalConsequenceSurface
+      finalDownstreamImport := hfinal
+      finalConsumerSurface := h.toFinalConsumerSurface
+      consumerNormalization := h.toConsumerNormalization
+      topRowFinalImport := hfinal.topRowFinalImport
+      topRowReady := hfinal.topRowReady
+      topRowDownstreamImport := hfinal.topRowDownstreamImport
+      downstreamImport := hfinal.downstreamImport
+      readyCertificate := hfinal.readyCertificate
+      endpointImport := hfinal.endpointImport
+      endpointReady := hfinal.endpointReady
+      endpointResiduals := hfinal.endpointResiduals
+      endpointCertificate := hfinal.endpointCertificate
+      middleDegreeCertificate := hfinal.middleDegreeCertificate
+      finalBundle := hfinal.finalBundle
+      finalBundleSelector := hfinal.finalBundleSelector
+      topRowFinalHandoff := hfinal.topRowFinalHandoff
+      topRowSelector := hfinal.topRowSelector
+      topRowSelectorHandoff := hfinal.topRowSelectorHandoff
+      localLedgers := hfinal.localLedgers
+      exact42Status := hfinal.exact42Status
+      exact42Profile := hfinal.exact42Profile
+      exact42WithMiddleSplits := hfinal.exact42WithMiddleSplits
+      exact42ProfileHandoff := hfinal.exact42ProfileHandoff
+      degreeTenSplits := hfinal.degreeTenSplits
+      degreeElevenSplits := hfinal.degreeElevenSplits
+      degreeTwelveSplits := hfinal.degreeTwelveSplits
+      middleDegreeSplits := hfinal.middleDegreeSplits
+      degreeTenHandoff := hfinal.degreeTenHandoff
+      degreeElevenHandoff := hfinal.degreeElevenHandoff
+      degreeTwelveHandoff := hfinal.degreeTwelveHandoff
+      middleDegreeHandoff := hfinal.middleDegreeHandoff
+      topRowProfile := hfinal.topRowProfile
+      topRowCommonSum := hfinal.topRowCommonSum
+      topRowCountProfile := hfinal.topRowCountProfile
+      r45TwentySevenTable := hfinal.r45TwentySevenTable
+      finalStatus := h.toFinalStatus
+      globalConsequences := h.toGlobalConsequenceBundle
+      finalConsequences := h.toFinalConsequenceSurface
+      threeTenFortyTwo := h.toThreeTenFortyTwo
+      r45TwentySeven := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      r10Ten39246 := h.toHasCliqueOrIndepSetBound_10_10_39246
+      regularTenAt40960 := h.regularTenAt40960
+      admissibleTenAt40960 := h.toTenMemAdmissibleBounds_40960
+      f40960 := h.toTenLeF_40960 }
+
+/-- Unified final consequence surfaces project to the current-frontier consumer surface. -/
+theorem RamseyTenR45Exact42UnifiedFinalConsequenceSurface.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toUnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+
+/-- Final downstream imports project to the current-frontier consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalDownstreamImport.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toUnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+
+/-- Compact final consumers project to the current-frontier consumer surface. -/
+theorem RamseyTenR45Exact42TopRowFinalConsumerSurface.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalConsumerSurface G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toUnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+
+/-- Consumer-normalized imports project to the current-frontier consumer surface. -/
+theorem RamseyTenR45Exact42ConsumerNormalization.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42ConsumerNormalization G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toUnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+
+/-- Top-row downstream imports project to the current-frontier consumer surface. -/
+theorem RamseyTenR45TopRowDownstreamImport.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45TopRowDownstreamImport G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toUnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+
+/-- Exact-`42` top-row final imports project to the current-frontier consumer surface. -/
+theorem RamseyThreeTenExact42TopRowFinalImport.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalImport G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toUnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+
+/-- Ready top-row certificates project to the current-frontier consumer surface. -/
+theorem RamseyThreeTenExact42TopRowReadyCertificate.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowReadyCertificate G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toUnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+
+/-- Final top-row handoffs project to the current-frontier consumer surface. -/
+theorem RamseyThreeTenExact42TopRowFinalHandoff.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowFinalHandoff G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toUnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+
+/-- Downstream imports with a profiled top row project to the current-frontier consumer surface. -/
+theorem RamseyTenR45DownstreamImport.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  (h.toUnifiedFinalConsumerImport htop).toCurrentFrontierConsumerSurface
+
+/-- Downstream imports with common-sum/count-profile data project to the current frontier. -/
+theorem RamseyTenR45DownstreamImport.toCurrentFrontierConsumerSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45DownstreamImport)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  (h.toUnifiedFinalConsumerImport_ofCommonSumCountProfile hcommon hcount)
+    |>.toCurrentFrontierConsumerSurface
+
+/-- Exact-`42` status, endpoint residuals, and a top row project to the current-frontier surface. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  (h.toUnifiedFinalConsumerImport hendpoints htop).toCurrentFrontierConsumerSurface
+
+/-- Exact-`42` status and endpoint residuals with profile components project to the current frontier. -/
+theorem
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toCurrentFrontierConsumerSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  (h.toUnifiedFinalConsumerImport_ofCommonSumCountProfile hendpoints hcommon hcount)
+    |>.toCurrentFrontierConsumerSurface
+
+/-- Profiled exact-`42` surfaces, endpoint residuals, and a top row project to the current frontier. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  (h.toUnifiedFinalConsumerImport hendpoints htop).toCurrentFrontierConsumerSurface
+
+/-- Profiled exact-`42` surfaces with endpoint residuals and profile components project to the current frontier. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toCurrentFrontierConsumerSurface_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  (h.toUnifiedFinalConsumerImport_ofCommonSumCountProfile hendpoints hcommon hcount)
+    |>.toCurrentFrontierConsumerSurface
+
+/-- Constructor exposing the current-frontier surface from a final-consumer import. -/
+theorem ramseyTenR45CurrentFrontierConsumerSurface_of_unifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toCurrentFrontierConsumerSurface
+
+/-- Constructor exposing the current-frontier surface from a unified final consequence surface. -/
+theorem ramseyTenR45CurrentFrontierConsumerSurface_of_unifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toCurrentFrontierConsumerSurface
+
+/-- Constructor exposing the current-frontier surface from a final downstream import. -/
+theorem ramseyTenR45CurrentFrontierConsumerSurface_of_finalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toCurrentFrontierConsumerSurface
+
+/-- Common-sum/count-profile constructor from exact-`42` status and endpoint residuals. -/
+theorem ramseyTenR45CurrentFrontierConsumerSurface_of_exact42Status_commonSum_countProfile_endpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  hstatus.toCurrentFrontierConsumerSurface_ofCommonSumCountProfile hendpoints hcommon hcount
+
+/-- Select the final-consumer import from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toUnifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.finalConsumerImport
+
+/-- Select the parameter-free theorem bundle from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.theoremBundle
+
+/-- Select the compact numerical consequences from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select the unified final consequence surface from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toUnifiedFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45Exact42UnifiedFinalConsequenceSurface G s v :=
+  h.unifiedFinalConsequenceSurface
+
+/-- Select the exact-`42` top-row final import from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalImport
+
+/-- Select the final downstream import from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the normalized compact final consumer from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toFinalConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45Exact42TopRowFinalConsumerSurface G s v :=
+  h.finalConsumerSurface
+
+/-- Select the consumer-normalized route from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.consumerNormalization
+
+/-- Select endpoint residuals from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the endpoint-only downstream import from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toEndpointDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45EndpointDownstreamImport :=
+  h.endpointImport
+
+/-- Select the profiled exact-`42` status with local middle-degree ledgers. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the profiled exact-`42` surface from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toExact42ProfileSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select the exact-`42` profile with middle-degree split ledgers. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toExact42WithMiddleSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the top-row downstream import from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toTopRowDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45TopRowDownstreamImport G s v :=
+  h.topRowDownstreamImport
+
+/-- Select the profiled top-row branch from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the common-sum top-row obligation from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the count-profile top-row obligation from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Select the local middle-degree ledger bundle from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the degree-`10` split handoff from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toDegreeTenSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.degreeTenHandoff
+
+/-- Select the degree-`11` split handoff from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toDegreeElevenSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.degreeElevenHandoff
+
+/-- Select the degree-`12` split handoff from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toDegreeTwelveSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.degreeTwelveHandoff
+
+/-- Select the uniform middle-degree split handoff from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toMiddleDegreeSplitHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.middleDegreeHandoff
+
+/-- Select the relaxed `R(4,5) <= 27` table from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select final status from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toFinalStatus
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select global consequences from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toGlobalConsequenceBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select final consequences from the current-frontier surface. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toFinalConsequenceSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume the current-frontier surface as the low-row exact-`42` result. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Consume the current-frontier surface as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume the current-frontier surface as the propagated `R(10,10) <= 39246` theorem. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume the current-frontier surface as the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960 H hcard
+
+/-- Consume the current-frontier surface as the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume the current-frontier surface as the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    10 ≤ F 40960 :=
+  h.f40960
+
+/-- Flat projection to theorem-only numerical consequences from the current-frontier surface. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Flat projection to the theorem bundle from the current-frontier surface. -/
+theorem ramseyTenR45UnifiedFinalTheoremBundle_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toUnifiedFinalTheoremBundle
+
+/-- Flat projection to the unified final-consumer import from the current-frontier surface. -/
+theorem ramseyTenR45UnifiedFinalConsumerImport_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.toUnifiedFinalConsumerImport
+
+/-- Current-frontier route to the low-row exact-`42` theorem. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toThreeTenFortyTwo
+
+/-- Current-frontier route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Current-frontier route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Current-frontier route to the regular induced `10`-subgraph theorem. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Current-frontier route to the admissible-bound conclusion. -/
+theorem ten_mem_admissibleBounds_40960_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.toTenMemAdmissibleBounds_40960
+
+/-- Current-frontier route to the extremal-function lower bound. -/
+theorem ten_le_F_40960_of_currentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    10 ≤ F 40960 :=
+  h.toTenLeF_40960
+
+/-- Final-consumer imports round-trip through the current-frontier surface on numerical consequences. -/
+theorem RamseyTenR45UnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45UnifiedFinalConsumerImport G s v) :
+    h.toCurrentFrontierConsumerSurface.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
+/-- Current-frontier surfaces round-trip through the unified import on theorem bundles. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toUnifiedFinalConsumerImport_toUnifiedFinalTheoremBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    h.toUnifiedFinalConsumerImport.toUnifiedFinalTheoremBundle =
+      h.toUnifiedFinalTheoremBundle := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
