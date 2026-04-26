@@ -26412,6 +26412,1701 @@ theorem CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublic
 
 end FinalConsumerSmallAtomCollisionCorePublicReleaseApi
 
+/-!
+## Final consumer partner-free / partner-hit pair-collision split handoff
+
+The small-atom public-release handoff leaves one documented refinement useful to downstream
+consumers: split pair-collision circuits by whether the collision hits the partner singleton.
+This layer records the partner-free hidden-bipartition coloring and the remaining partner-hit
+finite high-cover templates as named terminal inputs, while projecting back to the public
+small-atom and pair-collision rebate surfaces.
+-/
+
+/--
+Terminal packet for the partner-free branch.  It records that deleting endpoint `a` leaves the
+two supports `{a} ∪ C` and `{a} ∪ (M \ C)`, that endpoint labels are distinct, and that equal
+labels close by two supports partitioning all four atoms.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate
+    (terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms : Prop) :
+    Type where
+  deletionSupportsHiddenBipartition : terminalPartnerFreeHiddenBipartitionDeletionSupports
+  endpointLabelsDistinct : terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+  equalLabelsPartitionAllFourAtoms :
+    terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+
+/-- Build the partner-free hidden-bipartition packet from its three terminal inputs. -/
+def certifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate_of_assumptions
+    {terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms : Prop}
+    (deletionSupportsHiddenBipartition :
+      terminalPartnerFreeHiddenBipartitionDeletionSupports)
+    (endpointLabelsDistinct :
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct)
+    (equalLabelsPartitionAllFourAtoms :
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms) :
+    CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms where
+  deletionSupportsHiddenBipartition := deletionSupportsHiddenBipartition
+  endpointLabelsDistinct := endpointLabelsDistinct
+  equalLabelsPartitionAllFourAtoms := equalLabelsPartitionAllFourAtoms
+
+section PartnerFreeHiddenBipartitionColoringApi
+
+variable {terminalPartnerFreeHiddenBipartitionDeletionSupports
+  terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+  terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms : Prop}
+
+/-- Project the partner-free hidden-bipartition support assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate.toDeletionSupportsHiddenBipartition
+    (h : CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms) :
+    terminalPartnerFreeHiddenBipartitionDeletionSupports :=
+  h.deletionSupportsHiddenBipartition
+
+/-- Project the partner-free endpoint-label distinctness assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate.toEndpointLabelsDistinct
+    (h : CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms) :
+    terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct :=
+  h.endpointLabelsDistinct
+
+/-- Project the equal-labels-close-by-partition assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate.toEqualLabelsPartitionAllFourAtoms
+    (h : CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms) :
+    terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms :=
+  h.equalLabelsPartitionAllFourAtoms
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate.of_assumptions_toDeletionSupportsHiddenBipartition
+    (deletionSupportsHiddenBipartition :
+      terminalPartnerFreeHiddenBipartitionDeletionSupports)
+    (endpointLabelsDistinct :
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct)
+    (equalLabelsPartitionAllFourAtoms :
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate_of_assumptions
+      deletionSupportsHiddenBipartition endpointLabelsDistinct
+      equalLabelsPartitionAllFourAtoms).toDeletionSupportsHiddenBipartition =
+      deletionSupportsHiddenBipartition :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate.of_assumptions_toEndpointLabelsDistinct
+    (deletionSupportsHiddenBipartition :
+      terminalPartnerFreeHiddenBipartitionDeletionSupports)
+    (endpointLabelsDistinct :
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct)
+    (equalLabelsPartitionAllFourAtoms :
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate_of_assumptions
+      deletionSupportsHiddenBipartition endpointLabelsDistinct
+      equalLabelsPartitionAllFourAtoms).toEndpointLabelsDistinct =
+      endpointLabelsDistinct :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate.of_assumptions_toEqualLabelsPartitionAllFourAtoms
+    (deletionSupportsHiddenBipartition :
+      terminalPartnerFreeHiddenBipartitionDeletionSupports)
+    (endpointLabelsDistinct :
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct)
+    (equalLabelsPartitionAllFourAtoms :
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate_of_assumptions
+      deletionSupportsHiddenBipartition endpointLabelsDistinct
+      equalLabelsPartitionAllFourAtoms).toEqualLabelsPartitionAllFourAtoms =
+      equalLabelsPartitionAllFourAtoms :=
+  rfl
+
+end PartnerFreeHiddenBipartitionColoringApi
+
+/--
+Terminal packet for the partner-hit branch.  It exposes the finite high-cover template list:
+two-petal `(π,δ) = (3,0)`, `(4,0)`, `(4,1)`, three-petal `(4,0)`, and the requirement that
+the hit atoms include the partner singleton.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+    (terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop) :
+    Type where
+  twoPetalPiThreeDeltaZeroTemplate :
+    terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+  twoPetalPiFourDeltaZeroTemplate :
+    terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+  twoPetalPiFourDeltaOneTemplate :
+    terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+  threePetalPiFourDeltaZeroTemplate :
+    terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+  templatesIncludePartnerSingleton :
+    terminalPartnerHitTemplatesIncludePartnerSingleton
+
+/-- Build the partner-hit finite high-cover template packet from raw terminal inputs. -/
+def certifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate_of_assumptions
+    {terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop}
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton where
+  twoPetalPiThreeDeltaZeroTemplate := twoPetalPiThreeDeltaZeroTemplate
+  twoPetalPiFourDeltaZeroTemplate := twoPetalPiFourDeltaZeroTemplate
+  twoPetalPiFourDeltaOneTemplate := twoPetalPiFourDeltaOneTemplate
+  threePetalPiFourDeltaZeroTemplate := threePetalPiFourDeltaZeroTemplate
+  templatesIncludePartnerSingleton := templatesIncludePartnerSingleton
+
+section PartnerHitFiniteHighCoverTemplateListApi
+
+variable {terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+  terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTemplatesIncludePartnerSingleton : Prop}
+
+/-- Project the partner-hit two-petal `(π,δ) = (3,0)` template assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.toTwoPetalPiThreeDeltaZeroTemplate
+    (h : CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate :=
+  h.twoPetalPiThreeDeltaZeroTemplate
+
+/-- Project the partner-hit two-petal `(π,δ) = (4,0)` template assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.toTwoPetalPiFourDeltaZeroTemplate
+    (h : CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate :=
+  h.twoPetalPiFourDeltaZeroTemplate
+
+/-- Project the partner-hit two-petal `(π,δ) = (4,1)` template assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.toTwoPetalPiFourDeltaOneTemplate
+    (h : CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitTwoPetalPiFourDeltaOneTemplate :=
+  h.twoPetalPiFourDeltaOneTemplate
+
+/-- Project the partner-hit three-petal `(π,δ) = (4,0)` template assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.toThreePetalPiFourDeltaZeroTemplate
+    (h : CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitThreePetalPiFourDeltaZeroTemplate :=
+  h.threePetalPiFourDeltaZeroTemplate
+
+/-- Project the partner-singleton inclusion assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.toTemplatesIncludePartnerSingleton
+    (h : CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitTemplatesIncludePartnerSingleton :=
+  h.templatesIncludePartnerSingleton
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.of_assumptions_toTwoPetalPiThreeDeltaZeroTemplate
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate_of_assumptions
+      twoPetalPiThreeDeltaZeroTemplate twoPetalPiFourDeltaZeroTemplate
+      twoPetalPiFourDeltaOneTemplate threePetalPiFourDeltaZeroTemplate
+      templatesIncludePartnerSingleton).toTwoPetalPiThreeDeltaZeroTemplate =
+      twoPetalPiThreeDeltaZeroTemplate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.of_assumptions_toTwoPetalPiFourDeltaZeroTemplate
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate_of_assumptions
+      twoPetalPiThreeDeltaZeroTemplate twoPetalPiFourDeltaZeroTemplate
+      twoPetalPiFourDeltaOneTemplate threePetalPiFourDeltaZeroTemplate
+      templatesIncludePartnerSingleton).toTwoPetalPiFourDeltaZeroTemplate =
+      twoPetalPiFourDeltaZeroTemplate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.of_assumptions_toTwoPetalPiFourDeltaOneTemplate
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate_of_assumptions
+      twoPetalPiThreeDeltaZeroTemplate twoPetalPiFourDeltaZeroTemplate
+      twoPetalPiFourDeltaOneTemplate threePetalPiFourDeltaZeroTemplate
+      templatesIncludePartnerSingleton).toTwoPetalPiFourDeltaOneTemplate =
+      twoPetalPiFourDeltaOneTemplate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.of_assumptions_toThreePetalPiFourDeltaZeroTemplate
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate_of_assumptions
+      twoPetalPiThreeDeltaZeroTemplate twoPetalPiFourDeltaZeroTemplate
+      twoPetalPiFourDeltaOneTemplate threePetalPiFourDeltaZeroTemplate
+      templatesIncludePartnerSingleton).toThreePetalPiFourDeltaZeroTemplate =
+      threePetalPiFourDeltaZeroTemplate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate.of_assumptions_toTemplatesIncludePartnerSingleton
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate_of_assumptions
+      twoPetalPiThreeDeltaZeroTemplate twoPetalPiFourDeltaZeroTemplate
+      twoPetalPiFourDeltaOneTemplate threePetalPiFourDeltaZeroTemplate
+      templatesIncludePartnerSingleton).toTemplatesIncludePartnerSingleton =
+      templatesIncludePartnerSingleton :=
+  rfl
+
+end PartnerHitFiniteHighCoverTemplateListApi
+
+/--
+Endpoint packet for the partner-free / partner-hit pair-collision split.  It records the
+exhaustive split together with the partner-free hidden-bipartition packet and the partner-hit
+finite high-cover template list.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+    (terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop) :
+    Type where
+  exhaustivePartnerFreePartnerHitSplit :
+    terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+  partnerFreeHiddenBipartitionColoring :
+    CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+  partnerHitFiniteHighCoverTemplateList :
+    CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+
+/-- Build the pair-collision split endpoint from raw terminal inputs. -/
+def certifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate_of_assumptions
+    {terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop}
+    (exhaustivePartnerFreePartnerHitSplit :
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit)
+    (deletionSupportsHiddenBipartition :
+      terminalPartnerFreeHiddenBipartitionDeletionSupports)
+    (endpointLabelsDistinct :
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct)
+    (equalLabelsPartitionAllFourAtoms :
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms)
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton where
+  exhaustivePartnerFreePartnerHitSplit := exhaustivePartnerFreePartnerHitSplit
+  partnerFreeHiddenBipartitionColoring :=
+    certifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate_of_assumptions
+      deletionSupportsHiddenBipartition endpointLabelsDistinct equalLabelsPartitionAllFourAtoms
+  partnerHitFiniteHighCoverTemplateList :=
+    certifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate_of_assumptions
+      twoPetalPiThreeDeltaZeroTemplate twoPetalPiFourDeltaZeroTemplate
+      twoPetalPiFourDeltaOneTemplate threePetalPiFourDeltaZeroTemplate
+      templatesIncludePartnerSingleton
+
+section PartnerFreePartnerHitPairCollisionSplitEndpointApi
+
+variable {terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+  terminalPartnerFreeHiddenBipartitionDeletionSupports
+  terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+  terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+  terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+  terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTemplatesIncludePartnerSingleton : Prop}
+
+/-- Project the exhaustive partner-free / partner-hit split assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toExhaustivePartnerFreePartnerHitSplit
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit :=
+  h.exhaustivePartnerFreePartnerHitSplit
+
+/-- Project the partner-free hidden-bipartition packet. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerFreeHiddenBipartitionColoring
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms :=
+  h.partnerFreeHiddenBipartitionColoring
+
+/-- Project the partner-hit finite high-cover template packet. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerHitFiniteHighCoverTemplateList
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton :=
+  h.partnerHitFiniteHighCoverTemplateList
+
+/-- Project the partner-free hidden-bipartition support assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerFreeDeletionSupportsHiddenBipartition
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerFreeHiddenBipartitionDeletionSupports :=
+  h.toPartnerFreeHiddenBipartitionColoring.toDeletionSupportsHiddenBipartition
+
+/-- Project the partner-free endpoint-label distinctness assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerFreeEndpointLabelsDistinct
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct :=
+  h.toPartnerFreeHiddenBipartitionColoring.toEndpointLabelsDistinct
+
+/-- Project the partner-free equal-labels partition closure assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerFreeEqualLabelsPartitionAllFourAtoms
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms :=
+  h.toPartnerFreeHiddenBipartitionColoring.toEqualLabelsPartitionAllFourAtoms
+
+/-- Project the partner-hit two-petal `(π,δ) = (3,0)` assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate :=
+  h.toPartnerHitFiniteHighCoverTemplateList.toTwoPetalPiThreeDeltaZeroTemplate
+
+/-- Project the partner-hit two-petal `(π,δ) = (4,0)` assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerHitTwoPetalPiFourDeltaZeroTemplate
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate :=
+  h.toPartnerHitFiniteHighCoverTemplateList.toTwoPetalPiFourDeltaZeroTemplate
+
+/-- Project the partner-hit two-petal `(π,δ) = (4,1)` assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerHitTwoPetalPiFourDeltaOneTemplate
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitTwoPetalPiFourDeltaOneTemplate :=
+  h.toPartnerHitFiniteHighCoverTemplateList.toTwoPetalPiFourDeltaOneTemplate
+
+/-- Project the partner-hit three-petal `(π,δ) = (4,0)` assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerHitThreePetalPiFourDeltaZeroTemplate
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitThreePetalPiFourDeltaZeroTemplate :=
+  h.toPartnerHitFiniteHighCoverTemplateList.toThreePetalPiFourDeltaZeroTemplate
+
+/-- Project the partner-hit singleton-inclusion assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.toPartnerHitTemplatesIncludePartnerSingleton
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    terminalPartnerHitTemplatesIncludePartnerSingleton :=
+  h.toPartnerHitFiniteHighCoverTemplateList.toTemplatesIncludePartnerSingleton
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.of_assumptions_toExhaustivePartnerFreePartnerHitSplit
+    (exhaustivePartnerFreePartnerHitSplit :
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit)
+    (deletionSupportsHiddenBipartition :
+      terminalPartnerFreeHiddenBipartitionDeletionSupports)
+    (endpointLabelsDistinct :
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct)
+    (equalLabelsPartitionAllFourAtoms :
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms)
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate_of_assumptions
+      exhaustivePartnerFreePartnerHitSplit deletionSupportsHiddenBipartition endpointLabelsDistinct
+      equalLabelsPartitionAllFourAtoms twoPetalPiThreeDeltaZeroTemplate twoPetalPiFourDeltaZeroTemplate
+      twoPetalPiFourDeltaOneTemplate threePetalPiFourDeltaZeroTemplate
+      templatesIncludePartnerSingleton).toExhaustivePartnerFreePartnerHitSplit =
+      exhaustivePartnerFreePartnerHitSplit :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.of_assumptions_toPartnerFreeDeletionSupportsHiddenBipartition
+    (exhaustivePartnerFreePartnerHitSplit :
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit)
+    (deletionSupportsHiddenBipartition :
+      terminalPartnerFreeHiddenBipartitionDeletionSupports)
+    (endpointLabelsDistinct :
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct)
+    (equalLabelsPartitionAllFourAtoms :
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms)
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate_of_assumptions
+      exhaustivePartnerFreePartnerHitSplit deletionSupportsHiddenBipartition endpointLabelsDistinct
+      equalLabelsPartitionAllFourAtoms twoPetalPiThreeDeltaZeroTemplate twoPetalPiFourDeltaZeroTemplate
+      twoPetalPiFourDeltaOneTemplate threePetalPiFourDeltaZeroTemplate
+      templatesIncludePartnerSingleton).toPartnerFreeDeletionSupportsHiddenBipartition =
+      deletionSupportsHiddenBipartition :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate.of_assumptions_toPartnerHitTemplatesIncludePartnerSingleton
+    (exhaustivePartnerFreePartnerHitSplit :
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit)
+    (deletionSupportsHiddenBipartition :
+      terminalPartnerFreeHiddenBipartitionDeletionSupports)
+    (endpointLabelsDistinct :
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct)
+    (equalLabelsPartitionAllFourAtoms :
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms)
+    (twoPetalPiThreeDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate)
+    (twoPetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate)
+    (twoPetalPiFourDeltaOneTemplate :
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate)
+    (threePetalPiFourDeltaZeroTemplate :
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate)
+    (templatesIncludePartnerSingleton :
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate_of_assumptions
+      exhaustivePartnerFreePartnerHitSplit deletionSupportsHiddenBipartition endpointLabelsDistinct
+      equalLabelsPartitionAllFourAtoms twoPetalPiThreeDeltaZeroTemplate twoPetalPiFourDeltaZeroTemplate
+      twoPetalPiFourDeltaOneTemplate threePetalPiFourDeltaZeroTemplate
+      templatesIncludePartnerSingleton).toPartnerHitTemplatesIncludePartnerSingleton =
+      templatesIncludePartnerSingleton :=
+  rfl
+
+end PartnerFreePartnerHitPairCollisionSplitEndpointApi
+
+/--
+Small-atom extension bundle: the four public-release small-atom obligations together with the
+partner-free / partner-hit split endpoint.  A pair-collision rebate handoff plus this bundle
+constructs the refined public-release handoff below.
+-/
+structure CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle
+    (terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop) :
+    Type where
+  smallAtomCollisionCoreObligations :
+    CertifiedProofMdCurrentFrontierTerminalSmallAtomCollisionCoreObligations
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+  partnerFreePartnerHitPairCollisionSplitEndpoint :
+    CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+
+/-- Build the extension bundle from already packaged small-atom and split endpoints. -/
+def certifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle_of_packets
+    {terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop}
+    (smallAtomCollisionCoreObligations :
+      CertifiedProofMdCurrentFrontierTerminalSmallAtomCollisionCoreObligations
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore)
+    (partnerFreePartnerHitPairCollisionSplitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton where
+  smallAtomCollisionCoreObligations := smallAtomCollisionCoreObligations
+  partnerFreePartnerHitPairCollisionSplitEndpoint :=
+    partnerFreePartnerHitPairCollisionSplitEndpoint
+
+section PartnerFreePartnerHitPairCollisionSplitExtensionBundleApi
+
+variable {terminalPairForcedPetalStrictDeficit
+  terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+  terminalFourFourCollisionFreeCutoff
+  terminalFourPairComplementaryTransversalBooleanOrientationCore
+  terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+  terminalPartnerFreeHiddenBipartitionDeletionSupports
+  terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+  terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+  terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+  terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTemplatesIncludePartnerSingleton : Prop}
+
+/-- Project the bundled small-atom collision-core obligations. -/
+def CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle.toSmallAtomCollisionCoreObligations
+    (h : CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalSmallAtomCollisionCoreObligations
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore :=
+  h.smallAtomCollisionCoreObligations
+
+/-- Project the bundled partner-free / partner-hit split endpoint. -/
+def CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle.toPartnerFreePartnerHitPairCollisionSplitEndpoint
+    (h : CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton :=
+  h.partnerFreePartnerHitPairCollisionSplitEndpoint
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle.of_packets_toSmallAtomCollisionCoreObligations
+    (smallAtomCollisionCoreObligations :
+      CertifiedProofMdCurrentFrontierTerminalSmallAtomCollisionCoreObligations
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore)
+    (partnerFreePartnerHitPairCollisionSplitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle_of_packets
+      smallAtomCollisionCoreObligations
+      partnerFreePartnerHitPairCollisionSplitEndpoint).toSmallAtomCollisionCoreObligations =
+      smallAtomCollisionCoreObligations :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle.of_packets_toPartnerFreePartnerHitPairCollisionSplitEndpoint
+    (smallAtomCollisionCoreObligations :
+      CertifiedProofMdCurrentFrontierTerminalSmallAtomCollisionCoreObligations
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore)
+    (partnerFreePartnerHitPairCollisionSplitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (certifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle_of_packets
+      smallAtomCollisionCoreObligations
+      partnerFreePartnerHitPairCollisionSplitEndpoint).toPartnerFreePartnerHitPairCollisionSplitEndpoint =
+      partnerFreePartnerHitPairCollisionSplitEndpoint :=
+  rfl
+
+end PartnerFreePartnerHitPairCollisionSplitExtensionBundleApi
+
+/--
+Final consumer handoff for the partner-free / partner-hit pair-collision split.  It extends the
+small-atom public-release handoff with the documented split endpoint while retaining projections
+to the pair-collision rebate circuit, the small-atom obligations, and the final target statement.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop)
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop)
+    (terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop)
+    (terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop)
+    (terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode : Prop)
+    (terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore : Prop)
+    (terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop) :
+    Type where
+  finalConsumerSmallAtomCollisionCorePublicReleaseHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+  partnerFreePartnerHitPairCollisionSplitEndpoint :
+    CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+
+section FinalConsumerPartnerFreePartnerHitPairCollisionSplitApi
+
+variable {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+variable {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+variable {packingSize : AnchoredPacking → ℕ}
+variable {WitnessCountAtLeast : ℕ → ℕ → Prop}
+variable {TwoDisjointTemplatesNeedTwo : Prop}
+variable {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+variable {v : ↑(s : Set α)}
+variable {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+variable {terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop}
+variable {terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop}
+variable {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+  terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+variable {terminalSharedPackedAtomPenaltyRebate
+  terminalForcedSplitPackedAtomBetweenPetals
+  terminalPairCollisionTwoPetalOverpayBranch
+  terminalPairCollisionGenuineThreePetalBranch
+  terminalPairCollisionProperSubfamilyNonpositive
+  terminalPairCollisionNoDiffuseLargerCollisionMode : Prop}
+variable {terminalPairForcedPetalStrictDeficit
+  terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+  terminalFourFourCollisionFreeCutoff
+  terminalFourPairComplementaryTransversalBooleanOrientationCore : Prop}
+variable {terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+  terminalPartnerFreeHiddenBipartitionDeletionSupports
+  terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+  terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+  terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+  terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTemplatesIncludePartnerSingleton : Prop}
+
+/-- Promote the small-atom public-release handoff by adjoining the partner split endpoint. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore)
+    (partnerFreePartnerHitPairCollisionSplitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton where
+  finalConsumerSmallAtomCollisionCorePublicReleaseHandoff := h
+  partnerFreePartnerHitPairCollisionSplitEndpoint :=
+    partnerFreePartnerHitPairCollisionSplitEndpoint
+
+/-- Promote a pair-collision rebate handoff using the small-atom/split extension bundle. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode)
+    (extensionBundle :
+      CertifiedProofMdCurrentFrontierPartnerFreePartnerHitPairCollisionSplitExtensionBundle
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton :=
+  (h.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+    extensionBundle.toSmallAtomCollisionCoreObligations).toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      extensionBundle.toPartnerFreePartnerHitPairCollisionSplitEndpoint
+
+/-- Project the small-atom public-release handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore :=
+  h.finalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+
+/-- Project the partner-free / partner-hit split endpoint. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toPartnerFreePartnerHitPairCollisionSplitEndpoint
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton :=
+  h.partnerFreePartnerHitPairCollisionSplitEndpoint
+
+/-- Project the pair-collision rebate-circuit handoff through the small-atom public-release surface. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  h.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff
+
+/-- Project the small-atom obligation packet through the small-atom public-release surface. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toSmallAtomCollisionCoreObligations
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalSmallAtomCollisionCoreObligations
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore :=
+  h.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toSmallAtomCollisionCoreObligations
+
+/-- Project the partner-free hidden-bipartition packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toPartnerFreeHiddenBipartitionColoring
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalPartnerFreeHiddenBipartitionColoringCertificate
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms :=
+  h.toPartnerFreePartnerHitPairCollisionSplitEndpoint.toPartnerFreeHiddenBipartitionColoring
+
+/-- Project the partner-hit finite high-cover template packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toPartnerHitFiniteHighCoverTemplateList
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalPartnerHitFiniteHighCoverTemplateListCertificate
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton :=
+  h.toPartnerFreePartnerHitPairCollisionSplitEndpoint.toPartnerHitFiniteHighCoverTemplateList
+
+/-- Project the pair-collision rebate endpoint through the pair-collision rebate surface. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toPairCollisionRebateCircuitEndpoint
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  h.toFinalConsumerPairCollisionRebateCircuitHandoff.toPairCollisionRebateCircuitEndpoint
+
+/-- Project the target statement through the small-atom public-release handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toTargetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    TargetStatement :=
+  h.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toTargetStatement
+
+/-- The partner-free / partner-hit split handoff exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    TargetStatement :=
+  h.toTargetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff_smallAtomPublicReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore)
+    (partnerFreePartnerHitPairCollisionSplitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (h.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      partnerFreePartnerHitPairCollisionSplitEndpoint).toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff =
+      h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff_splitEndpoint
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore)
+    (partnerFreePartnerHitPairCollisionSplitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPartnerFreePartnerHitPairCollisionSplitEndpointCertificate
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    (h.toFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      partnerFreePartnerHitPairCollisionSplitEndpoint).toPartnerFreePartnerHitPairCollisionSplitEndpoint =
+      partnerFreePartnerHitPairCollisionSplitEndpoint :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff_pairEndpoint
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    h.toPairCollisionRebateCircuitEndpoint =
+      h.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toPairCollisionRebateCircuitEndpoint :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff_targetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPartnerFreePartnerHitPairCollisionSplitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton) :
+    h.toTargetStatement =
+      h.toFinalConsumerSmallAtomCollisionCorePublicReleaseHandoff.toTargetStatement :=
+  rfl
+
+end FinalConsumerPartnerFreePartnerHitPairCollisionSplitApi
+
 end FinalObligationDashboard
 
 
