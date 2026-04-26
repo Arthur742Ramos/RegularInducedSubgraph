@@ -23826,6 +23826,1357 @@ theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinal
 
 end FinalConsumerStrictCrossNoLeftoverApi
 
+/-!
+## Final consumer pair-collision rebate-circuit handoff
+
+The no-leftover handoff is the current final consumer surface for strict cross-defect and leftover
+deletion assumptions.  The declarations below add the next rebate-circuit endpoint for
+pair-collision analysis.  Each branch is still assumption-backed, but the pieces are named and
+packaged so downstream proof-md consumers can cite the entire pair-collision circuit without
+unpacking the no-leftover facade.
+-/
+
+/-- Certificate for the shared packed-atom penalty rebate used by the pair-collision circuit. -/
+structure CertifiedProofMdCurrentFrontierTerminalSharedPackedAtomPenaltyRebateCertificate
+    (terminalSharedPackedAtomPenaltyRebate : Prop) : Type where
+  sharedPackedAtomPenaltyRebate : terminalSharedPackedAtomPenaltyRebate
+
+/-- Project the shared packed-atom penalty rebate assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalSharedPackedAtomPenaltyRebateCertificate.toSharedPackedAtomPenaltyRebate
+    {terminalSharedPackedAtomPenaltyRebate : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalSharedPackedAtomPenaltyRebateCertificate
+      terminalSharedPackedAtomPenaltyRebate) :
+    terminalSharedPackedAtomPenaltyRebate :=
+  h.sharedPackedAtomPenaltyRebate
+
+/-- Certificate for the forced split of a packed atom between the two petals. -/
+structure CertifiedProofMdCurrentFrontierTerminalForcedSplitPackedAtomBetweenPetalsCertificate
+    (terminalForcedSplitPackedAtomBetweenPetals : Prop) : Type where
+  forcedSplitPackedAtomBetweenPetals : terminalForcedSplitPackedAtomBetweenPetals
+
+/-- Project the forced split packed-atom assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalForcedSplitPackedAtomBetweenPetalsCertificate.toForcedSplitPackedAtomBetweenPetals
+    {terminalForcedSplitPackedAtomBetweenPetals : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalForcedSplitPackedAtomBetweenPetalsCertificate
+      terminalForcedSplitPackedAtomBetweenPetals) :
+    terminalForcedSplitPackedAtomBetweenPetals :=
+  h.forcedSplitPackedAtomBetweenPetals
+
+/-- Certificate for the two-petal overpay branch of the pair-collision circuit. -/
+structure CertifiedProofMdCurrentFrontierTerminalPairCollisionTwoPetalOverpayCertificate
+    (terminalPairCollisionTwoPetalOverpayBranch : Prop) : Type where
+  twoPetalOverpayBranch : terminalPairCollisionTwoPetalOverpayBranch
+
+/-- Project the two-petal overpay branch assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionTwoPetalOverpayCertificate.toTwoPetalOverpayBranch
+    {terminalPairCollisionTwoPetalOverpayBranch : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionTwoPetalOverpayCertificate
+      terminalPairCollisionTwoPetalOverpayBranch) :
+    terminalPairCollisionTwoPetalOverpayBranch :=
+  h.twoPetalOverpayBranch
+
+/-- Certificate for the genuine three-petal branch of the pair-collision circuit. -/
+structure CertifiedProofMdCurrentFrontierTerminalPairCollisionGenuineThreePetalCertificate
+    (terminalPairCollisionGenuineThreePetalBranch : Prop) : Type where
+  genuineThreePetalBranch : terminalPairCollisionGenuineThreePetalBranch
+
+/-- Project the genuine three-petal branch assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionGenuineThreePetalCertificate.toGenuineThreePetalBranch
+    {terminalPairCollisionGenuineThreePetalBranch : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionGenuineThreePetalCertificate
+      terminalPairCollisionGenuineThreePetalBranch) :
+    terminalPairCollisionGenuineThreePetalBranch :=
+  h.genuineThreePetalBranch
+
+/-- Certificate for the proper-subfamily nonpositive ledger in the rebate circuit. -/
+structure CertifiedProofMdCurrentFrontierTerminalPairCollisionProperSubfamilyNonpositiveCertificate
+    (terminalPairCollisionProperSubfamilyNonpositive : Prop) : Type where
+  properSubfamilyNonpositive : terminalPairCollisionProperSubfamilyNonpositive
+
+/-- Project the proper-subfamily nonpositive assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionProperSubfamilyNonpositiveCertificate.toProperSubfamilyNonpositive
+    {terminalPairCollisionProperSubfamilyNonpositive : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionProperSubfamilyNonpositiveCertificate
+      terminalPairCollisionProperSubfamilyNonpositive) :
+    terminalPairCollisionProperSubfamilyNonpositive :=
+  h.properSubfamilyNonpositive
+
+/-- Certificate for the no-diffuse / larger-collision mode of the rebate circuit. -/
+structure CertifiedProofMdCurrentFrontierTerminalPairCollisionNoDiffuseLargerCollisionModeCertificate
+    (terminalPairCollisionNoDiffuseLargerCollisionMode : Prop) : Type where
+  noDiffuseLargerCollisionMode : terminalPairCollisionNoDiffuseLargerCollisionMode
+
+/-- Project the no-diffuse / larger-collision mode assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionNoDiffuseLargerCollisionModeCertificate.toNoDiffuseLargerCollisionMode
+    {terminalPairCollisionNoDiffuseLargerCollisionMode : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionNoDiffuseLargerCollisionModeCertificate
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  h.noDiffuseLargerCollisionMode
+
+/--
+Endpoint certificate for the pair-collision rebate circuit.  It names the shared packed-atom rebate,
+the forced petal split, the two-petal and genuine three-petal branches, the proper-subfamily
+nonpositive ledger, and the no-diffuse/larger-collision mode as separate reusable certificates.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+    (terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode : Prop) :
+    Type where
+  sharedPackedAtomPenaltyRebate :
+    CertifiedProofMdCurrentFrontierTerminalSharedPackedAtomPenaltyRebateCertificate
+      terminalSharedPackedAtomPenaltyRebate
+  forcedSplitPackedAtomBetweenPetals :
+    CertifiedProofMdCurrentFrontierTerminalForcedSplitPackedAtomBetweenPetalsCertificate
+      terminalForcedSplitPackedAtomBetweenPetals
+  twoPetalOverpayBranch :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionTwoPetalOverpayCertificate
+      terminalPairCollisionTwoPetalOverpayBranch
+  genuineThreePetalBranch :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionGenuineThreePetalCertificate
+      terminalPairCollisionGenuineThreePetalBranch
+  properSubfamilyNonpositive :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionProperSubfamilyNonpositiveCertificate
+      terminalPairCollisionProperSubfamilyNonpositive
+  noDiffuseLargerCollisionMode :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionNoDiffuseLargerCollisionModeCertificate
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+
+/-- Build the pair-collision rebate-circuit endpoint from the six raw terminal assumptions. -/
+def certifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate_of_assumptions
+    {terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode : Prop}
+    (sharedPackedAtomPenaltyRebate : terminalSharedPackedAtomPenaltyRebate)
+    (forcedSplitPackedAtomBetweenPetals : terminalForcedSplitPackedAtomBetweenPetals)
+    (twoPetalOverpayBranch : terminalPairCollisionTwoPetalOverpayBranch)
+    (genuineThreePetalBranch : terminalPairCollisionGenuineThreePetalBranch)
+    (properSubfamilyNonpositive : terminalPairCollisionProperSubfamilyNonpositive)
+    (noDiffuseLargerCollisionMode : terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode where
+  sharedPackedAtomPenaltyRebate := ⟨sharedPackedAtomPenaltyRebate⟩
+  forcedSplitPackedAtomBetweenPetals := ⟨forcedSplitPackedAtomBetweenPetals⟩
+  twoPetalOverpayBranch := ⟨twoPetalOverpayBranch⟩
+  genuineThreePetalBranch := ⟨genuineThreePetalBranch⟩
+  properSubfamilyNonpositive := ⟨properSubfamilyNonpositive⟩
+  noDiffuseLargerCollisionMode := ⟨noDiffuseLargerCollisionMode⟩
+
+section PairCollisionRebateCircuitEndpointApi
+
+variable {terminalSharedPackedAtomPenaltyRebate
+  terminalForcedSplitPackedAtomBetweenPetals
+  terminalPairCollisionTwoPetalOverpayBranch
+  terminalPairCollisionGenuineThreePetalBranch
+  terminalPairCollisionProperSubfamilyNonpositive
+  terminalPairCollisionNoDiffuseLargerCollisionMode : Prop}
+
+/-- Project the shared packed-atom penalty rebate certificate. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toSharedPackedAtomPenaltyRebateCertificate
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierTerminalSharedPackedAtomPenaltyRebateCertificate
+      terminalSharedPackedAtomPenaltyRebate :=
+  h.sharedPackedAtomPenaltyRebate
+
+/-- Project the forced split packed-atom certificate. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toForcedSplitPackedAtomBetweenPetalsCertificate
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierTerminalForcedSplitPackedAtomBetweenPetalsCertificate
+      terminalForcedSplitPackedAtomBetweenPetals :=
+  h.forcedSplitPackedAtomBetweenPetals
+
+/-- Project the two-petal overpay branch certificate. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toTwoPetalOverpayBranchCertificate
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionTwoPetalOverpayCertificate
+      terminalPairCollisionTwoPetalOverpayBranch :=
+  h.twoPetalOverpayBranch
+
+/-- Project the genuine three-petal branch certificate. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toGenuineThreePetalBranchCertificate
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionGenuineThreePetalCertificate
+      terminalPairCollisionGenuineThreePetalBranch :=
+  h.genuineThreePetalBranch
+
+/-- Project the proper-subfamily nonpositive certificate. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toProperSubfamilyNonpositiveCertificate
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionProperSubfamilyNonpositiveCertificate
+      terminalPairCollisionProperSubfamilyNonpositive :=
+  h.properSubfamilyNonpositive
+
+/-- Project the no-diffuse / larger-collision mode certificate. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toNoDiffuseLargerCollisionModeCertificate
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionNoDiffuseLargerCollisionModeCertificate
+      terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  h.noDiffuseLargerCollisionMode
+
+/-- Project the shared packed-atom penalty rebate assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toSharedPackedAtomPenaltyRebate
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalSharedPackedAtomPenaltyRebate :=
+  h.toSharedPackedAtomPenaltyRebateCertificate.toSharedPackedAtomPenaltyRebate
+
+/-- Project the forced split packed-atom assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toForcedSplitPackedAtomBetweenPetals
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalForcedSplitPackedAtomBetweenPetals :=
+  h.toForcedSplitPackedAtomBetweenPetalsCertificate.toForcedSplitPackedAtomBetweenPetals
+
+/-- Project the two-petal overpay branch assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toTwoPetalOverpayBranch
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalPairCollisionTwoPetalOverpayBranch :=
+  h.toTwoPetalOverpayBranchCertificate.toTwoPetalOverpayBranch
+
+/-- Project the genuine three-petal branch assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toGenuineThreePetalBranch
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalPairCollisionGenuineThreePetalBranch :=
+  h.toGenuineThreePetalBranchCertificate.toGenuineThreePetalBranch
+
+/-- Project the proper-subfamily nonpositive assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toProperSubfamilyNonpositive
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalPairCollisionProperSubfamilyNonpositive :=
+  h.toProperSubfamilyNonpositiveCertificate.toProperSubfamilyNonpositive
+
+/-- Project the no-diffuse / larger-collision mode assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.toNoDiffuseLargerCollisionMode
+    (h : CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  h.toNoDiffuseLargerCollisionModeCertificate.toNoDiffuseLargerCollisionMode
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.of_assumptions_toSharedPackedAtomPenaltyRebate
+    (sharedPackedAtomPenaltyRebate : terminalSharedPackedAtomPenaltyRebate)
+    (forcedSplitPackedAtomBetweenPetals : terminalForcedSplitPackedAtomBetweenPetals)
+    (twoPetalOverpayBranch : terminalPairCollisionTwoPetalOverpayBranch)
+    (genuineThreePetalBranch : terminalPairCollisionGenuineThreePetalBranch)
+    (properSubfamilyNonpositive : terminalPairCollisionProperSubfamilyNonpositive)
+    (noDiffuseLargerCollisionMode : terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (certifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate_of_assumptions
+      sharedPackedAtomPenaltyRebate forcedSplitPackedAtomBetweenPetals twoPetalOverpayBranch
+      genuineThreePetalBranch properSubfamilyNonpositive noDiffuseLargerCollisionMode).toSharedPackedAtomPenaltyRebate =
+      sharedPackedAtomPenaltyRebate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.of_assumptions_toForcedSplitPackedAtomBetweenPetals
+    (sharedPackedAtomPenaltyRebate : terminalSharedPackedAtomPenaltyRebate)
+    (forcedSplitPackedAtomBetweenPetals : terminalForcedSplitPackedAtomBetweenPetals)
+    (twoPetalOverpayBranch : terminalPairCollisionTwoPetalOverpayBranch)
+    (genuineThreePetalBranch : terminalPairCollisionGenuineThreePetalBranch)
+    (properSubfamilyNonpositive : terminalPairCollisionProperSubfamilyNonpositive)
+    (noDiffuseLargerCollisionMode : terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (certifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate_of_assumptions
+      sharedPackedAtomPenaltyRebate forcedSplitPackedAtomBetweenPetals twoPetalOverpayBranch
+      genuineThreePetalBranch properSubfamilyNonpositive noDiffuseLargerCollisionMode).toForcedSplitPackedAtomBetweenPetals =
+      forcedSplitPackedAtomBetweenPetals :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.of_assumptions_toTwoPetalOverpayBranch
+    (sharedPackedAtomPenaltyRebate : terminalSharedPackedAtomPenaltyRebate)
+    (forcedSplitPackedAtomBetweenPetals : terminalForcedSplitPackedAtomBetweenPetals)
+    (twoPetalOverpayBranch : terminalPairCollisionTwoPetalOverpayBranch)
+    (genuineThreePetalBranch : terminalPairCollisionGenuineThreePetalBranch)
+    (properSubfamilyNonpositive : terminalPairCollisionProperSubfamilyNonpositive)
+    (noDiffuseLargerCollisionMode : terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (certifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate_of_assumptions
+      sharedPackedAtomPenaltyRebate forcedSplitPackedAtomBetweenPetals twoPetalOverpayBranch
+      genuineThreePetalBranch properSubfamilyNonpositive noDiffuseLargerCollisionMode).toTwoPetalOverpayBranch =
+      twoPetalOverpayBranch :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.of_assumptions_toGenuineThreePetalBranch
+    (sharedPackedAtomPenaltyRebate : terminalSharedPackedAtomPenaltyRebate)
+    (forcedSplitPackedAtomBetweenPetals : terminalForcedSplitPackedAtomBetweenPetals)
+    (twoPetalOverpayBranch : terminalPairCollisionTwoPetalOverpayBranch)
+    (genuineThreePetalBranch : terminalPairCollisionGenuineThreePetalBranch)
+    (properSubfamilyNonpositive : terminalPairCollisionProperSubfamilyNonpositive)
+    (noDiffuseLargerCollisionMode : terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (certifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate_of_assumptions
+      sharedPackedAtomPenaltyRebate forcedSplitPackedAtomBetweenPetals twoPetalOverpayBranch
+      genuineThreePetalBranch properSubfamilyNonpositive noDiffuseLargerCollisionMode).toGenuineThreePetalBranch =
+      genuineThreePetalBranch :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.of_assumptions_toProperSubfamilyNonpositive
+    (sharedPackedAtomPenaltyRebate : terminalSharedPackedAtomPenaltyRebate)
+    (forcedSplitPackedAtomBetweenPetals : terminalForcedSplitPackedAtomBetweenPetals)
+    (twoPetalOverpayBranch : terminalPairCollisionTwoPetalOverpayBranch)
+    (genuineThreePetalBranch : terminalPairCollisionGenuineThreePetalBranch)
+    (properSubfamilyNonpositive : terminalPairCollisionProperSubfamilyNonpositive)
+    (noDiffuseLargerCollisionMode : terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (certifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate_of_assumptions
+      sharedPackedAtomPenaltyRebate forcedSplitPackedAtomBetweenPetals twoPetalOverpayBranch
+      genuineThreePetalBranch properSubfamilyNonpositive noDiffuseLargerCollisionMode).toProperSubfamilyNonpositive =
+      properSubfamilyNonpositive :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate.of_assumptions_toNoDiffuseLargerCollisionMode
+    (sharedPackedAtomPenaltyRebate : terminalSharedPackedAtomPenaltyRebate)
+    (forcedSplitPackedAtomBetweenPetals : terminalForcedSplitPackedAtomBetweenPetals)
+    (twoPetalOverpayBranch : terminalPairCollisionTwoPetalOverpayBranch)
+    (genuineThreePetalBranch : terminalPairCollisionGenuineThreePetalBranch)
+    (properSubfamilyNonpositive : terminalPairCollisionProperSubfamilyNonpositive)
+    (noDiffuseLargerCollisionMode : terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (certifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate_of_assumptions
+      sharedPackedAtomPenaltyRebate forcedSplitPackedAtomBetweenPetals twoPetalOverpayBranch
+      genuineThreePetalBranch properSubfamilyNonpositive noDiffuseLargerCollisionMode).toNoDiffuseLargerCollisionMode =
+      noDiffuseLargerCollisionMode :=
+  rfl
+
+end PairCollisionRebateCircuitEndpointApi
+
+/--
+Final consumer handoff for the pair-collision rebate-circuit endpoint.  It extends the no-leftover
+surface with the six named rebate-circuit obligations, while preserving all existing projections to
+public, downstream, Ramsey, target-statement, and strict-cross/no-leftover handoff surfaces.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop)
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop)
+    (terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop)
+    (terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop)
+    (terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode : Prop) :
+    Type where
+  finalConsumerNoLeftoverHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  pairCollisionRebateCircuitEndpoint :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+
+section FinalConsumerPairCollisionRebateCircuitApi
+
+variable {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+variable {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+variable {packingSize : AnchoredPacking → ℕ}
+variable {WitnessCountAtLeast : ℕ → ℕ → Prop}
+variable {TwoDisjointTemplatesNeedTwo : Prop}
+variable {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+variable {v : ↑(s : Set α)}
+variable {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+variable {terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop}
+variable {terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop}
+variable {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+  terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+variable {terminalSharedPackedAtomPenaltyRebate
+  terminalForcedSplitPackedAtomBetweenPetals
+  terminalPairCollisionTwoPetalOverpayBranch
+  terminalPairCollisionGenuineThreePetalBranch
+  terminalPairCollisionProperSubfamilyNonpositive
+  terminalPairCollisionNoDiffuseLargerCollisionMode : Prop}
+
+/-- Promote a no-leftover final consumer handoff by adjoining the rebate-circuit endpoint. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode where
+  finalConsumerNoLeftoverHandoff := h
+  pairCollisionRebateCircuitEndpoint := pairCollisionRebateCircuitEndpoint
+
+/-- Non-dot constructor for the pair-collision rebate-circuit handoff. -/
+def certifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff_of_noLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  h.toFinalConsumerPairCollisionRebateCircuitHandoff pairCollisionRebateCircuitEndpoint
+
+/-- Promote a strict cross-defect handoff to the pair-collision rebate-circuit surface. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  (h.toFinalConsumerNoLeftoverHandoff noLeftoverDeletionAssumptions).toFinalConsumerPairCollisionRebateCircuitHandoff
+    pairCollisionRebateCircuitEndpoint
+
+/-- Promote a pair-pivot handoff directly to the pair-collision rebate-circuit surface. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  (h.toFinalConsumerNoLeftoverHandoff strictCrossAtomDefect noLeftoverDeletionAssumptions).toFinalConsumerPairCollisionRebateCircuitHandoff
+    pairCollisionRebateCircuitEndpoint
+
+/-- Build the pair-collision rebate-circuit handoff from the archive/release bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  (h.toFinalConsumerNoLeftoverHandoff pairPivotBridgeBlockerAssumptions strictCrossAtomDefect
+    noLeftoverDeletionAssumptions).toFinalConsumerPairCollisionRebateCircuitHandoff
+      pairCollisionRebateCircuitEndpoint
+
+/-- Build the pair-collision rebate-circuit handoff from the final consumer archive/release facade. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerPairCollisionRebateCircuitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  (h.toFinalConsumerNoLeftoverHandoff bridgeBlockerAssumptions pairPivotBridgeBlockerAssumptions
+    strictCrossAtomDefect noLeftoverDeletionAssumptions).toFinalConsumerPairCollisionRebateCircuitHandoff
+      pairCollisionRebateCircuitEndpoint
+
+/-- Project the no-leftover final consumer handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalConsumerNoLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.finalConsumerNoLeftoverHandoff
+
+/-- Project the pair-collision rebate-circuit endpoint certificate. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toPairCollisionRebateCircuitEndpoint
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  h.pairCollisionRebateCircuitEndpoint
+
+/-- Project the strict cross-defect handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalConsumerStrictCrossDefectHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect :=
+  h.toFinalConsumerNoLeftoverHandoff.toFinalConsumerStrictCrossDefectHandoff
+
+/-- Project the pair-pivot handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalConsumerPairPivotHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerPairPivotHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing :=
+  h.toFinalConsumerNoLeftoverHandoff.toFinalConsumerPairPivotHandoff
+
+/-- Project the archive/release bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerNoLeftoverHandoff.toFinalConsumerArchiveReleaseHandoff
+
+/-- Project the final consumer archive/release facade. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalConsumerArchiveReleaseFacade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerNoLeftoverHandoff.toFinalConsumerArchiveReleaseFacade
+
+/-- Project the remaining final assumption surfaces inherited from the no-leftover handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalRemainingAssumptionSurfaces
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierFinalRemainingAssumptionSurfaces
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerNoLeftoverHandoff.toFinalRemainingAssumptionSurfaces
+
+/-- Project the final consumer obligation export. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toConsumerObligationExport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdCurrentFrontierConsumerObligationExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerNoLeftoverHandoff.toConsumerObligationExport
+
+/-- Project the final target consumer certificate. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalTargetConsumerCertificate
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.toFinalConsumerNoLeftoverHandoff.toFinalTargetConsumerCertificate
+
+/-- Project the final numerical consequences. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalNumericalConsequences
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalConsumerNoLeftoverHandoff.toFinalNumericalConsequences
+
+/-- Project the target statement. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toTargetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    TargetStatement :=
+  h.toFinalConsumerNoLeftoverHandoff.toTargetStatement
+
+/-- Project the shared packed-atom penalty rebate assumption from the final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toTerminalSharedPackedAtomPenaltyRebate
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalSharedPackedAtomPenaltyRebate :=
+  h.toPairCollisionRebateCircuitEndpoint.toSharedPackedAtomPenaltyRebate
+
+/-- Project the forced split packed-atom assumption from the final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toTerminalForcedSplitPackedAtomBetweenPetals
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalForcedSplitPackedAtomBetweenPetals :=
+  h.toPairCollisionRebateCircuitEndpoint.toForcedSplitPackedAtomBetweenPetals
+
+/-- Project the two-petal overpay branch assumption from the final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toTerminalPairCollisionTwoPetalOverpayBranch
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalPairCollisionTwoPetalOverpayBranch :=
+  h.toPairCollisionRebateCircuitEndpoint.toTwoPetalOverpayBranch
+
+/-- Project the genuine three-petal branch assumption from the final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toTerminalPairCollisionGenuineThreePetalBranch
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalPairCollisionGenuineThreePetalBranch :=
+  h.toPairCollisionRebateCircuitEndpoint.toGenuineThreePetalBranch
+
+/-- Project the proper-subfamily nonpositive assumption from the final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toTerminalPairCollisionProperSubfamilyNonpositive
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalPairCollisionProperSubfamilyNonpositive :=
+  h.toPairCollisionRebateCircuitEndpoint.toProperSubfamilyNonpositive
+
+/-- Project the no-diffuse / larger-collision mode assumption from the final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toTerminalPairCollisionNoDiffuseLargerCollisionMode
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    terminalPairCollisionNoDiffuseLargerCollisionMode :=
+  h.toPairCollisionRebateCircuitEndpoint.toNoDiffuseLargerCollisionMode
+
+/-- The pair-collision rebate-circuit handoff exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    TargetStatement :=
+  h.toTargetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff_noLeftoverHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (h.toFinalConsumerPairCollisionRebateCircuitHandoff pairCollisionRebateCircuitEndpoint).toFinalConsumerNoLeftoverHandoff =
+      h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff_endpoint
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (h.toFinalConsumerPairCollisionRebateCircuitHandoff pairCollisionRebateCircuitEndpoint).toPairCollisionRebateCircuitEndpoint =
+      pairCollisionRebateCircuitEndpoint :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff_targetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (h.toFinalConsumerPairCollisionRebateCircuitHandoff pairCollisionRebateCircuitEndpoint).toTargetStatement =
+      h.toTargetStatement :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff.toFinalConsumerPairCollisionRebateCircuitHandoff_strictCross
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerStrictCrossDefectHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (h.toFinalConsumerPairCollisionRebateCircuitHandoff noLeftoverDeletionAssumptions
+      pairCollisionRebateCircuitEndpoint).toFinalConsumerStrictCrossDefectHandoff =
+      h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerPairCollisionRebateCircuitHandoff_targetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers)
+    (pairPivotBridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalPairPivotBridgeBlockerAssumptions
+        terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing)
+    (strictCrossAtomDefect : terminalStrictCrossAtomDefect)
+    (noLeftoverDeletionAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalNoLeftoverDeletionAssumptions
+        terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (pairCollisionRebateCircuitEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalPairCollisionRebateCircuitEndpointCertificate
+        terminalSharedPackedAtomPenaltyRebate
+        terminalForcedSplitPackedAtomBetweenPetals
+        terminalPairCollisionTwoPetalOverpayBranch
+        terminalPairCollisionGenuineThreePetalBranch
+        terminalPairCollisionProperSubfamilyNonpositive
+        terminalPairCollisionNoDiffuseLargerCollisionMode) :
+    (h.toFinalConsumerPairCollisionRebateCircuitHandoff bridgeBlockerAssumptions
+      pairPivotBridgeBlockerAssumptions strictCrossAtomDefect noLeftoverDeletionAssumptions
+      pairCollisionRebateCircuitEndpoint).toTargetStatement =
+      h.toTargetStatement :=
+  rfl
+
+end FinalConsumerPairCollisionRebateCircuitApi
+
 end FinalObligationDashboard
 
 end RegularInducedSubgraph
