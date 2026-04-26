@@ -2487,6 +2487,8 @@ Recommended attack:
     Add zero-gain saturation: gain-zero replacements preserve deficit one, so choose `P` lexicographically
     maximal in block-size profile and covered support; all terminal exclusions must hold on its zero-gain
     orbit.
+    Derive zero-gain locality: in a lexicographically saturated packing, a zero-gain support cannot meet two
+    packed atoms; if it meets one, it has the same size as that atom.
     Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
     short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
     total gain.
@@ -2498,13 +2500,19 @@ Recommended attack:
     Generalize to repair families: if `h` records contact with `B_j\{a}` and `t` records a lift using `a`,
     the full gain is `g^- + t - (1_{h or t}(|B_j|-1)-h(|B_j|-2))`, i.e. the four cases
     `g^-`, `g^- - 1`, `g^-`, `g^- + 2 - |B_j|`.
+    Combine lift accounting with zero-gain locality: nonpositive shortened-block unlifts are unit-gain
+    same-size exchanges with leftover singletons, and equality pure absorptions require `|B_j|-1` leftover
+    singletons.
     Add lift-collision alternative: a projected repair family has no disjoint full lift only if at least two
     projected supports are forced to lift through the deleted vertex.
-    Derive the small-atom corollary: size-two atoms force collision for `g^->=2` and allow only zero-gain
-    shortened-block unlifts for `g^-=1`; size-three atoms purely absorb only unit gain.
-    Package the two-atom deletion endpoint as a zero-gain pivot / forced collision-star dichotomy.
+    Derive the small-atom corollary: size-two atoms have no collision-star endpoint after
+    inclusion-minimality; their only deletion endpoint is a zero-gain pivot.  Size-three atoms purely absorb
+    only unit projected gain.
     Add pair-pivot saturation: a zero-gain pair pivot meeting another packed atom creates a larger block and
-    contradicts zero-gain saturation; surviving pair pivots are same-size exchanges with leftover singletons.
+    contradicts zero-gain saturation; surviving pair pivots are same-size exchanges with leftover singletons,
+    so saturated packings with no leftover singletons have no pair atoms.
+    Derive the no-leftover cutoff: if `L=0`, all four atoms have size at least three, so `|A|>=12`; the
+    all-pair `|A|=8` saturated rank-three packing is impossible.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

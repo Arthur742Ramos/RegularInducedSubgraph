@@ -1996,6 +1996,8 @@ What remains justified after audit is:
       cross-block supports;
       gain-zero replacements preserve deficit one, so the blocker is taken zero-gain-saturated across its
       replacement orbit;
+      zero-gain supports in a lexicographically saturated packing are local same-size exchanges with at most
+      one packed atom;
       deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
       are blocked;
       one-support deletion repair has exact lift accounting: shortened-block repairs have blocked positive
@@ -2004,13 +2006,15 @@ What remains justified after audit is:
       absorb only unit projected gain;
       the same lift accounting holds for full repair families with gains
       `g^-`, `g^- - 1`, `g^-`, or `g^- + 2 - |B_j|`;
+      zero-gain locality makes all nonpositive boundary lifts local exchanges/absorptions using leftover
+      singletons;
       absence of a disjoint full lift is exactly lift-collision by at least two supports forced through the
       deleted vertex;
-      small atoms sharpen this: size-two atoms force collision for projected gain at least two and size-three
-      atoms purely absorb only unit gain;
-      two-atom deletion endpoints are zero-gain pivots or forced collision stars;
+      small atoms sharpen this: inclusion-minimality rules out pair-atom collision stars, so two-atom
+      deletion endpoints are only zero-gain pivots, while size-three atoms purely absorb only unit gain;
       zero-gain saturation leaves pair pivots only as same-size exchanges with leftover singletons, so
-      all-pair saturated packings have collision-star deletions;
+      saturated packings with no leftover singletons have no pair atoms;
+      hence no-leftover saturated packings have `|A|>=12`, and the all-pair `|A|=8` packing is impossible;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;

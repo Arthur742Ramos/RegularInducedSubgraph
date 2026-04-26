@@ -5427,6 +5427,8 @@ Consequences: leftover singletons are support-independent; supports meeting one 
 most that block; supports meeting blocks `I` have size at most `1+sum_{i in I}(|B_i|-1)`.
 Gain-zero replacements preserve the deficit-one packing; choose a zero-gain-saturated packing
 lexicographically maximal in block-size profile, so every zero-gain move is terminal and profile-nonincreasing.
+In such a saturated packing, every zero-gain support is local: it meets at most one packed atom, and if it
+does then it has the same size as that atom.
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
 vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
 positive-gain repair family whose every full lift has nonpositive total gain.
@@ -5439,16 +5441,19 @@ unit projected gain.
 For a full projected repair family with gain `g^-`, the lift gain is one of
 `g^-`, `g^- - 1`, `g^-`, or `g^- + 2 - |B_j|` according as it misses/hits the shortened block and omits/uses
 the deleted vertex; this four-case formula is the exact multi-support deletion endpoint.
+By zero-gain locality, nonpositive shortened-block unlifts are unit-gain same-size exchanges with leftover
+singletons, and equality pure absorptions use `|B_j|-1` leftover singletons.
 The only remaining lift obstruction is collision: a projected repair family has no disjoint full lift only
 when at least two projected supports are forced to lift through the same deleted vertex.
-Consequently, at a size-two atom every repair family with `g^->=2` is collision-forced, while `g^-=1`
-survives only as a zero-gain shortened-block unlift; at a size-three atom pure absorption is possible only
-for `g^-=1`.
-Equivalently, a two-atom deletion endpoint is a zero-gain pivot or a forced collision star; there is no
-absorption case.
+Consequently, at a size-two atom inclusion-minimality rules out collision stars: every projected member has
+positive gain, at most one forced lift can hit the shortened partner, and any forced lift missing it is a
+forbidden positive support.  Thus the only two-atom deletion endpoint is a zero-gain pivot.
 In a zero-gain-saturated packing, a pair-atom pivot that meets another packed atom would create a larger
 block, so surviving pivots are only same-size exchanges with leftover singletons.  With no leftover
-singletons, every pair-atom deletion is collision-forced.
+singletons, no saturated packing can contain a pair atom.
+Thus a saturated packing with no leftover singletons has four atoms all of size at least three, so `|A|>=12`;
+for `|A|<=11`, every deficit-one packing has a leftover singleton, and the all-pair `|A|=8` packing is
+impossible.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

@@ -11972,6 +11972,19 @@ covered support, so that every zero-gain replacement is profile-nonincreasing.  
 then a saturated bridge blocker: no positive-gain support exists, and all gain-zero moves stay inside the
 same terminal class.
 
+Lexicographic saturation localizes every zero-gain support.  If `gain_P(C)=0` and `C` meets packed blocks
+`B_i` indexed by `I`, then
+
+```text
+|C|=1+sum_{i in I}(|B_i|-1).
+```
+
+If `|I|>=2`, this size is strictly larger than every hit block, because all packed blocks are non-singleton.
+Replacing the hit blocks by `C` would therefore make the sorted block-size profile lexicographically larger,
+contradicting saturation.  Hence a zero-gain support meets at most one packed block.  If it meets one packed
+block `B_i`, then `|C|=|B_i|`; it is only a same-size exchange of that atom with some leftover vertices.  In
+particular, every tight atom-defect replacement is local to a single atom.
+
 Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
 `P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
 `B_j\{a}` lowers the saving by exactly one, so the projected packing in `A\{a}` has saving `|A|-5`, one
@@ -12049,6 +12062,13 @@ available no-absorption lift with gain `g^-` closes, a shortened-block unlift lo
 shortened-block thickening keeps the full projected gain, and a pure absorption lift is possible only when
 `g^-<=|B_j|-2`.  This is the precise multi-support deletion endpoint.
 
+Zero-gain locality identifies the nonpositive lift cases.  A shortened-block unlift can be nonpositive only
+when `g^-=1`; then it is zero-gain against `P`, so it must be a same-size exchange with the original atom
+`B_j` and may use only vertices from `B_j\{a}` together with leftover singletons.  A pure absorption lift
+with equality `g^-=|B_j|-2` is also zero-gain; it likewise must be local to `B_j`, hence has size `|B_j|`,
+contains `a`, misses `B_j\{a}`, and uses `|B_j|-1` leftover singletons.  All other available lifts in the
+four-case table are positive bridges, except for strictly negative pure absorptions inside larger atoms.
+
 There is only one additional lift obstruction: collision at the deleted vertex.  Each projected support in
 `R^-` comes from at least one original column, hence has an unlifted lift, a thickened lift through `a`, or
 both.  If the projected family has no disjoint full lift at all, then at least two of its members are
@@ -12072,16 +12092,22 @@ members.  For `g^-=1`, the only nonpositive disjoint full lift is the shortened-
 blocked by a positive lift; genuine absorption starts only at atoms of size at least four for gain at least
 two.
 
-Consequently a size-two atom has a binary deletion endpoint.  For each of its two vertices `a`, every
-minimal projected positive-gain repair after deleting `a` is either
+The collision-star alternative collapses at a size-two atom once the projected repair family is chosen
+inclusion-minimal.  In such a minimal positive-gain family, every member has strictly positive projected
+gain; otherwise removing a nonpositive member would leave a smaller positive-gain family.  Let
+`B_j={a,b}`.  In any projected family after deleting `a`, at most one member can meet the shortened atom
+`{b}`.  If an `a`-forced member misses `b`, its thickened lift has the same positive gain against `P`, since
+`|B_j|=2`; this is a forbidden positive support.  Therefore every `a`-forced member would have to meet `b`,
+but disjointness allows at most one such member.  Hence a lift-collision star cannot occur at a pair atom.
+
+Consequently a size-two atom has only the pivot endpoint.  For each of its two vertices `a`, every minimal
+projected positive-gain repair after deleting `a` must be a
 
 ```text
-zero-gain pivot:  g^-=1, it hits the other vertex of the atom, and its unlifted lift is tight;
-collision star:   at least two members are forced to lift through a.
+zero-gain pivot:  g^-=1, it hits the other vertex b, and its unlifted lift is tight.
 ```
 
-There is no absorption case at a two-atom.  Thus a deficit-one packing whose non-singleton atoms are all
-pairs reduces the deletion side to zero-gain pivots and forced collision stars only.
+There is no absorption or collision case at a two-atom.
 
 Zero-gain saturation sharply restricts the pivot side.  Let `B_j={a,b}` be a pair atom in a saturated
 packing.  A zero-gain pivot after deleting `a` is an unlifted support `C` containing `b` with
@@ -12094,9 +12120,14 @@ C={b,l}
 ```
 
 with a leftover singleton atom `l`.  Consequently, if a saturated deficit-one packing has no leftover
-singletons, every deletion from a pair atom is forced into the collision-star alternative.  If it has one
-leftover singleton, pair pivots can only swap the deleted vertex with that singleton; all other deletion
-repairs are collision-forced.
+singletons, it cannot contain a pair atom at all.  If it has one leftover singleton, pair pivots can only
+swap the deleted vertex with that singleton.
+
+This gives a useful size cutoff.  A zero-gain-saturated deficit-one packing with `L=0` has four
+non-singleton atoms and none of them is a pair, so all four atoms have size at least three and `|A|>=12`.
+Equivalently, in every saturated rank-three endpoint with `|A|<=11`, each deficit-one packing has at least
+one leftover singleton.  The all-pair four-atom packing at `|A|=8` is therefore impossible in the saturated
+rank-three branch.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

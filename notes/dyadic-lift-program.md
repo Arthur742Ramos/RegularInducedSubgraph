@@ -1098,6 +1098,8 @@ Hence leftover singletons are support-independent, packed blocks cannot be thick
 meeting block set `I` has size at most `1+sum_{I}(|B_i|-1)`.
 Gain-zero replacements preserve the one-defect packing, so the blocker is taken zero-gain-saturated: all
 positive-gain exclusions persist throughout the zero-gain orbit.
+Lexicographic saturation localizes zero-gain supports: they meet at most one packed atom, and then only as a
+same-size exchange with leftover vertices.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
 In the one-support case the exact lift accounting has two types: hitting the shortened block makes the
@@ -1107,13 +1109,17 @@ So size-two blocks cannot absorb such repairs, and size-three blocks absorb only
 For a whole projected repair family with gain `g^-`, lift gains are exactly
 `g^-`, `g^- - 1`, `g^-`, or `g^- + 2 - |B_j|` depending on shortened-block contact and whether the lift uses
 the deleted vertex.
+Zero-gain locality makes nonpositive shortened-block unlifts local same-size exchanges, and equality pure
+absorptions require `|B_j|-1` leftover singletons.
 If no disjoint full lift exists, at least two projected supports are forced through the deleted vertex; this
 lift-collision is the only nongain obstruction.
-For size-two atoms, projected gain at least two is therefore collision-forced, and unit gain survives only as
-a zero-gain shortened-block unlift; size-three atoms can purely absorb only unit gain.
-So two-atom deletion endpoints are exactly zero-gain pivots or forced collision stars.
+For size-two atoms, inclusion-minimality collapses lift-collision: every projected member has positive gain,
+at most one forced lift can hit the shortened partner, and any forced lift missing it is a forbidden positive
+support.  Thus two-atom deletion endpoints are only zero-gain pivots.
 Zero-gain saturation removes pivots meeting another packed atom; pair pivots can only exchange with leftover
-singletons, so all-pair saturated packings have only collision-star deletions.
+singletons, so saturated packings with no leftover singletons have no pair atoms.
+Hence no-leftover saturated packings have all four atoms of size at least three; in particular `|A|>=12`,
+and the all-pair `|A|=8` packing is impossible.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.
