@@ -7130,6 +7130,38 @@ any exact-basis counterexample must simultaneously block appendable defect repai
 outside-only block selections.  The latter is the missing global information in atom-only local
 countermodels.
 
+This gives a useful amplification diagnostic.  Fix `L == 0 [MOD 4]`.  In any direction whose retained
+fiber has at least `R(L,L)` vertices and avoids the required append residue `d_i`, Ramsey supplies an
+`L`-vertex regular block of residue `q_i in {0,3}` with `q_i != d_i` when `d_i` is extreme, and with
+`q_i` one of the two extreme wrong residues when `d_i` is middle.  Replacing four-blocks by these
+`L`-blocks changes none of the equations except the surplus threshold:
+
+```text
+append:       q_i + sum_{j != i} deg_{P_j}(v) = d_i       for v in P_i,
+outside-only: q_i + sum_{j != i} deg_{P_j}(v) = Q         for v in P_i,
+              sum_i |P_i| > m.
+```
+
+Thus large homogeneous reservoirs amplify any block-level selector.  In particular, a no-cross family
+of same-residue `L`-blocks has size at most `m/L` in a terminal counterexample.  This kills the
+disjoint-clique toy model at every scale, not only for four-blocks.
+
+The same observation also identifies the sparse-import barrier.  The retained lower bound alone can be
+spread over only linearly many one-vertex imports; then the available old-balanced augmented blocks
+`X_i union {b}` still have size four, and an outside-only contradiction cannot be forced from them
+without using a block-level selector of density greater than `1/4`.  Therefore the exact-basis endpoint
+has a genuine dichotomy:
+
+```text
+heavy retained reservoirs  -> amplified wrong-residue blocks must synchronize or append;
+sparse retained imports    -> the missing mass must come from boundary triples X_i.
+```
+
+Consequently the remaining theorem is not a finite same-direction Ramsey statement.  It is a
+boundary-decorated one-large-class selector: the boundary triples provide almost `3m` outside vertices
+but are zero-sum-free, so they can only help through outside-only maximality or through explicit
+coordinate exchanges with the sparse retained imports.
+
 The same outside-only constraint applies already to the maximal boundary `X`.  Since
 `|X|` can be as large as `3(m-1)`, a terminal boundary is a `1/3`-critical obstruction for the
 ordinary mod-`4` congruent-degree selector: no `Y subset X` with `|Y|>m` may have all degrees in
