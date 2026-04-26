@@ -5313,6 +5313,9 @@ More exactly, `Spec_Z(A)` records partition sizes `1,2,3`; target realization re
 by every active deletion or zero-filter relaxation.
 The gap cases are `e_Z>=2` with empty spectrum, `e_Z=1` with spectrum contained in `{1}`, and `e_Z=0` with
 spectrum contained in `{1,2}`.
+Criticality is exactly that every `A\{a}` meets the same allowed spectrum interval, while every
+zero-relaxation uses `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)` and the enlarged support family to meet its
+allowed interval.
 For `|A|<=3`, this is the explicit finite table: `empty` needs three empty-support columns; one active
 coordinate needs one singleton plus two empty columns; two active coordinates need either the pair plus two
 empty columns or two singletons plus one empty column; three active coordinates need triple, pair+singleton,

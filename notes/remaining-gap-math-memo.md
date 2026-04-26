@@ -1958,6 +1958,7 @@ Equivalently, the partition-size spectrum misses the interval allowed by empty-s
 active deletion or zero-filter relaxation fills the gap.
 The gap cases are empty spectrum for `e_Z>=2`, spectrum inside `{1}` for `e_Z=1`, and spectrum inside
 `{1,2}` for `e_Z=0`.
+Criticality says every active deletion and every zero-relaxation has spectrum meeting its allowed interval.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.

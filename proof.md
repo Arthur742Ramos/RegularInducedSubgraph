@@ -11337,6 +11337,18 @@ one needs a two- or three-block partition.  In the third, even one- and two-bloc
 because no empty-support columns are available; an exact three-block partition is required.  Every active
 deletion or zero-filter relaxation must move the corresponding spectrum into the required interval.
 
+The criticality conditions are therefore:
+
+```text
+Spec_Z(A\{a}) cap {max(1,3-e_Z),...,3} nonempty        for every a in A,
+Spec_{Z\{z}}(A) cap {max(1,3-e_{Z\{z}}),...,3} nonempty        for every z in Z,
+```
+
+where `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)`.  Active deletion keeps the empty-support capacity fixed and
+projects the admissible supports; zero-filter relaxation enlarges both the support family and the empty
+capacity by the private columns at `z`.  These two displayed conditions are the exact minor-criticality
+equations for the high-active target branch.
+
 For `|A|<=3` this criterion is the following table:
 
 ```text

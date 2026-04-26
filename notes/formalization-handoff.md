@@ -2412,6 +2412,8 @@ Recommended attack:
     `F_Z`; realization requires intersection with `{max(1,3-e_Z),...,3}`.
     Record the three empty-capacity cases: `e_Z>=2` forces empty spectrum, `e_Z=1` permits only useless
     one-block partitions, and `e_Z=0` permits only useless one-/two-block partitions.
+    Record the criticality equations for `Spec_Z(A\{a})` and `Spec_{Z\{z}}(A)`, with
+    `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)`.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

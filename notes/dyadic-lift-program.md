@@ -1031,6 +1031,8 @@ Equivalently, the partition-size spectrum `Spec_Z(A) subset {1,2,3}` misses the 
 empty-support capacity, while every active deletion or zero-filter relaxation fills the gap.
 The three gaps are: no partition when `e_Z>=2`, only one-block partitions when `e_Z=1`, or no three-block
 partition when `e_Z=0`.
+Active criticality projects to `A\{a}` with the same empty capacity; zero criticality enlarges capacities by
+private columns `p_z` and must meet the new allowed interval.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.
