@@ -4126,6 +4126,107 @@ theorem ramseyThreeEightDegreeWindow_residual_degree_seven_common_neighbor_sum_b
       _ = 42 := by rw [hNvCard]; norm_num
   exact ⟨hlower, by rwa [hledger]⟩
 
+/--
+Upper-bound equality in the exact `28`-vertex residual is rigid: if a degree-`7`
+vertex has common-neighbor ledger exactly `42`, then every one of its neighbors
+uses the maximum allowed six cross edges into the non-neighborhood side.
+-/
+theorem ramseyThreeEightDegreeWindow_residual_degree_seven_common_neighbor_sum_eq_forty_two_forces_neighbor_cross_card_six
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        2 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 8)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 7)
+    (hsumEq :
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 42) :
+    ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+      (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x => G.Adj w x)).card = 6 := by
+  classical
+  let Nv : Finset α := s.filter fun w => G.Adj (v : α) w
+  let crossCount : α → ℕ := fun w =>
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x => G.Adj w x)).card
+  have hledger :
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) =
+        Finset.sum Nv crossCount := by
+    simpa [Nv, crossCount] using
+      ramseyThreeEightDegreeWindow_residual_degree_seven_common_neighbor_sum_eq_neighbor_cross_sum
+        (G := G) (s := s) (v := v) hdegv
+  have hsumCross : Finset.sum Nv crossCount = 42 := by
+    rw [← hledger]
+    exact hsumEq
+  have hNvCard : Nv.card = 7 := by
+    have hdeg_eq : (G.induce (s : Set α)).degree v = Nv.card := by
+      simpa [Nv] using degree_induce_finset_eq_card_filter_adj G s v
+    rw [← hdeg_eq]
+    exact hdegv
+  have hcrossLe : ∀ w ∈ Nv, crossCount w ≤ 6 := by
+    intro w hwNv
+    have hw : w ∈ s := (Finset.mem_filter.mp hwNv).1
+    have hvw : G.Adj (v : α) w := (Finset.mem_filter.mp hwNv).2
+    exact
+      (ramseyThreeEightDegreeWindow_residual_degree_seven_neighbor_cross_card_bounds
+        (G := G) (s := s) hdegree hnoK3 (v := v) hdegv (w := w) hw hvw).2
+  intro w hw hvw
+  have hwNv : w ∈ Nv := Finset.mem_filter.mpr ⟨hw, hvw⟩
+  have hsumErase : crossCount w + Finset.sum (Nv.erase w) crossCount = Finset.sum Nv crossCount :=
+    Finset.add_sum_erase Nv crossCount hwNv
+  have hrestCard : (Nv.erase w).card = 6 := by
+    have hcardErase := Finset.card_erase_add_one hwNv
+    omega
+  have hrestLe : Finset.sum (Nv.erase w) crossCount ≤ 36 := by
+    calc
+      Finset.sum (Nv.erase w) crossCount ≤ Finset.sum (Nv.erase w) (fun _ => 6) := by
+        exact Finset.sum_le_sum (by
+          intro y hy
+          exact hcrossLe y (Finset.mem_of_mem_erase hy))
+      _ = 6 * (Nv.erase w).card := by simp [Nat.mul_comm]
+      _ = 36 := by rw [hrestCard]; norm_num
+  have hcrosswLe : crossCount w ≤ 6 := hcrossLe w hwNv
+  have hcrossw : crossCount w = 6 := by
+    omega
+  simpa [crossCount] using hcrossw
+
+/--
+At the same upper-bound equality, every neighbor of the degree-`7` base vertex is
+itself degree `7`.  Thus the `42` boundary forces a degree-`7` cluster around the
+base vertex.
+-/
+theorem ramseyThreeEightDegreeWindow_residual_degree_seven_common_neighbor_sum_eq_forty_two_forces_neighbor_degree_seven
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        2 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 8)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 7)
+    (hsumEq :
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 42) :
+    ∀ {w : α}, (hw : w ∈ s) → G.Adj (v : α) w →
+      (G.induce (s : Set α)).degree ⟨w, hw⟩ = 7 := by
+  intro w hw hvw
+  have hcrossSix :=
+    ramseyThreeEightDegreeWindow_residual_degree_seven_common_neighbor_sum_eq_forty_two_forces_neighbor_cross_card_six
+      (G := G) (s := s) hdegree hnoK3 (v := v) hdegv hsumEq (w := w) hw hvw
+  have hcrossDegree :=
+    ramseyThreeEightDegreeWindow_residual_degree_seven_neighbor_cross_card_add_one_eq_degree
+      (G := G) (s := s) hnoK3 (v := v) hdegv (w := w) hw hvw
+  omega
+
 /-- A degree-`7` common-neighbor ledger above `42` eliminates the exact `R(3,8)` residual. -/
 theorem ramseyThreeEightDegreeWindow_residual_eliminated_of_degree_seven_common_neighbor_sum_ge_forty_three
     {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
@@ -4771,6 +4872,120 @@ theorem hasCliqueOrIndepSetBound_3_8_28_of_refined_degree_window_with_common_sum
     hcommonLe htight hneighborCross hcommonSumLe
 
 /--
+Final boundary-refined `R(3,8) <= 28` obstruction surface: besides the common-sum cap,
+the exact upper boundary `42` is exposed as a rigid local condition forcing every
+neighbor of the degree-`7` base vertex to have cross-card `6` and induced degree `7`.
+-/
+theorem hasCliqueOrIndepSetBound_3_8_28_of_refined_degree_window_with_exact_boundary_constraints
+    (hrefined :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 28 →
+        (∀ v : ↑(s : Set α),
+          2 ≤ (G.induce (s : Set α)).degree v ∧
+            (G.induce (s : Set α)).degree v < 8) →
+        (∀ v : ↑(s : Set α),
+          20 ≤ ((Gᶜ).induce (s : Set α)).degree v ∧
+            ((Gᶜ).induce (s : Set α)).degree v ≤ 25) →
+        Even (∑ v : ↑(s : Set α), (G.induce (s : Set α)).degree v) →
+        Even #{v : ↑(s : Set α) | Odd ((G.induce (s : Set α)).degree v)} →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 7 →
+            ∀ {x : α}, x ∈ s → ¬ G.Adj (v : α) x →
+              ∃ w ∈ s, G.Adj (v : α) w ∧ G.Adj x w) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 7 →
+            20 ≤
+              Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                (fun x =>
+                  (((s.erase (v : α)).erase x).filter
+                    (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 7 →
+            ∀ {x : α}, x ∈ s → ¬ G.Adj (v : α) x →
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card ≤ 7) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 7 →
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 20 →
+            ∀ {x : α}, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) →
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 7 →
+            ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+              1 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                  (fun x => G.Adj w x)).card ∧
+                (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                  (fun x => G.Adj w x)).card ≤ 6) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 7 →
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 42) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 7 →
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 42 →
+            ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+              (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x => G.Adj w x)).card = 6) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 7 →
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 42 →
+            ∀ {w : α}, (hw : w ∈ s) → G.Adj (v : α) w →
+              (G.induce (s : Set α)).degree ⟨w, hw⟩ = 7) →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 8 t) :
+    HasCliqueOrIndepSetBound 3 8 28 := by
+  refine hasCliqueOrIndepSetBound_3_8_28_of_refined_degree_window_with_common_sum_cap ?_
+  intro α _ G s hcard hdegree hcompl hsumEven hoddCountEven hdom hsumCommon
+    hcommonLe htight hneighborCross hcommonSumLe
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 8 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  have hupperCross :
+      ∀ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 7 →
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 42 →
+          ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+            (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+              (fun x => G.Adj w x)).card = 6 := by
+    intro v hdegv hsumEq w hw hvw
+    exact
+      ramseyThreeEightDegreeWindow_residual_degree_seven_common_neighbor_sum_eq_forty_two_forces_neighbor_cross_card_six
+        (G := G) (s := s) hdegree hnoK3 (v := v) hdegv hsumEq (w := w) hw hvw
+  have hupperDegree :
+      ∀ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 7 →
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 42 →
+          ∀ {w : α}, (hw : w ∈ s) → G.Adj (v : α) w →
+            (G.induce (s : Set α)).degree ⟨w, hw⟩ = 7 := by
+    intro v hdegv hsumEq w hw hvw
+    exact
+      ramseyThreeEightDegreeWindow_residual_degree_seven_common_neighbor_sum_eq_forty_two_forces_neighbor_degree_seven
+        (G := G) (s := s) hdegree hnoK3 (v := v) hdegv hsumEq (w := w) hw hvw
+  exact hrefined G s hcard hdegree hcompl hsumEven hoddCountEven hdom hsumCommon
+    hcommonLe htight hneighborCross hcommonSumLe hupperCross hupperDegree
+
+/--
 Degree-window reduction for the low target `R(3,10) <= 42`: with the sharp
 `R(3,9) <= 36` predecessor, an exact counterexample can only have every induced degree
 between `6` and `9`.
@@ -5098,6 +5313,77 @@ theorem ramseyThreeNineRegular8_residual_common_neighbor_sum_eq_fifty_six
   rw [residual_common_neighbor_sum_eq_neighbor_cross_sum (G := G) (s := s) (v := (v : α))]
   exact ramseyThreeNineRegular8_residual_neighbor_cross_sum_eq_fifty_six
     (G := G) (s := s) hdegree hnoK3 v
+
+/--
+Average constraint for the exact `36`-vertex `8`-regular residual: since the
+twenty-seven non-neighbors of any base vertex contribute exactly `56` common-neighbor
+incidences, at least one non-neighbor contributes three or more.
+-/
+theorem ramseyThreeNineRegular8_residual_exists_nonNeighbor_common_neighbor_card_ge_three
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 36)
+    (hdegree :
+      ∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (v : ↑(s : Set α)) :
+    ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+      3 ≤ (((s.erase (v : α)).erase x).filter
+        (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card := by
+  classical
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  have hnonNbrsCard : nonNbrsV.card = 27 := by
+    simpa [nonNbrsV] using
+      ramseyThreeNineRegular8_residual_nonNeighbor_card_eq_twenty_seven
+        (G := G) (s := s) hcard hdegree v
+  have hsumExact : Finset.sum nonNbrsV commonCount = 56 := by
+    simpa [nonNbrsV, commonCount] using
+      ramseyThreeNineRegular8_residual_common_neighbor_sum_eq_fifty_six
+        (G := G) (s := s) hdegree hnoK3 v
+  by_contra hnone
+  have hle : ∀ x ∈ nonNbrsV, commonCount x ≤ 2 := by
+    intro x hx
+    by_contra hnotLe
+    have hxge : 3 ≤ commonCount x := by omega
+    exact hnone ⟨x, hx, hxge⟩
+  have hsumLe : Finset.sum nonNbrsV commonCount ≤ 54 := by
+    calc
+      Finset.sum nonNbrsV commonCount ≤ Finset.sum nonNbrsV (fun _ => 2) := by
+        exact Finset.sum_le_sum hle
+      _ = 2 * nonNbrsV.card := by simp [Nat.mul_comm]
+      _ = 54 := by rw [hnonNbrsCard]; norm_num
+  omega
+
+/--
+Certificate eliminator for the exact `36`-vertex residual: no base vertex can have all
+twenty-seven non-neighbors contributing at most two common neighbors.
+-/
+theorem ramseyThreeNineRegular8_residual_eliminated_of_all_common_neighbor_card_le_two
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 36)
+    (hdegree :
+      ∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        ∀ {x : α}, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) →
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card ≤ 2) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 9 t := by
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 9 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  rcases hcert with ⟨v, hle⟩
+  rcases ramseyThreeNineRegular8_residual_exists_nonNeighbor_common_neighbor_card_ge_three
+      (G := G) (s := s) hcard hdegree hnoK3 v with
+    ⟨x, hx, hge⟩
+  have hxle := hle hx
+  omega
 
 /--
 Certificate eliminator for the exact `36`-vertex `8`-regular residual: any base vertex whose
@@ -5572,6 +5858,76 @@ theorem hasCliqueOrIndepSetBound_3_9_36_of_3_8_28_regular8_with_exact_common_sum
     hneighborCrossSum hneighborCrossCard
 
 /--
+Average-refined exact-ledger `R(3,9) <= 36` reduction: the remaining `36`-vertex
+`8`-regular residual may be assumed not only to have exact common/cross sum `56`, but
+also to have, around every base vertex, some non-neighbor with at least three common
+neighbors.
+-/
+theorem hasCliqueOrIndepSetBound_3_9_36_of_3_8_28_regular8_with_exact_common_sum_cross_and_average_constraints
+    (h3_8 : HasCliqueOrIndepSetBound 3 8 28)
+    (hregular :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 36 →
+        (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8) →
+        (∀ v : ↑(s : Set α),
+          27 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) →
+        (∀ v : ↑(s : Set α),
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 27 →
+            ∀ {x : α}, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) →
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1) →
+        (∀ v : ↑(s : Set α), ∀ {x : α}, x ∈ s → ¬ G.Adj (v : α) x →
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card ≤ 8) →
+        (∀ v : ↑(s : Set α),
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 56) →
+        (∀ v : ↑(s : Set α),
+          Finset.sum (s.filter fun w => G.Adj (v : α) w)
+            (fun w =>
+              (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x => G.Adj w x)).card) = 56) →
+        (∀ v : ↑(s : Set α), ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+          (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x => G.Adj w x)).card = 7) →
+        (∀ v : ↑(s : Set α),
+          ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+            3 ≤ (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 9 t) :
+    HasCliqueOrIndepSetBound 3 9 36 := by
+  refine hasCliqueOrIndepSetBound_3_9_36_of_3_8_28_regular8_with_exact_common_sum_and_cross_constraints
+    h3_8 ?_
+  intro α _ G s hcard hdegree hsumCommon htight hcommonLe hcommonExact
+    hneighborCrossSum hneighborCrossCard
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 9 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  have haverage :
+      ∀ v : ↑(s : Set α),
+        ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+          3 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card := by
+    intro v
+    exact ramseyThreeNineRegular8_residual_exists_nonNeighbor_common_neighbor_card_ge_three
+      (G := G) (s := s) hcard hdegree hnoK3 v
+  exact hregular G s hcard hdegree hsumCommon htight hcommonLe hcommonExact
+    hneighborCrossSum hneighborCrossCard haverage
+
+/--
 Combined low-row wiring for `R(3,10) <= 42`: the `R(3,9) <= 36` predecessor can
 be supplied by the refined `8`-regular residual obligation with common-neighbor
 constraints.
@@ -5717,6 +6073,66 @@ theorem hasCliqueOrIndepSetBound_3_10_42_of_3_8_28_regular8_with_exact_common_su
     hwindow
 
 /--
+Combined `R(3,10) <= 42` wiring through the average-refined exact `36`-vertex residual:
+the predecessor `R(3,9) <= 36` can be reduced to a regular residual with exact `56`
+ledgers and a forced non-neighbor of common-neighbor multiplicity at least three around
+every base vertex.
+-/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_3_8_28_regular8_with_exact_common_sum_cross_and_average_constraints
+    (h3_8 : HasCliqueOrIndepSetBound 3 8 28)
+    (hregular :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 36 →
+        (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8) →
+        (∀ v : ↑(s : Set α),
+          27 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) →
+        (∀ v : ↑(s : Set α),
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 27 →
+            ∀ {x : α}, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) →
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1) →
+        (∀ v : ↑(s : Set α), ∀ {x : α}, x ∈ s → ¬ G.Adj (v : α) x →
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card ≤ 8) →
+        (∀ v : ↑(s : Set α),
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 56) →
+        (∀ v : ↑(s : Set α),
+          Finset.sum (s.filter fun w => G.Adj (v : α) w)
+            (fun w =>
+              (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x => G.Adj w x)).card) = 56) →
+        (∀ v : ↑(s : Set α), ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+          (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x => G.Adj w x)).card = 7) →
+        (∀ v : ↑(s : Set α),
+          ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+            3 ≤ (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 9 t)
+    (hwindow :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 42 →
+        (∀ v : ↑(s : Set α),
+          6 ≤ (G.induce (s : Set α)).degree v ∧
+            (G.induce (s : Set α)).degree v < 10) →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  hasCliqueOrIndepSetBound_3_10_42_of_3_9_36_degree_window
+    (hasCliqueOrIndepSetBound_3_9_36_of_3_8_28_regular8_with_exact_common_sum_cross_and_average_constraints
+      h3_8 hregular)
+    hwindow
+
+/--
 Concrete local constraints on any exact `42`-vertex degree-window residual for
 `R(3,10)`: degrees are in `{6,7,8,9}`, and every edge has no common neighbor because
 the residual is triangle-free.
@@ -5823,6 +6239,298 @@ theorem ramseyThreeTenDegreeWindow_residual_degree_nine_dominates
     · exact (Finset.mem_filter.mp hyNv).1
   exact hnoI10 ⟨insert x Nv, hInsertSub, hI10⟩
 
+/-- A degree-`9` vertex in the exact `42`-vertex residual has exactly `32` non-neighbors. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_nonNeighbor_card_eq_thirty_two
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42) {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9) :
+    ((s.erase (v : α)).filter (fun w => ¬ G.Adj (v : α) w)).card = 32 := by
+  classical
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun w => ¬ G.Adj (v : α) w
+  have hneighbor :
+      s.filter (fun w => G.Adj (v : α) w) =
+        (s.erase (v : α)).filter (G.Adj (v : α)) := by
+    ext w
+    by_cases hwv : w = (v : α)
+    · subst w
+      simp
+    · simp [hwv]
+  have hpart :
+      ((s.erase (v : α)).filter (G.Adj (v : α))).card + nonNbrsV.card =
+        (s.erase (v : α)).card := by
+    simpa [nonNbrsV] using
+      (Finset.card_filter_add_card_filter_not (s := s.erase (v : α)) (p := G.Adj (v : α)))
+  have hneighborCard : ((s.erase (v : α)).filter (G.Adj (v : α))).card = 9 := by
+    rw [← hneighbor]
+    rw [← degree_induce_finset_eq_card_filter_adj G s v]
+    exact hdegv
+  have htotal : (s.erase (v : α)).card = 41 := by
+    rw [Finset.card_erase_of_mem v.2, hcard]
+  simpa [nonNbrsV] using (by omega : nonNbrsV.card = 32)
+
+/--
+Count form of degree-`9` domination in the exact `42`-vertex residual: every non-neighbor
+has a nonempty common-neighborhood with the base vertex.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_pos
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    {x : α} (hx : x ∈ s) (hxv : ¬ G.Adj (v : α) x) :
+    1 ≤
+      (((s.erase (v : α)).erase x).filter
+        (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card := by
+  classical
+  rcases ramseyThreeTenDegreeWindow_residual_degree_nine_dominates
+      (G := G) (s := s) (hnoK3 := hnoK3) (hnoI10 := hnoI10) (v := v)
+      hdegv hx hxv with
+    ⟨w, hw, hvw, hxw⟩
+  have hwCommon :
+      w ∈ ((s.erase (v : α)).erase x).filter
+        (fun w => G.Adj (v : α) w ∧ G.Adj x w) := by
+    exact Finset.mem_filter.mpr
+      ⟨Finset.mem_erase.mpr
+        ⟨hxw.ne.symm, Finset.mem_erase.mpr ⟨hvw.ne.symm, hw⟩⟩,
+        ⟨hvw, hxw⟩⟩
+  exact Nat.succ_le_of_lt (Finset.card_pos.mpr ⟨w, hwCommon⟩)
+
+/--
+Under the `42`-vertex degree window, a non-neighbor of a degree-`9` vertex has at most
+nine common neighbors with it.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_le_nine
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    {v : ↑(s : Set α)} {x : α} (hx : x ∈ s) :
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card ≤ 9 := by
+  classical
+  let commonNbrs : Finset α :=
+    ((s.erase (v : α)).erase x).filter fun w => G.Adj (v : α) w ∧ G.Adj x w
+  have hsub : commonNbrs ⊆ s.filter fun w => G.Adj x w := by
+    intro w hw
+    rcases Finset.mem_filter.mp hw with ⟨hwErase, hwAdj⟩
+    have hw_s : w ∈ s := (Finset.mem_erase.mp (Finset.mem_erase.mp hwErase).2).2
+    exact Finset.mem_filter.mpr ⟨hw_s, hwAdj.2⟩
+  have hcommonLeNeighbor : commonNbrs.card ≤ (s.filter fun w => G.Adj x w).card :=
+    Finset.card_le_card hsub
+  have hneighborCardLe : (s.filter fun w => G.Adj x w).card ≤ 9 := by
+    rw [← degree_induce_finset_eq_card_filter_adj (G := G) (s := s) (v := ⟨x, hx⟩)]
+    have hxdeg := hdegree ⟨x, hx⟩
+    omega
+  exact le_trans hcommonLeNeighbor hneighborCardLe
+
+/--
+For a degree-`9` base vertex in the `42`-vertex residual, every neighbor's induced degree is
+one plus its number of cross edges into the base vertex's non-neighborhood side.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_neighbor_cross_card_add_one_eq_degree
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    {v : ↑(s : Set α)}
+    (_hdegv : (G.induce (s : Set α)).degree v = 9)
+    {w : α} (hw : w ∈ s) (hvw : G.Adj (v : α) w) :
+    ((((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x => G.Adj w x)).card + 1) =
+        (G.induce (s : Set α)).degree ⟨w, hw⟩ :=
+  residual_adjacent_cross_card_add_one_eq_degree
+    (G := G) (s := s) hnoK3 v.2 hw hvw
+
+/--
+Under the exact `42`-vertex degree window, each neighbor of a degree-`9` vertex has between
+five and eight edges into that vertex's non-neighborhood side.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_neighbor_cross_card_bounds
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    {w : α} (hw : w ∈ s) (hvw : G.Adj (v : α) w) :
+    5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x => G.Adj w x)).card ∧
+      (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x => G.Adj w x)).card ≤ 8 := by
+  have hcross :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_neighbor_cross_card_add_one_eq_degree
+      (G := G) (s := s) hnoK3 (v := v) hdegv (w := w) hw hvw
+  have hdegw := hdegree ⟨w, hw⟩
+  constructor <;> omega
+
+/-- Common-neighbor and neighbor-cross ledgers agree for a degree-`9` base vertex. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_eq_neighbor_cross_sum
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    {v : ↑(s : Set α)}
+    (_hdegv : (G.induce (s : Set α)).degree v = 9) :
+    Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) =
+      Finset.sum (s.filter fun w => G.Adj (v : α) w)
+        (fun w =>
+          (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x => G.Adj w x)).card) :=
+  residual_common_neighbor_sum_eq_neighbor_cross_sum (G := G) (s := s) (v := (v : α))
+
+/--
+The degree-`9` common-neighbor ledger in a `42`-vertex residual is squeezed into
+`[32,72]`: domination gives one incidence for each non-neighbor, and the degree window
+caps each of the nine neighbor-side cross counts by eight.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_bounds
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9) :
+    32 ≤
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72 := by
+  classical
+  let Nv : Finset α := s.filter fun w => G.Adj (v : α) w
+  let crossCount : α → ℕ := fun w =>
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x => G.Adj w x)).card
+  have hlower :
+      32 ≤
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) := by
+    let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+    have hnonNbrsCard : nonNbrsV.card = 32 := by
+      simpa [nonNbrsV] using
+        ramseyThreeTenDegreeWindow_residual_degree_nine_nonNeighbor_card_eq_thirty_two
+          (G := G) (s := s) hcard (v := v) hdegv
+    have hconst : Finset.sum nonNbrsV (fun _ : α => 1) = nonNbrsV.card := by
+      simp
+    calc
+      32 = nonNbrsV.card := hnonNbrsCard.symm
+      _ = Finset.sum nonNbrsV (fun _ : α => 1) := hconst.symm
+      _ ≤
+          Finset.sum nonNbrsV
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) := by
+            exact Finset.sum_le_sum (by
+              intro x hx
+              rcases Finset.mem_filter.mp hx with ⟨hxErase, hxv⟩
+              have hx_s : x ∈ s := (Finset.mem_erase.mp hxErase).2
+              exact ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_pos
+                (G := G) (s := s) hnoK3 hnoI10 (v := v) hdegv hx_s hxv)
+  have hledger :
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) =
+        Finset.sum Nv crossCount := by
+    simpa [Nv, crossCount] using
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_eq_neighbor_cross_sum
+        (G := G) (s := s) (v := v) hdegv
+  have hNvCard : Nv.card = 9 := by
+    have hdeg_eq : (G.induce (s : Set α)).degree v = Nv.card := by
+      simpa [Nv] using degree_induce_finset_eq_card_filter_adj G s v
+    rw [← hdeg_eq]
+    exact hdegv
+  have hcrossLe : ∀ w ∈ Nv, crossCount w ≤ 8 := by
+    intro w hwNv
+    have hw : w ∈ s := (Finset.mem_filter.mp hwNv).1
+    have hvw : G.Adj (v : α) w := (Finset.mem_filter.mp hwNv).2
+    exact
+      (ramseyThreeTenDegreeWindow_residual_degree_nine_neighbor_cross_card_bounds
+        (G := G) (s := s) hdegree hnoK3 (v := v) hdegv (w := w) hw hvw).2
+  have hsumCrossLe : Finset.sum Nv crossCount ≤ 72 := by
+    calc
+      Finset.sum Nv crossCount ≤ Finset.sum Nv (fun _w => 8) := by
+        exact Finset.sum_le_sum hcrossLe
+      _ = 8 * Nv.card := by simp [Nat.mul_comm]
+      _ = 72 := by rw [hNvCard]; norm_num
+  exact ⟨hlower, by rwa [hledger]⟩
+
+/-- A degree-`9` common-neighbor ledger above `72` eliminates the exact `42` residual. -/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_seventy_three
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          73 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  have hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+    intro hI10
+    exact hdone (Or.inr hI10)
+  rcases hcert with ⟨v, hdegv, hsumGe⟩
+  have hsumLe :=
+    (ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_bounds
+      (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv).2
+  omega
+
+/-- A degree-`9` common-neighbor ledger below `32` eliminates the exact `42` residual. -/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_le_thirty_one
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 31) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  have hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+    intro hI10
+    exact hdone (Or.inr hI10)
+  rcases hcert with ⟨v, hdegv, hsumLe⟩
+  have hsumGe :=
+    (ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_bounds
+      (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv).1
+  omega
+
 /--
 Certificate form of the degree-`9` domination constraint: the `42`-vertex
 degree-window residual is eliminated as soon as a degree-`9` vertex has a
@@ -5852,6 +6560,89 @@ theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_anticomple
       hdegv hx hxv with
     ⟨w, hw, hvw, hxw⟩
   exact False.elim ((hanti w hw hvw) hxw)
+
+/--
+Refined `R(3,10) <= 42` degree-window reduction: after the `R(3,9) <= 36` input, an
+exact `42`-vertex residual may additionally be assumed to satisfy the degree-`9`
+common-neighbor ledger bounds and neighbor-cross bounds.
+-/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_3_9_36_degree_window_with_degree_nine_common_sum_bounds
+    (h3_9 : HasCliqueOrIndepSetBound 3 9 36)
+    (hwindow :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 42 →
+        (∀ v : ↑(s : Set α),
+          6 ≤ (G.induce (s : Set α)).degree v ∧
+            (G.induce (s : Set α)).degree v < 10) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 9 →
+            32 ≤
+              Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                (fun x =>
+                  (((s.erase (v : α)).erase x).filter
+                    (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 9 →
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72) →
+        (∀ v : ↑(s : Set α),
+          (G.induce (s : Set α)).degree v = 9 →
+            ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+              5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                  (fun x => G.Adj w x)).card ∧
+                (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                  (fun x => G.Adj w x)).card ≤ 8) →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    HasCliqueOrIndepSetBound 3 10 42 := by
+  refine hasCliqueOrIndepSetBound_3_10_42_of_3_9_36_degree_window h3_9 ?_
+  intro α _ G s hcard hdegree
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  have hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+    intro hI10
+    exact hdone (Or.inr hI10)
+  have hsumLower :
+      ∀ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 →
+          32 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) := by
+    intro v hdegv
+    exact
+      (ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_bounds
+        (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv).1
+  have hsumUpper :
+      ∀ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 →
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72 := by
+    intro v hdegv
+    exact
+      (ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_bounds
+        (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv).2
+  have hcrossBounds :
+      ∀ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 →
+          ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+            5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x => G.Adj w x)).card ∧
+              (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x => G.Adj w x)).card ≤ 8 := by
+    intro v hdegv w hw hvw
+    exact ramseyThreeTenDegreeWindow_residual_degree_nine_neighbor_cross_card_bounds
+      (G := G) (s := s) hdegree hnoK3 (v := v) hdegv (w := w) hw hvw
+  exact hwindow G s hcard hdegree hsumLower hsumUpper hcrossBounds
 
 /-- Arithmetic ledger for the `R(3,10) <= 42` degree-window reduction. -/
 theorem ramseyThreeTenDegreeWindow_reduction_gap :
