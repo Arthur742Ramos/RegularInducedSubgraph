@@ -1952,6 +1952,9 @@ What remains justified after audit is:
       large supports of size at least `|A|-2` are excluded, and active-deletion projected near-packings have
       all one-unit lifts blocked; one-block shadows are impossible and two-block shadows are double-collision
       only;
+      the support graph has independence number at most three, so pair-only endpoints stop at `|A|=7` and
+      rank-three projected supports are forced from `|A|>=8`;
+      zero-filter criticality is a private excess bridge across `Delta=|A|-3-mu_Z`;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       every zero-relaxed cover must use at least one such private column;

@@ -11458,6 +11458,35 @@ the two full supports overlap at `a` and cannot be used together in the full par
 shadows are the remaining hole/double/triple-collision alternatives, with all multiplicity-one repairs
 blocked.  This is the excess-packing version of the active thickening exclusions.
 
+There is a coarse but useful shadow-graph consequence.  Join two active coordinates `u,v` when some full
+support `B in F_Z` contains both.  Every four-coordinate proper shadow must be partitionable into at most
+three projected blocks, so every four-set contains at least one such joined pair.  Hence this support graph
+has independence number at most `3`.  In particular, pair supports alone can only sustain the full-minor
+endpoint in the first few dimensions: for `n=5` the pair layer is an intersecting graph whose every
+four-set contains an edge; for `n=6` it is a graph with matching number `2` and every vertex deletion still
+has matching number `2`; for `n=7` it is a factor-critical graph on seven vertices.  For `n>=8`, pair
+supports cannot even make every active deletion feasible, so some projected support of size at least `3`
+is forced.
+
+The zero-filter repairs can be measured by the same excess.  Let
+
+```text
+mu_Z(A)=max sum_i(|B_i|-1)
+```
+
+over disjoint non-singleton supports in `F_Z`.  The full obstruction is `mu_Z(A)<=n-4`, and its excess
+defect is
+
+```text
+Delta_Z(A)=n-3-mu_Z(A) >= 1.
+```
+
+For a zero coordinate `z`, the relaxed family `F_{Z\{z}}` has excess at least `n-3`.  Therefore every
+zero-critical repair contains private support blocks from `p_z` whose net saving contribution is at least
+`Delta_Z(A)` after replacing the full-family blocks it conflicts with.  In particular, zero criticality is
+not just the existence of a private column: it is a private excess bridge across the current full-family
+defect.
+
 For `|A|<=3` this criterion is the following table:
 
 ```text
@@ -11838,8 +11867,9 @@ At the current reduction level, the first-bit theorem has only the following ter
 
 ```text
 large-outside ternary target avoidance:
-  a critical filtered three-cover / partition-spectrum gap, with active thickening exclusions and
-  zero-filter private repair tuples;
+  a full-minor-critical singleton-complete excess-packing failure: full supports have size at most |A|-3,
+  active projected near-packings have all one-unit lifts blocked, the support graph has alpha <= 3,
+  pair-only endpoints stop at |A|=7, and zero-filter repairs privately bridge Delta=|A|-3-mu_Z;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches;
 near-threshold two-residue deletion:

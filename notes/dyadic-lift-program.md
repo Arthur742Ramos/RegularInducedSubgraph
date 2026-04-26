@@ -1049,6 +1049,10 @@ Then target realization is equivalent to a disjoint non-singleton support packin
 Consequently supports of size at least `|A|-2` are excluded, and active-deletion projected packings of
 saving `|A|-4` have all one-unit lifts blocked; one-block active shadows are impossible, and two-block
 shadows are only double-collision witnesses.
+The pair-support shadow graph has independence number at most three, so pair-only endpoints stop after
+`|A|=7`; from `|A|>=8` some rank-three projected support is forced.
+Zero-filter criticality is quantified by the full-family excess defect `Delta=|A|-3-mu_Z`: each zero
+relaxation must add private support saving that bridges this defect.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.

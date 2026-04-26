@@ -2433,6 +2433,10 @@ Recommended attack:
     Record large-support exclusions `|B|<=|A|-3` and active-deletion projected near-packings of saving
     `|A|-4` whose one-unit lifts by the deleted coordinate are blocked; one-block active shadows are
     impossible and two-block shadows are double-collision only.
+    Add the support graph consequence: every four-set contains a co-supported pair, so the support graph has
+    independence number at most three; pair-only endpoints occur only for `|A|<=7`.
+    Define `mu_Z` as maximum disjoint-support excess and `Delta=|A|-3-mu_Z`; formalize zero relaxation as a
+    private excess bridge of size at least `Delta`.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

@@ -1975,6 +1975,10 @@ sum to at least `|A|-3`; the endpoint is full-minor-critical excess-packing fail
 Thus supports have size at most `|A|-3`; active deletions have projected saving-`|A|-4` packings with all
 one-unit lifts blocked.  One-block active shadows are impossible; two-block shadows are double-collision
 only.
+The support graph has independence number at most three.  Pair-only endpoints are limited to `|A|=5,6,7`;
+for `|A|>=8` some projected support of size at least three is forced.
+Writing `mu_Z` for maximum full-family excess, every zero relaxation supplies private support saving that
+bridges the defect `|A|-3-mu_Z`.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.
