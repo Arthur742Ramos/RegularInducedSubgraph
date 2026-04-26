@@ -5408,9 +5408,11 @@ Equivalently, for every deficit-one packing `P`, every support `C` has replaceme
 `gain_P(C)=|C|-1-sum_{B_i in P:C cap B_i nonempty}(|B_i|-1)<=0`; positive gain would close.
 Consequences: leftover singletons are support-independent; supports meeting one packed block have size at
 most that block; supports meeting blocks `I` have size at most `1+sum_{i in I}(|B_i|-1)`.
+Gain-zero replacements preserve the deficit-one packing; choose a zero-gain-saturated packing
+lexicographically maximal in block-size profile, so every zero-gain move is terminal and profile-nonincreasing.
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
-vertex inside a packed block creates a one-short projected packing and forces a deletion-only positive
-bridge whose every full lift has nonpositive gain.
+vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
+positive-gain repair family whose every full lift has nonpositive total gain.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

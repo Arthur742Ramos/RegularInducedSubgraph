@@ -11861,14 +11861,22 @@ For two packed blocks this forbids a support containing their full union; for on
 singletons it forbids replacing the block by a same-size-or-larger cross support.  Thus a deficit-one
 packing induces a genuine bridge-free block system, not merely a maximum packing.
 
+The zero-gain case is also structural.  If `gain_P(C)=0`, replacing the packed blocks hit by `C` with `C`
+produces another deficit-one packing.  Hence all positive-gain exclusions and active-deletion repair-family
+conditions must hold throughout the zero-gain replacement orbit of `P`.  We may therefore choose `P`
+zero-gain-saturated, for example lexicographically maximal in its sorted block-size profile and then in its
+covered support, so that every zero-gain replacement is profile-nonincreasing.  The rank-three endpoint is
+then a saturated bridge blocker: no positive-gain support exists, and all gain-zero moves stay inside the
+same terminal class.
+
 Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
 `P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
 `B_j\{a}` lowers the saving by exactly one, so the projected packing in `A\{a}` has saving `|A|-5`, one
-short of the shadow threshold.  Full minor-criticality therefore supplies a projected support `C'` with
-positive gain against this projected packing.  Terminality of `A` says that every lift of `C'` back to a
-support of `A` has nonpositive gain against `P`.  Thus each vertex inside a packed block has a
-deletion-only bridge: it exists after that vertex is removed, but all of its full lifts are blocked in the
-original endpoint.
+short of the shadow threshold.  Full minor-criticality therefore supplies a projected repair family with
+total positive gain against this projected packing; choose it inclusion-minimal among positive-gain repair
+families.  Terminality of `A` says that every full lift of that minimal repair family has nonpositive total
+gain against `P`.  Thus each vertex inside a packed block has a deletion-only bridge family: it exists after
+that vertex is removed, but all of its full lifts are blocked in the original endpoint.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

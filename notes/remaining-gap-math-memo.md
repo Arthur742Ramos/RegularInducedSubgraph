@@ -2010,8 +2010,10 @@ Equivalently every support has nonpositive replacement gain against every defici
 `P`: `gain_P(C)=|C|-1-sum_{B_i cap C != empty}(|B_i|-1)<=0`.
 This makes leftover singletons support-independent, forbids thickening packed blocks, and caps any support
 crossing packed blocks `I` by `1+sum_I(|B_i|-1)`.
-Deleting a packed-block vertex creates a one-short projected packing, so criticality forces a deletion-only
-positive bridge whose full lifts are blocked by nonpositive gain.
+Gain-zero replacements preserve the deficit-one packing, so the bridge blocker can be taken zero-gain
+saturated; terminal exclusions hold on the entire zero-gain orbit.
+Deleting a packed-block vertex creates a one-short projected packing, so criticality forces a minimal
+deletion-only positive-gain repair family whose full lifts are blocked by nonpositive total gain.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

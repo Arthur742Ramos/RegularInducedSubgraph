@@ -2470,8 +2470,12 @@ Recommended attack:
     `gain_P(C)<=0` for every deficit-one packing `P` and support `C`.
     Derive the local caps: leftover singletons support-independent; one-block crossings have size at most
     the block; crossings over block set `I` have size at most `1+sum_I(|B_i|-1)`.
-    Formalize deletion-only bridges: deleting a packed-block vertex makes the projected packing one short,
-    forcing a positive-gain bridge in the shadow whose full lifts all have nonpositive gain.
+    Add zero-gain saturation: gain-zero replacements preserve deficit one, so choose `P` lexicographically
+    maximal in block-size profile and covered support; all terminal exclusions must hold on its zero-gain
+    orbit.
+    Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
+    short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
+    total gain.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

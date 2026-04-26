@@ -1983,7 +1983,10 @@ What remains justified after audit is:
       in gain form, every support has nonpositive replacement gain against every deficit-one packing;
       this gives local caps: leftover singletons independent, no packed-block thickening, and bounded
       cross-block supports;
-      deleting a packed-block vertex forces a deletion-only positive bridge whose full lifts are blocked;
+      gain-zero replacements preserve deficit one, so the blocker is taken zero-gain-saturated across its
+      replacement orbit;
+      deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
+      are blocked;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;
