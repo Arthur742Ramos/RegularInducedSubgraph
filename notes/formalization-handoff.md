@@ -1755,6 +1755,13 @@ Recommended attack:
    Formalize the one-word augmentation test: for a pair selector `U` of residue `R`, an outside regular
    word of size `s` and internal residue `q_j` with uniform quotient adjacency `a in {0,1}` appends iff
    `q_j+2a|U|=R+as [MOD 4]`.  The odd-`m` deficit may also need a two-word weighted-column check.
+   The exact condition is more general: for base selector `S`, one word `P` appends iff
+   `deg_P(x)=K` on `S` and `deg_P(u)+deg_S(u)=R+K` on `P`; for two words `P,Q`, replace the first
+   condition by `deg_P(x)+deg_Q(x)=K` and the second by
+   `deg_P(u)+deg_Q(u)+deg_S(u)=R+K` on `P union Q`.
+   For a single outside direction `A_j=X_j union C_j`, formalize this as a bounded augmented-fiber
+   catalogue: the old `3+1`, `2+2`, and `1+3` tables apply with append residue replaced by `R+K` and
+   with the extra base-column term.
    For two words `j,k`, record the equations
    `s_j a_j(i)+s_k a_k(i)=K` on `U`, and
    `q_j+2 sum_U a_j+b s_k=q_k+2 sum_U a_k+b s_j=R+K [MOD 4]`.
@@ -1773,6 +1780,9 @@ Recommended attack:
    `zx_i+z'x_i=zy_i+z'y_i=K` for all `i`, and
    `deg_U(z)+b=deg_U(z')+b=R+K [MOD 4]`.  Nonuniform columns can only occur in bitwise complementary
    retained pairs.
+   Equivalent trace formulation: with `t_z(i)=(zx_i,zy_i)`, an augmenting retained pair must satisfy
+   `t_z(i)+t_z'(i)=(K,K)` on every selected pair; non-pair-uniform traces force the affine complement
+   trace, and then only the total-degree congruence remains.
    Record the parity split: pair-only selectors cannot mix non-triangle and triangle pair classes,
    because size-two words contribute only even cross-degrees.  Mixed-class selectors must use odd-size
    singleton or whole-triple words.
@@ -1784,10 +1794,21 @@ Recommended attack:
    Let `M_U=A(Q[U])+diag(tau)`.  If one solution exists, every kernel vector toggles solutions, so
    terminality implies `|H|<=m-|U|` for all `H in ker M_U`; a large kernel vector closes.  If no constant
    bit is soluble, record the dual obstruction as a kernel vector witnessing affine inconsistency.
+   Formalize the support compression for a soluble terminal branch: for `J=union supp(H)` over
+   `ker M_U`, averaging over the kernel gives `|J|<=2(m-|U|)`.  Outside `J`, affine solutions have fixed
+   bits, with at most `(m-|U|)/2` forced ones in a terminal soluble branch.
+   Formalize the exact dual criterion: with `r_i=floor(deg_{Q[U]}(i)/2)`, some constant bit `c` solves
+   `M_U 1_T=r+c1_U` iff no even-weight `H in ker M_U` has `sum_{i in H} r_i=1 [MOD 2]`.
+   Unpack this as a parity-closed certificate: `deg_H(i)=0` off `H`, `deg_H(i)=tau_i` on `H`, `|H|`
+   even, and the half-degree sum over `H` odd.
    In the constant `tau` parity-matched case (`deg_Q(i)=tau [MOD 2]`), `1_U` is in the kernel; if
    `|U|` is odd, some constant bit is always compatible.  The full selector already closes
    constant-type constant-parity quotient sets above `m/2` by pair words, so keep the Arf bit only as a
    below-threshold diagnostic.
+   Formalize the exact Davenport top layer if the boundary route is used: Olson's extremal theorem for
+   `C_4^r` identifies every zero-sum-free sequence of length `3r` as three copies of a basis.  In that
+   endpoint, boundary imports are coordinate count vectors `0<=a_i<=3`; an export of old-sum
+   `sum_i a_i e_i` forces exactly `a_i` imports from the `i`-th parallel triple.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

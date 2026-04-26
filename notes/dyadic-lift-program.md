@@ -1236,6 +1236,17 @@ Writing `a=0` for cross-empty and `a=1` for cross-complete, the exact condition 
 `q_j+2a|U|=R+as [MOD 4]`.  If `m` is even this one-word test already handles the size-`m` boundary
 selector; if `m` is odd and the pair selector has size `m-1`, the only remaining augmentation check uses
 two outside words whose weighted neighbourhood columns sum constantly on `U`.
+The exact one-word condition is `deg_P(x)=K` on the base selector and
+`deg_P(u)+deg_S(u)=R+K` on the new word `P`; internal nonregularity is allowed if the degree into the
+base compensates it.  Similarly, two words `P,Q` satisfy
+`deg_P(x)+deg_Q(x)=K` on the base and
+`deg_P(u)+deg_Q(u)+deg_S(u)=R+K` on the new vertices.  The scalar formulas below are the regular-word
+homogeneous-cross subcase.
+Inside a single outside exact-basis direction `A_j=X_j union C_j`, the resulting catalogue is bounded:
+subsets of the boundary triple and at most one or two retained vertices are governed by the same
+`3+1`, `2+2`, and `1+3` equations as append atoms, with the append residue replaced by `R+K` and with
+the added base-column term.  Thus the equality residual is a finite augmented-fiber pattern check once
+the base pair selector is fixed.
 For two words `j,k`, the exact equations are
 `s_j a_j(i)+s_k a_k(i)=K` on `U`,
 `q_j+2 sum_U a_j+b s_k=R+K`, and
@@ -1259,6 +1270,9 @@ For non-pair-uniform retained vertices use the full bit-column equation.  Two re
 `zx_i+z'x_i=zy_i+z'y_i=K`, and also
 `deg_U(z)+b=deg_U(z')+b=R+K [MOD 4]`.  Thus the only nonuniform possibility is bitwise complementary
 columns on every selected boundary vertex, with the total-degree congruences fixed.
+Equivalently, with retained traces `t_z(i)=(zx_i,zy_i)`, any augmenting pair satisfies
+`t_z(i)+t_z'(i)=(K,K)` for every selected pair.  Non-pair-uniform traces therefore force the affine
+complement trace, leaving only the displayed total-degree congruence and the mutual edge `b`.
 Pair-only selectors cannot mix these classes: size-two words contribute only even cross-degrees, so the
 parity of the final residue is the parity of the internal pair residue.  Any genuine mixed-class
 selector must therefore use singleton or whole-triple words, the odd-size words that can change
@@ -1274,6 +1288,17 @@ exists terminality forces every `H in ker M_U` to have `|H|<=m-|U|`.  A large tw
 vector closes the branch.  If no constant bit makes the affine system soluble, symmetry gives a dual
 kernel certificate incompatible with the carry right-hand side.  The irreducible endpoint is therefore
 small-kernel plus affine-inconsistency for this twisted quotient matrix.
+In a soluble terminal branch this is a genuine compression: if `J=union_{H in ker M_U} supp(H)`,
+averaging over the kernel gives `|J|/2<=m-|U|`, hence `|J|<=2(m-|U|)`.  Outside `J`, every soluble
+affine branch has fixed bits; the fixed-one set outside `J` has size at most `(m-|U|)/2`.
+Moreover the insoluble branch is exactly an even-kernel Arf certificate.  With
+`r_i=floor(deg_{Q[U]}(i)/2)`, the system is `M_U 1_T=r+c1_U`; some `c` is soluble unless there is an
+even-weight `H in ker M_U` with `sum_{i in H} r_i=1 [MOD 2]`.  Such an `H` blocks both constants; it is
+the remaining insoluble certificate rather than a solution-weight consequence.
+Unpacked, this certificate is parity-closed:
+`deg_H(i)=0` for `i outside H`, `deg_H(i)=tau_i` for `i in H`, `|H|` is even, and
+`sum_{i in H} floor(deg_U(i)/2)=1 [MOD 2]`.  A proper `H` localizes the obstruction to a smaller closed
+mixed quotient; `H=U` is the one-bit whole-class Arf obstruction.
 In the parity-matched constant-type case, `tau` is constant and `deg_Q(i)=tau [MOD 2]`, so `1_U` lies
 in the kernel.  If `|U|` is odd, the constant bit `c` can always satisfy the single all-ones
 compatibility equation.  But the full selector already closes any constant-type constant-parity quotient
@@ -1288,6 +1313,12 @@ The zero-sum-free boundary `X` has length at most the Davenport extremal value `
 2. If `X` is close to extremal, an inverse-Davenport theorem for `C_4^(m-1)` should force a
    basis-like boundary, roughly three copies of independent order-`4` directions, and the allowed
    imports from `X` become explicit coordinate exchanges.
+
+At the exact top layer this is rigid by Olson's extremal theorem for finite abelian `p`-groups:
+if `|X|=3r` in `C_4^r`, then after a basis change
+`X=e_1^3 e_2^3 ... e_r^3`.  A boundary import is then just a coordinate count vector
+`0<=a_i<=3`; exporting old-sum `sum_i a_i e_i` forces exactly `a_i` imported copies from the `i`-th
+parallel triple.  The only residual freedom is which parallel graph traces of each coordinate are used.
 
 So the remaining input is an inverse/stability theorem for value-coupled zero-sum-free boundaries,
 not another ordinary zero-sum extraction.

@@ -7303,6 +7303,19 @@ only remaining augmentation is a two-singleton/two-word equation in which the tw
 neighbourhood columns have constant weighted sum on `U`.  Hence the final homogeneous boundary check is
 finite and local around at most two outside triples.
 
+The exact one-word equation is slightly more general than the regular-word shorthand.  Let
+`S=union_{i in U} P_i` be the base pair selector.  A word `P` disjoint from `S` augments it iff there is
+`K` such that
+
+```text
+deg_P(x)=K                         for every x in S,
+deg_P(u)+deg_S(u)=R+K              for every u in P.       [MOD 4]
+```
+
+Thus internal nonregularity of `P` is allowed, but only if its degree into the selected boundary pairs
+compensates it pointwise.  The previous regular/uniform formula is the scalar subcase
+`deg_P(u)=q_j` and `deg_S(u)=2a|U|`.
+
 Explicitly, for two outside regular words `P_j,P_k` of sizes `s_j,s_k`, internal residues `q_j,q_k`,
 and quotient columns `a_j,a_k:U->{0,1}`, put `b=1` if the two outside triples are cross-complete and
 `b=0` if they are cross-empty.  They augment the base selector iff there is a residue `K` such that
@@ -7318,6 +7331,35 @@ complementary on `U`, both constantly zero, or both constantly one; a nonconstan
 row sums `0` and `2` and is not allowed.  Their column sums must also have the parity forced by the last
 two displayed equations.  Thus the odd-`m` homogeneous residual is a two-column parity obstruction, not
 an unstructured boundary selector.
+
+The exact two-word equation has the same form: for outside words `P,Q` one needs
+
+```text
+deg_P(x)+deg_Q(x)=K                         for every x in S,
+deg_P(u)+deg_Q(u)+deg_S(u)=R+K              for every u in P union Q.       [MOD 4]
+```
+
+Again the weighted-column formulas above are the scalar case in which `P` and `Q` have constant internal
+degree and homogeneous cross-adjacency.  Therefore the finite residual is best viewed as a bounded-word
+compensation table over at most two outside triples, not merely as a regular-word table.
+
+For one outside exact-basis direction, this bounded-word table is finite.  Write
+`A_j=X_j union C_j`, and for `z in C_j` record its three-bit boundary trace to `X_j`.  A one-word
+augmentation contained in `A_j` is determined by a subset of the boundary triple and at most one retained
+vertex in the sparse-import regime.  The exact equation above says:
+
+```text
+for P subset X_j:              internal degrees of P plus its base-column are constant;
+for P=Y union {z}:             deg_Y(y)+1_{zy}+base_y is constant on y in Y,
+                               deg_Y(z)+base_z has the same value;
+for P using two retained z,z': the two retained columns into Y must compensate both
+                               their mutual edge and the boundary degrees of Y.
+```
+
+Thus the equality residual can be checked direction-by-direction by the same `3+1`, `2+2`, and `1+3`
+tables used for append atoms, with the append residue `d_i` replaced by the current base residue
+`R+K` and with an additional base-column term.  No new large object is hidden here: after the pair-word
+selector is fixed, every one- or two-word augmentation is a bounded augmented-fiber pattern.
 
 The same equations apply to retained imports, and this is essential in the equality case.  A retained
 singleton `z in C_j` is an outside word of size `1` and internal residue `0`.  It augments a pair-word
@@ -7439,6 +7481,60 @@ mixed-class case is not an arbitrary labelled quotient; it is a quotient in whic
 kernel of `A+diag(tau)` is small and simultaneously supplies the affine inconsistency certificate.
 That is a much narrower algebraic endpoint.
 
+The small-kernel condition has a useful support consequence.  Let
+`L=m-|U|` and let
+
+```text
+J = union_{H in ker M_U} supp(H).
+```
+
+A uniformly random kernel vector has probability `1/2` of being nonzero on each coordinate of `J`, so
+the average weight in the kernel is `|J|/2`.  Since every kernel vector has weight at most `L`,
+
+```text
+|J| <= 2L = 2(m-|U|).
+```
+
+Therefore, in a soluble terminal branch, outside the small core `J` all solutions of the odd-word
+affine system have fixed bits.
+If a soluble branch has fixed-one set `F_1 subset U\J`, terminality further forces
+`|F_1| <= L/2`, because every solution has weight at most `L/2`.  Thus for `|U|>m/2` the mixed-class
+odd-word residual compresses to a core of size at most `2(m-|U|)` plus at most `(m-|U|)/2` forced whole
+triples outside the core.  This support compression is a property of the soluble branch; the insoluble
+branch is instead the even-kernel certificate described next.
+
+The dual obstruction itself is simpler than it first appears.  Put
+
+```text
+r_i = floor(deg_{Q[U]}(i)/2)       [MOD 2].
+```
+
+The carry equation is `M_U 1_T = r + c 1_U`.  A choice of `c` is soluble iff
+`r+c1_U` is orthogonal to `ker M_U`.  Since changing `c` only changes the pairing with odd-weight kernel
+vectors, some `c` works unless there is an even-weight kernel vector `H` with
+
+```text
+sum_{i in H} r_i = 1       [MOD 2].
+```
+
+Conversely, such an even `H` blocks both constants.  Hence the affine-inconsistent branch is exactly an
+even twisted-Eulerian kernel set with odd half-degree sum.  This certificate is the remaining
+insoluble obstruction; it is not automatically bounded by the solution-weight argument above.
+
+Unpacking `M_U 1_H=0`, an Arf certificate `H` has the concrete parity-closed form
+
+```text
+deg_H(i)=0              for i in U\H,                  [MOD 2]
+deg_H(i)=tau_i          for i in H,                    [MOD 2]
+|H|=0,  sum_{i in H} floor(deg_U(i)/2)=1               [MOD 2].
+```
+
+Thus no outside quotient vertex sees `H` oddly, while vertices of `H` have exactly the parity prescribed
+by their boundary type.  If `H` is proper, the mixed-class obstruction has localized to the smaller
+parity-closed subquotient `H`; if `H=U`, then the whole class is parity-matched and only the single
+global Arf bit remains.  This is the odd-word analogue of the retained trace-hole reduction: terminal
+failure is forced onto a proper closed support or a one-bit whole-class obstruction.
+
 One important special case is already explicit.  Suppose `tau` is constant on `U` and
 `deg_{Q[U]}(i)=tau [MOD 2]` for every `i in U`.  Then `1_U in ker M_U`.  If `|U|>m/2` and the carry
 equation is soluble for some `c`, the two complementary solutions `T` and `U\T` have weights summing
@@ -7467,6 +7563,21 @@ case splits naturally into two regimes.
    basis sequence with three copies of each order-`4` generator.  In that basis-like case, balanced
    imports from `X` are extremely constrained but explicit, so the exchange equations become finite
    coordinate moves.
+
+The exact top layer is already rigid.  By the Olson extremal theorem for finite abelian `p`-groups, a
+zero-sum-free sequence of length `D(C_4^r)-1=3r` in `C_4^r` is, after a change of basis,
+
+```text
+e_1,e_1,e_1, e_2,e_2,e_2, ..., e_r,e_r,e_r.
+```
+
+Thus when `|X|=3(m-1)`, every boundary import has a coordinate count vector
+`a=(a_1,...,a_r)` with `0<=a_i<=3`, and its old-coordinate sum is exactly
+`sum_i a_i e_i`.  Conversely every vector of `C_4^r` has such a boundary representative, with the only
+choices being which of the three parallel copies of each `e_i` are used.  Therefore the value-coupled
+exchange is not a general Davenport problem at the exact endpoint: exporting a retained set of old-sum
+`sum_i a_i e_i` forces precisely `a_i` imports from the `i`-th boundary triple.  All remaining freedom is
+inside the three parallel graph traces of each coordinate.
 
 Thus a plausible final route is now precise: prove a stability/inverse-Davenport boundary theorem
 adapted to the value-coupled exchange.  The required input is not another zero-sum existence theorem;
