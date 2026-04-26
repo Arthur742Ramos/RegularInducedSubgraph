@@ -1956,7 +1956,10 @@ What remains justified after audit is:
       witness;
       the first high-active dimension `|A|=4` has explicit singleton/pair/triple layer restrictions;
       its one-empty-column layer forbids singleton/triple, pair/pair, and pair+two-singleton partitions;
+      the one-empty-column layer splits into singleton-core or pair-witness subcases, and the zero-empty
+      layer has all missing pairs essential;
       in the co-singleton `|A|=4` core the pair layer is an intersecting `K_4` edge family;
+      size-three pair layers are star/triangle templates with complementary pair blockers;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on

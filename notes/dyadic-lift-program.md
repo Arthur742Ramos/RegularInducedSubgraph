@@ -1057,7 +1057,11 @@ For `|A|=4`, the co-singleton core is all triples present with no full support, 
 complementary pair-pair; the `e_Z=0` case is all singletons present and all pairs absent.
 The `e_Z=1` case forbids singleton/triple, pair/pair, and pair+two-singleton partitions, but every
 three-point active deletion has a pair+singleton or three-singleton partition.
+Its singleton-core subcase has all singletons present and all pairs/triples absent; otherwise a
+pair+singleton deletion witness forces both thickened pairs and the deleted singleton absent.  In `e_Z=0`,
+all missing pairs are essential blockers.
 The co-singleton core's pair layer is an intersecting edge family on `K_4`, hence a star/triangle subfamily.
+The size-three cases are exactly star or triangle; their complements are the three essential pair blockers.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

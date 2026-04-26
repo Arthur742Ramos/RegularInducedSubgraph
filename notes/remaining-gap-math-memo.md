@@ -1983,7 +1983,11 @@ For `|A|=4`, this gives concrete layers: co-singleton core is all triples/no ful
 complementary pair-pair, while `e_Z=0` is all singletons/no pairs.
 The `e_Z=1` four-point layer forbids singleton/triple, pair/pair, and pair+two-singleton partitions but has
 pair+singleton or three-singleton witnesses on every three-point deletion.
+Its singleton-core subcase has all singletons present and all pairs/triples absent; pair-witness subcases
+force thickened pairs and the deleted singleton absent.  For `e_Z=0`, every missing pair is essential.
 The co-singleton pair layer is an intersecting family on `K_4`, hence star/triangle and size at most three.
+Size-three pair layers are exactly star or triangle; their complementary pairs are the essential
+pair-partition blockers.
 If `|R|=m+s`, `s<=3`, terminality inside `R` is the finite list that `b-deg_D` is nonconstant on `R\D`
 for every `|D|<=s-1`.
 The full two-residue core is equivalently `epsilon(v)-deg_D(v)=const` on `J\D`, with `epsilon=0` on `R`

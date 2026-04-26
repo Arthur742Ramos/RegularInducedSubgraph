@@ -11521,10 +11521,29 @@ all three singletons of A\{a}.
 Every such deletion witness has all one-coordinate thickenings by `a` forbidden by the preceding
 thickening exclusion.
 
+Thus the `e_Z=1` layer splits into a singleton-core case and a pair-witness case.  If all four singletons
+are present, then every pair and every triple is absent: pairs would make pair+two-singleton tripartitions,
+and triples would make singleton/triple bipartitions.  Otherwise some active deletion is witnessed by a
+pair `P` and complementary singleton `{r}` inside `A\{a}`; then the forbidden thickenings give
+
+```text
+P union {a} notin F_Z,        {r,a} notin F_Z,        {a} notin F_Z.
+```
+
+For `e_Z=0`, the four-point blocker certificate is exact: all four singletons are present, every pair is
+missing, and each missing pair is essential because the corresponding tripartition is that pair together
+with the two complementary singletons.
+
 In the `|A|=4` co-singleton core, the pair layer is therefore an intersecting family of edges of `K_4`.
 Consequently it is contained in either a three-edge star or a triangle, and in particular has size at most
 three.  Thus this first high-active core has at most the four mandatory co-singleton triples plus three
 pair supports; full support and singleton supports are absent.
+
+When the pair layer has size three, there are only two types.  If it is the star at `i`, then the three
+missing pairs inside `A\{i}` are exactly the blockers for the three complementary pair partitions.  If it
+is the triangle on `A\{i}`, then the three missing pairs through `i` play the same role.  Smaller pair
+layers are subfamilies of these two patterns with additional missing-pair blockers.  Hence the `|A|=4`
+co-singleton core is finite up to choosing a star/triangle pair template and deleting some of its pairs.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

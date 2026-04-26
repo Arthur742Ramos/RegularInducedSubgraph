@@ -5346,8 +5346,13 @@ support, no singletons, and no complementary pair-pair; the `e_Z=0` gap has all 
 pairs.
 For `|A|=4`, `e_Z=1`, there are no complementary singleton/triple, pair/pair, or pair+two-singleton
 partitions, while every three-point active deletion has a pair+singleton or three-singleton witness.
+If all singletons are present, all pairs and triples are absent; otherwise a pair+singleton deletion witness
+for `A\{a}` forces the two thickened pairs and singleton `{a}` to be absent.  For `e_Z=0`, all singletons
+are present and every missing pair is essential.
 The `|A|=4` co-singleton pair layer is an intersecting family in `K_4`, hence contained in a star or
 triangle and has size at most three.
+If the pair layer has size three, it is either a star or a triangle; the complementary three missing pairs
+are precisely the pair-partition blockers.  Smaller pair layers are subtemplates with extra blockers.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

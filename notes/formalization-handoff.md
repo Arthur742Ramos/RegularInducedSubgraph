@@ -2445,8 +2445,13 @@ Recommended attack:
     absent, and no complementary pair-pair; `e_Z=0` has all singletons present and all pairs absent.
     Add the `|A|=4`, `e_Z=1` layer: no singleton/triple, pair/pair, or pair+two-singleton partition of
     `A`, but every three-point active deletion has a pair+singleton or three-singleton witness.
+    Split it into singleton-core (all singletons present, all pairs/triples absent) and pair-witness
+    subcases; in a pair-witness for `A\{a}`, both thickened pairs and singleton `{a}` are absent.  For
+    `e_Z=0`, all pairs are essential missing blockers.
     Record that the `|A|=4` co-singleton pair layer is intersecting in `K_4`, hence contained in a star or
     triangle and has size at most three.
+    Add the star/triangle pair templates: size-three pair layers are either a star or triangle, and the
+    complementary three missing pairs are the pair-partition blockers; smaller layers add blockers.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).
