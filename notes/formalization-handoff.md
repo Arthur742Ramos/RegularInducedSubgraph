@@ -2213,12 +2213,19 @@ Recommended attack:
     possible only if `|X|r==0 mod 2`, and then `e(X)==|X|r/2 mod 2`.
     Add the size-refined Davenport endpoint: in
     `((Z/4)^S/<1>) x Z/4 ~= (Z/4)^m`, every `3m+1` vertices yield a nonempty constant-trace packet with
-    `|X|==0 mod 4`.  For these packets handshaking is automatic and cross-count reduces to `mp==0 mod 4`.
+    `|X|==0 mod 4`.  For these packets the size handshaking condition is automatic, the edge parity target
+    is `e(X)==0 mod 2`, and cross-count reduces to `mp==0 mod 4`.
     Add the case split for `mp==0 mod 4`: odd `m` forces `p=0`, `m==2 mod 4` forces `p in {0,2}`, and
     `m==0 mod 4` imposes no condition on `p`.
     Add the atom refinement: choose a minimal zero-sum packet in the size-refined trace group.  It has size
     at most `3m+1`, no proper nonempty constant-trace size-`0 mod 4` subpacket, and terminality forbids it
     (and unions of disjoint such atoms) from being internally regular at the matching residue.
+    Add the atom-defect formulation: for an atom `X_i` with constant trace `p_i` in chamber `U_t`, define
+    `epsilon_i(v)=deg_Xi(v)-(a+p_i-t) mod 4`.  For a union of atoms, regularity is equivalent to
+    `epsilon_i(v)+sum_{j!=i}(deg_Xj(v)-p_j)==0 mod 4` for every vertex in every chosen atom.  Terminality
+    is anti-cancellation of these defects by cross-degree correction vectors.
+    Add the two-atom global parity filter obtained by summing the defect equations:
+    `2e(X)+e(X,Y)==0 mod 4` and `2e(Y)+e(X,Y)==0 mod 4`.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

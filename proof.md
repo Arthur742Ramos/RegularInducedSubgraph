@@ -9966,11 +9966,18 @@ For such a packet the handshaking condition is automatic.  The cross-count congr
 m p == 0        [MOD 4],
 ```
 
-and terminality says that `H[X]` is not an internal selector of residue `a+p-t`.  In the critical largest
-degree chamber, for `m>=2`, there are two disjoint size-`0 mod 4` constant-trace packets, and every
-nonempty union of a disjoint family of them has the same automatic handshaking property.  This is the
-cleanest packet endpoint: the only remaining obstruction is internal residue synchronization inside
-arithmetically admissible constant-trace packets.
+and the handshaking edge-count target becomes
+
+```text
+e(X) == 0        [MOD 2].
+```
+
+Thus an odd-edge packet is automatically harmless.  Terminality says that every even-edge admissible
+packet `X` is not an internal selector of residue `a+p-t`.  In the critical largest degree chamber, for
+`m>=2`, there are two disjoint size-`0 mod 4` constant-trace packets, and every nonempty union of a
+disjoint family of them has the same even-edge handshaking target.  This is the cleanest packet endpoint:
+the only remaining obstruction is internal residue synchronization inside arithmetically admissible
+constant-trace packets with even internal edge parity.
 
 The cross-count `mp==0 [MOD 4]` splits the endpoint into three arithmetic branches:
 
@@ -9999,6 +10006,37 @@ The largest outside degree chamber in a critical bucket contains two disjoint su
 terminal bucket must support two disjoint trace atoms in one chamber, while every atom and every union of
 disjoint atoms fails the matching internal residue test.  No further trace-subpacket reduction is hidden
 inside these atoms.
+
+For an atom `X_i` with constant trace `p_i` in the same chamber `U_t`, define its internal defect
+
+```text
+epsilon_i(v)=deg_{X_i}(v)-(a+p_i-t)        [MOD 4]        (v in X_i).
+```
+
+The atom is dangerous exactly when `epsilon_i` vanishes identically.  For a disjoint family of atoms
+`X_i`, put `p_I=sum_{i in I}p_i`.  The union `X_I` would merge with `S` exactly when, for every
+`v in X_i`,
+
+```text
+epsilon_i(v)+sum_{j in I, j != i}(deg_{X_j}(v)-p_j) == 0        [MOD 4].
+```
+
+Thus the terminal packet endpoint is an anti-cancellation statement: every atom has a nonzero defect
+vector, and no collection of cross-degree correction vectors from the other atoms can cancel all defects
+simultaneously.  In the critical largest chamber this anti-cancellation already has to hold for two
+disjoint atoms.
+
+For two size-`0 mod 4` atoms `X,Y`, cancellation has a global parity filter.  Summing the two defect
+equations over `X` and over `Y` gives
+
+```text
+2e(X)+e(X,Y)==0        [MOD 4],
+2e(Y)+e(X,Y)==0        [MOD 4].
+```
+
+Therefore a two-atom union can be dangerous only when `e(X)` and `e(Y)` have the same parity and
+`e(X,Y)` has the corresponding residue `0` or `2` modulo `4`.  If this global filter fails, the union is
+automatically harmless before any pointwise defect analysis.
 
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater

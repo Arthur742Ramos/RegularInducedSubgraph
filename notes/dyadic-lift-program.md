@@ -878,13 +878,17 @@ directions.
 The matching internal residue additionally must pass the handshaking filter `|X|(a+p-t)==0 mod 2`, with
 the parity of `e(X)` then fixed.
 Refining the Davenport group by a size mod-`4` coordinate gives constant-trace packets with
-`|X|==0 mod 4` from any `3m+1` vertices in one outside degree chamber; these automatically pass
-handshaking, and their cross-count condition is just `mp==0 mod 4`.
+`|X|==0 mod 4` from any `3m+1` vertices in one outside degree chamber; the size handshaking condition is
+automatic, the edge parity target is `e(X)==0 mod 2`, and their cross-count condition is `mp==0 mod 4`.
 Consequently the trace branch is controlled by `m mod 4`: `p=0` for odd `m`, `p` even for
 `m==2 mod 4`, and no trace restriction for `m==0 mod 4`.
 Minimal size-refined packets are zero-sum atoms in `(Z/4)^m`, hence have size at most `3m+1` and contain
 no smaller constant-trace size-`0 mod 4` subpacket.  The critical chamber contains two disjoint atoms,
 all internally anti-selector at their matching residues.
+For atom unions, the exact obstruction is anti-cancellation of defect vectors:
+`epsilon_i(v)+sum_{j!=i}(deg_{X_j}(v)-p_j)` cannot vanish on every vertex of every chosen atom.
+Two-atom cancellation further requires the global parity filter
+`2e(X)+e(X,Y)==2e(Y)+e(X,Y)==0 mod 4`.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

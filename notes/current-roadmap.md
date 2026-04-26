@@ -5110,13 +5110,18 @@ arithmetically coupled.
 They are dangerous only when the matching residue `r=a+p-t` also satisfies the handshaking parity
 `|X|r==0 mod 2`; then `e(X)==|X|r/2 mod 2` is fixed.
 Adding packet size as a `Z/4` coordinate gives a cleaner Davenport endpoint: every `3m+1` vertices in a
-degree chamber contain a constant-trace packet with `|X|==0 mod 4`; then handshaking is automatic and the
-cross-count reduces to `mp==0 mod 4`.
+degree chamber contain a constant-trace packet with `|X|==0 mod 4`; then the size side of handshaking is
+automatic, the edge parity target is `e(X)==0 mod 2`, and the cross-count reduces to `mp==0 mod 4`.
 So the packet endpoint splits by `m mod 4`: odd `m` forces `p=0`, `m==2 mod 4` allows only `p=0,2`, and
 `m==0 mod 4` allows all traces.
 Choosing packets minimal in the size-refined trace group gives atom packets of size at most `3m+1`, with
 no proper nonempty constant-trace size-`0 mod 4` subpacket; terminality forbids every such atom and every
 union of disjoint atoms from passing the matching internal residue test.
+Equivalently, each atom has a nonzero internal defect vector
+`epsilon_i=deg_{X_i}-(a+p_i-t)`, and for any atom union the cross-degree correction vectors
+`deg_{X_j}-p_j` cannot cancel all defects simultaneously.
+For two atoms, cancellation also requires
+`2e(X)+e(X,Y)==2e(Y)+e(X,Y)==0 mod 4`.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

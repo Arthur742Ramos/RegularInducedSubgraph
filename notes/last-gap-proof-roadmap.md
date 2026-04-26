@@ -1826,9 +1826,12 @@ What remains justified after audit is:
       threshold `3m-2`, exactly matching the merge equation, and packet parameters satisfy
       `|X|t==mp mod 4` plus the handshaking danger filter `|X|(a+p-t)==0 mod 2`;
       adding packet size as a `Z/4` coordinate gives size-`0 mod 4` constant-trace packets at threshold
-      `3m+1`, for which handshaking is automatic and the cross-count is `mp==0 mod 4`, splitting into
+      `3m+1`, for which the size handshaking condition is automatic, the edge parity target is even, and
+      the cross-count is `mp==0 mod 4`, splitting into
       odd/even/zero `m mod 4` trace branches; minimal packets are zero-sum atoms of size at most `3m+1`,
-      and terminality makes every atom and union of disjoint atoms internally anti-selector;
+      and terminality makes every atom and union of disjoint atoms internally anti-selector, equivalently
+      atom defect vectors cannot be cancelled by cross-degree correction vectors, with a two-atom global
+      parity filter from `2e(X)+e(X,Y)` and `2e(Y)+e(X,Y)`;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

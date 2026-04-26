@@ -1816,11 +1816,16 @@ constant-trace `p` packet in chamber `t` is forbidden from having internal resid
 Each such packet satisfies `|X|t==mp mod 4`.
 Only packets passing `|X|(a+p-t)==0 mod 2` can be dangerous by handshaking.
 Using size mod `4` as an extra Davenport coordinate yields constant-trace packets with `|X|==0 mod 4`;
-for these the handshaking filter is automatic and `mp==0 mod 4`.
+for these the size handshaking condition is automatic, the edge parity target is `e(X)==0 mod 2`, and
+`mp==0 mod 4`.
 Hence odd `m` forces zero trace, `m==2 mod 4` forces even trace, and `m==0 mod 4` is the only unrestricted
 trace branch.
 Minimal size-refined packets are atoms of size at most `3m+1`; a critical chamber contains two disjoint
 atoms, and terminality forbids each atom and atom-union from the matching internal residue.
+Atom unions are governed by defect anti-cancellation:
+`epsilon_i(v)+sum_{j!=i}(deg_{X_j}(v)-p_j)` must fail somewhere for every chosen atom family.
+For two atoms this has the global necessary filter
+`2e(X)+e(X,Y)==2e(Y)+e(X,Y)==0 mod 4`.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no
