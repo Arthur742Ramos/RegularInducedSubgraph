@@ -4747,6 +4747,67 @@ theorem sparseZeroTwoIndependentBoundary_large_fiber_forces_zeroType_or_large_no
   have hcap := sparseZeroTwoIndependentBoundary_seven_type_cap S τ m hzero hsmall
   omega
 
+/--
+General seven-type cap with an arbitrary excluded boundary type.  This is the complement-ready
+version of `sparseZeroTwoIndependentBoundary_seven_type_cap`.
+-/
+theorem boundaryTripleType_seven_type_cap_excluding
+    {α : Type*} (S : Finset α) (τ : α → Fin 8) (a : Fin 8) (m : ℕ)
+    (ha : ∀ x ∈ S, τ x ≠ a)
+    (hsmall :
+      ∀ t : Fin 8, t ≠ a →
+        (S.filter fun x => τ x = t).card ≤ m) :
+    S.card ≤ 7 * m := by
+  classical
+  let T : Finset (Fin 8) := Finset.univ.erase a
+  have hmaps : (S : Set α).MapsTo τ T := by
+    intro x hx
+    simp [T, ha x hx]
+  have hcard :
+      S.card = ∑ t in T, (S.filter fun x => τ x = t).card := by
+    simpa using
+      (Finset.card_eq_sum_card_fiberwise (f := τ) (s := S) (t := T) hmaps)
+  have hsum_le : (∑ t in T, (S.filter fun x => τ x = t).card) ≤ ∑ _t in T, m := by
+    exact
+      Finset.sum_le_sum (fun t ht => by
+        have hta : t ≠ a := by
+          simpa [T] using ht
+        exact hsmall t hta)
+  have hconst : (∑ _t in T, m) = T.card * m := by
+    simpa using
+      (Finset.sum_const_nat (s := T) (m := m) (f := fun _ : Fin 8 => m)
+        (by intro t ht; rfl))
+  have hTcard : T.card = 7 := by
+    simp [T]
+  calc
+    S.card = ∑ t in T, (S.filter fun x => τ x = t).card := hcard
+    _ ≤ ∑ _t in T, m := hsum_le
+    _ = T.card * m := hconst
+    _ = 7 * m := by rw [hTcard]
+
+/--
+Pigeonhole form of `boundaryTripleType_seven_type_cap_excluding`: a packet larger than `7m` either
+realizes the distinguished type or has another type fiber larger than `m`.
+-/
+theorem boundaryTripleType_large_fiber_forces_type_or_large_other
+    {α : Type*} (S : Finset α) (τ : α → Fin 8) (a : Fin 8) {m : ℕ}
+    (hlarge : 7 * m < S.card) :
+    (∃ x ∈ S, τ x = a) ∨
+      ∃ t : Fin 8, t ≠ a ∧
+        m < (S.filter fun x => τ x = t).card := by
+  classical
+  by_contra hno
+  have ha : ∀ x ∈ S, τ x ≠ a := by
+    intro x hx hτ
+    exact hno (Or.inl ⟨x, hx, hτ⟩)
+  have hsmall :
+      ∀ t : Fin 8, t ≠ a →
+        (S.filter fun x => τ x = t).card ≤ m := by
+    intro t hta
+    by_contra hle
+    exact hno (Or.inr ⟨t, hta, Nat.lt_of_not_ge hle⟩)
+  have hcap := boundaryTripleType_seven_type_cap_excluding S τ a m ha hsmall
+  omega
 
 /--
 General finite support cap for boundary-type decompositions: if only `k` boundary types are
@@ -4933,6 +4994,62 @@ theorem droppedTailSubbucket_of_large_complete_boundary_type_fiber
       modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
         (G := G) huS hhost huMod⟩
 
+/-- A large independent boundary-type fiber supplies a modular exact subbucket. -/
+theorem modEqSubbucket_of_large_independent_boundary_type_fiber
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    {t : Fin 8}
+    (hlarge : 2 ^ j < (S.filter fun x => τ x = t).card)
+    (hindependent :
+      ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → ¬ G.Adj x y) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧ InducesModEqDegree G u (2 ^ j) := by
+  classical
+  let F : Finset (Fin n) := S.filter fun x => τ x = t
+  have hle : 2 ^ j ≤ F.card := by
+    exact le_of_lt (by simpa [F] using hlarge)
+  rcases exists_subset_card_eq_of_le_card (s := F) hle with ⟨u, huF, hcard⟩
+  have huS : u ⊆ S := by
+    intro x hx
+    exact (Finset.mem_filter.mp (huF hx)).1
+  have hindep : G.IsIndepSet ((u : Set (Fin n))) := by
+    intro x hx y hy hxy hadj
+    have hxF : x ∈ F := huF hx
+    have hyF : y ∈ F := huF hy
+    exact
+      hindependent x (Finset.mem_filter.mp hxF).1 (Finset.mem_filter.mp hxF).2
+        y (Finset.mem_filter.mp hyF).1 (Finset.mem_filter.mp hyF).2 hxy hadj
+  exact
+    ⟨u, huS, hcard,
+      inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G
+        (inducesRegularOfDegree_of_isIndepSet G u hindep)⟩
+
+/-- A large independent boundary-type fiber also freezes the dropped tail inside a mod-equal host. -/
+theorem droppedTailSubbucket_of_large_independent_boundary_type_fiber
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    {t : Fin 8}
+    (hmod : InducesModEqDegree G S (2 ^ j))
+    (hlarge : 2 ^ j < (S.filter fun x => τ x = t).card)
+    (hindependent :
+      ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → ¬ G.Adj x y) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases modEqSubbucket_of_large_independent_boundary_type_fiber
+      (G := G) (j := j) (S := S) τ hlarge hindependent with
+    ⟨u, huS, hcard, huMod⟩
+  have hhost :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hmod ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  exact
+    ⟨u, huS, hcard,
+      modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+        (G := G) huS hhost huMod⟩
+
 /--
 Independent-boundary `{0,2}` branch closure at the `j ≥ 7` modular-selector scale: if the
 all-miss type is absent and every nonzero type fiber is complete, then the large fixed witness
@@ -5061,6 +5178,127 @@ theorem sparseZeroTwoIndependentBoundary_fromSeven_droppedTail_closed_of_forbidd
   exact
     sparseZeroTwoIndependentBoundary_fromSeven_droppedTail_closed_of_no_zeroType_and_complete_fibers
       G τ hj hS hmod hzeroType hcomplete
+
+/--
+At the `j ≥ 7` selector scale, the complementary seven-type cap forces either the forbidden all-hit
+type or a non-all-hit boundary-type fiber larger than the target bucket size.
+-/
+theorem sparseOneThreeTriangleBoundary_fromSeven_forces_sevenType_or_large_nonseven_type
+    {α : Type*} {j : ℕ} (S : Finset α) (τ : α → Fin 8)
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card) :
+    (∃ x ∈ S, τ x = (7 : Fin 8)) ∨
+      ∃ t : Fin 8, t ≠ (7 : Fin 8) ∧
+        2 ^ j < (S.filter fun x => τ x = t).card := by
+  have hlarge : 7 * 2 ^ j < S.card :=
+    lt_of_lt_of_le (seven_mul_two_pow_lt_selector_size_fromSeven hj) hS
+  exact
+    boundaryTripleType_large_fiber_forces_type_or_large_other
+      S τ (7 : Fin 8) hlarge
+
+/--
+The triangle-boundary `{3,1}` `3+1` sieve forbids every realized all-hit type.  This is the
+complement of the independent-boundary all-miss bridge.
+-/
+theorem sparseOneThreeTriangleBoundary_no_sevenType_of_forbidden_threeOne_atoms
+    {α : Type*} {S : Finset α} (τ : α → Fin 8) {spectrum : Finset ℕ}
+    (hthreeResidue : 3 ∈ spectrum)
+    (hforbid :
+      ∀ x ∈ S, ∀ d ∈ spectrum, ¬ AugmentedThreeOneAtomRegular d 1 1 1 (τ x)) :
+    ∀ x ∈ S, τ x ≠ (7 : Fin 8) := by
+  intro x hx hτ
+  have hforbidSeven :
+      ∀ d ∈ spectrum, ¬ AugmentedThreeOneAtomRegular d 1 1 1 (7 : Fin 8) := by
+    intro d hd
+    simpa [hτ] using hforbid x hx d hd
+  exact augmentedThreeOne_triangleBoundary_forbidden_sevenType hthreeResidue hforbidSeven
+
+/--
+The same-type `2+2` sieve turns every surviving non-all-hit type fiber into an independent set in the
+triangle-boundary `{3,1}` branch.
+-/
+theorem sparseOneThreeTriangleBoundary_independent_nonseven_fibers_of_forbidden_sameType_atoms
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {S : Finset (Fin n)} (τ : Fin n → Fin 8) {spectrum : Finset ℕ}
+    (honeResidue : 1 ∈ spectrum) (hthreeResidue : 3 ∈ spectrum)
+    (hforbid :
+      ∀ t : Fin 8, t ≠ (7 : Fin 8) →
+        ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y →
+          ∀ i k : Fin 3, i ≠ k →
+            ∀ d ∈ spectrum,
+              ¬ AugmentedTwoTwoAtomRegular d 1 (if G.Adj x y then 1 else 0) t t i k) :
+    ∀ t : Fin 8, t ≠ (7 : Fin 8) →
+      ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → ¬ G.Adj x y := by
+  intro t ht7 x hxS hxt y hyS hyt hxy
+  by_contra hAdj
+  have hεle : (if G.Adj x y then 1 else 0) ≤ 1 := by
+    by_cases hxyAdj : G.Adj x y <;> simp [hxyAdj]
+  have hforced : (if G.Adj x y then 1 else 0) = 0 :=
+    augmentedTwoTwoSameType_forces_independent_of_oneThree_triangleBoundary_allPairs
+      (spectrum := spectrum) (ε := if G.Adj x y then 1 else 0) (τ := t)
+      honeResidue hthreeResidue hεle
+      (hforbid t ht7 x hxS hxt y hyS hyt hxy)
+  simpa [hAdj] using hforced
+
+/--
+Dropped-tail form of the complementary triangle-boundary `{3,1}` branch closure: if the all-hit type
+is absent and every non-all-hit type fiber is independent, then the large fixed witness contains a
+dropped-tail subbucket.
+-/
+theorem sparseOneThreeTriangleBoundary_fromSeven_droppedTail_closed_of_no_sevenType_and_independent_fibers
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card)
+    (hmod : InducesModEqDegree G S (2 ^ j))
+    (hseven : ∀ x ∈ S, τ x ≠ (7 : Fin 8))
+    (hindependent :
+      ∀ t : Fin 8, t ≠ (7 : Fin 8) →
+        ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → ¬ G.Adj x y) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] := by
+  rcases sparseOneThreeTriangleBoundary_fromSeven_forces_sevenType_or_large_nonseven_type
+      S τ hj hS with hhit | hlarge
+  · rcases hhit with ⟨x, hxS, hxτ⟩
+    exact False.elim (hseven x hxS hxτ)
+  · rcases hlarge with ⟨t, ht7, htlarge⟩
+    exact
+      droppedTailSubbucket_of_large_independent_boundary_type_fiber
+        (G := G) (j := j) (S := S) τ hmod htlarge (hindependent t ht7)
+
+/--
+Fully selector-facing complementary `{3,1}` closure: the `3+1` atom removes the all-hit type, the
+same-type `2+2` atoms make all remaining type fibers independent, and the seven-type pigeonhole cap
+then produces a dropped-tail subbucket for every `j ≥ 7` host.
+-/
+theorem sparseOneThreeTriangleBoundary_fromSeven_droppedTail_closed_of_forbidden_atoms
+    {n j : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {S : Finset (Fin n)} (τ : Fin n → Fin 8) {spectrum : Finset ℕ}
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card)
+    (hmod : InducesModEqDegree G S (2 ^ j))
+    (honeResidue : 1 ∈ spectrum) (hthreeResidue : 3 ∈ spectrum)
+    (hforbidThreeOne :
+      ∀ x ∈ S, ∀ d ∈ spectrum, ¬ AugmentedThreeOneAtomRegular d 1 1 1 (τ x))
+    (hforbidTwoTwo :
+      ∀ t : Fin 8, t ≠ (7 : Fin 8) →
+        ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y →
+          ∀ i k : Fin 3, i ≠ k →
+            ∀ d ∈ spectrum,
+              ¬ AugmentedTwoTwoAtomRegular d 1 (if G.Adj x y then 1 else 0) t t i k) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] := by
+  have hsevenType : ∀ x ∈ S, τ x ≠ (7 : Fin 8) :=
+    sparseOneThreeTriangleBoundary_no_sevenType_of_forbidden_threeOne_atoms
+      τ hthreeResidue hforbidThreeOne
+  have hindependent :
+      ∀ t : Fin 8, t ≠ (7 : Fin 8) →
+        ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → ¬ G.Adj x y :=
+    sparseOneThreeTriangleBoundary_independent_nonseven_fibers_of_forbidden_sameType_atoms
+      G τ honeResidue hthreeResidue hforbidTwoTwo
+  exact
+    sparseOneThreeTriangleBoundary_fromSeven_droppedTail_closed_of_no_sevenType_and_independent_fibers
+      G τ hj hS hmod hsevenType hindependent
 
 /-- Full-spectrum corollary of the same-type `2+2` rule. -/
 theorem augmentedTwoTwoSameType_forces_opposite_of_fullSpectrum_forbidden
@@ -5207,6 +5445,59 @@ def HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven : Pr
             ∀ v w : ↑(u : Set (Fin n)),
               (G.neighborFinset v ∩ (S \ u)).card ≡
                 (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j]
+
+/--
+Terminal-boundary atom decomposition for the genuine `j ≥ 7`, `D = 5` selector tail.  For every
+large fixed witness it supplies one of the two seven-type boundary branches now closed below:
+independent-boundary `{0,2}` or triangle-boundary `{3,1}`.
+-/
+def HasPolynomialCostFixedWitnessTerminalBoundaryAtomDecompositionSelectionFiveFromSeven : Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 7 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+      ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+        InducesModEqDegree G S (2 ^ j) →
+          ∃ τ : (Fin n → Fin 8), ∃ spectrum : Finset ℕ,
+            ((0 ∈ spectrum ∧ 2 ∈ spectrum ∧
+                (∀ x ∈ S, ∀ d ∈ spectrum,
+                  ¬ AugmentedThreeOneAtomRegular d 0 0 0 (τ x)) ∧
+                (∀ t : Fin 8, t ≠ (0 : Fin 8) →
+                  ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y →
+                    ∀ i k : Fin 3, i ≠ k →
+                      ∀ d ∈ spectrum,
+                        ¬ AugmentedTwoTwoAtomRegular d 0
+                          (if G.Adj x y then 1 else 0) t t i k)) ∨
+              (1 ∈ spectrum ∧ 3 ∈ spectrum ∧
+                (∀ x ∈ S, ∀ d ∈ spectrum,
+                  ¬ AugmentedThreeOneAtomRegular d 1 1 1 (τ x)) ∧
+                (∀ t : Fin 8, t ≠ (7 : Fin 8) →
+                  ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y →
+                    ∀ i k : Fin 3, i ≠ k →
+                      ∀ d ∈ spectrum,
+                        ¬ AugmentedTwoTwoAtomRegular d 1
+                          (if G.Adj x y then 1 else 0) t t i k)))
+
+/--
+The terminal-boundary atom decomposition closes the genuine `j ≥ 7` dropped-tail selector tail: its
+two branches are exactly the independent-boundary `{0,2}` and triangle-boundary `{3,1}` branch
+closures.
+-/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_terminalBoundaryAtomDecompositionSelectionFiveFromSeven
+    (hselect : HasPolynomialCostFixedWitnessTerminalBoundaryAtomDecompositionSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven := by
+  classical
+  intro n j hj G S hS hmod
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases hselect hj G hS hmod with ⟨τ, spectrum, hzeroTwo | honeThree⟩
+  · rcases hzeroTwo with ⟨hzero, htwo, hforbidThreeOne, hforbidTwoTwo⟩
+    exact
+      sparseZeroTwoIndependentBoundary_fromSeven_droppedTail_closed_of_forbidden_atoms
+        G τ hj hS hmod hzero htwo hforbidThreeOne hforbidTwoTwo
+  · rcases honeThree with ⟨hone, hthree, hforbidThreeOne, hforbidTwoTwo⟩
+    exact
+      sparseOneThreeTriangleBoundary_fromSeven_droppedTail_closed_of_forbidden_atoms
+        G τ hj hS hmod hone hthree hforbidThreeOne hforbidTwoTwo
 
 /-- A modular `q = 32` selector gives a regular `q = 32` selector. -/
 theorem
@@ -5420,6 +5711,18 @@ theorem
   exact
     ⟨u, huS, hcard,
       inducesModEqDegree_of_modEq_hostDegree_and_dropDegree (G := G) huS hhost hdrop⟩
+
+/--
+The same atom decomposition also closes the genuine `j ≥ 7` modular exact-subbucket selector tail,
+via the dropped-tail bridge.
+-/
+theorem
+    hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven_of_terminalBoundaryAtomDecompositionSelectionFiveFromSeven
+    (hselect : HasPolynomialCostFixedWitnessTerminalBoundaryAtomDecompositionSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven :=
+  hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven_of_droppedTailConstancySelectionFiveFromSeven
+    (hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_terminalBoundaryAtomDecompositionSelectionFiveFromSeven
+      hselect)
 
 /-- A dropped-tail `j ≥ 7` selector gives a regular `j ≥ 7` selector. -/
 theorem
