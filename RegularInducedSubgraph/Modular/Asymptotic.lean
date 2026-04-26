@@ -28374,6 +28374,1204 @@ theorem FirstBitTerminalRankThreePairAtomDeletionFrontier.to_remainingPairAtomDe
 end FirstBitTerminalRankThreePairAtomDeletionFrontier
 
 /--
+No-leftover deletion frontier for the terminal rank-three first-bit branch.  This packages the
+strict cross-atom defect and the first no-leftover four-four atom core on top of the pair-atom
+deletion frontier: every no-leftover core has four atoms of size four, cross-support caps `6/9/12`,
+and each packed-atom deletion repair is forced into either unit strict absorption or a deleted-vertex
+lift collision.  All inputs remain explicit frontier assumptions.
+-/
+structure FirstBitTerminalRankThreeNoLeftoverDeletionFrontier
+    {Vertex Triple Coord Atom Move RepairFamily Lift PairPivot CollisionStar UnitAbsorption
+      LiftCollision Bridge Thickening Replacement : Type*}
+    [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord] [DecidableEq Atom]
+    (coreVertices : Finset Vertex) (activeCoordinates zeroFilter : Finset Coord)
+    (retainedTargets : Finset (Finset Vertex))
+    (outgoingTriples : Finset Vertex → Finset Triple)
+    (tripleSupport : Triple → Finset Vertex)
+    (rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord)
+    (atomPartition : Finset Vertex → Triple → Finset Atom)
+    (atomBlock : Finset Vertex → Triple → Atom → Finset Vertex)
+    (pureTwoAtomSupport : Finset Vertex → Triple → Atom → Atom → Finset Vertex)
+    (deletedPackedBlock : Finset Vertex → Triple → Atom → Finset Vertex)
+    (packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount :
+      Finset Vertex → Triple → ℕ)
+    (pureTwoAtomGain : Finset Vertex → Triple → Atom → Atom → ℤ)
+    (liftTotalGain : Finset Vertex → Triple → Atom → RepairFamily → Lift → ℤ)
+    (deletionGain : Finset Vertex → Triple → Atom → ℤ)
+    (pairPivotSupport : Finset Vertex → Triple → Atom → PairPivot → Finset Vertex)
+    (collisionStarSupport collisionStarLeafSet :
+      Finset Vertex → Triple → Atom → CollisionStar → Finset Vertex)
+    (collisionStarCenter : Finset Vertex → Triple → Atom → CollisionStar → Vertex)
+    (crossAtomSupport : Finset Vertex → Triple → Finset Atom → Finset Vertex)
+    (unitAbsorptionHeight unitAbsorptionTerminalCount unitAbsorptionDeletedGain :
+      Finset Vertex → Triple → Atom → UnitAbsorption → ℕ)
+    (unitAbsorptionFullGain : Finset Vertex → Triple → Atom → UnitAbsorption → ℤ)
+    (liftCollisionVertex : Finset Vertex → Triple → Atom → LiftCollision → Vertex)
+    (m : ℕ)
+    (scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+      terminalResolved rankThreeBridgeObstructed : Finset Vertex → Triple → Prop)
+    (feasibleComplementShadowPacking capacityDeficient : Finset Vertex → Triple → Prop)
+    (oneSavingBridge : Finset Vertex → Triple → Bridge → Prop)
+    (thickeningBlocker : Finset Vertex → Triple → Thickening → Prop)
+    (replacementBlocker : Finset Vertex → Triple → Replacement → Prop)
+    (forbiddenSupport : Finset Vertex → Triple → Finset Vertex → Prop)
+    (zeroGainMove sameTerminalClass : Finset Vertex → Triple → Move → Prop)
+    (packedAtom sizeTwoPackedAtom : Finset Vertex → Triple → Atom → Prop)
+    (minimalPositiveRepairFamily : Finset Vertex → Triple → Atom → RepairFamily → Prop)
+    (fullLift : Finset Vertex → Triple → Atom → RepairFamily → Lift → Prop)
+    (pairDeletionPivot zeroGainPairPivot sameSizePairExchange :
+      Finset Vertex → Triple → Atom → PairPivot → Prop)
+    (leftoverSingleton : Finset Vertex → Triple → Atom → PairPivot → Vertex → Prop)
+    (collisionStarDeletion : Finset Vertex → Triple → Atom → CollisionStar → Prop)
+    (allPairSaturatedPacking pairDeletionEndpointResolved : Finset Vertex → Triple → Prop)
+    (strictCrossAtomDefect : Finset Vertex → Triple → Atom → Atom → Prop)
+    (firstNoLeftoverCore : Finset Vertex → Triple → Prop)
+    (unitStrictAbsorption : Finset Vertex → Triple → Atom → UnitAbsorption → Prop)
+    (deletedVertexLiftCollision : Finset Vertex → Triple → Atom → LiftCollision → Prop)
+    (noLeftoverDeletionRepair : Finset Vertex → Triple → Atom → Prop)
+    (targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+      scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+      fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+      tracePinningFrontier rankThreeBridgeObstruction terminalRankThreeClosure
+      zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+      deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions : Prop) :
+    Prop where
+  pairAtomDeletionFrontierCert :
+    FirstBitTerminalRankThreePairAtomDeletionFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+      collisionStarCenter m scalarKilledTerminal smallActiveZeroFilter lowRankBounded
+      rankThreeHighActive terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking
+      capacityDeficient oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport
+      zeroGainMove sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily
+      fullLift pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton
+      collisionStarDeletion allPairSaturatedPacking pairDeletionEndpointResolved
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions
+  strictCrossAtomDefectFrontierCert : strictCrossAtomDefectFrontier
+  firstNoLeftoverCoreFrontierCert : firstNoLeftoverCoreFrontier
+  unitStrictAbsorptionFrontierCert : unitStrictAbsorptionFrontier
+  deletedVertexLiftCollisionFrontierCert : deletedVertexLiftCollisionFrontier
+  noLeftoverDeletionRepairDichotomyCert : noLeftoverDeletionRepairDichotomy
+  firstNoLeftoverCore_four_atoms :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X →
+        (atomPartition T X).card = 4 ∧
+          ∀ atom : Atom, atom ∈ atomPartition T X → (atomBlock T X atom).card = 4
+  firstNoLeftoverCore_crossSupport_pair_cap :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+        atoms ⊆ atomPartition T X → atoms.card = 2 → (crossAtomSupport T X atoms).card ≤ 6
+  firstNoLeftoverCore_crossSupport_triple_cap :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+        atoms ⊆ atomPartition T X → atoms.card = 3 → (crossAtomSupport T X atoms).card ≤ 9
+  firstNoLeftoverCore_crossSupport_four_cap :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+        atoms ⊆ atomPartition T X → atoms.card = 4 → (crossAtomSupport T X atoms).card ≤ 12
+  strictCrossAtomDefect_of_noLeftover_pair :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ a : Atom,
+        a ∈ atomPartition T X → ∀ b : Atom, b ∈ atomPartition T X → a ≠ b →
+          strictCrossAtomDefect T X a b
+  unitStrictAbsorption_scalars :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → ∀ absorption : UnitAbsorption,
+          unitStrictAbsorption T X atom absorption →
+            unitAbsorptionHeight T X atom absorption = 0 ∧
+              unitAbsorptionTerminalCount T X atom absorption = 1 ∧
+                unitAbsorptionDeletedGain T X atom absorption = 1 ∧
+                  unitAbsorptionFullGain T X atom absorption = -1
+  liftCollision_deletedVertex :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → ∀ collision : LiftCollision,
+          deletedVertexLiftCollision T X atom collision →
+            liftCollisionVertex T X atom collision ∈ deletedPackedBlock T X atom
+  noLeftoverDeletion_repair_dichotomy :
+    ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+      rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+        atom ∈ atomPartition T X → packedAtom T X atom →
+          noLeftoverDeletionRepair T X atom ∧
+            ((∃ absorption : UnitAbsorption, unitStrictAbsorption T X atom absorption) ∨
+              (∃ collision : LiftCollision, deletedVertexLiftCollision T X atom collision))
+  remainingNoLeftoverDeletionAssumptionsCert : remainingNoLeftoverDeletionAssumptions
+
+section FirstBitTerminalRankThreeNoLeftoverDeletionFrontierConstruction
+
+variable {Vertex Triple Coord Atom Move RepairFamily Lift PairPivot CollisionStar UnitAbsorption
+  LiftCollision Bridge Thickening Replacement : Type*}
+variable [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord] [DecidableEq Atom]
+variable {coreVertices : Finset Vertex} {activeCoordinates zeroFilter : Finset Coord}
+variable {retainedTargets : Finset (Finset Vertex)}
+variable {outgoingTriples : Finset Vertex → Finset Triple}
+variable {tripleSupport : Triple → Finset Vertex}
+variable {rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord}
+variable {atomPartition : Finset Vertex → Triple → Finset Atom}
+variable {atomBlock : Finset Vertex → Triple → Atom → Finset Vertex}
+variable {pureTwoAtomSupport : Finset Vertex → Triple → Atom → Atom → Finset Vertex}
+variable {deletedPackedBlock : Finset Vertex → Triple → Atom → Finset Vertex}
+variable {packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount :
+  Finset Vertex → Triple → ℕ}
+variable {pureTwoAtomGain : Finset Vertex → Triple → Atom → Atom → ℤ}
+variable {liftTotalGain : Finset Vertex → Triple → Atom → RepairFamily → Lift → ℤ}
+variable {deletionGain : Finset Vertex → Triple → Atom → ℤ}
+variable {pairPivotSupport : Finset Vertex → Triple → Atom → PairPivot → Finset Vertex}
+variable {collisionStarSupport collisionStarLeafSet :
+  Finset Vertex → Triple → Atom → CollisionStar → Finset Vertex}
+variable {collisionStarCenter : Finset Vertex → Triple → Atom → CollisionStar → Vertex}
+variable {crossAtomSupport : Finset Vertex → Triple → Finset Atom → Finset Vertex}
+variable {unitAbsorptionHeight unitAbsorptionTerminalCount unitAbsorptionDeletedGain :
+  Finset Vertex → Triple → Atom → UnitAbsorption → ℕ}
+variable {unitAbsorptionFullGain : Finset Vertex → Triple → Atom → UnitAbsorption → ℤ}
+variable {liftCollisionVertex : Finset Vertex → Triple → Atom → LiftCollision → Vertex}
+variable {m : ℕ}
+variable {scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+  terminalResolved rankThreeBridgeObstructed : Finset Vertex → Triple → Prop}
+variable {feasibleComplementShadowPacking capacityDeficient : Finset Vertex → Triple → Prop}
+variable {oneSavingBridge : Finset Vertex → Triple → Bridge → Prop}
+variable {thickeningBlocker : Finset Vertex → Triple → Thickening → Prop}
+variable {replacementBlocker : Finset Vertex → Triple → Replacement → Prop}
+variable {forbiddenSupport : Finset Vertex → Triple → Finset Vertex → Prop}
+variable {zeroGainMove sameTerminalClass : Finset Vertex → Triple → Move → Prop}
+variable {packedAtom sizeTwoPackedAtom : Finset Vertex → Triple → Atom → Prop}
+variable {minimalPositiveRepairFamily : Finset Vertex → Triple → Atom → RepairFamily → Prop}
+variable {fullLift : Finset Vertex → Triple → Atom → RepairFamily → Lift → Prop}
+variable {pairDeletionPivot zeroGainPairPivot sameSizePairExchange :
+  Finset Vertex → Triple → Atom → PairPivot → Prop}
+variable {leftoverSingleton : Finset Vertex → Triple → Atom → PairPivot → Vertex → Prop}
+variable {collisionStarDeletion : Finset Vertex → Triple → Atom → CollisionStar → Prop}
+variable {allPairSaturatedPacking pairDeletionEndpointResolved : Finset Vertex → Triple → Prop}
+variable {strictCrossAtomDefect : Finset Vertex → Triple → Atom → Atom → Prop}
+variable {firstNoLeftoverCore : Finset Vertex → Triple → Prop}
+variable {unitStrictAbsorption : Finset Vertex → Triple → Atom → UnitAbsorption → Prop}
+variable {deletedVertexLiftCollision : Finset Vertex → Triple → Atom → LiftCollision → Prop}
+variable {noLeftoverDeletionRepair : Finset Vertex → Triple → Atom → Prop}
+variable {targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+  scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+  fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+  tracePinningFrontier rankThreeBridgeObstruction terminalRankThreeClosure
+  zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+  smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+  strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+  deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+  remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+  remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+  remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions : Prop}
+
+/-- Build the no-leftover deletion frontier from the pair-atom deletion frontier. -/
+theorem firstBitTerminalRankThreeNoLeftoverDeletionFrontier_of_pairAtomDeletion
+    (hpair :
+      FirstBitTerminalRankThreePairAtomDeletionFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+        complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+        packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+        liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+        collisionStarCenter m scalarKilledTerminal smallActiveZeroFilter lowRankBounded
+        rankThreeHighActive terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking
+        capacityDeficient oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport
+        zeroGainMove sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily
+        fullLift pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton
+        collisionStarDeletion allPairSaturatedPacking pairDeletionEndpointResolved
+        targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+        singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+        terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker
+        deletionRepairFamilyObstruction smallAtomDeletionCorollary pairPivotSaturation
+        collisionStarDeletionOutcome remainingUniversalDichotomyAssumptions
+        remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions
+        remainingFourAtomBridgeBlockerAssumptions remainingPairAtomDeletionAssumptions)
+    (hstrictMarker : strictCrossAtomDefectFrontier)
+    (hcoreMarker : firstNoLeftoverCoreFrontier)
+    (hunitMarker : unitStrictAbsorptionFrontier)
+    (hcollisionMarker : deletedVertexLiftCollisionFrontier)
+    (hdichotomyMarker : noLeftoverDeletionRepairDichotomy)
+    (hcoreFour :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X →
+          (atomPartition T X).card = 4 ∧
+            ∀ atom : Atom, atom ∈ atomPartition T X → (atomBlock T X atom).card = 4)
+    (hpairCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 2 → (crossAtomSupport T X atoms).card ≤ 6)
+    (htripleCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 3 → (crossAtomSupport T X atoms).card ≤ 9)
+    (hfourCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 4 → (crossAtomSupport T X atoms).card ≤ 12)
+    (hstrict :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ a : Atom,
+          a ∈ atomPartition T X → ∀ b : Atom, b ∈ atomPartition T X → a ≠ b →
+            strictCrossAtomDefect T X a b)
+    (hunit :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → ∀ absorption : UnitAbsorption,
+            unitStrictAbsorption T X atom absorption →
+              unitAbsorptionHeight T X atom absorption = 0 ∧
+                unitAbsorptionTerminalCount T X atom absorption = 1 ∧
+                  unitAbsorptionDeletedGain T X atom absorption = 1 ∧
+                    unitAbsorptionFullGain T X atom absorption = -1)
+    (hliftCollision :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → ∀ collision : LiftCollision,
+            deletedVertexLiftCollision T X atom collision →
+              liftCollisionVertex T X atom collision ∈ deletedPackedBlock T X atom)
+    (hrepair :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom →
+            noLeftoverDeletionRepair T X atom ∧
+              ((∃ absorption : UnitAbsorption, unitStrictAbsorption T X atom absorption) ∨
+                (∃ collision : LiftCollision, deletedVertexLiftCollision T X atom collision)))
+    (hremaining : remainingNoLeftoverDeletionAssumptions) :
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+      collisionStarCenter crossAtomSupport unitAbsorptionHeight unitAbsorptionTerminalCount
+      unitAbsorptionDeletedGain unitAbsorptionFullGain liftCollisionVertex m
+      scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+      terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient
+      oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove
+      sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily fullLift
+      pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton collisionStarDeletion
+      allPairSaturatedPacking pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore
+      unitStrictAbsorption deletedVertexLiftCollision noLeftoverDeletionRepair
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+      deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions where
+  pairAtomDeletionFrontierCert := hpair
+  strictCrossAtomDefectFrontierCert := hstrictMarker
+  firstNoLeftoverCoreFrontierCert := hcoreMarker
+  unitStrictAbsorptionFrontierCert := hunitMarker
+  deletedVertexLiftCollisionFrontierCert := hcollisionMarker
+  noLeftoverDeletionRepairDichotomyCert := hdichotomyMarker
+  firstNoLeftoverCore_four_atoms := hcoreFour
+  firstNoLeftoverCore_crossSupport_pair_cap := hpairCap
+  firstNoLeftoverCore_crossSupport_triple_cap := htripleCap
+  firstNoLeftoverCore_crossSupport_four_cap := hfourCap
+  strictCrossAtomDefect_of_noLeftover_pair := hstrict
+  unitStrictAbsorption_scalars := hunit
+  liftCollision_deletedVertex := hliftCollision
+  noLeftoverDeletion_repair_dichotomy := hrepair
+  remainingNoLeftoverDeletionAssumptionsCert := hremaining
+
+/-- Build the no-leftover deletion frontier from the four-atom bridge-blocker frontier. -/
+theorem firstBitTerminalRankThreeNoLeftoverDeletionFrontier_of_fourAtomBridgeBlocker
+    (hfour :
+      FirstBitTerminalRankThreeFourAtomBridgeBlockerFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+        complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+        packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+        liftTotalGain deletionGain m scalarKilledTerminal smallActiveZeroFilter lowRankBounded
+        rankThreeHighActive terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking
+        capacityDeficient oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport
+        zeroGainMove sameTerminalClass packedAtom minimalPositiveRepairFamily fullLift
+        targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+        singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+        terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker
+        deletionRepairFamilyObstruction remainingUniversalDichotomyAssumptions
+        remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions
+        remainingFourAtomBridgeBlockerAssumptions)
+    (hsmall : smallAtomDeletionCorollary) (hpair : pairPivotSaturation)
+    (hcollision : collisionStarDeletionOutcome)
+    (hsizeTwo :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          packedAtom T X atom ∧ atom ∈ atomPartition T X ∧ (atomBlock T X atom).card = 2)
+    (hpairDelete :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          (∃ pivot : PairPivot,
+            pairDeletionPivot T X atom pivot ∧ zeroGainPairPivot T X atom pivot) ∨
+            (∃ star : CollisionStar, collisionStarDeletion T X atom star))
+    (hstarSupport :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          ∀ star : CollisionStar, collisionStarDeletion T X atom star →
+            collisionStarCenter T X atom star ∈ deletedPackedBlock T X atom ∧
+              collisionStarSupport T X atom star =
+                {collisionStarCenter T X atom star} ∪ collisionStarLeafSet T X atom star)
+    (hzeroPivot :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          ∀ pivot : PairPivot, pairDeletionPivot T X atom pivot →
+            zeroGainPairPivot T X atom pivot →
+              sameSizePairExchange T X atom pivot ∧
+                pairPivotSupport T X atom pivot ⊆ coreVertices ∧
+                  ∃ leftover : Vertex,
+                    leftoverSingleton T X atom pivot leftover ∧ leftover ∈ coreVertices)
+    (hallPair :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → allPairSaturatedPacking T X →
+          pairDeletionEndpointResolved T X ∧
+            ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+              ∃ star : CollisionStar, collisionStarDeletion T X atom star)
+    (hsmallAtom :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, atom ∈ atomPartition T X →
+          (atomBlock T X atom).card ≤ 2 → packedAtom T X atom →
+            sizeTwoPackedAtom T X atom ∨
+              ∃ star : CollisionStar, collisionStarDeletion T X atom star)
+    (hremainingPair : remainingPairAtomDeletionAssumptions)
+    (hstrictMarker : strictCrossAtomDefectFrontier)
+    (hcoreMarker : firstNoLeftoverCoreFrontier)
+    (hunitMarker : unitStrictAbsorptionFrontier)
+    (hcollisionMarker : deletedVertexLiftCollisionFrontier)
+    (hdichotomyMarker : noLeftoverDeletionRepairDichotomy)
+    (hcoreFour :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X →
+          (atomPartition T X).card = 4 ∧
+            ∀ atom : Atom, atom ∈ atomPartition T X → (atomBlock T X atom).card = 4)
+    (hpairCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 2 → (crossAtomSupport T X atoms).card ≤ 6)
+    (htripleCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 3 → (crossAtomSupport T X atoms).card ≤ 9)
+    (hfourCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 4 → (crossAtomSupport T X atoms).card ≤ 12)
+    (hstrict :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ a : Atom,
+          a ∈ atomPartition T X → ∀ b : Atom, b ∈ atomPartition T X → a ≠ b →
+            strictCrossAtomDefect T X a b)
+    (hunit :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → ∀ absorption : UnitAbsorption,
+            unitStrictAbsorption T X atom absorption →
+              unitAbsorptionHeight T X atom absorption = 0 ∧
+                unitAbsorptionTerminalCount T X atom absorption = 1 ∧
+                  unitAbsorptionDeletedGain T X atom absorption = 1 ∧
+                    unitAbsorptionFullGain T X atom absorption = -1)
+    (hliftCollision :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → ∀ collision : LiftCollision,
+            deletedVertexLiftCollision T X atom collision →
+              liftCollisionVertex T X atom collision ∈ deletedPackedBlock T X atom)
+    (hrepair :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom →
+            noLeftoverDeletionRepair T X atom ∧
+              ((∃ absorption : UnitAbsorption, unitStrictAbsorption T X atom absorption) ∨
+                (∃ collision : LiftCollision, deletedVertexLiftCollision T X atom collision)))
+    (hremaining : remainingNoLeftoverDeletionAssumptions) :
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+      collisionStarCenter crossAtomSupport unitAbsorptionHeight unitAbsorptionTerminalCount
+      unitAbsorptionDeletedGain unitAbsorptionFullGain liftCollisionVertex m
+      scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+      terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient
+      oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove
+      sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily fullLift
+      pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton collisionStarDeletion
+      allPairSaturatedPacking pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore
+      unitStrictAbsorption deletedVertexLiftCollision noLeftoverDeletionRepair
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+      deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions :=
+  firstBitTerminalRankThreeNoLeftoverDeletionFrontier_of_pairAtomDeletion
+    (firstBitTerminalRankThreePairAtomDeletionFrontier_of_fourAtomBridgeBlocker hfour hsmall
+      hpair hcollision hsizeTwo hpairDelete hstarSupport hzeroPivot hallPair hsmallAtom
+      hremainingPair)
+    hstrictMarker hcoreMarker hunitMarker hcollisionMarker hdichotomyMarker hcoreFour hpairCap
+    htripleCap hfourCap hstrict hunit hliftCollision hrepair hremaining
+
+/-- Build the no-leftover deletion frontier directly from the rank-three closure package. -/
+theorem firstBitTerminalRankThreeNoLeftoverDeletionFrontier_of_closure
+    (hclosure :
+      FirstBitTerminalRankThreeBridgeClosureFrontier coreVertices activeCoordinates zeroFilter
+        retainedTargets outgoingTriples tripleSupport rankThreeSupport complementShadowPacking
+        packingSaving bridgeClosingThreshold m scalarKilledTerminal smallActiveZeroFilter
+        lowRankBounded rankThreeHighActive terminalResolved rankThreeBridgeObstructed
+        feasibleComplementShadowPacking capacityDeficient oneSavingBridge thickeningBlocker
+        replacementBlocker targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction terminalRankThreeClosure remainingUniversalDichotomyAssumptions
+        remainingRankThreeBridgeAssumptions remainingRankThreeClosureAssumptions)
+    (htrace : tracePinningFrontier) (hzero : zeroGainSaturation)
+    (hblocker : fourAtomBridgeBlocker)
+    (hdeleteObstruction : deletionRepairFamilyObstruction)
+    (hatomSub :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, atom ∈ atomPartition T X →
+          atomBlock T X atom ⊆ coreVertices)
+    (hdisjoint :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ a : Atom, a ∈ atomPartition T X → ∀ b : Atom,
+          b ∈ atomPartition T X → a ≠ b → Disjoint (atomBlock T X a) (atomBlock T X b))
+    (hcard :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → (atomPartition T X).card = 4)
+    (hcount :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → packedAtomCount T X + looseAtomCount T X = 4)
+    (hpackedMem :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          atom ∈ atomPartition T X)
+    (hpureUnion :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ a : Atom, a ∈ atomPartition T X → ∀ b : Atom,
+          b ∈ atomPartition T X → a ≠ b →
+            pureTwoAtomSupport T X a b = atomBlock T X a ∪ atomBlock T X b)
+    (hpureForbidden :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ a : Atom, a ∈ atomPartition T X → ∀ b : Atom,
+          b ∈ atomPartition T X → a ≠ b → forbiddenSupport T X (pureTwoAtomSupport T X a b))
+    (hpureGain :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ a : Atom, a ∈ atomPartition T X → ∀ b : Atom,
+          b ∈ atomPartition T X → a ≠ b → pureTwoAtomGain T X a b = 1)
+    (hzeroMove :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ move : Move, zeroGainMove T X move →
+          sameTerminalClass T X move)
+    (hdeleteSub :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          deletedPackedBlock T X atom ⊆ atomBlock T X atom)
+    (hdeleteGain :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          0 < deletionGain T X atom)
+    (hminimalRepair :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          ∃ repair : RepairFamily, minimalPositiveRepairFamily T X atom repair)
+    (hliftGain :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          ∀ repair : RepairFamily, minimalPositiveRepairFamily T X atom repair →
+            ∀ lift : Lift, fullLift T X atom repair lift →
+              liftTotalGain T X atom repair lift ≤ 0)
+    (hremainingFour : remainingFourAtomBridgeBlockerAssumptions)
+    (hsmall : smallAtomDeletionCorollary) (hpair : pairPivotSaturation)
+    (hcollision : collisionStarDeletionOutcome)
+    (hsizeTwo :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          packedAtom T X atom ∧ atom ∈ atomPartition T X ∧ (atomBlock T X atom).card = 2)
+    (hpairDelete :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          (∃ pivot : PairPivot,
+            pairDeletionPivot T X atom pivot ∧ zeroGainPairPivot T X atom pivot) ∨
+            (∃ star : CollisionStar, collisionStarDeletion T X atom star))
+    (hstarSupport :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          ∀ star : CollisionStar, collisionStarDeletion T X atom star →
+            collisionStarCenter T X atom star ∈ deletedPackedBlock T X atom ∧
+              collisionStarSupport T X atom star =
+                {collisionStarCenter T X atom star} ∪ collisionStarLeafSet T X atom star)
+    (hzeroPivot :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          ∀ pivot : PairPivot, pairDeletionPivot T X atom pivot →
+            zeroGainPairPivot T X atom pivot →
+              sameSizePairExchange T X atom pivot ∧
+                pairPivotSupport T X atom pivot ⊆ coreVertices ∧
+                  ∃ leftover : Vertex,
+                    leftoverSingleton T X atom pivot leftover ∧ leftover ∈ coreVertices)
+    (hallPair :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → allPairSaturatedPacking T X →
+          pairDeletionEndpointResolved T X ∧
+            ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+              ∃ star : CollisionStar, collisionStarDeletion T X atom star)
+    (hsmallAtom :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, atom ∈ atomPartition T X →
+          (atomBlock T X atom).card ≤ 2 → packedAtom T X atom →
+            sizeTwoPackedAtom T X atom ∨
+              ∃ star : CollisionStar, collisionStarDeletion T X atom star)
+    (hremainingPair : remainingPairAtomDeletionAssumptions)
+    (hstrictMarker : strictCrossAtomDefectFrontier)
+    (hcoreMarker : firstNoLeftoverCoreFrontier)
+    (hunitMarker : unitStrictAbsorptionFrontier)
+    (hcollisionMarker : deletedVertexLiftCollisionFrontier)
+    (hdichotomyMarker : noLeftoverDeletionRepairDichotomy)
+    (hcoreFour :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X →
+          (atomPartition T X).card = 4 ∧
+            ∀ atom : Atom, atom ∈ atomPartition T X → (atomBlock T X atom).card = 4)
+    (hpairCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 2 → (crossAtomSupport T X atoms).card ≤ 6)
+    (htripleCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 3 → (crossAtomSupport T X atoms).card ≤ 9)
+    (hfourCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 4 → (crossAtomSupport T X atoms).card ≤ 12)
+    (hstrict :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ a : Atom,
+          a ∈ atomPartition T X → ∀ b : Atom, b ∈ atomPartition T X → a ≠ b →
+            strictCrossAtomDefect T X a b)
+    (hunit :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → ∀ absorption : UnitAbsorption,
+            unitStrictAbsorption T X atom absorption →
+              unitAbsorptionHeight T X atom absorption = 0 ∧
+                unitAbsorptionTerminalCount T X atom absorption = 1 ∧
+                  unitAbsorptionDeletedGain T X atom absorption = 1 ∧
+                    unitAbsorptionFullGain T X atom absorption = -1)
+    (hliftCollision :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → ∀ collision : LiftCollision,
+            deletedVertexLiftCollision T X atom collision →
+              liftCollisionVertex T X atom collision ∈ deletedPackedBlock T X atom)
+    (hrepair :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom →
+            noLeftoverDeletionRepair T X atom ∧
+              ((∃ absorption : UnitAbsorption, unitStrictAbsorption T X atom absorption) ∨
+                (∃ collision : LiftCollision, deletedVertexLiftCollision T X atom collision)))
+    (hremaining : remainingNoLeftoverDeletionAssumptions) :
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+      collisionStarCenter crossAtomSupport unitAbsorptionHeight unitAbsorptionTerminalCount
+      unitAbsorptionDeletedGain unitAbsorptionFullGain liftCollisionVertex m
+      scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+      terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient
+      oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove
+      sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily fullLift
+      pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton collisionStarDeletion
+      allPairSaturatedPacking pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore
+      unitStrictAbsorption deletedVertexLiftCollision noLeftoverDeletionRepair
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+      deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions :=
+  firstBitTerminalRankThreeNoLeftoverDeletionFrontier_of_pairAtomDeletion
+    (firstBitTerminalRankThreePairAtomDeletionFrontier_of_closure hclosure htrace hzero
+      hblocker hdeleteObstruction hatomSub hdisjoint hcard hcount hpackedMem hpureUnion
+      hpureForbidden hpureGain hzeroMove hdeleteSub hdeleteGain hminimalRepair hliftGain
+      hremainingFour hsmall hpair hcollision hsizeTwo hpairDelete hstarSupport hzeroPivot
+      hallPair hsmallAtom hremainingPair)
+    hstrictMarker hcoreMarker hunitMarker hcollisionMarker hdichotomyMarker hcoreFour hpairCap
+    htripleCap hfourCap hstrict hunit hliftCollision hrepair hremaining
+
+/--
+Build the no-leftover deletion frontier from the universal ternary dichotomy and rank-three bridge
+obstruction packages, then the closure, four-atom, pair-deletion, and no-leftover inputs.
+-/
+theorem firstBitTerminalRankThreeNoLeftoverDeletionFrontier_of_dichotomy
+    (huniversal :
+      FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+        zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+        smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+        mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+        fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions)
+    (hbridge :
+      FirstBitTerminalRankThreeBridgeObstructionFrontier activeCoordinates retainedTargets
+        outgoingTriples rankThreeSupport complementShadowPacking packingSaving bridgeClosingThreshold
+        rankThreeHighActive feasibleComplementShadowPacking oneSavingBridge thickeningBlocker
+        replacementBlocker capacityDeficient
+        (FirstBitTerminalUniversalTernaryDichotomyFrontier coreVertices activeCoordinates
+          zeroFilter retainedTargets outgoingTriples tripleSupport m scalarKilledTerminal
+          smallActiveZeroFilter lowRankBounded rankThreeHighActive targetCoverCoherenceFrontier
+          mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+          fourActiveSingletonOnlyCoverFrontier remainingUniversalDichotomyAssumptions)
+        scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+        fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+        rankThreeBridgeObstruction remainingRankThreeBridgeAssumptions)
+    (hscalar :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        scalarKilledTerminal T X → terminalResolved T X)
+    (hsmallResolve :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        smallActiveZeroFilter T X → terminalResolved T X)
+    (hlow :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        m ≤ 16 → lowRankBounded T X → terminalResolved T X)
+    (hrank :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → rankThreeBridgeObstructed T X)
+    (hterminalClosure : terminalRankThreeClosure)
+    (hremainingClosure : remainingRankThreeClosureAssumptions)
+    (htrace : tracePinningFrontier) (hzero : zeroGainSaturation)
+    (hblocker : fourAtomBridgeBlocker)
+    (hdeleteObstruction : deletionRepairFamilyObstruction)
+    (hatomSub :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, atom ∈ atomPartition T X →
+          atomBlock T X atom ⊆ coreVertices)
+    (hdisjoint :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ a : Atom, a ∈ atomPartition T X → ∀ b : Atom,
+          b ∈ atomPartition T X → a ≠ b → Disjoint (atomBlock T X a) (atomBlock T X b))
+    (hcard :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → (atomPartition T X).card = 4)
+    (hcount :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → packedAtomCount T X + looseAtomCount T X = 4)
+    (hpackedMem :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          atom ∈ atomPartition T X)
+    (hpureUnion :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ a : Atom, a ∈ atomPartition T X → ∀ b : Atom,
+          b ∈ atomPartition T X → a ≠ b →
+            pureTwoAtomSupport T X a b = atomBlock T X a ∪ atomBlock T X b)
+    (hpureForbidden :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ a : Atom, a ∈ atomPartition T X → ∀ b : Atom,
+          b ∈ atomPartition T X → a ≠ b → forbiddenSupport T X (pureTwoAtomSupport T X a b))
+    (hpureGain :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ a : Atom, a ∈ atomPartition T X → ∀ b : Atom,
+          b ∈ atomPartition T X → a ≠ b → pureTwoAtomGain T X a b = 1)
+    (hzeroMove :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ move : Move, zeroGainMove T X move →
+          sameTerminalClass T X move)
+    (hdeleteSub :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          deletedPackedBlock T X atom ⊆ atomBlock T X atom)
+    (hdeleteGain :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          0 < deletionGain T X atom)
+    (hminimalRepair :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          ∃ repair : RepairFamily, minimalPositiveRepairFamily T X atom repair)
+    (hliftGain :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, packedAtom T X atom →
+          ∀ repair : RepairFamily, minimalPositiveRepairFamily T X atom repair →
+            ∀ lift : Lift, fullLift T X atom repair lift →
+              liftTotalGain T X atom repair lift ≤ 0)
+    (hremainingFour : remainingFourAtomBridgeBlockerAssumptions)
+    (hsmall : smallAtomDeletionCorollary) (hpair : pairPivotSaturation)
+    (hcollision : collisionStarDeletionOutcome)
+    (hsizeTwo :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          packedAtom T X atom ∧ atom ∈ atomPartition T X ∧ (atomBlock T X atom).card = 2)
+    (hpairDelete :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          (∃ pivot : PairPivot,
+            pairDeletionPivot T X atom pivot ∧ zeroGainPairPivot T X atom pivot) ∨
+            (∃ star : CollisionStar, collisionStarDeletion T X atom star))
+    (hstarSupport :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          ∀ star : CollisionStar, collisionStarDeletion T X atom star →
+            collisionStarCenter T X atom star ∈ deletedPackedBlock T X atom ∧
+              collisionStarSupport T X atom star =
+                {collisionStarCenter T X atom star} ∪ collisionStarLeafSet T X atom star)
+    (hzeroPivot :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+          ∀ pivot : PairPivot, pairDeletionPivot T X atom pivot →
+            zeroGainPairPivot T X atom pivot →
+              sameSizePairExchange T X atom pivot ∧
+                pairPivotSupport T X atom pivot ⊆ coreVertices ∧
+                  ∃ leftover : Vertex,
+                    leftoverSingleton T X atom pivot leftover ∧ leftover ∈ coreVertices)
+    (hallPair :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → allPairSaturatedPacking T X →
+          pairDeletionEndpointResolved T X ∧
+            ∀ atom : Atom, sizeTwoPackedAtom T X atom →
+              ∃ star : CollisionStar, collisionStarDeletion T X atom star)
+    (hsmallAtom :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → ∀ atom : Atom, atom ∈ atomPartition T X →
+          (atomBlock T X atom).card ≤ 2 → packedAtom T X atom →
+            sizeTwoPackedAtom T X atom ∨
+              ∃ star : CollisionStar, collisionStarDeletion T X atom star)
+    (hremainingPair : remainingPairAtomDeletionAssumptions)
+    (hstrictMarker : strictCrossAtomDefectFrontier)
+    (hcoreMarker : firstNoLeftoverCoreFrontier)
+    (hunitMarker : unitStrictAbsorptionFrontier)
+    (hcollisionMarker : deletedVertexLiftCollisionFrontier)
+    (hdichotomyMarker : noLeftoverDeletionRepairDichotomy)
+    (hcoreFour :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X →
+          (atomPartition T X).card = 4 ∧
+            ∀ atom : Atom, atom ∈ atomPartition T X → (atomBlock T X atom).card = 4)
+    (hpairCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 2 → (crossAtomSupport T X atoms).card ≤ 6)
+    (htripleCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 3 → (crossAtomSupport T X atoms).card ≤ 9)
+    (hfourCap :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atoms : Finset Atom,
+          atoms ⊆ atomPartition T X → atoms.card = 4 → (crossAtomSupport T X atoms).card ≤ 12)
+    (hstrict :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ a : Atom,
+          a ∈ atomPartition T X → ∀ b : Atom, b ∈ atomPartition T X → a ≠ b →
+            strictCrossAtomDefect T X a b)
+    (hunit :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → ∀ absorption : UnitAbsorption,
+            unitStrictAbsorption T X atom absorption →
+              unitAbsorptionHeight T X atom absorption = 0 ∧
+                unitAbsorptionTerminalCount T X atom absorption = 1 ∧
+                  unitAbsorptionDeletedGain T X atom absorption = 1 ∧
+                    unitAbsorptionFullGain T X atom absorption = -1)
+    (hliftCollision :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → ∀ collision : LiftCollision,
+            deletedVertexLiftCollision T X atom collision →
+              liftCollisionVertex T X atom collision ∈ deletedPackedBlock T X atom)
+    (hrepair :
+      ∀ T : Finset Vertex, T ∈ retainedTargets → ∀ X : Triple, X ∈ outgoingTriples T →
+        rankThreeHighActive T X → firstNoLeftoverCore T X → ∀ atom : Atom,
+          atom ∈ atomPartition T X → packedAtom T X atom →
+            noLeftoverDeletionRepair T X atom ∧
+              ((∃ absorption : UnitAbsorption, unitStrictAbsorption T X atom absorption) ∨
+                (∃ collision : LiftCollision, deletedVertexLiftCollision T X atom collision)))
+    (hremaining : remainingNoLeftoverDeletionAssumptions) :
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+      collisionStarCenter crossAtomSupport unitAbsorptionHeight unitAbsorptionTerminalCount
+      unitAbsorptionDeletedGain unitAbsorptionFullGain liftCollisionVertex m
+      scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+      terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient
+      oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove
+      sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily fullLift
+      pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton collisionStarDeletion
+      allPairSaturatedPacking pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore
+      unitStrictAbsorption deletedVertexLiftCollision noLeftoverDeletionRepair
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+      deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions :=
+  firstBitTerminalRankThreeNoLeftoverDeletionFrontier_of_pairAtomDeletion
+    (firstBitTerminalRankThreePairAtomDeletionFrontier_of_dichotomy huniversal hbridge hscalar
+      hsmallResolve hlow hrank hterminalClosure hremainingClosure htrace hzero hblocker
+      hdeleteObstruction hatomSub hdisjoint hcard hcount hpackedMem hpureUnion hpureForbidden
+      hpureGain hzeroMove hdeleteSub hdeleteGain hminimalRepair hliftGain hremainingFour hsmall
+      hpair hcollision hsizeTwo hpairDelete hstarSupport hzeroPivot hallPair hsmallAtom
+      hremainingPair)
+    hstrictMarker hcoreMarker hunitMarker hcollisionMarker hdichotomyMarker hcoreFour hpairCap
+    htripleCap hfourCap hstrict hunit hliftCollision hrepair hremaining
+
+end FirstBitTerminalRankThreeNoLeftoverDeletionFrontierConstruction
+
+section FirstBitTerminalRankThreeNoLeftoverDeletionFrontier
+
+variable {Vertex Triple Coord Atom Move RepairFamily Lift PairPivot CollisionStar UnitAbsorption
+  LiftCollision Bridge Thickening Replacement : Type*}
+variable [DecidableEq Vertex] [DecidableEq Triple] [DecidableEq Coord] [DecidableEq Atom]
+variable {coreVertices : Finset Vertex} {activeCoordinates zeroFilter : Finset Coord}
+variable {retainedTargets : Finset (Finset Vertex)}
+variable {outgoingTriples : Finset Vertex → Finset Triple}
+variable {tripleSupport : Triple → Finset Vertex}
+variable {rankThreeSupport complementShadowPacking : Finset Vertex → Triple → Finset Coord}
+variable {atomPartition : Finset Vertex → Triple → Finset Atom}
+variable {atomBlock : Finset Vertex → Triple → Atom → Finset Vertex}
+variable {pureTwoAtomSupport : Finset Vertex → Triple → Atom → Atom → Finset Vertex}
+variable {deletedPackedBlock : Finset Vertex → Triple → Atom → Finset Vertex}
+variable {packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount :
+  Finset Vertex → Triple → ℕ}
+variable {pureTwoAtomGain : Finset Vertex → Triple → Atom → Atom → ℤ}
+variable {liftTotalGain : Finset Vertex → Triple → Atom → RepairFamily → Lift → ℤ}
+variable {deletionGain : Finset Vertex → Triple → Atom → ℤ}
+variable {pairPivotSupport : Finset Vertex → Triple → Atom → PairPivot → Finset Vertex}
+variable {collisionStarSupport collisionStarLeafSet :
+  Finset Vertex → Triple → Atom → CollisionStar → Finset Vertex}
+variable {collisionStarCenter : Finset Vertex → Triple → Atom → CollisionStar → Vertex}
+variable {crossAtomSupport : Finset Vertex → Triple → Finset Atom → Finset Vertex}
+variable {unitAbsorptionHeight unitAbsorptionTerminalCount unitAbsorptionDeletedGain :
+  Finset Vertex → Triple → Atom → UnitAbsorption → ℕ}
+variable {unitAbsorptionFullGain : Finset Vertex → Triple → Atom → UnitAbsorption → ℤ}
+variable {liftCollisionVertex : Finset Vertex → Triple → Atom → LiftCollision → Vertex}
+variable {m : ℕ}
+variable {scalarKilledTerminal smallActiveZeroFilter lowRankBounded rankThreeHighActive
+  terminalResolved rankThreeBridgeObstructed : Finset Vertex → Triple → Prop}
+variable {feasibleComplementShadowPacking capacityDeficient : Finset Vertex → Triple → Prop}
+variable {oneSavingBridge : Finset Vertex → Triple → Bridge → Prop}
+variable {thickeningBlocker : Finset Vertex → Triple → Thickening → Prop}
+variable {replacementBlocker : Finset Vertex → Triple → Replacement → Prop}
+variable {forbiddenSupport : Finset Vertex → Triple → Finset Vertex → Prop}
+variable {zeroGainMove sameTerminalClass : Finset Vertex → Triple → Move → Prop}
+variable {packedAtom sizeTwoPackedAtom : Finset Vertex → Triple → Atom → Prop}
+variable {minimalPositiveRepairFamily : Finset Vertex → Triple → Atom → RepairFamily → Prop}
+variable {fullLift : Finset Vertex → Triple → Atom → RepairFamily → Lift → Prop}
+variable {pairDeletionPivot zeroGainPairPivot sameSizePairExchange :
+  Finset Vertex → Triple → Atom → PairPivot → Prop}
+variable {leftoverSingleton : Finset Vertex → Triple → Atom → PairPivot → Vertex → Prop}
+variable {collisionStarDeletion : Finset Vertex → Triple → Atom → CollisionStar → Prop}
+variable {allPairSaturatedPacking pairDeletionEndpointResolved : Finset Vertex → Triple → Prop}
+variable {strictCrossAtomDefect : Finset Vertex → Triple → Atom → Atom → Prop}
+variable {firstNoLeftoverCore : Finset Vertex → Triple → Prop}
+variable {unitStrictAbsorption : Finset Vertex → Triple → Atom → UnitAbsorption → Prop}
+variable {deletedVertexLiftCollision : Finset Vertex → Triple → Atom → LiftCollision → Prop}
+variable {noLeftoverDeletionRepair : Finset Vertex → Triple → Atom → Prop}
+variable {targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier
+  scalarLowerSwapShadowFrontier fourActiveSingletonOnlyCoverFrontier
+  fullMinorCriticalFilteredCoverFrontier singletonShadowCollapseFrontier
+  tracePinningFrontier rankThreeBridgeObstruction terminalRankThreeClosure
+  zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+  smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+  strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+  deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+  remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+  remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+  remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions : Prop}
+
+variable (h :
+  FirstBitTerminalRankThreeNoLeftoverDeletionFrontier coreVertices activeCoordinates
+    zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+    complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+    packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+    liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+    collisionStarCenter crossAtomSupport unitAbsorptionHeight unitAbsorptionTerminalCount
+    unitAbsorptionDeletedGain unitAbsorptionFullGain liftCollisionVertex m scalarKilledTerminal
+    smallActiveZeroFilter lowRankBounded rankThreeHighActive terminalResolved
+    rankThreeBridgeObstructed feasibleComplementShadowPacking capacityDeficient oneSavingBridge
+    thickeningBlocker replacementBlocker forbiddenSupport zeroGainMove sameTerminalClass
+    packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily fullLift pairDeletionPivot
+    zeroGainPairPivot sameSizePairExchange leftoverSingleton collisionStarDeletion
+    allPairSaturatedPacking pairDeletionEndpointResolved strictCrossAtomDefect firstNoLeftoverCore
+    unitStrictAbsorption deletedVertexLiftCollision noLeftoverDeletionRepair
+    targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+    fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+    singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+    terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+    smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+    strictCrossAtomDefectFrontier firstNoLeftoverCoreFrontier unitStrictAbsorptionFrontier
+    deletedVertexLiftCollisionFrontier noLeftoverDeletionRepairDichotomy
+    remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+    remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+    remainingPairAtomDeletionAssumptions remainingNoLeftoverDeletionAssumptions)
+
+/-- Project the pair-atom deletion frontier underneath the no-leftover layer. -/
+@[simp] theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_pairAtomDeletionFrontier :
+    FirstBitTerminalRankThreePairAtomDeletionFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain pairPivotSupport collisionStarSupport collisionStarLeafSet
+      collisionStarCenter m scalarKilledTerminal smallActiveZeroFilter lowRankBounded
+      rankThreeHighActive terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking
+      capacityDeficient oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport
+      zeroGainMove sameTerminalClass packedAtom sizeTwoPackedAtom minimalPositiveRepairFamily
+      fullLift pairDeletionPivot zeroGainPairPivot sameSizePairExchange leftoverSingleton
+      collisionStarDeletion allPairSaturatedPacking pairDeletionEndpointResolved
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      smallAtomDeletionCorollary pairPivotSaturation collisionStarDeletionOutcome
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions
+      remainingPairAtomDeletionAssumptions :=
+  h.pairAtomDeletionFrontierCert
+
+/-- Project the four-atom bridge-blocker frontier underneath the no-leftover layer. -/
+@[simp] theorem
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_fourAtomBridgeBlockerFrontier :
+    FirstBitTerminalRankThreeFourAtomBridgeBlockerFrontier coreVertices activeCoordinates
+      zeroFilter retainedTargets outgoingTriples tripleSupport rankThreeSupport
+      complementShadowPacking atomPartition atomBlock pureTwoAtomSupport deletedPackedBlock
+      packingSaving bridgeClosingThreshold packedAtomCount looseAtomCount pureTwoAtomGain
+      liftTotalGain deletionGain m scalarKilledTerminal smallActiveZeroFilter lowRankBounded
+      rankThreeHighActive terminalResolved rankThreeBridgeObstructed feasibleComplementShadowPacking
+      capacityDeficient oneSavingBridge thickeningBlocker replacementBlocker forbiddenSupport
+      zeroGainMove sameTerminalClass packedAtom minimalPositiveRepairFamily fullLift
+      targetCoverCoherenceFrontier mixedTernaryCoreClosureFrontier scalarLowerSwapShadowFrontier
+      fourActiveSingletonOnlyCoverFrontier fullMinorCriticalFilteredCoverFrontier
+      singletonShadowCollapseFrontier tracePinningFrontier rankThreeBridgeObstruction
+      terminalRankThreeClosure zeroGainSaturation fourAtomBridgeBlocker deletionRepairFamilyObstruction
+      remainingUniversalDichotomyAssumptions remainingRankThreeBridgeAssumptions
+      remainingRankThreeClosureAssumptions remainingFourAtomBridgeBlockerAssumptions :=
+  h.to_pairAtomDeletionFrontier.to_fourAtomBridgeBlockerFrontier
+
+/-- Project the upstream target-cover coherence surface. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_targetCoverCoherenceFrontier :
+    targetCoverCoherenceFrontier :=
+  h.to_pairAtomDeletionFrontier.to_targetCoverCoherenceFrontier
+
+/-- Project the terminal scalar surface package. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_terminalScalars :
+    FirstBitPacketTerminalScalarFrontierSurfaces :=
+  h.to_pairAtomDeletionFrontier.to_terminalScalars
+
+/-- Project the scalar lower-swap shadow frontier. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_scalarLowerSwapShadowFrontier :
+    scalarLowerSwapShadowFrontier :=
+  h.to_pairAtomDeletionFrontier.to_scalarLowerSwapShadowFrontier
+
+/-- Project the full-minor critical filtered-cover frontier. -/
+theorem
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_fullMinorCriticalFilteredCoverFrontier :
+    fullMinorCriticalFilteredCoverFrontier :=
+  h.to_pairAtomDeletionFrontier.to_fullMinorCriticalFilteredCoverFrontier
+
+/-- Project the singleton-shadow collapse frontier. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_singletonShadowCollapseFrontier :
+    singletonShadowCollapseFrontier :=
+  h.to_pairAtomDeletionFrontier.to_singletonShadowCollapseFrontier
+
+/-- Project the trace-pinning marker. -/
+@[simp] theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_tracePinningFrontier :
+    tracePinningFrontier :=
+  h.to_pairAtomDeletionFrontier.to_tracePinningFrontier
+
+/-- Project the zero-gain saturation/locality marker. -/
+@[simp] theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_zeroGainSaturation :
+    zeroGainSaturation :=
+  h.to_pairAtomDeletionFrontier.to_zeroGainSaturation
+
+/-- Project the strict cross-atom defect marker. -/
+@[simp] theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_strictCrossAtomDefectFrontier :
+    strictCrossAtomDefectFrontier :=
+  h.strictCrossAtomDefectFrontierCert
+
+/-- Project the first no-leftover core marker. -/
+@[simp] theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_firstNoLeftoverCoreFrontier :
+    firstNoLeftoverCoreFrontier :=
+  h.firstNoLeftoverCoreFrontierCert
+
+/-- Project the unit strict absorption marker. -/
+@[simp] theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_unitStrictAbsorptionFrontier :
+    unitStrictAbsorptionFrontier :=
+  h.unitStrictAbsorptionFrontierCert
+
+/-- Project the deleted-vertex lift-collision marker. -/
+@[simp] theorem
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_deletedVertexLiftCollisionFrontier :
+    deletedVertexLiftCollisionFrontier :=
+  h.deletedVertexLiftCollisionFrontierCert
+
+/-- Project the no-leftover deletion-repair dichotomy marker. -/
+@[simp] theorem
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_noLeftoverDeletionRepairDichotomy :
+    noLeftoverDeletionRepairDichotomy :=
+  h.noLeftoverDeletionRepairDichotomyCert
+
+/-- Project the packed-atom deletion repair-family obstruction marker. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_deletionRepairFamilyObstruction :
+    deletionRepairFamilyObstruction :=
+  h.to_fourAtomBridgeBlockerFrontier.to_deletionRepairFamilyObstruction
+
+/-- Project the rank-three terminal closure marker. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_terminalRankThreeClosure :
+    terminalRankThreeClosure :=
+  h.to_pairAtomDeletionFrontier.to_terminalRankThreeClosure
+
+/-- Project the retained pair-atom deletion assumptions. -/
+theorem
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_remainingPairAtomDeletionAssumptions :
+    remainingPairAtomDeletionAssumptions :=
+  h.to_pairAtomDeletionFrontier.to_remainingPairAtomDeletionAssumptions
+
+/-- Project the retained four-atom bridge-blocker assumptions. -/
+theorem
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_remainingFourAtomBridgeBlockerAssumptions :
+    remainingFourAtomBridgeBlockerAssumptions :=
+  h.to_fourAtomBridgeBlockerFrontier.to_remainingFourAtomBridgeBlockerAssumptions
+
+/-- Project the retained rank-three closure assumptions. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_remainingRankThreeClosureAssumptions :
+    remainingRankThreeClosureAssumptions :=
+  h.to_fourAtomBridgeBlockerFrontier.to_bridgeClosureFrontier.to_remainingRankThreeClosureAssumptions
+
+/-- Project the retained rank-three bridge assumptions. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_remainingRankThreeBridgeAssumptions :
+    remainingRankThreeBridgeAssumptions :=
+  (h.to_fourAtomBridgeBlockerFrontier.to_rankThreeBridgeObstructionFrontier).to_remainingRankThreeBridgeAssumptions
+
+/-- Project the retained universal dichotomy assumptions. -/
+theorem
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_remainingUniversalDichotomyAssumptions :
+    remainingUniversalDichotomyAssumptions :=
+  (h.to_fourAtomBridgeBlockerFrontier.to_universalDichotomyFrontier).to_remainingUniversalDichotomyAssumptions
+
+/-- Project the retained no-leftover deletion assumptions. -/
+theorem
+    FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.to_remainingNoLeftoverDeletionAssumptions :
+    remainingNoLeftoverDeletionAssumptions :=
+  h.remainingNoLeftoverDeletionAssumptionsCert
+
+/-- Summarize the first no-leftover four-four atom core and its cross-support caps. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.firstNoLeftoverCore_summary
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X) :
+    (atomPartition T X).card = 4 ∧
+      (∀ atom : Atom, atom ∈ atomPartition T X → (atomBlock T X atom).card = 4) ∧
+        (∀ atoms : Finset Atom, atoms ⊆ atomPartition T X → atoms.card = 2 →
+          (crossAtomSupport T X atoms).card ≤ 6) ∧
+          (∀ atoms : Finset Atom, atoms ⊆ atomPartition T X → atoms.card = 3 →
+            (crossAtomSupport T X atoms).card ≤ 9) ∧
+            ∀ atoms : Finset Atom, atoms ⊆ atomPartition T X → atoms.card = 4 →
+              (crossAtomSupport T X atoms).card ≤ 12 :=
+  ⟨(h.firstNoLeftoverCore_four_atoms T hT X hX hrank hcore).1,
+    (h.firstNoLeftoverCore_four_atoms T hT X hX hrank hcore).2,
+    h.firstNoLeftoverCore_crossSupport_pair_cap T hT X hX hrank hcore,
+    h.firstNoLeftoverCore_crossSupport_triple_cap T hT X hX hrank hcore,
+    h.firstNoLeftoverCore_crossSupport_four_cap T hT X hX hrank hcore⟩
+
+/-- Strict cross-atom defect for distinct atoms in a no-leftover core. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.strictCrossAtomDefect_of_distinct
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {a b : Atom} (ha : a ∈ atomPartition T X) (hb : b ∈ atomPartition T X) (hne : a ≠ b) :
+    strictCrossAtomDefect T X a b :=
+  h.strictCrossAtomDefect_of_noLeftover_pair T hT X hX hrank hcore a ha b hb hne
+
+/-- Unit strict absorption has terminal scalars `h = 0`, `t = 1`, `g⁻ = 1`, and full gain `-1`. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.unitStrictAbsorption_summary
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X)
+    {absorption : UnitAbsorption} (habs : unitStrictAbsorption T X atom absorption) :
+    unitAbsorptionHeight T X atom absorption = 0 ∧
+      unitAbsorptionTerminalCount T X atom absorption = 1 ∧
+        unitAbsorptionDeletedGain T X atom absorption = 1 ∧
+          unitAbsorptionFullGain T X atom absorption = -1 :=
+  h.unitStrictAbsorption_scalars T hT X hX hrank hcore atom hatom absorption habs
+
+/-- Deleted-vertex lift collisions are pinned to the deleted packed block. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.liftCollision_deletedVertex
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X)
+    {collision : LiftCollision} (hcollision : deletedVertexLiftCollision T X atom collision) :
+    liftCollisionVertex T X atom collision ∈ deletedPackedBlock T X atom :=
+  h.liftCollision_deletedVertex T hT X hX hrank hcore atom hatom collision hcollision
+
+/-- No-leftover deletion repair is exactly the unit strict absorption / lift-collision dichotomy. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.deletion_repair_dichotomy_of_noLeftoverCore
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    (hcore : firstNoLeftoverCore T X)
+    {atom : Atom} (hatom : atom ∈ atomPartition T X) (hpacked : packedAtom T X atom) :
+    noLeftoverDeletionRepair T X atom ∧
+      ((∃ absorption : UnitAbsorption, unitStrictAbsorption T X atom absorption) ∨
+        (∃ collision : LiftCollision, deletedVertexLiftCollision T X atom collision)) :=
+  h.noLeftoverDeletion_repair_dichotomy T hT X hX hrank hcore atom hatom hpacked
+
+/-- Reuse the packed-atom deletion repair-family obstruction through the no-leftover layer. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.deletion_repairFamily_summary
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) (hrank : rankThreeHighActive T X)
+    {atom : Atom} (hpacked : packedAtom T X atom) :
+    atom ∈ atomPartition T X ∧ deletedPackedBlock T X atom ⊆ atomBlock T X atom ∧
+      0 < deletionGain T X atom ∧
+        (∃ repair : RepairFamily, minimalPositiveRepairFamily T X atom repair) ∧
+          (∀ repair : RepairFamily, minimalPositiveRepairFamily T X atom repair →
+            ∀ lift : Lift, fullLift T X atom repair lift →
+              liftTotalGain T X atom repair lift ≤ 0) :=
+  h.to_pairAtomDeletionFrontier.deletion_repairFamily_summary hT hX hrank hpacked
+
+/-- Apply the rank-three closure through the no-leftover layer. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.closure_outcome_of_mem
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) :
+    terminalResolved T X ∨ rankThreeBridgeObstructed T X :=
+  h.to_pairAtomDeletionFrontier.closure_outcome_of_mem hT hX
+
+/-- Apply the universal terminal dichotomy through the no-leftover layer. -/
+theorem FirstBitTerminalRankThreeNoLeftoverDeletionFrontier.universalDichotomy_of_mem
+    {T : Finset Vertex} (hT : T ∈ retainedTargets)
+    {X : Triple} (hX : X ∈ outgoingTriples T) :
+    scalarKilledTerminal T X ∨ smallActiveZeroFilter T X ∨
+      (m ≤ 16 ∧ lowRankBounded T X) ∨ rankThreeHighActive T X :=
+  h.to_pairAtomDeletionFrontier.universalDichotomy_of_mem hT hX
+
+end FirstBitTerminalRankThreeNoLeftoverDeletionFrontier
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
