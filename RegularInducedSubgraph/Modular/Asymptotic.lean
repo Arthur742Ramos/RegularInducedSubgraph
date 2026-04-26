@@ -1,3 +1,4 @@
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Sqrt
@@ -5,6 +6,7 @@ import RegularInducedSubgraph.Modular.Cascade
 import RegularInducedSubgraph.Modular.Frontier
 
 open Filter
+open scoped BigOperators
 
 namespace RegularInducedSubgraph
 
@@ -4475,6 +4477,54 @@ theorem augmentedOneThreeAtomRegular_three_iff
   · rintro ⟨hτbitEq, hσbitEq, hυbitEq, hτσEq, hτυEq, hσυEq⟩
     refine ⟨?_, ?_, ?_, ?_⟩ <;> omega
 
+/--
+Equation form of a mixed `3+1` augmented-fiber atom: three boundary vertices with boundary
+edge-statuses `e01`, `e02`, `e12` and one retained vertex of type `τ`.
+-/
+def AugmentedThreeOneAtomRegular (d e01 e02 e12 : ℕ) (τ : Fin 8) : Prop :=
+  e01 + e02 + boundaryTripleBit τ (0 : Fin 3) = d ∧
+    e01 + e12 + boundaryTripleBit τ (1 : Fin 3) = d ∧
+      e02 + e12 + boundaryTripleBit τ (2 : Fin 3) = d ∧
+        boundaryTripleBit τ (0 : Fin 3) + boundaryTripleBit τ (1 : Fin 3) +
+          boundaryTripleBit τ (2 : Fin 3) = d
+
+/-- The independent-boundary `d=0` row of the augmented `3+1` sieve. -/
+theorem augmentedThreeOneAtomRegular_independent_zero_iff (τ : Fin 8) :
+    AugmentedThreeOneAtomRegular 0 0 0 0 τ ↔
+      boundaryTripleBit τ (0 : Fin 3) = 0 ∧
+        boundaryTripleBit τ (1 : Fin 3) = 0 ∧
+          boundaryTripleBit τ (2 : Fin 3) = 0 := by
+  unfold AugmentedThreeOneAtomRegular
+  constructor
+  · rintro ⟨h0, h1, h2, _hτ⟩
+    refine ⟨?_, ?_, ?_⟩ <;> omega
+  · rintro ⟨h0, h1, h2⟩
+    refine ⟨?_, ?_, ?_, ?_⟩ <;> omega
+
+/-- The triangle-boundary `d=3` row of the augmented `3+1` sieve. -/
+theorem augmentedThreeOneAtomRegular_triangle_three_iff (τ : Fin 8) :
+    AugmentedThreeOneAtomRegular 3 1 1 1 τ ↔
+      boundaryTripleBit τ (0 : Fin 3) = 1 ∧
+        boundaryTripleBit τ (1 : Fin 3) = 1 ∧
+          boundaryTripleBit τ (2 : Fin 3) = 1 := by
+  have h0le : boundaryTripleBit τ (0 : Fin 3) ≤ 1 := boundaryTripleBit_le_one τ 0
+  have h1le : boundaryTripleBit τ (1 : Fin 3) ≤ 1 := boundaryTripleBit_le_one τ 1
+  have h2le : boundaryTripleBit τ (2 : Fin 3) ≤ 1 := boundaryTripleBit_le_one τ 2
+  unfold AugmentedThreeOneAtomRegular
+  constructor
+  · rintro ⟨h0, h1, h2, hτ⟩
+    refine ⟨?_, ?_, ?_⟩ <;> omega
+  · rintro ⟨h0, h1, h2⟩
+    refine ⟨?_, ?_, ?_, ?_⟩ <;> omega
+
+/-- The all-miss boundary type has zero bits. -/
+lemma boundaryTripleBit_zero (i : Fin 3) : boundaryTripleBit (0 : Fin 8) i = 0 := by
+  fin_cases i <;> decide
+
+/-- The all-hit boundary type has one bits. -/
+lemma boundaryTripleBit_seven (i : Fin 3) : boundaryTripleBit (7 : Fin 8) i = 1 := by
+  fin_cases i <;> decide
+
 /-- A repaired-residue spectrum is full when it contains all four regular four-vertex residues. -/
 def ContainsAllFourResidues (spectrum : Finset ℕ) : Prop :=
   0 ∈ spectrum ∧ 1 ∈ spectrum ∧ 2 ∈ spectrum ∧ 3 ∈ spectrum
@@ -4483,6 +4533,41 @@ lemma ContainsAllFourResidues.mem_of_lt_four {spectrum : Finset ℕ} {d : ℕ}
     (hfull : ContainsAllFourResidues spectrum) (hd : d < 4) : d ∈ spectrum := by
   rcases hfull with ⟨h0, h1, h2, h3⟩
   interval_cases d <;> assumption
+
+/-- Every three-bit boundary type has two equal coordinates. -/
+lemma exists_boundaryTripleBit_eq_pair (τ : Fin 8) :
+    ∃ i k : Fin 3, i ≠ k ∧ boundaryTripleBit τ i = boundaryTripleBit τ k := by
+  fin_cases τ <;> decide
+
+/--
+Independent-boundary `{0,2}` branch: repaired residue `0` forbids the all-miss type via the
+augmented `3+1` atom.
+-/
+theorem augmentedThreeOne_independentBoundary_forbidden_zeroType
+    {spectrum : Finset ℕ} (hzero : 0 ∈ spectrum)
+    (hforbid :
+      ∀ d ∈ spectrum, ¬ AugmentedThreeOneAtomRegular d 0 0 0 (0 : Fin 8)) :
+    False := by
+  have hatom : AugmentedThreeOneAtomRegular 0 0 0 0 (0 : Fin 8) := by
+    exact
+      (augmentedThreeOneAtomRegular_independent_zero_iff (0 : Fin 8)).2
+        ⟨boundaryTripleBit_zero 0, boundaryTripleBit_zero 1, boundaryTripleBit_zero 2⟩
+  exact hforbid 0 hzero hatom
+
+/--
+Triangle-boundary `{3,1}` complement branch: repaired residue `3` forbids the all-hit type via the
+augmented `3+1` atom.
+-/
+theorem augmentedThreeOne_triangleBoundary_forbidden_sevenType
+    {spectrum : Finset ℕ} (hthree : 3 ∈ spectrum)
+    (hforbid :
+      ∀ d ∈ spectrum, ¬ AugmentedThreeOneAtomRegular d 1 1 1 (7 : Fin 8)) :
+    False := by
+  have hatom : AugmentedThreeOneAtomRegular 3 1 1 1 (7 : Fin 8) := by
+    exact
+      (augmentedThreeOneAtomRegular_triangle_three_iff (7 : Fin 8)).2
+        ⟨boundaryTripleBit_seven 0, boundaryTripleBit_seven 1, boundaryTripleBit_seven 2⟩
+  exact hforbid 3 hthree hatom
 
 /--
 Same-type `2+2` sieve rule.  If an equal-bit boundary pair has its matching repaired
@@ -4518,6 +4603,148 @@ theorem augmentedTwoTwoSameType_forces_opposite_of_residue_forbidden
           hdge τ τ i k).2
           ⟨hεe, hcross'⟩
     exact hforbid (e + 2 * boundaryTripleBit τ i) hres hatom
+  omega
+
+/--
+Independent-boundary `{0,2}` same-type rule.  If the boundary pair is a nonedge and its two bits
+agree, residues `0` and `2` force every retained same-type pair to be adjacent.
+-/
+theorem augmentedTwoTwoSameType_forces_clique_of_zeroTwo_independentBoundary
+    {spectrum : Finset ℕ} {ε : ℕ} {τ : Fin 8} {i k : Fin 3}
+    (hzero : 0 ∈ spectrum) (htwo : 2 ∈ spectrum) (hε : ε ≤ 1)
+    (hbits : boundaryTripleBit τ i = boundaryTripleBit τ k)
+    (hforbid :
+      ∀ d ∈ spectrum, ¬ AugmentedTwoTwoAtomRegular d 0 ε τ τ i k) :
+    ε = 1 := by
+  have hbit : boundaryTripleBit τ i ≤ 1 := boundaryTripleBit_le_one τ i
+  have hres : 0 + 2 * boundaryTripleBit τ i ∈ spectrum := by
+    have hlt : boundaryTripleBit τ i < 2 := by omega
+    interval_cases boundaryTripleBit τ i
+    · simpa using hzero
+    · simpa using htwo
+  have hopp :
+      ε + 0 = 1 :=
+    augmentedTwoTwoSameType_forces_opposite_of_residue_forbidden
+      (spectrum := spectrum) (e := 0) (ε := ε) (τ := τ) (i := i) (k := k)
+      (by decide : 0 ≤ 1) hε hbits hres hforbid
+  omega
+
+/--
+Triangle-boundary `{3,1}` same-type rule.  If the boundary pair is an edge and its two bits agree,
+residues `1` and `3` force every retained same-type pair to be nonadjacent.
+-/
+theorem augmentedTwoTwoSameType_forces_independent_of_oneThree_triangleBoundary
+    {spectrum : Finset ℕ} {ε : ℕ} {τ : Fin 8} {i k : Fin 3}
+    (hone : 1 ∈ spectrum) (hthree : 3 ∈ spectrum) (hε : ε ≤ 1)
+    (hbits : boundaryTripleBit τ i = boundaryTripleBit τ k)
+    (hforbid :
+      ∀ d ∈ spectrum, ¬ AugmentedTwoTwoAtomRegular d 1 ε τ τ i k) :
+    ε = 0 := by
+  have hbit : boundaryTripleBit τ i ≤ 1 := boundaryTripleBit_le_one τ i
+  have hres : 1 + 2 * boundaryTripleBit τ i ∈ spectrum := by
+    have hlt : boundaryTripleBit τ i < 2 := by omega
+    interval_cases boundaryTripleBit τ i
+    · simpa using hone
+    · simpa using hthree
+  have hopp :
+      ε + 1 = 1 :=
+    augmentedTwoTwoSameType_forces_opposite_of_residue_forbidden
+      (spectrum := spectrum) (e := 1) (ε := ε) (τ := τ) (i := i) (k := k)
+      (by decide : 1 ≤ 1) hε hbits hres hforbid
+  omega
+
+/--
+Every boundary type has a repeated coordinate, so in the independent-boundary `{0,2}` branch the
+same-type `2+2` sieve makes every surviving type class a clique.
+-/
+theorem augmentedTwoTwoSameType_forces_clique_of_zeroTwo_independentBoundary_allPairs
+    {spectrum : Finset ℕ} {ε : ℕ} {τ : Fin 8}
+    (hzero : 0 ∈ spectrum) (htwo : 2 ∈ spectrum) (hε : ε ≤ 1)
+    (hforbid :
+      ∀ i k : Fin 3, i ≠ k →
+        ∀ d ∈ spectrum, ¬ AugmentedTwoTwoAtomRegular d 0 ε τ τ i k) :
+    ε = 1 := by
+  rcases exists_boundaryTripleBit_eq_pair τ with ⟨i, k, hik, hbits⟩
+  exact
+    augmentedTwoTwoSameType_forces_clique_of_zeroTwo_independentBoundary
+      hzero htwo hε hbits (hforbid i k hik)
+
+/--
+Complementary all-pairs form: in the triangle-boundary `{3,1}` branch every surviving type class is
+independent.
+-/
+theorem augmentedTwoTwoSameType_forces_independent_of_oneThree_triangleBoundary_allPairs
+    {spectrum : Finset ℕ} {ε : ℕ} {τ : Fin 8}
+    (hone : 1 ∈ spectrum) (hthree : 3 ∈ spectrum) (hε : ε ≤ 1)
+    (hforbid :
+      ∀ i k : Fin 3, i ≠ k →
+        ∀ d ∈ spectrum, ¬ AugmentedTwoTwoAtomRegular d 1 ε τ τ i k) :
+    ε = 0 := by
+  rcases exists_boundaryTripleBit_eq_pair τ with ⟨i, k, hik, hbits⟩
+  exact
+    augmentedTwoTwoSameType_forces_independent_of_oneThree_triangleBoundary
+      hone hthree hε hbits (hforbid i k hik)
+
+/--
+Finite seven-type cap used by the independent-boundary `{0,2}` branch: if type `000` is absent and
+each of the other seven type fibers has size at most `m`, then the whole fiber has size at most `7m`.
+-/
+theorem sparseZeroTwoIndependentBoundary_seven_type_cap
+    {α : Type*} (S : Finset α) (τ : α → Fin 8) (m : ℕ)
+    (hzero : ∀ x ∈ S, τ x ≠ (0 : Fin 8))
+    (hsmall :
+      ∀ t : Fin 8, t ≠ (0 : Fin 8) →
+        (S.filter fun x => τ x = t).card ≤ m) :
+    S.card ≤ 7 * m := by
+  classical
+  let T : Finset (Fin 8) := Finset.univ.erase (0 : Fin 8)
+  have hmaps : (S : Set α).MapsTo τ T := by
+    intro x hx
+    simp [T, hzero x hx]
+  have hcard :
+      S.card = ∑ t in T, (S.filter fun x => τ x = t).card := by
+    simpa using
+      (Finset.card_eq_sum_card_fiberwise (f := τ) (s := S) (t := T) hmaps)
+  have hsum_le : (∑ t in T, (S.filter fun x => τ x = t).card) ≤ ∑ _t in T, m := by
+    exact
+      Finset.sum_le_sum (fun t ht => by
+        have ht0 : t ≠ (0 : Fin 8) := by
+          simpa [T] using ht
+        exact hsmall t ht0)
+  have hconst : (∑ _t in T, m) = T.card * m := by
+    simpa using
+      (Finset.sum_const_nat (s := T) (m := m) (f := fun _ : Fin 8 => m)
+        (by intro t ht; rfl))
+  have hTcard : T.card = 7 := by
+    simp [T]
+  calc
+    S.card = ∑ t in T, (S.filter fun x => τ x = t).card := hcard
+    _ ≤ ∑ _t in T, m := hsum_le
+    _ = T.card * m := hconst
+    _ = 7 * m := by rw [hTcard]
+
+/--
+Pigeonhole form of the same cap.  A fiber larger than `7m` either contains the forbidden type `000`
+or has a nonzero boundary-type class larger than `m`.
+-/
+theorem sparseZeroTwoIndependentBoundary_large_fiber_forces_zeroType_or_large_nonzero_type
+    {α : Type*} (S : Finset α) (τ : α → Fin 8) {m : ℕ}
+    (hlarge : 7 * m < S.card) :
+    (∃ x ∈ S, τ x = (0 : Fin 8)) ∨
+      ∃ t : Fin 8, t ≠ (0 : Fin 8) ∧
+        m < (S.filter fun x => τ x = t).card := by
+  classical
+  by_contra hno
+  have hzero : ∀ x ∈ S, τ x ≠ (0 : Fin 8) := by
+    intro x hx hτ
+    exact hno (Or.inl ⟨x, hx, hτ⟩)
+  have hsmall :
+      ∀ t : Fin 8, t ≠ (0 : Fin 8) →
+        (S.filter fun x => τ x = t).card ≤ m := by
+    intro t ht0
+    by_contra hle
+    exact hno (Or.inr ⟨t, ht0, Nat.lt_of_not_ge hle⟩)
+  have hcap := sparseZeroTwoIndependentBoundary_seven_type_cap S τ m hzero hsmall
   omega
 
 /-- Full-spectrum corollary of the same-type `2+2` rule. -/
