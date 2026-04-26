@@ -1962,9 +1962,16 @@ Recommended attack:
    `h_X(g)+h_X(-g)=4 supp(g)` and terminality imply `4 supp(g)<=|S|+2d`.  At deficit zero this forbids
    two-sided-compatible cuts in blocks of size below four and restricts four-block cuts to one coordinate.
    Formalize the four-block corollary: if a deficit-zero minimal four-block has all singleton and pair
-   cuts two-sided-compatible, then all four old-coordinate values lie in one coordinate, and minimality
-   leaves only `e_i^4` or `(-e_i)^4`.  These cyclic atoms have no boundary-height gain on cuts, so their
-   remaining obstruction is purely self-layer residue.
+   cuts two-sided-compatible, then all four old-coordinate values are the same positive boundary basis
+   element, so the block is `e_i^4`.  The singleton height test excludes `(-e_i)^4`, because one exported
+   `-e_i` imports three boundary copies and gains two vertices.  The positive atom has no boundary-height
+   gain on cuts, so its remaining obstruction is purely self-layer residue.
+   Formalize the local reroot table for that atom.  With retained atom `S_i=e_i^4` and boundary triple
+   `X_i=e_i^3`, set `R_i=S_i union X_i`.  Every size-preserving old-coordinate reroot is a four-set
+   `T subset R_i`.  For fixed selected remainder `A`, the full reroot test is existence of `R` such that
+   `M_A(a)+deg_T(a)=R` on `A` and `L_A(v)+deg_T(v)=R` on `T`; equivalently, for the omitted triple
+   `O=R_i\T`, use `deg_T=deg_{R_i}-deg_O` in both lines.  The positive atom is therefore a seven-vertex
+   omission table plus a constant-column condition on `A`.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

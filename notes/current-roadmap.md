@@ -4910,8 +4910,13 @@ For an old-balanced retained block `S`, a proper cut `Y` with both sides graph-c
 `4 supp(sigma(Y))<=|S|+2d`, since `h_X(g)+h_X(-g)=4 supp(g)`.  Thus deficit-zero compatible cuts below
 size four disappear, and four-block cuts are one-coordinate.
 If all singleton and pair cuts of a deficit-zero minimal four-block are two-sided-compatible, the block is
-forced to be a one-coordinate cyclic atom `e_i^4` or `(-e_i)^4`; remaining obstruction there is
-self-layer residue only.
+forced to be the positive one-coordinate cyclic atom `e_i^4`; the negative atom is killed by the
+singleton height gain.  Remaining obstruction there is self-layer residue only.
+For that atom, the retained four-set plus the boundary triple is a seven-vertex coordinate reservoir
+`R_i`.  Every size-preserving old-coordinate reroot is a four-set `T subset R_i`; with fixed selected
+remainder `A`, the test is `M_A+deg_T=R` on `A` and `L_A+deg_T=R` on `T`, or equivalently a labelled
+omitted-triple table using `deg_T=deg_{R_i}-deg_O`.  The positive-atom residue is therefore a seven-point
+table plus one constant-column condition.
 
 ## Supporting work that is useful but not on the critical path
 

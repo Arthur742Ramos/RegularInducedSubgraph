@@ -1499,9 +1499,18 @@ identity `h_X(g)+h_X(-g)=4 supp(g)` and the two terminal inequalities give
 `4 supp(g)<=|S|+2d`.  Hence deficit-zero two-sided-compatible cuts in blocks of size below four are
 impossible, and four-block cuts must be supported on one boundary coordinate.
 If a deficit-zero minimal four-block has all singleton and pair cuts two-sided-compatible, it is forced
-into one coordinate: singleton cuts have support one, pair cuts forbid two different coordinates, and
-minimality leaves only the cyclic atoms `e_i^4` or `(-e_i)^4`.  Such atoms have zero boundary-height gain
-on every cut; any obstruction they leave is self-layer residue, not coordinate arithmetic.
+into the positive one-coordinate atom `e_i^4`: singleton cuts have height at most one, hence value `e_i`,
+and pair cuts forbid two different coordinates.  The negative atom `(-e_i)^4` is excluded because a
+compatible singleton export would import three boundary copies and gain two vertices.  The positive atom
+has zero boundary-height gain on every cut; any obstruction it leaves is self-layer residue, not
+coordinate arithmetic.
+For a positive atom, combine the retained four-set `S_i=e_i^4` with the boundary triple `X_i=e_i^3`.
+Every size-preserving old-coordinate reroot is a four-set `T subset R_i=S_i union X_i`, `|R_i|=7`.
+With `A` the fixed selected remainder, the full reroot test is:
+`M_A(a)+deg_T(a)=R` on `A` and `L_A(v)+deg_T(v)=R` on `T`.  Equivalently, for the omitted triple
+`O=R_i\T`, replace `deg_T` by `deg_{R_i}-deg_O`.  Hence the final positive-atom residue is a labelled
+seven-vertex omission table coupled to one constant-column condition on the fixed remainder, not a
+group-theoretic boundary problem.
 
 So the remaining input is an inverse/stability theorem for value-coupled zero-sum-free boundaries,
 not another ordinary zero-sum extraction.

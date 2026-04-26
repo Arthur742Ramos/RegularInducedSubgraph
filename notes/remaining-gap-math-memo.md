@@ -1662,7 +1662,12 @@ If `S` is old-balanced and a cut `Y` plus its complement are both graph-compatib
 `4 supp(sigma(Y))<=|S|+2d`.  Hence deficit-zero two-sided-compatible cuts in blocks of size less than
 four are impossible, and four-block cuts live on a single coordinate.
 A deficit-zero minimal four-block with all singleton and pair cuts two-sided-compatible is therefore only
-`e_i^4` or `(-e_i)^4`; it has no boundary-height gain and leaves only self-layer residue.
+the positive atom `e_i^4`; the negative atom is killed by singleton height gain, and the remaining
+obstruction is self-layer residue.
+For this atom, `S_i=e_i^4` together with the boundary triple `X_i=e_i^3` forms a seven-point reservoir.
+Every same-size old-coordinate reroot is a four-set `T`; with fixed selected remainder `A`, it must
+satisfy `M_A+deg_T=R` on `A` and `L_A+deg_T=R` on `T`.  In omitted-triple form this is the
+seven-point table obtained from `deg_T=deg_{R_i}-deg_O`, plus a constant-column condition on `A`.
 
 ## 14. Pair-chamber orientation normal form
 

@@ -8458,18 +8458,56 @@ single boundary coordinate.  This turns the old `3+1`/`2+2` append tables into a
 coordinate test rather than an unrestricted finite search.
 
 In particular, a deficit-zero minimal four-block whose singleton and pair cuts are all two-sided
-compatible is forced into one boundary coordinate.  Singleton cuts give `supp(sigma(y))=1` for every
-vertex of the block; pair cuts then forbid two vertices from using different coordinates, since their
-pair value would have support two.  Minimality rules out a proper zero-sum pair, so the one-coordinate
-block is one of the cyclic atoms
+compatible is forced into one boundary coordinate with the positive boundary orientation.  The singleton
+height inequality gives `h_X(sigma(y))<=1`; since minimality rules out `sigma(y)=0`, every singleton has
+value exactly `e_i` for some coordinate.  Pair cuts then forbid two vertices from using different
+coordinates, since their pair value would have support two.  Hence the block is the single cyclic atom
 
 ```text
-e_i,e_i,e_i,e_i        or        -e_i,-e_i,-e_i,-e_i.
+e_i,e_i,e_i,e_i.
 ```
 
-Thus the exact-top four-block residual is either label-incompatible on some cut, or it is a one-coordinate
-cyclic atom with no hidden multi-coordinate import.  The latter has zero height gain on every cut, so it
-can obstruct enlargement only by self-layer residue, not by boundary-coordinate arithmetic.
+The negative atom `(-e_i)^4` is excluded by the singleton height test, since exporting one vertex would
+import three boundary copies and gain two vertices.  Thus the exact-top four-block residual is either
+label-incompatible on some cut, or it is the positive one-coordinate cyclic atom with no hidden
+multi-coordinate import.  That atom has zero height gain on every cut, so it can obstruct enlargement
+only by self-layer residue, not by boundary-coordinate arithmetic.
+
+For such a positive atom the remaining self-layer table is completely local.  Let `X_i` be the three
+boundary copies of `e_i`, let `S_i` be the retained atom `e_i^4`, and put
+
+```text
+R_i=S_i union X_i,        |R_i|=7.
+```
+
+Every size-preserving old-coordinate reroot of `S_i` is exactly a four-set `T subset R_i`; all four-set
+sums are `0` in the old coordinate group.  Let `A` be the fixed selected remainder.  The reroot has two
+ordinary self-layer lines: the remainder vertices must see the new four-set by one common correction, and
+the four chosen coordinate vertices must hit the same residue.  Equivalently, for some residue `R`,
+
+```text
+M_A(a)+deg_T(a)=R             for every a in A,
+L_A(v)+deg_T(v)=R             for every v in T,             [MOD 4]
+```
+
+where `M_A` and `L_A` collect all contributions not coming from `T`.  In omitted-triple form
+`O=R_i\T`, this is
+
+```text
+M_A(a)+deg_{R_i}(a)-deg_O(a)=R        for every a in A,
+L_A(v)+deg_{R_i}(v)-deg_O(v)=R        for every v in R_i\O. [MOD 4]
+```
+
+The second line alone is the internal coordinate-atom table:
+
+```text
+L_A(v)+deg_{R_i}(v)-deg_O(v) = constant        for every v in R_i\O.        [MOD 4]
+```
+
+Thus the last exact-top positive-atom residue is a labelled seven-vertex omission table coupled to one
+constant-column condition on the fixed remainder.  One must rule out, or exploit, the possibility that
+every omitted triple fails one of these displayed congruences.  This is a rerooting problem rather than a
+Davenport problem; the group arithmetic has disappeared.
 
 Thus a plausible final route is now precise: prove a stability/inverse-Davenport boundary theorem
 adapted to the value-coupled exchange.  The required input is not another zero-sum existence theorem;
