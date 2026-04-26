@@ -6515,6 +6515,30 @@ distance-three packing of at least three spine vertices.  This is the next targe
 robust degree-three into either an independent set larger than `m` or another congruent induced
 subgraph.
 
+There is a complementary cover from a maximal induced matching.  Let `M` be a maximum induced matching
+in the same terminal girth-five `H`, and let `U` be its endpoint set.  Terminality gives `|U|<=m`.
+The vertices outside the closed neighbourhood of `U` form an independent set: if two such vertices were
+adjacent, their edge could be added to `M` and would still be induced.  Hence this undominated set has
+size at most `m`.
+
+The dominated remainder is controlled by its trace on `U`.  For a matching edge `uu' in M`, the
+vertices whose only neighbour in `U` is `u`, together with those whose only neighbour in `U` is `u'`,
+form an independent set: same-side pairs share a neighbour, and a cross-edge would make the induced
+`C_4` `x-u-u'-y-x`.  Thus each matched pair supports at most `m` private vertices.  Vertices with at
+least two neighbours in `U` are pair-incidences over the endpoint set: no vertex hits both ends of one
+matching edge, and for every unordered pair `{a,b} subset U` there is at most one outside vertex adjacent
+to both `a` and `b`; two such vertices would be nonadjacent by triangle-freeness and would form a
+`C_4` with `a,b`.  Consequently all large mass not already bounded by the independent set or private
+classes lies in a simple pair-incidence cloud over at most `m` endpoints.
+
+This cloud has its own adjacency restrictions.  Two cloud vertices can be adjacent only if their traces
+on `U` are disjoint and do not hit opposite ends of a matching edge; otherwise a common endpoint gives a
+triangle, and opposite endpoints `u,u'` give the `C_4` `q-u-u'-q'-q`.  Thus any remaining large one-type
+counterexample has been reduced to a `C_4`-free, triangle-free graph whose nontrivial vertices are
+labelled by distinct pairs or larger matchings in an `m`-point matched ground set, with adjacency allowed
+only between labels that avoid the matching-neighbour conflict.  Closing this pair-incidence cloud is
+now the precise large-girth residual.
+
 For support at most four, either the support contains a square face, in which case the face `C_4`
 condition applies, or it is a forest subgraph of the cube.  The forest-support case is again a bounded
 tree of type classes with anti-complete nonedges; any parity side of size three is clique-bounded by the
@@ -6529,14 +6553,14 @@ same independent-pair argument applies.  Therefore a forest support has at most 
 classes, and if there are two then they are adjacent in the cube; all other supported types are cliques
 of size at most `m`.
 
-This leaves only two adjacent-type residuals.  If the adjacent types share a zero coordinate, their
-union lies in a single miss class `M_x`, so its independence number is at most two; any large same-type
-piece falls under the one-type girth-five complement argument, while the balanced two-type union remains
-a smaller shared-miss edge problem.  If they share no zero coordinate, then up to symmetry the pair is
-`111`--`110`: the lower type lies in one miss class, and every vertex of that lower type has a clique
-neighbourhood in the all-hit type by the one-corner rule.  Thus the support-at-most-four branch reduces
-to the one-type girth-five selector or to one of these two adjacent-edge incidence problems, plus at most
-`2m` clique-bounded spill.
+This leaves only one genuinely new adjacent-type residual.  If the adjacent types share a zero
+coordinate, their union lies in a single miss class `M_x`, so the whole union has independence number at
+most two; since the ambient direction is induced-`C_4`-free, complementing this union gives exactly the
+same girth-five selector already isolated above.  If the adjacent types share no zero coordinate, then
+up to symmetry the pair is `111`--`110`: the lower type lies in one miss class, and every vertex of that
+lower type has a clique neighbourhood in the all-hit type by the one-corner rule.  Thus the
+support-at-most-four branch reduces to the one-type girth-five selector or to this single top-edge
+incidence problem, plus at most `2m` clique-bounded spill.
 
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with

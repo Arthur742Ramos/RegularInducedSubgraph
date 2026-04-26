@@ -1573,13 +1573,18 @@ Recommended attack:
    the latter case those neighbours are pairwise at distance at least three along `F`.  Also formalize
    the local exchange that two outside vertices cannot have the same sole spine-neighbour
    `u in D_2(F)`, since replacing `u` by both leaves enlarges `F`.
+   Also formalize the maximum-induced-matching cover for the girth-five remnant.  If `U` is the endpoint
+   set of a maximum induced matching, then `|U|<=m`; vertices outside `N[U]` are independent; each matched
+   endpoint-pair supports at most `m` private neighbours; and all remaining vertices form a pair-incidence
+   cloud over `U`, with at most one vertex per endpoint pair and adjacency only between traces that are
+   disjoint and avoid opposite ends of a matching edge.
    For support at most four, either a full square face triggers the face-C4 condition, or the support is
    a cube forest of at most four type classes.  In the cube-forest case, formalize the parity compression:
    at most one type of each parity is nonlinear, and if two nonlinear opposite-parity types survive they
-   must be adjacent in the cube.  Therefore the small-support residual is either one nonlinear type, a
-   shared-miss adjacent edge whose union has independence at most two, or the top edge `111`--`110` up to
-   symmetry where each lower-type vertex has clique neighbourhood in the all-hit type; all other classes
-   are clique-bounded.
+   must be adjacent in the cube.  If the adjacent edge shares a zero coordinate, its union is already an
+   `alpha<=2`, induced-`C_4`-free instance and complements to the one-type girth-five selector.  Therefore
+   the only new small-support residual is the top edge `111`--`110` up to symmetry, where each lower-type
+   vertex has clique neighbourhood in the all-hit type; all other classes are clique-bounded.
 
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified

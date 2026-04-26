@@ -991,14 +991,23 @@ the spine, since distance one gives a triangle and distance two gives a `C_4`.  
 outside vertices can have the same sole spine-neighbour `u in D_2(F)`, because replacing `u` by those two
 independent leaves enlarges the spine.  The remaining one-type girth-five target is therefore a sparse
 incidence problem over a spine of size at most `11m/5`.
+A maximum induced matching gives a complementary cover.  If `U` is its endpoint set, then `|U|<=m`, the
+vertices outside `N[U]` are independent, each matched endpoint-pair supports at most `m` private
+neighbours, and all remaining vertices are pair-incidences over `U`: no vertex hits both ends of a
+matching edge, and at most one vertex realizes any unordered pair of endpoints.  Adjacent cloud vertices
+must have disjoint traces and cannot hit opposite ends of one matching edge, or else they create a
+triangle or `C_4`.  Thus the unresolved large girth-five mass is a precise pair-incidence cloud over an
+`m`-point matched ground set.
 The support-at-most-four cube forest also compresses: at most one type of each parity can be nonlinear,
 because same-parity types are anti-complete and two independent pairs would give an independent four-set.
 If the two possible nonlinear types have opposite parity and Hamming distance three, the same argument
 applies.  Hence any two nonlinear types must be adjacent in the cube; all other supported types are
-cliques of size at most `m`.  The adjacent edge either shares a zero coordinate, giving a two-type
-shared-miss residual with union independence at most two, or is the top edge `111`--`110` up to symmetry,
-where every lower-type vertex has clique neighbourhood in the all-hit type.  Thus the small-support
-branch has only one-type or adjacent-edge incidence residuals, plus clique-bounded spill.
+cliques of size at most `m`.  An adjacent edge sharing a zero coordinate is already the same one-type
+girth-five selector after complementing the whole shared-miss union, because that union has
+independence at most two and is induced-`C_4`-free.  The only new adjacent-edge case is the top edge
+`111`--`110` up to symmetry, where every lower-type vertex has clique neighbourhood in the all-hit type.
+Thus the small-support branch has only the one-type selector or this top-edge incidence residual, plus
+clique-bounded spill.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it
