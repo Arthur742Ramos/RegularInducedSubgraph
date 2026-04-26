@@ -2498,7 +2498,37 @@ theorem hasExactSmallModulusAffineCrossSelector_three_fourteen_of_cliqueOrIndepS
     (j := 3) (m := 14) (N := 3670016) hbound (by decide)
 
 /--
-The smallest `j = 2` affine field is reduced to the exact Ramsey threshold
+The first `j = 2` higher-bit affine selector field is reduced to the exact Ramsey
+threshold `R(11,11) <= 45056`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_two_eleven_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 11 11 45056) :
+    HasExactSmallModulusAffineCrossSelector 2 11 :=
+  hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    (j := 2) (m := 11) (N := 45056) hbound (by decide)
+
+/--
+The same first `j = 2` affine selector field reduced to the off-diagonal
+Ramsey threshold needed by the symmetric step: `R(10,11) <= 22528`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_two_eleven_of_cliqueOrIndepSetBound_ten_eleven
+    (hbound : HasCliqueOrIndepSetBound 10 11 22528) :
+    HasExactSmallModulusAffineCrossSelector 2 11 :=
+  hasExactSmallModulusAffineCrossSelector_two_eleven_of_cliqueOrIndepSetBound
+    (hasCliqueOrIndepSetBound_11_11_of_10_11_22528 hbound)
+
+/--
+The second `j = 2` higher-bit affine selector field is reduced to the exact Ramsey
+threshold `R(12,12) <= 49152`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_two_twelve_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 12 12 49152) :
+    HasExactSmallModulusAffineCrossSelector 2 12 :=
+  hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    (j := 2) (m := 12) (N := 49152) hbound (by decide)
+
+/--
+The `13 <= m` tail's first `j = 2` affine field is reduced to the exact Ramsey threshold
 `R(13,13) <= 53248`.
 -/
 theorem hasExactSmallModulusAffineCrossSelector_two_thirteen_of_cliqueOrIndepSetBound
@@ -2508,7 +2538,7 @@ theorem hasExactSmallModulusAffineCrossSelector_two_thirteen_of_cliqueOrIndepSet
     (j := 2) (m := 13) (N := 53248) hbound (by decide)
 
 /--
-Binomial Ramsey alone cannot close the first remaining `j = 2` affine field nor the
+Binomial Ramsey alone cannot close the `13 <= m` tail's first `j = 2` affine field nor the
 first remaining `j = 3` affine field.  The exact replacement targets are the sharper
 bounds `R(13,13) <= 53248` and `R(14,14) <= 3670016`, respectively.
 -/
