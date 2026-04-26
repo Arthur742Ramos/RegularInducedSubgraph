@@ -2806,6 +2806,511 @@ theorem targetStatement_of_certifiedProofMdCurrentFrontierTargetStatementBundle
     TargetStatement :=
   h.targetStatement
 
+/-!
+## Downstream current-frontier checklist and Ramsey-current bridge
+
+The target-import facade is convenient for final proof-md consumers, but downstream lanes also want a
+flat checklist exposing the theorem-only Ramsey bundle, exact-`42` profile data, terminal mixed-target
+imports, and first-bit/co-cut surfaces at once.  The bridge below keeps this certified proof-md
+checklist paired with the latest localized `RamseyTenR45CurrentFrontierConsumerSurface` without
+asserting any new Ramsey row: all numerical Ramsey conclusions remain the assumption-backed
+frontier already carried by the imported surfaces.
+-/
+
+/-- Project the profiled exact-`42` surface with middle-degree split ledgers from target imports. -/
+def CertifiedProofMdCurrentFrontierTargetImports.toExact42WithMiddleSplits
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42Ramsey.toExact42WithMiddleSplits
+
+/-- Project the profiled exact-`42` three-row surface from target imports. -/
+def CertifiedProofMdCurrentFrontierTargetImports.toExact42ProfileSurface
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Ramsey.toExact42ProfileSurface
+
+/-- Project the local middle-degree ledger bundle from target imports. -/
+def CertifiedProofMdCurrentFrontierTargetImports.toLocalLedgerBundle
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.exact42Ramsey.toLocalLedgerBundle
+
+/-- Package the target-import Ramsey rows as the reusable final-consequence surface. -/
+def CertifiedProofMdCurrentFrontierTargetImports.toFinalConsequenceSurface
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45FinalConsequenceSurface :=
+  h.toGlobalConsequenceBundle.toFinalConsequenceSurface
+
+/-- Package the target-import Ramsey rows as the parameter-free theorem bundle. -/
+def CertifiedProofMdCurrentFrontierTargetImports.toUnifiedFinalTheoremBundle
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.toGlobalConsequenceBundle.toUnifiedFinalTheoremBundle h.toThreeTenFortyTwo
+
+/-- Package the target-import Ramsey rows as compact numerical consequences. -/
+def CertifiedProofMdCurrentFrontierTargetImports.toFinalNumericalConsequences
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toGlobalConsequenceBundle.toFinalNumericalConsequences h.toThreeTenFortyTwo
+
+/--
+Flat downstream checklist for the current proof-md frontier.  It is just a normalized view of
+`CertifiedProofMdCurrentFrontierTargetImports`: target-statement closure, theorem-only Ramsey
+consequences, exact-`42` profile data, terminal mixed-target imports, and first-bit/co-cut obligations.
+-/
+structure CertifiedProofMdCurrentFrontierDownstreamChecklist
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Type where
+  targetImports :
+    CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  targetStatement : TargetStatement
+  targetConsumer : CertifiedProofMdFinalTargetConsumerCertificate
+  exact42Ramsey : CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  theoremBundle : RamseyTenR45UnifiedFinalTheoremBundle
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  terminalMixedCore : CertifiedProofMdTerminalMixedTargetCoreImports
+  homogeneousCarryImports : FirstBitTerminalMixedTypeHomogeneousCarryImports
+  firstBitCoCut :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  finalBranchWrappers : FirstBitTerminalPacketFinalBranchWrappers
+  availableCutFinalWrapper :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom
+  availableCutCollapse :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom
+  fullCoordinateCollapse :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse WithHoles PositiveAtom
+  postQuotientAnchoredPacking :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+
+/-- Promote target imports to the flat downstream checklist. -/
+def CertifiedProofMdCurrentFrontierTargetImports.toDownstreamChecklist
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  targetImports := h
+  targetStatement := targetStatement_of_certifiedProofMdCurrentFrontierTargetImports h
+  targetConsumer := h.toFinalTargetConsumerCertificate
+  exact42Ramsey := h.toExact42ConsumerNormalizedRamsey
+  exact42WithMiddleSplits := h.toExact42WithMiddleSplits
+  exact42Profile := h.toExact42ProfileSurface
+  localLedgers := h.toLocalLedgerBundle
+  globalConsequences := h.toGlobalConsequenceBundle
+  finalConsequences := h.toFinalConsequenceSurface
+  theoremBundle := h.toUnifiedFinalTheoremBundle
+  numericalConsequences := h.toFinalNumericalConsequences
+  terminalMixedCore := h.toTerminalMixedCore
+  homogeneousCarryImports := h.toHomogeneousCarryImports
+  firstBitCoCut := h.toFirstBitCoCut
+  finalBranchWrappers := h.toFirstBitFinalBranchWrappers
+  availableCutFinalWrapper := h.toFirstBitAvailableCutFinalWrapper
+  availableCutCollapse := h.toFirstBitAvailableCutCollapse
+  fullCoordinateCollapse := h.toFirstBitFullCoordinateCollapse
+  postQuotientAnchoredPacking := h.toFirstBitPostQuotientAnchoredPacking
+
+/-- Promote the current-frontier audit certificate to the downstream checklist. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toDownstreamChecklist
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toCurrentFrontierTargetImports.toDownstreamChecklist
+
+/-- Promote the integrated frontier handoff to the downstream checklist. -/
+def CertifiedProofMdIntegratedFrontierHandoffCertificate.toCurrentFrontierDownstreamChecklist
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toCurrentFrontierTargetImports.toDownstreamChecklist
+
+/-- Non-dot constructor from the current-frontier audit certificate to the downstream checklist. -/
+def certifiedProofMdCurrentFrontierDownstreamChecklist_of_currentFrontierAuditCertificate
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toDownstreamChecklist
+
+/-- Non-dot constructor from the integrated frontier handoff to the downstream checklist. -/
+def certifiedProofMdCurrentFrontierDownstreamChecklist_of_integratedFrontierHandoff
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toCurrentFrontierDownstreamChecklist
+
+/-- Project target imports from the downstream checklist. -/
+def CertifiedProofMdCurrentFrontierDownstreamChecklist.toCurrentFrontierTargetImports
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.targetImports
+
+/-- Project the final target consumer from the downstream checklist. -/
+def CertifiedProofMdCurrentFrontierDownstreamChecklist.toFinalTargetConsumerCertificate
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.targetConsumer
+
+/-- Project the normalized exact-`42` Ramsey certificate from the downstream checklist. -/
+def CertifiedProofMdCurrentFrontierDownstreamChecklist.toExact42ConsumerNormalizedRamsey
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate :=
+  h.exact42Ramsey
+
+/-- Project the theorem-only Ramsey bundle from the downstream checklist. -/
+def CertifiedProofMdCurrentFrontierDownstreamChecklist.toUnifiedFinalTheoremBundle
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.theoremBundle
+
+/-- Project compact numerical Ramsey consequences from the downstream checklist. -/
+def CertifiedProofMdCurrentFrontierDownstreamChecklist.toFinalNumericalConsequences
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Project terminal mixed-target imports from the downstream checklist. -/
+def CertifiedProofMdCurrentFrontierDownstreamChecklist.toTerminalMixedCore
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.terminalMixedCore
+
+/-- Project first-bit/co-cut obligations from the downstream checklist. -/
+def CertifiedProofMdCurrentFrontierDownstreamChecklist.toFirstBitCoCut
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut
+
+/-- The downstream checklist exposes its certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierDownstreamChecklist
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  h.targetStatement
+
+/--
+Bridge between proof-md target imports and the latest localized Ramsey current-frontier surface.
+This keeps the two consumer-facing facades available together; the consistency lemmas below are
+normalization statements between proof terms for the same carried propositions.
+-/
+structure CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Type where
+  checklist :
+    CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  ramseySurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+
+/-- Pair a proof-md downstream checklist with a localized Ramsey current-frontier surface. -/
+def CertifiedProofMdCurrentFrontierDownstreamChecklist.withRamseySurface
+    (h : CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hramsey : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v where
+  checklist := h
+  ramseySurface := hramsey
+
+/-- Build a proof-md/Ramsey bridge directly from target imports and a Ramsey current surface. -/
+def CertifiedProofMdCurrentFrontierTargetImports.toRamseySurfaceBridge
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hramsey : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v :=
+  h.toDownstreamChecklist.withRamseySurface hramsey
+
+/-- Project the proof-md checklist from the proof-md/Ramsey bridge. -/
+def CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toDownstreamChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdCurrentFrontierDownstreamChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.checklist
+
+/-- Project target imports from the proof-md/Ramsey bridge. -/
+def CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toCurrentFrontierTargetImports
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.checklist.toCurrentFrontierTargetImports
+
+/-- Project the localized Ramsey current-frontier surface from the bridge. -/
+def CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toRamseyCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.ramseySurface
+
+/-- Project the certified target-statement bundle from the bridge. -/
+def CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toTargetStatementBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toCurrentFrontierTargetImports.toTargetStatementBundle
+
+/-- Project proof-md's theorem-only Ramsey bundle from the bridge. -/
+def CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toCertifiedUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.checklist.toUnifiedFinalTheoremBundle
+
+/-- Project the Ramsey surface's theorem-only bundle from the bridge. -/
+def CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toRamseyUnifiedFinalTheoremBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    RamseyTenR45UnifiedFinalTheoremBundle :=
+  h.ramseySurface.toUnifiedFinalTheoremBundle
+
+/-- Project proof-md's compact numerical Ramsey consequences from the bridge. -/
+def CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toCertifiedFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.checklist.toFinalNumericalConsequences
+
+/-- Project the Ramsey surface's compact numerical consequences from the bridge. -/
+def CertifiedProofMdCurrentFrontierRamseySurfaceBridge.toRamseyFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.ramseySurface.toFinalNumericalConsequences
+
+/-- The bridge exposes `TargetStatement` through the proof-md checklist. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierRamseySurfaceBridge
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    TargetStatement :=
+  h.checklist.targetStatement
+
+/-- Proof-md and Ramsey-current theorem bundles normalize to proofs of the same proposition. -/
+theorem CertifiedProofMdCurrentFrontierRamseySurfaceBridge.certifiedTheoremBundle_eq_ramseySurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    h.toCertifiedUnifiedFinalTheoremBundle =
+      h.toRamseyUnifiedFinalTheoremBundle := by
+  exact Subsingleton.elim _ _
+
+/-- Proof-md and Ramsey-current compact numerical packages normalize to the same proposition. -/
+theorem CertifiedProofMdCurrentFrontierRamseySurfaceBridge.certifiedNumericalConsequences_eq_ramseySurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierRamseySurfaceBridge
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v) :
+    h.toCertifiedFinalNumericalConsequences =
+      h.toRamseyFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTargetImports.toDownstreamChecklist_targetImports
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toDownstreamChecklist.targetImports = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTargetImports.toDownstreamChecklist_targetConsumer
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toDownstreamChecklist.toFinalTargetConsumerCertificate =
+      h.toFinalTargetConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTargetImports.toDownstreamChecklist_theoremBundle
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toDownstreamChecklist.toUnifiedFinalTheoremBundle =
+      h.toUnifiedFinalTheoremBundle :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTargetImports.toRamseySurfaceBridge_ramseySurface
+    (h : CertifiedProofMdCurrentFrontierTargetImports
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hramsey : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    (h.toRamseySurfaceBridge hramsey).toRamseyCurrentFrontierConsumerSurface =
+      hramsey :=
+  rfl
+
 @[simp]
 theorem CertifiedProofMdFinalObligationDashboard.toCurrentFrontierTargetImports_toFinalObligationDashboard
     (h : CertifiedProofMdFinalObligationDashboard
