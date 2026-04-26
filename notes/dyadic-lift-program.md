@@ -1578,6 +1578,9 @@ After quotienting trace twins and excluding decoded cases, the ambiguous core is
 `C_ext=P`, a triple packing, and `C_int subset K_3(J_int)`, with `P cap C_int=empty`.  In the extremal
 case `P` is Fano, so terminality says every Fano line is killed internally by the blocker graph or a
 signed `E_3` equation.
+Moreover a fixed kept pair is disjoint from at most two triples of a packing on seven points.  Hence
+killing an external packing `P` internally requires at least `ceil(|P|/2)` distinct kept-pair witnesses;
+Fano ambiguity needs at least four.
 For a non-exact boundary, replace `h_X` by the maximum available import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`.  Terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every graph-compatible export.  The exact top is just the case

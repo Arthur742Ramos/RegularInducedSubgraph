@@ -2036,6 +2036,9 @@ Recommended attack:
    In the ambiguous core after quotienting trace twins, record the finite form
    `C_ext=P` a triple packing and `C_int subset K_3(J_int)` with `P cap C_int=empty`.  In the Fano case,
    each Fano line must be killed internally by the blocker graph or a signed `E_3` equality failure.
+   Add the packing-transversal bound: for each kept pair `e`, the family `{O in P:e cap O=empty}` has
+   size at most two, since it is a triple packing on five points.  Thus terminality of an external
+   packing `P` requires at least `ceil(|P|/2)` distinct internal kept-pair witnesses; Fano requires four.
    Generalize the height inequality to non-exact boundaries with
    `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}` (or unavailable).  For every graph-compatible export `Y`,
    terminality gives `H_X(sigma(Y))-|Y|<=m-|B|`; exact Davenport top is the special case `H_X=h_X`.

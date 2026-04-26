@@ -8812,6 +8812,25 @@ the internal blocker graph or the signed `E_3` equations to hit every line of th
 last ambiguous positive-atom core is a finite line-hitting problem: an internal obstruction transversal
 against a packing (or Fano) of externally indistinguishable omitted triples.
 
+There is one more counting squeeze on this transversal.  For a kept pair `e={u,v}`, let
+
+```text
+P(e)={O in P:e cap O=empty}.
+```
+
+Because `P` is a triple packing, `P(e)` is a triple packing on the five-point set `R_i\e`; hence
+`|P(e)|<=2` (three triples on five points would violate inclusion-exclusion while sharing no pair).
+Therefore any terminal ambiguous core with external packing `P` needs at least
+
+```text
+ceil(|P|/2)
+```
+
+distinct internal kept-pair witnesses, where a witness is either a blocker edge of `J_int` or a signed
+`E_3` equality failure on that kept pair.  In particular, a Fano external ambiguity requires at least
+four distinct internal pair witnesses.  If the internal side has at most three such witnesses, one
+externally surviving omitted triple in `P` survives all internal checks, and the positive atom reroots.
+
 The same height language also covers the non-exact boundary.  For an arbitrary zero-sum-free boundary
 `X`, define the available import height
 

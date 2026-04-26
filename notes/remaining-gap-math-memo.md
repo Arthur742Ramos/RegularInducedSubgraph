@@ -1702,6 +1702,8 @@ Terminality of the positive atom is now one of four finite certificates: externa
 decoded mismatch, or genuine ambiguous core.
 In the ambiguous core, after trace-twin quotienting, `C_ext` is a triple packing disjoint from
 `C_int subset K_3(J_int)`; Fano ambiguity means every Fano line is internally killed.
+A fixed kept pair is disjoint from at most two packing triples, so an ambiguous packing `P` needs at
+least `ceil(|P|/2)` internal kept-pair witnesses; Fano needs four.
 Away from the exact boundary top, the same inequality uses
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`: terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every compatible export.

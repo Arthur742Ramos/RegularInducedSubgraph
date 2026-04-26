@@ -4959,6 +4959,8 @@ mismatch, or a genuine ambiguous core with both candidate sets of size at least 
 After trace-twin quotient and removing decoded cases, the ambiguous core is a triple packing `P` disjoint
 from `C_int subset K_3(J_int)`; in the Fano case every line must be killed by an internal blocker or
 signed `E_3` failure.
+A fixed kept pair is disjoint from at most two triples of a packing, so terminal ambiguous packing `P`
+requires at least `ceil(|P|/2)` distinct internal kept-pair witnesses; Fano requires four.
 For non-exact boundaries, use the maximum import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`; terminal exports satisfy
 `H_X(sigma(Y))-|Y|<=m-|B|`.  Exact top is the explicit box-height case.
