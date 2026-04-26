@@ -5117,11 +5117,22 @@ So the packet endpoint splits by `m mod 4`: odd `m` forces `p=0`, `m==2 mod 4` a
 Choosing packets minimal in the size-refined trace group gives atom packets of size at most `3m+1`, with
 no proper nonempty constant-trace size-`0 mod 4` subpacket; terminality forbids every such atom and every
 union of disjoint atoms from passing the matching internal residue test.
+Greedy atom extraction in the critical largest chamber leaves a zero-sum-free remainder of size at most
+`3m`, so the disjoint atom family covers more than `19m/4` outside vertices; every nonempty atom subunion
+is internally forbidden.
 Equivalently, each atom has a nonzero internal defect vector
 `epsilon_i=deg_{X_i}-(a+p_i-t)`, and for any atom union the cross-degree correction vectors
 `deg_{X_j}-p_j` cannot cancel all defects simultaneously.
 For two atoms, cancellation also requires
 `2e(X)+e(X,Y)==2e(Y)+e(X,Y)==0 mod 4`.
+If two size-`0 mod 4` atoms are internally regular and cross-regular, their union is dangerous exactly
+when `d_X+c_XY==d_Y+c_YX==a+p_X+p_Y-t mod 4`; in the same-profile case this is the coalescence rule
+`c_XY=c_YX`.
+For larger atom families, any cross-uniform subfamily reduces to a weighted atom quotient
+`e_i+sum_{j!=i}c_ij=0 mod 4`; terminality forces either quotient unsolvability or nonconstant
+cross-correction vectors in every large subfamily.
+On atoms with constant internal defect, the nonconstant cross-corrections form an irregularity graph; any
+quotient-solvable independent set in this graph has lifted size at most `m`.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

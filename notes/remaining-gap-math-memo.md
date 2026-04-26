@@ -1822,10 +1822,17 @@ Hence odd `m` forces zero trace, `m==2 mod 4` forces even trace, and `m==0 mod 4
 trace branch.
 Minimal size-refined packets are atoms of size at most `3m+1`; a critical chamber contains two disjoint
 atoms, and terminality forbids each atom and atom-union from the matching internal residue.
+Greedy extraction in the largest critical chamber gives a disjoint atom family covering more than
+`19m/4` vertices after a zero-sum-free remainder of size at most `3m`.
 Atom unions are governed by defect anti-cancellation:
 `epsilon_i(v)+sum_{j!=i}(deg_{X_j}(v)-p_j)` must fail somewhere for every chosen atom family.
 For two atoms this has the global necessary filter
 `2e(X)+e(X,Y)==2e(Y)+e(X,Y)==0 mod 4`.
+For internally regular cross-regular size-zero atoms, the two-atom quotient danger condition is
+`d_X+c_XY==d_Y+c_YX==a+p_X+p_Y-t`.
+Large cross-uniform atom subfamilies reduce to the quotient equations
+`e_i+sum_{j!=i}c_ij=0 mod 4`; terminality forces quotient unsolvability or cross-irregularity.
+The atom irregularity graph has no quotient-solvable independent set of lifted size greater than `m`.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

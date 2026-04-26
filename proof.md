@@ -10007,6 +10007,19 @@ terminal bucket must support two disjoint trace atoms in one chamber, while ever
 disjoint atoms fails the matching internal residue test.  No further trace-subpacket reduction is hidden
 inside these atoms.
 
+Greedy extraction gives a stronger cover form.  In the size-refined trace group `(Z/4Z)^m`, repeatedly
+remove a minimal zero-sum atom from the largest outside degree chamber until the remainder is
+zero-sum-free.  The remainder has size at most `3m`.  Since a critical largest chamber has size greater
+than `31m/4`, it contains a disjoint atom family
+
+```text
+X_1,...,X_N
+```
+
+whose union has size greater than `19m/4`.  Terminality forbids every nonempty subunion of this atom
+family from passing its matching internal residue test.  Thus the packet endpoint is a large atom-family
+anti-selector problem, not merely a two-atom obstruction.
+
 For an atom `X_i` with constant trace `p_i` in the same chamber `U_t`, define its internal defect
 
 ```text
@@ -10037,6 +10050,54 @@ equations over `X` and over `Y` gives
 Therefore a two-atom union can be dangerous only when `e(X)` and `e(Y)` have the same parity and
 `e(X,Y)` has the corresponding residue `0` or `2` modulo `4`.  If this global filter fails, the union is
 automatically harmless before any pointwise defect analysis.
+
+If the two atoms are themselves internally regular, say with residues `d_X,d_Y`, and the cross-degrees
+are constant modulo `4`,
+
+```text
+deg_Y(x)==c_{XY} for x in X,        deg_X(y)==c_{YX} for y in Y,
+```
+
+then the two-atom union is dangerous exactly when
+
+```text
+d_X+c_{XY} == d_Y+c_{YX} == a+p_X+p_Y-t        [MOD 4].
+```
+
+Because both atom sizes are `0 mod 4`, the usual edge-count symmetry imposes no extra congruence on
+`c_{XY},c_{YX}`.  In the same-profile subcase `p_X=p_Y` and `d_X=d_Y`, this reduces to the coalescence
+rule `c_{XY}=c_{YX}` at the target residue.  Thus terminality forbids every such size-zero two-atom
+quotient solution.
+
+For a larger atom family, there is a clean quotient/uniformity split.  Suppose a subfamily `I` has the
+property that, for every ordered pair `i != j` in `I`, the cross-correction
+
+```text
+kappa_{ij}(v)=deg_{X_j}(v)-p_j        [MOD 4]        (v in X_i)
+```
+
+is constant on `X_i`, say `c_{ij}`.  If each atom has constant internal defect `e_i`, then the union of
+the subfamily is dangerous exactly when the weighted atom quotient satisfies
+
+```text
+e_i + sum_{j in I, j != i} c_{ij} == 0        [MOD 4]        for every i in I.
+```
+
+Thus a cross-uniform atom subfamily is governed by an ordinary finite quotient system over `Z/4Z`.
+Terminality has two ways to block an atom family covering more than `19m/4` vertices: either every large
+subfamily has a genuinely nonconstant cross-correction vector or the associated atom quotient has no
+nonempty zero-row solution.  This is the atom-level form of the self-layer obstruction.
+
+Equivalently, on the atoms with constant internal defect, form the irregularity graph `R_atom` by joining
+`i` and `j` when at least one of the two cross-corrections `kappa_{ij},kappa_{ji}` is nonconstant.  Every
+independent set of `R_atom` is a genuine quotient system over `Z/4Z`.  Terminality implies:
+
+```text
+every quotient-solvable independent set in R_atom has lifted size at most m.
+```
+
+Thus a terminal atom family of lifted size greater than `19m/4` must either contain many internally
+nonconstant-defect atoms, have large irregularity graph, or be a quotient-free weighted `Z/4` system.
 
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater

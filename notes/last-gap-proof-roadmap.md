@@ -1829,9 +1829,14 @@ What remains justified after audit is:
       `3m+1`, for which the size handshaking condition is automatic, the edge parity target is even, and
       the cross-count is `mp==0 mod 4`, splitting into
       odd/even/zero `m mod 4` trace branches; minimal packets are zero-sum atoms of size at most `3m+1`,
-      and terminality makes every atom and union of disjoint atoms internally anti-selector, equivalently
-      atom defect vectors cannot be cancelled by cross-degree correction vectors, with a two-atom global
-      parity filter from `2e(X)+e(X,Y)` and `2e(Y)+e(X,Y)`;
+      greedy extraction covers more than `19m/4` vertices of the largest critical chamber by disjoint
+      atoms, and terminality makes every atom and union of disjoint atoms internally anti-selector,
+      equivalently atom defect vectors cannot be cancelled by cross-degree correction vectors, with a
+      two-atom global parity filter from `2e(X)+e(X,Y)` and `2e(Y)+e(X,Y)` and a two-atom quotient test
+      `d_X+c_XY==d_Y+c_YX==a+p_X+p_Y-t` in the cross-regular case; larger cross-uniform atom subfamilies
+      reduce to weighted quotient equations, so terminality forces quotient unsolvability or
+      cross-irregularity in every large subfamily; equivalently the atom irregularity graph has no
+      quotient-solvable independent set of lifted size above `m`;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

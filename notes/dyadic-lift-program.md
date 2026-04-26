@@ -885,10 +885,21 @@ Consequently the trace branch is controlled by `m mod 4`: `p=0` for odd `m`, `p`
 Minimal size-refined packets are zero-sum atoms in `(Z/4)^m`, hence have size at most `3m+1` and contain
 no smaller constant-trace size-`0 mod 4` subpacket.  The critical chamber contains two disjoint atoms,
 all internally anti-selector at their matching residues.
+Greedy extraction leaves a zero-sum-free remainder of size at most `3m`, so the largest critical chamber
+contains a disjoint atom family covering more than `19m/4` vertices, with every nonempty subunion
+anti-selector.
 For atom unions, the exact obstruction is anti-cancellation of defect vectors:
 `epsilon_i(v)+sum_{j!=i}(deg_{X_j}(v)-p_j)` cannot vanish on every vertex of every chosen atom.
 Two-atom cancellation further requires the global parity filter
 `2e(X)+e(X,Y)==2e(Y)+e(X,Y)==0 mod 4`.
+For internally regular cross-regular atoms of size `0 mod 4`, the exact quotient danger condition is
+`d_X+c_XY==d_Y+c_YX==a+p_X+p_Y-t mod 4`; same-profile atoms coalesce only when the two cross residues
+agree.
+More generally, a cross-uniform atom subfamily is controlled by the quotient equations
+`e_i+sum_{j!=i}c_ij=0 mod 4`; a terminal large atom family must therefore be either quotient-unsolvable or
+cross-irregular on every large subfamily.
+Equivalently, the atom irregularity graph (edges are nonconstant cross-corrections) has no
+quotient-solvable independent set of lifted size greater than `m`.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

@@ -2220,12 +2220,24 @@ Recommended attack:
     Add the atom refinement: choose a minimal zero-sum packet in the size-refined trace group.  It has size
     at most `3m+1`, no proper nonempty constant-trace size-`0 mod 4` subpacket, and terminality forbids it
     (and unions of disjoint such atoms) from being internally regular at the matching residue.
+    Add greedy atom-family extraction: repeatedly remove minimal zero-sum atoms from the largest critical
+    chamber until the remainder is zero-sum-free.  The remainder has size at most `3m`, so the extracted
+    atom family covers more than `19m/4` vertices; every nonempty subunion is terminally forbidden.
     Add the atom-defect formulation: for an atom `X_i` with constant trace `p_i` in chamber `U_t`, define
     `epsilon_i(v)=deg_Xi(v)-(a+p_i-t) mod 4`.  For a union of atoms, regularity is equivalent to
     `epsilon_i(v)+sum_{j!=i}(deg_Xj(v)-p_j)==0 mod 4` for every vertex in every chosen atom.  Terminality
     is anti-cancellation of these defects by cross-degree correction vectors.
     Add the two-atom global parity filter obtained by summing the defect equations:
     `2e(X)+e(X,Y)==0 mod 4` and `2e(Y)+e(X,Y)==0 mod 4`.
+    Add the two-atom quotient test for internally regular, cross-regular atoms:
+    `d_X+c_XY==d_Y+c_YX==a+p_X+p_Y-t mod 4`; for same-profile atoms this reduces to `c_XY=c_YX`.
+    Add the atom quotient/uniformity split: if a subfamily has constant cross-corrections
+    `kappa_ij(v)=deg_Xj(v)-p_j` on each atom and constant internal defects `e_i`, then its union is
+    dangerous iff `e_i+sum_{j!=i}c_ij==0 mod 4` for all atoms.  Terminality requires quotient
+    unsolvability or nonconstant cross-corrections in every large subfamily.
+    Define the atom irregularity graph on constant-defect atoms, joining two atoms when either directed
+    cross-correction is nonconstant.  Formalize that every quotient-solvable independent set has lifted
+    size at most `m`.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are
