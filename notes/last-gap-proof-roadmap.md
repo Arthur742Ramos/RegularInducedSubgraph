@@ -1964,6 +1964,8 @@ What remains justified after audit is:
       partial swaps by omitted-trace or retained-scalar failure;
       for fixed `T,X`, the four `kappa` target covers are coherent under the rotation
       `h_k=k+deg_X-psi_T`, with opposite residues swapping active/filter roles and complementing traces;
+      in the four `q`-classes, active adjacent pairs rotate as `12,01,30,23` and switch pairs as
+      `23,12,01,30`;
       opposite high-active target endpoints on a shared certificate force an antipodal trace core of
       repeated complementary centers plus singleton flips around both centers, with complementary
       restrictions on intersections of different certificates;

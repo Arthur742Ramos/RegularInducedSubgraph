@@ -2448,6 +2448,8 @@ Recommended attack:
     Formalize four-residue target coherence for fixed `T,X`: `h_k=k+deg_X-psi_T`, active set
     `{h_k in {1,2}}`, zero set `{h_k in {0,3}}`, and `k` versus `k+2` swaps active/zero while complementing
     outside traces.
+    Record the explicit `q`-class rotation table: active pairs `12,01,30,23` and switch pairs
+    `23,12,01,30`.
     Formalize the antipodal trace core forced when both opposite residues are high-active target endpoints
     on a shared certificate: repeated centers `sigma`, `1-sigma`, and singleton flips around the two centers;
     for different certificates, record complementary restrictions on intersections.

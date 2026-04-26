@@ -1061,6 +1061,8 @@ failure.
 For fixed `T,X`, the four `kappa` target-cover problems are coherently related by
 `h_k=k+deg_X-psi_T`: opposite residues swap active and zero coordinates and complement traces, so the
 high-active filtered covers cannot be chosen independently.
+In the four `q`-classes, the active adjacent pairs rotate as `12,01,30,23`, with switch pairs
+`23,12,01,30`.
 Two opposite high-active target endpoints on a shared certificate force an antipodal trace core: repeated
 complementary centers and singleton flips around both centers; different minimal certificates carry the
 same complementary restriction on their intersections.
