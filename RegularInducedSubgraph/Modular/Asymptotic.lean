@@ -18227,6 +18227,937 @@ theorem FirstBitTerminalAtomPacketRepairAffineProfileFlagImports.obligation
   · exact h.to_dyadicFlagDescent
 
 /--
+Stopped-bit support: at the stopped level, the active packets lie in the ambient packet
+family, are nonempty, satisfy the zero-prefix predicate, and have the recorded parity
+character.
+-/
+def FirstBitTerminalStoppedBitCharacterSupport
+    {Level Packet : Type*} (levels : Finset Level) (packets : Finset Packet)
+    (stoppedLevel : Level) (support : Finset Packet)
+    (zeroPrefix : Level → Packet → Prop) (parityCharacter : Level → Packet → Fin 2)
+    (stoppedParity : Fin 2) : Prop :=
+  stoppedLevel ∈ levels ∧ support ⊆ packets ∧ support.Nonempty ∧
+    (∀ packet : Packet, packet ∈ support → zeroPrefix stoppedLevel packet) ∧
+      ∀ packet : Packet, packet ∈ support →
+        parityCharacter stoppedLevel packet = stoppedParity
+
+/-- The stopped level belongs to the dyadic flag. -/
+theorem FirstBitTerminalStoppedBitCharacterSupport.stoppedLevel_mem
+    {Level Packet : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    (h :
+      FirstBitTerminalStoppedBitCharacterSupport levels packets stoppedLevel support
+        zeroPrefix parityCharacter stoppedParity) :
+    stoppedLevel ∈ levels :=
+  h.1
+
+/-- The stopped support is contained in the ambient packet family. -/
+theorem FirstBitTerminalStoppedBitCharacterSupport.support_subset_packets
+    {Level Packet : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    (h :
+      FirstBitTerminalStoppedBitCharacterSupport levels packets stoppedLevel support
+        zeroPrefix parityCharacter stoppedParity) :
+    support ⊆ packets :=
+  h.2.1
+
+/-- The stopped support is nonempty. -/
+theorem FirstBitTerminalStoppedBitCharacterSupport.support_nonempty
+    {Level Packet : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    (h :
+      FirstBitTerminalStoppedBitCharacterSupport levels packets stoppedLevel support
+        zeroPrefix parityCharacter stoppedParity) :
+    support.Nonempty :=
+  h.2.2.1
+
+/-- Packets in the stopped support satisfy the stopped zero-prefix predicate. -/
+theorem FirstBitTerminalStoppedBitCharacterSupport.zeroPrefix_of_mem
+    {Level Packet : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    (h :
+      FirstBitTerminalStoppedBitCharacterSupport levels packets stoppedLevel support
+        zeroPrefix parityCharacter stoppedParity)
+    {packet : Packet} (hpacket : packet ∈ support) :
+    zeroPrefix stoppedLevel packet :=
+  h.2.2.2.1 packet hpacket
+
+/-- Packets in the stopped support have the stopped parity character. -/
+theorem FirstBitTerminalStoppedBitCharacterSupport.parityCharacter_eq
+    {Level Packet : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    (h :
+      FirstBitTerminalStoppedBitCharacterSupport levels packets stoppedLevel support
+        zeroPrefix parityCharacter stoppedParity)
+    {packet : Packet} (hpacket : packet ∈ support) :
+    parityCharacter stoppedLevel packet = stoppedParity :=
+  h.2.2.2.2 packet hpacket
+
+/--
+Cut-circuit surface for a stopped support.  Each boundary cut is incident with the stopped
+support and has the target cut parity.
+-/
+def FirstBitTerminalStoppedBitSupportCutCircuit
+    {Packet Cut : Type*} (support : Finset Packet) (cuts : Finset Cut)
+    (incident : Packet → Cut → Prop) (cutParity : Cut → Fin 2)
+    (targetCutParity : Fin 2) : Prop :=
+  support.Nonempty ∧ cuts.Nonempty ∧
+    ∀ cut : Cut, cut ∈ cuts →
+      (∃ packet : Packet, packet ∈ support ∧ incident packet cut) ∧
+        cutParity cut = targetCutParity
+
+/--
+Minimality of a stopped support circuit with respect to an imported circuit predicate.
+The predicate itself remains an assumption supplied by the downstream finite/linear
+certificate.
+-/
+def FirstBitTerminalStoppedBitSupportCutCircuitMinimal
+    {Packet : Type*} (support : Finset Packet) (supportCircuit : Finset Packet → Prop) :
+    Prop :=
+  supportCircuit support ∧
+    ∀ subsupport : Finset Packet, subsupport ⊆ support →
+      subsupport.card < support.card → ¬ supportCircuit subsupport
+
+/-- Project the stopped support circuit predicate from the minimality package. -/
+theorem FirstBitTerminalStoppedBitSupportCutCircuitMinimal.supportCircuit
+    {Packet : Type*} {support : Finset Packet} {supportCircuit : Finset Packet → Prop}
+    (h :
+      FirstBitTerminalStoppedBitSupportCutCircuitMinimal support supportCircuit) :
+    supportCircuit support :=
+  h.1
+
+/-- Exclude a smaller stopped support from carrying the same imported circuit predicate. -/
+theorem FirstBitTerminalStoppedBitSupportCutCircuitMinimal.not_supportCircuit_of_card_lt
+    {Packet : Type*} {support subsupport : Finset Packet}
+    {supportCircuit : Finset Packet → Prop}
+    (h :
+      FirstBitTerminalStoppedBitSupportCutCircuitMinimal support supportCircuit)
+    (hsub : subsupport ⊆ support) (hcard : subsupport.card < support.card) :
+    ¬ supportCircuit subsupport :=
+  h.2 subsupport hsub hcard
+
+/--
+Certificate bundling a stopped-bit support with its cut-circuit and minimality imports.
+This is only a bookkeeping layer: the actual circuit predicate is supplied explicitly.
+-/
+structure FirstBitTerminalStoppedBitSupportCutCircuitCertificate
+    {Level Packet Cut : Type*} (levels : Finset Level) (packets : Finset Packet)
+    (stoppedLevel : Level) (support : Finset Packet)
+    (zeroPrefix : Level → Packet → Prop) (parityCharacter : Level → Packet → Fin 2)
+    (stoppedParity : Fin 2) (cuts : Finset Cut) (incident : Packet → Cut → Prop)
+    (cutParity : Cut → Fin 2) (targetCutParity : Fin 2)
+    (supportCircuit : Finset Packet → Prop) : Prop where
+  stoppedSupport :
+    FirstBitTerminalStoppedBitCharacterSupport levels packets stoppedLevel support
+      zeroPrefix parityCharacter stoppedParity
+  cutCircuit :
+    FirstBitTerminalStoppedBitSupportCutCircuit support cuts incident cutParity
+      targetCutParity
+  minimalCircuit :
+    FirstBitTerminalStoppedBitSupportCutCircuitMinimal support supportCircuit
+
+/-- Build a stopped-bit support cut-circuit certificate from its imported fields. -/
+theorem firstBitTerminalStoppedBitSupportCutCircuitCertificate_of_assumptions
+    {Level Packet Cut : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    {cuts : Finset Cut} {incident : Packet → Cut → Prop} {cutParity : Cut → Fin 2}
+    {targetCutParity : Fin 2} {supportCircuit : Finset Packet → Prop}
+    (hstopped :
+      FirstBitTerminalStoppedBitCharacterSupport levels packets stoppedLevel support
+        zeroPrefix parityCharacter stoppedParity)
+    (hcut :
+      FirstBitTerminalStoppedBitSupportCutCircuit support cuts incident cutParity
+        targetCutParity)
+    (hminimal :
+      FirstBitTerminalStoppedBitSupportCutCircuitMinimal support supportCircuit) :
+    FirstBitTerminalStoppedBitSupportCutCircuitCertificate levels packets stoppedLevel
+      support zeroPrefix parityCharacter stoppedParity cuts incident cutParity
+      targetCutParity supportCircuit where
+  stoppedSupport := hstopped
+  cutCircuit := hcut
+  minimalCircuit := hminimal
+
+/-- Project the stopped support from a cut-circuit certificate. -/
+theorem FirstBitTerminalStoppedBitSupportCutCircuitCertificate.to_stoppedSupport
+    {Level Packet Cut : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    {cuts : Finset Cut} {incident : Packet → Cut → Prop} {cutParity : Cut → Fin 2}
+    {targetCutParity : Fin 2} {supportCircuit : Finset Packet → Prop}
+    (h :
+      FirstBitTerminalStoppedBitSupportCutCircuitCertificate levels packets stoppedLevel
+        support zeroPrefix parityCharacter stoppedParity cuts incident cutParity
+        targetCutParity supportCircuit) :
+    FirstBitTerminalStoppedBitCharacterSupport levels packets stoppedLevel support
+      zeroPrefix parityCharacter stoppedParity :=
+  h.stoppedSupport
+
+/-- Project the cut-circuit surface from a stopped support certificate. -/
+theorem FirstBitTerminalStoppedBitSupportCutCircuitCertificate.to_cutCircuit
+    {Level Packet Cut : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    {cuts : Finset Cut} {incident : Packet → Cut → Prop} {cutParity : Cut → Fin 2}
+    {targetCutParity : Fin 2} {supportCircuit : Finset Packet → Prop}
+    (h :
+      FirstBitTerminalStoppedBitSupportCutCircuitCertificate levels packets stoppedLevel
+        support zeroPrefix parityCharacter stoppedParity cuts incident cutParity
+        targetCutParity supportCircuit) :
+    FirstBitTerminalStoppedBitSupportCutCircuit support cuts incident cutParity
+      targetCutParity :=
+  h.cutCircuit
+
+/-- Project minimality from a stopped support certificate. -/
+theorem FirstBitTerminalStoppedBitSupportCutCircuitCertificate.to_minimalCircuit
+    {Level Packet Cut : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    {cuts : Finset Cut} {incident : Packet → Cut → Prop} {cutParity : Cut → Fin 2}
+    {targetCutParity : Fin 2} {supportCircuit : Finset Packet → Prop}
+    (h :
+      FirstBitTerminalStoppedBitSupportCutCircuitCertificate levels packets stoppedLevel
+        support zeroPrefix parityCharacter stoppedParity cuts incident cutParity
+        targetCutParity supportCircuit) :
+    FirstBitTerminalStoppedBitSupportCutCircuitMinimal support supportCircuit :=
+  h.minimalCircuit
+
+/-- Apply the cut-circuit incidence/parity statement to one boundary cut. -/
+theorem FirstBitTerminalStoppedBitSupportCutCircuitCertificate.cut_incident_and_parity
+    {Level Packet Cut : Type*} {levels : Finset Level} {packets support : Finset Packet}
+    {stoppedLevel : Level} {zeroPrefix : Level → Packet → Prop}
+    {parityCharacter : Level → Packet → Fin 2} {stoppedParity : Fin 2}
+    {cuts : Finset Cut} {incident : Packet → Cut → Prop} {cutParity : Cut → Fin 2}
+    {targetCutParity : Fin 2} {supportCircuit : Finset Packet → Prop}
+    (h :
+      FirstBitTerminalStoppedBitSupportCutCircuitCertificate levels packets stoppedLevel
+        support zeroPrefix parityCharacter stoppedParity cuts incident cutParity
+        targetCutParity supportCircuit)
+    {cut : Cut} (hcut : cut ∈ cuts) :
+    (∃ packet : Packet, packet ∈ support ∧ incident packet cut) ∧
+      cutParity cut = targetCutParity :=
+  h.cutCircuit.2.2 cut hcut
+
+/-- Packets in an even hyperplane have even parity. -/
+def FirstBitTerminalEvenHyperplaneParity
+    {Packet : Type*} (packets : Finset Packet) (evenHyperplane : Packet → Prop)
+    (packetParity : Packet → Fin 2) : Prop :=
+  ∀ packet : Packet, packet ∈ packets → evenHyperplane packet → packetParity packet = 0
+
+/-- The even hyperplane is spanned by imported generators. -/
+def FirstBitTerminalEvenHyperplaneSpan
+    {Packet Generator : Type*} (packets : Finset Packet) (generators : Finset Generator)
+    (evenHyperplane : Packet → Prop) (spansPacket : Finset Generator → Packet → Prop) :
+    Prop :=
+  ∀ packet : Packet, packet ∈ packets → evenHyperplane packet →
+    ∃ basis : Finset Generator, basis ⊆ generators ∧ spansPacket basis packet
+
+/-- Odd-coset packets are realized by odd atoms. -/
+def FirstBitTerminalOddCosetPacketRealization
+    {Packet Atom Coset : Type*} (packets : Finset Packet) (atoms : Finset Atom)
+    (cosetOf : Packet → Coset) (oddCoset : Coset → Prop)
+    (realizesPacket : Atom → Packet → Prop) (atomParity : Atom → Fin 2) : Prop :=
+  ∀ packet : Packet, packet ∈ packets → oddCoset (cosetOf packet) →
+    ∃ atom : Atom, atom ∈ atoms ∧ realizesPacket atom packet ∧ atomParity atom = 1
+
+/--
+Dual span/realization certificate for the stopped-bit frontier: the even side is a
+spanned hyperplane, while the odd side is realized by packet atoms in the odd coset.
+-/
+structure FirstBitTerminalEvenHyperplaneOddCosetCertificate
+    {Packet Generator Atom Coset : Type*} (packets : Finset Packet)
+    (generators : Finset Generator) (atoms : Finset Atom)
+    (evenHyperplane : Packet → Prop) (packetParity : Packet → Fin 2)
+    (spansPacket : Finset Generator → Packet → Prop)
+    (cosetOf : Packet → Coset) (oddCoset : Coset → Prop)
+    (realizesPacket : Atom → Packet → Prop) (atomParity : Atom → Fin 2) : Prop where
+  evenParity :
+    FirstBitTerminalEvenHyperplaneParity packets evenHyperplane packetParity
+  evenSpan :
+    FirstBitTerminalEvenHyperplaneSpan packets generators evenHyperplane spansPacket
+  oddCosetRealization :
+    FirstBitTerminalOddCosetPacketRealization packets atoms cosetOf oddCoset
+      realizesPacket atomParity
+
+/-- Build an even-hyperplane/odd-coset certificate from imported fields. -/
+theorem firstBitTerminalEvenHyperplaneOddCosetCertificate_of_assumptions
+    {Packet Generator Atom Coset : Type*} {packets : Finset Packet}
+    {generators : Finset Generator} {atoms : Finset Atom}
+    {evenHyperplane : Packet → Prop} {packetParity : Packet → Fin 2}
+    {spansPacket : Finset Generator → Packet → Prop}
+    {cosetOf : Packet → Coset} {oddCoset : Coset → Prop}
+    {realizesPacket : Atom → Packet → Prop} {atomParity : Atom → Fin 2}
+    (hevenParity :
+      FirstBitTerminalEvenHyperplaneParity packets evenHyperplane packetParity)
+    (hevenSpan :
+      FirstBitTerminalEvenHyperplaneSpan packets generators evenHyperplane spansPacket)
+    (hodd :
+      FirstBitTerminalOddCosetPacketRealization packets atoms cosetOf oddCoset
+        realizesPacket atomParity) :
+    FirstBitTerminalEvenHyperplaneOddCosetCertificate packets generators atoms
+      evenHyperplane packetParity spansPacket cosetOf oddCoset realizesPacket
+      atomParity where
+  evenParity := hevenParity
+  evenSpan := hevenSpan
+  oddCosetRealization := hodd
+
+/-- Project parity zero on the even hyperplane. -/
+theorem FirstBitTerminalEvenHyperplaneOddCosetCertificate.packetParity_eq_zero
+    {Packet Generator Atom Coset : Type*} {packets : Finset Packet}
+    {generators : Finset Generator} {atoms : Finset Atom}
+    {evenHyperplane : Packet → Prop} {packetParity : Packet → Fin 2}
+    {spansPacket : Finset Generator → Packet → Prop}
+    {cosetOf : Packet → Coset} {oddCoset : Coset → Prop}
+    {realizesPacket : Atom → Packet → Prop} {atomParity : Atom → Fin 2}
+    (h :
+      FirstBitTerminalEvenHyperplaneOddCosetCertificate packets generators atoms
+        evenHyperplane packetParity spansPacket cosetOf oddCoset realizesPacket
+        atomParity)
+    {packet : Packet} (hpacket : packet ∈ packets) (heven : evenHyperplane packet) :
+    packetParity packet = 0 :=
+  h.evenParity packet hpacket heven
+
+/-- Project a generator span witness for an even-hyperplane packet. -/
+theorem FirstBitTerminalEvenHyperplaneOddCosetCertificate.evenSpan_witness
+    {Packet Generator Atom Coset : Type*} {packets : Finset Packet}
+    {generators : Finset Generator} {atoms : Finset Atom}
+    {evenHyperplane : Packet → Prop} {packetParity : Packet → Fin 2}
+    {spansPacket : Finset Generator → Packet → Prop}
+    {cosetOf : Packet → Coset} {oddCoset : Coset → Prop}
+    {realizesPacket : Atom → Packet → Prop} {atomParity : Atom → Fin 2}
+    (h :
+      FirstBitTerminalEvenHyperplaneOddCosetCertificate packets generators atoms
+        evenHyperplane packetParity spansPacket cosetOf oddCoset realizesPacket
+        atomParity)
+    {packet : Packet} (hpacket : packet ∈ packets) (heven : evenHyperplane packet) :
+    ∃ basis : Finset Generator, basis ⊆ generators ∧ spansPacket basis packet :=
+  h.evenSpan packet hpacket heven
+
+/-- Project an odd atom realizing an odd-coset packet. -/
+theorem FirstBitTerminalEvenHyperplaneOddCosetCertificate.oddCoset_realizingAtom
+    {Packet Generator Atom Coset : Type*} {packets : Finset Packet}
+    {generators : Finset Generator} {atoms : Finset Atom}
+    {evenHyperplane : Packet → Prop} {packetParity : Packet → Fin 2}
+    {spansPacket : Finset Generator → Packet → Prop}
+    {cosetOf : Packet → Coset} {oddCoset : Coset → Prop}
+    {realizesPacket : Atom → Packet → Prop} {atomParity : Atom → Fin 2}
+    (h :
+      FirstBitTerminalEvenHyperplaneOddCosetCertificate packets generators atoms
+        evenHyperplane packetParity spansPacket cosetOf oddCoset realizesPacket
+        atomParity)
+    {packet : Packet} (hpacket : packet ∈ packets) (hodd : oddCoset (cosetOf packet)) :
+    ∃ atom : Atom, atom ∈ atoms ∧ realizesPacket atom packet ∧ atomParity atom = 1 :=
+  h.oddCosetRealization packet hpacket hodd
+
+/-- Two-sheeted cover fibers over the base packet graph. -/
+def FirstBitTerminalTwoSheetedCoverFibers
+    {Base Cover : Type*} (base : Finset Base) (cover : Finset Cover)
+    (projection : Cover → Base) (sheet : Cover → Fin 2) : Prop :=
+  ∀ basepoint : Base, basepoint ∈ base →
+    ∃ zeroLift : Cover, zeroLift ∈ cover ∧ projection zeroLift = basepoint ∧
+      sheet zeroLift = 0 ∧
+        ∃ oneLift : Cover, oneLift ∈ cover ∧ projection oneLift = basepoint ∧
+          sheet oneLift = 1 ∧ zeroLift ≠ oneLift ∧
+            ∀ lift : Cover, lift ∈ cover → projection lift = basepoint →
+              lift = zeroLift ∨ lift = oneLift
+
+/-- Deck involution normal form for a two-sheeted cover. -/
+def FirstBitTerminalTwoSheetedCoverDeckNormalForm
+    {Cover : Type*} (cover : Finset Cover) (deck : Cover → Cover)
+    (sheet : Cover → Fin 2) : Prop :=
+  ∀ lift : Cover, lift ∈ cover →
+    deck lift ∈ cover ∧ deck (deck lift) = lift ∧ deck lift ≠ lift ∧
+      sheet (deck lift) = sheet lift + (1 : Fin 2)
+
+/-- The deck involution preserves the base projection. -/
+def FirstBitTerminalTwoSheetedCoverDeckOverBase
+    {Base Cover : Type*} (cover : Finset Cover) (projection : Cover → Base)
+    (deck : Cover → Cover) : Prop :=
+  ∀ lift : Cover, lift ∈ cover → projection (deck lift) = projection lift
+
+/-- Holonomy normal form for lifted paths in a two-sheeted cover. -/
+def FirstBitTerminalTwoSheetedCoverHolonomyNormalForm
+    {Base Cover Path : Type*} (base : Finset Base) (cover : Finset Cover)
+    (paths : Finset Path) (projection : Cover → Base) (sheet : Cover → Fin 2)
+    (pathStart pathEnd : Path → Base) (liftStart liftEnd : Path → Cover)
+    (holonomy : Path → Fin 2) : Prop :=
+  ∀ path : Path, path ∈ paths →
+    pathStart path ∈ base ∧ pathEnd path ∈ base ∧
+      liftStart path ∈ cover ∧ liftEnd path ∈ cover ∧
+        projection (liftStart path) = pathStart path ∧
+          projection (liftEnd path) = pathEnd path ∧
+            sheet (liftEnd path) = sheet (liftStart path) + holonomy path
+
+/-- Flatness certificate: every recorded cycle has trivial two-sheeted holonomy. -/
+def FirstBitTerminalFlatTwoSheetedCycleHolonomy
+    {Path : Type*} (cycles : Finset Path) (holonomy : Path → Fin 2) : Prop :=
+  ∀ cycle : Path, cycle ∈ cycles → holonomy cycle = 0
+
+/--
+Flat two-sheeted cover/holonomy normal-form certificate.  It records the fiber
+normal form, deck involution, lifted path holonomy, and flat cycle holonomy as
+separate imported assumptions.
+-/
+structure FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate
+    {Base Cover Path : Type*} (base : Finset Base) (cover : Finset Cover)
+    (paths cycles : Finset Path) (projection : Cover → Base) (sheet : Cover → Fin 2)
+    (deck : Cover → Cover) (pathStart pathEnd : Path → Base)
+    (liftStart liftEnd : Path → Cover) (holonomy : Path → Fin 2) : Prop where
+  twoSheetedFibers : FirstBitTerminalTwoSheetedCoverFibers base cover projection sheet
+  deckNormalForm : FirstBitTerminalTwoSheetedCoverDeckNormalForm cover deck sheet
+  deckOverBase : FirstBitTerminalTwoSheetedCoverDeckOverBase cover projection deck
+  holonomyNormalForm :
+    FirstBitTerminalTwoSheetedCoverHolonomyNormalForm base cover paths projection sheet
+      pathStart pathEnd liftStart liftEnd holonomy
+  flatCycleHolonomy : FirstBitTerminalFlatTwoSheetedCycleHolonomy cycles holonomy
+
+/-- Build a flat two-sheeted cover/holonomy certificate from imported fields. -/
+theorem firstBitTerminalFlatTwoSheetedCoverHolonomyCertificate_of_assumptions
+    {Base Cover Path : Type*} {base : Finset Base} {cover : Finset Cover}
+    {paths cycles : Finset Path} {projection : Cover → Base} {sheet : Cover → Fin 2}
+    {deck : Cover → Cover} {pathStart pathEnd : Path → Base}
+    {liftStart liftEnd : Path → Cover} {holonomy : Path → Fin 2}
+    (hfibers : FirstBitTerminalTwoSheetedCoverFibers base cover projection sheet)
+    (hdeck : FirstBitTerminalTwoSheetedCoverDeckNormalForm cover deck sheet)
+    (hdeckBase : FirstBitTerminalTwoSheetedCoverDeckOverBase cover projection deck)
+    (hholonomy :
+      FirstBitTerminalTwoSheetedCoverHolonomyNormalForm base cover paths projection sheet
+        pathStart pathEnd liftStart liftEnd holonomy)
+    (hflat : FirstBitTerminalFlatTwoSheetedCycleHolonomy cycles holonomy) :
+    FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate base cover paths cycles
+      projection sheet deck pathStart pathEnd liftStart liftEnd holonomy where
+  twoSheetedFibers := hfibers
+  deckNormalForm := hdeck
+  deckOverBase := hdeckBase
+  holonomyNormalForm := hholonomy
+  flatCycleHolonomy := hflat
+
+/-- Project the two lifts over a basepoint from a flat cover certificate. -/
+theorem FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate.fiber_over
+    {Base Cover Path : Type*} {base : Finset Base} {cover : Finset Cover}
+    {paths cycles : Finset Path} {projection : Cover → Base} {sheet : Cover → Fin 2}
+    {deck : Cover → Cover} {pathStart pathEnd : Path → Base}
+    {liftStart liftEnd : Path → Cover} {holonomy : Path → Fin 2}
+    (h :
+      FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate base cover paths cycles
+        projection sheet deck pathStart pathEnd liftStart liftEnd holonomy)
+    {basepoint : Base} (hbase : basepoint ∈ base) :
+    ∃ zeroLift : Cover, zeroLift ∈ cover ∧ projection zeroLift = basepoint ∧
+      sheet zeroLift = 0 ∧
+        ∃ oneLift : Cover, oneLift ∈ cover ∧ projection oneLift = basepoint ∧
+          sheet oneLift = 1 ∧ zeroLift ≠ oneLift ∧
+            ∀ lift : Cover, lift ∈ cover → projection lift = basepoint →
+              lift = zeroLift ∨ lift = oneLift :=
+  h.twoSheetedFibers basepoint hbase
+
+/-- Project deck membership from a flat cover certificate. -/
+theorem FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate.deck_mem
+    {Base Cover Path : Type*} {base : Finset Base} {cover : Finset Cover}
+    {paths cycles : Finset Path} {projection : Cover → Base} {sheet : Cover → Fin 2}
+    {deck : Cover → Cover} {pathStart pathEnd : Path → Base}
+    {liftStart liftEnd : Path → Cover} {holonomy : Path → Fin 2}
+    (h :
+      FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate base cover paths cycles
+        projection sheet deck pathStart pathEnd liftStart liftEnd holonomy)
+    {lift : Cover} (hlift : lift ∈ cover) :
+    deck lift ∈ cover :=
+  (h.deckNormalForm lift hlift).1
+
+/-- Project deck involutivity from a flat cover certificate. -/
+theorem FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate.deck_involutive
+    {Base Cover Path : Type*} {base : Finset Base} {cover : Finset Cover}
+    {paths cycles : Finset Path} {projection : Cover → Base} {sheet : Cover → Fin 2}
+    {deck : Cover → Cover} {pathStart pathEnd : Path → Base}
+    {liftStart liftEnd : Path → Cover} {holonomy : Path → Fin 2}
+    (h :
+      FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate base cover paths cycles
+        projection sheet deck pathStart pathEnd liftStart liftEnd holonomy)
+    {lift : Cover} (hlift : lift ∈ cover) :
+    deck (deck lift) = lift :=
+  (h.deckNormalForm lift hlift).2.1
+
+/-- Project the deck fixed-point exclusion. -/
+theorem FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate.deck_ne
+    {Base Cover Path : Type*} {base : Finset Base} {cover : Finset Cover}
+    {paths cycles : Finset Path} {projection : Cover → Base} {sheet : Cover → Fin 2}
+    {deck : Cover → Cover} {pathStart pathEnd : Path → Base}
+    {liftStart liftEnd : Path → Cover} {holonomy : Path → Fin 2}
+    (h :
+      FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate base cover paths cycles
+        projection sheet deck pathStart pathEnd liftStart liftEnd holonomy)
+    {lift : Cover} (hlift : lift ∈ cover) :
+    deck lift ≠ lift :=
+  (h.deckNormalForm lift hlift).2.2.1
+
+/-- Project the sheet-flip normal form of the deck involution. -/
+theorem FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate.deck_sheet_flip
+    {Base Cover Path : Type*} {base : Finset Base} {cover : Finset Cover}
+    {paths cycles : Finset Path} {projection : Cover → Base} {sheet : Cover → Fin 2}
+    {deck : Cover → Cover} {pathStart pathEnd : Path → Base}
+    {liftStart liftEnd : Path → Cover} {holonomy : Path → Fin 2}
+    (h :
+      FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate base cover paths cycles
+        projection sheet deck pathStart pathEnd liftStart liftEnd holonomy)
+    {lift : Cover} (hlift : lift ∈ cover) :
+    sheet (deck lift) = sheet lift + (1 : Fin 2) :=
+  (h.deckNormalForm lift hlift).2.2.2
+
+/-- Project preservation of the base projection by the deck involution. -/
+theorem FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate.deck_projection_eq
+    {Base Cover Path : Type*} {base : Finset Base} {cover : Finset Cover}
+    {paths cycles : Finset Path} {projection : Cover → Base} {sheet : Cover → Fin 2}
+    {deck : Cover → Cover} {pathStart pathEnd : Path → Base}
+    {liftStart liftEnd : Path → Cover} {holonomy : Path → Fin 2}
+    (h :
+      FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate base cover paths cycles
+        projection sheet deck pathStart pathEnd liftStart liftEnd holonomy)
+    {lift : Cover} (hlift : lift ∈ cover) :
+    projection (deck lift) = projection lift :=
+  h.deckOverBase lift hlift
+
+/-- Project the lifted-path holonomy normal form. -/
+theorem FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate.path_holonomyNormalForm
+    {Base Cover Path : Type*} {base : Finset Base} {cover : Finset Cover}
+    {paths cycles : Finset Path} {projection : Cover → Base} {sheet : Cover → Fin 2}
+    {deck : Cover → Cover} {pathStart pathEnd : Path → Base}
+    {liftStart liftEnd : Path → Cover} {holonomy : Path → Fin 2}
+    (h :
+      FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate base cover paths cycles
+        projection sheet deck pathStart pathEnd liftStart liftEnd holonomy)
+    {path : Path} (hpath : path ∈ paths) :
+    pathStart path ∈ base ∧ pathEnd path ∈ base ∧
+      liftStart path ∈ cover ∧ liftEnd path ∈ cover ∧
+        projection (liftStart path) = pathStart path ∧
+          projection (liftEnd path) = pathEnd path ∧
+            sheet (liftEnd path) = sheet (liftStart path) + holonomy path :=
+  h.holonomyNormalForm path hpath
+
+/-- Project flatness of cycle holonomy. -/
+theorem FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate.cycle_holonomy_zero
+    {Base Cover Path : Type*} {base : Finset Base} {cover : Finset Cover}
+    {paths cycles : Finset Path} {projection : Cover → Base} {sheet : Cover → Fin 2}
+    {deck : Cover → Cover} {pathStart pathEnd : Path → Base}
+    {liftStart liftEnd : Path → Cover} {holonomy : Path → Fin 2}
+    (h :
+      FirstBitTerminalFlatTwoSheetedCoverHolonomyCertificate base cover paths cycles
+        projection sheet deck pathStart pathEnd liftStart liftEnd holonomy)
+    {cycle : Path} (hcycle : cycle ∈ cycles) :
+    holonomy cycle = 0 :=
+  h.flatCycleHolonomy cycle hcycle
+
+/-- Selectors for the stopped-bit/affine-profile dyadic frontier. -/
+inductive FirstBitTerminalStoppedBitAffineProfileDyadicFrontierSelector : Type
+  | affineProfileAvoidance
+  | inverseKneserNormalForm
+  | dyadicFlagDescent
+  | stoppedSupportCircuit
+  | evenHyperplaneSpan
+  | oddCosetPacketRealization
+  | coverHolonomyNormalForm
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalStoppedBitAffineProfileDyadicFrontierSelector
+
+/-- The proof obligation attached to each stopped-bit/affine-profile dyadic selector. -/
+def obligation
+    (affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop) :
+    FirstBitTerminalStoppedBitAffineProfileDyadicFrontierSelector → Prop
+  | affineProfileAvoidance => affineProfileAvoidance
+  | inverseKneserNormalForm => inverseKneserNormalForm
+  | dyadicFlagDescent => dyadicFlagDescent
+  | stoppedSupportCircuit => stoppedSupportCircuit
+  | evenHyperplaneSpan => evenHyperplaneSpan
+  | oddCosetPacketRealization => oddCosetPacketRealization
+  | coverHolonomyNormalForm => coverHolonomyNormalForm
+
+end FirstBitTerminalStoppedBitAffineProfileDyadicFrontierSelector
+
+/--
+Combined imports for the affine-profile dyadic frontier plus the stopped-bit support-circuit,
+dual hyperplane/coset, and flat cover/holonomy normal forms.
+-/
+structure FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+    (affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop) : Prop where
+  affineProfileFrontier :
+    FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent
+  stoppedSupportCircuitCert : stoppedSupportCircuit
+  evenHyperplaneSpanCert : evenHyperplaneSpan
+  oddCosetPacketRealizationCert : oddCosetPacketRealization
+  coverHolonomyNormalFormCert : coverHolonomyNormalForm
+
+/-- Build stopped-bit/affine-profile dyadic imports from independent assumptions. -/
+theorem firstBitTerminalStoppedBitAffineProfileDyadicFrontierImports_of_parts
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (hprofile : affineProfileAvoidance) (hkneser : inverseKneserNormalForm)
+    (hflag : dyadicFlagDescent) (hstopped : stoppedSupportCircuit)
+    (heven : evenHyperplaneSpan) (hodd : oddCosetPacketRealization)
+    (hcover : coverHolonomyNormalForm) :
+    FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm where
+  affineProfileFrontier :=
+    firstBitTerminalAffineProfileTargetAvoidanceFrontierImports_of_parts
+      hprofile hkneser hflag
+  stoppedSupportCircuitCert := hstopped
+  evenHyperplaneSpanCert := heven
+  oddCosetPacketRealizationCert := hodd
+  coverHolonomyNormalFormCert := hcover
+
+/-- Project the affine-profile target-avoidance frontier. -/
+theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.to_affineProfileFrontier
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+        affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+        stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+        coverHolonomyNormalForm) :
+    FirstBitTerminalAffineProfileTargetAvoidanceFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent :=
+  h.affineProfileFrontier
+
+/-- Project affine profile avoidance from the stopped-bit dyadic bundle. -/
+theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.to_affineProfileAvoidance
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+        affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+        stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+        coverHolonomyNormalForm) :
+    affineProfileAvoidance :=
+  h.affineProfileFrontier.to_affineProfileAvoidance
+
+/-- Project inverse-Kneser normal form from the stopped-bit dyadic bundle. -/
+theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.to_inverseKneserNormalForm
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+        affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+        stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+        coverHolonomyNormalForm) :
+    inverseKneserNormalForm :=
+  h.affineProfileFrontier.to_inverseKneserNormalForm
+
+/-- Project dyadic flag descent from the stopped-bit dyadic bundle. -/
+theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.to_dyadicFlagDescent
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+        affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+        stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+        coverHolonomyNormalForm) :
+    dyadicFlagDescent :=
+  h.affineProfileFrontier.to_dyadicFlagDescent
+
+/-- Project stopped support-circuit imports. -/
+theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.to_stoppedSupportCircuit
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+        affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+        stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+        coverHolonomyNormalForm) :
+    stoppedSupportCircuit :=
+  h.stoppedSupportCircuitCert
+
+/-- Project even-hyperplane span imports. -/
+theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.to_evenHyperplaneSpan
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+        affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+        stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+        coverHolonomyNormalForm) :
+    evenHyperplaneSpan :=
+  h.evenHyperplaneSpanCert
+
+/-- Project odd-coset packet-realization imports. -/
+theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.to_oddCosetPacketRealization
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+        affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+        stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+        coverHolonomyNormalForm) :
+    oddCosetPacketRealization :=
+  h.oddCosetPacketRealizationCert
+
+/-- Project cover/holonomy normal-form imports. -/
+theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.to_coverHolonomyNormalForm
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+        affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+        stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+        coverHolonomyNormalForm) :
+    coverHolonomyNormalForm :=
+  h.coverHolonomyNormalFormCert
+
+/-- Project the obligation selected from the stopped-bit/affine-profile dyadic bundle. -/
+theorem FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports.obligation
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports
+        affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+        stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+        coverHolonomyNormalForm)
+    (selector : FirstBitTerminalStoppedBitAffineProfileDyadicFrontierSelector) :
+    FirstBitTerminalStoppedBitAffineProfileDyadicFrontierSelector.obligation
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm selector := by
+  cases selector
+  · exact h.to_affineProfileAvoidance
+  · exact h.to_inverseKneserNormalForm
+  · exact h.to_dyadicFlagDescent
+  · exact h.to_stoppedSupportCircuit
+  · exact h.to_evenHyperplaneSpan
+  · exact h.to_oddCosetPacketRealization
+  · exact h.to_coverHolonomyNormalForm
+
+/--
+Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
+dyadic frontier and the stopped-bit support/cover frontier.
+-/
+structure FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports
+    (packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop) : Prop where
+  repairAffineImports :
+    FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent
+  stoppedBitDyadicFrontier :
+    FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+      oddCosetPacketRealization coverHolonomyNormalForm
+
+/-- Build the repair/shadow plus stopped-bit affine dyadic bundle from independent imports. -/
+theorem firstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports_of_parts
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (hpacket : packetAtomFrontier) (hrepair : atomPacketRepairFrontier)
+    (hshadow : principalBucketShadowFrontier) (hprofile : affineProfileAvoidance)
+    (hkneser : inverseKneserNormalForm) (hflag : dyadicFlagDescent)
+    (hstopped : stoppedSupportCircuit) (heven : evenHyperplaneSpan)
+    (hodd : oddCosetPacketRealization) (hcover : coverHolonomyNormalForm) :
+    FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+      oddCosetPacketRealization coverHolonomyNormalForm where
+  repairAffineImports :=
+    firstBitTerminalAtomPacketRepairAffineProfileFlagImports_of_parts
+      hpacket hrepair hshadow hprofile hkneser hflag
+  stoppedBitDyadicFrontier :=
+    firstBitTerminalStoppedBitAffineProfileDyadicFrontierImports_of_parts
+      hprofile hkneser hflag hstopped heven hodd hcover
+
+/-- Project the repair/affine-profile flag imports. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_repairAffineImports
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    FirstBitTerminalAtomPacketRepairAffineProfileFlagImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent :=
+  h.repairAffineImports
+
+/-- Project the stopped-bit dyadic frontier imports. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_stoppedBitDyadicFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    FirstBitTerminalStoppedBitAffineProfileDyadicFrontierImports affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+      oddCosetPacketRealization coverHolonomyNormalForm :=
+  h.stoppedBitDyadicFrontier
+
+/-- Project packet-atom frontier imports from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_packetAtomFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    packetAtomFrontier :=
+  h.repairAffineImports.to_packetAtomFrontier
+
+/-- Project atom-packet repair imports from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_atomPacketRepairFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    atomPacketRepairFrontier :=
+  h.repairAffineImports.to_atomPacketRepairFrontier
+
+/-- Project principal-bucket shadow imports from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_principalBucketShadowFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    principalBucketShadowFrontier :=
+  h.repairAffineImports.to_principalBucketShadowFrontier
+
+/-- Project affine profile avoidance from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_affineProfileAvoidance
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    affineProfileAvoidance :=
+  h.stoppedBitDyadicFrontier.to_affineProfileAvoidance
+
+/-- Project inverse-Kneser normal form from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_inverseKneserNormalForm
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    inverseKneserNormalForm :=
+  h.stoppedBitDyadicFrontier.to_inverseKneserNormalForm
+
+/-- Project dyadic flag descent from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_dyadicFlagDescent
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    dyadicFlagDescent :=
+  h.stoppedBitDyadicFrontier.to_dyadicFlagDescent
+
+/-- Project stopped support-circuit imports from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_stoppedSupportCircuit
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    stoppedSupportCircuit :=
+  h.stoppedBitDyadicFrontier.to_stoppedSupportCircuit
+
+/-- Project even-hyperplane span imports from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_evenHyperplaneSpan
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    evenHyperplaneSpan :=
+  h.stoppedBitDyadicFrontier.to_evenHyperplaneSpan
+
+/-- Project odd-coset realization imports from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_oddCosetPacketRealization
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    oddCosetPacketRealization :=
+  h.stoppedBitDyadicFrontier.to_oddCosetPacketRealization
+
+/-- Project cover/holonomy imports from the stopped-bit combined bundle. -/
+theorem FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports.to_coverHolonomyNormalForm
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier
+      affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization
+      coverHolonomyNormalForm : Prop}
+    (h :
+      FirstBitTerminalAtomPacketRepairStoppedBitAffineProfileDyadicImports packetAtomFrontier
+        atomPacketRepairFrontier principalBucketShadowFrontier affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm) :
+    coverHolonomyNormalForm :=
+  h.stoppedBitDyadicFrontier.to_coverHolonomyNormalForm
+
+/--
 Full co-cut/principal-bucket shadow/packet-atom repair imports enriched with the affine profile
 target-avoidance frontier.
 -/
