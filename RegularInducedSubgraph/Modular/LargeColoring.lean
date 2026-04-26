@@ -5024,4 +5024,933 @@ theorem targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublic
       h).finalReleaseBundleReuse = h.toPublicFinalArchiveReleaseBundle :=
   rfl
 
+/--
+Assumption-backed scalar-quotient/transpose packet for the proof-md public frontier.  The
+transpose-rigidity input is deliberately split into its forward, reverse, and diagonal pieces; the
+remaining fields name the parity-tetrahedron star phase handoff, the signed-`K4` quotient closure
+classification, and the downstream target-selector consumer marker.
+-/
+structure ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+    (fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop) :
+    Prop where
+  terminalScalarSurfaces : FirstBitPacketTerminalScalarFrontierSurfaces
+  quotientWithTerminalScalars : FirstBitPacketQuotientFrontierSurfacesWithTerminalScalars
+  fullySplitTransposeForwardRigidityCert : fullySplitTransposeForwardRigidity
+  fullySplitTransposeReverseRigidityCert : fullySplitTransposeReverseRigidity
+  fullySplitTransposeDiagonalRigidityCert : fullySplitTransposeDiagonalRigidity
+  parityTetrahedronStarPhaseHandoffCert : parityTetrahedronStarPhaseHandoff
+  signedK4QuotientClosureClassificationCert : signedK4QuotientClosureClassification
+  publicDownstreamTargetSelectorConsumersCert : publicDownstreamTargetSelectorConsumers
+
+/-- Build the scalar-quotient/transpose assumption packet from its explicit endpoints. -/
+theorem proofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket_of_parts
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (hterminalScalars : FirstBitPacketTerminalScalarFrontierSurfaces)
+    (hquotientWithScalars : FirstBitPacketQuotientFrontierSurfacesWithTerminalScalars)
+    (hforward : fullySplitTransposeForwardRigidity)
+    (hreverse : fullySplitTransposeReverseRigidity)
+    (hdiagonal : fullySplitTransposeDiagonalRigidity)
+    (hphase : parityTetrahedronStarPhaseHandoff)
+    (hclassification : signedK4QuotientClosureClassification)
+    (hconsumers : publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers where
+  terminalScalarSurfaces := hterminalScalars
+  quotientWithTerminalScalars := hquotientWithScalars
+  fullySplitTransposeForwardRigidityCert := hforward
+  fullySplitTransposeReverseRigidityCert := hreverse
+  fullySplitTransposeDiagonalRigidityCert := hdiagonal
+  parityTetrahedronStarPhaseHandoffCert := hphase
+  signedK4QuotientClosureClassificationCert := hclassification
+  publicDownstreamTargetSelectorConsumersCert := hconsumers
+
+/-- Project the terminal scalar surfaces from the scalar-quotient/transpose packet. -/
+theorem ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket.toTerminalScalarSurfaces
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    FirstBitPacketTerminalScalarFrontierSurfaces :=
+  h.terminalScalarSurfaces
+
+/-- Project the quotient frontier enriched with terminal scalars. -/
+theorem ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket.toQuotientWithTerminalScalars
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    FirstBitPacketQuotientFrontierSurfacesWithTerminalScalars :=
+  h.quotientWithTerminalScalars
+
+/-- Project the scalar-free quotient frontier from the scalar-quotient packet. -/
+theorem ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket.toQuotientFrontier
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    FirstBitPacketQuotientFrontierSurfaces :=
+  h.quotientWithTerminalScalars.quotient
+
+/-- Project the forward half of the split transpose-rigidity assumption. -/
+theorem ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket.toFullySplitTransposeForwardRigidity
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    fullySplitTransposeForwardRigidity :=
+  h.fullySplitTransposeForwardRigidityCert
+
+/-- Project the reverse half of the split transpose-rigidity assumption. -/
+theorem ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket.toFullySplitTransposeReverseRigidity
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    fullySplitTransposeReverseRigidity :=
+  h.fullySplitTransposeReverseRigidityCert
+
+/-- Project the diagonal/fixed-point part of the split transpose-rigidity assumption. -/
+theorem ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket.toFullySplitTransposeDiagonalRigidity
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    fullySplitTransposeDiagonalRigidity :=
+  h.fullySplitTransposeDiagonalRigidityCert
+
+/-- Project the parity-tetrahedron star phase handoff marker. -/
+theorem ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket.toParityTetrahedronStarPhaseHandoff
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    parityTetrahedronStarPhaseHandoff :=
+  h.parityTetrahedronStarPhaseHandoffCert
+
+/-- Project the signed-`K4` quotient closure classification marker. -/
+theorem ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket.toSignedK4QuotientClosureClassification
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    signedK4QuotientClosureClassification :=
+  h.signedK4QuotientClosureClassificationCert
+
+/-- Project the public downstream target-selector consumer marker. -/
+theorem ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket.toPublicDownstreamTargetSelectorConsumers
+    {fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    publicDownstreamTargetSelectorConsumers :=
+  h.publicDownstreamTargetSelectorConsumersCert
+
+/--
+Public selector names for the scalar-quotient proof-md frontier.  The first three cases reuse the
+terminal public selector obligations; the remaining cases name the scalar quotient, split transpose,
+star-phase, signed-`K4`, and downstream-consumer assumptions.
+-/
+inductive ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector : Type where
+  | terminalStrictCrossAtomDefectObligation
+  | terminalNoLeftoverFourFourAtomDeletionDichotomyObligation
+  | terminalNoLeftoverUnitStrictAbsorptionOrLiftCollisionObligation
+  | terminalScalarFrontierSurfaces
+  | quotientWithTerminalScalarsEndpoint
+  | fullySplitTransposeForwardRigidityEndpoint
+  | fullySplitTransposeReverseRigidityEndpoint
+  | fullySplitTransposeDiagonalRigidityEndpoint
+  | parityTetrahedronStarPhaseHandoffEndpoint
+  | signedK4QuotientClosureClassificationEndpoint
+  | publicDownstreamTargetSelectorConsumersEndpoint
+  deriving DecidableEq, Repr
+
+namespace ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector
+
+/-- The exact obligation selected by a scalar-quotient proof-md public target selector. -/
+def obligation
+    (terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop) :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector → Prop
+  | terminalStrictCrossAtomDefectObligation => terminalStrictCrossAtomDefect
+  | terminalNoLeftoverFourFourAtomDeletionDichotomyObligation =>
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+  | terminalNoLeftoverUnitStrictAbsorptionOrLiftCollisionObligation =>
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  | terminalScalarFrontierSurfaces => FirstBitPacketTerminalScalarFrontierSurfaces
+  | quotientWithTerminalScalarsEndpoint => FirstBitPacketQuotientFrontierSurfacesWithTerminalScalars
+  | fullySplitTransposeForwardRigidityEndpoint => fullySplitTransposeForwardRigidity
+  | fullySplitTransposeReverseRigidityEndpoint => fullySplitTransposeReverseRigidity
+  | fullySplitTransposeDiagonalRigidityEndpoint => fullySplitTransposeDiagonalRigidity
+  | parityTetrahedronStarPhaseHandoffEndpoint => parityTetrahedronStarPhaseHandoff
+  | signedK4QuotientClosureClassificationEndpoint => signedK4QuotientClosureClassification
+  | publicDownstreamTargetSelectorConsumersEndpoint => publicDownstreamTargetSelectorConsumers
+
+end ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector
+
+/--
+Obligation packet for public scalar-quotient target selectors.  It composes the existing final
+proof-md terminal selector obligations with the explicit scalar quotient and split transpose packet.
+-/
+structure ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+    (terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop) :
+    Prop where
+  terminalSelectorObligations :
+    ProofMdLargeSupportColoringFinalProofMdConsumerPublicTerminalSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  scalarQuotientAssumptions :
+    ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+
+/-- Build the scalar-quotient public selector-obligation packet from its two component packets. -/
+theorem proofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket_of_parts
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (hterminal :
+      ProofMdLargeSupportColoringFinalProofMdConsumerPublicTerminalSelectorObligationPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers where
+  terminalSelectorObligations := hterminal
+  scalarQuotientAssumptions := hscalar
+
+/-- Project the obligation selected by a scalar-quotient proof-md public selector. -/
+theorem ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket.obligation
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers)
+    (selector : ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector) :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector.obligation
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers selector := by
+  cases selector
+  · exact h.terminalSelectorObligations.strictCrossAtomDefect
+  · exact h.terminalSelectorObligations.noLeftoverFourFourAtomDeletionDichotomy
+  · exact h.terminalSelectorObligations.noLeftoverUnitStrictAbsorptionOrLiftCollision
+  · exact h.scalarQuotientAssumptions.terminalScalarSurfaces
+  · exact h.scalarQuotientAssumptions.quotientWithTerminalScalars
+  · exact h.scalarQuotientAssumptions.fullySplitTransposeForwardRigidityCert
+  · exact h.scalarQuotientAssumptions.fullySplitTransposeReverseRigidityCert
+  · exact h.scalarQuotientAssumptions.fullySplitTransposeDiagonalRigidityCert
+  · exact h.scalarQuotientAssumptions.parityTetrahedronStarPhaseHandoffCert
+  · exact h.scalarQuotientAssumptions.signedK4QuotientClosureClassificationCert
+  · exact h.scalarQuotientAssumptions.publicDownstreamTargetSelectorConsumersCert
+
+/--
+Package the final proof-md terminal selectors together with explicit scalar quotient and transpose
+assumptions into the public scalar-quotient target-selector obligations.
+-/
+def ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle.toScalarQuotientPublicTargetSelectorObligationPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers where
+  terminalSelectorObligations := h.toTerminalSelectorObligationPacket
+  scalarQuotientAssumptions := hscalar
+
+/--
+Assumption-backed endpoint bundle for public scalar-quotient proof-md consumers.  It keeps the
+existing final proof-md/public endpoint as the source of target closure while carrying the scalar
+quotient, fully split transpose-rigidity, parity-tetrahedron star phase handoff, signed-`K4`
+classification, and downstream target-selector consumer obligations explicitly.
+-/
+structure ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+    (terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop) :
+    Type where
+  finalProofMdConsumerPublicEndpoint :
+    ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  publicFinalCurrentFrontierEndpoint :
+    ProofMdLargeSupportColoringPublicFinalCurrentFrontierEndpointWrapper
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  finalReleaseEndpoint :
+    ProofMdLargeSupportColoringFinalReleaseDownstreamConsumerEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  downstreamObligationLayer :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  terminalSelectorObligations :
+    ProofMdLargeSupportColoringFinalProofMdConsumerPublicTerminalSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  scalarQuotientAssumptions :
+    ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  publicTargetSelectorObligations :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  currentSelectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint
+  downstreamSelectorObligations : FirstBitCurrentSelectorAssumptions
+  noLeftoverCurrentFrontierPacket :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  externalBlockHandoff : ProofMdLargeSupportColoringExternalBlockHandoffFacade
+  finalTargetWrapper :
+    ProofMdLargeSupportColoringFinalPublicTargetObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  publicCitationCheckpointReuse :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  downstreamObligationProjection :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  finalReleaseBundleReuse : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  targetStatement_fromFinalProofMdConsumerPublicEndpoint : TargetStatement
+  targetStatement_fromScalarQuotientAssumptionPacket : TargetStatement
+  targetStatement_fromPublicTargetSelectorObligations : TargetStatement
+  targetStatement_fromFullySplitTransposeForwardRigidity : TargetStatement
+  targetStatement_fromFullySplitTransposeReverseRigidity : TargetStatement
+  targetStatement_fromFullySplitTransposeDiagonalRigidity : TargetStatement
+  targetStatement_fromParityTetrahedronStarPhaseHandoff : TargetStatement
+  targetStatement_fromSignedK4QuotientClosureClassification : TargetStatement
+  targetStatement_fromPublicDownstreamTargetSelectorConsumers : TargetStatement
+  targetStatement_fromDownstreamObligationProjection : TargetStatement
+  targetStatement_fromCurrentSelectorEndpoint : TargetStatement
+
+/-- Build the scalar-quotient public endpoint bundle from the final proof-md public endpoint. -/
+def ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers where
+  finalProofMdConsumerPublicEndpoint := h
+  publicFinalCurrentFrontierEndpoint := h.toPublicFinalCurrentFrontierEndpointWrapper
+  finalReleaseEndpoint := h.toFinalReleaseDownstreamConsumerEndpointBundle
+  downstreamObligationLayer := h.toFinalPublicDownstreamTargetObligationLayer
+  terminalSelectorObligations := h.toTerminalSelectorObligationPacket
+  scalarQuotientAssumptions := hscalar
+  publicTargetSelectorObligations := h.toScalarQuotientPublicTargetSelectorObligationPacket hscalar
+  currentSelectorEndpoint := h.toCurrentSelectorEndpoint
+  downstreamSelectorObligations := h.downstreamSelectorObligations
+  noLeftoverCurrentFrontierPacket := h.toNoLeftoverCurrentFrontierPacket
+  externalBlockHandoff := h.toExternalBlockHandoffFacade
+  finalTargetWrapper := h.toFinalPublicTargetObligationPacket
+  publicCitationCheckpointReuse := h.toPublicReleaseCurrentFrontierCitationBundle
+  downstreamObligationProjection := h.toFinalPublicDownstreamTargetObligationLayer
+  finalReleaseBundleReuse := h.toPublicFinalArchiveReleaseBundle
+  targetStatement_fromFinalProofMdConsumerPublicEndpoint :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle h
+  targetStatement_fromScalarQuotientAssumptionPacket :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle h
+  targetStatement_fromPublicTargetSelectorObligations :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle h
+  targetStatement_fromFullySplitTransposeForwardRigidity :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle h
+  targetStatement_fromFullySplitTransposeReverseRigidity :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle h
+  targetStatement_fromFullySplitTransposeDiagonalRigidity :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle h
+  targetStatement_fromParityTetrahedronStarPhaseHandoff :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle h
+  targetStatement_fromSignedK4QuotientClosureClassification :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle h
+  targetStatement_fromPublicDownstreamTargetSelectorConsumers :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle h
+  targetStatement_fromDownstreamObligationProjection :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle_viaDownstreamObligationProjection
+      h
+  targetStatement_fromCurrentSelectorEndpoint :=
+    targetStatement_of_proofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle_viaSelectorEndpoint
+      h
+
+/-- Expose the scalar-quotient public endpoint bundle from a final proof-md public endpoint. -/
+def ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle.toScalarQuotientPublicEndpointBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers :=
+  ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle
+    h hscalar
+
+/-- Expose the scalar-quotient public endpoint bundle from the public/final wrapper. -/
+def ProofMdLargeSupportColoringPublicFinalCurrentFrontierEndpointWrapper.toScalarQuotientPublicEndpointBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringPublicFinalCurrentFrontierEndpointWrapper
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers :=
+  h.toFinalProofMdConsumerPublicEndpointBundle.toScalarQuotientPublicEndpointBundle hscalar
+
+/-- Expose the scalar-quotient public endpoint bundle from the final-release endpoint. -/
+def ProofMdLargeSupportColoringFinalReleaseDownstreamConsumerEndpointBundle.toScalarQuotientPublicEndpointBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringFinalReleaseDownstreamConsumerEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers :=
+  h.toFinalProofMdConsumerPublicEndpointBundle.toScalarQuotientPublicEndpointBundle hscalar
+
+/-- Recover the final proof-md public endpoint from the scalar-quotient bundle. -/
+def ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.toFinalProofMdConsumerPublicEndpointBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.finalProofMdConsumerPublicEndpoint
+
+/-- Recover the scalar-quotient/transpose assumption packet from the scalar-quotient bundle. -/
+def ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.toScalarQuotientTransposeAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers :=
+  h.scalarQuotientAssumptions
+
+/-- Recover the public scalar-quotient target-selector obligation packet. -/
+def ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.toPublicTargetSelectorObligationPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers :=
+  h.publicTargetSelectorObligations
+
+/-- Recover the current selector endpoint from the scalar-quotient public bundle. -/
+def ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.toCurrentSelectorEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    FirstBitLargeSupportColoringCurrentSelectorEndpoint :=
+  h.currentSelectorEndpoint
+
+/-- Recover downstream target-obligation projections from the scalar-quotient public bundle. -/
+def ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.toFinalPublicDownstreamTargetObligationLayer
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.downstreamObligationLayer
+
+/-- Recover the no-leftover/current-frontier packet from the scalar-quotient public bundle. -/
+def ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.toNoLeftoverCurrentFrontierPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverCurrentFrontierPacket
+
+/-- Recover final-release bundle reuse from the scalar-quotient public bundle. -/
+def ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.toPublicFinalArchiveReleaseBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle :=
+  h.finalReleaseBundleReuse
+
+/-- The scalar-quotient public bundle discharges every named target-selector obligation. -/
+theorem ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.publicTargetSelectorObligation
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers)
+    (selector : ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector) :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector.obligation
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers selector :=
+  ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket.obligation
+    h.publicTargetSelectorObligations selector
+
+/-- The scalar-quotient public endpoint closes the target via the final proof-md public endpoint. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromFinalProofMdConsumerPublicEndpoint
+
+/-- The scalar-quotient public endpoint closes the target after scalar-quotient packaging. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaScalarQuotientAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromScalarQuotientAssumptionPacket
+
+/-- The scalar-quotient public endpoint closes the target through public target-selector obligations. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaPublicTargetSelectorObligations
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromPublicTargetSelectorObligations
+
+/-- The scalar-quotient public endpoint closes the target through forward transpose rigidity. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaFullySplitTransposeForwardRigidity
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromFullySplitTransposeForwardRigidity
+
+/-- The scalar-quotient public endpoint closes the target through reverse transpose rigidity. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaFullySplitTransposeReverseRigidity
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromFullySplitTransposeReverseRigidity
+
+/-- The scalar-quotient public endpoint closes the target through diagonal transpose rigidity. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaFullySplitTransposeDiagonalRigidity
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromFullySplitTransposeDiagonalRigidity
+
+/-- The scalar-quotient public endpoint closes the target through the parity-tetrahedron star phase handoff. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaParityTetrahedronStarPhaseHandoff
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromParityTetrahedronStarPhaseHandoff
+
+/-- The scalar-quotient public endpoint closes the target through signed-`K4` quotient classification. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaSignedK4QuotientClosureClassification
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromSignedK4QuotientClosureClassification
+
+/-- The scalar-quotient public endpoint closes the target through downstream target-selector consumers. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaPublicDownstreamTargetSelectorConsumers
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromPublicDownstreamTargetSelectorConsumers
+
+/-- The scalar-quotient public endpoint closes the target through downstream obligation projection. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaDownstreamObligationProjection
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromDownstreamObligationProjection
+
+/-- The scalar-quotient public endpoint closes the target through the current selector endpoint. -/
+theorem targetStatement_of_proofMdLargeSupportColoringScalarQuotientPublicEndpointBundle_viaCurrentSelectorEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    TargetStatement :=
+  h.targetStatement_fromCurrentSelectorEndpoint
+
+@[simp] theorem ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle_finalProofMdConsumerPublicEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    (ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle
+      h hscalar).finalProofMdConsumerPublicEndpoint = h :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle_scalarQuotientAssumptions
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    (ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle
+      h hscalar).scalarQuotientAssumptions = hscalar :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle_publicTargetSelectorObligations
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    (ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle
+      h hscalar).publicTargetSelectorObligations =
+      h.toScalarQuotientPublicTargetSelectorObligationPacket hscalar :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle_currentSelectorEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    (ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle
+      h hscalar).currentSelectorEndpoint = h.toCurrentSelectorEndpoint :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle_finalReleaseBundleReuse
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers : Prop}
+    (h : ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (hscalar :
+      ProofMdLargeSupportColoringScalarQuotientTransposeAssumptionPacket
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers) :
+    (ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle.ofFinalProofMdConsumerPublicEndpointBundle
+      h hscalar).finalReleaseBundleReuse = h.toPublicFinalArchiveReleaseBundle :=
+  rfl
+
 end RegularInducedSubgraph
