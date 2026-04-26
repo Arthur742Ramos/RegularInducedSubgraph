@@ -20816,6 +20816,756 @@ theorem FirstBitTerminalLabeledResidualSplitFrontier.to_nearThresholdDeletionTem
 end FirstBitTerminalLabeledResidualSplitFrontierSubfrontierProjections
 
 /--
+Switched disjoint-cover target frontier for the large-outside ternary branch.  The coordinate
+switching normalizes the target to `0/1` values on `coordinates`; three outside columns vanish on
+zero coordinates and disjointly cover the one coordinates, subject to the recorded capacities.
+-/
+structure FirstBitTerminalSwitchedDisjointCoverTargetFrontier
+    {Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    (coordinates zeroCoordinates oneCoordinates : Finset Coord)
+    (outsideColumns : Finset Column)
+    (switchedTarget capacity : Coord → ℕ) (columnEntry : Column → Coord → ℕ)
+    (switchingNormalization zeroCoordinateVanish oneCoordinateDisjointCover
+      switchedDisjointCover : Prop) : Prop where
+  outsideColumns_card_eq_three : outsideColumns.card = 3
+  zeroCoordinates_subset : zeroCoordinates ⊆ coordinates
+  oneCoordinates_subset : oneCoordinates ⊆ coordinates
+  zero_one_disjoint : Disjoint zeroCoordinates oneCoordinates
+  zero_one_cover_coordinates :
+    ∀ p : Coord, p ∈ coordinates → p ∈ zeroCoordinates ∨ p ∈ oneCoordinates
+  switchedTarget_zero : ∀ p : Coord, p ∈ zeroCoordinates → switchedTarget p = 0
+  switchedTarget_one : ∀ p : Coord, p ∈ oneCoordinates → switchedTarget p = 1
+  switchedTarget_binary : ∀ p : Coord, p ∈ coordinates →
+    switchedTarget p = 0 ∨ switchedTarget p = 1
+  columnEntry_le_capacity :
+    ∀ c : Column, c ∈ outsideColumns → ∀ p : Coord, p ∈ coordinates →
+      columnEntry c p ≤ capacity p
+  zeroCoordinate_vanishing :
+    ∀ c : Column, c ∈ outsideColumns → ∀ p : Coord, p ∈ zeroCoordinates →
+      columnEntry c p = 0
+  oneCoordinate_covered :
+    ∀ p : Coord, p ∈ oneCoordinates →
+      ∃ c : Column, c ∈ outsideColumns ∧ columnEntry c p = 1
+  oneCoordinate_disjoint :
+    ∀ c : Column, c ∈ outsideColumns → ∀ d : Column, d ∈ outsideColumns → c ≠ d →
+      ∀ p : Coord, p ∈ oneCoordinates → columnEntry c p = 1 → columnEntry d p = 0
+  oneCoordinate_uniqueCover :
+    ∀ p : Coord, p ∈ oneCoordinates →
+      ∃! c : Column, c ∈ outsideColumns ∧ columnEntry c p = 1
+  switchingNormalizationCert : switchingNormalization
+  zeroCoordinateVanishCert : zeroCoordinateVanish
+  oneCoordinateDisjointCoverCert : oneCoordinateDisjointCover
+  switchedDisjointCoverCert : switchedDisjointCover
+
+/-- Build the switched disjoint-cover target frontier from explicit certificate fields. -/
+theorem firstBitTerminalSwitchedDisjointCoverTargetFrontier_of_assumptions
+    {Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {switchingNormalization zeroCoordinateVanish oneCoordinateDisjointCover
+      switchedDisjointCover : Prop}
+    (hcols : outsideColumns.card = 3)
+    (hzeroSub : zeroCoordinates ⊆ coordinates)
+    (honeSub : oneCoordinates ⊆ coordinates)
+    (hdisj : Disjoint zeroCoordinates oneCoordinates)
+    (hcoverCoords :
+      ∀ p : Coord, p ∈ coordinates → p ∈ zeroCoordinates ∨ p ∈ oneCoordinates)
+    (hzeroTarget : ∀ p : Coord, p ∈ zeroCoordinates → switchedTarget p = 0)
+    (honeTarget : ∀ p : Coord, p ∈ oneCoordinates → switchedTarget p = 1)
+    (hbinary :
+      ∀ p : Coord, p ∈ coordinates → switchedTarget p = 0 ∨ switchedTarget p = 1)
+    (hcapacity :
+      ∀ c : Column, c ∈ outsideColumns → ∀ p : Coord, p ∈ coordinates →
+        columnEntry c p ≤ capacity p)
+    (hvanish :
+      ∀ c : Column, c ∈ outsideColumns → ∀ p : Coord, p ∈ zeroCoordinates →
+        columnEntry c p = 0)
+    (hcovered :
+      ∀ p : Coord, p ∈ oneCoordinates →
+        ∃ c : Column, c ∈ outsideColumns ∧ columnEntry c p = 1)
+    (hdisjointCover :
+      ∀ c : Column, c ∈ outsideColumns → ∀ d : Column, d ∈ outsideColumns → c ≠ d →
+        ∀ p : Coord, p ∈ oneCoordinates → columnEntry c p = 1 → columnEntry d p = 0)
+    (hunique :
+      ∀ p : Coord, p ∈ oneCoordinates →
+        ∃! c : Column, c ∈ outsideColumns ∧ columnEntry c p = 1)
+    (hswitch : switchingNormalization) (hzeroVanish : zeroCoordinateVanish)
+    (honeCover : oneCoordinateDisjointCover) (hswitched : switchedDisjointCover) :
+    FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+      oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover where
+  outsideColumns_card_eq_three := hcols
+  zeroCoordinates_subset := hzeroSub
+  oneCoordinates_subset := honeSub
+  zero_one_disjoint := hdisj
+  zero_one_cover_coordinates := hcoverCoords
+  switchedTarget_zero := hzeroTarget
+  switchedTarget_one := honeTarget
+  switchedTarget_binary := hbinary
+  columnEntry_le_capacity := hcapacity
+  zeroCoordinate_vanishing := hvanish
+  oneCoordinate_covered := hcovered
+  oneCoordinate_disjoint := hdisjointCover
+  oneCoordinate_uniqueCover := hunique
+  switchingNormalizationCert := hswitch
+  zeroCoordinateVanishCert := hzeroVanish
+  oneCoordinateDisjointCoverCert := honeCover
+  switchedDisjointCoverCert := hswitched
+
+section FirstBitTerminalSwitchedDisjointCoverTargetFrontier
+
+variable {Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {switchingNormalization zeroCoordinateVanish oneCoordinateDisjointCover
+  switchedDisjointCover : Prop}
+
+/-- Project that the switched branch uses exactly three outside columns. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.threeColumns
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover) :
+    outsideColumns.card = 3 :=
+  h.outsideColumns_card_eq_three
+
+/-- The switched `0` and `1` coordinate sets partition the ambient coordinate set. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.zeroOnePartition
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover) :
+    zeroCoordinates ⊆ coordinates ∧ oneCoordinates ⊆ coordinates ∧
+      Disjoint zeroCoordinates oneCoordinates ∧
+        ∀ p : Coord, p ∈ coordinates → p ∈ zeroCoordinates ∨ p ∈ oneCoordinates :=
+  ⟨h.zeroCoordinates_subset, h.oneCoordinates_subset, h.zero_one_disjoint,
+    h.zero_one_cover_coordinates⟩
+
+/-- On the switched coordinates, the target is binary. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.switchedTargetBinary
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover)
+    {p : Coord} (hp : p ∈ coordinates) :
+    switchedTarget p = 0 ∨ switchedTarget p = 1 :=
+  h.switchedTarget_binary p hp
+
+/-- Zero coordinates are exactly normalized as target value zero. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.switchedTarget_zero_of_mem
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover)
+    {p : Coord} (hp : p ∈ zeroCoordinates) :
+    switchedTarget p = 0 :=
+  h.switchedTarget_zero p hp
+
+/-- One coordinates are exactly normalized as target value one. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.switchedTarget_one_of_mem
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover)
+    {p : Coord} (hp : p ∈ oneCoordinates) :
+    switchedTarget p = 1 :=
+  h.switchedTarget_one p hp
+
+/-- Every outside column respects the per-coordinate capacity. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.columnEntry_le_capacity_of_mem
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover)
+    {c : Column} (hc : c ∈ outsideColumns) {p : Coord} (hp : p ∈ coordinates) :
+    columnEntry c p ≤ capacity p :=
+  h.columnEntry_le_capacity c hc p hp
+
+/-- Every outside column vanishes on a switched zero coordinate. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.zeroCoordinate_vanishes
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover)
+    {c : Column} (hc : c ∈ outsideColumns) {p : Coord} (hp : p ∈ zeroCoordinates) :
+    columnEntry c p = 0 :=
+  h.zeroCoordinate_vanishing c hc p hp
+
+/-- Every switched one coordinate is covered by at least one outside column. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.oneCoordinate_covered_by_column
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover)
+    {p : Coord} (hp : p ∈ oneCoordinates) :
+    ∃ c : Column, c ∈ outsideColumns ∧ columnEntry c p = 1 :=
+  h.oneCoordinate_covered p hp
+
+/-- Distinct outside columns cannot both cover the same switched one coordinate. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.oneCoordinate_disjoint_columns
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover)
+    {c d : Column} (hc : c ∈ outsideColumns) (hd : d ∈ outsideColumns) (hcd : c ≠ d)
+    {p : Coord} (hp : p ∈ oneCoordinates) (hcp : columnEntry c p = 1) :
+    columnEntry d p = 0 :=
+  h.oneCoordinate_disjoint c hc d hd hcd p hp hcp
+
+/-- The cover of a switched one coordinate is unique among the three outside columns. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.oneCoordinate_uniqueCover_of_mem
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover)
+    {p : Coord} (hp : p ∈ oneCoordinates) :
+    ∃! c : Column, c ∈ outsideColumns ∧ columnEntry c p = 1 :=
+  h.oneCoordinate_uniqueCover p hp
+
+/-- Project the coordinate-switching normalization certificate. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.to_switchingNormalization
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover) :
+    switchingNormalization :=
+  h.switchingNormalizationCert
+
+/-- Project the zero-coordinate vanishing certificate. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.to_zeroCoordinateVanish
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover) :
+    zeroCoordinateVanish :=
+  h.zeroCoordinateVanishCert
+
+/-- Project the one-coordinate disjoint-cover certificate. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.to_oneCoordinateDisjointCover
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover) :
+    oneCoordinateDisjointCover :=
+  h.oneCoordinateDisjointCoverCert
+
+/-- Project the switched disjoint-cover frontier certificate. -/
+theorem FirstBitTerminalSwitchedDisjointCoverTargetFrontier.to_switchedDisjointCover
+    (h :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover) :
+    switchedDisjointCover :=
+  h.switchedDisjointCoverCert
+
+end FirstBitTerminalSwitchedDisjointCoverTargetFrontier
+
+/--
+Coordinate-minimal target-avoidance certificate for the large-outside ternary branch.  It records
+the existing ternary packet-repair frontier, a capacitated three-sum cube target failure, feasibility
+on every proper coordinate shadow, and the switched disjoint-cover normalization of the remaining
+three-column obstruction.
+-/
+structure FirstBitTerminalTernaryTargetAvoidanceCertificate
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    (terminalPackets : Finset Packet) (targetOf : Packet → Target) (arity : ℕ)
+    (targetRealized shiftedSelfLayerFailure : Packet → Target → Prop)
+    (coordinates zeroCoordinates oneCoordinates : Finset Coord)
+    (outsideColumns : Finset Column)
+    (switchedTarget capacity : Coord → ℕ) (columnEntry : Column → Coord → ℕ)
+    (coverFeasible : Finset Coord → Prop)
+    (ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier : Prop) : Prop where
+  ternaryPacketRepairFrontier :
+    FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+      ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch
+  capacitatedThreeSumCubeCert : capacitatedThreeSumCube
+  targetFailureCert : targetFailure
+  coordinateMinimalTargetFailureCert : coordinateMinimalTargetFailure
+  properShadowFeasibilityCert : properShadowFeasibility
+  properShadowFeasible :
+    ∀ shadow : Finset Coord, shadow ⊆ coordinates → shadow ≠ coordinates →
+      coverFeasible shadow
+  switchingNormalizationCert : switchingNormalization
+  switchedDisjointCoverFrontier :
+    FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+      oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontierCert : targetAvoidanceFrontier
+
+/-- Build the ternary target-avoidance certificate from a packet frontier and switched cover data. -/
+theorem firstBitTerminalTernaryTargetAvoidanceCertificate_of_frontiers
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier : Prop}
+    (hternary :
+      FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch)
+    (hcube : capacitatedThreeSumCube) (hfailure : targetFailure)
+    (hminimal : coordinateMinimalTargetFailure)
+    (hshadowCert : properShadowFeasibility)
+    (hshadow :
+      ∀ shadow : Finset Coord, shadow ⊆ coordinates → shadow ≠ coordinates →
+        coverFeasible shadow)
+    (hswitch : switchingNormalization)
+    (hswitched :
+      FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+        oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+        zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover)
+    (htargetAvoidance : targetAvoidanceFrontier) :
+    FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+      outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+      largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+      properShadowFeasibility switchingNormalization zeroCoordinateVanish
+      oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier where
+  ternaryPacketRepairFrontier := hternary
+  capacitatedThreeSumCubeCert := hcube
+  targetFailureCert := hfailure
+  coordinateMinimalTargetFailureCert := hminimal
+  properShadowFeasibilityCert := hshadowCert
+  properShadowFeasible := hshadow
+  switchingNormalizationCert := hswitch
+  switchedDisjointCoverFrontier := hswitched
+  targetAvoidanceFrontierCert := htargetAvoidance
+
+section FirstBitTerminalTernaryTargetAvoidanceCertificate
+
+variable {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {coverFeasible : Finset Coord → Prop}
+variable {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+  coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+  zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontier : Prop}
+
+/-- Forget target-avoidance fields and recover the ternary packet-repair frontier. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.to_ternaryPacketRepairFrontier
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier) :
+    FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+      ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch :=
+  h.ternaryPacketRepairFrontier
+
+/-- Project the switched disjoint-cover target frontier. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.to_switchedDisjointCoverTargetFrontier
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier) :
+    FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+      oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover :=
+  h.switchedDisjointCoverFrontier
+
+/-- Project the capacitated three-sum cube certificate. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.to_capacitatedThreeSumCube
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier) :
+    capacitatedThreeSumCube :=
+  h.capacitatedThreeSumCubeCert
+
+/-- Project the target-failure certificate. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.to_targetFailure
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier) :
+    targetFailure :=
+  h.targetFailureCert
+
+/-- Project coordinate-minimality of the target-failure certificate. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.to_coordinateMinimalTargetFailure
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier) :
+    coordinateMinimalTargetFailure :=
+  h.coordinateMinimalTargetFailureCert
+
+/-- Project the named proper-shadow feasibility certificate. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.to_properShadowFeasibility
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier) :
+    properShadowFeasibility :=
+  h.properShadowFeasibilityCert
+
+/-- Every proper coordinate shadow is feasible for the three-column cover problem. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.properShadowFeasible_of_subset
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier)
+    {shadow : Finset Coord} (hsub : shadow ⊆ coordinates) (hne : shadow ≠ coordinates) :
+    coverFeasible shadow :=
+  h.properShadowFeasible shadow hsub hne
+
+/-- Project the coordinate-switching normalization certificate. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.to_switchingNormalization
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier) :
+    switchingNormalization :=
+  h.switchingNormalizationCert
+
+/-- Project the target-avoidance frontier marker. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.to_targetAvoidanceFrontier
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier) :
+    targetAvoidanceFrontier :=
+  h.targetAvoidanceFrontierCert
+
+/-- The wrapped ternary packet-repair frontier still closes the large-outside branch. -/
+theorem FirstBitTerminalTernaryTargetAvoidanceCertificate.to_largeOutsideBranch
+    (h :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier) :
+    largeOutsideBranch :=
+  h.ternaryPacketRepairFrontier.to_largeOutsideBranch
+
+end FirstBitTerminalTernaryTargetAvoidanceCertificate
+
+section FirstBitTerminalTernaryTargetAvoidanceResidualSplitProjections
+
+variable {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {coverFeasible : Finset Coord → Prop}
+variable {labeledDeletionCoreFrontier nearThresholdDeletionTemplateFrontier
+  ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+  coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+  zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontier nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+  sThreeDeletionTemplate nearThresholdBranch splitTheorem : Prop}
+
+/-- Recover the ternary target-avoidance certificate from a residual split frontier. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.to_ternaryTargetAvoidanceCertificate
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        (FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+          targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+          outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+          ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+          largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+          properShadowFeasibility switchingNormalization zeroCoordinateVanish
+          oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier)
+        nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem) :
+    FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+      outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+      largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+      properShadowFeasibility switchingNormalization zeroCoordinateVanish
+      oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier :=
+  h.ternaryPacketRepairFrontierCert
+
+/-- Recover the underlying ternary packet-repair frontier through a target-avoidance split. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.to_ternaryPacketRepairFrontier_of_targetAvoidance
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        (FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+          targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+          outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+          ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+          largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+          properShadowFeasibility switchingNormalization zeroCoordinateVanish
+          oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier)
+        nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem) :
+    FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+      ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch :=
+  h.ternaryPacketRepairFrontierCert.to_ternaryPacketRepairFrontier
+
+end FirstBitTerminalTernaryTargetAvoidanceResidualSplitProjections
+
+/--
+Critical three-column disjoint-cover frontier.  This is the irreducible target-avoidance residue:
+the full coordinate set has the target-failure certificate, every proper coordinate shadow is
+coverable, the switched obstruction is a three-column disjoint cover, and the critical dimension is
+at least four.
+-/
+structure FirstBitTerminalCriticalThreeColumnCoverFrontier
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    (terminalPackets : Finset Packet) (targetOf : Packet → Target) (arity : ℕ)
+    (targetRealized shiftedSelfLayerFailure : Packet → Target → Prop)
+    (coordinates zeroCoordinates oneCoordinates : Finset Coord)
+    (outsideColumns : Finset Column)
+    (switchedTarget capacity : Coord → ℕ) (columnEntry : Column → Coord → ℕ)
+    (coverFeasible : Finset Coord → Prop)
+    (ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop) : Prop where
+  targetAvoidanceCertificate :
+    FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+      outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+      largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+      properShadowFeasibility switchingNormalization zeroCoordinateVanish
+      oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+  dimension_ge_four : 4 ≤ coordinates.card
+  properShadowCoverable :
+    ∀ shadow : Finset Coord, shadow ⊆ coordinates → shadow ≠ coordinates →
+      coverFeasible shadow
+  criticalThreeColumnCoverCert : criticalThreeColumnCover
+  criticalityCloses :
+    criticalThreeColumnCover → targetFailure → irreducibleTargetAvoidanceBranch
+
+/-- Build the critical three-column cover frontier from the target-avoidance certificate. -/
+theorem firstBitTerminalCriticalThreeColumnCoverFrontier_of_certificate
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    (hcert :
+      FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier)
+    (hdim : 4 ≤ coordinates.card)
+    (hshadow :
+      ∀ shadow : Finset Coord, shadow ⊆ coordinates → shadow ≠ coordinates →
+        coverFeasible shadow)
+    (hcritical : criticalThreeColumnCover)
+    (hcloses : criticalThreeColumnCover → targetFailure → irreducibleTargetAvoidanceBranch) :
+    FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+      outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+      largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+      properShadowFeasibility switchingNormalization zeroCoordinateVanish
+      oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+      criticalThreeColumnCover irreducibleTargetAvoidanceBranch where
+  targetAvoidanceCertificate := hcert
+  dimension_ge_four := hdim
+  properShadowCoverable := hshadow
+  criticalThreeColumnCoverCert := hcritical
+  criticalityCloses := hcloses
+
+section FirstBitTerminalCriticalThreeColumnCoverFrontier
+
+variable {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {coverFeasible : Finset Coord → Prop}
+variable {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+  coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+  zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch : Prop}
+
+/-- Project the target-avoidance certificate from the critical cover frontier. -/
+theorem FirstBitTerminalCriticalThreeColumnCoverFrontier.to_ternaryTargetAvoidanceCertificate
+    (h :
+      FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+        criticalThreeColumnCover irreducibleTargetAvoidanceBranch) :
+    FirstBitTerminalTernaryTargetAvoidanceCertificate terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+      outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+      largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+      properShadowFeasibility switchingNormalization zeroCoordinateVanish
+      oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier :=
+  h.targetAvoidanceCertificate
+
+/-- The critical target-avoidance branch has coordinate dimension at least four. -/
+theorem FirstBitTerminalCriticalThreeColumnCoverFrontier.dimension_ge_four_bound
+    (h :
+      FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+        criticalThreeColumnCover irreducibleTargetAvoidanceBranch) :
+    4 ≤ coordinates.card :=
+  h.dimension_ge_four
+
+/-- Every proper coordinate shadow remains coverable in the critical frontier. -/
+theorem FirstBitTerminalCriticalThreeColumnCoverFrontier.properShadowCoverable_of_subset
+    (h :
+      FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+        criticalThreeColumnCover irreducibleTargetAvoidanceBranch)
+    {shadow : Finset Coord} (hsub : shadow ⊆ coordinates) (hne : shadow ≠ coordinates) :
+    coverFeasible shadow :=
+  h.properShadowCoverable shadow hsub hne
+
+/-- Project the switched disjoint-cover target frontier from the critical cover frontier. -/
+theorem FirstBitTerminalCriticalThreeColumnCoverFrontier.to_switchedDisjointCoverTargetFrontier
+    (h :
+      FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+        criticalThreeColumnCover irreducibleTargetAvoidanceBranch) :
+    FirstBitTerminalSwitchedDisjointCoverTargetFrontier coordinates zeroCoordinates
+      oneCoordinates outsideColumns switchedTarget capacity columnEntry switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover :=
+  h.targetAvoidanceCertificate.to_switchedDisjointCoverTargetFrontier
+
+/-- Project the underlying ternary packet-repair frontier from the critical cover frontier. -/
+theorem FirstBitTerminalCriticalThreeColumnCoverFrontier.to_ternaryPacketRepairFrontier
+    (h :
+      FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+        criticalThreeColumnCover irreducibleTargetAvoidanceBranch) :
+    FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+      ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch :=
+  h.targetAvoidanceCertificate.to_ternaryPacketRepairFrontier
+
+/-- Project the critical three-column cover marker. -/
+theorem FirstBitTerminalCriticalThreeColumnCoverFrontier.to_criticalThreeColumnCover
+    (h :
+      FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+        criticalThreeColumnCover irreducibleTargetAvoidanceBranch) :
+    criticalThreeColumnCover :=
+  h.criticalThreeColumnCoverCert
+
+/-- Close the irreducible target-avoidance branch from the critical cover and target-failure fields. -/
+theorem FirstBitTerminalCriticalThreeColumnCoverFrontier.to_irreducibleTargetAvoidanceBranch
+    (h :
+      FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+        criticalThreeColumnCover irreducibleTargetAvoidanceBranch) :
+    irreducibleTargetAvoidanceBranch :=
+  h.criticalityCloses h.criticalThreeColumnCoverCert
+    h.targetAvoidanceCertificate.targetFailureCert
+
+end FirstBitTerminalCriticalThreeColumnCoverFrontier
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
