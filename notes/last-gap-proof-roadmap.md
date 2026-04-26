@@ -1913,6 +1913,8 @@ What remains justified after audit is:
       at `r=3` the target is always arithmetically legal, giving a large-outside ternary branch, while
       absence of three outside vertices squeezes the two Gallai residue classes into
       `m-2<=|C|<=|R|<=m+3`;
+      ternary target failure has a coordinate-minimal essential certificate, while nonempty target
+      realization is obstructed exactly by scalar-good hypergraph emptiness;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on
