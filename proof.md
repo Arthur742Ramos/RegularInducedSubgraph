@@ -6627,18 +6627,34 @@ The charging lemma is not a purely matching-theoretic statement; it contains the
 problem.  Indeed, one endpoint-exclusive side may be a whole triangle-free, induced-`C_4`-free graph
 attached to a single endpoint `a` and missed by the mate `b`.  Adding the edge `ab` and joining `a` to
 that layer preserves induced-`C_4`-freeness and `K_4`-freeness exactly when the layer is triangle-free
-and induced-`C_4`-free.  Thus the endpoint-exclusive charging lemma is equivalent, at its core, to the
-following standalone layer theorem:
+and induced-`C_4`-free.  The previous degree-two condition is only the visible small-subgraph shadow of
+the actual terminal condition.  In the all-target colour-`1` core, for every same-direction subset
+`S` with `|S|=0 [MOD 4]`, pure discard closes exactly when
 
 ```text
-Triangle-free C4-free layer selector.
-If F is triangle-free and induced-C4-free, alpha(F)<=m, and F has no induced Delta<=2
-subgraph on more than 11m/5 vertices, then |F|=O(m).
+deg_G[S](s)=1        for every s in S,
 ```
 
-The bipartite case gives `|F|<=2m`; the non-bipartite case reduces to a shortest odd core, distance-three
-pendant quotient, and a zero-trace remainder as above.  This layer theorem is now the exact irreducible
-mathematical target.
+or equivalently in the complement layer `F`,
+
+```text
+deg_F[S](s)=2        [MOD 4]        for every s in S.
+```
+
+Thus the endpoint-exclusive charging lemma is equivalent, at its core, to the following standalone
+mod-`4` layer theorem:
+
+```text
+Triangle-free C4-free mod-2-degree layer selector.
+If F is triangle-free and induced-C4-free, alpha(F)<=m, and no nonempty induced
+S subset F with |S|=0 [MOD 4] has all degrees 2 [MOD 4], then |F|=O(m).
+```
+
+The earlier induced-`Delta<=2` bound follows from this theorem by applying Yuster's
+`11(k-1)/5` path/cycle lemma to any induced maximum-degree-two subgraph, but it is not by itself the
+whole obstruction.  The bipartite case gives `|F|<=2m`; the non-bipartite case reduces to a shortest odd
+core, distance-three pendant quotient, and a zero-trace remainder as above.  This mod-`4` layer theorem
+is now the exact irreducible mathematical target.
 
 Inside that remaining complement class there is still a useful triangle-anchor decomposition.  Let
 `abc` be a triangle in `H`, and for every outside vertex `v` put

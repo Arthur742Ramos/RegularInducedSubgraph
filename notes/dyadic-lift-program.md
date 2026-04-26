@@ -1017,9 +1017,12 @@ independent residual already contribute only `O(m)`; this charging lemma would l
 all-target colour-`1` core and close the remaining `{0,1}`/`{3,2}` local branch.
 This charging lemma contains the true last selector problem: a single exclusive side can be an arbitrary
 triangle-free induced-`C_4`-free layer joined to one endpoint of a matching edge and missed by the other.
-Thus the irreducible standalone target is the triangle-free induced-`C_4`-free layer theorem: with
-`alpha<=m` and no induced `Delta<=2` subgraph larger than `11m/5`, prove linear size.  The bipartite case
-is `<=2m`; the non-bipartite case is the shortest-odd-core/distance-three-pendant/zero-trace recursion.
+The visible induced-`Delta<=2` bound is only a shadow.  In the all-target colour-`1` core, every
+same-direction subset `S` with `|S|=0 [MOD 4]` is forbidden when the complement layer has
+`deg_{F[S]}(s)=2 [MOD 4]` for all `s`.  Thus the irreducible standalone target is the triangle-free
+induced-`C_4`-free mod-`2`-degree layer theorem: with `alpha<=m` and no nonempty size-`0 mod 4`
+induced subgraph all of whose degrees are `2 mod 4`, prove linear size.  The bipartite case is `<=2m`;
+the non-bipartite case is the shortest-odd-core/distance-three-pendant/zero-trace recursion.
 Useful structure remains inside that class.  If `abc` is a triangle in the complement `H`, trace every
 outside vertex by `N_H(v) cap {a,b,c}`.  No trace has size three; incomparable nonempty traces are
 anti-complete, since an edge between them and an anchor edge induce a `C_4`.  Thus two-neighbour trace

@@ -1634,8 +1634,9 @@ Recommended attack:
    remaining vertices lie in endpoint neighbourhoods whose common/exclusive parts have the edge-anchor
    structure.  The remaining formal target is the endpoint-exclusive charging lemma
    `sum_i(|E_i^a|+|E_i^b|)=O(m)` for assigned exclusive classes of the matching edges.
-   Record that this contains the true standalone layer theorem: triangle-free induced-`C_4`-free
-   `F` with `alpha(F)<=m` and no induced `Delta<=2` subgraph larger than `11m/5` must have `|F|=O(m)`.
+   Record that the true standalone layer theorem is stronger than the visible induced-`Delta<=2` shadow:
+   triangle-free induced-`C_4`-free `F` with `alpha(F)<=m` and no nonempty induced
+   `S` of size `0 mod 4` whose degrees are all `2 mod 4` must have `|F|=O(m)`.
    Within that complement class, formalize the triangle-anchor trace lemma: for a triangle `abc`, no
    outside vertex is adjacent to all three anchors; vertices with incomparable nonempty traces into
    `{a,b,c}` are anti-complete; the two-neighbour trace classes are independent; singleton trace classes
