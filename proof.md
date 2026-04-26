@@ -6623,6 +6623,23 @@ most `m`, common neighbours at most `m`, the independent residual at most `m`, a
 neighbourhoods by the displayed lemma.  This is the exact remaining mathematical endpoint of the
 `{0,1}`/`{3,2}` branch.
 
+The charging lemma is not a purely matching-theoretic statement; it contains the true last selector
+problem.  Indeed, one endpoint-exclusive side may be a whole triangle-free, induced-`C_4`-free graph
+attached to a single endpoint `a` and missed by the mate `b`.  Adding the edge `ab` and joining `a` to
+that layer preserves induced-`C_4`-freeness and `K_4`-freeness exactly when the layer is triangle-free
+and induced-`C_4`-free.  Thus the endpoint-exclusive charging lemma is equivalent, at its core, to the
+following standalone layer theorem:
+
+```text
+Triangle-free C4-free layer selector.
+If F is triangle-free and induced-C4-free, alpha(F)<=m, and F has no induced Delta<=2
+subgraph on more than 11m/5 vertices, then |F|=O(m).
+```
+
+The bipartite case gives `|F|<=2m`; the non-bipartite case reduces to a shortest odd core, distance-three
+pendant quotient, and a zero-trace remainder as above.  This layer theorem is now the exact irreducible
+mathematical target.
+
 Inside that remaining complement class there is still a useful triangle-anchor decomposition.  Let
 `abc` be a triangle in `H`, and for every outside vertex `v` put
 
