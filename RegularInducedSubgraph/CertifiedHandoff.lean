@@ -30270,6 +30270,1404 @@ theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerTernarySo
 
 end FinalConsumerTernarySourceCollisionRefinementApi
 
+
+/-!
+## Parity-tetrahedron target incidence and all-edge Latin scalar endpoint handoff
+
+This frontier names the next proof-md/current-frontier packets after the integrated ternary
+source collision refinement.  It keeps the parity-tetrahedron target incidence data separate
+from the all-edge Latin scalar endpoint data, then packages both with the existing ternary
+source collision and small-collision size-cutoff handoff surfaces.
+-/
+
+/-- Target-incidence packet for the parity-tetrahedron branch. -/
+structure CertifiedProofMdCurrentFrontierTerminalParityTetrahedronTargetIncidenceCertificate
+    (terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase : Prop) :
+    Type where
+  parityTetrahedronRigidity : terminalParityTetrahedronRigidity
+  targetTypeIncidenceTable : terminalParityTetrahedronTargetTypeIncidenceTable
+  allEdgeStarPhase : terminalParityTetrahedronAllEdgeStarPhase
+
+/-- Half-edge Latin `K_{2,2}` design packet with the cross-residue-flat calculation. -/
+structure CertifiedProofMdCurrentFrontierTerminalHalfEdgeLatinKTwoTwoEndpointDesignCertificate
+    (terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation : Prop) :
+    Type where
+  halfEdgeLatinKTwoTwoDesign : terminalHalfEdgeLatinKTwoTwoDesign
+  crossResidueFlatCalculation : terminalCrossResidueFlatCalculation
+
+/-- Signed-`K_4` scalar obstruction packet, including the `r_G - S_G` equation. -/
+structure CertifiedProofMdCurrentFrontierTerminalSignedKFourScalarObstructionCertificate
+    (terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable : Prop) :
+    Type where
+  signedKFourScalarObstructionEquationRGMinusSG :
+    terminalSignedKFourScalarObstructionEquationRGMinusSG
+  shortenedPairHitFiniteOmissionTable : terminalShortenedPairHitFiniteOmissionTable
+
+/--
+Terminal packet combining parity-tetrahedron incidence with the all-edge Latin scalar endpoint.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+    (terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable : Prop) :
+    Type where
+  targetIncidence :
+    CertifiedProofMdCurrentFrontierTerminalParityTetrahedronTargetIncidenceCertificate
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+  halfEdgeLatinEndpointDesign :
+    CertifiedProofMdCurrentFrontierTerminalHalfEdgeLatinKTwoTwoEndpointDesignCertificate
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+  signedScalarObstruction :
+    CertifiedProofMdCurrentFrontierTerminalSignedKFourScalarObstructionCertificate
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable
+
+/-- Build the parity-tetrahedron/all-edge Latin scalar endpoint packet from raw terminal facts. -/
+def certifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate_of_assumptions
+    {terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable : Prop}
+    (parityTetrahedronRigidity : terminalParityTetrahedronRigidity)
+    (targetTypeIncidenceTable : terminalParityTetrahedronTargetTypeIncidenceTable)
+    (allEdgeStarPhase : terminalParityTetrahedronAllEdgeStarPhase)
+    (halfEdgeLatinKTwoTwoDesign : terminalHalfEdgeLatinKTwoTwoDesign)
+    (crossResidueFlatCalculation : terminalCrossResidueFlatCalculation)
+    (signedKFourScalarObstructionEquationRGMinusSG :
+      terminalSignedKFourScalarObstructionEquationRGMinusSG)
+    (shortenedPairHitFiniteOmissionTable : terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable where
+  targetIncidence :=
+    { parityTetrahedronRigidity := parityTetrahedronRigidity
+      targetTypeIncidenceTable := targetTypeIncidenceTable
+      allEdgeStarPhase := allEdgeStarPhase }
+  halfEdgeLatinEndpointDesign :=
+    { halfEdgeLatinKTwoTwoDesign := halfEdgeLatinKTwoTwoDesign
+      crossResidueFlatCalculation := crossResidueFlatCalculation }
+  signedScalarObstruction :=
+    { signedKFourScalarObstructionEquationRGMinusSG :=
+        signedKFourScalarObstructionEquationRGMinusSG
+      shortenedPairHitFiniteOmissionTable := shortenedPairHitFiniteOmissionTable }
+
+section ParityTetrahedronAllEdgeLatinScalarEndpointTerminalApi
+
+variable {terminalParityTetrahedronRigidity
+  terminalParityTetrahedronTargetTypeIncidenceTable
+  terminalParityTetrahedronAllEdgeStarPhase
+  terminalHalfEdgeLatinKTwoTwoDesign
+  terminalCrossResidueFlatCalculation
+  terminalSignedKFourScalarObstructionEquationRGMinusSG
+  terminalShortenedPairHitFiniteOmissionTable : Prop}
+
+/-- Project the parity-tetrahedron rigidity packet. -/
+def CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate.toParityTetrahedronRigidity
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    terminalParityTetrahedronRigidity :=
+  h.targetIncidence.parityTetrahedronRigidity
+
+/-- Project the target-type incidence table. -/
+def CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate.toTargetTypeIncidenceTable
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    terminalParityTetrahedronTargetTypeIncidenceTable :=
+  h.targetIncidence.targetTypeIncidenceTable
+
+/-- Project the all-edge star phase packet. -/
+def CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate.toAllEdgeStarPhase
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    terminalParityTetrahedronAllEdgeStarPhase :=
+  h.targetIncidence.allEdgeStarPhase
+
+/-- Project the half-edge Latin `K_{2,2}` endpoint design. -/
+def CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate.toHalfEdgeLatinKTwoTwoDesign
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    terminalHalfEdgeLatinKTwoTwoDesign :=
+  h.halfEdgeLatinEndpointDesign.halfEdgeLatinKTwoTwoDesign
+
+/-- Project the cross-residue-flat calculation. -/
+def CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate.toCrossResidueFlatCalculation
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    terminalCrossResidueFlatCalculation :=
+  h.halfEdgeLatinEndpointDesign.crossResidueFlatCalculation
+
+/-- Project the signed-`K_4` scalar obstruction equation `r_G - S_G`. -/
+def CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate.toSignedKFourScalarObstructionEquationRGMinusSG
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    terminalSignedKFourScalarObstructionEquationRGMinusSG :=
+  h.signedScalarObstruction.signedKFourScalarObstructionEquationRGMinusSG
+
+/-- Project the shortened-pair-hit finite omission table. -/
+def CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate.toShortenedPairHitFiniteOmissionTable
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    terminalShortenedPairHitFiniteOmissionTable :=
+  h.signedScalarObstruction.shortenedPairHitFiniteOmissionTable
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate.of_assumptions_toTargetTypeIncidenceTable
+    (parityTetrahedronRigidity : terminalParityTetrahedronRigidity)
+    (targetTypeIncidenceTable : terminalParityTetrahedronTargetTypeIncidenceTable)
+    (allEdgeStarPhase : terminalParityTetrahedronAllEdgeStarPhase)
+    (halfEdgeLatinKTwoTwoDesign : terminalHalfEdgeLatinKTwoTwoDesign)
+    (crossResidueFlatCalculation : terminalCrossResidueFlatCalculation)
+    (signedKFourScalarObstructionEquationRGMinusSG :
+      terminalSignedKFourScalarObstructionEquationRGMinusSG)
+    (shortenedPairHitFiniteOmissionTable : terminalShortenedPairHitFiniteOmissionTable) :
+    (certifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate_of_assumptions
+      parityTetrahedronRigidity
+      targetTypeIncidenceTable
+      allEdgeStarPhase
+      halfEdgeLatinKTwoTwoDesign
+      crossResidueFlatCalculation
+      signedKFourScalarObstructionEquationRGMinusSG
+      shortenedPairHitFiniteOmissionTable).toTargetTypeIncidenceTable =
+      targetTypeIncidenceTable :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate.of_assumptions_toSignedKFourScalarObstructionEquationRGMinusSG
+    (parityTetrahedronRigidity : terminalParityTetrahedronRigidity)
+    (targetTypeIncidenceTable : terminalParityTetrahedronTargetTypeIncidenceTable)
+    (allEdgeStarPhase : terminalParityTetrahedronAllEdgeStarPhase)
+    (halfEdgeLatinKTwoTwoDesign : terminalHalfEdgeLatinKTwoTwoDesign)
+    (crossResidueFlatCalculation : terminalCrossResidueFlatCalculation)
+    (signedKFourScalarObstructionEquationRGMinusSG :
+      terminalSignedKFourScalarObstructionEquationRGMinusSG)
+    (shortenedPairHitFiniteOmissionTable : terminalShortenedPairHitFiniteOmissionTable) :
+    (certifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate_of_assumptions
+      parityTetrahedronRigidity
+      targetTypeIncidenceTable
+      allEdgeStarPhase
+      halfEdgeLatinKTwoTwoDesign
+      crossResidueFlatCalculation
+      signedKFourScalarObstructionEquationRGMinusSG
+      shortenedPairHitFiniteOmissionTable).toSignedKFourScalarObstructionEquationRGMinusSG =
+      signedKFourScalarObstructionEquationRGMinusSG :=
+  rfl
+
+end ParityTetrahedronAllEdgeLatinScalarEndpointTerminalApi
+
+/--
+Extension bundle adjoining parity-tetrahedron/all-edge Latin scalar endpoint data to the
+ternary source-collision refinement bundle.
+-/
+structure CertifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle
+    (terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable : Prop) :
+    Type where
+  ternarySourceCollisionRefinementExtensionBundle :
+    CertifiedProofMdCurrentFrontierTernarySourceCollisionRefinementExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+  parityTetrahedronAllEdgeLatinScalarEndpoint :
+    CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable
+
+/-- Build the parity-tetrahedron/all-edge Latin extension bundle from its two packets. -/
+def certifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle_of_packets
+    {terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable : Prop}
+    (ternarySourceCollisionRefinementExtensionBundle :
+      CertifiedProofMdCurrentFrontierTernarySourceCollisionRefinementExtensionBundle
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals)
+    (parityTetrahedronAllEdgeLatinScalarEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable where
+  ternarySourceCollisionRefinementExtensionBundle :=
+    ternarySourceCollisionRefinementExtensionBundle
+  parityTetrahedronAllEdgeLatinScalarEndpoint := parityTetrahedronAllEdgeLatinScalarEndpoint
+
+section ParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundleApi
+
+variable {terminalPairForcedPetalStrictDeficit
+  terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+  terminalFourFourCollisionFreeCutoff
+  terminalFourPairComplementaryTransversalBooleanOrientationCore
+  terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+  terminalPartnerFreeHiddenBipartitionDeletionSupports
+  terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+  terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+  terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+  terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTemplatesIncludePartnerSingleton
+  terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+  terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+  terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+  terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+  terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+  terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+  terminalTernarySourceDistinctSourceLabels
+  terminalTernarySourceNoRainbowPartition
+  terminalTernarySourceNoJointBlocker
+  terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+  terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+  terminalTernarySourceShortenedPairHitDeltaOtherBounds
+  terminalTernarySourceCollisionCompensatedByOtherPetals
+  terminalParityTetrahedronRigidity
+  terminalParityTetrahedronTargetTypeIncidenceTable
+  terminalParityTetrahedronAllEdgeStarPhase
+  terminalHalfEdgeLatinKTwoTwoDesign
+  terminalCrossResidueFlatCalculation
+  terminalSignedKFourScalarObstructionEquationRGMinusSG
+  terminalShortenedPairHitFiniteOmissionTable : Prop}
+
+/-- Project the ternary source-collision extension bundle. -/
+def CertifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle.toTernarySourceCollisionRefinementExtensionBundle
+    (h :
+      CertifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierTernarySourceCollisionRefinementExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals :=
+  h.ternarySourceCollisionRefinementExtensionBundle
+
+/-- Project the older small-collision size-cutoff extension bundle through the new bundle. -/
+def CertifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle.toSmallCollisionSizeCutoffExtensionBundle
+    (h :
+      CertifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierSmallCollisionSizeCutoffExtensionBundle
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  h.ternarySourceCollisionRefinementExtensionBundle.smallCollisionSizeCutoffExtensionBundle
+
+/-- Project the parity-tetrahedron/all-edge Latin scalar endpoint packet. -/
+def CertifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle.toParityTetrahedronAllEdgeLatinScalarEndpoint
+    (h :
+      CertifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable :=
+  h.parityTetrahedronAllEdgeLatinScalarEndpoint
+
+end ParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundleApi
+
+/--
+Final consumer handoff after adjoining the parity-tetrahedron target-incidence and all-edge
+Latin scalar endpoint packet to the ternary source-collision refinement surface.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop)
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop)
+    (terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop)
+    (terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop)
+    (terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode : Prop)
+    (terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore : Prop)
+    (terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton : Prop)
+    (terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop)
+    (terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals : Prop)
+    (terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable : Prop) :
+    Type where
+  ternarySourceCollisionRefinementHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect
+      terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate
+      terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch
+      terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive
+      terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit
+      terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff
+      terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+  parityTetrahedronAllEdgeLatinScalarEndpoint :
+    CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable
+
+section FinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointApi
+
+variable {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+variable {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+variable {packingSize : AnchoredPacking → ℕ}
+variable {WitnessCountAtLeast : ℕ → ℕ → Prop}
+variable {TwoDisjointTemplatesNeedTwo : Prop}
+variable {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+variable {v : ↑(s : Set α)}
+variable {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+variable {terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop}
+variable {terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing : Prop}
+variable {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+  terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+variable {terminalSharedPackedAtomPenaltyRebate
+  terminalForcedSplitPackedAtomBetweenPetals
+  terminalPairCollisionTwoPetalOverpayBranch
+  terminalPairCollisionGenuineThreePetalBranch
+  terminalPairCollisionProperSubfamilyNonpositive
+  terminalPairCollisionNoDiffuseLargerCollisionMode : Prop}
+variable {terminalPairForcedPetalStrictDeficit
+  terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+  terminalFourFourCollisionFreeCutoff
+  terminalFourPairComplementaryTransversalBooleanOrientationCore : Prop}
+variable {terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+  terminalPartnerFreeHiddenBipartitionDeletionSupports
+  terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+  terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+  terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+  terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+  terminalPartnerHitTemplatesIncludePartnerSingleton : Prop}
+variable {terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+  terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+  terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+  terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+  terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo : Prop}
+variable {terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+  terminalTernarySourceDistinctSourceLabels
+  terminalTernarySourceNoRainbowPartition
+  terminalTernarySourceNoJointBlocker
+  terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+  terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+  terminalTernarySourceShortenedPairHitDeltaOtherBounds
+  terminalTernarySourceCollisionCompensatedByOtherPetals : Prop}
+variable {terminalParityTetrahedronRigidity
+  terminalParityTetrahedronTargetTypeIncidenceTable
+  terminalParityTetrahedronAllEdgeStarPhase
+  terminalHalfEdgeLatinKTwoTwoDesign
+  terminalCrossResidueFlatCalculation
+  terminalSignedKFourScalarObstructionEquationRGMinusSG
+  terminalShortenedPairHitFiniteOmissionTable : Prop}
+
+/-- Promote the ternary refinement handoff by adjoining the parity/Latin endpoint packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff.toFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals)
+    (parityTetrahedronAllEdgeLatinScalarEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable where
+  ternarySourceCollisionRefinementHandoff := h
+  parityTetrahedronAllEdgeLatinScalarEndpoint := parityTetrahedronAllEdgeLatinScalarEndpoint
+
+/-- Promote the size-cutoff handoff through ternary refinement and the parity/Latin endpoint. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff.toFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo)
+    (ternarySourceCollisionRefinement :
+      CertifiedProofMdCurrentFrontierTerminalTernarySourceCollisionRefinementCertificate
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals)
+    (parityTetrahedronAllEdgeLatinScalarEndpoint :
+      CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable :=
+  (h.toFinalConsumerTernarySourceCollisionRefinementHandoff
+    ternarySourceCollisionRefinement).toFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      parityTetrahedronAllEdgeLatinScalarEndpoint
+
+/-- Promote the pair-collision rebate handoff through the full parity/Latin endpoint bundle. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff.toFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerPairCollisionRebateCircuitHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode)
+    (extensionBundle :
+      CertifiedProofMdCurrentFrontierParityTetrahedronAllEdgeLatinScalarEndpointExtensionBundle
+        terminalPairForcedPetalStrictDeficit
+        terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+        terminalFourFourCollisionFreeCutoff
+        terminalFourPairComplementaryTransversalBooleanOrientationCore
+        terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+        terminalPartnerFreeHiddenBipartitionDeletionSupports
+        terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+        terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+        terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+        terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+        terminalPartnerHitTemplatesIncludePartnerSingleton
+        terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+        terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+        terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+        terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+        terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+        terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+        terminalTernarySourceDistinctSourceLabels
+        terminalTernarySourceNoRainbowPartition
+        terminalTernarySourceNoJointBlocker
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+        terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+        terminalTernarySourceShortenedPairHitDeltaOtherBounds
+        terminalTernarySourceCollisionCompensatedByOtherPetals
+        terminalParityTetrahedronRigidity
+        terminalParityTetrahedronTargetTypeIncidenceTable
+        terminalParityTetrahedronAllEdgeStarPhase
+        terminalHalfEdgeLatinKTwoTwoDesign
+        terminalCrossResidueFlatCalculation
+        terminalSignedKFourScalarObstructionEquationRGMinusSG
+        terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable :=
+  (h.toFinalConsumerTernarySourceCollisionRefinementHandoff
+    extensionBundle.toTernarySourceCollisionRefinementExtensionBundle).toFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      extensionBundle.toParityTetrahedronAllEdgeLatinScalarEndpoint
+
+/-- Project the ternary source-collision handoff from the parity/Latin endpoint handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff.toFinalConsumerTernarySourceCollisionRefinementHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierFinalConsumerTernarySourceCollisionRefinementHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals :=
+  h.ternarySourceCollisionRefinementHandoff
+
+/-- Project the small-collision size-cutoff handoff through the parity/Latin endpoint handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff.toFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierFinalConsumerNoLeftoverSmallCollisionSizeCutoffHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo :=
+  h.ternarySourceCollisionRefinementHandoff.noLeftoverSmallCollisionSizeCutoffHandoff
+
+/-- Project the parity-tetrahedron/all-edge Latin scalar endpoint packet from the final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff.toParityTetrahedronAllEdgeLatinScalarEndpoint
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable) :
+    CertifiedProofMdCurrentFrontierTerminalParityTetrahedronAllEdgeLatinScalarEndpointCertificate
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable :=
+  h.parityTetrahedronAllEdgeLatinScalarEndpoint
+
+/-- Project the target statement through the parity/Latin scalar endpoint handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff.toTargetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable) :
+    TargetStatement :=
+  h.ternarySourceCollisionRefinementHandoff.toTargetStatement
+
+/-- The parity/Latin scalar endpoint handoff exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      Basis WithHoles PositiveAtom AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+      terminalPairAtomDeletionPivots terminalPairPivotSaturation terminalCollisionStarForcing
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      terminalSharedPackedAtomPenaltyRebate terminalForcedSplitPackedAtomBetweenPetals
+      terminalPairCollisionTwoPetalOverpayBranch terminalPairCollisionGenuineThreePetalBranch
+      terminalPairCollisionProperSubfamilyNonpositive terminalPairCollisionNoDiffuseLargerCollisionMode
+      terminalPairForcedPetalStrictDeficit terminalSizeThreeNoLeftoverCollisionOnlyFiniteTemplates
+      terminalFourFourCollisionFreeCutoff terminalFourPairComplementaryTransversalBooleanOrientationCore
+      terminalPairCollisionPartnerFreePartnerHitExhaustiveSplit
+      terminalPartnerFreeHiddenBipartitionDeletionSupports
+      terminalPartnerFreeHiddenBipartitionEndpointLabelsDistinct
+      terminalPartnerFreeHiddenBipartitionEqualLabelsPartitionAllFourAtoms
+      terminalPartnerHitTwoPetalPiThreeDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTwoPetalPiFourDeltaOneTemplate
+      terminalPartnerHitThreePetalPiFourDeltaZeroTemplate
+      terminalPartnerHitTemplatesIncludePartnerSingleton
+      terminalThreeTwoTwoTwoDeletionProjectsFourPairAtoms
+      terminalThreeTwoTwoTwoProjectedPairAtomsExposeOneCornerSquareCore
+      terminalThreeTwoTwoTwoSquareBreakerDischargeEliminatesPattern
+      terminalNoLeftoverSmallCollisionEndpointSizeAtMostNineDischarged
+      terminalNoLeftoverSmallCollisionFirstProfilesFourTwoTwoTwoOrThreeThreeTwoTwo
+      terminalTernarySourceShortenedPairFreeLabelsFromSizeThreeAtoms
+      terminalTernarySourceDistinctSourceLabels
+      terminalTernarySourceNoRainbowPartition
+      terminalTernarySourceNoJointBlocker
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQTwo
+      terminalTernarySourceShortenedPairHitStrictCrossDefectQThree
+      terminalTernarySourceShortenedPairHitDeltaOtherBounds
+      terminalTernarySourceCollisionCompensatedByOtherPetals
+      terminalParityTetrahedronRigidity
+      terminalParityTetrahedronTargetTypeIncidenceTable
+      terminalParityTetrahedronAllEdgeStarPhase
+      terminalHalfEdgeLatinKTwoTwoDesign
+      terminalCrossResidueFlatCalculation
+      terminalSignedKFourScalarObstructionEquationRGMinusSG
+      terminalShortenedPairHitFiniteOmissionTable) :
+    TargetStatement :=
+  h.toTargetStatement
+
+end FinalConsumerParityTetrahedronAllEdgeLatinScalarEndpointApi
+
 end FinalConsumerNoLeftoverSmallCollisionSizeCutoffApi
 
 end FinalConsumerPartnerFreePartnerHitPairCollisionSplitApi
