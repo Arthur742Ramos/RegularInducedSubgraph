@@ -8879,6 +8879,29 @@ six-cycle, or the union of two edge-disjoint triangles (possibly sharing one ver
 five-template ambiguous cores sit inside one of these two leave types before the internal witness
 matching is imposed.
 
+Large packings also rigidify the occupied trace alphabet.  Assume the external ambiguity is anchored by
+the empty or full trace, so every occupied trace `p` has `|p cap O|` independent of `O in P`.
+If `P=F` is the full Fano plane, double-counting incidences gives
+
+```text
+3|p| = 7t,
+```
+
+where `t=|p cap O|` is the common line intersection.  Hence `|p|` is `0` or `7`, and the only occupied
+traces compatible with full Fano ambiguity are `empty` and `R_i`.
+
+If `P=F\{L_0}` is a six-packing, the same rigidity leaves exactly four trace types.  Write
+`A=L_0` and `B=R_i\L_0`.  The six present Fano lines are, for each `a in A`, the two lines
+`a` plus a complementary pair of `B`.  Equal intersections on the two lines through the same `a` force
+the three pair-sum equalities on `B`, hence the trace is constant on `B`.  Equal intersections across
+different `a` then force the trace to be constant on `A`.  Thus
+
+```text
+p in {empty, L_0, R_i\L_0, R_i}.
+```
+
+So anchored Fano and near-Fano ambiguity can survive only with a two-level trace alphabet.
+
 For `P=F` this lower bound has an exact Fano-plane form.  A kept-pair witness `e` kills precisely the
 Fano lines disjoint from `e`; therefore a witness graph `H` kills all Fano omitted triples iff no Fano
 line meets every edge of `H`.  Equivalently, `H` is not vertex-covered by any Fano line.  Every graph

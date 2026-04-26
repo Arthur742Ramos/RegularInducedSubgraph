@@ -1592,6 +1592,9 @@ completes `P` to the Fano plane.  So a six-packing has `Gamma(P)=K_6` and minimu
 forced complement-pair witnesses.
 Generally the leave graph has `21-3|P|` edges and even degrees `6-2d_P(x)`.  For `|P|=5`, it is therefore
 a six-cycle or two edge-disjoint triangles, so the five-template core has only these leave types.
+Anchored large packings rigidify traces: full Fano ambiguity allows only empty/full occupied traces by
+`3|p|=7t`, while a six-packing `F\{L_0}` allows only
+`empty, L_0, R_i\L_0, R_i`.
 For `P` Fano, the exact graph shadow is that the internal witness graph is not covered by any Fano line;
 all three-edge witness graphs are line-covered.
 Equivalently, dualize to the seven Fano lines: each kept-pair witness joins the two lines disjoint from

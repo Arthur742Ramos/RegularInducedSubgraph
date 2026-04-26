@@ -1711,6 +1711,8 @@ in one point.
 Minimum covers are maximum matchings plus complement-four witnesses for unmatched triples; a six-packing
 is Fano minus one line, hence has a three-witness minimum core.
 The packing leave graph always has even degrees; five-packings have only six-cycle or two-triangle leaves.
+Anchored full-Fano ambiguity allows only empty/full traces; anchored Fano-minus-one-line ambiguity allows
+only the missing line and its complement in addition.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

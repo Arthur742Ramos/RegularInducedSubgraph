@@ -2051,6 +2051,9 @@ Recommended attack:
    Add the general leave calculus: `|E Lambda(P)|=21-3|P|` and
    `deg_Lambda(x)=6-2d_P(x)`, so leave degrees are even.  For five triples the leave is either a six-cycle
    or two edge-disjoint triangles.
+   Formalize anchored large-packing trace rigidity: if all occupied traces have constant intersection
+   with all Fano lines, then only `empty` and `R_i` occur (`3|p|=7t`).  If they have constant intersection
+   with the six lines of `F\{L_0}`, then only `empty`, `L_0`, `R_i\L_0`, and `R_i` occur.
    In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
    iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness
