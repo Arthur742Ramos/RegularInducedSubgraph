@@ -265,25 +265,326 @@ split-marker compensator quotient has no large marker side.  Gallai supplies the
 remaining first-bit input is exactly the loss-64 affine selector from parity-regular supports to
 mod-4-regular supports.  Equivalently, after Gallai reduces the odd-parity case to an even induced
 bucket, it is enough to prove the loss-32 even selector: every induced even-degree graph contains a
-`1/32`-large induced subgraph whose degrees are congruent modulo `4`.  With an Eulerian orientation of
-the even graph, the zero/two-residue strengthening asks for a large induced set `W` and a bit `r` with
-both `out_W(v)` and `in_W(v)` equal to `r` modulo `2` on all retained vertices.  This bidirected parity
-selector is sufficient but not equivalent, because the full selector may also return all degrees `1` or
-`3 mod 4`.  In matrix language, the exact first-bit obstruction left after the higher-bit q-marker
+`1/32`-large induced subgraph whose degrees are congruent modulo `4`.  A fixed Eulerian orientation of
+the ambient even graph does not linearize the zero/two-residue case: the selected graph `E[W]` can be
+oriented Eulerian after `W` is known, but the inherited orientation on `E[W]` need not be Eulerian and
+its out-parity does not determine `deg_{E[W]}(v)/2 [MOD 2]`.  In matrix language, the exact first-bit
+obstruction left after the higher-bit q-marker
 closure is the deterministic principal-submatrix theorem for symmetric zero-diagonal matrices with even
 row sums: find a `1/32`-large principal submatrix whose row sums are constant modulo `4`.  Edge-count
 zero-sum partitions and random-graph modulo partitions do not imply this vertex-degree statement.  Nor do
-the currently checked Scott/Ferber--Krivelevich parity tools: Scott gives a real bipartite mod-`k`
-linear bound and frames the arbitrary-graph linear residue problem as a target, while
-Ferber--Krivelevich and its prescribed-label extension remain mod-`2` inputs.  The primary-source
-Alon--Friedland--Kalai theorem is also not enough: it produces non-induced regular subgraphs under
-almost-regular/density hypotheses, so it does not select a large principal submatrix of an arbitrary
-Eulerian witness.
+the currently checked Scott/Hunter/Ferber--Krivelevich tools: Scott--Hunter gives a real bipartite
+mod-`k` linear bound with all degrees `1 mod k`, while Ferber--Krivelevich proves the arbitrary-graph
+`k=2` odd-degree conjecture with constant `1/10000`.  The former is bipartite-only and the latter
+freezes only the parity bit, so neither supplies the loss-`64` arbitrary even-graph mod-`4` selector.
+Prescribed-parity variants remain linear `F_2` inputs: they can choose the first bit of the retained
+degrees, but the next bit is the carry `binom(deg,2) [MOD 2]`, equivalently the synchronized in/out
+parity condition only after the selected even graph is oriented on its own.  That carry is exactly what
+the first-bit selector must control.  Equivalently, for `v` in a retained set `W`, the residue `deg_W(v) [MOD 4]` is the pair
+`(deg_W(v) [MOD 2], binom(deg_W(v),2) [MOD 2])`; the second coordinate counts unordered pairs of
+selected neighbors of `v`.  The first-bit target is therefore exactly a simultaneous graph-degree and
+centered pair-hypergraph parity selector, not a single linear parity-label theorem: find a `1/32`-large
+`W` on which both coordinates are constant.
+For nested sets `W subset S` with `B=S\W`, the carry obeys
+`c_W = c_S + c_B + p_W p_B` over `F_2`, alongside `p_W=p_S+p_B`.  This identity is the exact terminal
+self-layer equation: the last discarded layer must have both its linear degree bit and its centered
+pair bit synchronized on the vertices that survive.
+Equivalently, after taking a largest total-degree class `S0` in the even graph, the labels in the
+co-degree form satisfy `alpha(v)+deg_H(v)=lambda`.  Thus the first-bit selector would already follow
+from the fixed-modulus-four arbitrary-graph selector: every graph `H` has a `1/16`-large induced
+subgraph whose degrees are congruent modulo `4`.  Applying this to `H=E[S0]` gives the required
+`1/32` subset.  The arbitrary-label co-degree theorem would be sufficient but is stronger than needed.
+A full four-color fixed-point partition would be stronger but is false: the labeled path with vertex
+labels `(0,0,1)` along the path has no coloring `gamma` for which each vertex satisfies
+`gamma(v)=alpha(v)+deg` into other color classes modulo `4`.  The remaining target must therefore be a
+single-large-class theorem, not a partition theorem.
+The primary-source Alon--Friedland--Kalai theorem is also not enough: it produces non-induced regular
+subgraphs under almost-regular/density hypotheses, so it does not select a large principal submatrix of
+an arbitrary Eulerian witness.
+Even in the special anti-degree case `alpha+deg_H=lambda`, the full four-class coloring upgrade is too
+strong.  It would require a partition into classes whose induced degree residues are
+`lambda,lambda-1,lambda-2,lambda-3`; Balister--Powierski--Scott--Tan's random-graph partition theorem
+has a finite Poisson limit for exactly this `q=4` one-class-per-residue count, hence such full
+partitions do not exist deterministically.  The viable formulation is a partial anti-degree coloring
+covering at least one quarter of the graph, or directly the single class of size `|H|/16`.
+The packet version of the same obstruction is now clean.  If `W` is a maximal mod-`4`-congruent
+retained set of residue `r`, any outside packet `B` with `deg_B(w)` constant (`delta`) on old vertices
+`w in W` and with `deg_W(b)+deg_B(b)=r+delta` for all `b in B` would enlarge `W`.  The old-vertex
+condition is linear: from any outside pool of size greater than `3(|W|-1)`, AFK/Olson applied to the
+mod-`4` difference vectors to a fixed anchor in `W` produces a nonempty packet whose degrees into `W`
+are constant modulo `4`.  Thus the hard part is not balancing the old witness; it is forcing the
+packet's own internal degrees to match the shifted residue, i.e. the same fresh self-layer carry.
+This kills the zero-shift sparse chamber: if `P_0={b: deg_W(b)=r}` contains an independent set larger
+than `3|W|`, Olson on the full adjacency vectors supplies a nonempty subset with zero old degree
+vector; its internal packet degree is zero, so it extends `W`.  Hence every maximal obstruction has
+`alpha(P_0)<=3|W|`.  The other sparse chambers and the dense counterpart are affine target-subsum
+problems: an independent subset `B subset P_t` extends once
+`sum_B(1_{bw})=t-r` for every old `w`, while a clique subset `B subset P_t` extends once
+`sum_B(1-1_{bw0})=r-t+1`.  Thus the residual obstruction is target avoidance in `(Z/4Z)^{|W|}`, not
+ordinary old-witness balancing.
+Equivalently, the final lemma has the sharp form: any degree-to-`W` chamber of size greater than
+`3|W|` in a maximum-cardinality witness must contain an affine packet whose old degrees are constant
+and whose internal degrees hit the shifted residue.  The four chambers then force an extension unless
+`|W|>=|H|/16`.  The lemma is false without maximality of `W` (large independent chambers can avoid
+nonzero targets), so the remaining proof must use the absence of a larger mod-`4`-congruent induced
+subgraph inside the chamber, not just Olson balancing.  With `W` chosen maximum, every chamber `P_t`
+has `alpha(P_t)<=|W|`, `omega(P_t)<=|W|`, and more generally no mod-`4`-congruent induced subgraph
+larger than `W`; hence a large chamber is already a dense/no-large-regular-witness object.  The final
+affine-packet theorem must use this global maximum hypothesis, not mere inclusion-maximality.
+
+For the formal loss-`32` endpoint one can spend more room than the sharp chamber lemma suggests.  If
+`|W|=m<n/32`, then some chamber has size greater than `31m/4`; iterating Olson in that chamber leaves
+at most `3(m-1)` vertices unused and gives an old-balanced union of size greater than `19m/4`.  Thus
+the first-bit target can be attacked through a weaker large-packet replacement theorem: given an
+old-balanced packet `B subset P_t`, either the append-only target
+`deg_B(b)=r+delta-t` occurs on a nonempty subpacket, or one deletes a set `D subset W` and keeps
+`W\D` together with many vertices of `B`.  The exact correction equations are
+
+```text
+deg_D(w) == r+delta-R       for kept old vertices w,
+deg_D(b) == t+deg_B(b)-R    for packet vertices b.
+```
+
+The case `D=empty` is precisely the affine packet lemma; nonempty `D` is the replacement slack that
+the loss-`32` constant may allow.
+
+The sharper way to spend this slack is more constrained than the first deletion-first formulation
+suggested.  If `D subset W` and `E=W\D`, then the old-coordinate equation for a replacement packet is
+
+```text
+deg_B(w)-deg_B(e_0) == deg_D(w)-deg_D(e_0)       for w in E
+```
+
+after choosing a basepoint `e_0 in E`.  Ordinary Olson gives a large zero-target packet on the
+coordinates of `E`; it does not by itself realize this arbitrary affine target.  Therefore the old
+coordinates are automatic only when `deg_D` is constant on `E`, equivalently when `E` is itself a
+mod-`4` congruent induced subset of the old witness `W`.
+
+In that congruent-`E` subcase, Olson on the coordinates of `E` leaves at most `max(0,3(|E|-1))`
+vertices unused, so a chamber of size `N>31m/4` gives an old-balanced packet `B_E` with
+
+```text
+|B_E| > N - max(0,3(|E|-1)) > m-|E|.
+```
+
+The loss-`32` theorem is therefore reduced not to arbitrary deletion, but to a simultaneous kept-old
+self-layer correction: find such a congruent `E` and a packet, or a subpacket still larger than
+`W\E`, for which
+
+```text
+deg_E(b)+deg_B(b) == constant       for every retained b.
+```
+
+Equivalently, one must rule out a chamber with no profitable signed packet `(B,D)` satisfying
+
+```text
+deg_B(w)-deg_D(w) == K          for w in W\D,
+deg_B(b)-deg_D(b) == r+K-t      for b in B,
+|B|>|D|.
+```
+
+This signed packet form is still the cleanest loss-`32` obstruction.  Deletion lowers the zero-sum
+dimension only in the zero-target/congruent-`E` subcase, or after an additional theorem representing
+the affine old-coordinate target; it is not a standalone Olson dimension count.
+
+A correct signed Olson normalization is nevertheless available.  In the group
+`(Z/4Z)^(W\{w_0})`, insert `p_b(w)=1_{bw}-1_{bw_0}` for every chamber vertex `b`, and insert
+`-p_d(w)=-(1_{dw}-1_{dw_0})` for every old vertex `d in W`.  Greedy Olson on this combined positive
+/ negative sequence leaves at most `3(m-1)` elements unused.  Therefore the union of the zero-sum
+blocks gives a signed packet `(B,D)` with
+
+```text
+|B| >= |P_t|-3(m-1) > 19m/4,       |D| <= m,
+deg_B(w)-deg_D(w) == constant      for every w in W.
+```
+
+Thus the old side of a profitable replacement can be made honest with large positive surplus.  The
+remaining obstruction is exactly the signed self-layer cleanup: refine such a packet, without losing
+the surplus, until `deg_B(b)-deg_D(b)` is constant on the positive side.
+Because the old witness has zero old-coordinate sum, this is the same as finding `E subset W` and
+`B subset P_t` with `|E|+|B|>m` whose old-coordinate degrees are already constant; only the new
+vertices in `B` still need their self-layer synchronized.
+
+One should also avoid spending the chamber pigeonhole too early.  With `U=V(H)\W` and
+`tau(b)=deg_W(b) [MOD 4]`, the direct labelled outside-packet target is
+
+```text
+deg_B(w)=delta              for all w in W,
+deg_B(b)+tau(b)=r+delta     for all b in B.
+```
+
+If `m<n/32`, then `|U|>31m`; Olson on all of `U` gives an old-balanced `B_0` with
+`|B_0|>28m`.  However, a class of `deg_{B_0}+tau` of size `>7m` need not remain old-balanced.
+Rebalancing inside that class still leaves `>4m`, but a second ordinary four-way refinement drops the
+available pool below the `3m` old-coordinate threshold if Olson is run afterward.  Thus the whole
+outside version does not close by a finite classify/expose/rebalance loop.
+
+The deleted-coordinate arithmetic after two unavoidable four-way refinements is:
+
+```text
+7m/4 - 3(m-d-1) > d,
+```
+
+which forces `d>5m/8-O(1)`.  Deletion can therefore make the final old-balance dimension feasible
+only after removing most of `W`; it still does not create the corrected self-layer.  The remaining
+lemma must synchronize the terminal self-layer while preserving old-balance.
+
+In kept-old notation `E=W\D`, the desired replacement is simply a larger congruent set `E union B`:
+
+```text
+deg_E(w)+deg_B(w)=R          for w in E,
+deg_E(b)+deg_B(b)=R          for b in B,
+|E|+|B|>m.
+```
+
+This exposes the exact two-sided absorption barrier.  After the two exposed refinements the outside
+pool has size `>7m/4`.  Choosing `E` first and then taking the best residue class of the final label
+`deg_E(b)` leaves only `>7m/16` outside vertices, so one would need `|E|>9m/16`.  But choosing the
+outside set first and then rebalancing old coordinates requires `|E|<3m/8+O(1)`.  These ranges are
+disjoint.  Therefore the missing lemma must couple the choices of `E` and `B`; neither side can be
+chosen first by a pure pigeonhole/Olson step.
+
+The even-degree endpoint has a stronger co-absorbing formulation before reduction to arbitrary
+labels.  If `U=V(H)\W`, one total-degree fiber `T subset U` has size `>31m/2`.  Writing `F=U\T` and
+`C=T\B`, the append equations for retained `B subset T` become
+
+```text
+deg_T(w)-deg_C(w)=delta             for w in W,
+deg_C(b)+deg_F(b)=s-r-delta         for b in B,
+```
+
+where `s` is the common total-degree residue on `T`.  Thus the even case asks for an outside
+discard-set `C` that regularizes both the old side and the retained side.  Refining by the fixed label
+`deg_F` costs a factor `4`, reducing the large `>31m/2` fiber to the familiar `>31m/8` chamber scale,
+so this is not yet a proof; it is the cleanest even-specific alternative to the arbitrary labelled
+self-layer lemma.
+
+With the signed-Olson normalization, the first old-frame step inside `T` can be made stronger:
+old-balancing a packet `B_0 subset T` leaves `|B_0|>|T|-3(m-1)>25m/2`.  A class of
+`deg_{B_0}(b)+deg_W(b)` therefore has size `>25m/8`, barely above the `3m` threshold.  But an
+ordinary rebalance inside that class leaves only `>m/8`, and a signed rebalance with old negatives no
+longer guarantees positive surplus over the deleted old vertices.  Hence the even total-degree fiber
+buys one extra exposed layer, but it still does not close by "classify, then rebalance."  The missing
+co-absorption lemma must regularize the old frame while retaining the large self-layer class, not
+after shrinking it by a Davenport loss.
+
+After the large class is chosen, the self-layer can be written as a co-cut condition.  Let
+`h_0(b)=deg_W(b)+deg_{B_0}(b)`, let `C` be a residue class of `h_0`, and put `R=B_0\C`.  For
+`B subset C`,
+
+```text
+deg_W(b)+deg_B(b) = h_0(b)-deg_R(b)-deg_{C\B}(b).
+```
+
+Thus on `C` the desired final label is equivalent to
+
+```text
+deg_R(b)+deg_{C\B}(b) == constant       for b in B,
+```
+
+plus old-balance of `B` on `W`.  The terminal object is therefore an old-balanced co-cut lemma for a
+class just larger than `3m`, not a raw internal-degree synchronization problem.
+
+Equivalently, with `q_C(b)=deg_C(b)+deg_R(b)`, one needs an old-balanced `B subset C` and a residue
+`lambda` such that
+
+```text
+deg_B(b) == q_C(b)-lambda       for b in B.
+```
+
+The labels are not arbitrary: on the class `C`, `q_C(b)=h_0-deg_W(b)`.  The missing theorem must use
+this coupling between prescribed residue and old-neighbourhood vector; a black-box labelled
+mod-`4` induced-subgraph result at this density would be stronger than what is currently available.
+
+With old deletion allowed, the same class endpoint becomes a signed co-cut.  For `D subset W`,
+`E=W\D`, and `B subset C`, the old side is
+
+```text
+deg_B(w)-deg_D(w) == K       for w in E,
+```
+
+while the new side is equivalent, on the `h_0`-class, to
+
+```text
+deg_R(b)+deg_{C\B}(b)+deg_D(b) == Lambda       for b in B,
+|B|>|D|.
+```
+
+This is the precise signed terminal lemma.  The class size `>25m/8` is enough to find an append-only
+old-balanced subpacket, but not enough for a blind signed-Olson step on `C` to keep more positive
+vertices than old deletions after the `3m` loss.  Hence the proof must either solve the append-only
+co-cut on `C`, or preserve positive surplus while solving the signed co-cut.
+
+The append-only version can be expressed through the discarded set `X=C\B`:
+
+```text
+deg_X(w) == deg_C(w)-K              for w in W,
+deg_X(b) == Lambda-deg_R(b)         for b in C\X,
+X != C.
+```
+
+Thus the final non-signed lemma is a one-sided prescribed co-degree theorem for a proper discard
+set.  The old equations prescribe the trace of `X` on `W`; the new equations prescribe the trace of
+`X` only on vertices retained outside `X`.
+
+Maximizing the retained side sharpens the obstruction further.  Choose `B subset C` maximal
+old-balanced on `W` and set `X=C\B`.  Then `X` is zero-sum-free in the old-coordinate difference
+group, so
+
+```text
+|X| <= 3(m-1),        |B| > |C|-3(m-1) > m/8.
+```
+
+The old-coordinate equation is automatic for this `X`; only the co-cut label
+
+```text
+eta_X(b)=deg_X(b)+deg_R(b)
+```
+
+must be made constant on `B`.  Hence the terminal obstruction is a zero-sum-free discarded boundary
+whose co-cut label is nonconstant on every maximal old-balanced complement.
+
+The local exchange equations are explicit.  From `C=B disjoint_union X`, move `Y subset B` into the
+discard and `Z subset X` into the retained set.  Old-balance is preserved iff
+
+```text
+sum_{z in Z} p_z == sum_{y in Y} p_y       in (Z/4Z)^(W\{w_0}),
+```
+
+and the new label is
+
+```text
+eta_{X'}(u)=eta_X(u)-deg_Z(u)+deg_Y(u)       for u in B\Y,
+eta_{X'}(z)=deg_{X\Z}(z)+deg_Y(z)+deg_R(z)   for z in Z.
+```
+
+The final boundary-exchange lemma is to find such an old-vector-balanced exchange making this label
+constant on `B'=(B\Y) union Z`.  A pure discard (`Z=empty`) only recurses inside `B`; any real closure
+has to use vertices of the zero-sum-free boundary `X`.
+
+The same endpoint has a useful one-large-class coloring normal form.  In a labelled graph
+`(H,alpha)`, a random four-coloring has the following property: for each vertex, the congruence
+
+```text
+gamma(v) == alpha(v)+deg_{H \ gamma^{-1}(gamma(v))}(v) [MOD 4]
+```
+
+holds with probability exactly `1/4` by cyclically shifting all colors in the closed neighbourhood of
+`v`.  Therefore some color has at least `|H|/16` pre-satisfied vertices.  If the same-color unsatisfied
+vertices have constant degree into that pre-satisfied fiber, the fiber is already a valid output.  The
+remaining obstruction is exactly the nonconstant same-color contamination term, i.e. the final
+self-layer again.  This is weaker than the false full fixed-point coloring theorem but strong enough
+to expose the only missing cleanup lemma.
 
 The current internal attack is the exposed-layer refinement diagnostic.  Once a discarded layer has been
 exposed and the retained set is refined by degree into that layer modulo `4`, its contribution remains
 constant forever.  The desired constant would follow if the final self-layer contribution could be
-synchronized without another factor; this is exactly the missing terminal self-layer lemma.
+synchronized without another factor; this is exactly the missing terminal self-layer lemma.  A bipartite
+residue theorem can repair only a chamber whose retained side has no uncontrolled internal edges, so the
+current self-layer must first be converted into such a chamber or handled by a genuinely self-layer
+co-cut argument.  Iterating the exposed-layer refinement further does not solve this: each new step
+only synchronizes the previous chamber on a smaller future set, and the output still has a fresh
+unsynchronized layer just outside it.
 
 So if `beta_m != 0`, there is a unique proper nonempty subset `S_m ⊊ U`, up to complement, such
 that:

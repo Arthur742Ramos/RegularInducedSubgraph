@@ -148,11 +148,12 @@ means every graph on at least `40960 = 4^6 * 10` vertices has a regular induced 
 `HasFourToEightTargetTenFixedWitnessLift` because the isolated `m = 10, j = 2` input witness itself
 has 40960 vertices.
 
-The strongest checked viable terminal-frontier wrapper currently exposed in Lean is now the affine
-cross-selector version:
+The preferred checked terminal-frontier wrapper currently exposed in Lean is the uniform higher-bit
+affine-selector version with the first bit reduced through Gallai to an even-degree mod-four selector
+and the terminal side left at the real fixed-witness external-block bridge:
 
 ```lean
-targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetsToSixteen_and_affineCrossSelectorFromSeventeen
+targetStatement_of_proofMdFinalHandoff_of_evenModFourColoringBound_le32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
 ```
 
 Its remaining inputs are:
@@ -161,37 +162,142 @@ Its remaining inputs are:
 sevenVertexBooleanCertificate :
   ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
 
-HasModFourZeroLossFiveInducedSubgraph
+C : ℕ
+0 < C
+C ≤ 32
+HasEvenDegreeModFourCongruentDegreeColoringBound C
 
 RamseyTenSmallTable
 
 HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5
 
-HasFourToEightTargetElevenFixedWitnessLift
-
-HasFourToEightTargetTwelveFixedWitnessLift
-
-HasExactSmallModulusFixedWitnessDyadicLift 2 13
-HasExactSmallModulusFixedWitnessDyadicLift 2 14
-HasExactSmallModulusFixedWitnessDyadicLift 3 14
-HasExactSmallModulusFixedWitnessDyadicLift 2 15
-HasExactSmallModulusFixedWitnessDyadicLift 3 15
-HasExactSmallModulusFixedWitnessDyadicLift 2 16
-HasExactSmallModulusFixedWitnessDyadicLift 3 16
-
-HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulusAffineCrossSelector 17
+HigherBitSmallModulusAffineSelectorsFromEleven
 ```
+
+The higher-bit input can equivalently be exposed through the slightly stronger
+`HigherBitSmallModulusAffineSelectorsFromElevenExtended`, which adds the finite `(m,j)=(13,3)`
+affine selector instead of using the built-in Ramsey fallback for that one slice.  Lean provides
+`hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_extended`
+and the certified wrapper
+`targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromElevenExtended_certifiedSeven`.
+
+There is also a sufficient finite-Ramsey expansion of the D=5 external-block bridge:
+
+```lean
+targetStatement_of_proofMdFinalHandoff_of_largeEvenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
+```
+
+Its remaining inputs are:
+
+```lean
+sevenVertexBooleanCertificate :
+  ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true
+
+HasLargeEvenDegreeModFourLoss32InducedSubgraph
+
+RamseyTenSmallTable
+
+HasCliqueOrIndepSetBound 16 16 8388607
+
+∀ {j : ℕ}, 5 ≤ j →
+  ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+    2 * R + 1 ≤ (2 ^ j) ^ 5 * 2 ^ j
+
+HigherBitSmallModulusAffineSelectorsFromEleven
+```
+
+This finite-Ramsey expansion is useful as a diagnostic sufficient condition for the terminal bridge,
+but it should not be treated as the main route to an unconditional proof: the tail is an arbitrary
+graph Ramsey bound of polynomial size in `q = 2^j`, so the real terminal goal remains the
+fixed-witness external-block bridge above.
+
+For importing the tail as a conventional Ramsey theorem, Lean now has
+`cliqueOrIndepSetBoundTail_of_pow_six_bound`, which packages a pointwise family
+`HasCliqueOrIndepSetBound q q R` with `2 * R + 1 <= q^6` into the exact terminal-tail shape above.
+The corresponding certified-seven endpoint is
+`targetStatement_of_proofMdFinalHandoff_of_largeEvenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_powSixTail_and_higherBitAffineSelectorsFromEleven_certifiedSeven`.
+
+With `RegularInducedSubgraph.CertifiedHandoff` imported, these same fields are packaged as
+`CertifiedProofMdCurrentFrontierCertificate`, since the seven-vertex finite certificate is supplied by
+`SevenVertexCertificate`.  The stronger arbitrary-set coloring variant is packaged as
+`CertifiedProofMdCurrentFrontierModFourColoringCertificate`, and the weaker first-bit import surface
+that only asks for an even-degree bounded coloring theorem with at most `32` colors is packaged as
+`CertifiedProofMdCurrentFrontierColoringCertificate`.  For the preferred external-block terminal
+frontier, use `CertifiedProofMdExternalBlockFrontierCertificate`,
+`CertifiedProofMdExternalBlockFrontierColoringCertificate`, or
+`CertifiedProofMdExternalBlockFrontierModFourColoringCertificate`.
 
 This is the current best checked Lean statement of "what remains."  The old residual
 `HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 17`
-is still available, but Lean now exposes the sharper affine cross-selector target: choose a retained
-bucket `u` inside the old `2^j` witness support `s` so that the ambient top-bit discrepancy on `s`
-cancels pairwise against the dropped tail `s \ u` modulo `2^(j+1)`.  Mathematically, this is the
-Lean-facing form of the saturated affine-pair/split-marker route.  The displayed stronger all-zero
-loss-5 theorem is one sufficient Lean way to supply the first bit.  `RamseyTenSmallTable` closes the
-isolated `m = 10, j = 2` case by
+is still available, but Lean now packages all higher-bit small-modulus work after Ramsey-10 as affine
+selectors: the finite `m = 11,12,13,14,15,16` selectors plus the uniform `m >= 17` selector.  Each
+selector chooses a retained bucket `u` inside the old `2^j` witness support `s` so that the ambient
+top-bit discrepancy on `s` cancels pairwise against the dropped tail `s \ u` modulo `2^(j+1)`.
+Mathematically, this is the Lean-facing form of the saturated affine-pair/split-marker route.  The
+first bit is now reduced to the large-support even-degree loss-32 selector; supports of size at most
+`32` are Lean-closed by empty/singleton witnesses, and Gallai contributes the extra loss factor `2`,
+yielding the existing `HasParityToModFourLoss64FixedWitnessLift`.  The older stronger all-zero loss-5
+theorem is still a sufficient compatibility input, but it is no longer the cleanest first-bit frontier.
+Lean also exposes the bounded-partition import surface
+`HasModFourCongruentDegreeColoringBound 32`: a 32-color partition of every induced vertex set into
+mod-4 congruent induced parts implies the even-degree selector by pigeonholing the largest color
+class.  The exact weaker first-bit import surface is
+`HasEvenDegreeModFourCongruentDegreeColoringBound C` for any `0 < C <= 32`; it only needs to color
+the even induced buckets produced by Gallai.
+`RamseyTenSmallTable` closes the isolated `m = 10, j = 2` case by
 recursing to `R(10,10) <= 40304 < 40960`, and the fixed-witness external-block self-bridge yields
 fixed-witness terminal regularization and removes the high-modulus higher-bit slice `m <= 2^j`.
+The fixed-witness terminal side also now has a direct finite-Ramsey prefix, independent of the
+external-block/cascade package:
+
+```lean
+fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound
+hasPolynomialCostFixedWitnessTerminalRegularization_of_exact_ramsey_prefix_and_tail
+fixedWitnessTerminalRegularizationData_six_of_le_four
+hasPolynomialCostFixedWitnessTerminalRegularization_six_of_tail_from_five
+fixedWitnessTerminalRegularizationData_eleven_of_le_five
+hasPolynomialCostFixedWitnessTerminalRegularization_eleven_of_tail_from_six
+fixedWitnessTerminalRegularizationData_twenty_of_le_six
+hasPolynomialCostFixedWitnessTerminalRegularization_twenty_of_tail_from_seven
+hasPolynomialCostFixedWitnessTerminalRegularization_of_ramsey_prefix_and_tail
+fixedWitnessTerminalRegularizationData_thirtyFive_of_le_seven
+hasPolynomialCostFixedWitnessTerminalRegularization_thirtyFive_of_tail_from_eight
+fixedWitnessTerminalRegularizationData_thirtySix_of_le_seven
+hasPolynomialCostFixedWitnessTerminalRegularization_thirtySix_of_tail_from_eight
+hasPolynomialCostFixedWitnessTerminalRegularization_mono
+fixedWitnessTerminalRegularizationData_sixtyThree_of_le_eight
+hasPolynomialCostFixedWitnessTerminalRegularization_sixtyThree_of_tail_from_nine
+fixedWitnessTerminalRegularizationData_oneHundredThirteen_of_le_nine
+hasPolynomialCostFixedWitnessTerminalRegularization_oneHundredThirteen_of_tail_from_ten
+fixedWitnessTerminalRegularizationData_twoHundredFour_of_le_ten
+hasPolynomialCostFixedWitnessTerminalRegularization_twoHundredFour_of_tail_from_eleven
+fixedWitnessTerminalRegularizationData_sixHundredEightyTwo_of_le_twelve
+hasPolynomialCostFixedWitnessTerminalRegularization_sixHundredEightyTwo_of_tail_from_thirteen
+```
+
+The same section also exposes a direct selector ladder that is strictly weaker than producing
+external-block/cascade data:
+
+```lean
+HasPolynomialCostFixedWitnessRegularSubbucketSelection
+HasPolynomialCostFixedWitnessModEqSubbucketSelection
+HasPolynomialCostFixedWitnessDroppedTailConstancySelection
+hasPolynomialCostFixedWitnessTerminalRegularization_of_regularSubbucketSelection
+hasPolynomialCostFixedWitnessTerminalRegularization_of_modEqSubbucketSelection
+hasPolynomialCostFixedWitnessTerminalRegularization_of_droppedTailConstancySelection
+```
+
+So the terminal task can now be attacked directly as exact subbucket selection inside the chosen
+large fixed-modulus host, or equivalently as dropped-tail residue constancy on that selected
+subbucket, without asking for the stronger terminal external-block/cascade witness.
+
+Thus the terminal regularization frontier can be pushed past any checked finite dyadic prefix by
+increasing the fixed polynomial exponent.  Concretely, Lean now regularizes all fixed-witness
+terminal slices through `q = 16` at exponent `6`, through `q = 64` at exponent `20`, and through
+`q = 128` at exponent `35`.  The exact finite-prefix form also reaches `q = 32` at exponent `11`.
+The coarser direct Ramsey-prefix arithmetic has additionally been batched through
+`q = 256` at exponent `63`, `q = 512` at exponent `113`, `q = 1024` at exponent `204`, and
+`q = 4096` at exponent `682`; the exponent-`682` terminal tail starts only at `j >= 13`.
 Lean also isolates the first two remaining small-modulus cases, `m = 11, j = 2` and
 `m = 12, j = 2`, as the finite targets `HasFourToEightTargetElevenFixedWitnessLift` and
 `HasFourToEightTargetTwelveFixedWitnessLift`.  It also isolates the whole next finite block
@@ -230,10 +336,13 @@ targetStatement_of_proofMdConcreteFRSatLargeGapBoolHandoffCertificate
 The remaining missing formal pieces are the inputs of the strongest viable wrappers plus the
 replacement theorem that discharges the older higher-bit residual predicate.  If the seven-vertex Boolean
 certificate is accepted from the existing external/Python proof, then the active mathematical gaps are:
-the first-bit modulus-four fixed-loss theorem (for Lean, the stronger
-`HasModFourZeroLossFiveInducedSubgraph` is sufficient), `RamseyTenSmallTable`,
+the first-bit even-degree bounded coloring theorem
+`HasEvenDegreeModFourCongruentDegreeColoringBound C` for some `0 < C ≤ 32` (or equivalently the
+loss-32 selector it implies), `RamseyTenSmallTable`,
 `HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5` (equivalently enough for
-`HasPolynomialCostFixedWitnessTerminalRegularization 5`), and formalization of the saturated
+`HasPolynomialCostFixedWitnessTerminalRegularization 5`; alternatively the direct fixed-witness
+terminal tail `j >= 13` at exponent `682` would be enough for
+`HasPolynomialCostFixedWitnessTerminalRegularization 682`), and formalization of the saturated
 affine-pair/split-marker theorem replacing the finite `m = 11, j = 2` target plus
 the finite `m = 12, j = 2` target plus
 the exact finite `13 <= m < 17`, `j = 2,3` targets except for the Ramsey-closed `(13,3)` case plus
@@ -241,7 +350,7 @@ the exact finite `13 <= m < 17`, `j = 2,3` targets except for the Ramsey-closed 
 The old monolithic `HasRamseyTenRegularAtDyadicTarget` is still available, but Lean now proves it from
 `RamseyTenSmallTable`.
 
-Work order: the dyadic residual should split into the first-bit modulus-four theorem and the already
+Work order: the dyadic residual should split into the first-bit even-degree selector and the already
 written higher-bit saturated theorem.  The terminal track should separately push the fixed-witness
 terminal side down to the external-block self-bridge and then prove that selected-top-host bridge.
 
@@ -327,7 +436,7 @@ The proof chain is:
 | Seven-vertex q=4 finite base | `sevenVertexCodeHasRegularFourOrFiveBool` certificate, bridged to `SevenVertexFourRegularBaseCase` |
 | Positive dyadic lift | `HasPolynomialCostPositiveEmptyControlDyadicLift C` |
 | Reduced dyadic residual | `HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap 7` |
-| Terminal regularization | `HasBoundedFixedModulusControlBlockModularHostPositiveDyadicTerminalRegularization r` |
+| Terminal regularization | `HasPolynomialCostFixedWitnessTerminalRegularization D` |
 | Host-local terminal obligations | `Q64PositiveDyadicTerminalGraphLocalObligations r` |
 | Concrete dropped-tail saturated terminal fields | `Q64ProofMdDroppedTailConcreteFRSatTerminalFields r` |
 | Saturated q-marker proof route | `Q64ProofMdSaturatedQMarkerTerminalRoute r` |
@@ -633,34 +742,416 @@ Recommended attack:
    subgraphs in arbitrary graphs.  The first-bit theorem must use the fixed modulus `4` and the
    parity-regular witness structure, or be imported as a genuine external fixed-modulus result.
 
-   The clean Lean-facing replacement target is the even Eulerian selector.  Gallai reduces the
-   odd-parity input to an even induced bucket at loss `2`; therefore the loss-64 theorem follows from:
+   The clean Lean-facing replacement target is now formalized as
+   `HasLargeEvenDegreeModFourLoss32InducedSubgraph`: the full even-degree selector is equivalent to
+   the large-support version because supports of size at most `32` are discharged by empty/singleton
+   witnesses.  Gallai reduces the odd-parity input to an even induced bucket at loss `2`, and Lean
+   proves
+
+   ```lean
+   hasLargeEvenDegreeModFourLoss32InducedSubgraph_iff :
+     HasLargeEvenDegreeModFourLoss32InducedSubgraph ↔
+       HasEvenDegreeModFourLoss32InducedSubgraph
+
+   hasParityToModFourLoss64FixedWitnessLift_of_evenDegreeModFourLoss32InducedSubgraph :
+     HasEvenDegreeModFourLoss32InducedSubgraph →
+       HasParityToModFourLoss64FixedWitnessLift
+
+   hasEvenDegreeModFourLoss32InducedSubgraph_of_modFourCongruentDegreeColoringBound :
+     HasModFourCongruentDegreeColoringBound 32 →
+       HasEvenDegreeModFourLoss32InducedSubgraph
+
+    hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound :
+      0 < C → C ≤ 32 →
+        HasEvenDegreeModFourCongruentDegreeColoringBound C →
+          HasEvenDegreeModFourLoss32InducedSubgraph
+
+    hasModFourCongruentDegreeColoringBound_mono :
+      C ≤ D →
+        HasModFourCongruentDegreeColoringBound C →
+          HasModFourCongruentDegreeColoringBound D
+
+    hasEvenDegreeModFourCongruentDegreeColoringBound_mono :
+      C ≤ D →
+        HasEvenDegreeModFourCongruentDegreeColoringBound C →
+          HasEvenDegreeModFourCongruentDegreeColoringBound D
+    ```
+
+   Thus the remaining selector is exactly:
 
    ```text
-   every induced even-degree graph E contains W with |W| >= |E|/32
+   every induced even-degree graph E with |E| >= 33 contains W with |W| >= |E|/32
    such that all degrees in E[W] are congruent modulo 4.
    ```
 
-   After orienting each even component Eulerian, the zero/two-residue subcase is the stronger bidirected
-   selector: find a large induced set `W` and a bit `r` with
-
-   ```text
-   out_W(v) == in_W(v) == r [MOD 2]  for every v in W.
-   ```
-
-   One-sided directed Gallai partitions are not enough: the modulus-four condition requires the in-
-   and out-parity equations to hold on the same retained vertices if the retained graph is forced even.
-   The full selector is broader because it may also return all degrees `1` or `3 mod 4`.
+   Do not use a fixed Eulerian orientation of the ambient even graph as a linear replacement for the
+   zero/two-residue subcase.  Once a particular even induced graph `E[W]` is known, it can be oriented
+   Eulerian and then out-parity equals `deg_{E[W]}(v)/2 [MOD 2]`; however the restriction of an
+   Eulerian orientation of `E` to `E[W]` need not be Eulerian.  Inherited out- and in-parities therefore
+   do not determine the second bit of `deg_{E[W]}(v)` on the candidate support.  The full selector is
+   broader anyway, because it may also return all degrees `1` or `3 mod 4`.
 
    Avoid two false imports here.  The Caro--Krasikov--Roditty zero-sum partition theorem is about the
    number of edges in each induced part modulo `q`, not all vertex degrees modulo `q`; random-graph
    modulo-`q` partition theorems are also irrelevant to arbitrary fixed witnesses.  The exact deterministic
-   statement needed is the principal-submatrix form.  Scott's modulo-`k` induced-subgraph results prove
-   useful bipartite and chromatic-number lower bounds and explicitly leave the arbitrary-graph linear
-   `f_k(n)` direction open; Ferber--Krivelevich and the prescribed-label extension are only parity
-   theorems.  Alon--Friedland--Kalai supplies non-induced regular subgraphs under almost-regular/density
-   hypotheses, not induced principal submatrices.  Do not cite any of these as a mod-`4` fixed-witness
-   selector.
+   statement needed is the principal-submatrix form.  Scott's modulo-`k` induced-subgraph results,
+   sharpened by Hunter, give useful bipartite/chromatic lower bounds with all degrees `1 mod k`;
+   Ferber--Krivelevich proves the arbitrary-graph `k=2` odd-degree conjecture with constant
+   `1/10000`.  These are genuine nearby theorems, but they do not provide the needed arbitrary
+   even-graph mod-`4` selector within the loss-`64` budget: the Scott--Hunter theorem is bipartite-only,
+   and the Ferber--Krivelevich theorem freezes only the first parity bit.  Prescribed-parity extensions
+   are still only `F_2` label theorems; the second bit of an even degree is the carry
+   `binom(deg,2) [MOD 2]`, not an inherited ambient out-degree parity.  Alon--Friedland--Kalai supplies non-induced regular
+   subgraphs under almost-regular/density hypotheses, not induced principal submatrices.  Do not cite
+   any of these as a mod-`4` fixed-witness selector.
+
+   The exact carry normal form is useful for formalization triage.  For `W` and `v in W`,
+
+   ```text
+   deg_W(v) [MOD 4] is determined by
+   p_W(v) = deg_W(v) [MOD 2]
+   c_W(v) = binom(deg_W(v),2) [MOD 2]
+          = #{ unordered selected neighbor-pairs of v } [MOD 2].
+   ```
+
+   The first-bit selector is therefore a simultaneous parity theorem for the graph-degree coordinate
+   `p_W` and the centered pair-hypergraph coordinate `c_W`.  Linear prescribed-parity imports address
+   only `p_W`; they do not synchronize `c_W` on the same retained support.
+
+   The exact internal target can be stated without mentioning modulo `4`:
+
+   ```text
+   for every even graph E, find W with |W| >= |E|/32 and constants p,c in F_2
+   such that every v in W has
+   deg_W(v) = p [MOD 2]
+   and an even/odd constant number c of unordered selected neighbor-pairs.
+   ```
+
+   This is equivalent to `HasLargeEvenDegreeModFourLoss32InducedSubgraph`, not merely sufficient:
+   the pair `(p,c)` is exactly the binary expansion of `deg_W(v) [MOD 4]`.
+
+   Useful algebraic deletion identity: if `W subset S`, `B = S \ W`, and `v in W`, then over `F_2`
+
+   ```text
+   p_W(v) = p_S(v) + p_B(v),
+   c_W(v) = c_S(v) + c_B(v) + p_W(v) * p_B(v),
+   ```
+
+   where `p_X(v)=deg_X(v) [MOD 2]` and `c_X(v)=binom(deg_X(v),2) [MOD 2]`.  This is the formal
+   self-layer equation behind the exposed-layer obstruction: old deleted layers can be synchronized,
+   but the last fresh deleted layer must have both `p_B` and `c_B` synchronized on the retained support.
+
+   A co-degree package explains the exact terminal form.  Since the input graph is even, choose a
+   largest total-degree class `S0`; it has size at least half.  For `W subset S0`,
+
+   ```text
+   deg_W(v) == lambda - deg_{E \ W}(v) [MOD 4].
+   ```
+
+   A fully labeled theorem would be sufficient:
+
+   ```text
+   for every graph H and label alpha : V(H) -> Z/4Z, there is W with |W| >= |H|/16
+   such that alpha(v) + deg_{H \ W}(v) is constant modulo 4 for all v in W.
+   ```
+
+   But the application only needs the special case `alpha(v)+deg_H(v)=lambda`, because
+   `alpha(v)=deg_{E\S0}(v)`.  In that case the statement is exactly:
+
+   ```text
+   every graph H has W with |W| >= |H|/16 whose induced degrees are congruent modulo 4.
+   ```
+
+   This fixed-modulus-four arbitrary-graph selector, applied to `H=E[S0]`, is the sharpest current
+   standalone endpoint for the first-bit problem.
+
+   A maximal-counterexample packet form is now isolated.  If `W` is maximal with induced degrees all
+   `r mod 4`, then any nonempty outside packet `B` satisfying
+
+   ```text
+   deg_B(w) == delta [MOD 4]                         for all w in W,
+   deg_W(b) + deg_B(b) == r + delta [MOD 4]          for all b in B
+   ```
+
+   would enlarge `W`.  The first condition is only linear co-cut balancing: for any outside pool `P`
+   with `|P| > 3(|W|-1)`, the AFK/Olson zero-subsum lemma applied to the difference vectors
+   `(1_{bw}-1_{bw0})_{w != w0}` gives a nonempty `B subset P` for which `deg_B(w)` is constant on
+   `W` modulo `4`.  Hence the old-witness side can be balanced at linear cost; the obstruction is the
+   second condition, the internal packet degree/carry equation on `B`.
+
+   The zero-shift sparse side of the packet obstruction is closed.  For
+   `P_0={b in V\W : deg_W(b)=r [MOD 4]}`, any independent set `I subset P_0` of size greater than
+   `3|W|` contains, by Olson on the full adjacency vectors `(1_{bw})_{w in W}`, a nonempty subset `B`
+   with `deg_B(w)=0` for all old vertices.  Since `B` is independent, `deg_B(b)=0`, so
+   `W union B` enlarges `W`.  Thus
+   a maximal counterexample must satisfy
+
+   ```text
+   alpha(P_0) <= 3|W|.
+   ```
+
+   The other sparse chambers and the dense chambers reduce to the same target-subsum variant.  For an
+   independent chamber `I subset P_t`, the target is
+   `sum_B(1_{bw}) == t-r [MOD 4]` for every `w in W`; for a clique chamber `K subset P_t`, the target is
+   `sum_B(1-1_{bw0}) == r-t+1 [MOD 4]`.  Together with the old difference sums, either target enlarges
+   `W`.  The last obstruction is therefore affine target avoidance in `(Z/4Z)^{|W|}`, not ordinary
+   old-witness zero-sum balance.
+
+   The exact remaining packet lemma is now:
+
+   ```text
+   If W is maximum-cardinality of residue r, |W|=m, and P_t={b:deg_W(b)=t} has |P_t|>3m,
+   then P_t contains nonempty B and delta with
+     deg_B(w)=delta       for all w in W,
+     deg_B(b)=r+delta-t   for all b in B.
+   ```
+
+   This lemma immediately gives the `1/16` arbitrary selector: if `m<n/16`, the four chambers partition
+   more than `15m` outside vertices, so one chamber has size `>3m` and extends `W`.  The threshold `3m`
+   is the Olson threshold for `(Z/4Z)^m`; the unproved content is exactly the internal-degree target,
+   using maximality of `W`.  Do not state the chamber lemma without maximality: independent chambers
+   with all old-neighborhood vectors equal can avoid nonzero affine targets, but then they are ruled out
+   only when they are themselves larger mod-`4`-congruent witnesses.
+
+   For formalization, this must be cardinal maximum, not inclusion maximal.  In a true counterexample
+   setup, every chamber `P_t` has no mod-`4`-congruent induced subgraph larger than `W`; in particular
+   `alpha(P_t)<=m` and `omega(P_t)<=m`.  Thus the residual chamber is not a sparse chamber but a
+   dense/no-large-regular-witness object, and the affine packet lemma must import that global maximum
+   hypothesis explicitly.
+
+   The loss-`32` target does not require the sharp `>3m` lemma.  If `m<n/32`, the largest chamber has
+   size `>31m/4`; iterated Olson inside it gives an old-balanced union of size `>19m/4` after discarding
+   at most `3(m-1)` vertices.  A possible weaker formal endpoint is therefore a replacement lemma for
+   such a large old-balanced packet.  If `B subset P_t` has old increment `delta` and one deletes
+   `D subset W`, then `W\D union B` has common residue `R` exactly when
+
+   ```text
+   deg_D(w)=r+delta-R       for kept old vertices w,
+   deg_D(b)=t+deg_B(b)-R    for packet vertices b.
+   ```
+
+   The affine packet lemma is the `D=empty`, `R=r+delta` special case; the nonempty-`D` version is the
+   replacement slack available only because the required constant is `1/32` rather than the sharper
+   arbitrary-selector `1/16`.
+
+   For a weaker formal endpoint, deletion can lower the number of old coordinates only after one
+   accounts for its affine target.  If `D subset W`, `E=W\D`, and `e_0 in E`, the old-side
+   replacement condition is
+
+   ```text
+   deg_B(w)-deg_B(e_0)=deg_D(w)-deg_D(e_0)       for every w in E.
+   ```
+
+   Plain Olson gives large zero-target packets, not arbitrary target packets.  Hence the earlier
+   deletion-first shortcut is valid without a new target-representation lemma only when `deg_D` is
+   constant on `E`, equivalently when `E` is itself a mod-`4` congruent induced subset of `W`.
+   In that zero-target subcase, Olson on the coordinates of `E` gives an old-balanced packet `B_E`
+   with
+
+   ```text
+   |B_E| > N - max(0,3(|E|-1)) > m-|E|.
+   ```
+
+   The remaining statement is then exactly the corrected self-layer condition
+
+   ```text
+   deg_E(b)+deg_{B_E}(b)=constant       for b in B_E
+   ```
+
+   or the same condition on an old-balanced subpacket still larger than `W\E`.  In its most symmetric
+   form, the profitable replacement lemma still asks for `B subset P_t`, `D subset W`, and `K` with
+
+   ```text
+   deg_B(w)-deg_D(w)=K          for every w in W\D,
+   deg_B(b)-deg_D(b)=r+K-t      for every b in B,
+   |B|>|D|.
+   ```
+
+   This is necessary and sufficient for `(W\D) union B` to contradict maximality of `W`.
+
+   The safe formal replacement for the invalid arbitrary-target shortcut is a signed Olson packet.
+   Choose `w_0 in W`, work in `(Z/4Z)^(W\{w_0})`, and insert positive vectors
+   `p_b(w)=1_{bw}-1_{bw_0}` for `b in P_t` together with negative vectors
+   `-p_d(w)=-(1_{dw}-1_{dw_0})` for `d in W`.  Greedy Olson on the combined sequence leaves at most
+   `3(m-1)` elements unused, so the union of the removed zero-sum blocks gives `B subset P_t` and
+   `D subset W` with
+
+   ```text
+   |B| >= |P_t|-3(m-1) > 19m/4,       |D| <= m,
+   deg_B(w)-deg_D(w)=constant         for every w in W.
+   ```
+
+   Hence `|B|>|D|` and the old-side line of the profitable packet is already certified.  The remaining
+   formal lemma is the signed self-layer cleanup preserving positive surplus and forcing
+   `deg_B(b)-deg_D(b)` to be constant on the retained positive vertices.
+   Equivalently, since `W` itself has zero old-coordinate sum, put `E=W\D`; then `E union B` has
+   size greater than `m` and is already regular on the old coordinate frame.  The remaining condition
+   is only the degree of each new vertex `b in B` into `E union B`.
+
+   There is a stronger labelled outside-packet statement that avoids the chamber pigeonhole.  Put
+   `U=V(H)\W` and `tau(b)=deg_W(b) [MOD 4]`.  If `m<n/32`, then `|U|>31m`, and it is enough to find
+   nonempty `B subset U` and `delta` with
+
+   ```text
+   deg_B(w)=delta              for all w in W,
+   deg_B(b)+tau(b)=r+delta     for all b in B.
+   ```
+
+   Olson on all of `U` gives an old-balanced packet `B_0` of size `>28m`.  A class of
+   `deg_{B_0}+tau` has size `>7m`, but old-balance is not inherited by that class.  If old-balance is
+   restored after two ordinary four-way refinements, the available pool is only `>7m/4`, below the
+   no-deletion `3m` threshold.  With deletion, the exact final inequality is
+
+   ```text
+   7m/4 - 3(m-d-1) > d
+   ```
+
+   which requires `d>5m/8-O(1)`.  Thus this is a useful formal endpoint only if paired with a real
+   terminal self-layer lemma that preserves old-balance.
+
+   In kept-old notation `E=W\D`, the replacement conditions are simply
+
+   ```text
+   deg_E(w)+deg_B(w)=R          for every w in E,
+   deg_E(b)+deg_B(b)=R          for every b in B,
+   |E|+|B|>m.
+   ```
+
+   The final formal lemma should not choose `E` and `B` independently.  After the exposed refinements,
+   the outside pool has size only `>7m/4`; choosing `E` first leaves a best label fiber of size
+   `>7m/16`, forcing `|E|>9m/16`, while choosing `B` first and rebalancing old coordinates needs
+   `|E|<3m/8+O(1)`.  The disjoint ranges identify the true endpoint as a simultaneous two-sided
+   absorption lemma.
+
+   The original even-degree theorem also admits a co-absorbing endpoint that should be kept separate
+   from the stronger arbitrary-label selector.  If `U=V(H)\W`, one total-degree fiber `T subset U` has
+   size `>31m/2`.  For `B subset T`, `C=T\B`, `F=U\T`, and common total-degree residue `s` on `T`,
+   the append equations are equivalent to
+
+   ```text
+   deg_T(w)-deg_C(w)=delta             for every w in W,
+   deg_C(b)+deg_F(b)=s-r-delta         for every b in B.
+   ```
+
+   A formal proof could target this co-absorption lemma directly.  The elementary refinement by
+   `deg_F` alone only recovers the `>31m/8` chamber scale, so an additional simultaneous argument is
+   still required.
+
+   The signed-Olson normalization sharpens but does not close this route.  Old-balancing a packet
+   `B_0 subset T` gives `|B_0|>|T|-3(m-1)>25m/2`; a class of
+   `deg_{B_0}(b)+deg_W(b)` has size `>25m/8`, just above `3m`.  Rebalancing after taking that class
+   leaves only `>m/8`, and signed rebalancing with old negatives no longer forces the positive side to
+   outnumber the old deletions.  Therefore the formal co-absorption target must keep the large
+   self-layer class while regularizing old coordinates simultaneously.
+
+   The class form can be stated without mentioning internal self-layer edges.  If `B_0` is
+   old-balanced, `h_0(b)=deg_W(b)+deg_{B_0}(b)`, `C` is a residue class of `h_0`, and `R=B_0\C`, then
+   for any `B subset C`
+
+   ```text
+   deg_W(b)+deg_B(b)=h_0(b)-deg_R(b)-deg_{C\B}(b).
+   ```
+
+   Hence the terminal formal lemma may be an old-balanced co-cut lemma: find nonempty old-balanced
+   `B subset C` such that `deg_R(b)+deg_{C\B}(b)` is constant on `B`.  In the even-specific route,
+   `|C|>25m/8`, so the class is only barely above the old-coordinate Davenport threshold.
+   Equivalently, with `q_C(b)=deg_C(b)+deg_R(b)`, find old-balanced `B subset C` and a residue
+   `lambda` such that
+
+   ```text
+   deg_B(b)=q_C(b)-lambda       for every b in B.
+   ```
+
+   On this class the labels satisfy `q_C(b)=h_0-deg_W(b)`, so the formal lemma should include the
+   coupling between the prescribed residue and the old-neighbourhood vector.
+
+   The signed version should be stated separately.  For `D subset W`, `E=W\D`, and `B subset C`,
+   the old side asks for `deg_B(w)-deg_D(w)=K` on `E`, while the new side is
+
+   ```text
+   deg_R(b)+deg_{C\B}(b)+deg_D(b)=Lambda       for every b in B,
+   |B|>|D|.
+   ```
+
+   The numerical warning is important for formalization: since `|C|` is only `>25m/8`, a blind
+   signed-Olson step on `C` can leave too few positive vertices to dominate `D`.  The formal endpoint
+   must either be append-only on `C` or explicitly preserve positive surplus in the signed co-cut.
+
+   The append-only formal endpoint can use the discard variable `X=C\B`:
+
+   ```text
+   deg_X(w)=deg_C(w)-K                 for every w in W,
+   deg_X(b)=Lambda-deg_R(b)            for every b in C\X,
+   X != C.
+   ```
+
+   This avoids circular references to `B` and states the remaining problem as a one-sided prescribed
+   co-degree selection theorem for a proper discard set.
+
+   A sharper formal endpoint chooses `B subset C` maximal among old-balanced subsets and sets
+   `X=C\B`.  Then `X` is zero-sum-free in `(Z/4Z)^(W\{w_0})`, hence `|X|<=3(m-1)` and
+   `|B|>|C|-3(m-1)>m/8`.  Since `B` is old-balanced, the old equation for `X` is automatic; the only
+   remaining condition is constancy on `B` of
+
+   ```text
+   eta_X(b)=deg_X(b)+deg_R(b).
+   ```
+
+   Thus the last obstruction can be formalized as a zero-sum-free boundary exchange lemma: some
+   maximal old-balanced complement must have constant `eta_X`, or else one can exchange vertices
+   across the zero-sum-free boundary to get a profitable packet.
+
+   The exchange lemma has the following local equations.  Given `C=B disjoint_union X`, move
+   `Y subset B` to the discard side and `Z subset X` to the retained side.  The old-balance condition is
+
+   ```text
+   sum_{z in Z} p_z = sum_{y in Y} p_y       in (Z/4Z)^(W\{w_0}),
+   ```
+
+   and the new co-cut labels are
+
+   ```text
+   eta_{X'}(u)=eta_X(u)-deg_Z(u)+deg_Y(u)       for u in B\Y,
+   eta_{X'}(z)=deg_{X\Z}(z)+deg_Y(z)+deg_R(z)   for z in Z.
+   ```
+
+   The pure-discard case `Z=empty` just recurses inside `B`; a closing proof must use a nonempty
+   `Z` from the zero-sum-free boundary.
+
+A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
+`(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event
+
+   ```text
+   gamma(v)=alpha(v)+deg_{H\gamma^{-1}(gamma(v))}(v) [MOD 4]
+   ```
+
+   has probability exactly `1/4` for each fixed vertex, by cyclic-shift symmetry on the closed
+   neighbourhood.  Hence some color has a pre-satisfied fiber of size at least `|H|/16`.  If the
+   same-color unsatisfied vertices have constant degree modulo `4` into that fiber, the fiber becomes a
+   genuine retained class.  The unproved cleanup lemma is precisely removal of this same-color
+   contamination; do not formalize the random preselector alone as the selector theorem.
+
+   Do not replace this with the stronger claim that every labeled graph admits a full
+   fixed-point coloring `gamma(v)=alpha(v)+deg_{H\gamma^{-1}(gamma(v))}(v) [MOD 4]`.  That partition
+   statement is false: the path `a-b-c` with labels `(0,0,1)` has no such coloring.  The leaf equations
+   exclude center colors `1` and `2`; center color `0` gives center outside-degree `1` or `2`, and
+   center color `3` gives outside-degree `2`.  The valid target is only a single large retained class,
+   and in the first-bit application the labels are the anti-degree labels above, not arbitrary labels.
+
+   The constant-sum anti-degree specialization also must remain a one-large-class theorem.  If
+   `alpha(v)+deg_H(v)=lambda`, then a full fixed-point coloring would be a partition into four
+   classes satisfying
+
+   ```text
+   gamma(v) + deg_{H[gamma^{-1}(gamma(v))]}(v) == lambda [MOD 4],
+   ```
+
+   i.e. the four classes would have induced degree residues `lambda-i`.  This is stronger than needed
+   and is not a deterministic import: Balister--Powierski--Scott--Tan's random-graph partition count
+   gives a finite Poisson limit for the number of `q=4` partitions with one class of each residue, so
+   such full partitions fail with positive limiting probability in `G(n,1/2)`.  A valid endpoint may
+   instead be phrased as a partial anti-degree coloring covering at least a quarter of the vertices; the
+   largest of its four classes would give the required `1/16` selector.
 
    ```text
    every symmetric zero-diagonal integer matrix with even row sums has a principal submatrix
@@ -668,15 +1159,19 @@ Recommended attack:
    ```
 
    This is equivalent to the even selector and would imply `HasParityToModFourLoss64FixedWitnessLift`.
-   The bidirected formulation is only a sufficient zero/two-residue strengthening, not an equivalent
-   replacement for the principal-submatrix statement.
+   Fixed-orientation bidirected parity is not a replacement for the principal-submatrix statement.
 
    A useful failed internal route is bounded layer refinement.  Choosing a largest total-degree class
    costs `2`, and successively synchronizing degrees into exposed discarded layers costs factors of `4`.
    Previously exposed layers stay synchronized under further refinement, but the final retained set has
    one new self-layer in its complement whose contribution is not controlled.  Closing that terminal
    self-layer at no extra loss would prove the desired `1/32` even selector; without it, the argument is
-   only a diagnostic and must not be formalized as the theorem.
+   only a diagnostic and must not be formalized as the theorem.  The Scott--Hunter bipartite theorem
+   would become relevant only after reducing this terminal obstruction to a chamber with no uncontrolled
+   internal edges on the retained side; the present principal-submatrix terminal layer is not yet
+   bipartite in that sense.  Nor does a longer finite refinement close the proof: every extra refinement
+   synchronizes degrees into the previous retained chamber only on a later subset, leaving a fresh
+   newly discarded self-layer whose contribution to the proposed output is still uncontrolled.
 
 3. Optional path-only fallback: prove the finite Ramsey table:
 
@@ -708,26 +1203,30 @@ Recommended attack:
    The same arithmetic repeats at `m = 12`: `j = 3` contradicts `24 < 16`, so only `j = 2`
    remains.
 
-6. Prove or replace the exact finite block:
+6. Prove or replace the finite affine-selector block:
 
    ```lean
-   HasExactSmallModulusFixedWitnessDyadicLift j m
+   HasExactSmallModulusAffineCrossSelector j m
    ```
 
-   for `13 <= m < 17` and `j = 2, 3`, except `(13,3)`, which Lean closes by the generic Ramsey
-   fallback `R(13,13) <= choose 24 12 <= 8^6 * 13`.  Lean proves that in this range `j = 4` is
-   impossible from the small-modulus condition `2^j < m`.  Supplying this block raises the infinite
-   residual to `m >= 17`.  This should be the stopping point for finite enumeration unless a
-   certificate engine makes these exact cases cheap.
+   for `m = 11, 12`, and for `13 <= m < 17` with `j = 2, 3`.  The exact fixed-witness targets remain
+   available, and the old package still closes `(13,3)` by the generic Ramsey fallback
+   `R(13,13) <= choose 24 12 <= 8^6 * 13`.  The extended package
+   `HigherBitSmallModulusAffineSelectorsFromElevenExtended` exposes `(13,3)` as an explicit affine
+   selector field via
+   `hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_with_thirteen_three`.
+   The preferred dyadic formulation is affine cancellation because it matches the uniform saturated
+   route.  Lean proves that in `13 <= m < 17`, `j = 4` is impossible from the small-modulus condition
+   `2^j < m`.
 
-7. For the saturated handoff, prove the remaining higher-bit small-modulus affine selector
+7. For the saturated handoff, prove the uniform higher-bit affine-selector package
 
    ```lean
-   HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulusAffineCrossSelector 17
+   HigherBitSmallModulusAffineSelectorsFromEleven
    ```
 
-   by the affine-pair/split-marker theorem from `proof.md` Lemmas 10.4e--10.4j.  The selector already
-   uses the existing residual assumptions:
+   by the affine-pair/split-marker theorem from `proof.md` Lemmas 10.4e--10.4j.  The uniform `m >= 17`
+   field already uses the existing residual assumptions:
 
    ```lean
    2 ^ j < m
@@ -738,9 +1237,9 @@ Recommended attack:
    and the saturated `FR^sat` provenance/support-decrease proposition.  This is no longer a dyadic
    carry gap; it is a formalization of the saturated q-marker routing already written in the proof notes.
 
-The hardest remaining non-terminal mathematical gap is therefore the first-bit
-`HasParityToModFourLoss64FixedWitnessLift`, unless the project chooses to import an external
-fixed-modulus-four congruent-degree theorem.
+The hardest remaining non-terminal mathematical gap is therefore the large-support first-bit
+`HasLargeEvenDegreeModFourLoss32InducedSubgraph`, unless the project chooses to import an external
+fixed-modulus-four congruent-degree theorem strong enough to imply it.
 
 ### Phase 3: Deferred terminal replacement
 

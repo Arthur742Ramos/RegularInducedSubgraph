@@ -1482,6 +1482,30 @@ lemma exists_large_mod_class_of_mul_pred_lt_card
     (exists_large_fiber_of_mul_pred_lt_card (s := s) (β := Fin q) (f := f)
       (hn := by simpa [Fintype.card_fin] using hn))
 
+lemma exists_mod_class_card_mul_ge_card
+    {α : Type*} [DecidableEq α] (s : Finset α) {q : ℕ} (hq : 0 < q) (f : α → Fin q) :
+    ∃ r : Fin q, s.card ≤ q * (s.filter fun x => f x = r).card := by
+  classical
+  by_cases hs0 : s.card = 0
+  · refine ⟨⟨0, hq⟩, ?_⟩
+    simp [hs0]
+  · have hspos : 0 < s.card := Nat.pos_of_ne_zero hs0
+    let n : ℕ := (s.card - 1) / q + 1
+    have hpred : q * (n - 1) < s.card := by
+      have hle : q * ((s.card - 1) / q) ≤ s.card - 1 := Nat.mul_div_le (s.card - 1) q
+      have hlt : s.card - 1 < s.card := Nat.sub_one_lt hs0
+      simpa [n] using lt_of_le_of_lt hle hlt
+    rcases exists_large_mod_class_of_mul_pred_lt_card (s := s) hq f hpred with ⟨r, hr⟩
+    refine ⟨r, le_trans ?_ (Nat.mul_le_mul_left q hr)⟩
+    have hmod := Nat.div_add_mod (s.card - 1) q
+    have hmodlt : (s.card - 1) % q < q := Nat.mod_lt _ hq
+    have hcard : s.card = q * ((s.card - 1) / q) + ((s.card - 1) % q) + 1 := by
+      omega
+    calc
+      s.card = q * ((s.card - 1) / q) + ((s.card - 1) % q) + 1 := hcard
+      _ ≤ q * ((s.card - 1) / q) + q := by omega
+      _ = q * n := by simp [n, Nat.mul_add, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
+
 lemma exists_large_subset_with_constant_externalDegree
     (G : SimpleGraph V) [DecidableRel G.Adj] (s t : Finset V) {k : ℕ}
     (hsize : (t.card + 1) * k ≤ s.card) :

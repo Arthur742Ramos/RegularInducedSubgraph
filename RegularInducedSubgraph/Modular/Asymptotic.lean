@@ -2045,6 +2045,60 @@ def HasParityToModFourLoss64FixedWitnessLift : Prop :=
       ∃ t : Finset (Fin n), t ⊆ s ∧ s.card ≤ 64 * t.card ∧ InducesModEqDegree G t 4
 
 /--
+First-bit selector after the Gallai parity cut: every induced subgraph whose internal degrees are
+even contains a `1/32`-large induced subgraph with constant degree modulo `4`.
+
+Together with Gallai's half-size even-degree induced subgraph, this is sufficient for the existing
+loss-`64` parity-to-mod-`4` fixed-witness lift.
+-/
+def HasEvenDegreeModFourLoss32InducedSubgraph : Prop := by
+  classical
+  exact
+    ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
+      (∀ v : ↑(s : Set (Fin n)), Even ((inducedOn G s).degree v)) →
+        ∃ t : Finset (Fin n), t ⊆ s ∧ s.card ≤ 32 * t.card ∧
+          InducesModEqDegree G t 4
+
+/--
+Large-support core of the even-degree first-bit selector.  The only omitted cases are
+`|s| <= 32`, where the empty set or a singleton already gives the required `1/32` witness.
+-/
+def HasLargeEvenDegreeModFourLoss32InducedSubgraph : Prop := by
+  classical
+  exact
+    ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
+      33 ≤ s.card →
+        (∀ v : ↑(s : Set (Fin n)), Even ((inducedOn G s).degree v)) →
+          ∃ t : Finset (Fin n), t ⊆ s ∧ s.card ≤ 32 * t.card ∧
+            InducesModEqDegree G t 4
+
+/--
+Bounded partition form of the modulus-four selector: color each induced vertex set with `C` colors
+so that every color class already has all induced degrees congruent modulo `4`.
+
+For `C = 32`, the largest color class implies `HasEvenDegreeModFourLoss32InducedSubgraph`; the
+definition is intentionally stated for arbitrary induced sets, matching the usual bounded partition
+theorem shape.
+-/
+def HasModFourCongruentDegreeColoringBound (C : ℕ) : Prop :=
+  ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
+    ∃ color : Fin n → Fin C,
+      ∀ r : Fin C, InducesModEqDegree G (s.filter fun v => color v = r) 4
+
+/--
+Even-degree version of the bounded partition import surface.  This is exactly what the first-bit
+route needs: the partition theorem only has to apply after Gallai has produced an even induced
+bucket.
+-/
+def HasEvenDegreeModFourCongruentDegreeColoringBound (C : ℕ) : Prop := by
+  classical
+  exact
+    ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
+      (∀ v : ↑(s : Set (Fin n)), Even ((inducedOn G s).degree v)) →
+        ∃ color : Fin n → Fin C,
+          ∀ r : Fin C, InducesModEqDegree G (s.filter fun v => color v = r) 4
+
+/--
 A stronger, literature-shaped finite target for the first dyadic bit: every induced vertex set has a
 `1/64`-large induced subgraph whose internal degrees are all `0 mod 4`.
 
@@ -2057,8 +2111,12 @@ def HasModFourZeroLoss64InducedSubgraph : Prop :=
       ∀ v : ↑(t : Set (Fin n)), (inducedOn G t).degree v ≡ 0 [MOD 4]
 
 /--
-Sharper finite target suggested by the standard "large induced subgraph with degrees divisible by
-`k`" theorem at `k = 4`: a `1/5`-large induced subgraph with all degrees `0 mod 4`.
+Sharper sufficient finite target for the first dyadic bit: a `1/5`-large induced subgraph with all
+degrees `0 mod 4`.
+
+This is intentionally kept as an assumption.  Nearby divisible-degree results often concern
+non-induced subgraphs, edge counts, dense/almost-regular hypotheses, or special graph classes, and
+should not be imported here unless they really imply this exact induced statement.
 -/
 def HasModFourZeroLossFiveInducedSubgraph : Prop :=
   ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {s : Finset (Fin n)},
@@ -2166,8 +2224,75 @@ def HasExactSmallModulusAffineCrossSelector (j m : ℕ) : Prop :=
             ∀ v w : ↑(u : Set (Fin n)),
               (G.neighborFinset v ∩ s).card +
                   (G.neighborFinset w ∩ (s \ u)).card ≡
-                (G.neighborFinset w ∩ s).card +
+              (G.neighborFinset w ∩ s).card +
                   (G.neighborFinset v ∩ (s \ u)).card [MOD 2 ^ (j + 1)]
+
+/--
+All higher-bit small-modulus affine selectors after the Ramsey-10 case.  This packages the finite
+`m = 11, 12, 13, 14, 15, 16` selectors together with the uniform residual from `m >= 17`.
+-/
+structure HigherBitSmallModulusAffineSelectorsFromEleven : Prop where
+  h11_2 : HasExactSmallModulusAffineCrossSelector 2 11
+  h12_2 : HasExactSmallModulusAffineCrossSelector 2 12
+  h13_2 : HasExactSmallModulusAffineCrossSelector 2 13
+  h14_2 : HasExactSmallModulusAffineCrossSelector 2 14
+  h14_3 : HasExactSmallModulusAffineCrossSelector 3 14
+  h15_2 : HasExactSmallModulusAffineCrossSelector 2 15
+  h15_3 : HasExactSmallModulusAffineCrossSelector 3 15
+  h16_2 : HasExactSmallModulusAffineCrossSelector 2 16
+  h16_3 : HasExactSmallModulusAffineCrossSelector 3 16
+  fromSeventeen :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulusAffineCrossSelector 17
+
+/--
+Fixed-witness target form of the higher-bit small-modulus residual.  This is weaker than the affine
+selector package and is often the direct output of finite/computational certificates.
+-/
+structure HigherBitSmallModulusFixedWitnessTargetsFromEleven : Prop where
+  h11_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 11
+  h12_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 12
+  h13_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 13
+  h14_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 14
+  h14_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 14
+  h15_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 15
+  h15_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 15
+  h16_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 16
+  h16_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 16
+  fromSeventeen :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 17
+
+/--
+Extended higher-bit affine-selector package that also exposes the finite `(m, j) = (13, 3)`
+case instead of relying on the built-in Ramsey fallback for that one slice.
+-/
+structure HigherBitSmallModulusAffineSelectorsFromElevenExtended : Prop where
+  h11_2 : HasExactSmallModulusAffineCrossSelector 2 11
+  h12_2 : HasExactSmallModulusAffineCrossSelector 2 12
+  h13_2 : HasExactSmallModulusAffineCrossSelector 2 13
+  h13_3 : HasExactSmallModulusAffineCrossSelector 3 13
+  h14_2 : HasExactSmallModulusAffineCrossSelector 2 14
+  h14_3 : HasExactSmallModulusAffineCrossSelector 3 14
+  h15_2 : HasExactSmallModulusAffineCrossSelector 2 15
+  h15_3 : HasExactSmallModulusAffineCrossSelector 3 15
+  h16_2 : HasExactSmallModulusAffineCrossSelector 2 16
+  h16_3 : HasExactSmallModulusAffineCrossSelector 3 16
+  fromSeventeen :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulusAffineCrossSelector 17
+
+/-- Forget the extra `(13,3)` field from the extended higher-bit selector package. -/
+theorem higherBitSmallModulusAffineSelectorsFromEleven_of_extended
+    (h : HigherBitSmallModulusAffineSelectorsFromElevenExtended) :
+    HigherBitSmallModulusAffineSelectorsFromEleven where
+  h11_2 := h.h11_2
+  h12_2 := h.h12_2
+  h13_2 := h.h13_2
+  h14_2 := h.h14_2
+  h14_3 := h.h14_3
+  h15_2 := h.h15_2
+  h15_3 := h.h15_3
+  h16_2 := h.h16_2
+  h16_3 := h.h16_3
+  fromSeventeen := h.fromSeventeen
 
 /-- The affine cross-selector is sufficient for the exact finite dyadic-step target. -/
 theorem hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector
@@ -2181,6 +2306,20 @@ theorem hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector
   refine hasFixedModulusWitnessOfCard_of_subset_cross_modEq_card G hus huCard ?_
   intro v w
   simpa using hcross v w
+
+/-- The affine cross-selector form closes the finite `m = 11`, `j = 2` target. -/
+theorem hasFourToEightTargetElevenFixedWitnessLift_of_affineCrossSelector
+    (hselector : HasExactSmallModulusAffineCrossSelector 2 11) :
+    HasFourToEightTargetElevenFixedWitnessLift := by
+  intro n hambient G hinput
+  exact (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector hselector) hambient G hinput
+
+/-- The affine cross-selector form closes the finite `m = 12`, `j = 2` target. -/
+theorem hasFourToEightTargetTwelveFixedWitnessLift_of_affineCrossSelector
+    (hselector : HasExactSmallModulusAffineCrossSelector 2 12) :
+    HasFourToEightTargetTwelveFixedWitnessLift := by
+  intro n hambient G hinput
+  exact (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector hselector) hambient G hinput
 
 /-- The uniform affine cross-selector closes the strict small-modulus dyadic residual. -/
 theorem
@@ -2608,6 +2747,65 @@ private lemma positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_terminal_
     exact hmod
   · dsimp [HasConstantModExternalBlockDegrees]
     exact ⟨hext, trivial⟩
+
+/--
+A non-singleton terminal bridge from a larger fixed-modulus host: if an exact `2^j`-subbucket is
+already regular and the host is larger, the dropped part of that same host is a genuine control block.
+-/
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_regular_subbucket
+    (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] {j : ℕ} {S u : Finset (Fin n)}
+    (hcard : u.card = 2 ^ j) (huS : u ⊆ S) (hproper : u.card < S.card)
+    (hhost : InducesModEqDegree G S (2 ^ j))
+    (hreg : ∃ d : ℕ, InducesRegularOfDegree G u d) :
+    ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+      ∃ blocks : List (Finset (Fin n) × ℕ),
+        2 ^ j ≤ (cascadeTerminal s chain).card ∧
+        (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+        NonemptyControlBlockUnion blocks ∧
+        ControlBlocksSeparated s blocks ∧
+        HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+        HasConstantModExternalBlockDegrees G s (2 ^ j) blocks := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hreg with ⟨d, hreg⟩
+  have hmodU : InducesModEqDegree G u (2 ^ j) :=
+    inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G hreg
+  have hhostU :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hhost ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  have hdrop :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] :=
+    modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+      (G := G) huS hhostU hmodU
+  have huNonempty : u.Nonempty := by
+    exact Finset.card_pos.mp (by simpa [hcard] using Nat.pow_pos (by decide : 0 < 2) j)
+  rcases huNonempty with ⟨v0, hv0⟩
+  let e : ℕ := (G.neighborFinset v0 ∩ (S \ u)).card
+  have hdiffNonempty : 0 < (S \ u).card := by
+    rw [Finset.card_sdiff, Finset.inter_eq_left.mpr huS]
+    omega
+  refine ⟨u, [], [((S \ u), e)], ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simpa [cascadeTerminal, hcard]
+  · simpa [cascadeTerminal, hcard]
+  · simpa [NonemptyControlBlockUnion, controlBlockUnion] using hdiffNonempty
+  · dsimp [ControlBlocksSeparated]
+    refine ⟨?_, by simp [controlBlockUnion], trivial⟩
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxDrop
+    exact (Finset.mem_sdiff.mp hxDrop).2 hxU
+  · change InducesModEqDegree G u (2 ^ j)
+    exact hmodU
+  · dsimp [HasConstantModExternalBlockDegrees]
+    refine ⟨?_, trivial⟩
+    intro v
+    simpa [e] using hdrop v ⟨v0, hv0⟩
 
 theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_cliqueOrIndepSetBound
     (G : SimpleGraph (Fin n)) {j K R : ℕ}
@@ -3067,6 +3265,87 @@ theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_four_of_cl
         exact h16 H s hs)
       (by norm_num)
 
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_of_pos_le_four_of_cliqueOrIndepSetBound
+    {j : ℕ} (hj : 0 < j) (hjle : j ≤ 4)
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 5 * 2 ^ j) (2 ^ j) →
+      (by
+        classical
+        exact
+          ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+            ∃ blocks : List (Finset (Fin n) × ℕ),
+              2 ^ j ≤ (cascadeTerminal s chain).card ∧
+              (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+              NonemptyControlBlockUnion blocks ∧
+              ControlBlocksSeparated s blocks ∧
+              HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+              HasConstantModExternalBlockDegrees G s (2 ^ j) blocks) := by
+  interval_cases j
+  · simpa using positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_one G
+  · simpa using positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_two G
+  · simpa using positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_three G
+  · simpa using
+      positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_four_of_cliqueOrIndepSetBound
+        G h16
+
+theorem hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBounds
+    (hRamsey :
+      ∀ {j : ℕ}, 0 < j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 5 * 2 ^ j) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 := by
+  classical
+  intro n j hj G hfixed
+  rcases hRamsey hj with ⟨R, hR, hlarge⟩
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_cliqueOrIndepSetBound
+      (G := G) (j := j) (K := (2 ^ j) ^ 5 * 2 ^ j) (R := R) hR hlarge hfixed
+
+theorem hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetPowSixBounds
+    (hRamsey :
+      ∀ {j : ℕ}, 0 < j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 6) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBounds
+    (fun hj => by
+      rcases hRamsey hj with ⟨R, hR, hpoly⟩
+      exact cliqueOrIndepSetBoundTail_of_pow_six_bound hR hpoly)
+
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_tail
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (hTail :
+      ∀ {j : ℕ}, 5 ≤ j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 5 * 2 ^ j) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 := by
+  classical
+  intro n j hj G hfixed
+  by_cases hjle : j ≤ 4
+  · exact
+      positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_of_pos_le_four_of_cliqueOrIndepSetBound
+        hj hjle h16 G hfixed
+  · have hjge : 5 ≤ j := by omega
+    rcases hTail hjge with ⟨R, hR, hlarge⟩
+    exact
+      positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_cliqueOrIndepSetBound
+        (G := G) (j := j) (K := (2 ^ j) ^ 5 * 2 ^ j) (R := R) hR hlarge hfixed
+
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_powSixTail
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (hTail :
+      ∀ {j : ℕ}, 5 ≤ j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 6) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_tail
+    h16
+    (fun hj => by
+      rcases hTail hj with ⟨R, hR, hpoly⟩
+      exact cliqueOrIndepSetBoundTail_of_pow_six_bound hR hpoly)
+
 theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_of_pos_le_three
     {j : ℕ} (hj : 0 < j) (hjle : j ≤ 3) (G : SimpleGraph (Fin n)) :
     HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 5 * 2 ^ j) (2 ^ j) →
@@ -3087,6 +3366,106 @@ theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_of_pos_le_thr
   · simpa using positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_three G
 
 /--
+Remaining terminal slice after the direct `j = 1,2,3` external-block constructions.  Closing this
+residual is equivalent to closing the D=5 positive-dyadic fixed-witness external-block bridge, but it
+does not restate the already-proved small dyadic moduli.
+-/
+def HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFour : Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 4 ≤ j) (G : SimpleGraph (Fin n)),
+      HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 5 * 2 ^ j) (2 ^ j) →
+        ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+          ∃ blocks : List (Finset (Fin n) × ℕ),
+            2 ^ j ≤ (cascadeTerminal s chain).card ∧
+            (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+            NonemptyControlBlockUnion blocks ∧
+            ControlBlocksSeparated s blocks ∧
+            HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+            HasConstantModExternalBlockDegrees G s (2 ^ j) blocks
+
+/-- The exact `j = 4` terminal external-block slice of the D=5 bridge. -/
+def HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveAtFour : Prop := by
+  classical
+  exact
+    ∀ {n : ℕ} (G : SimpleGraph (Fin n)),
+      HasFixedModulusWitnessOfCard G ((2 ^ 4) ^ 5 * 2 ^ 4) (2 ^ 4) →
+        ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+          ∃ blocks : List (Finset (Fin n) × ℕ),
+            2 ^ 4 ≤ (cascadeTerminal s chain).card ∧
+            (cascadeTerminal s chain).card ≤ 2 ^ 4 ∧
+            NonemptyControlBlockUnion blocks ∧
+            ControlBlocksSeparated s blocks ∧
+            HasFixedModulusCascadeFrom G (2 ^ 4) s chain ∧
+            HasConstantModExternalBlockDegrees G s (2 ^ 4) blocks
+
+/-- The large-modulus terminal external-block slice of the D=5 bridge after `j = 4`. -/
+def HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive : Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 5 ≤ j) (G : SimpleGraph (Fin n)),
+      HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 5 * 2 ^ j) (2 ^ j) →
+        ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+          ∃ blocks : List (Finset (Fin n) × ℕ),
+            2 ^ j ≤ (cascadeTerminal s chain).card ∧
+            (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+            NonemptyControlBlockUnion blocks ∧
+            ControlBlocksSeparated s blocks ∧
+            HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+            HasConstantModExternalBlockDegrees G s (2 ^ j) blocks
+
+/-- The `j = 4` slice plus the `j ≥ 5` slice close the terminal residual from `j ≥ 4`. -/
+theorem hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFour_of_atFour_and_fromFive
+    (hatFour : HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveAtFour)
+    (hfromFive : HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFour := by
+  intro n j hj G hfixed
+  rcases Nat.eq_or_lt_of_le hj with rfl | hgt
+  · exact hatFour G hfixed
+  · have hjfive : 5 ≤ j := by omega
+    exact hfromFive hjfive G hfixed
+
+/-- The existing q=16 Ramsey reduction proves the exact `j = 4` terminal slice. -/
+theorem hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveAtFour_of_cliqueOrIndepSetBound16
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveAtFour := by
+  intro n G hfixed
+  exact positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_at_four_of_cliqueOrIndepSetBound
+    G h16 hfixed
+
+/-- The q=16 Ramsey reduction plus the `j ≥ 5` slice close the terminal residual from `j ≥ 4`. -/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFour_of_cliqueOrIndepSetBound16_and_fromFive
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (hfromFive : HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFour :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFour_of_atFour_and_fromFive
+    (hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveAtFour_of_cliqueOrIndepSetBound16
+      h16)
+    hfromFive
+
+/-- The `j ≥ 4` terminal residual, together with the direct `j ≤ 3` slices, closes the D=5 bridge. -/
+theorem hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_fromFour
+    (hfromFour : HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFour) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 := by
+  intro n j hj G hfixed
+  by_cases hjle : j ≤ 3
+  · exact positiveDyadicFixedWitnessExternalBlockSelfBridgeData_five_of_pos_le_three
+      hj hjle G hfixed
+  · have hfour : 4 ≤ j := by omega
+    exact hfromFour hfour G hfixed
+
+/-- The q=16 Ramsey reduction and the `j ≥ 5` slice close the full D=5 external-block bridge. -/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_fromFive
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (hfromFive : HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_fromFour
+    (hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFour_of_cliqueOrIndepSetBound16_and_fromFive
+      h16 hfromFive)
+
+/--
 Viable dyadic self-bridge after the `q = 8` obstruction: only positive dyadic moduli `2^j` with
 `j > 0` are requested, so the impossible `q = 1` control-block terminal case is excluded.
 -/
@@ -3103,6 +3482,627 @@ def HasPolynomialCostFixedWitnessTerminalRegularization (D : ℕ) : Prop :=
   ∀ {n j : ℕ} (G : SimpleGraph (Fin n)),
     HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
       HasRegularInducedSubgraphOfCard G (2 ^ j)
+
+/--
+Direct exact-subbucket form of fixed-witness terminal regularization.  It asks for a regular
+`2^j`-subbucket inside the selected fixed-modulus witness itself, which is weaker than producing
+external-block/cascade data.
+-/
+def HasPolynomialCostFixedWitnessRegularSubbucketSelection (D : ℕ) : Prop :=
+  ∀ {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    ((2 ^ j) ^ D * 2 ^ j) ≤ S.card →
+      InducesModEqDegree G S (2 ^ j) →
+        ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+          ∃ d : ℕ, InducesRegularOfDegree G u d
+
+/--
+Modular exact-subbucket form of the same terminal task.  Since an exact `q`-vertex subbucket with
+degrees congruent modulo `q` is automatically regular, this is enough for terminal regularization.
+-/
+def HasPolynomialCostFixedWitnessModEqSubbucketSelection (D : ℕ) : Prop :=
+  ∀ {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    ((2 ^ j) ^ D * 2 ^ j) ≤ S.card →
+      InducesModEqDegree G S (2 ^ j) →
+        ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+          InducesModEqDegree G u (2 ^ j)
+
+/--
+Dropped-tail constancy form of the direct terminal task.  The selected exact subbucket only has to
+make the dropped part `S \ u` have constant degree modulo `2^j` on `u`; host-degree constancy then
+forces internal regularity.
+-/
+def HasPolynomialCostFixedWitnessDroppedTailConstancySelection (D : ℕ) : Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+      ((2 ^ j) ^ D * 2 ^ j) ≤ S.card →
+        InducesModEqDegree G S (2 ^ j) →
+          ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+            ∀ v w : ↑(u : Set (Fin n)),
+              (G.neighborFinset v ∩ (S \ u)).card ≡
+                (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j]
+
+/--
+The exact-subbucket selector is precisely enough for fixed-witness terminal regularization.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_regularSubbucketSelection
+    {D : ℕ} (hselect : HasPolynomialCostFixedWitnessRegularSubbucketSelection D) :
+    HasPolynomialCostFixedWitnessTerminalRegularization D := by
+  intro n j G hfixed
+  rcases hfixed with ⟨S, hS, hmod⟩
+  rcases hselect G hS hmod with ⟨u, _huS, hcard, d, hreg⟩
+  exact ⟨u, by simpa [hcard], d, hreg⟩
+
+/-- A modular exact-subbucket selector gives the regular-subbucket selector. -/
+theorem hasPolynomialCostFixedWitnessRegularSubbucketSelection_of_modEqSubbucketSelection
+    {D : ℕ} (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelection D) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelection D := by
+  intro n j G S hS hmod
+  rcases hselect G hS hmod with ⟨u, huS, hcard, huMod⟩
+  rcases
+    inducesRegularOfDegree_of_card_eq_modulus_of_inducesModEqDegree G hcard huMod with
+    ⟨d, hreg⟩
+  exact ⟨u, huS, hcard, d, hreg⟩
+
+/-- A modular exact-subbucket selector is enough for fixed-witness terminal regularization. -/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_modEqSubbucketSelection
+    {D : ℕ} (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelection D) :
+    HasPolynomialCostFixedWitnessTerminalRegularization D :=
+  hasPolynomialCostFixedWitnessTerminalRegularization_of_regularSubbucketSelection
+    (hasPolynomialCostFixedWitnessRegularSubbucketSelection_of_modEqSubbucketSelection hselect)
+
+/-- Dropped-tail constancy gives the modular exact-subbucket selector. -/
+theorem hasPolynomialCostFixedWitnessModEqSubbucketSelection_of_droppedTailConstancySelection
+    {D : ℕ} (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelection D) :
+    HasPolynomialCostFixedWitnessModEqSubbucketSelection D := by
+  classical
+  intro n j G S hS hmod
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases hselect G hS hmod with ⟨u, huS, hcard, hdrop⟩
+  have hhost :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hmod ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  exact
+    ⟨u, huS, hcard,
+      inducesModEqDegree_of_modEq_hostDegree_and_dropDegree (G := G) huS hhost hdrop⟩
+
+/-- Dropped-tail constancy is enough for fixed-witness terminal regularization. -/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_droppedTailConstancySelection
+    {D : ℕ} (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelection D) :
+    HasPolynomialCostFixedWitnessTerminalRegularization D :=
+  hasPolynomialCostFixedWitnessTerminalRegularization_of_modEqSubbucketSelection
+    (hasPolynomialCostFixedWitnessModEqSubbucketSelection_of_droppedTailConstancySelection hselect)
+
+/--
+Terminal regularization is monotone in the polynomial exponent: a larger exponent asks for a larger
+fixed-modulus witness, so any smaller-exponent theorem applies by witness monotonicity.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_mono
+    {D E : ℕ} (hDE : D ≤ E)
+    (hterminal : HasPolynomialCostFixedWitnessTerminalRegularization D) :
+    HasPolynomialCostFixedWitnessTerminalRegularization E := by
+  intro n j G hfixed
+  have hqpos : 0 < 2 ^ j := Nat.pow_pos (by decide : 0 < 2)
+  exact
+    hterminal G
+      (hasFixedModulusWitnessOfCard_mono G
+        (Nat.mul_le_mul_right (2 ^ j) (Nat.pow_le_pow_right hqpos hDE))
+        hfixed)
+
+/--
+If a fixed witness is already at least the ambient forcing threshold for its target size, terminal
+regularization follows from size alone.  This is the direct regularization route, not the stronger
+external-block/cascade package.
+-/
+theorem hasRegularInducedSubgraphOfCard_of_fixedWitness_forcingThreshold_le
+    {K q n : ℕ} (G : SimpleGraph (Fin n)) (hthreshold : forcingThreshold q ≤ K) :
+    HasFixedModulusWitnessOfCard G K q → HasRegularInducedSubgraphOfCard G q := by
+  intro hfixed
+  rcases hfixed with ⟨s, hs, _hsmod⟩
+  have hKn : K ≤ n := by
+    exact le_trans hs (by simpa using s.card_le_univ)
+  have hqF : q ≤ F n := le_F_of_forcingThreshold_le (le_trans hthreshold hKn)
+  exact (le_F_iff.mp hqF) G
+
+/--
+Concrete direct terminal criterion from the universal `F(4^k) ≥ k+1` bound: a dyadic fixed
+witness whose size dominates `4^(2^j-1)` already contains a regular `2^j`-vertex induced
+subgraph.  This closes finite terminal slices by arithmetic alone.
+-/
+theorem fixedWitnessTerminalRegularizationData_of_four_pow_le
+    {j D n : ℕ} (G : SimpleGraph (Fin n))
+    (hpow : 4 ^ (2 ^ j - 1) ≤ (2 ^ j) ^ D * 2 ^ j) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  have hqpos : 0 < 2 ^ j := Nat.pow_pos (by decide : 0 < 2)
+  have hthreshold : forcingThreshold (2 ^ j) ≤ (2 ^ j) ^ D * 2 ^ j := by
+    calc
+      forcingThreshold (2 ^ j) ≤ 4 ^ (2 ^ j - 1) := by
+        have hsucc : (2 ^ j - 1) + 1 = 2 ^ j := Nat.succ_pred_eq_of_pos hqpos
+        simpa [hsucc] using forcingThreshold_le_four_pow (2 ^ j - 1)
+      _ ≤ (2 ^ j) ^ D * 2 ^ j := hpow
+  exact hasRegularInducedSubgraphOfCard_of_fixedWitness_forcingThreshold_le G hthreshold
+
+/--
+Sharper direct terminal criterion from the finite Ramsey theorem inside the fixed witness.  A
+clique or independent set on `k` vertices is regular, so a fixed witness whose cardinality dominates
+`choose (2(k-1)) (k-1)` already terminal-regularizes to size `k`.
+-/
+theorem hasRegularInducedSubgraphOfCard_of_fixedWitness_ramseyBound
+    {n K k q : ℕ} (G : SimpleGraph (Fin n)) (hk : 0 < k)
+    (hramsey : Nat.choose ((k - 1) + (k - 1)) (k - 1) ≤ K) :
+    HasFixedModulusWitnessOfCard G K q → HasRegularInducedSubgraphOfCard G k := by
+  classical
+  intro hwitness
+  rcases hwitness with ⟨s, hKs, _hmod⟩
+  let H : SimpleGraph ↑(s : Set (Fin n)) := inducedOn G s
+  have hsRamsey :
+      Nat.choose ((k - 1) + (k - 1)) (k - 1) ≤
+        (Finset.univ : Finset ↑(s : Set (Fin n))).card := by
+    simpa using le_trans hramsey hKs
+  have hkpred : (k - 1) + 1 = k := by omega
+  have hregH : HasRegularInducedSubgraphOfCard H k := by
+    rcases ramsey_finset H (k - 1) (k - 1) Finset.univ hsRamsey with hclique | hindep
+    · rcases hclique with ⟨t, _ht, hct⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isClique H t hct.isClique
+      simpa [hct.card_eq, hkpred] using hreg
+    · rcases hindep with ⟨t, _ht, hit⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isIndepSet H t hit.isIndepSet
+      simpa [hit.card_eq, hkpred] using hreg
+  let e : H ↪g G :=
+    SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
+  exact hasRegularInducedSubgraphOfCard_of_embedding e hregH
+
+/--
+Direct terminal criterion from any certified finite Ramsey bound, not only the generic binomial
+bound.  This lets improved finite Ramsey tables feed the fixed-witness terminal blocker without
+passing through external-control blocks.
+-/
+theorem hasRegularInducedSubgraphOfCard_of_fixedWitness_cliqueOrIndepSetBound
+    {n K k q R : ℕ} (G : SimpleGraph (Fin n))
+    (hR : HasCliqueOrIndepSetBound k k R) (hlarge : R ≤ K) :
+    HasFixedModulusWitnessOfCard G K q → HasRegularInducedSubgraphOfCard G k := by
+  classical
+  intro hwitness
+  rcases hwitness with ⟨s, hKs, _hmod⟩
+  let H : SimpleGraph ↑(s : Set (Fin n)) := inducedOn G s
+  have hsRamsey :
+      R ≤ (Finset.univ : Finset ↑(s : Set (Fin n))).card := by
+    simpa using le_trans hlarge hKs
+  have hregH : HasRegularInducedSubgraphOfCard H k := by
+    rcases hR H Finset.univ hsRamsey with hclique | hindep
+    · rcases hclique with ⟨t, _ht, hct⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isClique H t hct.isClique
+      simpa [hct.card_eq] using hreg
+    · rcases hindep with ⟨t, _ht, hit⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isIndepSet H t hit.isIndepSet
+      simpa [hit.card_eq] using hreg
+  let e : H ↪g G :=
+    SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
+  exact hasRegularInducedSubgraphOfCard_of_embedding e hregH
+
+/--
+Dyadic specialization of the sharp finite-Ramsey terminal criterion.
+-/
+theorem fixedWitnessTerminalRegularizationData_of_ramsey_bound
+    {j D n : ℕ} (G : SimpleGraph (Fin n))
+    (hramsey :
+      Nat.choose ((2 ^ j - 1) + (2 ^ j - 1)) (2 ^ j - 1) ≤
+        (2 ^ j) ^ D * 2 ^ j) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  exact
+    hasRegularInducedSubgraphOfCard_of_fixedWitness_ramseyBound G
+      (Nat.pow_pos (by decide : 0 < 2)) hramsey
+
+/--
+Dyadic fixed-witness terminal regularization from any diagonal Ramsey bound `R(2^j,2^j)`.
+This is the terminal-only analogue of the older external-block Ramsey handoff.
+-/
+theorem fixedWitnessTerminalRegularizationData_of_cliqueOrIndepSetBound
+    {j D R n : ℕ} (G : SimpleGraph (Fin n))
+    (hR : HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R)
+    (hlarge : R ≤ (2 ^ j) ^ D * 2 ^ j) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  exact hasRegularInducedSubgraphOfCard_of_fixedWitness_cliqueOrIndepSetBound G hR hlarge
+
+/-- At exponent `5`, the direct fixed-witness terminal slices `j <= 3` are unconditional. -/
+theorem fixedWitnessTerminalRegularizationData_five_of_le_three
+    {j n : ℕ} (hjle : j ≤ 3) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 5 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  interval_cases j
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by decide)
+
+/--
+The `q = 16` slice of exponent-`5` terminal regularization follows directly from the certified
+`R(16,16)` bound; no external-block structure is needed.
+-/
+theorem fixedWitnessTerminalRegularizationData_five_at_four_of_cliqueOrIndepSetBound16
+    {n : ℕ} (G : SimpleGraph (Fin n))
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607) :
+    HasFixedModulusWitnessOfCard G ((2 ^ 4) ^ 5 * 2 ^ 4) (2 ^ 4) →
+      HasRegularInducedSubgraphOfCard G (2 ^ 4) := by
+  exact fixedWitnessTerminalRegularizationData_of_cliqueOrIndepSetBound
+    (G := G) (j := 4) (D := 5) (R := 8388607) h16 (by norm_num)
+
+/--
+The direct terminal prefix through `q = 16`: exponent-`5` terminal regularization now only needs
+the dyadic tail `j >= 5`, provided the same certified `R(16,16)` bound used elsewhere.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_five_of_cliqueOrIndepSetBound16_and_tail
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (hTail :
+      ∀ {j : ℕ}, 5 ≤ j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 5 * 2 ^ j) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 5 := by
+  intro n j G hfixed
+  by_cases hjle : j ≤ 3
+  · exact fixedWitnessTerminalRegularizationData_five_of_le_three hjle G hfixed
+  by_cases hjfour : j = 4
+  · subst j
+    exact fixedWitnessTerminalRegularizationData_five_at_four_of_cliqueOrIndepSetBound16
+      G h16 hfixed
+  · have hjfive : 5 ≤ j := by omega
+    rcases hTail hjfive with ⟨R, hR, hlarge⟩
+    exact fixedWitnessTerminalRegularizationData_of_cliqueOrIndepSetBound
+      (G := G) (j := j) (D := 5) (R := R) hR (le_trans (by omega) hlarge) hfixed
+
+/--
+Exact finite-Ramsey prefix form of the terminal attack.  This avoids losing exponent in the finite
+initial range by using the actual binomial bound for each dyadic slice.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_exact_ramsey_prefix_and_tail
+    {D J : ℕ}
+    (hprefix :
+      ∀ {j : ℕ}, j ≤ J →
+        Nat.choose ((2 ^ j - 1) + (2 ^ j - 1)) (2 ^ j - 1) ≤
+          (2 ^ j) ^ D * 2 ^ j)
+    (htail :
+      ∀ {n j : ℕ}, J + 1 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization D := by
+  intro n j G hfixed
+  by_cases hjle : j ≤ J
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (hprefix hjle) hfixed
+  · exact htail (by omega) G hfixed
+
+/--
+Coarse finite-Ramsey arithmetic criterion for a dyadic terminal slice.  The exact binomial bound is
+at most `2^(2*(2^j-1))`; if that exponent is already below the fixed-witness cost exponent
+`j*(D+1)`, direct terminal regularization follows.
+-/
+theorem fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound
+    {j D n : ℕ} (G : SimpleGraph (Fin n))
+    (hindex : 2 * (2 ^ j - 1) ≤ j * (D + 1)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  refine fixedWitnessTerminalRegularizationData_of_ramsey_bound G ?_
+  calc
+    Nat.choose ((2 ^ j - 1) + (2 ^ j - 1)) (2 ^ j - 1) ≤
+        2 ^ ((2 ^ j - 1) + (2 ^ j - 1)) := Nat.choose_le_two_pow _ _
+    _ ≤ 2 ^ (j * (D + 1)) := by
+      exact Nat.pow_le_pow_right (by decide : 0 < 2) (by omega)
+    _ = (2 ^ j) ^ (D + 1) := by
+      rw [Nat.pow_mul]
+    _ = (2 ^ j) ^ D * 2 ^ j := by
+      rw [Nat.pow_succ]
+
+/--
+Unconditional direct terminal regularization through `q = 16` at exponent `6`, using the exact
+finite Ramsey binomial bound inside the fixed witness.  This closes the first live small dyadic
+terminal-regularization slice without any terminal-host certificate.
+-/
+theorem fixedWitnessTerminalRegularizationData_six_of_le_four
+    {j n : ℕ} (hjle : j ≤ 4) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  interval_cases j
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+
+/-- The first open small terminal-regularization slice, `q = 16`, is unconditional at exponent `6`. -/
+theorem fixedWitnessTerminalRegularizationData_six_at_four
+    {n : ℕ} (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ 4) ^ 6 * 2 ^ 4) (2 ^ 4) →
+      HasRegularInducedSubgraphOfCard G (2 ^ 4) := by
+  exact fixedWitnessTerminalRegularizationData_six_of_le_four (by norm_num) G
+
+/--
+After the direct finite-Ramsey terminal slices through `q = 16`, full exponent-`6`
+fixed-witness terminal regularization only has to be proved for dyadic indices `j >= 5`.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_six_of_tail_from_five
+    (htail :
+      ∀ {n j : ℕ}, 5 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 6 * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 6 := by
+  intro n j G hfixed
+  by_cases hjle : j ≤ 4
+  · exact fixedWitnessTerminalRegularizationData_six_of_le_four hjle G hfixed
+  · exact htail (by omega) G hfixed
+
+/--
+The exact finite-Ramsey prefix reaches through `q = 32` already at exponent `11`.
+-/
+theorem fixedWitnessTerminalRegularizationData_eleven_of_le_five
+    {j n : ℕ} (hjle : j ≤ 5) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 11 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  interval_cases j
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+
+/-- With exponent `11`, only dyadic indices `j >= 6` remain. -/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_eleven_of_tail_from_six
+    (htail :
+      ∀ {n j : ℕ}, 6 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 11 * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 11 := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_exact_ramsey_prefix_and_tail
+      (D := 11) (J := 5)
+      (fun {j} hjle => by
+        interval_cases j
+        · norm_num
+        · norm_num
+        · native_decide
+        · native_decide
+        · native_decide
+        · native_decide)
+      htail
+
+/--
+Coarse Ramsey arithmetic closes all fixed-witness terminal slices through `q = 64` at exponent
+`20`.
+-/
+theorem fixedWitnessTerminalRegularizationData_twenty_of_le_six
+    {j n : ℕ} (hjle : j ≤ 6) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 20 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  interval_cases j
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G (by norm_num)
+
+/--
+With exponent `20`, the fixed-witness terminal blocker has been pushed past the `q = 64` slice:
+only dyadic indices `j >= 7` remain.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_twenty_of_tail_from_seven
+    (htail :
+      ∀ {n j : ℕ}, 7 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 20 * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 20 := by
+  intro n j G hfixed
+  by_cases hjle : j ≤ 6
+  · exact fixedWitnessTerminalRegularizationData_twenty_of_le_six hjle G hfixed
+  · exact htail (by omega) G hfixed
+
+/--
+General finite-prefix form of the direct Ramsey terminal attack.  Any finite collection of dyadic
+terminal slices whose Ramsey exponents fit inside `(2^j)^D * 2^j` can be removed from the terminal
+frontier; only the stated tail remains.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_of_ramsey_prefix_and_tail
+    {D J : ℕ}
+    (hprefix : ∀ {j : ℕ}, j ≤ J → 2 * (2 ^ j - 1) ≤ j * (D + 1))
+    (htail :
+      ∀ {n j : ℕ}, J + 1 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ D * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization D := by
+  intro n j G hfixed
+  by_cases hjle : j ≤ J
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G (hprefix hjle) hfixed
+  · exact htail (by omega) G hfixed
+
+/--
+At exponent `36`, the direct Ramsey prefix reaches through `q = 128`.
+-/
+theorem fixedWitnessTerminalRegularizationData_thirtySix_of_le_seven
+    {j n : ℕ} (hjle : j ≤ 7) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 36 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  exact
+    fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G
+      (by interval_cases j <;> norm_num)
+
+/--
+With exponent `36`, only dyadic indices `j >= 8` remain in the fixed-witness terminal blocker.
+-/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_thirtySix_of_tail_from_eight
+    (htail :
+      ∀ {n j : ℕ}, 8 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 36 * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 36 := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_ramsey_prefix_and_tail
+      (D := 36) (J := 7)
+      (fun {j} hjle => by interval_cases j <;> norm_num)
+      htail
+
+/--
+The exact finite-Ramsey prefix reaches through `q = 128` at exponent `35`.
+-/
+theorem fixedWitnessTerminalRegularizationData_thirtyFive_of_le_seven
+    {j n : ℕ} (hjle : j ≤ 7) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 35 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  interval_cases j
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+  · exact fixedWitnessTerminalRegularizationData_of_ramsey_bound G (by native_decide)
+
+/-- With exponent `35`, only dyadic indices `j >= 8` remain. -/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_thirtyFive_of_tail_from_eight
+    (htail :
+      ∀ {n j : ℕ}, 8 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 35 * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 35 := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_exact_ramsey_prefix_and_tail
+      (D := 35) (J := 7)
+      (fun {j} hjle => by
+        interval_cases j
+        · norm_num
+        · norm_num
+        · native_decide
+        · native_decide
+        · native_decide
+        · native_decide
+        · native_decide
+        · native_decide)
+      htail
+
+/--
+At exponent `63`, the direct Ramsey prefix reaches through `q = 256`.
+-/
+theorem fixedWitnessTerminalRegularizationData_sixtyThree_of_le_eight
+    {j n : ℕ} (hjle : j ≤ 8) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 63 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  exact
+    fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G
+      (by interval_cases j <;> norm_num)
+
+/-- With exponent `63`, only dyadic indices `j >= 9` remain. -/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_sixtyThree_of_tail_from_nine
+    (htail :
+      ∀ {n j : ℕ}, 9 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 63 * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 63 := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_ramsey_prefix_and_tail
+      (D := 63) (J := 8)
+      (fun {j} hjle => by interval_cases j <;> norm_num)
+      htail
+
+/--
+At exponent `113`, the direct Ramsey prefix reaches through `q = 512`.
+-/
+theorem fixedWitnessTerminalRegularizationData_oneHundredThirteen_of_le_nine
+    {j n : ℕ} (hjle : j ≤ 9) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 113 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  exact
+    fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G
+      (by interval_cases j <;> norm_num)
+
+/-- With exponent `113`, only dyadic indices `j >= 10` remain. -/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_oneHundredThirteen_of_tail_from_ten
+    (htail :
+      ∀ {n j : ℕ}, 10 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 113 * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 113 := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_ramsey_prefix_and_tail
+      (D := 113) (J := 9)
+      (fun {j} hjle => by interval_cases j <;> norm_num)
+      htail
+
+/--
+At exponent `204`, the direct Ramsey prefix reaches through `q = 1024`.
+-/
+theorem fixedWitnessTerminalRegularizationData_twoHundredFour_of_le_ten
+    {j n : ℕ} (hjle : j ≤ 10) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 204 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  exact
+    fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G
+      (by interval_cases j <;> norm_num)
+
+/-- With exponent `204`, only dyadic indices `j >= 11` remain. -/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_twoHundredFour_of_tail_from_eleven
+    (htail :
+      ∀ {n j : ℕ}, 11 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 204 * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 204 := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_ramsey_prefix_and_tail
+      (D := 204) (J := 10)
+      (fun {j} hjle => by interval_cases j <;> norm_num)
+      htail
+
+/--
+At exponent `682`, the direct Ramsey prefix reaches through `q = 4096`.
+-/
+theorem fixedWitnessTerminalRegularizationData_sixHundredEightyTwo_of_le_twelve
+    {j n : ℕ} (hjle : j ≤ 12) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 682 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  exact
+    fixedWitnessTerminalRegularizationData_of_ramsey_exponent_bound G
+      (by interval_cases j <;> norm_num)
+
+/-- With exponent `682`, only dyadic indices `j >= 13` remain. -/
+theorem hasPolynomialCostFixedWitnessTerminalRegularization_sixHundredEightyTwo_of_tail_from_thirteen
+    (htail :
+      ∀ {n j : ℕ}, 13 ≤ j → ∀ G : SimpleGraph (Fin n),
+        HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 682 * 2 ^ j) (2 ^ j) →
+          HasRegularInducedSubgraphOfCard G (2 ^ j)) :
+    HasPolynomialCostFixedWitnessTerminalRegularization 682 := by
+  exact
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_ramsey_prefix_and_tail
+      (D := 682) (J := 12)
+      (fun {j} hjle => by interval_cases j <;> norm_num)
+      htail
+
+/--
+Coarser universal-threshold variant of the small dyadic terminal regularization range.  The sharper
+finite-Ramsey criterion above gives exponent `6`; this version records the direct
+`forcingThreshold (k+1) ≤ 4^k` route.
+-/
+theorem fixedWitnessTerminalRegularizationData_seven_of_le_four
+    {j n : ℕ} (hjle : j ≤ 4) (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ j) ^ 7 * 2 ^ j) (2 ^ j) →
+      HasRegularInducedSubgraphOfCard G (2 ^ j) := by
+  interval_cases j
+  · exact fixedWitnessTerminalRegularizationData_of_four_pow_le G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_four_pow_le G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_four_pow_le G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_four_pow_le G (by norm_num)
+  · exact fixedWitnessTerminalRegularizationData_of_four_pow_le G (by norm_num)
+
+/-- Coarser universal-threshold q=16 terminal-regularization slice at exponent `7`. -/
+theorem fixedWitnessTerminalRegularizationData_seven_at_four
+    {n : ℕ} (G : SimpleGraph (Fin n)) :
+    HasFixedModulusWitnessOfCard G ((2 ^ 4) ^ 7 * 2 ^ 4) (2 ^ 4) →
+      HasRegularInducedSubgraphOfCard G (2 ^ 4) := by
+  exact fixedWitnessTerminalRegularizationData_seven_of_le_four (by norm_num) G
 
 /--
 Further reduction of the terminal regularization problem: after deleting one nonempty control block,
@@ -7284,6 +8284,192 @@ theorem hasParityToModFourLoss64FixedWitnessLift_of_modFourZeroLoss64InducedSubg
   rcases hzero G (s := s) with ⟨t, hts, hcard, htmod, _htzero⟩
   exact ⟨t, hts, hcard, htmod⟩
 
+/-- The large-support first-bit selector is equivalent to the full selector up to trivial
+empty/singleton cases. -/
+theorem hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourLoss32InducedSubgraph
+    (hlarge : HasLargeEvenDegreeModFourLoss32InducedSubgraph) :
+    HasEvenDegreeModFourLoss32InducedSubgraph := by
+  intro n G s hsEven
+  by_cases hsLarge : 33 ≤ s.card
+  · exact hlarge G (s := s) hsLarge hsEven
+  · have hsSmall : s.card ≤ 32 := by omega
+    by_cases hsEmpty : s.card = 0
+    · refine ⟨∅, by simp, ?_, inducesModEqDegree_empty G 4⟩
+      simp [hsEmpty]
+    · have hsPos : 0 < s.card := Nat.pos_of_ne_zero hsEmpty
+      rcases Finset.card_pos.mp hsPos with ⟨x, hx⟩
+      refine ⟨{x}, ?_, ?_, inducesModEqDegree_singleton G x 4⟩
+      · intro y hy
+        simpa [Finset.mem_singleton.mp hy] using hx
+      · simpa using hsSmall
+
+/-- The full even-degree selector trivially restricts to the large-support core. -/
+theorem hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourLoss32InducedSubgraph
+    (heven : HasEvenDegreeModFourLoss32InducedSubgraph) :
+    HasLargeEvenDegreeModFourLoss32InducedSubgraph := by
+  intro n G s _hsLarge hsEven
+  exact heven G (s := s) hsEven
+
+/-- The first-bit even-degree selector is unchanged if supports of size at most `32` are discarded. -/
+theorem hasLargeEvenDegreeModFourLoss32InducedSubgraph_iff :
+    HasLargeEvenDegreeModFourLoss32InducedSubgraph ↔
+      HasEvenDegreeModFourLoss32InducedSubgraph :=
+  ⟨hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourLoss32InducedSubgraph,
+    hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourLoss32InducedSubgraph⟩
+
+/-- The stronger loss-5 all-`0 mod 4` theorem implies the large-support even-degree selector. -/
+theorem hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_modFourZeroLossFiveInducedSubgraph
+    (hfive : HasModFourZeroLossFiveInducedSubgraph) :
+    HasLargeEvenDegreeModFourLoss32InducedSubgraph := by
+  intro n G s _hsLarge _hsEven
+  rcases hfive G (s := s) with ⟨t, hts, hcard, htmod, _htzero⟩
+  refine ⟨t, hts, ?_, htmod⟩
+  exact le_trans hcard (by omega)
+
+/-- A bounded 32-color mod-four partition supplies the even-degree loss-32 selector. -/
+theorem hasEvenDegreeModFourLoss32InducedSubgraph_of_modFourCongruentDegreeColoringBound
+    (hcolor : HasModFourCongruentDegreeColoringBound 32) :
+    HasEvenDegreeModFourLoss32InducedSubgraph := by
+  intro n G s _hsEven
+  classical
+  rcases hcolor G (s := s) with ⟨color, hclasses⟩
+  rcases exists_mod_class_card_mul_ge_card (s := s) (q := 32) (by decide) color with
+    ⟨r, hr⟩
+  refine ⟨s.filter fun v => color v = r, ?_, ?_, hclasses r⟩
+  · exact Finset.filter_subset _ _
+  · simpa using hr
+
+/-- The arbitrary-set bounded partition theorem implies its even-degree restricted form. -/
+theorem hasEvenDegreeModFourCongruentDegreeColoringBound_of_modFourCongruentDegreeColoringBound
+    {C : ℕ} (hcolor : HasModFourCongruentDegreeColoringBound C) :
+    HasEvenDegreeModFourCongruentDegreeColoringBound C := by
+  intro n G s _hsEven
+  exact hcolor G (s := s)
+
+/-- A bounded mod-four coloring remains valid after adding unused colors. -/
+theorem hasModFourCongruentDegreeColoringBound_mono {C D : ℕ} (hCD : C ≤ D)
+    (hcolor : HasModFourCongruentDegreeColoringBound C) :
+    HasModFourCongruentDegreeColoringBound D := by
+  intro n G s
+  classical
+  rcases hcolor G (s := s) with ⟨color, hclasses⟩
+  refine ⟨fun v => Fin.castLE hCD (color v), ?_⟩
+  intro r
+  by_cases hr : r.val < C
+  · let rC : Fin C := ⟨r.val, hr⟩
+    have hfilter :
+        (s.filter fun v => Fin.castLE hCD (color v) = r) =
+          s.filter fun v => color v = rC := by
+      ext v
+      simp [rC, Fin.ext_iff]
+    simpa [hfilter] using hclasses rC
+  · have hfilter : (s.filter fun v => Fin.castLE hCD (color v) = r) = ∅ := by
+      ext v
+      constructor
+      · intro hv
+        have hvEq : Fin.castLE hCD (color v) = r := (Finset.mem_filter.mp hv).2
+        have hval : (Fin.castLE hCD (color v)).val = r.val := by
+          simpa using congrArg Fin.val hvEq
+        exact False.elim <| hr (by
+          have hc : (Fin.castLE hCD (color v)).val < C := by
+            simpa using (color v).isLt
+          rw [← hval]
+          exact hc)
+      · intro hv
+        simp at hv
+    rw [hfilter]
+    exact inducesModEqDegree_empty G 4
+
+/-- An even-degree bounded mod-four coloring remains valid after adding unused colors. -/
+theorem hasEvenDegreeModFourCongruentDegreeColoringBound_mono {C D : ℕ} (hCD : C ≤ D)
+    (hcolor : HasEvenDegreeModFourCongruentDegreeColoringBound C) :
+    HasEvenDegreeModFourCongruentDegreeColoringBound D := by
+  intro n G s hsEven
+  classical
+  rcases hcolor G (s := s) hsEven with ⟨color, hclasses⟩
+  refine ⟨fun v => Fin.castLE hCD (color v), ?_⟩
+  intro r
+  by_cases hr : r.val < C
+  · let rC : Fin C := ⟨r.val, hr⟩
+    have hfilter :
+        (s.filter fun v => Fin.castLE hCD (color v) = r) =
+          s.filter fun v => color v = rC := by
+      ext v
+      simp [rC, Fin.ext_iff]
+    simpa [hfilter] using hclasses rC
+  · have hfilter : (s.filter fun v => Fin.castLE hCD (color v) = r) = ∅ := by
+      ext v
+      constructor
+      · intro hv
+        have hvEq : Fin.castLE hCD (color v) = r := (Finset.mem_filter.mp hv).2
+        have hval : (Fin.castLE hCD (color v)).val = r.val := by
+          simpa using congrArg Fin.val hvEq
+        exact False.elim <| hr (by
+          have hc : (Fin.castLE hCD (color v)).val < C := by
+            simpa using (color v).isLt
+          rw [← hval]
+          exact hc)
+      · intro hv
+        simp at hv
+    rw [hfilter]
+    exact inducesModEqDegree_empty G 4
+
+/--
+Any even-degree bounded partition with at most `32` colors supplies the loss-`32` selector by taking
+the largest color class.
+-/
+theorem hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
+    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    (hcolor : HasEvenDegreeModFourCongruentDegreeColoringBound C) :
+    HasEvenDegreeModFourLoss32InducedSubgraph := by
+  intro n G s hsEven
+  classical
+  rcases hcolor G (s := s) hsEven with ⟨color, hclasses⟩
+  rcases exists_mod_class_card_mul_ge_card (s := s) (q := C) hCpos color with
+    ⟨r, hr⟩
+  refine ⟨s.filter fun v => color v = r, ?_, ?_, hclasses r⟩
+  · exact Finset.filter_subset _ _
+  · exact le_trans hr (Nat.mul_le_mul_right _ hC)
+
+/-- The exact 32-color even-degree partition form closes the loss-`32` selector. -/
+theorem hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound32
+    (hcolor : HasEvenDegreeModFourCongruentDegreeColoringBound 32) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
+    (C := 32) (by decide) (by decide) hcolor
+
+/-- A bounded 32-color mod-four partition also supplies the large-support core selector. -/
+theorem hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_modFourCongruentDegreeColoringBound
+    (hcolor : HasModFourCongruentDegreeColoringBound 32) :
+    HasLargeEvenDegreeModFourLoss32InducedSubgraph :=
+  hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourLoss32InducedSubgraph
+    (hasEvenDegreeModFourLoss32InducedSubgraph_of_modFourCongruentDegreeColoringBound hcolor)
+
+/--
+Gallai's half-size even-degree cut reduces the first dyadic bit to a loss-`32` selector on
+even-degree induced graphs.
+-/
+theorem hasParityToModFourLoss64FixedWitnessLift_of_evenDegreeModFourLoss32InducedSubgraph
+    (heven : HasEvenDegreeModFourLoss32InducedSubgraph) :
+    HasParityToModFourLoss64FixedWitnessLift := by
+  intro n G s _hsmod
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases exists_large_even_induced_subgraph_subset G s with ⟨u, hus, huCard, huEven⟩
+  rcases heven G (s := u) huEven with ⟨t, htu, htCard, htmod⟩
+  refine ⟨t, subset_trans htu hus, ?_, htmod⟩
+  have h64 : 2 * u.card ≤ 64 * t.card := by omega
+  exact le_trans huCard h64
+
+/-- Gallai plus the large-support first-bit selector closes the loss-`64`
+parity-to-mod-`4` fixed-witness lift. -/
+theorem hasParityToModFourLoss64FixedWitnessLift_of_largeEvenDegreeModFourLoss32InducedSubgraph
+    (hlarge : HasLargeEvenDegreeModFourLoss32InducedSubgraph) :
+    HasParityToModFourLoss64FixedWitnessLift :=
+  hasParityToModFourLoss64FixedWitnessLift_of_evenDegreeModFourLoss32InducedSubgraph
+    (hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourLoss32InducedSubgraph
+      hlarge)
+
 /-- The sharper loss-5 all-`0 mod 4` theorem implies the loss-64 theorem used by the dyadic split. -/
 theorem hasModFourZeroLoss64InducedSubgraph_of_modFourZeroLossFiveInducedSubgraph
     (hfive : HasModFourZeroLossFiveInducedSubgraph) :
@@ -7648,6 +8834,148 @@ theorem hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSix
       · exact h16_2 hambient G hinput
       · exact h16_3 hambient G hinput
       · norm_num at hsmall
+
+/--
+Variant of the `13`-to-`17` higher-bit reduction that exposes the finite `(m,j)=(13,3)`
+case as a parameter instead of using the Ramsey fallback internally.
+-/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_with_thirteen_three
+    (h13_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 13)
+    (h13_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 13)
+    (h14_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 14)
+    (h14_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 14)
+    (h15_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 15)
+    (h15_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 15)
+    (h16_2 : HasExactSmallModulusFixedWitnessDyadicLift 2 16)
+    (h16_3 : HasExactSmallModulusFixedWitnessDyadicLift 3 16)
+    (hrest :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 17) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 := by
+  intro n j m hj hm hM hsmall hindex hgap hambient G hinput
+  by_cases hge17 : 17 ≤ m
+  · exact hrest hj hm hge17 hsmall hindex hgap hambient G hinput
+  · have hlt17 : m < 17 := Nat.lt_of_not_ge hge17
+    interval_cases m
+    · have hjle : j ≤ 4 := by omega
+      interval_cases j
+      · exact h13_2 hambient G hinput
+      · exact h13_3 hambient G hinput
+      · norm_num at hsmall
+    · have hjle : j ≤ 4 := by omega
+      interval_cases j
+      · exact h14_2 hambient G hinput
+      · exact h14_3 hambient G hinput
+      · norm_num at hsmall
+    · have hjle : j ≤ 4 := by omega
+      interval_cases j
+      · exact h15_2 hambient G hinput
+      · exact h15_3 hambient G hinput
+      · norm_num at hsmall
+    · have hjle : j ≤ 4 := by omega
+      interval_cases j
+      · exact h16_2 hambient G hinput
+      · exact h16_3 hambient G hinput
+      · norm_num at hsmall
+
+/-- Affine higher-bit selectors immediately provide the fixed-witness target package. -/
+theorem higherBitSmallModulusFixedWitnessTargetsFromEleven_of_affineSelectors
+    (h : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven where
+  h11_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h11_2
+  h12_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h12_2
+  h13_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h13_2
+  h14_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_2
+  h14_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_3
+  h15_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_2
+  h15_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_3
+  h16_2 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_2
+  h16_3 := hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_3
+  fromSeventeen :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
+      h.fromSeventeen
+
+/-- Extended affine selectors also provide the fixed-witness target package. -/
+theorem higherBitSmallModulusFixedWitnessTargetsFromEleven_of_extended
+    (h : HigherBitSmallModulusAffineSelectorsFromElevenExtended) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven :=
+  higherBitSmallModulusFixedWitnessTargetsFromEleven_of_affineSelectors
+    (higherBitSmallModulusAffineSelectorsFromEleven_of_extended h)
+
+/-- The fixed-witness target package closes the higher-bit small-modulus residual from `m = 11`. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_fixedWitnessTargets
+    (h : HigherBitSmallModulusFixedWitnessTargetsFromEleven) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 := by
+  have hsmallThirteen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen
+      h.h13_2 h.h14_2 h.h14_3 h.h15_2 h.h15_3 h.h16_2 h.h16_3 h.fromSeventeen
+  have h12 :
+      HasFourToEightTargetTwelveFixedWitnessLift := by
+    intro n hambient G hinput
+    exact h.h12_2 hambient G hinput
+  have hsmallTwelve :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 12 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_twelve
+      h12 hsmallThirteen
+  have h11 :
+      HasFourToEightTargetElevenFixedWitnessLift := by
+    intro n hambient G hinput
+    exact h.h11_2 hambient G hinput
+  intro n j m hj hm hM hsmall hindex hgap hambient G hinput
+  rcases Nat.eq_or_lt_of_le hM with heleven | hgt
+  · subst m
+    have hjle : j ≤ 3 := by omega
+    interval_cases j
+    · exact h11 hambient G hinput
+    · norm_num at hgap
+  · exact hsmallTwelve hj hm (Nat.succ_le_of_lt hgt) hsmall hindex hgap hambient G hinput
+
+/-- The affine-selector package closes the higher-bit small-modulus residual from `m = 11`. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_affineSelectors
+    (h : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 :=
+  hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_fixedWitnessTargets
+    (higherBitSmallModulusFixedWitnessTargetsFromEleven_of_affineSelectors h)
+
+/-- Extended affine-selector package closes the higher-bit small-modulus residual from `m = 13`. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_of_extended
+    (h : HigherBitSmallModulusAffineSelectorsFromElevenExtended) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 :=
+  hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_with_thirteen_three
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h13_2)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h13_3)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_2)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h14_3)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_2)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h15_3)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_2)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_3)
+    (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
+      h.fromSeventeen)
+
+/-- Extended affine-selector package closes the higher-bit small-modulus residual from `m = 11`. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_extended
+    (h : HigherBitSmallModulusAffineSelectorsFromElevenExtended) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 := by
+  have hsmallThirteen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_of_extended
+      h
+  have hsmallTwelve :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 12 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_twelve
+      (hasFourToEightTargetTwelveFixedWitnessLift_of_affineCrossSelector h.h12_2)
+      hsmallThirteen
+  intro n j m hj hm hM hsmall hindex hgap hambient G hinput
+  exact
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven
+      (hasFourToEightTargetElevenFixedWitnessLift_of_affineCrossSelector h.h11_2)
+      hsmallTwelve hj hm hM hsmall hindex hgap hambient G hinput
 
 /--
 Dyadic window from the first-bit loss-64 lift plus the strict higher-bit residual starting at `m = 10`.
@@ -17135,6 +18463,10 @@ theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramsey
         modFourZeroLossFive)
       ramseyTenRegular twiceLargeGapJAtLeastTwoFromEleven droppedTailConcreteFRSatTerminalFields
 
+section LongHandoffNames
+
+set_option linter.style.longLine false
+
 /--
 Strongest concrete handoff after removing the high-modulus terminal slice from the higher-bit
 residual.  The remaining dyadic residual now explicitly assumes `2^j < m`.
@@ -17367,6 +18699,343 @@ theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramsey
     h13_2 h14_2 h14_3 h15_2 h15_3 h16_2 h16_3
     (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
       affineCrossSelectorFromSeventeen)
+
+/--
+Same handoff with every higher-bit small-modulus obligation after Ramsey-10 expressed as an affine
+selector.  This is the most uniform Lean-facing dyadic frontier: the remaining higher-bit work is to
+prove one selector package rather than a mix of finite fixed-witness lifts and an infinite residual.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_fourToEightTargetsToSixteen_and_affineCrossSelectorFromSeventeen
+    sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenSmallTable
+    fixedWitnessExternalBlockSelfBridgeFive
+    (hasFourToEightTargetElevenFixedWitnessLift_of_affineCrossSelector higherBitSelectors.h11_2)
+    (hasFourToEightTargetTwelveFixedWitnessLift_of_affineCrossSelector higherBitSelectors.h12_2)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h13_2)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h14_2)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h14_3)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h15_2)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h15_3)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h16_2)
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h16_3)
+    higherBitSelectors.fromSeventeen
+
+/--
+Same handoff using the extended affine-selector package that explicitly exposes the finite
+`(m,j)=(13,3)` selector.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromElevenExtended
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromElevenExtended) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenSmallTable
+    fixedWitnessExternalBlockSelfBridgeFive
+    (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_extended
+      higherBitSelectors)
+
+/--
+Same strongest viable handoff, but with the first-bit input sharpened to the even-degree loss-`32`
+selector.  Gallai supplies the missing loss-`2`, so this is exactly the Lean-facing first-bit
+replacement for the stronger all-zero mod-`4` loss-`5` assumption.  The terminal input is stated
+directly as fixed-witness terminal regularization, without routing through external blocks.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessTerminalRegularizationFive_and_higherBitAffineSelectorsFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (terminalRegularizationFive :
+      HasPolynomialCostFixedWitnessTerminalRegularization 5)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement := by
+  have hsmallSeventeen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 17 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
+      higherBitSelectors.fromSeventeen
+  have hsmallThirteen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen
+      (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h13_2)
+      (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h14_2)
+      (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h14_3)
+      (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h15_2)
+      (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h15_3)
+      (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h16_2)
+      (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector higherBitSelectors.h16_3)
+      hsmallSeventeen
+  have hsmallTwelve :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 12 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_twelve
+      (hasFourToEightTargetTwelveFixedWitnessLift_of_affineCrossSelector higherBitSelectors.h12_2)
+      hsmallThirteen
+  have hsmallEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_affineSelectors
+      higherBitSelectors
+  have hrestEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_of_fixedWitnessTerminalRegularizationFive_and_smallModulus
+      terminalRegularizationFive hsmallEleven
+  have hrestTen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_ten
+      (hasFourToEightTargetTenFixedWitnessLift_of_ramseyTenRegularAtDyadicTarget
+        (hasRamseyTenRegularAtDyadicTarget_of_ramseyTenSmallTable ramseyTenSmallTable))
+      hrestEleven
+  have htwiceSeven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap 7 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap_of_parityToModFourLoss64_and_jAtLeastTwo
+      (M := 7)
+      (hasParityToModFourLoss64FixedWitnessLift_of_evenDegreeModFourLoss32InducedSubgraph
+        evenDegreeModFourLoss32)
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_seven_of_ten
+        hrestTen)
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_fixedWitnessTerminalRegularization
+      sevenVertexBooleanCertificate
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap_of_twiceLargeGap
+        htwiceSeven)
+      terminalRegularizationFive
+
+/--
+Same strongest viable handoff, but with the first-bit input sharpened to the even-degree loss-`32`
+selector.  Gallai supplies the missing loss-`2`, so this is exactly the Lean-facing first-bit
+replacement for the stronger all-zero mod-`4` loss-`5` assumption.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessTerminalRegularizationFive_and_higherBitAffineSelectorsFromEleven
+      sevenVertexBooleanCertificate evenDegreeModFourLoss32 ramseyTenSmallTable
+      (hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+        fixedWitnessExternalBlockSelfBridgeFive)
+      higherBitSelectors
+
+/--
+Same sharp handoff, but with the higher-bit input stated as fixed-witness finite targets and the
+uniform fixed-witness residual from `m = 17`.  Affine selectors are sufficient for these targets but
+are not required by this theorem.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven) :
+    TargetStatement := by
+  have hsmallEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_eleven_of_fixedWitnessTargets
+      higherBitTargets
+  have hterminal :
+      HasPolynomialCostFixedWitnessTerminalRegularization 5 :=
+    hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+      fixedWitnessExternalBlockSelfBridgeFive
+  have hrestEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 11 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_of_fixedWitnessTerminalRegularizationFive_and_smallModulus
+      hterminal hsmallEleven
+  have hrestTen :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo 10 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_ten
+      (hasFourToEightTargetTenFixedWitnessLift_of_ramseyTenRegularAtDyadicTarget
+        (hasRamseyTenRegularAtDyadicTarget_of_ramseyTenSmallTable ramseyTenSmallTable))
+      hrestEleven
+  have htwiceSeven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap 7 :=
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGap_of_parityToModFourLoss64_and_jAtLeastTwo
+      (M := 7)
+      (hasParityToModFourLoss64FixedWitnessLift_of_evenDegreeModFourLoss32InducedSubgraph
+        evenDegreeModFourLoss32)
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwo_seven_of_ten
+        hrestTen)
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_fixedWitnessTerminalRegularization
+      sevenVertexBooleanCertificate
+      (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixLargeGap_of_twiceLargeGap
+        htwiceSeven)
+      hterminal
+
+/--
+Same final handoff with the first-bit assumption expressed as a bounded 32-color mod-four
+congruent-degree partition theorem.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourColoringBound32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourColoringBound32 : HasModFourCongruentDegreeColoringBound 32)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
+    sevenVertexBooleanCertificate
+    (hasEvenDegreeModFourLoss32InducedSubgraph_of_modFourCongruentDegreeColoringBound
+      modFourColoringBound32)
+    ramseyTenSmallTable fixedWitnessExternalBlockSelfBridgeFive higherBitSelectors
+
+/--
+Same final handoff with the first-bit assumption stated only for even-degree induced graphs, and with
+any color bound `C <= 32`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_evenModFourColoringBound_le32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
+    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (evenModFourColoringBound : HasEvenDegreeModFourCongruentDegreeColoringBound C)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitAffineSelectorsFromEleven
+    sevenVertexBooleanCertificate
+    (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
+      hCpos hC evenModFourColoringBound)
+    ramseyTenSmallTable fixedWitnessExternalBlockSelfBridgeFive higherBitSelectors
+
+/--
+Same sharp first-bit/higher-bit handoff, but with the terminal assumption expanded to the
+finite-Ramsey frontier now proved sufficient for D=5 fixed-witness terminal regularization itself.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (evenDegreeModFourLoss32 : HasEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (cliqueOrIndepSetBoundTail :
+      ∀ {j : ℕ}, 5 ≤ j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 5 * 2 ^ j)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_fixedWitnessTerminalRegularizationFive_and_higherBitAffineSelectorsFromEleven
+      sevenVertexBooleanCertificate evenDegreeModFourLoss32 ramseyTenSmallTable
+      (hasPolynomialCostFixedWitnessTerminalRegularization_five_of_cliqueOrIndepSetBound16_and_tail
+        cliqueOrIndepSetBound16 cliqueOrIndepSetBoundTail)
+      higherBitSelectors
+
+/--
+Same final handoff with the first-bit assumption reduced to the genuinely large-support cases:
+for `|s| <= 32`, the even-degree selector is discharged by empty/singleton witnesses.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_largeEvenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (largeEvenDegreeModFourLoss32 : HasLargeEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (cliqueOrIndepSetBoundTail :
+      ∀ {j : ℕ}, 5 ≤ j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 5 * 2 ^ j)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
+      sevenVertexBooleanCertificate
+      (hasEvenDegreeModFourLoss32InducedSubgraph_of_largeEvenDegreeModFourLoss32InducedSubgraph
+        largeEvenDegreeModFourLoss32)
+      ramseyTenSmallTable cliqueOrIndepSetBound16 cliqueOrIndepSetBoundTail higherBitSelectors
+
+/--
+Same large-support terminal-frontier handoff, with the dyadic tail written in the standard
+polynomial form `R(2^j,2^j) <= ((2^j)^6 - 1)/2`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_largeEvenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_powSixTail_and_higherBitAffineSelectorsFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (largeEvenDegreeModFourLoss32 : HasLargeEvenDegreeModFourLoss32InducedSubgraph)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (cliqueOrIndepSetBoundTail :
+      ∀ {j : ℕ}, 5 ≤ j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 6)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_largeEvenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
+    sevenVertexBooleanCertificate largeEvenDegreeModFourLoss32 ramseyTenSmallTable
+    cliqueOrIndepSetBound16
+    (fun hj => by
+      rcases cliqueOrIndepSetBoundTail hj with ⟨R, hR, hpoly⟩
+      exact cliqueOrIndepSetBoundTail_of_pow_six_bound hR hpoly)
+    higherBitSelectors
+
+/--
+Current sharp handoff with the first-bit input stated as an arbitrary-set 32-color mod-four
+congruent-degree partition theorem, and the terminal side stated as the explicit D=5 finite-Ramsey
+frontier.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourColoringBound32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourColoringBound32 : HasModFourCongruentDegreeColoringBound 32)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (cliqueOrIndepSetBoundTail :
+      ∀ {j : ℕ}, 5 ≤ j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 5 * 2 ^ j)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_largeEvenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
+      sevenVertexBooleanCertificate
+      (hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_modFourCongruentDegreeColoringBound
+        modFourColoringBound32)
+      ramseyTenSmallTable cliqueOrIndepSetBound16 cliqueOrIndepSetBoundTail higherBitSelectors
+
+/--
+Current sharp handoff with the first-bit input stated as an even-degree bounded coloring theorem
+using any positive number of colors at most `32`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_evenModFourColoringBound_le32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
+    {C : ℕ} (hCpos : 0 < C) (hC : C ≤ 32)
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (evenModFourColoringBound : HasEvenDegreeModFourCongruentDegreeColoringBound C)
+    (ramseyTenSmallTable : RamseyTenSmallTable)
+    (cliqueOrIndepSetBound16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (cliqueOrIndepSetBoundTail :
+      ∀ {j : ℕ}, 5 ≤ j →
+        ∃ R : ℕ, HasCliqueOrIndepSetBound (2 ^ j) (2 ^ j) R ∧
+          2 * R + 1 ≤ (2 ^ j) ^ 5 * 2 ^ j)
+    (higherBitSelectors : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    TargetStatement := by
+  exact
+    targetStatement_of_proofMdFinalHandoff_of_largeEvenDegreeModFourLoss32_and_ramseyTenSmallTable_and_cliqueOrIndepSetBound16_and_tail_and_higherBitAffineSelectorsFromEleven
+      sevenVertexBooleanCertificate
+      (hasLargeEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourLoss32InducedSubgraph
+        (hasEvenDegreeModFourLoss32InducedSubgraph_of_evenDegreeModFourCongruentDegreeColoringBound
+          hCpos hC evenModFourColoringBound))
+      ramseyTenSmallTable cliqueOrIndepSetBound16 cliqueOrIndepSetBoundTail higherBitSelectors
 
 /-- The named-field final handoff certificate closes the target statement. -/
 theorem targetStatement_of_proofMdFinalHandoffCertificate
@@ -17949,6 +19618,8 @@ theorem
           q64_theoremG_in_canonicalSaturatedFirstReturnConvention hcanon hcanonical hprefix
             hnonzero hsmall hskew)
         hadmissible hsmaller hlocal)
+
+end LongHandoffNames
 
 end DyadicLift
 

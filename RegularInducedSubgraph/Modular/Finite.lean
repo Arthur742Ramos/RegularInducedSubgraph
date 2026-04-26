@@ -421,14 +421,21 @@ private lemma even_induced_degree_one_side
   rwa [ZMod.natCast_eq_zero_iff_even] at hcast
 
 /--
-Gallai's parity theorem: every finite graph contains an induced subgraph on at least half of its
-vertices whose degrees are all even.
+Gallai's parity construction in partition form: every finite graph admits a bipartition into two
+parts whose induced degrees are all even on each side.
 -/
-lemma exists_large_even_induced_subgraph (G : SimpleGraph V) :
-    ∃ s : Finset V, Fintype.card V ≤ 2 * s.card ∧
+lemma exists_even_induced_bipartition (G : SimpleGraph V) :
+    ∃ s0 s1 : Finset V, Disjoint s0 s1 ∧ s0 ∪ s1 = Finset.univ ∧
       (by
         classical
-        exact ∀ v : ↑(s : Set V), Even ((inducedOn G s).degree v)) := by
+        exact ∀ v : ↑(s0 : Set V),
+          Even (@SimpleGraph.degree _ (inducedOn G s0) v
+            ((inducedOn G s0).neighborSetFintype v))) ∧
+      (by
+        classical
+        exact ∀ v : ↑(s1 : Set V),
+          Even (@SimpleGraph.degree _ (inducedOn G s1) v
+            ((inducedOn G s1).neighborSetFintype v))) := by
   classical
   letI : DecidableRel G.Adj := Classical.decRel G.Adj
   obtain ⟨x, hx⟩ := exists_lap_solution (G := G)
@@ -444,16 +451,29 @@ lemma exists_large_even_induced_subgraph (G : SimpleGraph V) :
     refine Finset.disjoint_left.mpr ?_
     intro v hv0 hv1
     simp only [s0, s1, Finset.mem_filter, Finset.mem_univ, true_and] at hv0 hv1
-    have : False := by simpa [hv0] using hv1
-    exact this.elim
+    exact (by simpa [hv0] using hv1 : False)
+  have hunion : s0 ∪ s1 = Finset.univ := by
+    ext v
+    constructor
+    · intro _
+      simp
+    · intro _
+      simp [s0, s1, zmod2_eq_zero_or_one (x v)]
+  exact ⟨s0, s1, hdisj, hunion, hdeg0, hdeg1⟩
+
+/--
+Gallai's parity theorem: every finite graph contains an induced subgraph on at least half of its
+vertices whose degrees are all even.
+-/
+lemma exists_large_even_induced_subgraph (G : SimpleGraph V) :
+    ∃ s : Finset V, Fintype.card V ≤ 2 * s.card ∧
+      (by
+        classical
+        exact ∀ v : ↑(s : Set V), Even ((inducedOn G s).degree v)) := by
+  classical
+  rcases exists_even_induced_bipartition (G := G) with
+    ⟨s0, s1, hdisj, hunion, hdeg0, hdeg1⟩
   have hcard : s0.card + s1.card = Fintype.card V := by
-    have hunion : s0 ∪ s1 = Finset.univ := by
-      ext v
-      constructor
-      · intro _
-        simp
-      · intro _
-        simp [s0, s1, zmod2_eq_zero_or_one (x v)]
     calc
       s0.card + s1.card = (s0 ∪ s1).card := by
         symm
@@ -5397,6 +5417,159 @@ private noncomputable def inducedOnIsoMap_host {W : Type*} [Fintype W] [Decidabl
   map_rel_iff' := by
     intro a b
     simpa [finsetSubtypeMapEquiv_host, inducedOn] using (e.map_adj_iff (v := a) (w := b))
+
+/--
+Gallai's parity theorem localized to an induced vertex set: every induced subgraph on `s` contains
+a subset of at least half of `s` whose own induced degrees are all even.
+-/
+lemma exists_large_even_induced_subgraph_subset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (s : Finset V) :
+    ∃ u : Finset V, u ⊆ s ∧ s.card ≤ 2 * u.card ∧
+      ∀ v : ↑(u : Set V),
+        Even (@SimpleGraph.degree _ (inducedOn G u) v
+          ((inducedOn G u).neighborSetFintype v)) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  let H : SimpleGraph ↑(s : Set V) := inducedOn G s
+  rcases exists_large_even_induced_subgraph (G := H) with ⟨r, hrCard, hrEven⟩
+  let e : H ↪g G := SimpleGraph.Embedding.comap
+    (Function.Embedding.subtype (· ∈ (s : Set V))) G
+  let u : Finset V := r.map e.toEmbedding
+  refine ⟨u, ?_, ?_, ?_⟩
+  · intro x hx
+    rcases Finset.mem_map.mp hx with ⟨v, _hv, rfl⟩
+    exact v.2
+  · have hcardSubtype : Fintype.card ↑(s : Set V) = s.card := by simp
+    have hru : u.card = r.card := by
+      dsimp [u]
+      rw [Finset.card_map]
+    simpa [H, hcardSubtype, hru] using hrCard
+  · intro v
+    have hvu : v.1 ∈ r.map e.toEmbedding := by
+      simpa [u] using v.2
+    rcases Finset.mem_map.mp hvu with ⟨w, hw, hwv⟩
+    let iso := inducedOnIsoMap_host e r
+    let wr : ↑(r : Set ↑(s : Set V)) := ⟨w, hw⟩
+    have hv_eq : v = iso wr := by
+      apply Subtype.ext
+      simpa [iso, wr, inducedOnIsoMap_host, finsetSubtypeMapEquiv_host, u] using hwv.symm
+    have hdeg :
+        @SimpleGraph.degree _ (inducedOn G u) v
+            ((inducedOn G u).neighborSetFintype v) =
+          @SimpleGraph.degree _ (inducedOn H r) wr
+            ((inducedOn H r).neighborSetFintype wr) := by
+      subst hv_eq
+      simpa [iso, H, e, u, wr] using (SimpleGraph.Iso.degree_eq iso wr)
+    simpa [hdeg] using hrEven wr
+
+/--
+Localized Gallai bipartition: inside any induced vertex set `s`, one can split `s` into two parts
+whose own induced degrees are all even.
+-/
+lemma exists_even_induced_bipartition_subset
+    (G : SimpleGraph V) [DecidableRel G.Adj] (s : Finset V) :
+    ∃ u0 u1 : Finset V, u0 ⊆ s ∧ u1 ⊆ s ∧ Disjoint u0 u1 ∧ u0 ∪ u1 = s ∧
+      (by
+        classical
+        exact ∀ v : ↑(u0 : Set V),
+          Even (@SimpleGraph.degree _ (inducedOn G u0) v
+            ((inducedOn G u0).neighborSetFintype v))) ∧
+      (by
+        classical
+        exact ∀ v : ↑(u1 : Set V),
+          Even (@SimpleGraph.degree _ (inducedOn G u1) v
+            ((inducedOn G u1).neighborSetFintype v))) := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  let H : SimpleGraph ↑(s : Set V) := inducedOn G s
+  rcases exists_even_induced_bipartition (G := H) with
+    ⟨r0, r1, hrdisj, hrunion, hrEven0, hrEven1⟩
+  let e : H ↪g G := SimpleGraph.Embedding.comap
+    (Function.Embedding.subtype (· ∈ (s : Set V))) G
+  let u0 : Finset V := r0.map e.toEmbedding
+  let u1 : Finset V := r1.map e.toEmbedding
+  have hu0s : u0 ⊆ s := by
+    intro x hx
+    rcases Finset.mem_map.mp hx with ⟨v, _hv, rfl⟩
+    exact v.2
+  have hu1s : u1 ⊆ s := by
+    intro x hx
+    rcases Finset.mem_map.mp hx with ⟨v, _hv, rfl⟩
+    exact v.2
+  have hudisj : Disjoint u0 u1 := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hx0 hx1
+    rcases Finset.mem_map.mp hx0 with ⟨v0, hv0, hv0x⟩
+    rcases Finset.mem_map.mp hx1 with ⟨v1, hv1, hv1x⟩
+    have hv01 : v0 = v1 := by
+      apply Subtype.ext
+      simpa [e] using hv0x.trans hv1x.symm
+    exact (Finset.disjoint_left.mp hrdisj) hv0 (by simpa [hv01] using hv1)
+  have huunion : u0 ∪ u1 = s := by
+    ext x
+    constructor
+    · intro hx
+      rcases Finset.mem_union.mp hx with hx0 | hx1
+      · exact hu0s hx0
+      · exact hu1s hx1
+    · intro hx
+      let w : ↑(s : Set V) := ⟨x, hx⟩
+      have hw : w ∈ r0 ∪ r1 := by
+        simpa [hrunion]
+      rcases Finset.mem_union.mp hw with hw0 | hw1
+      · exact Finset.mem_union.mpr <| Or.inl <| by
+          change x ∈ u0
+          exact Finset.mem_map.mpr ⟨w, hw0, rfl⟩
+      · exact Finset.mem_union.mpr <| Or.inr <| by
+          change x ∈ u1
+          exact Finset.mem_map.mpr ⟨w, hw1, rfl⟩
+  have huEven0 :
+      ∀ v : ↑(u0 : Set V),
+        Even (@SimpleGraph.degree _ (inducedOn G u0) v
+          ((inducedOn G u0).neighborSetFintype v)) := by
+    intro v
+    have hvu : v.1 ∈ r0.map e.toEmbedding := by
+      simpa [u0] using v.2
+    rcases Finset.mem_map.mp hvu with ⟨w, hw, hwv⟩
+    let iso := inducedOnIsoMap_host e r0
+    let wr : ↑(r0 : Set ↑(s : Set V)) := ⟨w, hw⟩
+    have hv_eq : v = iso wr := by
+      apply Subtype.ext
+      simpa [iso, wr, inducedOnIsoMap_host, finsetSubtypeMapEquiv_host, u0] using hwv.symm
+    have hdeg :
+        @SimpleGraph.degree _ (inducedOn G u0) v
+            ((inducedOn G u0).neighborSetFintype v) =
+          @SimpleGraph.degree _ (inducedOn H r0) wr
+            ((inducedOn H r0).neighborSetFintype wr) := by
+      subst hv_eq
+      simpa [iso, H, e, u0, wr] using (SimpleGraph.Iso.degree_eq iso wr)
+    simpa [hdeg] using hrEven0 wr
+  have huEven1 :
+      ∀ v : ↑(u1 : Set V),
+        Even (@SimpleGraph.degree _ (inducedOn G u1) v
+          ((inducedOn G u1).neighborSetFintype v)) := by
+    intro v
+    have hvu : v.1 ∈ r1.map e.toEmbedding := by
+      simpa [u1] using v.2
+    rcases Finset.mem_map.mp hvu with ⟨w, hw, hwv⟩
+    let iso := inducedOnIsoMap_host e r1
+    let wr : ↑(r1 : Set ↑(s : Set V)) := ⟨w, hw⟩
+    have hv_eq : v = iso wr := by
+      apply Subtype.ext
+      simpa [iso, wr, inducedOnIsoMap_host, finsetSubtypeMapEquiv_host, u1] using hwv.symm
+    have hdeg :
+        @SimpleGraph.degree _ (inducedOn G u1) v
+            ((inducedOn G u1).neighborSetFintype v) =
+          @SimpleGraph.degree _ (inducedOn H r1) wr
+            ((inducedOn H r1).neighborSetFintype wr) := by
+      subst hv_eq
+      simpa [iso, H, e, u1, wr] using (SimpleGraph.Iso.degree_eq iso wr)
+    simpa [hdeg] using hrEven1 wr
+  exact ⟨u0, u1, hu0s, hu1s, hudisj, huunion, huEven0, huEven1⟩
 
 private def mapControlBlocks {W : Type*} [DecidableEq W] (e : V ↪ W) :
     List (Finset V × ℕ) → List (Finset W × ℕ)

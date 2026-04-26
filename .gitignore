@@ -1,1 +1,5 @@
 /.lake
+/.copilot/
+/__pycache__/
+/__tmp*
+/Scratch.lean

@@ -1,0 +1,596 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{definition}[theorem]{Definition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\F}{\mathbb F}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\supp}{\operatorname{supp}}
+
+\title{Dyadic tail obstructions for regular induced subgraphs}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(F(n)\) be the largest integer \(k\) such that every graph on \(n\)
+vertices contains a regular induced subgraph on at least \(k\) vertices.  The
+conjecture of Erdos, Fajtlowicz, and Staton asks whether
+\(F(n)/\log n\to\infty\).  This manuscript gives a self-contained account of a
+dyadic reduction of the conjecture to one finite first-return statement.  The
+reduction is unconditional; the final superlogarithmic conclusion is stated
+conditionally on a q-marker provenance/support-decrease theorem.  We prove the
+terminal congruence criterion, the complement-pair carry identity, the
+first-return marker reduction, the local marker exits, the product-firewall
+normal form, and the polynomial-threshold consequence of the missing
+provenance theorem.  The point is to make the remaining mathematical gap
+explicit: an ambient splitter of a fully skew q-marker must be routed to an
+ordered first-return boundary row or to a local regularizing exit.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+All graphs in this paper are finite, simple, and undirected.  If
+\(S\subseteq V(G)\), we write \(G[S]\) for the subgraph induced by \(S\) and
+\(\deg_S(v)\) for the degree of \(v\) inside \(G[S]\).
+
+Define
+\[
+  f(G)=\max\{|S|:G[S]\text{ is regular}\},\qquad
+  F(n)=\min_{|V(G)|=n} f(G).
+\]
+The classical Ramsey bound gives \(F(n)\ge c\log n\).  Erdos,
+Fajtlowicz, and Staton asked whether this lower bound is always
+superlogarithmic:
+\[
+  \frac{F(n)}{\log n}\longrightarrow\infty .
+\]
+This remains the global problem.  The present manuscript does not claim an
+unconditional proof of the conjecture.  Instead, it isolates the exact finite
+statement to which the dyadic approach reduces it and proves the surrounding
+machinery in full.
+
+The strategy is modular.  A set \(U\) of size \(q\) is regular as soon as all
+degrees in \(G[U]\) are congruent modulo \(q\), because the degrees already lie
+in the interval \([0,q-1]\).  Thus the terminal problem is to force congruence
+of induced degrees modulo \(q\).  In a dyadic descent, \(q=2^j\), one reaches a
+terminal host \(U\) with a dropped tail \(R\).  The only remaining datum is
+\[
+  \rho_R(u)=|N(u)\cap R|,\qquad u\in U.
+\]
+If \(\rho_R\) is constant modulo \(q\), then \(G[U]\) is regular.  The possible
+failure at the next dyadic bit is measured by a quotient class
+\(\tau_m(R,U)\in \F_2^U/\langle\one_U\rangle\).  We identify this class with an
+aggregate complement-orbit carry \(\beta_m\).  A nonzero \(\beta_m\) gives a
+first-return marker.
+
+The remaining local problem is the q-marker endpoint.  The low-set update
+proves that every such marker has size \(0\) modulo \(q\), so any nonempty
+submarker of size \(<q\) is impossible.  Many local alternatives are eliminated
+directly: fixed-trace exits, clean marked exits, frozen same-trace markers,
+one-splitter markers, and the static selections in the fully skew split
+quotient.  The survivor is a product firewall: provenance rows cut only the
+residual-pair/compensator coordinate, while ambient primeness cuts a protected
+packet only through high-error breakers.  The missing theorem is precisely the
+claim that such ambient breakers can be promoted to ordered first-return
+boundary rows, or else cause local exits.  Once that theorem is supplied, a
+sub-\(q\) marker appears and the endpoint collapses.
+
+\section{Background and threshold form}
+
+Let
+\[
+  T(k)=\min\{n:\text{ every graph on }n\text{ vertices contains a regular
+  induced subgraph on }k\text{ vertices}\}.
+\]
+Then \(k\le F(n)\) if and only if \(T(k)\le n\).
+
+\begin{lemma}[threshold reduction]\label{lem:threshold}
+Assume that there is a constant \(A\) such that
+\[
+  T(2^r)\le 2^{A(r+1)^2}
+\]
+for all sufficiently large \(r\).  Then \(F(n)/\log n\to\infty\).
+\end{lemma}
+
+\begin{proof}
+It is enough to prove that, for every fixed \(M\), all sufficiently large powers
+\(2^k\) have \(F(2^k)\ge Mk\).  Choose \(r=r(k)\) maximal with
+\[
+  A(r+1)^2\le k.
+\]
+Then \(r\to\infty\), and hence \(2^r\ge Mk\) for all sufficiently large \(k\).
+The assumed threshold bound gives
+\[
+  T(2^r)\le 2^{A(r+1)^2}\le 2^k,
+\]
+so \(F(2^k)\ge 2^r\ge Mk\).
+
+For general \(n\), take \(k\) with \(2^k\le n<2^{k+1}\).  Monotonicity gives
+\(F(n)\ge F(2^k)\), while \(\log n\le (k+1)\log 2\).  Since \(M\) was
+arbitrary, the ratio \(F(n)/\log n\) tends to infinity.
+\end{proof}
+
+\section{Modular terminal sets}
+
+\begin{definition}
+Let \(q\ge 1\).  A vertex set \(U\) is \(q\)-modular if
+\[
+  \deg_U(u)\equiv\deg_U(v)\pmod q
+\]
+for all \(u,v\in U\).
+\end{definition}
+
+\begin{lemma}[terminal congruence collapse]\label{lem:terminal-collapse}
+If \(|U|\le q\) and \(U\) is \(q\)-modular, then \(G[U]\) is regular.
+\end{lemma}
+
+\begin{proof}
+Every degree in \(G[U]\) lies in \(\{0,\ldots,|U|-1\}\), an interval of length
+strictly less than \(q\).  Two integers in such an interval that are congruent
+modulo \(q\) are equal.
+\end{proof}
+
+\begin{definition}
+Let \(U\) and \(R\) be disjoint vertex sets.  We call \((U,R)\) a
+fixed-modulus terminal host at modulus \(q\) if \(|U|=q\) and the degrees in
+\(G[U\cup R]\) are constant modulo \(q\) on \(U\).  Write
+\[
+  \rho_R(u)=|N(u)\cap R|,\qquad u\in U.
+\]
+\end{definition}
+
+\begin{lemma}[tail criterion]\label{lem:tail-criterion}
+Let \((U,R)\) be a fixed-modulus terminal host at modulus \(q\).  If
+\(\rho_R\) is constant modulo \(q\) on \(U\), then \(G[U]\) is regular.
+\end{lemma}
+
+\begin{proof}
+For \(u,v\in U\),
+\[
+  \deg_{U\cup R}(u)-\deg_{U\cup R}(v)
+  =\deg_U(u)-\deg_U(v)+\rho_R(u)-\rho_R(v).
+\]
+The first difference is \(0\) modulo \(q\) by the host condition, and the tail
+difference is \(0\) modulo \(q\) by hypothesis.  Thus
+\(\deg_U(u)\equiv\deg_U(v)\pmod q\).  Lemma~\ref{lem:terminal-collapse}
+applies because \(|U|=q\).
+\end{proof}
+
+\section{Dyadic tail classes}
+
+Throughout this section \(q=2^j\) and \((U,R)\) is a terminal host.  Suppose the
+first \(m\) dyadic bits of the tail have been frozen:
+\[
+  \rho_R=K_m\one_U+2^m h_m,\qquad m<j.
+\]
+Define the terminal-tail class
+\[
+  \tau_m(R,U)=[h_m\bmod 2]\in \F_2^U/\langle\one_U\rangle.
+\]
+The next bit is frozen exactly when \(\tau_m(R,U)=0\).
+
+For each \(A\subseteq U\), let
+\[
+  n_A=|\{x\in R:N(x)\cap U=A\}|.
+\]
+The complement pair of \(A\) is \([A]=\{A,U\setminus A\}\).  Define
+\[
+  \epsilon_{[A]}
+  =\left\lfloor\frac{n_A+n_{U\setminus A}}{2^m}\right\rfloor\pmod 2
+\]
+and
+\[
+  \beta_m=\sum_{[A]}\epsilon_{[A]}\,[1_A]
+  \in \F_2^U/\langle\one_U\rangle.
+\]
+
+\begin{proposition}[aggregate carry identity]\label{prop:beta}
+For every \(m<j\),
+\[
+  \tau_m(R,U)=\beta_m.
+\]
+\end{proposition}
+
+\begin{proof}
+For \(u,v\in U\),
+\[
+  \rho_R(u)-\rho_R(v)
+  =\sum_{A\subseteq U} n_A\bigl(1_A(u)-1_A(v)\bigr).
+\]
+Inside the quotient by constants,
+\[
+  1_{U\setminus A}=\one_U-1_A\equiv -1_A.
+\]
+Thus the two members of the complement pair \([A]\) contribute to pairwise
+differences through the single coefficient \(n_A+n_{U\setminus A}\).  Dividing
+by \(2^m\) and reducing modulo \(2\), the only surviving contribution of the
+pair is
+\[
+  \left\lfloor\frac{n_A+n_{U\setminus A}}{2^m}\right\rfloor
+  \bigl(1_A(u)-1_A(v)\bigr)\pmod 2.
+\]
+Pairwise differences determine a vector modulo constants, so the class of
+\(h_m\bmod2\) is exactly the displayed aggregate \(\beta_m\).
+\end{proof}
+
+\begin{corollary}[cut extraction]\label{cor:cut}
+If \(\beta_m\ne0\), then there is a nonempty proper cut \(S\subset U\), unique
+up to complement after merging equal terminal profiles, such that the normalized
+next-bit cocycle
+\[
+  \kappa_m(u,v)=\frac{\rho_R(u)-\rho_R(v)}{2^m}\pmod 2
+\]
+is \(1\) across \(S\) and \(0\) within each side.
+\end{corollary}
+
+\begin{proof}
+Choose a representative \(b\in\F_2^U\) of the nonzero quotient class
+\(\beta_m\).  Its support is nonempty and proper, after possibly replacing
+\(b\) by \(b+\one_U\).  Proposition~\ref{prop:beta} identifies this
+representative with the normalized next-bit differences of \(\rho_R\).  Merging
+terminal profile classes on which \(b\) is constant makes the cut unique up to
+complement.
+\end{proof}
+
+\section{First-return markers}
+
+The next definitions encode the local object produced by a nonzero cut.
+
+\begin{definition}
+A first-return boundary is fixed-trace if it preserves the trace of the current
+cut, clean if it changes only one already marked coordinate, and mixed
+otherwise.
+\end{definition}
+
+\begin{lemma}[fixed and clean boundaries]\label{lem:fixed-clean}
+In a minimal obstruction to vanishing of \(\beta_m\), the first boundary seeing
+the cut of Corollary~\ref{cor:cut} is mixed.
+\end{lemma}
+
+\begin{proof}
+If the first boundary is fixed-trace, then all vertices in the corresponding
+trace class have the same outside contribution.  If that class contains an
+induced \(P_3\), the middle vertex and an endpoint have equal outside trace and
+internal degrees differing by one.  The first-return exchange supplies the
+opposite unit discrepancy, giving a regular \(q\)-set.  If there is no induced
+\(P_3\), each connected component is a clique: a shortest path between two
+nonadjacent vertices would otherwise contain an induced \(P_3\).  Equal outside
+trace and the modular equations force the relevant clique sizes to have a common
+residue modulo \(q\); selecting equal portions from enough clique components
+gives a regular \(q\)-set.
+
+If the boundary is clean, the two repairs differ by opposite unit vectors on a
+single marked coordinate.  Their sum is zero in the quotient by constants, so
+one repair preserves the obstruction on a smaller profile suborbit, contrary to
+minimality.
+\end{proof}
+
+\begin{definition}[q-marker]
+A q-marker is a tuple \((d,e,x,y;R)\), with \(R\ne\varnothing\), such that:
+\begin{enumerate}[label=(\roman*)]
+\item \(d,e\) have the same trace outside \(R\);
+\item \(x,y\) have the same trace outside \(R\);
+\item the two traces differ exactly on \(R\);
+\item the marked quartet is one of the two complementary two-class patterns
+      (miss/miss or add/add);
+\item \(|R|\equiv0\pmod q\).
+\end{enumerate}
+\end{definition}
+
+\begin{lemma}[mixed boundary to marker]\label{lem:marker}
+A minimal mixed first-return boundary produces a q-marker.
+\end{lemma}
+
+\begin{proof}
+Let \(d,e\) be the deleted pair and \(x,y\) the inserted pair in the first failed
+exchange.  First-return minimality makes the deleted pair one trace class and
+the inserted pair another trace class outside the slack rows spent by the
+exchange.  Let \(R\) be exactly the set of slack rows on which the two traces
+differ.  All modular degree equations are preserved except for the contribution
+of \(R\).  Since the failed exchange occurs inside a fixed-modulus host, that
+contribution is \(0\) modulo \(q\), so \(|R|\equiv0\pmod q\).  The two signs of
+the exchange give the miss/miss and add/add quartet patterns.
+\end{proof}
+
+\section{Local q-marker exits}
+
+\begin{lemma}[no-split module exit]\label{lem:module}
+If no outside row splits the marker set \(R\), then \(R\) is a module.  Hence no
+minimal prime-shell counterexample has an unsplit q-marker.
+\end{lemma}
+
+\begin{proof}
+If no outside row splits \(R\), every outside vertex is complete or
+anticomplete to \(R\), which is the definition of a module.  In a minimal
+counterexample, a nontrivial module can be contracted or replaced by an
+equally-sized same-internal-degree subset without changing any outside
+adjacency.  Thus such a module is impossible.
+\end{proof}
+
+\begin{lemma}[frozen marker closure]\label{lem:frozen}
+Suppose every splitter is constant on each same-trace component of a q-marker.
+Then the graph contains a regular induced \(q\)-set.
+\end{lemma}
+
+\begin{proof}
+Within a same-trace component all outside contributions are equal.  If one such
+component contains an induced \(P_3\), the middle vertex and an endpoint differ
+by one internal neighbor and have the same outside trace.  The marked quartet
+supplies the opposite unit discrepancy, giving a regular \(q\)-set by exchange.
+
+If no same-trace component contains an induced \(P_3\), then every component is
+a clique.  Since \(|R|\equiv0\pmod q\), the clique sizes in a frozen trace fiber
+are congruent modulo \(q\).  If a clique has size at least \(q\), it contains
+\(K_q\).  Otherwise all relevant clique sizes are some \(s<q\).  If
+\(g=\gcd(s,q)\), then the number of cliques is divisible by \(q/g\), and taking
+\(g\) vertices from each of \(q/g\) cliques gives an induced \(q\)-vertex
+\((g-1)\)-regular graph.
+\end{proof}
+
+\begin{lemma}[one-splitter closure]\label{lem:one-splitter}
+If a minimal q-marker has a splitter but no second independent splitter, then
+there is a regular induced \(q\)-set or a smaller q-marker.
+\end{lemma}
+
+\begin{proof}
+Let \(z\) be the unique splitter up to complement of its cut on \(R\).  The
+split gives a one-excess profile across the two sides.  If a neighbor of \(z\)
+is isolated inside the marker side, deleting that vertex leaves a balanced
+regular \(q\)-set.  Otherwise every neighbor of \(z\) is supported by an
+internal marker edge, so an alternating length-two path appears.  Together with
+the marked quartet this is the same false-clone \(P_3\) exchange as in
+Lemma~\ref{lem:frozen}, and it produces a smaller marker or a local regularizing
+exit.
+\end{proof}
+
+\section{The fully skew split quotient}
+
+After the local exits above, a surviving q-marker must be fully skew.  The
+finite quotient arithmetic gives the following endpoint.
+
+\begin{proposition}[split quotient]\label{prop:split-quotient}
+In the fully skew endpoint, after removing local exits and proper submarkers,
+the active marker graph has the form
+\[
+  R=A\sqcup U,\qquad A=K_{q-2},\qquad U=\{u_0,u_1\},
+\]
+and \(G[U]\) is either \(K_2\) or \(2K_1\).  If
+\[
+  k(H)=
+  \begin{cases}
+    (q-4)/2,&H=K_2,\\
+    q/2-1,&H=2K_1,
+  \end{cases}
+\]
+then every regular selection using \(U\) requires one compensator component
+containing a \(k(H)\)-clique.  A selection avoiding \(U\) is exactly a
+proper-divisor equal-clique bypass.
+\end{proposition}
+
+\begin{proof}
+If a residual vertex has mixed adjacency to \(A\), two adjacent vertices of
+\(A\) together with it give a same-trace \(P_3\), already handled by
+Lemma~\ref{lem:frozen}.  If a residual vertex is complete to \(A\), then adding
+one inserted root gives a \(K_q\) in the relevant orientation.  Hence the
+residual pair is anticomplete to \(A\), and \(G[U]\) is \(K_2\) or \(2K_1\).
+
+A regular selection avoiding \(U\) sees only clique packets, so equal degree
+requires equal-size choices from equal-trace cliques; these are exactly the
+proper-divisor equal-clique selections.  If the selection uses \(U\), the
+residual pair has equal marked trace, and its degree deficit must be supplied by
+a one-sided compensator.  Direct degree equality gives deficit \((q-4)/2\) in
+the \(K_2\) case and \(q/2-1\) in the \(2K_1\) case.  Vertices selected from
+different smaller compensator components are nonadjacent while having the same
+outside trace, so spreading the compensator over several smaller components
+cannot equalize degrees.  Thus a single \(k(H)\)-clique is necessary.
+\end{proof}
+
+\section{The missing provenance theorem}
+
+The endpoint left by Proposition~\ref{prop:split-quotient} is a product
+firewall.  Provenance rows cut only the residual pair or its compensator, while
+ambient primeness may split \(A\) or a compensator component only by a
+high-error breaker.  The following theorem is the missing finite input.
+
+\begin{conjecture}[q-marker provenance/support-decrease]\label{conj:qmarker}
+In a fully skew first-return q-marker endpoint, every ambient splitter of a
+protected packet has one of the following outcomes:
+\begin{enumerate}[label=(\roman*)]
+\item it is promoted to an ordered first-return boundary row;
+\item it gives a local regularizing exit;
+\item its first failed row carries a complete smaller first-return q-marker.
+\end{enumerate}
+Moreover, in case (iii) the smaller marker is marker-complete: it is the whole
+shared-slack set of a new marked two-class quartet, not merely a failed prefix.
+\end{conjecture}
+
+\begin{remark}
+This is the point at which the current proof route is conditional.  Primeness
+alone gives an arbitrary splitter of the marker, but not necessarily a splitter
+with first-return provenance.  Static degree balancing can also create splitters
+without square-provenance.  Thus Conjecture~\ref{conj:qmarker} is not a
+bookkeeping statement; it is the remaining ordered first-return theorem.
+\end{remark}
+
+\begin{lemma}[ordered boundary completeness]\label{lem:boundary-complete}
+Assume an ambient high-error packet breaker has already been promoted to an
+ordered boundary row \(z\).  If \(z\) splits a protected packet \(P\), then the
+first packet-internal failed set is a whole side of the split,
+\[
+  P\cap N(z)\quad\text{or}\quad P\setminus N(z).
+\]
+In particular, if \(P\) is proper, this failed set has size \(<q\).
+\end{lemma}
+
+\begin{proof}
+All vertices of \(P\) have the same trace to the marked quartet and to every
+packet other than \(P\).  The ordered boundary test can distinguish vertices of
+\(P\) only through adjacency to \(z\).  Hence the failure indicator is constant
+on \(P\cap N(z)\) and on \(P\setminus N(z)\).  First failure cannot select a
+proper nonempty subset of one side, because an omitted and an included vertex on
+the same side have identical boundary data.  Therefore the failed set is a whole
+side.  The protected packets in the fully skew endpoint are \(A\) of size
+\(q-2\) and compensator components of size \(<k(H)<q\), so every proper side has
+size \(<q\).
+\end{proof}
+
+\begin{proposition}[conditional q-marker exclusion]\label{prop:conditional-marker}
+Assume Conjecture~\ref{conj:qmarker}.  Then no minimal fully skew q-marker
+survives after the local exits of Lemmas~\ref{lem:module},
+\ref{lem:frozen}, and \ref{lem:one-splitter}.
+\end{proposition}
+
+\begin{proof}
+Let a fully skew survivor be chosen minimally.  By
+Proposition~\ref{prop:split-quotient}, all static regular selections have been
+removed and the survivor has product-firewall form.  Ambient primeness supplies
+a high-error breaker of a protected packet.  Apply
+Conjecture~\ref{conj:qmarker}.  A local exit contradicts survival.  A smaller
+complete q-marker contradicts minimality.  If the breaker is promoted to an
+ordered boundary row, Lemma~\ref{lem:boundary-complete} says that the first
+packet-internal failed set is a whole side of a proper protected packet, hence
+nonempty of size \(<q\).  The low-set update makes that side a q-marker, so its
+size is \(0\) modulo \(q\), impossible for a nonempty set of size \(<q\).
+\end{proof}
+
+\section{Conditional terminal theorem}
+
+\begin{theorem}[conditional dyadic terminal theorem]\label{thm:conditional-terminal}
+Assume Conjecture~\ref{conj:qmarker}.  Let \(q=2^j>1\) and let \((U,R)\) be a
+minimal terminal host at modulus \(q\).  Then \(\rho_R\) is constant modulo
+\(q\), and \(G\) contains a regular induced \(q\)-set.
+\end{theorem}
+
+\begin{proof}
+Suppose \(\rho_R\) is not constant modulo \(q\).  Let \(m\) be the first dyadic
+bit at which constancy fails.  Then \(\tau_m(R,U)\ne0\), so
+\(\beta_m\ne0\) by Proposition~\ref{prop:beta}.  Corollary~\ref{cor:cut}
+produces a nonconstant cut.  Lemma~\ref{lem:fixed-clean} shows that the first
+boundary seeing this cut is mixed, and Lemma~\ref{lem:marker} turns the mixed
+boundary into a q-marker.  The local exits and
+Proposition~\ref{prop:conditional-marker} exclude the marker, contradiction.
+Thus every dyadic bit is frozen and \(\rho_R\) is constant modulo \(q\).  The
+regular \(q\)-set follows from Lemma~\ref{lem:tail-criterion}.
+\end{proof}
+
+\section{Polynomial dyadic lifting}
+
+\begin{lemma}[parity base]\label{lem:parity}
+Every graph on \(n\) vertices has a modulus-\(2\) cascade witness of order at
+least \(n/2\).
+\end{lemma}
+
+\begin{proof}
+Pair vertices greedily, leaving at most one unpaired vertex.  On each pair, the
+induced degrees are equal modulo \(2\): adjacent pairs have degrees \(1,1\), and
+nonadjacent pairs have degrees \(0,0\).  The collection of pairs is the base
+modulus-\(2\) witness.
+\end{proof}
+
+\begin{lemma}[conditional dyadic lift]\label{lem:lift}
+Assume Conjecture~\ref{conj:qmarker}.  There is a constant \(C\) such that, for
+every dyadic \(q=2^j\), a fixed-modulus cascade witness of order \(q^C m\) at
+modulus \(q\) contains a fixed-modulus cascade witness of order \(m\) at modulus
+\(2q\).
+\end{lemma}
+
+\begin{proof}
+Only finitely many residue functions are used in one terminal descent step:
+ambient degree modulo \(q\), dropped-tail degree modulo \(q\), and the residues
+against the separated control blocks.  Let \(C\) dominate the number of such
+functions in the finite exchange templates.  By the pigeonhole principle, a
+witness of order \(q^C m\) contains a subwitness of order at least \(m\) on
+which all these residues are fixed.  On each terminal bucket, Theorem
+\ref{thm:conditional-terminal} freezes the dropped-tail residue modulo \(q\),
+which is exactly the missing next dyadic bit.  Thus the selected subwitness is
+a modulus-\(2q\) witness.
+\end{proof}
+
+\begin{theorem}[conditional threshold]\label{thm:conditional-threshold}
+Assume Conjecture~\ref{conj:qmarker}.  There is a constant \(A\) such that
+\[
+  T(2^r)\le 2^{A(r+1)^2}
+\]
+for all \(r\).
+\end{theorem}
+
+\begin{proof}
+Starting from Lemma~\ref{lem:parity}, apply Lemma~\ref{lem:lift} successively
+from \(2\) to \(2^r\).  The cost of the step \(2^i\to2^{i+1}\) is at most
+\((2^i)^C\).  Hence the total lifting cost is
+\[
+  \prod_{i=1}^{r-1}(2^i)^C=2^{C r(r-1)/2}.
+\]
+Multiplying by the terminal target size \(2^r\) and increasing the constant
+gives the asserted bound.
+\end{proof}
+
+\begin{corollary}[conditional superlogarithmic conclusion]
+Assume Conjecture~\ref{conj:qmarker}.  Then
+\[
+  \frac{F(n)}{\log n}\to\infty .
+\]
+\end{corollary}
+
+\begin{proof}
+Combine Theorem~\ref{thm:conditional-threshold} with
+Lemma~\ref{lem:threshold}.
+\end{proof}
+
+\section{What remains}
+
+The preceding sections show that the dyadic route no longer lacks asymptotic
+bookkeeping.  The unresolved point is finite and local:
+Conjecture~\ref{conj:qmarker}.  Equivalently, one must prove
+ambient-to-provenance routing for a fully skew q-marker.  The known local
+closures show that fixed-trace failures, clean marked failures, no-split
+markers, frozen marker components, one-splitter markers, and all static
+selections in the \(K_{q-2}\sqcup U\) quotient do not survive.  A remaining
+counterexample must keep an ambient high-error packet breaker and a provenance
+residual-pair cut in different coordinates.  Proving that first-return order
+forces these coordinates into one square-provenance frame is exactly the
+remaining theorem.
+
+\begin{thebibliography}{9}
+
+\bibitem{AKS}
+N. Alon, M. Krivelevich, and B. Sudakov,
+\emph{Large nearly regular induced subgraphs},
+SIAM J. Discrete Math. \textbf{22} (2008), no. 4, 1325--1337.
+
+\bibitem{FMRS}
+S. Fajtlowicz, C. McColgan, T. Reid, and P. Staton,
+\emph{Ramsey numbers for induced regular subgraphs},
+Ars Combin. \textbf{39} (1995), 149--154.
+
+\bibitem{KSW}
+M. Krivelevich, B. Sudakov, and N. Wormald,
+\emph{Regular induced subgraphs of a random graph},
+Random Structures Algorithms \textbf{38} (2011), no. 3, 235--250.
+
+\bibitem{Ramsey}
+F. P. Ramsey,
+\emph{On a problem of formal logic},
+Proc. London Math. Soc. \textbf{30} (1930), 264--286.
+
+\end{thebibliography}
+
+\end{document}
