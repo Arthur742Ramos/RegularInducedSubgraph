@@ -1172,6 +1172,10 @@ Partner-free labels have split-atom rebate at least three: minimally one size-at
 size-three plus another split atom, or three pair atoms (the square-breaker core).
 After the square-breaker core is discharged, every pair-atom collision detects a split atom of size at least
 three.
+The isolated no-leftover atom pattern `3,2,2,2` is discharged too: deleting from the size-three atom gives
+four projected pair atoms and the same one-corner square core.
+Thus no no-leftover small-collision endpoint survives below `|A|=10`; the first profiles are `4,2,2,2` and
+`3,3,2,2`.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

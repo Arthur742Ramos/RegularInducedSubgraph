@@ -2576,6 +2576,10 @@ Recommended attack:
     another split atom, or three pair atoms.
     Conclude the pair-atom endpoint after square-breaker discharge: every remaining pair collision splits an
     opposite atom of size at least three, so pair atoms only detect larger split atoms.
+    Add the isolated size-three elimination: for atom sizes `3,2,2,2`, deletion from the size-three atom gives
+    four projected pair atoms and therefore the same one-corner square core.
+    Derive the first-size cutoff: after square-breaker discharge, no no-leftover small-collision endpoint
+    survives with `|A|<=9`; the first sorted profiles are `4,2,2,2` and `3,3,2,2`.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

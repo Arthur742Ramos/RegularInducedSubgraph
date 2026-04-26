@@ -2096,6 +2096,10 @@ Partner-free labels have split-atom rebate at least three; the minimal patterns 
 atom, one size-three atom plus another split atom, or three pair atoms.
 After the four-pair square-breaker is discharged, every pair-atom collision detects a split atom of size at
 least three.
+The no-leftover pattern `3,2,2,2` is also square-routed, because deleting from the size-three atom leaves four
+projected pair atoms.
+So after square-breaker discharge no no-leftover small-collision endpoint survives with `|A|<=9`; the first
+profiles are `4,2,2,2` and `3,3,2,2`.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

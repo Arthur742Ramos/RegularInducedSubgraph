@@ -12510,6 +12510,41 @@ least three.  Thus a pair atom is no longer an independent no-leftover obstructi
 the local leftover pivot orbit, it is part of the four-pair one-corner square, or its deletion collision is a
 detector for a larger split atom in the same four-atom packing.
 
+The isolated size-three case also routes to the square core.  Suppose `L=0` and the atom sizes are
+`3,2,2,2`.  Delete a vertex `a` from the size-three atom.  The projected packing has four pair atoms: the
+shortened pair from the size-three atom and the three original pair atoms.  Since a no-leftover size-three
+deletion has no zero-gain or strict-absorption lift, terminality forces a projected lift-collision.  But for
+four projected pair atoms the preceding Boolean analysis applies verbatim, with the shortened pair playing
+the distinguished pair.  Thus the deletion exposes the same one-corner square-breaker.  After square-breaker
+discharge, the atom-size pattern `3,2,2,2` is impossible.
+
+Consequently the no-leftover small-collision branch has a sharp first size after square-breaker discharge.
+All four atoms are non-singleton, so `|A|=8` is the four-pair square core and `|A|=9` is necessarily the
+isolated pattern `3,2,2,2`.  Both are discharged.  Hence any remaining no-leftover endpoint with a small atom
+has
+
+```text
+|A| >= 10,
+```
+
+and the first possible sorted atom-size profiles are only
+
+```text
+4,2,2,2        or        3,3,2,2.
+```
+
+These two first profiles have finite normal forms.  In profile `4,2,2,2`, every remaining pair-atom collision
+must split the unique four-atom.  In the partner-free subbranch the label is exactly a cut of the four-atom,
+together with an assignment of the two other pair atoms to the two sides; in the partner-hit subbranch the
+full-pair petal must hit the four-atom and omit at least two of its vertices, which are then compensated by
+the other petals.  Thus the profile `4,2,2,2` is a one-large-atom cut system.
+
+In profile `3,3,2,2`, a partner-free collision has split-rebate at least three, so it must split either both
+three-atoms or one three-atom together with one pair atom.  A partner-hit collision must hit a three-atom and
+omit two of its vertices, again forcing compensation through the other petals.  Deleting from a three-atom
+projects to atom sizes `2,3,2,2`; if the other three-atom is not split, the projected collision is the
+already-discharged four-pair square core.  Hence profile `3,3,2,2` is a coupled two-three-atom split system.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

@@ -2061,6 +2061,9 @@ What remains justified after audit is:
       partner-free split atoms have total rebate at least three, with minimal patterns: one size-at-least-four
       atom, one size-three plus another split atom, or three pair atoms;
       after square-breaker discharge, every pair-atom collision detects a split atom of size at least three;
+      the isolated no-leftover pattern `3,2,2,2` is also square-routed by deleting from the size-three atom;
+      hence no no-leftover small-collision endpoint survives with `|A|<=9`; first profiles are
+      `4,2,2,2` and `3,3,2,2`;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

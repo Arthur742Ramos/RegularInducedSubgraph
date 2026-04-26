@@ -5520,6 +5520,10 @@ size-at-least-four atom, one size-three atom plus another split atom, or three p
 four-pair square-breaker core.
 Therefore, after square-breaker discharge, every pair-atom collision detects a split atom of size at least
 three; pair atoms are no longer independent no-leftover obstructions.
+The isolated pattern `3,2,2,2` also collapses: deleting from the size-three atom produces four projected
+pair atoms, hence the same Boolean one-corner square core.
+Therefore after square-breaker discharge there is no no-leftover small-collision endpoint with `|A|<=9`; the
+first possible profiles are `4,2,2,2` and `3,3,2,2`.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.
