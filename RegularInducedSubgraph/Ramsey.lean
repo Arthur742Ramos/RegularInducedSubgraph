@@ -3189,6 +3189,227 @@ theorem nonadjacent_degree_nine_endpoint_degree_ten_eleven_twelve_split_ledgers
     exact ⟨Or.inr (Or.inr hledger.1), hledger.2.1, hledger.2.2.1,
       hledger.2.2.2.1, by omega, by omega⟩
 
+/--
+Structured ledger for a degree-`10`/`11`/`12` non-neighbor of a degree-`9` endpoint in the
+`27`-vertex residual.  The fields give named accessors for the common-neighbor count, the two
+fixed octets in the endpoint non-neighborhood, the degree split, and the tight common-neighbor
+window.
+-/
+structure DegreeNineEndpointMiddleDegreeSplitLedger
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (u v : α) : Prop where
+  common_eq_degree_sub_eight :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8
+  neighbor_side_eq_eight :
+    (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+      (G.Adj u)).card = 8
+  nonneighbor_side_eq_eight :
+    (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+      (fun w => ¬ G.Adj u w)).card = 8
+  degree_split :
+    G.degree u =
+      (G.neighborFinset u ∩ G.neighborFinset v).card +
+        (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+          (G.Adj u)).card
+  common_lower : 2 ≤ (G.neighborFinset u ∩ G.neighborFinset v).card
+  common_upper : (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 4
+
+/-- Build the structured middle-degree ledger from the interval form of the split lemma. -/
+theorem DegreeNineEndpointMiddleDegreeSplitLedger.of_degree_bounds
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegv : G.degree v = 9) (hdeguLower : 10 ≤ G.degree u)
+    (hdeguUpper : G.degree u ≤ 12) :
+    DegreeNineEndpointMiddleDegreeSplitLedger G u v := by
+  have hledger :=
+    nonadjacent_degree_nine_endpoint_middle_degree_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv hdeguLower hdeguUpper
+  exact
+    { common_eq_degree_sub_eight := hledger.1
+      neighbor_side_eq_eight := hledger.2.1
+      nonneighbor_side_eq_eight := hledger.2.2.1
+      degree_split := hledger.2.2.2.1
+      common_lower := hledger.2.2.2.2.1
+      common_upper := hledger.2.2.2.2.2 }
+
+/-- Build the middle-degree ledger from the explicit `10 ∨ 11 ∨ 12` degree split. -/
+theorem DegreeNineEndpointMiddleDegreeSplitLedger.of_exact_middle_degree
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegv : G.degree v = 9)
+    (hdegu : G.degree u = 10 ∨ G.degree u = 11 ∨ G.degree u = 12) :
+    DegreeNineEndpointMiddleDegreeSplitLedger G u v := by
+  have hdeguLower : 10 ≤ G.degree u := by
+    rcases hdegu with hdeg10 | hdegRest
+    · omega
+    rcases hdegRest with hdeg11 | hdeg12
+    · omega
+    · omega
+  have hdeguUpper : G.degree u ≤ 12 := by
+    rcases hdegu with hdeg10 | hdegRest
+    · omega
+    rcases hdegRest with hdeg11 | hdeg12
+    · omega
+    · omega
+  exact DegreeNineEndpointMiddleDegreeSplitLedger.of_degree_bounds
+    G hcard hnoK4 hnoI5 huv_ne huv hdegv hdeguLower hdeguUpper
+
+/--
+Exact middle-degree ledger with the common-neighbor count already specialized to `2`, `3`, or
+`4`.  The parameter `common` is deliberately explicit so degree-specific certificates have stable
+names and reusable field accessors.
+-/
+structure DegreeNineEndpointExactMiddleDegreeSplitLedger
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (u v : α) (common : ℕ) : Prop where
+  common_eq :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = common
+  neighbor_side_eq_eight :
+    (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+      (G.Adj u)).card = 8
+  nonneighbor_side_eq_eight :
+    (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+      (fun w => ¬ G.Adj u w)).card = 8
+  degree_split :
+    G.degree u =
+      (G.neighborFinset u ∩ G.neighborFinset v).card +
+        (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+          (G.Adj u)).card
+  common_eq_degree_sub_eight :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8
+  common_le_five : (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 5
+
+/-- The exact degree-`10` non-neighbor ledger as a named structured certificate. -/
+theorem DegreeNineEndpointExactMiddleDegreeSplitLedger.of_degree_ten
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 10) (hdegv : G.degree v = 9) :
+    DegreeNineEndpointExactMiddleDegreeSplitLedger G u v 2 := by
+  have hledger :=
+    degree_ten_nonadjacent_degree_nine_endpoint_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv
+  exact
+    { common_eq := hledger.1
+      neighbor_side_eq_eight := hledger.2.1
+      nonneighbor_side_eq_eight := hledger.2.2.1
+      degree_split := hledger.2.2.2.1
+      common_eq_degree_sub_eight := hledger.2.2.2.2.1
+      common_le_five := hledger.2.2.2.2.2 }
+
+/-- The exact degree-`11` non-neighbor ledger as a named structured certificate. -/
+theorem DegreeNineEndpointExactMiddleDegreeSplitLedger.of_degree_eleven
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 11) (hdegv : G.degree v = 9) :
+    DegreeNineEndpointExactMiddleDegreeSplitLedger G u v 3 := by
+  have hledger :=
+    degree_eleven_nonadjacent_degree_nine_endpoint_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv
+  exact
+    { common_eq := hledger.1
+      neighbor_side_eq_eight := hledger.2.1
+      nonneighbor_side_eq_eight := hledger.2.2.1
+      degree_split := hledger.2.2.2.1
+      common_eq_degree_sub_eight := hledger.2.2.2.2.1
+      common_le_five := hledger.2.2.2.2.2 }
+
+/-- The exact degree-`12` non-neighbor ledger as a named structured certificate. -/
+theorem DegreeNineEndpointExactMiddleDegreeSplitLedger.of_degree_twelve
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 12) (hdegv : G.degree v = 9) :
+    DegreeNineEndpointExactMiddleDegreeSplitLedger G u v 4 := by
+  have hledger :=
+    degree_twelve_nonadjacent_degree_nine_endpoint_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv
+  exact
+    { common_eq := hledger.1
+      neighbor_side_eq_eight := hledger.2.1
+      nonneighbor_side_eq_eight := hledger.2.2.1
+      degree_split := hledger.2.2.2.1
+      common_eq_degree_sub_eight := hledger.2.2.2.2.1
+      common_le_five := hledger.2.2.2.2.2 }
+
+/-- Residual certificate exposing all exact degree-`10` non-neighbor splits of degree-`9` endpoints. -/
+def NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven : Prop :=
+  ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj],
+    Fintype.card α = 27 →
+      (¬ ∃ t : Finset α, G.IsNClique 4 t) →
+      (¬ ∃ t : Finset α, G.IsNIndepSet 5 t) →
+      ∀ {u v : α}, u ≠ v → ¬ G.Adj u v → G.degree u = 10 → G.degree v = 9 →
+        DegreeNineEndpointExactMiddleDegreeSplitLedger G u v 2
+
+/-- Residual certificate exposing all exact degree-`11` non-neighbor splits of degree-`9` endpoints. -/
+def NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven : Prop :=
+  ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj],
+    Fintype.card α = 27 →
+      (¬ ∃ t : Finset α, G.IsNClique 4 t) →
+      (¬ ∃ t : Finset α, G.IsNIndepSet 5 t) →
+      ∀ {u v : α}, u ≠ v → ¬ G.Adj u v → G.degree u = 11 → G.degree v = 9 →
+        DegreeNineEndpointExactMiddleDegreeSplitLedger G u v 3
+
+/-- Residual certificate exposing all exact degree-`12` non-neighbor splits of degree-`9` endpoints. -/
+def NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven : Prop :=
+  ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj],
+    Fintype.card α = 27 →
+      (¬ ∃ t : Finset α, G.IsNClique 4 t) →
+      (¬ ∃ t : Finset α, G.IsNIndepSet 5 t) →
+      ∀ {u v : α}, u ≠ v → ¬ G.Adj u v → G.degree u = 12 → G.degree v = 9 →
+        DegreeNineEndpointExactMiddleDegreeSplitLedger G u v 4
+
+/-- Uniform residual certificate for the degree-`10`/`11`/`12` middle band. -/
+def NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven : Prop :=
+  ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj],
+    Fintype.card α = 27 →
+      (¬ ∃ t : Finset α, G.IsNClique 4 t) →
+      (¬ ∃ t : Finset α, G.IsNIndepSet 5 t) →
+      ∀ {u v : α}, u ≠ v → ¬ G.Adj u v → G.degree v = 9 →
+        (G.degree u = 10 ∨ G.degree u = 11 ∨ G.degree u = 12) →
+          DegreeNineEndpointMiddleDegreeSplitLedger G u v
+
+/-- The current local lemmas discharge the degree-`10` middle-band certificate. -/
+theorem noRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven := by
+  intro α _ _ G _ hcard hnoK4 hnoI5 u v huv_ne huv hdegu hdegv
+  exact DegreeNineEndpointExactMiddleDegreeSplitLedger.of_degree_ten
+    G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv
+
+/-- The current local lemmas discharge the degree-`11` middle-band certificate. -/
+theorem noRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven := by
+  intro α _ _ G _ hcard hnoK4 hnoI5 u v huv_ne huv hdegu hdegv
+  exact DegreeNineEndpointExactMiddleDegreeSplitLedger.of_degree_eleven
+    G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv
+
+/-- The current local lemmas discharge the degree-`12` middle-band certificate. -/
+theorem noRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven := by
+  intro α _ _ G _ hcard hnoK4 hnoI5 u v huv_ne huv hdegu hdegv
+  exact DegreeNineEndpointExactMiddleDegreeSplitLedger.of_degree_twelve
+    G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv
+
+/-- The current local lemmas discharge the uniform degree-`10`/`11`/`12` middle-band certificate. -/
+theorem noRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven := by
+  intro α _ _ G _ hcard hnoK4 hnoI5 u v huv_ne huv hdegv hdegu
+  exact DegreeNineEndpointMiddleDegreeSplitLedger.of_exact_middle_degree
+    G hcard hnoK4 hnoI5 huv_ne huv hdegv hdegu
+
 
 /--
 In the `27`-vertex residual, a neighbor of a degree-`13` endpoint has exactly four common
@@ -14466,6 +14687,150 @@ theorem RamseyTenR45EndpointResidualCertificateWithExact42Profile.toHasCliqueOrI
     (h : RamseyTenR45EndpointResidualCertificateWithExact42Profile) :
     HasCliqueOrIndepSetBound 4 5 27 :=
   h.endpointCertificate.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/--
+Expanded handoff that keeps the three endpoint residual assumptions together with the now-named
+middle-degree split certificates for degree-`10`, `11`, and `12` non-neighbors of degree-`9`
+endpoints.  The final-status fields are carried alongside the split ledgers so downstream agents
+can consume either the local middle-band data or the global Ramsey-10 consequences from one object.
+-/
+structure RamseyTenR45MiddleDegreeEndpointCertificate : Prop where
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointCertificate : RamseyTenR45EndpointResidualCertificate
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+
+/-- Endpoint residuals plus the proved middle-degree ledgers give the expanded handoff certificate. -/
+theorem RamseyTenR45EndpointResiduals.toMiddleDegreeCertificate
+    (h : RamseyTenR45EndpointResiduals) : RamseyTenR45MiddleDegreeEndpointCertificate :=
+  { endpointResiduals := h
+    endpointCertificate := RamseyTenR45EndpointResiduals.toCertificate h
+    degreeTenSplits :=
+      noRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+    degreeElevenSplits :=
+      noRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+    degreeTwelveSplits :=
+      noRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+    middleDegreeSplits :=
+      noRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+    r45TwentySevenTable := RamseyTenR45EndpointResiduals.toR45TwentySevenTable h
+    finalStatus := RamseyTenR45EndpointResiduals.toFinalStatus h }
+
+/-- Recover the endpoint residual assumptions from the expanded middle-degree certificate. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toEndpointResiduals
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) : RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Extract the previously exported endpoint-residual certificate. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toEndpointResidualCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) :
+    RamseyTenR45EndpointResidualCertificate :=
+  h.endpointCertificate
+
+/-- Extract the uniform middle-degree split certificate. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toMiddleDegreeSplitCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.middleDegreeSplits
+
+/-- Extract the exact degree-`10` split certificate. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toDegreeTenSplitCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.degreeTenSplits
+
+/-- Extract the exact degree-`11` split certificate. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toDegreeElevenSplitCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.degreeElevenSplits
+
+/-- Extract the exact degree-`12` split certificate. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toDegreeTwelveSplitCertificate
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.degreeTwelveSplits
+
+/-- Extract the relaxed `R(4,5) <= 27` table from the expanded handoff. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toR45TwentySevenTable
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) : RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Extract the final Ramsey-10 status from the expanded handoff. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toFinalStatus
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) : RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Consume the expanded handoff as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.finalStatus.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Consume the expanded handoff as the current `R(10,10)` frontier. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.finalStatus.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Consume the expanded handoff as the regular induced `10`-subgraph theorem at `40960`. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) {V : Type} [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.finalStatus.toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Consume the expanded handoff as the admissible-bound statement. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) : 10 ∈ admissibleBounds 40960 :=
+  h.finalStatus.toTenMemAdmissibleBounds_40960
+
+/-- Consume the expanded handoff as the extremal-function lower bound. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toTenLeF_40960
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) : 10 ≤ F 40960 :=
+  h.finalStatus.toTenLeF_40960
+
+/-- Explicit endpoint assumptions packaged together with the named middle-degree split ledgers. -/
+theorem ramseyTenR45MiddleDegreeEndpointCertificate_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45MiddleDegreeEndpointCertificate :=
+  RamseyTenR45EndpointResiduals.toMiddleDegreeCertificate ⟨h8, h9, h13⟩
+
+/--
+Final-facing wrapper: the three endpoint assumptions, with the middle-degree ledgers carried in the
+certificate, discharge the relaxed Ramsey-10 final status.
+-/
+theorem ramseyTenR45FinalStatus_of_degreeEight_degreeNine_degreeThirteen_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45FinalStatus :=
+  (ramseyTenR45MiddleDegreeEndpointCertificate_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13).toFinalStatus
+
+/-- Final-facing wrapper to the current `R(10,10)` frontier with middle-degree ledgers retained. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_degreeEight_degreeNine_degreeThirteen_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  (ramseyTenR45MiddleDegreeEndpointCertificate_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13).toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Final-facing wrapper to the dyadic regular-induced-subgraph status with middle ledgers retained. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_degreeEight_degreeNine_degreeThirteen_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  (ramseyTenR45MiddleDegreeEndpointCertificate_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13).toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
