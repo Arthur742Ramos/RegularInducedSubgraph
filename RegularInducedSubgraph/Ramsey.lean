@@ -932,6 +932,66 @@ theorem hasCliqueOrIndepSetBound_three_eleven_sixty_two :
     (by norm_num)
 
 /--
+In any no-`K₄`/no-independent-`10` ambient set, an edge has fewer than ten common
+neighbors.  A `2`-clique inside the common neighborhood completes a `K₄` over the edge,
+while an independent `10`-set is already forbidden.
+-/
+theorem adjacent_common_neighbor_card_lt_of_no_clique_four_no_indep_ten
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hnoK4 : ¬ ∃ t ⊆ s, G.IsNClique 4 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t)
+    {u v : α} (hu : u ∈ s) (hv : v ∈ s) (huv : G.Adj u v) :
+    (((s.erase u).erase v).filter (fun w => G.Adj u w ∧ G.Adj v w)).card < 10 := by
+  classical
+  let commonNbrs : Finset α := ((s.erase u).erase v).filter fun w => G.Adj u w ∧ G.Adj v w
+  have commonNbrs_subset_s : commonNbrs ⊆ s := by
+    intro w hw
+    have hwErase : w ∈ (s.erase u).erase v := (Finset.mem_filter.mp hw).1
+    exact (Finset.mem_erase.mp (Finset.mem_erase.mp hwErase).2).2
+  have h2_10 : HasCliqueOrIndepSetBound 2 10 10 := by
+    exact hasCliqueOrIndepSetBound_of_ramsey_finset
+      (a := 2) (b := 10) (N := 10) (by decide) (by decide) (by decide)
+  refine card_lt_of_no_clique_or_indep h2_10 G commonNbrs ?_ ?_
+  · rintro ⟨t, htCommon, htClique⟩
+    have hut : ∀ w ∈ t, G.Adj u w := by
+      intro w hw
+      exact (Finset.mem_filter.mp (htCommon hw)).2.1
+    have hvt : ∀ w ∈ t, G.Adj v w := by
+      intro w hw
+      exact (Finset.mem_filter.mp (htCommon hw)).2.2
+    have hCliqueWithV : G.IsNClique 3 (insert v t) := htClique.insert hvt
+    have hCliqueWithUV : G.IsNClique 4 (insert u (insert v t)) := by
+      refine hCliqueWithV.insert ?_
+      intro w hw
+      rcases Finset.mem_insert.mp hw with rfl | hwt
+      · exact huv
+      · exact hut w hwt
+    refine hnoK4 ?_
+    refine ⟨insert u (insert v t), ?_, hCliqueWithUV⟩
+    intro w hw
+    rcases Finset.mem_insert.mp hw with rfl | hw
+    · exact hu
+    rcases Finset.mem_insert.mp hw with rfl | hwt
+    · exact hv
+    exact commonNbrs_subset_s (htCommon hwt)
+  · rintro ⟨t, htCommon, htIndep⟩
+    refine hnoI10 ?_
+    refine ⟨t, ?_, htIndep⟩
+    intro w hw
+    exact commonNbrs_subset_s (htCommon hw)
+
+/-- In any no-`K₄`/no-independent-`10` ambient set, an edge has at most nine common neighbors. -/
+theorem adjacent_common_neighbor_card_le_nine_of_no_clique_four_no_indep_ten
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hnoK4 : ¬ ∃ t ⊆ s, G.IsNClique 4 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t)
+    {u v : α} (hu : u ∈ s) (hv : v ∈ s) (huv : G.Adj u v) :
+    (((s.erase u).erase v).filter (fun w => G.Adj u w ∧ G.Adj v w)).card ≤ 9 := by
+  exact Nat.le_of_lt_succ
+    (adjacent_common_neighbor_card_lt_of_no_clique_four_no_indep_ten
+      G s hnoK4 hnoI10 hu hv huv)
+
+/--
 In any no-`K₅`/no-independent-`10` graph, a local `R(3,10)` input bounds the common
 neighborhood of an adjacent pair.  A `3`-clique in that common neighborhood extends over
 the edge to a `5`-clique, while an independent `10`-set is already forbidden.
@@ -3568,6 +3628,52 @@ theorem ramseyFourTenRegular41_residual_neighborhood_constraints
     exact (Finset.mem_filter.mp (htN hw)).1
 
 /--
+The exact `104`-vertex `41`-regular residual has a much tighter local edge cap than the
+generic `R(3,10)` common-neighborhood bound: every edge has at most nine common neighbors.
+-/
+theorem ramseyFourTenRegular41_residual_edge_common_neighbor_card_le_nine
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (_hcard : s.card = 104)
+    (_hdegree :
+      ∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 41)
+    (hnoK4 : ¬ ∃ t ⊆ s, G.IsNClique 4 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    ∀ {u v : α}, u ∈ s → v ∈ s → G.Adj u v →
+      (((s.erase u).erase v).filter (fun w => G.Adj u w ∧ G.Adj v w)).card ≤ 9 := by
+  intro u v hu hv huv
+  exact adjacent_common_neighbor_card_le_nine_of_no_clique_four_no_indep_ten
+    G s hnoK4 hnoI10 hu hv huv
+
+/--
+Consequently, a `104`-vertex `41`-regular residual is eliminated by any certificate of an edge
+with ten common neighbors.
+-/
+theorem ramseyFourTenRegular41_residual_eliminated_of_edge_common_neighbor_ge_ten
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 104)
+    (hdegree :
+      ∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 41)
+    (hedge :
+      ∃ u ∈ s, ∃ v ∈ s, G.Adj u v ∧
+        10 ≤ (((s.erase u).erase v).filter (fun w => G.Adj u w ∧ G.Adj v w)).card) :
+    (∃ t ⊆ s, G.IsNClique 4 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 4 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t
+  · exact hdone
+  have hnoK4 : ¬ ∃ t ⊆ s, G.IsNClique 4 t := by
+    intro hK4
+    exact hdone (Or.inl hK4)
+  have hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+    intro hI10
+    exact hdone (Or.inr hI10)
+  rcases hedge with ⟨u, hu, v, hv, huv, hcommon⟩
+  have hcap :=
+    ramseyFourTenRegular41_residual_edge_common_neighbor_card_le_nine
+      (u := u) (v := v) G s hcard hdegree hnoK4 hnoI10 hu hv huv
+  omega
+
+/--
 Consequently, sharpening the low-row input to `R(3,10) <= 41` excludes the exact
 `104`-vertex `41`-regular residual left by the `R(4,10) <= 104` degree-window step.
 -/
@@ -3642,7 +3748,8 @@ theorem ramseyFourTenDegreeWindow_reduction_gap :
       104 - 63 = 41 ∧
         42 - 41 = 1 ∧
           42 + 63 - 104 = 1 ∧
-            63 - 62 = 1 := by
+            63 - 62 = 1 ∧
+              41 - 9 = 32 := by
   decide
 
 theorem ramseyNineTenTwoStepNarrowTable_of_threeStepNarrowTable
@@ -3900,6 +4007,38 @@ theorem ramseyFiveTenDegreeWindow_residual_constraints_of_3_10_42
   · intro u v hu hv huv
     exact adjacent_common_neighbor_card_le_forty_one_of_3_10_42_no_clique_five_no_indep_ten
       h3_10 G s hnoK5 hnoI10 hu hv huv
+
+/--
+With the `R(3,10) <= 42` input, a `206`-vertex degree-window residual is eliminated by any
+edge whose common-neighborhood certificate reaches `42`.
+-/
+theorem ramseyFiveTenDegreeWindow_residual_eliminated_of_3_10_42_edge_common_neighbor_ge_forty_two
+    (h3_10 : HasCliqueOrIndepSetBound 3 10 42)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 206)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        102 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 104)
+    (hedge :
+      ∃ u ∈ s, ∃ v ∈ s, G.Adj u v ∧
+        42 ≤ (((s.erase u).erase v).filter (fun w => G.Adj u w ∧ G.Adj v w)).card) :
+    (∃ t ⊆ s, G.IsNClique 5 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 5 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t
+  · exact hdone
+  have hnoK5 : ¬ ∃ t ⊆ s, G.IsNClique 5 t := by
+    intro hK5
+    exact hdone (Or.inl hK5)
+  have hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+    intro hI10
+    exact hdone (Or.inr hI10)
+  rcases hedge with ⟨u, hu, v, hv, huv, hcommon⟩
+  have hcap :=
+    (ramseyFiveTenDegreeWindow_residual_constraints_of_3_10_42
+      h3_10 G s hcard hdegree hnoK5 hnoI10).2 (u := u) (v := v) hu hv huv
+  omega
 
 /-- Arithmetic ledger for the `R(5,10) <= 206` degree-window reduction. -/
 theorem ramseyFiveTenDegreeWindow_reduction_gap :
