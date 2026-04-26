@@ -8901,6 +8901,12 @@ p in {empty, L_0, R_i\L_0, R_i}.
 ```
 
 So anchored Fano and near-Fano ambiguity can survive only with a two-level trace alphabet.
+Consequently they cannot survive in a trace-twin-free anchored quotient.  In the full Fano case all
+points have the same occupied-trace profile; in the near-Fano case all points of `L_0` are twins and all
+points of `R_i\L_0` are twins.  Thus, after quotienting trace twins, every irreducible anchored external
+packing has size at most five.  The Fano and near-Fano witness-cover catalogues are therefore pre-quotient
+diagnostics: their occurrence forces a twin split/merge rather than a genuinely seven-point anchored
+core.
 
 For `P=F` this lower bound has an exact Fano-plane form.  A kept-pair witness `e` kills precisely the
 Fano lines disjoint from `e`; therefore a witness graph `H` kills all Fano omitted triples iff no Fano

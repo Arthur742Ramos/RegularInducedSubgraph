@@ -2054,6 +2054,8 @@ Recommended attack:
    Formalize anchored large-packing trace rigidity: if all occupied traces have constant intersection
    with all Fano lines, then only `empty` and `R_i` occur (`3|p|=7t`).  If they have constant intersection
    with the six lines of `F\{L_0}`, then only `empty`, `L_0`, `R_i\L_0`, and `R_i` occur.
+   Conclude that full and near-Fano anchored packings force trace twins, so a trace-twin-free anchored
+   quotient has external packing size at most five.
    In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
    iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

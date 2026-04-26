@@ -4973,6 +4973,8 @@ The general leave graph has `21-3|P|` edges and even degrees; for five triples i
 two edge-disjoint triangles.
 Anchored large-packing ambiguity has a tiny trace alphabet: full Fano permits only empty/full traces, and
 Fano-minus-one-line permits only `empty`, the missing line, its complement, and full.
+Hence full and near-Fano anchored packings force trace twins; after trace-twin quotienting, irreducible
+anchored packings have size at most five.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is
