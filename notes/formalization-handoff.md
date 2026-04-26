@@ -1118,6 +1118,12 @@ Recommended attack:
    The pure-discard case `Z=empty` just recurses inside `B`; a closing proof must use a nonempty
    `Z` from the zero-sum-free boundary.
 
+   For a minimal formal counterexample, choose `B` lexicographically: maximum cardinality among
+   old-balanced subsets of `C`, then maximum largest `eta_X`-fiber.  Then no balanced exchange
+   `(Y,Z)` has `|Z|>|Y|`, and no balanced exchange with `|Z|=|Y|` improves the largest updated
+   `eta`-fiber.  This label-stable zero-sum-free boundary is the strongest local obstruction to state
+   before proving the exchange lemma.
+
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event
 

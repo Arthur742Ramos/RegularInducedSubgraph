@@ -5631,6 +5631,23 @@ displayed formulae are constant on `B'`.  The case `Z=empty` is a pure further d
 same co-cut problem inside `B`; the genuinely new possibility must use the zero-sum-free boundary
 vertices in `X`.
 
+For the extremal obstruction, choose `B` with maximum cardinality among old-balanced subsets of `C`,
+and, subject to that, maximize the largest fiber of `eta_X` on `B`.  Then the boundary satisfies two
+additional no-exchange rules.  First, there is no old-vector-balanced exchange `(Y,Z)` with
+`|Z|>|Y|`; otherwise `B'` would be a larger old-balanced retained set.  Second, among exchanges with
+`|Z|=|Y|`, none can increase the largest constant fiber of the updated label `eta_{X'}`.  Therefore a
+minimal counterexample to the co-cut lemma is not just a zero-sum-free boundary; it is a
+cardinality-maximal, label-stable zero-sum-free boundary.  This is the strongest local form presently
+available:
+
+```text
+X is zero-sum-free,
+no balanced exchange imports more vertices from X than it exports from B,
+no equal-size balanced exchange improves the largest eta-fiber.
+```
+
+Any proof of the terminal lemma may now target this extremal boundary directly.
+
 There is a complementary one-large-class coloring view which isolates the same obstruction without
 requiring a full coloring theorem.  For a labelled graph `(H,alpha)` and a color
 `gamma:V(H)->Z/4Z`, call `v` pre-satisfied if

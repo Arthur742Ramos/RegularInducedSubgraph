@@ -562,6 +562,20 @@ The final boundary-exchange lemma is to find such an old-vector-balanced exchang
 constant on `B'=(B\Y) union Z`.  A pure discard (`Z=empty`) only recurses inside `B`; any real closure
 has to use vertices of the zero-sum-free boundary `X`.
 
+The extremal boundary should be chosen lexicographically: first maximize `|B|` among old-balanced
+subsets of `C`, then maximize the largest `eta_X`-fiber on `B`.  Such a boundary has no
+old-vector-balanced exchange with `|Z|>|Y|`, and no equal-size exchange that improves the largest
+updated label fiber.  Hence the terminal obstruction can be stated as a label-stable zero-sum-free
+boundary:
+
+```text
+X zero-sum-free;
+no balanced exchange imports more from X than it exports from B;
+no equal-size balanced exchange improves the eta fiber structure.
+```
+
+This is the strongest finite local target reached so far.
+
 The same endpoint has a useful one-large-class coloring normal form.  In a labelled graph
 `(H,alpha)`, a random four-coloring has the following property: for each vertex, the congruence
 
