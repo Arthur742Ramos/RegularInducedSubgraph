@@ -1764,9 +1764,13 @@ What remains justified after audit is:
       large anchored packings force trace twins and the irreducible anchored quotient has size at most
       five, where witness counts are at least `3,2,2` for sizes `5,4,3`; the six-cycle leave
       five-packing also forces trace twins, and the two-triangle leave does too via the shared-point
-      adjacent/opposite equations, so the trace-twin-free anchored quotient has size at most four; Fano
-      itself
-      needs four kept-pair witnesses; dualizing to the seven Fano
+      adjacent/opposite equations, so the trace-twin-free anchored quotient has size at most four; at
+      size four the only trace-twin-free shape is the `(1,3,3,0)` base-triple/star normal form, while
+      the tetrahedral and one-disjoint-pair shapes force twins; its minimum terminal cores are exactly
+      the three two-witness patterns `{u_i v_i, v_j v_k}`; sizes three and two are governed directly by
+      `Gamma(P)=P_3/K_3` (path, centered `K_3`, triangular `K_3`) or a single adjacent/disjoint pair;
+      Fano itself needs four kept-pair
+      witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual
       star forests (`K_{1,2}+2K_2`, the two five-edge star forests, or `K_{1,6}`), each dual star being
       a cluster of bad kept pairs in the complement of its center line;

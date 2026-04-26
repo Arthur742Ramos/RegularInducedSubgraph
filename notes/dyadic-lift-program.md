@@ -1605,6 +1605,18 @@ twins.  Thus the irreducible anchored five-template case has the two-triangle le
 The two-triangle leave also forces twins: disjoint triangles cannot occur, and the shared-point block
 systems have adjacent/opposite assignments whose balanced trace equations force equal coordinates.
 Therefore the trace-twin-free anchored external packing has size at most four.
+At size four, the degree-pattern count leaves only three shapes.  The tetrahedral `(0,6,0,1)` shape and
+the one-disjoint-pair `(0,5,2,0)` shape force trace twins.  The unique trace-twin-free size-four normal
+form is `(1,3,3,0)`: one base triple `U={u_1,u_2,u_3}` and three triples `{a,u_i,v_i}`.
+Its balanced traces are `empty`, full, `{u_i,v_j,v_k}` and their complements.  Since
+`Gamma(P)=K_4`, minimum terminality needs two witnesses, necessarily one of
+`{u_i v_i, v_j v_k}`.
+For `|P|=3`, `Gamma(P)` is `P_3` or `K_3`, and a minimum core is one forced complement pair for a
+matched edge plus one bad pair in the unmatched triple's complement-four.  For `|P|=2`, adjacent
+templates have one forced witness and disjoint templates need two.
+The three-template geometries are just path, centered `K_3`, and triangular `K_3`:
+`{a,x_1,x_2},{a,b,c},{b,y_1,y_2}`; three triples sharing `a`; or
+`{a,b,x},{a,c,y},{b,c,z}`.
 For `P` Fano, the exact graph shadow is that the internal witness graph is not covered by any Fano line;
 all three-edge witness graphs are line-covered.
 Equivalently, dualize to the seven Fano lines: each kept-pair witness joins the two lines disjoint from

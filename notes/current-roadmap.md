@@ -4981,6 +4981,15 @@ The six-cycle leave five-packing has only empty/full anchored balanced traces, s
 irreducible anchored five-packings must have two-triangle leave.
 The two-triangle leave also forces trace twins by the shared-point adjacent/opposite block equations.
 Thus the trace-twin-free anchored external packing has size at most four.
+At size four only the degree pattern `(1,3,3,0)` remains trace-twin-free, with normal form a base triple
+`U={u_1,u_2,u_3}` plus `{a,u_i,v_i}` for `i=1,2,3`; the tetrahedral and one-disjoint-pair patterns force
+twins.
+Its balanced traces are `empty`, full, `{u_i,v_j,v_k}` and complements; `Gamma(P)=K_4`, so minimum
+terminality is one of the three two-witness patterns `{u_i v_i, v_j v_k}`.
+For three templates, `Gamma(P)` is `P_3` or `K_3`; minimum terminality is one forced complement pair for
+a matched edge plus one bad complement-four pair for the unmatched triple.  Two templates are immediate:
+one forced witness if adjacent, two one-at-a-time witnesses if disjoint.
+The size-three geometries are only path, centered `K_3`, and triangular `K_3`.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

@@ -8958,6 +8958,77 @@ they force `x_1=x_2`, `x_3=x_4`, and `x_5=x_6`.  Thus every anchored five-packin
 Consequently, after trace-twin quotienting, an irreducible anchored positive-atom external packing has
 size at most four.
 
+The size-four case has only one trace-twin-free shape.  If the point degrees in the four triples are
+`n_j=#{x:d_P(x)=j}`, then pair-packing gives
+
+```text
+n_0+n_1+n_2+n_3=7,        n_1+2n_2+3n_3=12,
+sum_x binom(d_P(x),2)<=binom(4,2).
+```
+
+The only possible degree patterns are
+
+```text
+(n_3,n_2,n_1,n_0)=(1,3,3,0), (0,6,0,1), (0,5,2,0).
+```
+
+The middle pattern is the tetrahedral `2`-regular packing on six points plus one unused point; its
+balanced traces identify the three opposite point-pairs of the tetrahedron, so it has trace twins.  The
+last pattern has one disjoint pair of triples.  In normal form
+
+```text
+A={a_1,a_2,a_3},  B={b_1,b_2,b_3},
+C={a_1,b_1,z},    D={a_2,b_2,z},
+```
+
+the equal-intersection equations force `a_2=b_1`, `a_1=b_2`, and `a_3=b_3=z` at the level of every
+anchored balanced trace, so it also has twins.  Therefore the only trace-twin-free size-four packing is
+the first pattern, with one point in three triples.  It has normal form
+
+```text
+U={u_1,u_2,u_3},
+L_i={a,u_i,v_i}  for i=1,2,3.
+```
+
+This is the unique anchored size-four positive-atom quotient left after all twin reductions.
+Its anchored balanced traces are also explicit:
+
+```text
+empty, R_i,
+{u_i,v_j,v_k},                 {a,u_j,u_k,v_i}        for {i,j,k}={1,2,3}.
+```
+
+Here the intersection graph `Gamma(P)` is `K_4`.  Hence the witness lower bound is exactly two.  A
+minimum terminal internal core is one of the three perfect matchings of `K_4`; in primal kept-pair form
+these are
+
+```text
+{u_i v_i, v_j v_k}        for {i,j,k}={1,2,3}.
+```
+
+Therefore the trace-twin-free anchored size-four positive atom is reduced to three explicit two-witness
+patterns, plus non-minimal cores with at least three bad kept pairs.
+
+The smaller anchored packing cases are completely described by the same matching rule.  For `|P|=3`,
+the union bound forces `Gamma(P)` to have two or three edges, so it is either a path `P_3` or a triangle
+`K_3`.  A minimum terminal core has two witnesses: choose one edge `OO'` of `Gamma(P)`, take the forced
+pair `R_i\(O union O')`, and add one internally bad pair in the four-point complement of the unmatched
+triple.  For `|P|=2`, adjacent triples have a single forced witness `R_i\(O union O')`; disjoint triples
+need one bad pair in each four-point complement.  Thus, after anchored trace-twin quotienting, the
+positive-atom ambiguous core is a finite list of two-template, three-template, and the single size-four
+base-triple/star pattern above.
+
+Explicitly, the three-template shapes are only
+
+```text
+Path:          {a,x_1,x_2}, {a,b,c}, {b,y_1,y_2};
+centered K_3:  {a,x_1,x_2}, {a,y_1,y_2}, {a,z_1,z_2};
+triangular K_3:{a,b,x}, {a,c,y}, {b,c,z}.
+```
+
+The first has two possible matched edges in `Gamma(P)`, while each `K_3` shape has three.  These are the
+only remaining anchored external template geometries before internal `E_3` signs are applied.
+
 For `P=F` this lower bound has an exact Fano-plane form.  A kept-pair witness `e` kills precisely the
 Fano lines disjoint from `e`; therefore a witness graph `H` kills all Fano omitted triples iff no Fano
 line meets every edge of `H`.  Equivalently, `H` is not vertex-covered by any Fano line.  Every graph

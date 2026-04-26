@@ -2064,6 +2064,19 @@ Recommended attack:
    Add the two-triangle leave collapse: disjoint leave triangles are impossible; shared-point leave
    triangles force block `056` and adjacent/opposite assignments on the four-cycle, and their balanced
    trace equations force twin pairs.  Conclude trace-twin-free anchored packings have size at most four.
+   Add the size-four classification.  The degree patterns are only `(1,3,3,0)`, `(0,6,0,1)`, and
+   `(0,5,2,0)`.  The tetrahedral and one-disjoint-pair patterns force trace twins; the sole
+   trace-twin-free normal form is `U={u_1,u_2,u_3}` and `{a,u_i,v_i}` for `i=1,2,3`.
+   Formalize its balanced traces: `empty`, full, `{u_i,v_j,v_k}`, and complements.  Its
+   `Gamma(P)=K_4`, so minimum witness covers are perfect matchings, i.e. primal pairs
+   `{u_i v_i, v_j v_k}`.
+   Add the size-three/two endpoint: for three templates, `Gamma(P)` is `P_3` or `K_3`, and a minimum
+   core is one forced complement pair for a matched edge plus one bad complement-four pair for the
+   unmatched triple.  For two templates, adjacent pairs have one forced witness and disjoint pairs need
+   two one-at-a-time witnesses.
+   Record the three size-three geometries: path
+   `{a,x_1,x_2},{a,b,c},{b,y_1,y_2}`, centered `K_3` with all triples sharing one point, and triangular
+   `K_3` `{a,b,x},{a,c,y},{b,c,z}`.
    In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
    iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

@@ -1720,6 +1720,13 @@ The six-cycle leave five-packing has only empty/full anchored balanced traces; t
 five-template anchored case is therefore the two-triangle leave.
 The two-triangle leave also forces trace twins, so trace-twin-free anchored packings have size at most
 four.
+The only trace-twin-free size-four shape is the `(1,3,3,0)` normal form
+`U={u_i}` and `{a,u_i,v_i}`.
+It has balanced traces `empty/full` plus `{u_i,v_j,v_k}` and complements, and its minimum terminal
+patterns are the three two-witness pairs `{u_i v_i, v_j v_k}`.
+Three-template cores are `P_3` or `K_3` in `Gamma(P)` and have one forced complement pair plus one
+unmatched complement-four witness; two-template cores are immediate.
+The three-template geometry is path, centered `K_3`, or triangular `K_3`.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,
