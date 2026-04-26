@@ -2110,6 +2110,8 @@ What remains justified after audit is:
       shortened-pair-hit petals have a finite omission table: `q=2` is one-omission-per-hit tight, while
       `q=3` forces a singleton hit in a size-three/larger target; the only all-small tight hit mode is `q=2`
       and folds back into the corner/F incidence tables;
+      large-target pair collisions satisfy the capacity identity `d_i=h-t_i-k_i`, total deficit `h-2`, rebate
+      `h-1`, strict side constraints `t_i+k_i<=h-1`, and side-slack sum `e_1+e_2=h-4`;
       after square discharge, the no-leftover all-ternary target-code branch has only signed-quotient scalar
       mismatch or extra-rebate/large-target exits;
       near-threshold pure deletion templates are boundary diagnostics only; mixed near-threshold obstructions

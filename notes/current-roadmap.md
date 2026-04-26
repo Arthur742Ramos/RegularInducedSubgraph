@@ -5537,6 +5537,13 @@ deletions point to split atoms of size at least three, and size-three deletions 
 to another split atom of size at least three.
 This graph is size-monotone: paths either reach a split atom of size at least four, or cycle entirely among
 size-three atoms.  Thus the remaining small branch is large-target or ternary-cycle.
+The large-target case has a capacity normal form: if a two-petal partner-free collision splits a size-`h`
+atom `H` and assigns `k_i` whole small atoms plus `t_i` vertices of `H` to petal `i`, then
+`d_i=h-t_i-k_i`, `d_1+d_2=h-2`, and the split rebate `h-1` leaves exactly one unit of global slack; strict
+defect is `t_i+k_i<=h-1`.  The `4,2,2,2` balance table is the extremal `h=4` case.
+With side slack `e_i=h-1-(t_i+k_i)`, one has `e_1+e_2=h-4`; hence every `h>4` split target has visible
+capacity slack that must be paid by additional split targets, partner-hit omissions, or the four-large-atom
+strict-defect branch.
 With four atoms, the ternary-cycle profiles are only `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`; the first is
 already the coupled two-three-atom table.
 The all-ternary profiles have high outdegree: in `3,3,3,3`, deleting any atom splits at least two other

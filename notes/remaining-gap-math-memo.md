@@ -2175,6 +2175,10 @@ Shortened-pair-hit petals obey the same finite omission table: `q=2` is tight on
 atom, and `q=3` needs a singleton hit in a size-three/larger target to supply the extra omission.
 The only all-small tight hit mode is `q=2`; it folds back into the corner/F incidence tables with the
 shortened pair as a pair target.
+Large-target pair collisions have a one-slack capacity identity: splitting a size-`h>=4` atom gives
+`d_i=h-t_i-k_i`, total deficit `h-2`, rebate `h-1`, and strict side constraints `t_i+k_i<=h-1`.
+The side slacks `e_i=h-1-(t_i+k_i)` satisfy `e_1+e_2=h-4`; only `h=4` is tight, while `h>4` must pay slack
+elsewhere or enter the all-large strict-defect branch.
 After square discharge, the all-ternary no-leftover target-code branch is exhausted: it becomes signed-quotient
 scalar mismatch or extra-rebate/large-target.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has

@@ -12611,6 +12611,51 @@ In particular, any profile with only one size-three atom and all other small ato
 discharged; any survivor with no size-at-least-four atom must contain at least two size-three atoms coupled
 by these balanced split labels.
 
+The large-target case has its own capacity normal form.  Suppose a pair deletion has a two-petal
+partner-free collision whose only large split target is an atom `H` of size `h>=4`, and the remaining opposite
+small atoms assigned whole to the two petals have counts `k_1,k_2` with `k_1+k_2=2`.  If petal `i` takes
+`t_i` vertices of `H`, then
+
+```text
+t_1+t_2=h,
+d_i=-g^-(C_i)=h-t_i-k_i.
+```
+
+The shared rebate from splitting `H` is `h-1`, so
+
+```text
+d_1+d_2=h-2,        (h-1)-(d_1+d_2)=1.
+```
+
+Strict cross-defect for both forced petals is exactly
+
+```text
+t_i+k_i <= h-1        (i=1,2).
+```
+
+Thus a large split atom is not diffuse: it is a two-side capacity cut on `H` with one unit of global rebate
+slack.  The first profile `4,2,2,2` is the extremal case `h=4`, where these inequalities force the balanced
+table `t_i=3-k_i`; for `h>4` the same formula records the extra internal capacity that must be consumed by
+the remaining repair petals or routed into the all-atoms-size-at-least-four branch.
+
+Equivalently, define side slack
+
+```text
+e_i = h-1-(t_i+k_i) >= 0.
+```
+
+Then
+
+```text
+e_1+e_2=h-4.
+```
+
+So `h=4` is the only completely tight large-target profile.  Every larger split target carries visible
+capacity slack on one or both sides; that slack is precisely the amount by which the forced-petal deficits
+exceed the minimal one-unit deficits already used in the four-atom rebate circuit.  Hence any `h>4`
+large-target survivor must account for this slack through additional split targets, partner-hit omissions, or
+entry into the all-atoms-size-at-least-four strict-defect branch.
+
 Since there are only four atoms, the ternary-cycle meta-case has only the sorted profiles
 
 ```text
@@ -13404,7 +13449,8 @@ large-outside ternary target avoidance:
   only the four-exception 2/2 type-square skeletons, whose odd cross curvature is the one-corner square and
   whose affine remnants merge into the signed-quotient scalar obstruction; shortened-pair-hit tight cases
   fold back into the same corner/F incidence tables; consequently the no-leftover all-ternary target-code
-  branch is exhausted modulo scalar mismatch or extra-rebate/large-target exits;
+  branch is exhausted modulo scalar mismatch or extra-rebate/large-target exits; large-target pair collisions
+  have the capacity identity d_i=h-t_i-k_i with side-slack sum h-4;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

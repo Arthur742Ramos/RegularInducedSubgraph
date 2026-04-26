@@ -2673,6 +2673,11 @@ Recommended attack:
     cannot be tight on pair targets alone and forces a singleton hit in a size-three/larger target.
     Add the hit-branch foldback: the only all-small tight hit mode is `q=2`, which is the same corner/F
     incidence table with the shortened pair treated as a pair target; `q=3` is extra-rebate/large-target.
+    Add the large-target capacity identity for a two-petal partner-free collision splitting a size-`h` atom:
+    `d_i=h-t_i-k_i`, `d_1+d_2=h-2`, rebate `h-1`, strict inequalities `t_i+k_i<=h-1`; specialize to the
+    `h=4` balance table.
+    Add the side-slack equation `e_i=h-1-(t_i+k_i)`, `e_1+e_2=h-4`, identifying `h=4` as the only tight
+    large-target profile.
     Record the all-ternary closure summary: after square discharge, the no-leftover all-ternary target-code
     branch has only signed-quotient scalar mismatch or extra-rebate/large-target exits.
     Record near-threshold uniformity: pure deletion templates are boundary diagnostics; every mixed
