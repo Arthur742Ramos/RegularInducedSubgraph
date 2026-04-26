@@ -1155,6 +1155,16 @@ direction fiber is a clique, and there are no cross-edges between directions, th
 selection takes a multiple of four vertices from each direction and each selected vertex sees
 `-1 mod 4`, not `0`, inside its direction block.  Thus the finite atom catalogue needs extra global
 information; it cannot close the theorem by itself.
+The large version of this toy model is excluded by outside-only maximality: four vertices from each of
+`t` clique directions form an outside-only congruent set of residue `3`, so `4t<=m` in a terminal
+counterexample.  The retained-only exact-basis branch must therefore avoid both append exits (defects
+repaired relative to `W`) and outside-only exits (selected blocks with constant total internal row-sum
+residue and total size larger than `m`).
+Every large direction still supplies wrong-residue regular four-blocks: if it avoids append residue
+`d_i`, Ramsey gives a clique block, independent block, or both, of residue different from `d_i` once the
+fiber has size at least `R(4,4)`.  Hence the retained-only obstruction is not a lack of regular blocks;
+it is a dual-exit bounded-block selector problem in which wrong-residue blocks must neither repair to
+the append residue through cross-edges nor synchronize to a large outside-only residue.
 
 Compressing four-blocks to supervertices recovers the same kind of row-sum selector: each block carries
 a four-coordinate defect vector, and each pair of blocks contributes a `4 by 4` cross-adjacency matrix.

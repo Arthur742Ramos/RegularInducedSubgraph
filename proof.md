@@ -7073,6 +7073,36 @@ maximum-witness constraints elsewhere.  But it proves that the exact basis branc
 the finite atom catalogue alone; it must import additional information from the global maximum
 hypothesis or from a non-basis exchange.
 
+The outside-only maximum constraint already rules out the large version of this toy model.  In the
+disjoint-clique example, taking four vertices from each of `t` clique directions gives an outside-only
+induced subgraph in which every selected vertex has degree `3 mod 4`; hence `4t<=m` in a genuine
+terminal counterexample.  More generally, any family of pairwise cross-regular four-blocks with the same
+total row-sum residue gives an outside-only congruent witness; if its total size exceeds `m`, it
+contradicts maximality of `W` even when the residue is not the append residue required to join `W`.
+Thus the retained-only branch has two exits:
+
+```text
+append exit:       block defects are repaired to residue r relative to W;
+outside-only exit: selected blocks have equal total degree residue internally.
+```
+
+The exact-basis obstruction must avoid both exits simultaneously.
+
+Every large retained direction supplies wrong-residue regular blocks.  If `C_i` avoids its required
+append residue `d_i`, then Ramsey still gives a regular four-block of another residue once `|C_i|>=R(4,4)`:
+if `d_i=0`, a clique four-block gives residue `3`; if `d_i=3`, an independent four-block gives residue
+`0`; and if `d_i in {1,2}`, Ramsey gives either an independent or a clique four-block, of residue `0`
+or `3`.  Thus a terminal exact-basis configuration contains a reservoir of regular four-blocks whose
+internal residues are known not to be append residues.  The retained-only obstruction is therefore not
+absence of regular blocks; it is the simultaneous failure of:
+
+```text
+wrong-residue blocks + cross-edges repair to append residue;
+wrong-residue blocks + cross-edges synchronize to an outside-only residue.
+```
+
+This is the precise dual-exit bounded-block selector left by the exact-basis reduction.
+
 Compressing the exact-basis branch also shows why this is not yet a smaller theorem.  Choose a
 four-block `S_i` in each direction and view it as a supervertex carrying a four-coordinate defect vector
 `a_i`.  Between two supervertices the graph supplies a `4 by 4` adjacency matrix; selecting a family of

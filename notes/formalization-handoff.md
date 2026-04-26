@@ -1679,6 +1679,14 @@ Recommended attack:
    same-direction four-blocks: every old-balanced selection uses multiples of four vertices per
    direction, so each selected vertex has internal degree `-1 mod 4`.  Formal closure must use global
    maximum-witness information or a non-basis exchange.
+   However, the large version of that toy model is excluded by outside-only maximality: four vertices
+   from each of `t` clique directions form an outside-only congruent set of residue `3`, so `4t<=m`.
+   More generally, any selected block family with constant total row-sum residue and size `>m`
+   contradicts maximality of `W`.
+   Formalize the wrong-residue block reservoir: every direction fiber of size at least `R(4,4)` that
+   avoids its append residue still contains a regular four-block of another residue.  The terminal
+   retained-only branch is therefore a dual-exit bounded-block selector: wrong-residue blocks must not
+   repair to the append residue and must not synchronize to a large outside-only residue.
 
    Compressing four-blocks gives a bounded-block version of the original row-sum selector: each block
    has a four-coordinate defect vector, and each block pair has a `4 by 4` cross-adjacency matrix.  A
