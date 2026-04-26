@@ -16755,6 +16755,726 @@ theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacket
     principalBucketShadowFrontier :=
   h.shadowImports.to_shadowFrontier
 
+/-- Residual-vector coordinates at pure atom-quotient scale. -/
+structure FirstBitTerminalPureQuotientResidualVector (Quot : Type*) where
+  incomingResidual : Quot → ℕ
+  selfLayerResidual : Quot → ℕ
+  affineResidual : Quot → ℕ
+  repairedResidual : Quot → ℕ
+
+/-- Every atom in the packet is assigned to one of the pure quotient classes. -/
+def FirstBitTerminalPureQuotientBundleSupport
+    {Atom Quot : Type*} (atoms : Finset Atom) (pureQuotients : Finset Quot)
+    (quotientOf : Atom → Quot) : Prop :=
+  ∀ atom : Atom, atom ∈ atoms → quotientOf atom ∈ pureQuotients
+
+/-- Atom-level residual coordinates agree modulo four with their quotient-vector coordinates. -/
+def FirstBitTerminalPureQuotientResidualUniform
+    {Atom Quot : Type*} (atoms : Finset Atom) (quotientOf : Atom → Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot)
+    (incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ) : Prop :=
+  ∀ atom : Atom, atom ∈ atoms →
+    incomingResidual atom ≡ residualVector.incomingResidual (quotientOf atom) [MOD 4] ∧
+    selfLayerResidual atom ≡ residualVector.selfLayerResidual (quotientOf atom) [MOD 4] ∧
+    affineResidual atom ≡ residualVector.affineResidual (quotientOf atom) [MOD 4] ∧
+    repairedResidual atom ≡ residualVector.repairedResidual (quotientOf atom) [MOD 4]
+
+/-- Quotient-level residual coherence for the repaired pure residual. -/
+def FirstBitTerminalPureQuotientResidualVectorCoherent
+    {Quot : Type*} (pureQuotients : Finset Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot) : Prop :=
+  ∀ quotient : Quot, quotient ∈ pureQuotients →
+    residualVector.repairedResidual quotient ≡
+      residualVector.incomingResidual quotient + residualVector.selfLayerResidual quotient +
+        residualVector.affineResidual quotient [MOD 4]
+
+/--
+Pure quotient residual certificate for an atom packet.  The fields are all imports: support of the
+quotient map, atom/quotient residual uniformity, and quotient-level repair coherence.
+-/
+structure FirstBitTerminalPureQuotientResidualCertificate
+    {Atom Quot : Type*} (atoms : Finset Atom) (pureQuotients : Finset Quot)
+    (quotientOf : Atom → Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot)
+    (incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ) : Prop where
+  quotientSupport : FirstBitTerminalPureQuotientBundleSupport atoms pureQuotients quotientOf
+  residualUniform :
+    FirstBitTerminalPureQuotientResidualUniform atoms quotientOf residualVector
+      incomingResidual selfLayerResidual affineResidual repairedResidual
+  residualCoherent :
+    FirstBitTerminalPureQuotientResidualVectorCoherent pureQuotients residualVector
+
+/-- Build a pure quotient residual certificate from its named assumptions. -/
+theorem firstBitTerminalPureQuotientResidualCertificate_of_assumptions
+    {Atom Quot : Type*} {atoms : Finset Atom} {pureQuotients : Finset Quot}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ}
+    (hsupport : FirstBitTerminalPureQuotientBundleSupport atoms pureQuotients quotientOf)
+    (huniform :
+      FirstBitTerminalPureQuotientResidualUniform atoms quotientOf residualVector
+        incomingResidual selfLayerResidual affineResidual repairedResidual)
+    (hcoherent :
+      FirstBitTerminalPureQuotientResidualVectorCoherent pureQuotients residualVector) :
+    FirstBitTerminalPureQuotientResidualCertificate atoms pureQuotients quotientOf
+      residualVector incomingResidual selfLayerResidual affineResidual repairedResidual where
+  quotientSupport := hsupport
+  residualUniform := huniform
+  residualCoherent := hcoherent
+
+/-- Project pure quotient support for one atom. -/
+theorem FirstBitTerminalPureQuotientResidualCertificate.quotient_mem_of_atom
+    {Atom Quot : Type*} {atoms : Finset Atom} {pureQuotients : Finset Quot}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ}
+    (h : FirstBitTerminalPureQuotientResidualCertificate atoms pureQuotients quotientOf
+      residualVector incomingResidual selfLayerResidual affineResidual repairedResidual)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    quotientOf atom ∈ pureQuotients :=
+  h.quotientSupport atom hatom
+
+/-- Project incoming residual uniformity for one atom. -/
+theorem FirstBitTerminalPureQuotientResidualCertificate.incomingResidual_modEq_of_mem
+    {Atom Quot : Type*} {atoms : Finset Atom} {pureQuotients : Finset Quot}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ}
+    (h : FirstBitTerminalPureQuotientResidualCertificate atoms pureQuotients quotientOf
+      residualVector incomingResidual selfLayerResidual affineResidual repairedResidual)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    incomingResidual atom ≡ residualVector.incomingResidual (quotientOf atom) [MOD 4] :=
+  (h.residualUniform atom hatom).1
+
+/-- Project self-layer residual uniformity for one atom. -/
+theorem FirstBitTerminalPureQuotientResidualCertificate.selfLayerResidual_modEq_of_mem
+    {Atom Quot : Type*} {atoms : Finset Atom} {pureQuotients : Finset Quot}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ}
+    (h : FirstBitTerminalPureQuotientResidualCertificate atoms pureQuotients quotientOf
+      residualVector incomingResidual selfLayerResidual affineResidual repairedResidual)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    selfLayerResidual atom ≡ residualVector.selfLayerResidual (quotientOf atom) [MOD 4] :=
+  (h.residualUniform atom hatom).2.1
+
+/-- Project affine residual uniformity for one atom. -/
+theorem FirstBitTerminalPureQuotientResidualCertificate.affineResidual_modEq_of_mem
+    {Atom Quot : Type*} {atoms : Finset Atom} {pureQuotients : Finset Quot}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ}
+    (h : FirstBitTerminalPureQuotientResidualCertificate atoms pureQuotients quotientOf
+      residualVector incomingResidual selfLayerResidual affineResidual repairedResidual)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    affineResidual atom ≡ residualVector.affineResidual (quotientOf atom) [MOD 4] :=
+  (h.residualUniform atom hatom).2.2.1
+
+/-- Project repaired residual uniformity for one atom. -/
+theorem FirstBitTerminalPureQuotientResidualCertificate.repairedResidual_modEq_of_mem
+    {Atom Quot : Type*} {atoms : Finset Atom} {pureQuotients : Finset Quot}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ}
+    (h : FirstBitTerminalPureQuotientResidualCertificate atoms pureQuotients quotientOf
+      residualVector incomingResidual selfLayerResidual affineResidual repairedResidual)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    repairedResidual atom ≡ residualVector.repairedResidual (quotientOf atom) [MOD 4] :=
+  (h.residualUniform atom hatom).2.2.2
+
+/-- Project quotient-level repair coherence. -/
+theorem FirstBitTerminalPureQuotientResidualCertificate.repairedResidual_modEq_sum_of_quotient
+    {Atom Quot : Type*} {atoms : Finset Atom} {pureQuotients : Finset Quot}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ}
+    (h : FirstBitTerminalPureQuotientResidualCertificate atoms pureQuotients quotientOf
+      residualVector incomingResidual selfLayerResidual affineResidual repairedResidual)
+    {quotient : Quot} (hquotient : quotient ∈ pureQuotients) :
+    residualVector.repairedResidual quotient ≡
+      residualVector.incomingResidual quotient + residualVector.selfLayerResidual quotient +
+        residualVector.affineResidual quotient [MOD 4] :=
+  h.residualCoherent quotient hquotient
+
+/-- Project quotient-level repair coherence at the quotient of an atom. -/
+theorem FirstBitTerminalPureQuotientResidualCertificate.repairedResidual_modEq_sum_of_atom
+    {Atom Quot : Type*} {atoms : Finset Atom} {pureQuotients : Finset Quot}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingResidual selfLayerResidual affineResidual repairedResidual : Atom → ℕ}
+    (h : FirstBitTerminalPureQuotientResidualCertificate atoms pureQuotients quotientOf
+      residualVector incomingResidual selfLayerResidual affineResidual repairedResidual)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    residualVector.repairedResidual (quotientOf atom) ≡
+      residualVector.incomingResidual (quotientOf atom) +
+        residualVector.selfLayerResidual (quotientOf atom) +
+        residualVector.affineResidual (quotientOf atom) [MOD 4] :=
+  h.residualCoherent (quotientOf atom) (h.quotientSupport atom hatom)
+
+/-- One-atom affine repair equation at atom-quotient scale. -/
+def FirstBitTerminalOneAtomAffineRepairEquation
+    {Atom Quot : Type*} (atoms : Finset Atom) (quotientOf : Atom → Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot)
+    (affineShift affineTarget : Atom → ℕ) (repairAllowed : Atom → Prop) : Prop :=
+  ∀ atom : Atom, atom ∈ atoms → repairAllowed atom →
+    residualVector.repairedResidual (quotientOf atom) + affineShift atom ≡ affineTarget atom [MOD 4]
+
+/-- Terminal avoidance predicate for one-atom affine repairs. -/
+def FirstBitTerminalOneAtomAffineRepairAvoidance
+    {Atom : Type*} (atoms : Finset Atom) (repairAllowed terminalObstruction : Atom → Prop) :
+    Prop :=
+  ∀ atom : Atom, atom ∈ atoms → repairAllowed atom → ¬ terminalObstruction atom
+
+/-- Certificate for one-atom affine repair equations and their terminal avoidance. -/
+structure FirstBitTerminalOneAtomAffineRepairCertificate
+    {Atom Quot : Type*} (atoms : Finset Atom) (quotientOf : Atom → Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot)
+    (affineShift affineTarget : Atom → ℕ) (repairAllowed terminalObstruction : Atom → Prop) :
+    Prop where
+  repairEquation :
+    FirstBitTerminalOneAtomAffineRepairEquation atoms quotientOf residualVector affineShift
+      affineTarget repairAllowed
+  repairAvoidance :
+    FirstBitTerminalOneAtomAffineRepairAvoidance atoms repairAllowed terminalObstruction
+
+/-- Build a one-atom affine repair certificate from its named assumptions. -/
+theorem firstBitTerminalOneAtomAffineRepairCertificate_of_assumptions
+    {Atom Quot : Type*} {atoms : Finset Atom} {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {affineShift affineTarget : Atom → ℕ} {repairAllowed terminalObstruction : Atom → Prop}
+    (heq :
+      FirstBitTerminalOneAtomAffineRepairEquation atoms quotientOf residualVector affineShift
+        affineTarget repairAllowed)
+    (havoid :
+      FirstBitTerminalOneAtomAffineRepairAvoidance atoms repairAllowed terminalObstruction) :
+    FirstBitTerminalOneAtomAffineRepairCertificate atoms quotientOf residualVector affineShift
+      affineTarget repairAllowed terminalObstruction where
+  repairEquation := heq
+  repairAvoidance := havoid
+
+/-- Apply the one-atom affine repair equation. -/
+theorem FirstBitTerminalOneAtomAffineRepairCertificate.affineRepair_modEq
+    {Atom Quot : Type*} {atoms : Finset Atom} {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {affineShift affineTarget : Atom → ℕ} {repairAllowed terminalObstruction : Atom → Prop}
+    (h : FirstBitTerminalOneAtomAffineRepairCertificate atoms quotientOf residualVector
+      affineShift affineTarget repairAllowed terminalObstruction)
+    {atom : Atom} (hatom : atom ∈ atoms) (hallowed : repairAllowed atom) :
+    residualVector.repairedResidual (quotientOf atom) + affineShift atom ≡ affineTarget atom
+      [MOD 4] :=
+  h.repairEquation atom hatom hallowed
+
+/-- Apply terminal avoidance for a one-atom affine repair. -/
+theorem FirstBitTerminalOneAtomAffineRepairCertificate.not_terminalObstruction
+    {Atom Quot : Type*} {atoms : Finset Atom} {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {affineShift affineTarget : Atom → ℕ} {repairAllowed terminalObstruction : Atom → Prop}
+    (h : FirstBitTerminalOneAtomAffineRepairCertificate atoms quotientOf residualVector
+      affineShift affineTarget repairAllowed terminalObstruction)
+    {atom : Atom} (hatom : atom ∈ atoms) (hallowed : repairAllowed atom) :
+    ¬ terminalObstruction atom :=
+  h.repairAvoidance atom hatom hallowed
+
+/-- Incoming-target repair equations for atom-packet repairs. -/
+def FirstBitTerminalAtomPacketIncomingTargetRepairEquation
+    {Atom Quot Target : Type*} (atoms : Finset Atom) (incomingTargets : Finset Target)
+    (quotientOf : Atom → Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot)
+    (incomingShift : Atom → Target → ℕ) (incomingTargetResidue : Target → ℕ)
+    (incomingRepairAllowed : Atom → Target → Prop) : Prop :=
+  ∀ atom : Atom, atom ∈ atoms → ∀ target : Target, target ∈ incomingTargets →
+    incomingRepairAllowed atom target →
+      residualVector.incomingResidual (quotientOf atom) + incomingShift atom target ≡
+        incomingTargetResidue target [MOD 4]
+
+/-- Terminal avoidance for incoming-target atom-packet repairs. -/
+def FirstBitTerminalAtomPacketIncomingTargetRepairAvoidance
+    {Atom Target : Type*} (atoms : Finset Atom) (incomingTargets : Finset Target)
+    (incomingRepairAllowed incomingTerminalObstruction : Atom → Target → Prop) : Prop :=
+  ∀ atom : Atom, atom ∈ atoms → ∀ target : Target, target ∈ incomingTargets →
+    incomingRepairAllowed atom target → ¬ incomingTerminalObstruction atom target
+
+/-- Shifted self-layer repair equations for atom-packet repairs. -/
+def FirstBitTerminalAtomPacketShiftedSelfLayerRepairEquation
+    {Atom Quot SelfLayer : Type*} (atoms : Finset Atom) (selfLayers : Finset SelfLayer)
+    (quotientOf : Atom → Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot)
+    (selfLayerShift : Atom → SelfLayer → ℕ) (shiftedSelfLayerResidue : SelfLayer → ℕ)
+    (selfLayerRepairAllowed : Atom → SelfLayer → Prop) : Prop :=
+  ∀ atom : Atom, atom ∈ atoms → ∀ layer : SelfLayer, layer ∈ selfLayers →
+    selfLayerRepairAllowed atom layer →
+      residualVector.selfLayerResidual (quotientOf atom) + selfLayerShift atom layer ≡
+        shiftedSelfLayerResidue layer [MOD 4]
+
+/-- Terminal avoidance for shifted self-layer atom-packet repairs. -/
+def FirstBitTerminalAtomPacketShiftedSelfLayerRepairAvoidance
+    {Atom SelfLayer : Type*} (atoms : Finset Atom) (selfLayers : Finset SelfLayer)
+    (selfLayerRepairAllowed selfLayerTerminalObstruction : Atom → SelfLayer → Prop) : Prop :=
+  ∀ atom : Atom, atom ∈ atoms → ∀ layer : SelfLayer, layer ∈ selfLayers →
+    selfLayerRepairAllowed atom layer → ¬ selfLayerTerminalObstruction atom layer
+
+/--
+Certificate for atom-packet repair equations: incoming targets, shifted self-layer equations, and
+their terminal avoidance predicates.
+-/
+structure FirstBitTerminalAtomPacketRepairEquationCertificate
+    {Atom Quot Target SelfLayer : Type*} (atoms : Finset Atom)
+    (incomingTargets : Finset Target) (selfLayers : Finset SelfLayer)
+    (quotientOf : Atom → Quot)
+    (residualVector : FirstBitTerminalPureQuotientResidualVector Quot)
+    (incomingShift : Atom → Target → ℕ) (incomingTargetResidue : Target → ℕ)
+    (incomingRepairAllowed incomingTerminalObstruction : Atom → Target → Prop)
+    (selfLayerShift : Atom → SelfLayer → ℕ) (shiftedSelfLayerResidue : SelfLayer → ℕ)
+    (selfLayerRepairAllowed selfLayerTerminalObstruction : Atom → SelfLayer → Prop) :
+    Prop where
+  incomingTargetRepair :
+    FirstBitTerminalAtomPacketIncomingTargetRepairEquation atoms incomingTargets quotientOf
+      residualVector incomingShift incomingTargetResidue incomingRepairAllowed
+  incomingTargetAvoidance :
+    FirstBitTerminalAtomPacketIncomingTargetRepairAvoidance atoms incomingTargets
+      incomingRepairAllowed incomingTerminalObstruction
+  shiftedSelfLayerRepair :
+    FirstBitTerminalAtomPacketShiftedSelfLayerRepairEquation atoms selfLayers quotientOf
+      residualVector selfLayerShift shiftedSelfLayerResidue selfLayerRepairAllowed
+  shiftedSelfLayerAvoidance :
+    FirstBitTerminalAtomPacketShiftedSelfLayerRepairAvoidance atoms selfLayers
+      selfLayerRepairAllowed selfLayerTerminalObstruction
+
+/-- Build an atom-packet repair-equation certificate from its named assumptions. -/
+theorem firstBitTerminalAtomPacketRepairEquationCertificate_of_assumptions
+    {Atom Quot Target SelfLayer : Type*} {atoms : Finset Atom}
+    {incomingTargets : Finset Target} {selfLayers : Finset SelfLayer}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingShift : Atom → Target → ℕ} {incomingTargetResidue : Target → ℕ}
+    {incomingRepairAllowed incomingTerminalObstruction : Atom → Target → Prop}
+    {selfLayerShift : Atom → SelfLayer → ℕ} {shiftedSelfLayerResidue : SelfLayer → ℕ}
+    {selfLayerRepairAllowed selfLayerTerminalObstruction : Atom → SelfLayer → Prop}
+    (hincoming :
+      FirstBitTerminalAtomPacketIncomingTargetRepairEquation atoms incomingTargets quotientOf
+        residualVector incomingShift incomingTargetResidue incomingRepairAllowed)
+    (hincomingAvoid :
+      FirstBitTerminalAtomPacketIncomingTargetRepairAvoidance atoms incomingTargets
+        incomingRepairAllowed incomingTerminalObstruction)
+    (hself :
+      FirstBitTerminalAtomPacketShiftedSelfLayerRepairEquation atoms selfLayers quotientOf
+        residualVector selfLayerShift shiftedSelfLayerResidue selfLayerRepairAllowed)
+    (hselfAvoid :
+      FirstBitTerminalAtomPacketShiftedSelfLayerRepairAvoidance atoms selfLayers
+        selfLayerRepairAllowed selfLayerTerminalObstruction) :
+    FirstBitTerminalAtomPacketRepairEquationCertificate atoms incomingTargets selfLayers
+      quotientOf residualVector incomingShift incomingTargetResidue incomingRepairAllowed
+      incomingTerminalObstruction selfLayerShift shiftedSelfLayerResidue selfLayerRepairAllowed
+      selfLayerTerminalObstruction where
+  incomingTargetRepair := hincoming
+  incomingTargetAvoidance := hincomingAvoid
+  shiftedSelfLayerRepair := hself
+  shiftedSelfLayerAvoidance := hselfAvoid
+
+/-- Apply an incoming-target atom-packet repair equation. -/
+theorem FirstBitTerminalAtomPacketRepairEquationCertificate.incomingTarget_modEq
+    {Atom Quot Target SelfLayer : Type*} {atoms : Finset Atom}
+    {incomingTargets : Finset Target} {selfLayers : Finset SelfLayer}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingShift : Atom → Target → ℕ} {incomingTargetResidue : Target → ℕ}
+    {incomingRepairAllowed incomingTerminalObstruction : Atom → Target → Prop}
+    {selfLayerShift : Atom → SelfLayer → ℕ} {shiftedSelfLayerResidue : SelfLayer → ℕ}
+    {selfLayerRepairAllowed selfLayerTerminalObstruction : Atom → SelfLayer → Prop}
+    (h : FirstBitTerminalAtomPacketRepairEquationCertificate atoms incomingTargets selfLayers
+      quotientOf residualVector incomingShift incomingTargetResidue incomingRepairAllowed
+      incomingTerminalObstruction selfLayerShift shiftedSelfLayerResidue selfLayerRepairAllowed
+      selfLayerTerminalObstruction)
+    {atom : Atom} (hatom : atom ∈ atoms) {target : Target}
+    (htarget : target ∈ incomingTargets) (hallowed : incomingRepairAllowed atom target) :
+    residualVector.incomingResidual (quotientOf atom) + incomingShift atom target ≡
+      incomingTargetResidue target [MOD 4] :=
+  h.incomingTargetRepair atom hatom target htarget hallowed
+
+/-- Apply terminal avoidance for an incoming-target atom-packet repair. -/
+theorem FirstBitTerminalAtomPacketRepairEquationCertificate.not_incomingTerminalObstruction
+    {Atom Quot Target SelfLayer : Type*} {atoms : Finset Atom}
+    {incomingTargets : Finset Target} {selfLayers : Finset SelfLayer}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingShift : Atom → Target → ℕ} {incomingTargetResidue : Target → ℕ}
+    {incomingRepairAllowed incomingTerminalObstruction : Atom → Target → Prop}
+    {selfLayerShift : Atom → SelfLayer → ℕ} {shiftedSelfLayerResidue : SelfLayer → ℕ}
+    {selfLayerRepairAllowed selfLayerTerminalObstruction : Atom → SelfLayer → Prop}
+    (h : FirstBitTerminalAtomPacketRepairEquationCertificate atoms incomingTargets selfLayers
+      quotientOf residualVector incomingShift incomingTargetResidue incomingRepairAllowed
+      incomingTerminalObstruction selfLayerShift shiftedSelfLayerResidue selfLayerRepairAllowed
+      selfLayerTerminalObstruction)
+    {atom : Atom} (hatom : atom ∈ atoms) {target : Target}
+    (htarget : target ∈ incomingTargets) (hallowed : incomingRepairAllowed atom target) :
+    ¬ incomingTerminalObstruction atom target :=
+  h.incomingTargetAvoidance atom hatom target htarget hallowed
+
+/-- Apply a shifted self-layer atom-packet repair equation. -/
+theorem FirstBitTerminalAtomPacketRepairEquationCertificate.shiftedSelfLayer_modEq
+    {Atom Quot Target SelfLayer : Type*} {atoms : Finset Atom}
+    {incomingTargets : Finset Target} {selfLayers : Finset SelfLayer}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingShift : Atom → Target → ℕ} {incomingTargetResidue : Target → ℕ}
+    {incomingRepairAllowed incomingTerminalObstruction : Atom → Target → Prop}
+    {selfLayerShift : Atom → SelfLayer → ℕ} {shiftedSelfLayerResidue : SelfLayer → ℕ}
+    {selfLayerRepairAllowed selfLayerTerminalObstruction : Atom → SelfLayer → Prop}
+    (h : FirstBitTerminalAtomPacketRepairEquationCertificate atoms incomingTargets selfLayers
+      quotientOf residualVector incomingShift incomingTargetResidue incomingRepairAllowed
+      incomingTerminalObstruction selfLayerShift shiftedSelfLayerResidue selfLayerRepairAllowed
+      selfLayerTerminalObstruction)
+    {atom : Atom} (hatom : atom ∈ atoms) {layer : SelfLayer}
+    (hlayer : layer ∈ selfLayers) (hallowed : selfLayerRepairAllowed atom layer) :
+    residualVector.selfLayerResidual (quotientOf atom) + selfLayerShift atom layer ≡
+      shiftedSelfLayerResidue layer [MOD 4] :=
+  h.shiftedSelfLayerRepair atom hatom layer hlayer hallowed
+
+/-- Apply terminal avoidance for a shifted self-layer atom-packet repair. -/
+theorem FirstBitTerminalAtomPacketRepairEquationCertificate.not_selfLayerTerminalObstruction
+    {Atom Quot Target SelfLayer : Type*} {atoms : Finset Atom}
+    {incomingTargets : Finset Target} {selfLayers : Finset SelfLayer}
+    {quotientOf : Atom → Quot}
+    {residualVector : FirstBitTerminalPureQuotientResidualVector Quot}
+    {incomingShift : Atom → Target → ℕ} {incomingTargetResidue : Target → ℕ}
+    {incomingRepairAllowed incomingTerminalObstruction : Atom → Target → Prop}
+    {selfLayerShift : Atom → SelfLayer → ℕ} {shiftedSelfLayerResidue : SelfLayer → ℕ}
+    {selfLayerRepairAllowed selfLayerTerminalObstruction : Atom → SelfLayer → Prop}
+    (h : FirstBitTerminalAtomPacketRepairEquationCertificate atoms incomingTargets selfLayers
+      quotientOf residualVector incomingShift incomingTargetResidue incomingRepairAllowed
+      incomingTerminalObstruction selfLayerShift shiftedSelfLayerResidue selfLayerRepairAllowed
+      selfLayerTerminalObstruction)
+    {atom : Atom} (hatom : atom ∈ atoms) {layer : SelfLayer}
+    (hlayer : layer ∈ selfLayers) (hallowed : selfLayerRepairAllowed atom layer) :
+    ¬ selfLayerTerminalObstruction atom layer :=
+  h.shiftedSelfLayerAvoidance atom hatom layer hlayer hallowed
+
+/-- Selector names for atom-packet repair frontier imports. -/
+inductive FirstBitTerminalAtomPacketRepairFrontierSelector : Type
+  | pureQuotientResiduals
+  | oneAtomAffineRepair
+  | incomingTargetRepair
+  | shiftedSelfLayerRepair
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalAtomPacketRepairFrontierSelector
+
+/-- The proof obligation attached to each atom-packet repair selector. -/
+def obligation
+    (pureQuotientResiduals oneAtomAffineRepair incomingTargetRepair
+      shiftedSelfLayerRepair : Prop) :
+    FirstBitTerminalAtomPacketRepairFrontierSelector → Prop
+  | pureQuotientResiduals => pureQuotientResiduals
+  | oneAtomAffineRepair => oneAtomAffineRepair
+  | incomingTargetRepair => incomingTargetRepair
+  | shiftedSelfLayerRepair => shiftedSelfLayerRepair
+
+end FirstBitTerminalAtomPacketRepairFrontierSelector
+
+/--
+Combined import surface for atom-packet repair APIs: pure quotient residuals, one-atom affine
+repair, incoming-target repair, and shifted self-layer repair.
+-/
+structure FirstBitTerminalAtomPacketRepairFrontierImports
+    (pureQuotientResiduals oneAtomAffineRepair incomingTargetRepair
+      shiftedSelfLayerRepair : Prop) : Prop where
+  pureQuotientResidualsCert : pureQuotientResiduals
+  oneAtomAffineRepairCert : oneAtomAffineRepair
+  incomingTargetRepairCert : incomingTargetRepair
+  shiftedSelfLayerRepairCert : shiftedSelfLayerRepair
+
+/-- Build atom-packet repair frontier imports from independent parts. -/
+theorem firstBitTerminalAtomPacketRepairFrontierImports_of_parts
+    {pureQuotientResiduals oneAtomAffineRepair incomingTargetRepair
+      shiftedSelfLayerRepair : Prop}
+    (hpure : pureQuotientResiduals) (hone : oneAtomAffineRepair)
+    (hincoming : incomingTargetRepair) (hself : shiftedSelfLayerRepair) :
+    FirstBitTerminalAtomPacketRepairFrontierImports pureQuotientResiduals
+      oneAtomAffineRepair incomingTargetRepair shiftedSelfLayerRepair where
+  pureQuotientResidualsCert := hpure
+  oneAtomAffineRepairCert := hone
+  incomingTargetRepairCert := hincoming
+  shiftedSelfLayerRepairCert := hself
+
+/-- Project pure quotient residual imports from atom-packet repair frontier imports. -/
+theorem FirstBitTerminalAtomPacketRepairFrontierImports.to_pureQuotientResiduals
+    {pureQuotientResiduals oneAtomAffineRepair incomingTargetRepair
+      shiftedSelfLayerRepair : Prop}
+    (h : FirstBitTerminalAtomPacketRepairFrontierImports pureQuotientResiduals
+      oneAtomAffineRepair incomingTargetRepair shiftedSelfLayerRepair) :
+    pureQuotientResiduals :=
+  h.pureQuotientResidualsCert
+
+/-- Project one-atom affine repair imports from atom-packet repair frontier imports. -/
+theorem FirstBitTerminalAtomPacketRepairFrontierImports.to_oneAtomAffineRepair
+    {pureQuotientResiduals oneAtomAffineRepair incomingTargetRepair
+      shiftedSelfLayerRepair : Prop}
+    (h : FirstBitTerminalAtomPacketRepairFrontierImports pureQuotientResiduals
+      oneAtomAffineRepair incomingTargetRepair shiftedSelfLayerRepair) :
+    oneAtomAffineRepair :=
+  h.oneAtomAffineRepairCert
+
+/-- Project incoming-target repair imports from atom-packet repair frontier imports. -/
+theorem FirstBitTerminalAtomPacketRepairFrontierImports.to_incomingTargetRepair
+    {pureQuotientResiduals oneAtomAffineRepair incomingTargetRepair
+      shiftedSelfLayerRepair : Prop}
+    (h : FirstBitTerminalAtomPacketRepairFrontierImports pureQuotientResiduals
+      oneAtomAffineRepair incomingTargetRepair shiftedSelfLayerRepair) :
+    incomingTargetRepair :=
+  h.incomingTargetRepairCert
+
+/-- Project shifted self-layer repair imports from atom-packet repair frontier imports. -/
+theorem FirstBitTerminalAtomPacketRepairFrontierImports.to_shiftedSelfLayerRepair
+    {pureQuotientResiduals oneAtomAffineRepair incomingTargetRepair
+      shiftedSelfLayerRepair : Prop}
+    (h : FirstBitTerminalAtomPacketRepairFrontierImports pureQuotientResiduals
+      oneAtomAffineRepair incomingTargetRepair shiftedSelfLayerRepair) :
+    shiftedSelfLayerRepair :=
+  h.shiftedSelfLayerRepairCert
+
+/-- Project the obligation named by an atom-packet repair selector. -/
+theorem FirstBitTerminalAtomPacketRepairFrontierImports.obligation
+    {pureQuotientResiduals oneAtomAffineRepair incomingTargetRepair
+      shiftedSelfLayerRepair : Prop}
+    (h : FirstBitTerminalAtomPacketRepairFrontierImports pureQuotientResiduals
+      oneAtomAffineRepair incomingTargetRepair shiftedSelfLayerRepair)
+    (selector : FirstBitTerminalAtomPacketRepairFrontierSelector) :
+    FirstBitTerminalAtomPacketRepairFrontierSelector.obligation pureQuotientResiduals
+      oneAtomAffineRepair incomingTargetRepair shiftedSelfLayerRepair selector := by
+  cases selector
+  · exact h.pureQuotientResidualsCert
+  · exact h.oneAtomAffineRepairCert
+  · exact h.incomingTargetRepairCert
+  · exact h.shiftedSelfLayerRepairCert
+
+/-- Selector for the atom-packet repair/principal-bucket shadow bundle. -/
+inductive FirstBitTerminalAtomPacketRepairPrincipalBucketShadowSelector : Type
+  | atomPacketRepairFrontier
+  | principalBucketShadowFrontier
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalAtomPacketRepairPrincipalBucketShadowSelector
+
+/-- The proof obligation attached to each atom-packet repair/principal-bucket shadow selector. -/
+def obligation (atomPacketRepairFrontier principalBucketShadowFrontier : Prop) :
+    FirstBitTerminalAtomPacketRepairPrincipalBucketShadowSelector → Prop
+  | atomPacketRepairFrontier => atomPacketRepairFrontier
+  | principalBucketShadowFrontier => principalBucketShadowFrontier
+
+end FirstBitTerminalAtomPacketRepairPrincipalBucketShadowSelector
+
+/-- Combined atom-packet repair and principal-bucket shadow import bundle. -/
+structure FirstBitTerminalAtomPacketRepairPrincipalBucketShadowImports
+    (atomPacketRepairFrontier principalBucketShadowFrontier : Prop) : Prop where
+  atomPacketRepairFrontierCert : atomPacketRepairFrontier
+  principalBucketShadowFrontierCert : principalBucketShadowFrontier
+
+/-- Build atom-packet repair/principal-bucket shadow imports from independent parts. -/
+theorem firstBitTerminalAtomPacketRepairPrincipalBucketShadowImports_of_parts
+    {atomPacketRepairFrontier principalBucketShadowFrontier : Prop}
+    (hrepair : atomPacketRepairFrontier) (hshadow : principalBucketShadowFrontier) :
+    FirstBitTerminalAtomPacketRepairPrincipalBucketShadowImports atomPacketRepairFrontier
+      principalBucketShadowFrontier where
+  atomPacketRepairFrontierCert := hrepair
+  principalBucketShadowFrontierCert := hshadow
+
+/-- Project the atom-packet repair frontier from the repair/principal-bucket shadow bundle. -/
+theorem FirstBitTerminalAtomPacketRepairPrincipalBucketShadowImports.to_atomPacketRepairFrontier
+    {atomPacketRepairFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalAtomPacketRepairPrincipalBucketShadowImports atomPacketRepairFrontier
+      principalBucketShadowFrontier) :
+    atomPacketRepairFrontier :=
+  h.atomPacketRepairFrontierCert
+
+/-- Project the principal-bucket shadow frontier from the repair/principal-bucket shadow bundle. -/
+theorem FirstBitTerminalAtomPacketRepairPrincipalBucketShadowImports.to_principalBucketShadowFrontier
+    {atomPacketRepairFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalAtomPacketRepairPrincipalBucketShadowImports atomPacketRepairFrontier
+      principalBucketShadowFrontier) :
+    principalBucketShadowFrontier :=
+  h.principalBucketShadowFrontierCert
+
+/-- Project the obligation named by an atom-packet repair/principal-bucket shadow selector. -/
+theorem FirstBitTerminalAtomPacketRepairPrincipalBucketShadowImports.obligation
+    {atomPacketRepairFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalAtomPacketRepairPrincipalBucketShadowImports atomPacketRepairFrontier
+      principalBucketShadowFrontier)
+    (selector : FirstBitTerminalAtomPacketRepairPrincipalBucketShadowSelector) :
+    FirstBitTerminalAtomPacketRepairPrincipalBucketShadowSelector.obligation
+      atomPacketRepairFrontier principalBucketShadowFrontier selector := by
+  cases selector
+  · exact h.atomPacketRepairFrontierCert
+  · exact h.principalBucketShadowFrontierCert
+
+/-- Selector for the packet-atom/repair/principal-bucket shadow bundle. -/
+inductive FirstBitTerminalPacketAtomRepairPrincipalBucketShadowSelector : Type
+  | packetAtomFrontier
+  | atomPacketRepairFrontier
+  | principalBucketShadowFrontier
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalPacketAtomRepairPrincipalBucketShadowSelector
+
+/-- The proof obligation attached to each packet-atom/repair/principal-bucket shadow selector. -/
+def obligation
+    (packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier : Prop) :
+    FirstBitTerminalPacketAtomRepairPrincipalBucketShadowSelector → Prop
+  | packetAtomFrontier => packetAtomFrontier
+  | atomPacketRepairFrontier => atomPacketRepairFrontier
+  | principalBucketShadowFrontier => principalBucketShadowFrontier
+
+end FirstBitTerminalPacketAtomRepairPrincipalBucketShadowSelector
+
+/-- Combined packet-atom frontier, atom-packet repair, and principal-bucket shadow imports. -/
+structure FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports
+    (packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier : Prop) :
+    Prop where
+  packetAtomFrontierCert : packetAtomFrontier
+  atomPacketRepairFrontierCert : atomPacketRepairFrontier
+  principalBucketShadowFrontierCert : principalBucketShadowFrontier
+
+/-- Build packet-atom/repair/principal-bucket shadow imports from independent parts. -/
+theorem firstBitTerminalPacketAtomRepairPrincipalBucketShadowImports_of_parts
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier : Prop}
+    (hpacket : packetAtomFrontier) (hrepair : atomPacketRepairFrontier)
+    (hshadow : principalBucketShadowFrontier) :
+    FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier where
+  packetAtomFrontierCert := hpacket
+  atomPacketRepairFrontierCert := hrepair
+  principalBucketShadowFrontierCert := hshadow
+
+/-- Project packet-atom frontier imports from the packet-atom/repair/shadow bundle. -/
+theorem FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports.to_packetAtomFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier) :
+    packetAtomFrontier :=
+  h.packetAtomFrontierCert
+
+/-- Project atom-packet repair imports from the packet-atom/repair/shadow bundle. -/
+theorem FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports.to_atomPacketRepairFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier) :
+    atomPacketRepairFrontier :=
+  h.atomPacketRepairFrontierCert
+
+/-- Project principal-bucket shadow imports from the packet-atom/repair/shadow bundle. -/
+theorem FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports.to_principalBucketShadowFrontier
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier) :
+    principalBucketShadowFrontier :=
+  h.principalBucketShadowFrontierCert
+
+/-- Project the obligation named by a packet-atom/repair/principal-bucket shadow selector. -/
+theorem FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports.obligation
+    {packetAtomFrontier atomPacketRepairFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier)
+    (selector : FirstBitTerminalPacketAtomRepairPrincipalBucketShadowSelector) :
+    FirstBitTerminalPacketAtomRepairPrincipalBucketShadowSelector.obligation packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier selector := by
+  cases selector
+  · exact h.packetAtomFrontierCert
+  · exact h.atomPacketRepairFrontierCert
+  · exact h.principalBucketShadowFrontierCert
+
+/-- Add atom-packet repair imports to the existing co-cut/principal-bucket/shadow/packet-atom bundle. -/
+structure FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+    (coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier : Prop) : Prop where
+  packetAtomImports :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+  atomPacketRepairFrontierCert : atomPacketRepairFrontier
+
+/-- Build the co-cut/principal-bucket/shadow/packet-atom bundle enriched by atom-packet repairs. -/
+theorem
+    firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports_of_parts
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier : Prop}
+    (hbase : coCutMixedPrincipalImports) (hshadow : principalBucketShadowFrontier)
+    (hpacket : packetAtomFrontier) (hrepair : atomPacketRepairFrontier) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier where
+  packetAtomImports :=
+    firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports_of_parts
+      hbase hshadow hpacket
+  atomPacketRepairFrontierCert := hrepair
+
+/-- Forget repair fields and recover the packet-atom/shadow bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports.to_packetAtomImports
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier :=
+  h.packetAtomImports
+
+/-- Project atom-packet repair imports from the enriched co-cut/principal-bucket bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports.to_atomPacketRepairFrontier
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier) :
+    atomPacketRepairFrontier :=
+  h.atomPacketRepairFrontierCert
+
+/-- Project base co-cut/mixed-core/principal-bucket imports from the enriched repair bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports.to_baseImports
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier) :
+    coCutMixedPrincipalImports :=
+  h.packetAtomImports.to_baseImports
+
+/-- Project principal-bucket shadow imports from the enriched repair bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports.to_shadowFrontier
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier) :
+    principalBucketShadowFrontier :=
+  h.packetAtomImports.to_shadowFrontier
+
+/-- Project packet-atom frontier imports from the enriched repair bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports.to_packetAtomFrontier
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier) :
+    packetAtomFrontier :=
+  h.packetAtomImports.to_packetAtomFrontier
+
+/-- Export packet-atom/repair/principal-bucket shadow imports from the enriched co-cut bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports.to_packetAtomRepairPrincipalBucketShadowImports
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomRepairImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier
+      atomPacketRepairFrontier) :
+    FirstBitTerminalPacketAtomRepairPrincipalBucketShadowImports packetAtomFrontier
+      atomPacketRepairFrontier principalBucketShadowFrontier :=
+  firstBitTerminalPacketAtomRepairPrincipalBucketShadowImports_of_parts
+    h.packetAtomImports.to_packetAtomFrontier h.atomPacketRepairFrontierCert
+    h.packetAtomImports.to_shadowFrontier
+
 /-- Co-cut/self-layer plus mixed target-core imports bundled with principal-bucket frontier imports. -/
 structure FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
     {Old Shadow Target Bucket RowSig CoRowSig : Type*}
