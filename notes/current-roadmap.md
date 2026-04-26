@@ -4965,6 +4965,10 @@ A fixed kept pair is disjoint from at most two triples of a packing, so terminal
 requires at least `ceil(|P|/2)` distinct internal kept-pair witnesses; Fano requires four.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
+In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is
+exactly no isolated dual line, and the four-witness core has dual shape `P_3 disjoint union 2K_2`.
+Inclusion-minimal Fano cores are dual star forests: four witnesses give `K_{1,2}+2K_2`, five give
+`K_{1,4}+K_2` or `K_{1,3}+K_{1,2}`, and six give `K_{1,6}`, primal `K_4` on a line complement.
 For non-exact boundaries, use the maximum import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`; terminal exports satisfy
 `H_X(sigma(Y))-|Y|<=m-|B|`.  Exact top is the explicit box-height case.

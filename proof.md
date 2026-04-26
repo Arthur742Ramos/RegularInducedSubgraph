@@ -8846,6 +8846,33 @@ with at most three witness edges is Fano-line-covered, so the first possible ter
 has four edges and must be a genuine Fano-line-uncoverable configuration, not a star, triangle, or any
 three-edge local defect.
 
+Dualizing the Fano lines makes the condition exact.  Let `D(H)` be the graph whose vertices are the
+seven Fano lines and where a kept-pair witness `e` contributes the edge joining the two Fano lines
+disjoint from `e`.  Then
+
+```text
+H kills every Fano omitted triple  <=>  D(H) has no isolated vertex.
+```
+
+Thus the Fano ambiguous core is an edge-cover problem on the dual line set.  A four-witness terminal
+core is necessarily a minimum edge cover of seven dual vertices, hence its dual cover has degree pattern
+`2,1,1,1,1,1,1`, i.e. `P_3 disjoint union 2K_2`.  Larger witness cores are terminal only through the
+same dual no-isolated-line condition.
+
+If the Fano core is inclusion-minimal, this dual graph is even more rigid: every dual edge must touch a
+degree-one dual vertex, otherwise that edge could be deleted without creating an isolated vertex.  Hence
+every inclusion-minimal dual cover is a star forest.  On seven dual vertices the only possibilities are
+
+```text
+4 witnesses: K_{1,2} disjoint union K_2 disjoint union K_2;
+5 witnesses: K_{1,4} disjoint union K_2, or K_{1,3} disjoint union K_{1,2};
+6 witnesses: K_{1,6}.
+```
+
+The extreme `K_{1,6}` case has a concrete primal meaning: all witness pairs lie in the four-point
+complement of one Fano line, and in fact form the whole `K_4` on that complement.  Thus even the
+maximally degenerate Fano ambiguity has a fixed four-point support.
+
 The same height language also covers the non-exact boundary.  For an arbitrary zero-sum-free boundary
 `X`, define the available import height
 

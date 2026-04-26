@@ -1755,7 +1755,9 @@ What remains justified after audit is:
       internal candidates `C_int subset K_3(J_int)`;
     - after trace-twin quotienting, ambiguous `C_ext` is a triple packing; terminality is
       `C_ext cap C_int = empty`, and a Fano ambiguity requires an internal witness graph not covered
-      by any Fano line, in particular at least four kept-pair witnesses;
+      by any Fano line, in particular at least four kept-pair witnesses; dualizing to the seven Fano
+      lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual
+      star forests (`K_{1,2}+2K_2`, the two five-edge star forests, or `K_{1,6}`);
     - the odd-word boundary residual also has a minimal Arf normal form: after closed-support
       localization, the even kernel of `A(Q[U])+diag(tau)` is exactly `{0,1_U}`, the obstruction is one
       whole-class half-edge bit, and equal twisted columns are impossible for `|U| > 2`;

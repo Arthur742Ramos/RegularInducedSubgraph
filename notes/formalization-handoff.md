@@ -2043,6 +2043,13 @@ Recommended attack:
    packing `P` requires at least `ceil(|P|/2)` distinct internal kept-pair witnesses; Fano requires four.
    In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
    iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
+   Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness
+   connects the two lines disjoint from it, and terminality is no isolated dual vertex.  Four witnesses
+   then force the dual cover shape `P_3 disjoint union 2K_2`.
+   Formalize the inclusion-minimal classification: every edge in a minimal no-isolated dual graph touches
+   a degree-one vertex, so the dual graph is a star forest.  On seven vertices this gives the four-,
+   five-, and six-witness shapes `K_{1,2}+2K_2`, `K_{1,4}+K_2`, `K_{1,3}+K_{1,2}`, and `K_{1,6}`; the
+   last is primal `K_4` on the complement of a Fano line.
    Generalize the height inequality to non-exact boundaries with
    `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}` (or unavailable).  For every graph-compatible export `Y`,
    terminality gives `H_X(sigma(Y))-|Y|<=m-|B|`; exact Davenport top is the special case `H_X=h_X`.

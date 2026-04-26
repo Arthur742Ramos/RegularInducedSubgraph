@@ -1708,6 +1708,10 @@ A fixed kept pair is disjoint from at most two packing triples, so an ambiguous 
 least `ceil(|P|/2)` internal kept-pair witnesses; Fano needs four.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
+Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,
+and the four-witness case is `P_3 disjoint union 2K_2` in the dual.
+Inclusion-minimal Fano cores are dual star forests, ending in the six-witness `K_{1,6}` case, which is
+primal `K_4` on the complement of one Fano line.
 Away from the exact boundary top, the same inequality uses
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`: terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every compatible export.

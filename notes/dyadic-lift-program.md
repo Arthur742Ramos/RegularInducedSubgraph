@@ -1585,6 +1585,12 @@ killing an external packing `P` internally requires at least `ceil(|P|/2)` disti
 Fano ambiguity needs at least four.
 For `P` Fano, the exact graph shadow is that the internal witness graph is not covered by any Fano line;
 all three-edge witness graphs are line-covered.
+Equivalently, dualize to the seven Fano lines: each kept-pair witness joins the two lines disjoint from
+it, and terminality is exactly that this dual graph has no isolated vertex.  A four-witness terminal core
+has dual cover `P_3 disjoint union 2K_2`.
+Inclusion-minimal dual covers are star forests: `K_{1,2}+2K_2` with four witnesses,
+`K_{1,4}+K_2` or `K_{1,3}+K_{1,2}` with five, and `K_{1,6}` with six.  The six-star is primal `K_4` on
+the complement of one Fano line.
 For a non-exact boundary, replace `h_X` by the maximum available import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`.  Terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every graph-compatible export.  The exact top is just the case
