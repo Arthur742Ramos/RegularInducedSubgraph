@@ -1000,6 +1000,16 @@ For `sigma_g=2`, split pairs never contribute.  The nonzero pair repairs are exa
 pairs with both vertices in `N_W(b_g)` or complete old pairs with both vertices outside `N_W(b_g)`.
 All usable singleton shifts are zero: isolated old deletion vertices in the `r=0` case are missed by
 `b_g`, and universal old deletion vertices in the `r=m-1` case are hit by `b_g`.
+Since `Rep(g) subset d+{0,sigma_g}`, the large-fiber exclusions leave only `{0,1}` or `{2,3}` in the
+unit-shift branch, and only `{0,2}` or `{1,3}` in the `sigma_g=2` branch.
+These are respectively: `alpha<=3` plus `2K_2`-free; `omega<=3` plus `C_4`-free; `alpha<=3` plus
+`C_4`-free; and `omega<=3` plus `2K_2`-free.
+Up to complement, the exact-basis endpoint is therefore: unit `sigma_g` gives `alpha<=3` and
+`2K_2`-free, while `sigma_g=2` gives `alpha<=3` and `C_4`-free.
+The standard `C_5` blow-up obstruction is capped: in a clique blow-up with bags `A_i`, equal bag
+selection is regular, so if all bags have size `>m/5` it gives an atom larger than `W`; otherwise one
+bag has size at most `m/5`, and the adjacent clique caps `|A_i|+|A_{i+1}|<=m` force
+`sum_i |A_i|<=11m/5`.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has

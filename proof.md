@@ -6700,6 +6700,66 @@ It also has no nonzero singleton repairs.  Therefore any old vertex isolated fro
 `W\{x}` in the `r=m-1` singleton case must be hit by `b_g`.  Equivalently, all usable singleton shifts
 are forced to be zero in the `sigma_g=2` branch.
 
+In repaired-residue language, `Rep(g)=d+Delta_<(4)(g)` is therefore contained in `{d,d+sigma_g}`.
+For very large terminal directions the excluded pairs `{0,3}` and `{1,2}` remove two adjacent cases.
+Thus:
+
+```text
+sigma_g unit:  Rep(g) subset {0,1} or {2,3};
+sigma_g=2:     Rep(g) subset {0,2} or {1,3}.
+```
+
+This identifies the old-deletion branch with the sparse hereditary pairs: unit shifts are the
+one-extreme/one-middle branches, while `sigma_g=2` is the opposite-parity branch.
+Unpacked:
+
+```text
+{0,1}: alpha(C_g)<=3 and C_g is induced-2K_2-free;
+{2,3}: omega(C_g)<=3 and C_g is induced-C_4-free;
+{0,2}: alpha(C_g)<=3 and C_g is induced-C_4-free;
+{1,3}: omega(C_g)<=3 and C_g is induced-2K_2-free.
+```
+
+Thus the unit branch leaves only the first line or its complement, and the `sigma_g=2` branch leaves
+the two cross-parity lines.
+After complementing the direction fiber if needed, the residual hereditary target is therefore only
+
+```text
+unit sigma_g:  alpha(C_g)<=3 and C_g is induced-2K_2-free;
+sigma_g=2:     alpha(C_g)<=3 and C_g is induced-C_4-free.
+```
+
+This is the current exact-basis endpoint after all small old-deletion repairs are accounted for.
+
+The standard cyclic blow-up obstruction is already controlled at this endpoint.  Suppose a residual
+direction fiber has a five-cycle blow-up partition `A_0,...,A_4` (indices modulo `5`) in which each
+`A_i` is a clique and the only cross edges are between consecutive bags.  A selection of `q_i` vertices
+from `A_i` has bag-degree residues
+
+```text
+q_i-1+q_{i-1}+q_{i+1}.
+```
+
+Hence taking the same number `q` from each bag gives a regular induced subgraph of size `5q`.  If every
+bag has size at least `floor(m/5)+1`, this immediately gives a congruent atom larger than `W`.  Otherwise
+some bag, say `A_0`, has size at most `floor(m/5)`.  Since adjacent bag unions are cliques and every
+clique in the direction has size at most `m`,
+
+```text
+|A_i|+|A_{i+1}|<=m        for all i,
+```
+
+and the five-cycle linear program with `|A_0|<=m/5` gives
+
+```text
+sum_i |A_i| <= 2m+floor(m/5) <= 11m/5.
+```
+
+Thus any C5-blow-up piece of size greater than `11m/5` already closes by an equal-bag atom.  The two
+hereditary endpoints above therefore cannot be finished by exhibiting only the usual C5 blow-up
+examples; a terminal very-large direction must use additional non-cyclic structure or boundary-type
+constraints.
+
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
 `deg_D(b)` constant on the four vertices.  The signed condition

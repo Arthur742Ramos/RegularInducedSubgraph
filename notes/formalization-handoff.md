@@ -1521,6 +1521,15 @@ Recommended attack:
    `N_W(b_g)` and complete pairs outside `N_W(b_g)` contribute.
    Also record singleton zero-shift constraints in the `sigma_g=2` branch: isolated usable old vertices
    are outside `N_W(b_g)`, and universal usable old vertices are inside `N_W(b_g)`.
+   Translate this to repaired residues: unit `sigma_g` leaves only `{0,1}` or `{2,3}` after the large
+   exclusions, while `sigma_g=2` leaves only `{0,2}` or `{1,3}`.
+   Record the hereditary meanings: `{0,1}` is `alpha<=3` plus `2K_2`-free; `{2,3}` is `omega<=3` plus
+   `C_4`-free; `{0,2}` is `alpha<=3` plus `C_4`-free; `{1,3}` is `omega<=3` plus `2K_2`-free.
+   Up to complement, only two exact-basis hereditary endpoints remain: unit `sigma_g` gives
+   `alpha<=3` and `2K_2`-free, while `sigma_g=2` gives `alpha<=3` and `C_4`-free.
+   Add the `C_5` blow-up cap: equal selection from all five clique bags is regular; if one bag has size
+   at most `m/5`, adjacent clique caps imply total size at most `11m/5`.  Hence any `C_5` blow-up piece
+   larger than `11m/5` already closes.
 
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is

@@ -4870,6 +4870,14 @@ For `sigma=2`, the only nonzero pair repairs are anticomplete old pairs inside `
 old pairs outside `N_W(b_g)`.
 In that branch all usable singleton shifts are zero: isolated old deletion vertices are missed by
 `b_g`, and universal old deletion vertices are hit by `b_g`.
+Equivalently, repaired spectra are `{0,1}` or `{2,3}` in the unit-shift branch and `{0,2}` or `{1,3}`
+in the `sigma=2` branch.
+These mean, respectively, `alpha<=3` with `2K_2`-free, `omega<=3` with `C_4`-free, `alpha<=3` with
+`C_4`-free, and `omega<=3` with `2K_2`-free.
+Up to complement, the two exact-basis hereditary endpoints are `alpha<=3` plus `2K_2`-free for unit
+`sigma`, and `alpha<=3` plus `C_4`-free for `sigma=2`.
+A `C_5` clique-blow-up piece larger than `11m/5` already closes: equal bag selection is regular, and if
+some bag has size at most `m/5`, adjacent clique caps force total size at most `11m/5`.
 The `25m/8` class margin also gives, for `m>24`, an augmented atom with `|S|=delta_S=0`, so
 `sum_S phi_S=-2e(S)`.
 
