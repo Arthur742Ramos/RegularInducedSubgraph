@@ -11282,6 +11282,735 @@ theorem targetStatement_of_proofMdLargeSupportColoringFirstBitFinalCitationConsu
     h.toFirstBitFinalCitationConsumerCertificate.checkpointCertificate = h :=
   rfl
 
+/--
+Final current-frontier checkpoint bundle exported after the final first-bit citation consumer.
+This is a citation-facing layer: it keeps the citation consumer certificate as the source of
+truth while republishing the post-checkpoint citation, checkpoint consumer, release certificate,
+handoff, typed-`F` residual, scalar quotient, current-selector, no-leftover current-frontier,
+public current-frontier wrapper, and diagnostic endpoints that downstream files cite.
+-/
+structure ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle : Type where
+  citationConsumerCertificate :
+    ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate
+  postCheckpointCitationBundle :
+    ProofMdLargeSupportColoringFirstBitFinalReleasePostCheckpointCitationBundle
+  checkpointConsumerBundle :
+    ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointConsumerBundle
+  checkpointCertificate : ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointCertificate
+  releaseCertificateFacade :
+    ProofMdLargeSupportColoringFirstBitPublicFinalClosureReleaseCertificateFacade
+  finalClosureHandoff : ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle
+  finalClosureFacade : ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade
+  selectorCurrentFrontierHandoff :
+    ProofMdLargeSupportColoringFirstBitDownstreamSelectorCurrentFrontierHandoffFacade
+  typedFGraphResidualFacade :
+    ProofMdLargeSupportColoringTypedFGraphResidualPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+      localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+      fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+      publicDownstreamTargetSelectorConsumerClosure
+  scalarQuotientPublicEndpoint :
+    ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  finalProofMdConsumerPublicEndpoint :
+    ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  scalarQuotientPublicTargetSelectorObligations :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  typedFGraphResidualPublicTargetSelectorObligations :
+    ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelectorObligationPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+      localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+      fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+      publicDownstreamTargetSelectorConsumerClosure
+  publicFinalCurrentFrontierEndpointWrapper :
+    ProofMdLargeSupportColoringPublicFinalCurrentFrontierEndpointWrapper
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  currentSelectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint
+  currentSelectorAssumptions : FirstBitCurrentSelectorAssumptions
+  downstreamObligationProjection :
+    ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  publicFinalArchiveReleaseBundle : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  noLeftoverCurrentFrontierPacket :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  publicCitationCheckpointReuse :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  externalBlockHandoff : ProofMdLargeSupportColoringExternalBlockHandoffFacade
+  allTernaryEndpointExhaustionCert : allTernaryEndpointExhaustion
+  nearThresholdBoundaryDiagnosticsCert : nearThresholdBoundaryDiagnostics
+  publicDownstreamTargetSelectorConsumerClosureCert :
+    publicDownstreamTargetSelectorConsumerClosure
+  targetStatement_fromCitationConsumerCertificate : TargetStatement
+  targetStatement_fromPostCheckpointCitationBundle : TargetStatement
+  targetStatement_fromCheckpointConsumerBundle : TargetStatement
+  targetStatement_fromCheckpointCertificate : TargetStatement
+  targetStatement_fromReleaseCertificateFacade : TargetStatement
+  targetStatement_fromFinalClosureHandoff : TargetStatement
+  targetStatement_fromFinalClosureFacade : TargetStatement
+  targetStatement_fromSelectorCurrentFrontierHandoff : TargetStatement
+  targetStatement_fromSelectorCurrentFrontierExternalBlock : TargetStatement
+  targetStatement_fromTypedFGraphResidualFacade : TargetStatement
+  targetStatement_fromScalarQuotientPublicEndpoint : TargetStatement
+  targetStatement_fromFinalProofMdConsumerPublicEndpoint : TargetStatement
+  targetStatement_fromScalarQuotientPublicTargetSelectorObligations : TargetStatement
+  targetStatement_fromTypedFGraphResidualPublicTargetSelectorObligations : TargetStatement
+  targetStatement_fromPublicFinalCurrentFrontierEndpointWrapper : TargetStatement
+  targetStatement_fromCurrentSelectorEndpoint : TargetStatement
+  targetStatement_fromDownstreamObligationProjection : TargetStatement
+  targetStatement_fromPublicFinalArchiveReleaseBundle : TargetStatement
+  targetStatement_fromNoLeftoverCurrentFrontierPacket : TargetStatement
+  targetStatement_fromPublicCitationCheckpointReuse : TargetStatement
+  targetStatement_fromExternalBlockHandoff : TargetStatement
+  targetStatement_fromAllTernaryEndpointExhaustion : TargetStatement
+  targetStatement_fromNearThresholdBoundaryDiagnostics : TargetStatement
+  targetStatement_fromPublicDownstreamTargetSelectorConsumerClosure : TargetStatement
+
+/-- Rows exported by the final current-frontier checkpoint bundle. -/
+inductive ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointRow : Type where
+  | checkpointBundle
+  | citationConsumerCertificate
+  | postCheckpointCitationBundle
+  | checkpointConsumerBundle
+  | checkpointCertificate
+  | releaseCertificateFacade
+  | finalClosureHandoff
+  | finalClosureFacade
+  | selectorCurrentFrontierHandoff
+  | typedFGraphResidualFacade
+  | scalarQuotientPublicEndpoint
+  | finalProofMdConsumerPublicEndpoint
+  | scalarQuotientPublicTargetSelectorObligations
+  | typedFGraphResidualPublicTargetSelectorObligations
+  | publicFinalCurrentFrontierEndpointWrapper
+  | currentSelectorEndpoint
+  | currentSelectorAssumptions
+  | downstreamObligationProjection
+  | publicFinalArchiveReleaseBundle
+  | noLeftoverCurrentFrontierPacket
+  | publicCitationCheckpointReuse
+  | externalBlockHandoff
+  | allTernaryEndpointExhaustion
+  | nearThresholdBoundaryDiagnostics
+  | publicDownstreamTargetSelectorConsumerClosure
+  deriving DecidableEq, Repr
+
+namespace ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointRow
+
+/-- The endpoint, packet, facade, or assumption selected by a final current-frontier checkpoint row. -/
+def obligation :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointRow → Sort _
+  | .checkpointBundle =>
+      ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle
+  | .citationConsumerCertificate =>
+      ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate
+  | .postCheckpointCitationBundle =>
+      ProofMdLargeSupportColoringFirstBitFinalReleasePostCheckpointCitationBundle
+  | .checkpointConsumerBundle =>
+      ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointConsumerBundle
+  | .checkpointCertificate =>
+      ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointCertificate
+  | .releaseCertificateFacade =>
+      ProofMdLargeSupportColoringFirstBitPublicFinalClosureReleaseCertificateFacade
+  | .finalClosureHandoff =>
+      ProofMdLargeSupportColoringFirstBitPublicFinalClosureHandoffBundle
+  | .finalClosureFacade =>
+      ProofMdLargeSupportColoringFirstBitPublicFinalClosureFacade
+  | .selectorCurrentFrontierHandoff =>
+      ProofMdLargeSupportColoringFirstBitDownstreamSelectorCurrentFrontierHandoffFacade
+  | .typedFGraphResidualFacade =>
+      ProofMdLargeSupportColoringTypedFGraphResidualPublicEndpointBundle
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+        localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+        fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+        publicDownstreamTargetSelectorConsumerClosure
+  | .scalarQuotientPublicEndpoint =>
+      ProofMdLargeSupportColoringScalarQuotientPublicEndpointBundle
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  | .finalProofMdConsumerPublicEndpoint =>
+      ProofMdLargeSupportColoringFinalProofMdConsumerPublicEndpointBundle
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  | .scalarQuotientPublicTargetSelectorObligations =>
+      ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+  | .typedFGraphResidualPublicTargetSelectorObligations =>
+      ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelectorObligationPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+        fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+        fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+        signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+        localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+        fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+        publicDownstreamTargetSelectorConsumerClosure
+  | .publicFinalCurrentFrontierEndpointWrapper =>
+      ProofMdLargeSupportColoringPublicFinalCurrentFrontierEndpointWrapper
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  | .currentSelectorEndpoint => FirstBitLargeSupportColoringCurrentSelectorEndpoint
+  | .currentSelectorAssumptions => FirstBitCurrentSelectorAssumptions
+  | .downstreamObligationProjection =>
+      ProofMdLargeSupportColoringFinalPublicDownstreamTargetObligationLayer
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  | .publicFinalArchiveReleaseBundle => FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  | .noLeftoverCurrentFrontierPacket =>
+      ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  | .publicCitationCheckpointReuse =>
+      ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  | .externalBlockHandoff => ProofMdLargeSupportColoringExternalBlockHandoffFacade
+  | .allTernaryEndpointExhaustion => allTernaryEndpointExhaustion
+  | .nearThresholdBoundaryDiagnostics => nearThresholdBoundaryDiagnostics
+  | .publicDownstreamTargetSelectorConsumerClosure =>
+      publicDownstreamTargetSelectorConsumerClosure
+
+end ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointRow
+
+namespace ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle
+
+/-- Build the final current-frontier checkpoint from the final citation consumer certificate. -/
+def ofFinalCitationConsumerCertificate
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle where
+  citationConsumerCertificate := h
+  postCheckpointCitationBundle := h.postCheckpointCitationBundle
+  checkpointConsumerBundle := h.checkpointConsumerBundle
+  checkpointCertificate := h.checkpointCertificate
+  releaseCertificateFacade := h.releaseCertificateFacade
+  finalClosureHandoff := h.finalClosureHandoff
+  finalClosureFacade := h.finalClosureFacade
+  selectorCurrentFrontierHandoff := h.selectorCurrentFrontierHandoff
+  typedFGraphResidualFacade := h.typedFGraphResidualFacade
+  scalarQuotientPublicEndpoint := h.scalarQuotientPublicEndpoint
+  finalProofMdConsumerPublicEndpoint := h.finalProofMdConsumerPublicEndpoint
+  scalarQuotientPublicTargetSelectorObligations := h.scalarQuotientPublicTargetSelectorObligations
+  typedFGraphResidualPublicTargetSelectorObligations :=
+    h.typedFGraphResidualPublicTargetSelectorObligations
+  publicFinalCurrentFrontierEndpointWrapper :=
+    h.publicCitationCheckpointReuse.toPublicFinalCurrentFrontierEndpointWrapper
+  currentSelectorEndpoint := h.currentSelectorEndpoint
+  currentSelectorAssumptions := h.currentSelectorAssumptions
+  downstreamObligationProjection := h.downstreamObligationProjection
+  publicFinalArchiveReleaseBundle := h.publicFinalArchiveReleaseBundle
+  noLeftoverCurrentFrontierPacket := h.noLeftoverCurrentFrontierPacket
+  publicCitationCheckpointReuse := h.publicCitationCheckpointReuse
+  externalBlockHandoff := h.externalBlockHandoff
+  allTernaryEndpointExhaustionCert := h.allTernaryEndpointExhaustionCert
+  nearThresholdBoundaryDiagnosticsCert := h.nearThresholdBoundaryDiagnosticsCert
+  publicDownstreamTargetSelectorConsumerClosureCert :=
+    h.publicDownstreamTargetSelectorConsumerClosureCert
+  targetStatement_fromCitationConsumerCertificate :=
+    ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate.targetStatement h
+  targetStatement_fromPostCheckpointCitationBundle :=
+    h.targetStatement_fromPostCheckpointCitationBundle
+  targetStatement_fromCheckpointConsumerBundle := h.targetStatement_fromCheckpointConsumerBundle
+  targetStatement_fromCheckpointCertificate := h.targetStatement_fromCheckpointCertificate
+  targetStatement_fromReleaseCertificateFacade := h.targetStatement_fromReleaseCertificateFacade
+  targetStatement_fromFinalClosureHandoff := h.targetStatement_fromFinalClosureHandoff
+  targetStatement_fromFinalClosureFacade := h.targetStatement_fromFinalClosureFacade
+  targetStatement_fromSelectorCurrentFrontierHandoff :=
+    h.targetStatement_fromSelectorCurrentFrontierHandoff
+  targetStatement_fromSelectorCurrentFrontierExternalBlock :=
+    h.targetStatement_fromSelectorCurrentFrontierExternalBlock
+  targetStatement_fromTypedFGraphResidualFacade := h.targetStatement_fromTypedFGraphResidualFacade
+  targetStatement_fromScalarQuotientPublicEndpoint := h.targetStatement_fromScalarQuotientPublicEndpoint
+  targetStatement_fromFinalProofMdConsumerPublicEndpoint :=
+    h.targetStatement_fromFinalProofMdConsumerPublicEndpoint
+  targetStatement_fromScalarQuotientPublicTargetSelectorObligations :=
+    h.targetStatement_fromScalarQuotientPublicTargetSelectorObligations
+  targetStatement_fromTypedFGraphResidualPublicTargetSelectorObligations :=
+    h.targetStatement_fromTypedFGraphResidualPublicTargetSelectorObligations
+  targetStatement_fromPublicFinalCurrentFrontierEndpointWrapper :=
+    targetStatement_of_proofMdLargeSupportColoringPublicFinalCurrentFrontierEndpointWrapper
+      h.publicCitationCheckpointReuse.toPublicFinalCurrentFrontierEndpointWrapper
+  targetStatement_fromCurrentSelectorEndpoint := h.targetStatement_fromCurrentSelectorEndpoint
+  targetStatement_fromDownstreamObligationProjection :=
+    h.targetStatement_fromDownstreamObligationProjection
+  targetStatement_fromPublicFinalArchiveReleaseBundle :=
+    h.targetStatement_fromPublicFinalArchiveReleaseBundle
+  targetStatement_fromNoLeftoverCurrentFrontierPacket :=
+    h.targetStatement_fromNoLeftoverCurrentFrontierPacket
+  targetStatement_fromPublicCitationCheckpointReuse :=
+    h.targetStatement_fromPublicCitationCheckpointReuse
+  targetStatement_fromExternalBlockHandoff := h.targetStatement_fromExternalBlockHandoff
+  targetStatement_fromAllTernaryEndpointExhaustion :=
+    h.targetStatement_fromAllTernaryEndpointExhaustion
+  targetStatement_fromNearThresholdBoundaryDiagnostics :=
+    h.targetStatement_fromNearThresholdBoundaryDiagnostics
+  targetStatement_fromPublicDownstreamTargetSelectorConsumerClosure :=
+    h.targetStatement_fromPublicDownstreamTargetSelectorConsumerClosure
+
+/-- Recover the final citation consumer certificate from the checkpoint bundle. -/
+def toFirstBitFinalCitationConsumerCertificate
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate :=
+  h.citationConsumerCertificate
+
+/-- Recover the post-checkpoint citation bundle from the checkpoint bundle. -/
+def toFirstBitFinalReleasePostCheckpointCitationBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    ProofMdLargeSupportColoringFirstBitFinalReleasePostCheckpointCitationBundle :=
+  h.postCheckpointCitationBundle
+
+/-- Recover the public/final current-frontier wrapper from the checkpoint bundle. -/
+def toPublicFinalCurrentFrontierEndpointWrapper
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    ProofMdLargeSupportColoringPublicFinalCurrentFrontierEndpointWrapper
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.publicFinalCurrentFrontierEndpointWrapper
+
+/-- Recover the no-leftover current-frontier packet from the checkpoint bundle. -/
+def toNoLeftoverCurrentFrontierPacket
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverCurrentFrontierPacket
+
+/-- Recover the current-selector endpoint from the checkpoint bundle. -/
+def toCurrentSelectorEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    FirstBitLargeSupportColoringCurrentSelectorEndpoint :=
+  h.currentSelectorEndpoint
+
+/-- Recover the current-selector assumptions from the checkpoint bundle. -/
+def toCurrentSelectorAssumptions
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    FirstBitCurrentSelectorAssumptions :=
+  h.currentSelectorAssumptions
+
+/-- Project any final current-frontier checkpoint row from the bundle. -/
+def rowObligation
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle)
+    (row : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointRow) :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointRow.obligation row := by
+  cases row
+  · exact h
+  · exact h.citationConsumerCertificate
+  · exact h.postCheckpointCitationBundle
+  · exact h.checkpointConsumerBundle
+  · exact h.checkpointCertificate
+  · exact h.releaseCertificateFacade
+  · exact h.finalClosureHandoff
+  · exact h.finalClosureFacade
+  · exact h.selectorCurrentFrontierHandoff
+  · exact h.typedFGraphResidualFacade
+  · exact h.scalarQuotientPublicEndpoint
+  · exact h.finalProofMdConsumerPublicEndpoint
+  · exact h.scalarQuotientPublicTargetSelectorObligations
+  · exact h.typedFGraphResidualPublicTargetSelectorObligations
+  · exact h.publicFinalCurrentFrontierEndpointWrapper
+  · exact h.currentSelectorEndpoint
+  · exact h.currentSelectorAssumptions
+  · exact h.downstreamObligationProjection
+  · exact h.publicFinalArchiveReleaseBundle
+  · exact h.noLeftoverCurrentFrontierPacket
+  · exact h.publicCitationCheckpointReuse
+  · exact h.externalBlockHandoff
+  · exact h.allTernaryEndpointExhaustionCert
+  · exact h.nearThresholdBoundaryDiagnosticsCert
+  · exact h.publicDownstreamTargetSelectorConsumerClosureCert
+
+/-- Select the target statement associated to a final current-frontier checkpoint row. -/
+def targetStatementForRow
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointRow → TargetStatement
+  | .checkpointBundle => h.targetStatement_fromCitationConsumerCertificate
+  | .citationConsumerCertificate => h.targetStatement_fromCitationConsumerCertificate
+  | .postCheckpointCitationBundle => h.targetStatement_fromPostCheckpointCitationBundle
+  | .checkpointConsumerBundle => h.targetStatement_fromCheckpointConsumerBundle
+  | .checkpointCertificate => h.targetStatement_fromCheckpointCertificate
+  | .releaseCertificateFacade => h.targetStatement_fromReleaseCertificateFacade
+  | .finalClosureHandoff => h.targetStatement_fromFinalClosureHandoff
+  | .finalClosureFacade => h.targetStatement_fromFinalClosureFacade
+  | .selectorCurrentFrontierHandoff => h.targetStatement_fromSelectorCurrentFrontierHandoff
+  | .typedFGraphResidualFacade => h.targetStatement_fromTypedFGraphResidualFacade
+  | .scalarQuotientPublicEndpoint => h.targetStatement_fromScalarQuotientPublicEndpoint
+  | .finalProofMdConsumerPublicEndpoint => h.targetStatement_fromFinalProofMdConsumerPublicEndpoint
+  | .scalarQuotientPublicTargetSelectorObligations =>
+      h.targetStatement_fromScalarQuotientPublicTargetSelectorObligations
+  | .typedFGraphResidualPublicTargetSelectorObligations =>
+      h.targetStatement_fromTypedFGraphResidualPublicTargetSelectorObligations
+  | .publicFinalCurrentFrontierEndpointWrapper =>
+      h.targetStatement_fromPublicFinalCurrentFrontierEndpointWrapper
+  | .currentSelectorEndpoint => h.targetStatement_fromCurrentSelectorEndpoint
+  | .currentSelectorAssumptions => h.targetStatement_fromCurrentSelectorEndpoint
+  | .downstreamObligationProjection => h.targetStatement_fromDownstreamObligationProjection
+  | .publicFinalArchiveReleaseBundle => h.targetStatement_fromPublicFinalArchiveReleaseBundle
+  | .noLeftoverCurrentFrontierPacket => h.targetStatement_fromNoLeftoverCurrentFrontierPacket
+  | .publicCitationCheckpointReuse => h.targetStatement_fromPublicCitationCheckpointReuse
+  | .externalBlockHandoff => h.targetStatement_fromExternalBlockHandoff
+  | .allTernaryEndpointExhaustion => h.targetStatement_fromAllTernaryEndpointExhaustion
+  | .nearThresholdBoundaryDiagnostics => h.targetStatement_fromNearThresholdBoundaryDiagnostics
+  | .publicDownstreamTargetSelectorConsumerClosure =>
+      h.targetStatement_fromPublicDownstreamTargetSelectorConsumerClosure
+
+/-- The final current-frontier checkpoint closes the target through its citation consumer. -/
+theorem targetStatement
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromCitationConsumerCertificate
+
+/-- Target-statement facade via post-checkpoint citation reuse. -/
+theorem targetStatement_viaPostCheckpointCitationBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromPostCheckpointCitationBundle
+
+/-- Target-statement facade via checkpoint consumer reuse. -/
+theorem targetStatement_viaCheckpointConsumerBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromCheckpointConsumerBundle
+
+/-- Target-statement facade via final release checkpoint certificate reuse. -/
+theorem targetStatement_viaCheckpointCertificate
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromCheckpointCertificate
+
+/-- Target-statement facade via public final-closure release certificate reuse. -/
+theorem targetStatement_viaReleaseCertificateFacade
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromReleaseCertificateFacade
+
+/-- Target-statement facade via selector/current-frontier handoff reuse. -/
+theorem targetStatement_viaSelectorCurrentFrontierHandoff
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromSelectorCurrentFrontierHandoff
+
+/-- Target-statement facade via typed `F` residual endpoint reuse. -/
+theorem targetStatement_viaTypedFGraphResidualFacade
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromTypedFGraphResidualFacade
+
+/-- Target-statement facade via scalar-quotient public endpoint reuse. -/
+theorem targetStatement_viaScalarQuotientPublicEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromScalarQuotientPublicEndpoint
+
+/-- Target-statement facade via the public/final current-frontier wrapper. -/
+theorem targetStatement_viaPublicFinalCurrentFrontierEndpointWrapper
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromPublicFinalCurrentFrontierEndpointWrapper
+
+/-- Target-statement facade via current-selector endpoint reuse. -/
+theorem targetStatement_viaCurrentSelectorEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromCurrentSelectorEndpoint
+
+/-- Target-statement facade via no-leftover/current-frontier packet reuse. -/
+theorem targetStatement_viaNoLeftoverCurrentFrontierPacket
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromNoLeftoverCurrentFrontierPacket
+
+/-- Target-statement facade via public current-frontier citation reuse. -/
+theorem targetStatement_viaPublicCitationCheckpointReuse
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromPublicCitationCheckpointReuse
+
+/-- Target-statement facade via all-ternary endpoint exhaustion diagnostics. -/
+theorem targetStatement_viaAllTernaryEndpointExhaustion
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromAllTernaryEndpointExhaustion
+
+/-- Target-statement facade via near-threshold boundary diagnostics. -/
+theorem targetStatement_viaNearThresholdBoundaryDiagnostics
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromNearThresholdBoundaryDiagnostics
+
+/-- Target-statement facade via public downstream target-selector consumer closure. -/
+theorem targetStatement_viaPublicDownstreamTargetSelectorConsumerClosure
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  h.targetStatement_fromPublicDownstreamTargetSelectorConsumerClosure
+
+/-- Target-statement facade selected by any final current-frontier checkpoint row. -/
+theorem targetStatement_viaRow
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle)
+    (row : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointRow) :
+    TargetStatement :=
+  h.targetStatementForRow row
+
+/-- The checkpoint bundle discharges every typed `F` residual public selector. -/
+theorem publicTargetSelectorObligation
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle)
+    (selector : ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelector) :
+    ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelector.obligation
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers
+      localHostTwoExceptionalPacketDischarge localHostThreeExceptionalPacketDischarge
+      fourExceptionTwoTwoTypeSquareSkeletons compactSignedQuotientResidual
+      publicDownstreamTargetSelectorConsumerClosure selector :=
+  ProofMdLargeSupportColoringTypedFGraphResidualPublicTargetSelectorObligationPacket.obligation
+    h.typedFGraphResidualPublicTargetSelectorObligations selector
+
+/-- The checkpoint bundle discharges every scalar-quotient public selector. -/
+theorem scalarQuotientPublicTargetSelectorObligation
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle)
+    (selector : ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector) :
+    ProofMdLargeSupportColoringScalarQuotientPublicTargetSelector.obligation
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+      fullySplitTransposeForwardRigidity fullySplitTransposeReverseRigidity
+      fullySplitTransposeDiagonalRigidity parityTetrahedronStarPhaseHandoff
+      signedK4QuotientClosureClassification publicDownstreamTargetSelectorConsumers selector :=
+  ProofMdLargeSupportColoringScalarQuotientPublicTargetSelectorObligationPacket.obligation
+    h.scalarQuotientPublicTargetSelectorObligations selector
+
+@[simp] theorem ofFinalCitationConsumerCertificate_citationConsumerCertificate
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).citationConsumerCertificate = h :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_postCheckpointCitationBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).postCheckpointCitationBundle =
+      h.postCheckpointCitationBundle :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_checkpointConsumerBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).checkpointConsumerBundle =
+      h.checkpointConsumerBundle :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_checkpointCertificate
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).checkpointCertificate = h.checkpointCertificate :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_releaseCertificateFacade
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).releaseCertificateFacade =
+      h.releaseCertificateFacade :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_selectorCurrentFrontierHandoff
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).selectorCurrentFrontierHandoff =
+      h.selectorCurrentFrontierHandoff :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_typedFGraphResidualFacade
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).typedFGraphResidualFacade =
+      h.typedFGraphResidualFacade :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_scalarQuotientPublicEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).scalarQuotientPublicEndpoint =
+      h.scalarQuotientPublicEndpoint :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_publicFinalCurrentFrontierEndpointWrapper
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).publicFinalCurrentFrontierEndpointWrapper =
+      h.publicCitationCheckpointReuse.toPublicFinalCurrentFrontierEndpointWrapper :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_currentSelectorEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).currentSelectorEndpoint = h.currentSelectorEndpoint :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_noLeftoverCurrentFrontierPacket
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).noLeftoverCurrentFrontierPacket =
+      h.noLeftoverCurrentFrontierPacket :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_publicCitationCheckpointReuse
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).publicCitationCheckpointReuse =
+      h.publicCitationCheckpointReuse :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_allTernaryEndpointExhaustion
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).allTernaryEndpointExhaustionCert =
+      h.allTernaryEndpointExhaustionCert :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_nearThresholdBoundaryDiagnostics
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).nearThresholdBoundaryDiagnosticsCert =
+      h.nearThresholdBoundaryDiagnosticsCert :=
+  rfl
+
+@[simp] theorem ofFinalCitationConsumerCertificate_publicDownstreamTargetSelectorConsumerClosure
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    (ofFinalCitationConsumerCertificate h).publicDownstreamTargetSelectorConsumerClosureCert =
+      h.publicDownstreamTargetSelectorConsumerClosureCert :=
+  rfl
+
+end ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle
+
+/-- Expose the final current-frontier checkpoint bundle from the final citation consumer. -/
+def ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle :=
+  ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle.ofFinalCitationConsumerCertificate h
+
+/-- Expose the final current-frontier checkpoint bundle from the post-checkpoint citation bundle. -/
+def ProofMdLargeSupportColoringFirstBitFinalReleasePostCheckpointCitationBundle.toFirstBitFinalCurrentFrontierCheckpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalReleasePostCheckpointCitationBundle) :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle :=
+  h.toFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle
+
+/-- Expose the final current-frontier checkpoint bundle from the checkpoint consumer bundle. -/
+def ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointConsumerBundle.toFirstBitFinalCurrentFrontierCheckpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointConsumerBundle) :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle :=
+  h.toFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle
+
+/-- Expose the final current-frontier checkpoint bundle from the final release checkpoint certificate. -/
+def ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointCertificate) :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle :=
+  h.toFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle
+
+/-- Expose the final current-frontier checkpoint bundle from the public release certificate facade. -/
+def ProofMdLargeSupportColoringFirstBitPublicFinalClosureReleaseCertificateFacade.toFirstBitFinalCurrentFrontierCheckpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureReleaseCertificateFacade) :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle :=
+  h.toFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle
+
+/-- Expose the final current-frontier checkpoint bundle from the selector/current-frontier handoff. -/
+def ProofMdLargeSupportColoringFirstBitDownstreamSelectorCurrentFrontierHandoffFacade.toFirstBitFinalCurrentFrontierCheckpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitDownstreamSelectorCurrentFrontierHandoffFacade) :
+    ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle :=
+  h.toFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle
+
+/-- Downstream proof-md target citation through the final current-frontier checkpoint bundle. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle) :
+    TargetStatement :=
+  ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle.targetStatement h
+
+/-- Downstream proof-md target citation selected by any final current-frontier checkpoint row. -/
+theorem targetStatement_of_proofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle_viaRow
+    (h : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointBundle)
+    (row : ProofMdLargeSupportColoringFirstBitFinalCurrentFrontierCheckpointRow) :
+    TargetStatement :=
+  h.targetStatementForRow row
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle_citationConsumerCertificate
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.citationConsumerCertificate = h :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle_postCheckpointCitationBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.postCheckpointCitationBundle =
+      h.postCheckpointCitationBundle :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle_publicFinalCurrentFrontierEndpointWrapper
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.publicFinalCurrentFrontierEndpointWrapper =
+      h.publicCitationCheckpointReuse.toPublicFinalCurrentFrontierEndpointWrapper :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle_currentSelectorEndpoint
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.currentSelectorEndpoint =
+      h.currentSelectorEndpoint :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle_noLeftoverCurrentFrontierPacket
+    (h : ProofMdLargeSupportColoringFirstBitFinalCitationConsumerCertificate) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.noLeftoverCurrentFrontierPacket =
+      h.noLeftoverCurrentFrontierPacket :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitFinalReleasePostCheckpointCitationBundle.toFirstBitFinalCurrentFrontierCheckpointBundle_postCheckpointCitationBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalReleasePostCheckpointCitationBundle) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.postCheckpointCitationBundle = h :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitFinalReleasePostCheckpointCitationBundle.toFirstBitFinalCurrentFrontierCheckpointBundle_citationConsumerCertificate
+    (h : ProofMdLargeSupportColoringFirstBitFinalReleasePostCheckpointCitationBundle) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.citationConsumerCertificate =
+      h.toFirstBitFinalCitationConsumerCertificate :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointConsumerBundle.toFirstBitFinalCurrentFrontierCheckpointBundle_checkpointConsumerBundle
+    (h : ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointConsumerBundle) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.checkpointConsumerBundle = h :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointCertificate.toFirstBitFinalCurrentFrontierCheckpointBundle_checkpointCertificate
+    (h : ProofMdLargeSupportColoringFirstBitFinalReleaseCheckpointCertificate) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.checkpointCertificate = h :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitPublicFinalClosureReleaseCertificateFacade.toFirstBitFinalCurrentFrontierCheckpointBundle_releaseCertificateFacade
+    (h : ProofMdLargeSupportColoringFirstBitPublicFinalClosureReleaseCertificateFacade) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.releaseCertificateFacade = h :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringFirstBitDownstreamSelectorCurrentFrontierHandoffFacade.toFirstBitFinalCurrentFrontierCheckpointBundle_selectorCurrentFrontierHandoff
+    (h : ProofMdLargeSupportColoringFirstBitDownstreamSelectorCurrentFrontierHandoffFacade) :
+    h.toFirstBitFinalCurrentFrontierCheckpointBundle.selectorCurrentFrontierHandoff = h :=
+  rfl
+
 end FirstBitPublicFinalClosure
 
 end RegularInducedSubgraph
