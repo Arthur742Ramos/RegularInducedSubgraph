@@ -2252,6 +2252,10 @@ Recommended attack:
     Add the three-certificate split for each threshold object `B1`, `B2`, and `B1 union B2`: either an
     atom has nonconstant internal defect, an ordered atom pair has nonconstant cross-correction, or the
     fully constant weighted `Z/4` quotient has no zero-row solution.
+    Add the pure-Q residual form: for a quotient-uniform bundle `B`, define
+    `R_i(B)=e_i+sum_{j in B,j!=i}c_ij`.  For two bundles, the union is quotient-solvable iff the
+    cross-bundle correction sums are `-R(B1)` and `-R(B2)` on the two sides.  Terminality is affine
+    avoidance of this cancellation vector.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

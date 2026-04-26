@@ -5145,6 +5145,9 @@ also a forbidden threshold object; if all cross-corrections are quotient-uniform
 two-bundle quotient must be unsolvable.
 Thus the small-atom endpoint has a three-certificate split for `B1`, `B2`, and `B1 union B2`: defect
 variation, cross-irregularity, or pure weighted-quotient unsolvability.
+In the pure `Q` case each bundle has a nonzero quotient residual vector `R(B)`, and the union is dangerous
+exactly when the cross-bundle correction vector equals `-R` on both sides; terminality is affine
+avoidance of that cancellation target.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

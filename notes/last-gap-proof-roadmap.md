@@ -1844,7 +1844,8 @@ What remains justified after audit is:
       quotient unsolvability; choosing them minimal makes them tight, and their union is a further
       forbidden threshold object unless the combined quotient is unsolvable or cross-irregular, yielding
       a three-certificate split: defect variation, cross-irregularity, or pure weighted-quotient
-      unsolvability;
+      unsolvability; in the pure quotient case, nonzero residual vectors for the two bundles must avoid
+      affine cancellation by the cross-bundle correction sums;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

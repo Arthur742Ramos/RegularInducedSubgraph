@@ -10172,6 +10172,30 @@ If all three certificates are `Q`, the obstruction is purely finite and lives en
 irregularity certificate inside one atom or between two atoms of the same outside degree chamber.  This
 three-certificate split is the current terminal normal form of the small-atom branch.
 
+In the pure `Q` case there is a precise residual-vector form.  For a quotient-uniform bundle `B`, define
+
+```text
+R_i(B)=e_i+sum_{j in B, j != i}c_{ij}        [MOD 4]        (i in B).
+```
+
+The bundle is blocked by a `Q` certificate exactly when `R(B)` is not the zero vector.  For two disjoint
+quotient-uniform bundles `B_1,B_2`, put
+
+```text
+C_i(B_2)=sum_{j in B_2}c_{ij}        (i in B_1),
+C_j(B_1)=sum_{i in B_1}c_{ji}        (j in B_2).
+```
+
+Then the combined bundle `B_1 union B_2` is dangerous exactly when
+
+```text
+C_i(B_2) == -R_i(B_1)        for every i in B_1,
+C_j(B_1) == -R_j(B_2)        for every j in B_2.
+```
+
+Thus the pure two-bundle obstruction is affine avoidance: both individual bundles have nonzero residual
+vectors, and the cross-bundle correction vectors avoid the unique affine target that would cancel them.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over
