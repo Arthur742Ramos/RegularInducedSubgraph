@@ -2498,6 +2498,16 @@ theorem hasExactSmallModulusAffineCrossSelector_three_fourteen_of_cliqueOrIndepS
     (j := 3) (m := 14) (N := 3670016) hbound (by decide)
 
 /--
+The same `(m, j) = (14, 3)` affine selector field reduced to the off-diagonal
+Ramsey threshold needed by the symmetric step: `R(13,14) <= 1835008`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_three_fourteen_of_cliqueOrIndepSetBound_thirteen_fourteen
+    (hbound : HasCliqueOrIndepSetBound 13 14 1835008) :
+    HasExactSmallModulusAffineCrossSelector 3 14 :=
+  hasExactSmallModulusAffineCrossSelector_three_fourteen_of_cliqueOrIndepSetBound
+    (hasCliqueOrIndepSetBound_14_14_of_13_14_1835008 hbound)
+
+/--
 The first `j = 2` higher-bit affine selector field is reduced to the exact Ramsey
 threshold `R(11,11) <= 45056`.
 -/
@@ -2536,6 +2546,17 @@ theorem hasExactSmallModulusAffineCrossSelector_two_thirteen_of_cliqueOrIndepSet
     HasExactSmallModulusAffineCrossSelector 2 13 :=
   hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
     (j := 2) (m := 13) (N := 53248) hbound (by decide)
+
+/--
+The `13 <= m` tail's first `j = 2` affine selector field reduced to the
+off-diagonal Ramsey threshold needed by the symmetric step:
+`R(12,13) <= 26624`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_two_thirteen_of_cliqueOrIndepSetBound_twelve_thirteen
+    (hbound : HasCliqueOrIndepSetBound 12 13 26624) :
+    HasExactSmallModulusAffineCrossSelector 2 13 :=
+  hasExactSmallModulusAffineCrossSelector_two_thirteen_of_cliqueOrIndepSetBound
+    (hasCliqueOrIndepSetBound_13_13_of_12_13_26624 hbound)
 
 /--
 The `m = 14`, `j = 2` higher-bit affine selector field is reduced to the exact Ramsey

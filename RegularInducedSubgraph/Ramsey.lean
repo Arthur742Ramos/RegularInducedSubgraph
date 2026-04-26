@@ -14483,6 +14483,30 @@ theorem hasCliqueOrIndepSetBound_11_11_of_10_11_22528
     (by decide) (by decide) (by norm_num) (by norm_num)
     h (HasCliqueOrIndepSetBound.symm h) (by norm_num)
 
+/--
+The finite-field `m = 13` selector can use the off-diagonal threshold needed by
+the symmetric Ramsey step.
+-/
+theorem hasCliqueOrIndepSetBound_13_13_of_12_13_26624
+    (h : HasCliqueOrIndepSetBound 12 13 26624) :
+    HasCliqueOrIndepSetBound 13 13 53248 := by
+  exact HasCliqueOrIndepSetBound.step_even_mono (a := 12) (b := 12)
+    (N₁ := 26624) (N₂ := 26624) (N := 53248)
+    (by decide) (by decide) (by norm_num) (by norm_num)
+    h (HasCliqueOrIndepSetBound.symm h) (by norm_num)
+
+/--
+The finite-field `(m, j) = (14, 3)` selector can use the off-diagonal threshold
+needed by the symmetric Ramsey step.
+-/
+theorem hasCliqueOrIndepSetBound_14_14_of_13_14_1835008
+    (h : HasCliqueOrIndepSetBound 13 14 1835008) :
+    HasCliqueOrIndepSetBound 14 14 3670016 := by
+  exact HasCliqueOrIndepSetBound.step_even_mono (a := 13) (b := 13)
+    (N₁ := 1835008) (N₂ := 1835008) (N := 3670016)
+    (by decide) (by decide) (by norm_num) (by norm_num)
+    h (HasCliqueOrIndepSetBound.symm h) (by norm_num)
+
 /-- Arithmetic form of the symmetric-step obstruction for the `R(11,11) <= 45056` target. -/
 theorem two_mul_sub_one_le_45056_iff_le_22528 (N : ℕ) :
     2 * N - 1 ≤ 45056 ↔ N ≤ 22528 := by
