@@ -5004,6 +5004,231 @@ theorem FirstBitPacketGraphQuotientResidual.oldIncrementRow
     m * δ j ≡ a j * (B j).card [MOD 4] :=
   FirstBitPacketOldIncrementCertificate.row h.oldIncrement hj
 
+/-- Integer equality modulo four, used for the signed packet-frame scalars. -/
+def firstBitIntModFourEq (x y : ℤ) : Prop :=
+  x % 4 = y % 4
+
+/-- Exact integer equality gives the signed mod-four scalar relation. -/
+theorem firstBitIntModFourEq_of_eq {x y : ℤ} (h : x = y) :
+    firstBitIntModFourEq x y := by
+  rw [h]
+
+/-- Global packet-row scalar:
+`S * r + (S - m) * Delta = 2 * e(B) [MOD 4]`. -/
+def FirstBitPacketGlobalRowScalar (S m Delta r eB : ℕ) : Prop :=
+  S * r + (S - m) * Delta ≡ 2 * eB [MOD 4]
+
+/-- The enlarged old-frame size has odd gap over the target size. -/
+def FirstBitPacketOddEnlargedSizeParity (S m : ℕ) : Prop :=
+  S - m ≡ 1 [MOD 2]
+
+/-- Replacement self-error sum `sum_B (eta_B + lambda)`. -/
+def firstBitPacketReplacementSelfErrorSum {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (eta : ι → ℕ) (lam : ℕ) : ℕ :=
+  ∑ j in active, eta j + lam
+
+/-- Replacement self-error scalar `sum_B (eta_B + lambda) = |D| * delta`. -/
+def FirstBitPacketReplacementSelfErrorSumScalar {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (eta : ι → ℕ) (lam Dcard delta : ℕ) : Prop :=
+  firstBitPacketReplacementSelfErrorSum active eta lam = Dcard * delta
+
+/-- Signed replacement scalar `lambda * (m - |D|) = |D| * r - 2 e(D)`. -/
+def FirstBitPacketReplacementLambdaScalar
+    (m Dcard lam r eD : ℕ) : Prop :=
+  (lam : ℤ) * ((m : ℤ) - (Dcard : ℤ)) = (Dcard : ℤ) * (r : ℤ) - 2 * (eD : ℤ)
+
+/-- Signed global scalar
+`(m - |D| - |B|) * K = (|B| - |D|) * r + 2e(D) - 2e(B) [MOD 4]`. -/
+def FirstBitPacketSignedGlobalScalar
+    (m Dcard Bcard K r eD eB : ℕ) : Prop :=
+  firstBitIntModFourEq
+    (((m : ℤ) - (Dcard : ℤ) - (Bcard : ℤ)) * (K : ℤ))
+    (((Bcard : ℤ) - (Dcard : ℤ)) * (r : ℤ) + 2 * (eD : ℤ) - 2 * (eB : ℤ))
+
+/-- Signed old-frame scalar `m * K = |B| * t - |D| * r [MOD 4]`. -/
+def FirstBitPacketSignedOldFrameScalar
+    (m K Bcard t Dcard r : ℕ) : Prop :=
+  firstBitIntModFourEq
+    ((m : ℤ) * (K : ℤ))
+    ((Bcard : ℤ) * (t : ℤ) - (Dcard : ℤ) * (r : ℤ))
+
+/-- Exact signed global equality certifies the mod-four signed global scalar. -/
+theorem firstBitPacketSignedGlobalScalar_of_eq
+    {m Dcard Bcard K r eD eB : ℕ}
+    (h :
+      (((m : ℤ) - (Dcard : ℤ) - (Bcard : ℤ)) * (K : ℤ)) =
+        (((Bcard : ℤ) - (Dcard : ℤ)) * (r : ℤ) + 2 * (eD : ℤ) -
+          2 * (eB : ℤ))) :
+    FirstBitPacketSignedGlobalScalar m Dcard Bcard K r eD eB :=
+  firstBitIntModFourEq_of_eq h
+
+/-- Exact signed old-frame equality certifies the mod-four old-frame scalar. -/
+theorem firstBitPacketSignedOldFrameScalar_of_eq
+    {m K Bcard t Dcard r : ℕ}
+    (h : ((m : ℤ) * (K : ℤ)) =
+      ((Bcard : ℤ) * (t : ℤ) - (Dcard : ℤ) * (r : ℤ))) :
+    FirstBitPacketSignedOldFrameScalar m K Bcard t Dcard r :=
+  firstBitIntModFourEq_of_eq h
+
+/-- Terminal packet scalar certificate bundling the unsigned row scalar, replacement scalars, and the
+two signed old-frame identities without asserting any graph-facing endpoint. -/
+structure FirstBitPacketTerminalScalarCertificate {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (eta : ι → ℕ)
+    (S m Delta r eB Dcard delta lam eD Bcard K t : ℕ) : Prop where
+  enlargedSizeLower : m ≤ S
+  globalRow : FirstBitPacketGlobalRowScalar S m Delta r eB
+  oddEnlarged : FirstBitPacketOddEnlargedSizeParity S m
+  replacementSelfError :
+    FirstBitPacketReplacementSelfErrorSumScalar active eta lam Dcard delta
+  replacementLambda : FirstBitPacketReplacementLambdaScalar m Dcard lam r eD
+  signedGlobal : FirstBitPacketSignedGlobalScalar m Dcard Bcard K r eD eB
+  signedOldFrame : FirstBitPacketSignedOldFrameScalar m K Bcard t Dcard r
+
+/-- Extract all scalar equations from a terminal packet scalar certificate. -/
+theorem FirstBitPacketTerminalScalarCertificate.scalars
+    {ι : Type*} [DecidableEq ι] {active : Finset ι} {eta : ι → ℕ}
+    {S m Delta r eB Dcard delta lam eD Bcard K t : ℕ}
+    (h :
+      FirstBitPacketTerminalScalarCertificate active eta
+        S m Delta r eB Dcard delta lam eD Bcard K t) :
+    FirstBitPacketGlobalRowScalar S m Delta r eB ∧
+      FirstBitPacketOddEnlargedSizeParity S m ∧
+        FirstBitPacketReplacementSelfErrorSumScalar active eta lam Dcard delta ∧
+          FirstBitPacketReplacementLambdaScalar m Dcard lam r eD ∧
+            FirstBitPacketSignedGlobalScalar m Dcard Bcard K r eD eB ∧
+              FirstBitPacketSignedOldFrameScalar m K Bcard t Dcard r :=
+  ⟨h.globalRow, h.oddEnlarged, h.replacementSelfError, h.replacementLambda,
+    h.signedGlobal, h.signedOldFrame⟩
+
+/-- Multiplication table in residues modulo four. -/
+def firstBitModFourMulTable (x y : Fin 4) : Fin 4 :=
+  ⟨(x.val * y.val) % 4, Nat.mod_lt _ (by decide : 0 < 4)⟩
+
+/-- Addition table in residues modulo four. -/
+def firstBitModFourAddTable (x y : Fin 4) : Fin 4 :=
+  ⟨(x.val + y.val) % 4, Nat.mod_lt _ (by decide : 0 < 4)⟩
+
+/-- Signed subtraction table in residues modulo four. -/
+def firstBitModFourSubTable (x y : Fin 4) : Fin 4 :=
+  ⟨(x.val + (4 - y.val)) % 4, Nat.mod_lt _ (by decide : 0 < 4)⟩
+
+/-- A signed difference has residue zero exactly when the two residues agree. -/
+theorem firstBitModFourSubTable_eq_zero_iff (x y : Fin 4) :
+    firstBitModFourSubTable x y = (0 : Fin 4) ↔ x = y := by
+  fin_cases x <;> fin_cases y <;> decide
+
+/-- The right side of a `2 * e` scalar only remembers the parity of `e`. -/
+def firstBitTwiceResidueTable (edgeParity : Fin 2) : Fin 4 :=
+  ⟨(2 * edgeParity.val) % 4, Nat.mod_lt _ (by decide : 0 < 4)⟩
+
+theorem firstBitTwiceResidueTable_eq_zero_iff (edgeParity : Fin 2) :
+    firstBitTwiceResidueTable edgeParity = (0 : Fin 4) ↔ edgeParity = (0 : Fin 2) := by
+  fin_cases edgeParity <;> decide
+
+theorem firstBitTwiceResidueTable_eq_two_iff (edgeParity : Fin 2) :
+    firstBitTwiceResidueTable edgeParity = (2 : Fin 4) ↔ edgeParity = (1 : Fin 2) := by
+  fin_cases edgeParity <;> decide
+
+/-- A residue is compatible with a `2 * e(B)` right side exactly in the even rows `0` and `2`. -/
+def FirstBitGlobalRowScalarAllowedEdgeParity (lhsResidue : Fin 4) : Prop :=
+  ∃ edgeParity : Fin 2, firstBitTwiceResidueTable edgeParity = lhsResidue
+
+theorem firstBitGlobalRowScalarAllowedEdgeParity_iff (lhsResidue : Fin 4) :
+    FirstBitGlobalRowScalarAllowedEdgeParity lhsResidue ↔
+      lhsResidue = (0 : Fin 4) ∨ lhsResidue = (2 : Fin 4) := by
+  fin_cases lhsResidue <;> decide
+
+/-- Odd left-hand residues are impossible for the global row scalar `lhs = 2e(B)`. -/
+theorem firstBitGlobalRowScalarOddResidue_obstruction {lhsResidue : Fin 4}
+    (hodd : lhsResidue = (1 : Fin 4) ∨ lhsResidue = (3 : Fin 4)) :
+    ¬ FirstBitGlobalRowScalarAllowedEdgeParity lhsResidue := by
+  intro h
+  have heven := (firstBitGlobalRowScalarAllowedEdgeParity_iff lhsResidue).1 h
+  rcases hodd with rfl | rfl
+  · rcases heven with hzero | htwo
+    · exact (by decide : (1 : Fin 4) ≠ (0 : Fin 4)) hzero
+    · exact (by decide : (1 : Fin 4) ≠ (2 : Fin 4)) htwo
+  · rcases heven with hzero | htwo
+    · exact (by decide : (3 : Fin 4) ≠ (0 : Fin 4)) hzero
+    · exact (by decide : (3 : Fin 4) ≠ (2 : Fin 4)) htwo
+
+/-- If the global row scalar has residue zero, then the edge-mass parity is zero, and conversely. -/
+theorem firstBitGlobalRowScalar_edgeParity_zero_iff
+    {lhsResidue : Fin 4} {edgeParity : Fin 2}
+    (hres : firstBitTwiceResidueTable edgeParity = lhsResidue) :
+    lhsResidue = (0 : Fin 4) ↔ edgeParity = (0 : Fin 2) := by
+  subst lhsResidue
+  exact firstBitTwiceResidueTable_eq_zero_iff edgeParity
+
+/-- If the global row scalar has residue two, then the edge-mass parity is one, and conversely. -/
+theorem firstBitGlobalRowScalar_edgeParity_one_iff
+    {lhsResidue : Fin 4} {edgeParity : Fin 2}
+    (hres : firstBitTwiceResidueTable edgeParity = lhsResidue) :
+    lhsResidue = (2 : Fin 4) ↔ edgeParity = (1 : Fin 2) := by
+  subst lhsResidue
+  exact firstBitTwiceResidueTable_eq_two_iff edgeParity
+
+/-- Old-frame residual table: zero means the signed old-frame scalar is balanced modulo four. -/
+def firstBitSignedOldFrameResidualTable
+    (m K Bcard t Dcard r : Fin 4) : Fin 4 :=
+  firstBitModFourSubTable
+    (firstBitModFourMulTable m K)
+    (firstBitModFourSubTable
+      (firstBitModFourMulTable Bcard t)
+      (firstBitModFourMulTable Dcard r))
+
+/-- Signed-global residual table for
+`(m - |D| - |B|)K - ((|B|-|D|)r + 2e(D)-2e(B))` modulo four. -/
+def firstBitSignedGlobalResidualTable
+    (m Dcard Bcard K r eD eB : Fin 4) : Fin 4 :=
+  firstBitModFourSubTable
+    (firstBitModFourMulTable
+      (firstBitModFourSubTable (firstBitModFourSubTable m Dcard) Bcard) K)
+    (firstBitModFourSubTable
+      (firstBitModFourAddTable
+        (firstBitModFourMulTable (firstBitModFourSubTable Bcard Dcard) r)
+        (firstBitTwiceResidueTable ⟨eD.val % 2, Nat.mod_lt _ (by decide : 0 < 2)⟩))
+      (firstBitTwiceResidueTable ⟨eB.val % 2, Nat.mod_lt _ (by decide : 0 < 2)⟩))
+
+/-- Abstract surface saying terminal scalar certificates can be unpacked at the quotient frontier. -/
+def HasFirstBitPacketTerminalScalarCertificateExtraction : Prop :=
+  ∀ {ι : Type*} [DecidableEq ι] (active : Finset ι) (eta : ι → ℕ)
+    (S m Delta r eB Dcard delta lam eD Bcard K t : ℕ),
+    FirstBitPacketTerminalScalarCertificate active eta
+      S m Delta r eB Dcard delta lam eD Bcard K t →
+      FirstBitPacketGlobalRowScalar S m Delta r eB ∧
+        FirstBitPacketOddEnlargedSizeParity S m ∧
+          FirstBitPacketReplacementSelfErrorSumScalar active eta lam Dcard delta ∧
+            FirstBitPacketReplacementLambdaScalar m Dcard lam r eD ∧
+              FirstBitPacketSignedGlobalScalar m Dcard Bcard K r eD eB ∧
+                FirstBitPacketSignedOldFrameScalar m K Bcard t Dcard r
+
+/-- Abstract surface exposing the mod-four `2e` parity/obstruction table. -/
+def HasFirstBitPacketGlobalRowScalarEdgeParityTable : Prop :=
+  ∀ lhsResidue : Fin 4,
+    FirstBitGlobalRowScalarAllowedEdgeParity lhsResidue ↔
+      lhsResidue = (0 : Fin 4) ∨ lhsResidue = (2 : Fin 4)
+
+theorem hasFirstBitPacketTerminalScalarCertificateExtraction :
+    HasFirstBitPacketTerminalScalarCertificateExtraction := by
+  intro ι _ active eta S m Delta r eB Dcard delta lam eD Bcard K t hcert
+  exact hcert.scalars
+
+theorem hasFirstBitPacketGlobalRowScalarEdgeParityTable :
+    HasFirstBitPacketGlobalRowScalarEdgeParityTable :=
+  firstBitGlobalRowScalarAllowedEdgeParity_iff
+
+/-- First-bit packet quotient scalar surfaces: certificate extraction plus the mod-four parity table. -/
+structure FirstBitPacketTerminalScalarFrontierSurfaces : Prop where
+  certificateExtraction : HasFirstBitPacketTerminalScalarCertificateExtraction
+  edgeParityTable : HasFirstBitPacketGlobalRowScalarEdgeParityTable
+
+/-- The terminal scalar frontier package is purely arithmetic. -/
+theorem firstBitPacketTerminalScalarFrontierSurfaces :
+    FirstBitPacketTerminalScalarFrontierSurfaces where
+  certificateExtraction := hasFirstBitPacketTerminalScalarCertificateExtraction
+  edgeParityTable := hasFirstBitPacketGlobalRowScalarEdgeParityTable
+
 /-- Surface asserting that old-increment certificates can be converted to target elimination. -/
 def HasFirstBitPacketTargetEliminationReduction : Prop :=
   ∀ {ι : Type*} [DecidableEq ι] (active : Finset ι)
@@ -5037,6 +5262,25 @@ theorem firstBitPacketQuotientFrontierSurfaces_of_targetElimination
     FirstBitPacketQuotientFrontierSurfaces where
   targetElimination := htarget
   profileCoalescence := hasFirstBitPacketProfileCoalescenceReduction
+
+/-- Packet quotient frontier enriched with the terminal scalar package. -/
+structure FirstBitPacketQuotientFrontierSurfacesWithTerminalScalars : Prop where
+  quotient : FirstBitPacketQuotientFrontierSurfaces
+  terminalScalars : FirstBitPacketTerminalScalarFrontierSurfaces
+
+/-- Add the terminal scalar package to a packet quotient frontier. -/
+theorem firstBitPacketQuotientFrontierSurfacesWithTerminalScalars_of_quotient
+    (hquotient : FirstBitPacketQuotientFrontierSurfaces) :
+    FirstBitPacketQuotientFrontierSurfacesWithTerminalScalars where
+  quotient := hquotient
+  terminalScalars := firstBitPacketTerminalScalarFrontierSurfaces
+
+/-- Build the packet quotient plus scalar package from the target-elimination reduction. -/
+theorem firstBitPacketQuotientFrontierSurfacesWithTerminalScalars_of_targetElimination
+    (htarget : HasFirstBitPacketTargetEliminationReduction) :
+    FirstBitPacketQuotientFrontierSurfacesWithTerminalScalars :=
+  firstBitPacketQuotientFrontierSurfacesWithTerminalScalars_of_quotient
+    (firstBitPacketQuotientFrontierSurfaces_of_targetElimination htarget)
 
 /-- Uniform cross packets can be read in either direction with the same cross value. -/
 theorem firstBitPacketUniformCross_symm
@@ -8703,6 +8947,54 @@ theorem
     modFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace_of_compressed h
   packetQuotient :=
     firstBitPacketQuotientFrontierSurfaces_of_targetElimination htarget
+
+/--
+Compressed aggregate package with retained-trace rows, packet quotient fields, and the terminal
+first-bit scalar certificate surfaces.  This is only wiring: the scalar package is arithmetic and
+does not assert a new graph-facing endpoint.
+-/
+structure
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTracePacketQuotientAndTerminalScalars :
+    Prop where
+  packetQuotient :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient
+  terminalScalars : FirstBitPacketTerminalScalarFrontierSurfaces
+
+/-- Forget the terminal scalar fields and recover the packet-quotient aggregate package. -/
+theorem
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTracePacketQuotientAndTerminalScalars.to_packetQuotient
+    (h :
+      ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTracePacketQuotientAndTerminalScalars) :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient :=
+  h.packetQuotient
+
+/-- Forget terminal scalars and packet quotients, recovering the compressed aggregate package. -/
+theorem
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTracePacketQuotientAndTerminalScalars.to_compressed
+    (h :
+      ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTracePacketQuotientAndTerminalScalars) :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry :=
+  h.packetQuotient.to_compressed
+
+/-- The scalar-enriched aggregate package still gives the rounded mod-four layer cap. -/
+theorem
+    triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTracePacketQuotientAndTerminalScalars
+    (h :
+      ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTracePacketQuotientAndTerminalScalars) :
+    TriangleFreeInducedC4FreeModFourLayerCap 14 :=
+  triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient
+    h.packetQuotient
+
+/-- Build the scalar-enriched aggregate package from compressed aggregate data and target elimination. -/
+theorem
+    modFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTracePacketQuotientAndTerminalScalars_of_compressed_and_packetTargetElimination
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry)
+    (htarget : HasFirstBitPacketTargetEliminationReduction) :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTracePacketQuotientAndTerminalScalars where
+  packetQuotient :=
+    modFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryRetainedTraceAndPacketQuotient_of_compressed_and_packetTargetElimination
+      h htarget
+  terminalScalars := firstBitPacketTerminalScalarFrontierSurfaces
 
 /--
 Conditional selector for the corrected `{0,1}`/`{3,2}` complement surface.  A linearly large
