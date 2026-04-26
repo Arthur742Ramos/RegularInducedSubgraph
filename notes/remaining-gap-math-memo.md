@@ -1648,6 +1648,8 @@ The odd-word boundary residual also compresses: a minimal affine-inconsistent Ar
 kernel exactly `{0,1_U}`.  Therefore `|U|` is even, `1_U in ker(A(Q[U])+diag(tau))`, `dim ker<=2`, and
 the irreducible obstruction is the single whole-class bit
 `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`; any other even kernel vector descends to a proper closed support.
+For `|U|>2`, equal columns of `A+diag(tau)` are impossible in this core, since they create the forbidden
+even kernel vector `e_i+e_j`.
 At the exact Davenport boundary top `X=e_1^3...e_r^3`, define
 `h_X(sum_i a_i e_i)=sum_i a_i` with `0<=a_i<=3`.  A graph-compatible export `Y` from the retained side
 closes whenever `|B|-|Y|+h_X(sigma(Y))>m`; thus terminality forces
@@ -1704,6 +1706,8 @@ In the ambiguous core, after trace-twin quotienting, `C_ext` is a triple packing
 `C_int subset K_3(J_int)`; Fano ambiguity means every Fano line is internally killed.
 A fixed kept pair is disjoint from at most two packing triples, so an ambiguous packing `P` needs at
 least `ceil(|P|/2)` internal kept-pair witnesses; Fano needs four.
+For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
+graphs are line-covered.
 Away from the exact boundary top, the same inequality uses
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`: terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every compatible export.

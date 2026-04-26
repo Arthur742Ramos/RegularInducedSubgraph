@@ -8308,6 +8308,14 @@ and a single quadratic half-edge bit.  Any terminal quotient with a larger kerne
 or with an even kernel vector different from `0,1_U`, descends to a proper closed
 support and is not irreducible.
 
+This also removes twisted twins from the minimal Arf core.  If two columns of
+`M_U=A(Q[U])+diag(tau)` were equal, then the two-point vector `e_i+e_j` would lie
+in `ker M_U`.  It has even weight, so in a minimal whole-class obstruction it
+would have to be either `0` or `1_U`.  Therefore, for `|U|>2`, all columns of
+`M_U` are distinct.  Equivalently, any pair of boundary triples with identical
+twisted adjacency profile already yields a proper closed even kernel support and
+is not part of an irreducible whole-class obstruction.
+
 One important special case is already explicit.  Suppose `tau` is constant on `U` and
 `deg_{Q[U]}(i)=tau [MOD 2]` for every `i in U`.  Then `1_U in ker M_U`.  If `|U|>m/2` and the carry
 equation is soluble for some `c`, the two complementary solutions `T` and `U\T` have weights summing
@@ -8830,6 +8838,13 @@ distinct internal kept-pair witnesses, where a witness is either a blocker edge 
 `E_3` equality failure on that kept pair.  In particular, a Fano external ambiguity requires at least
 four distinct internal pair witnesses.  If the internal side has at most three such witnesses, one
 externally surviving omitted triple in `P` survives all internal checks, and the positive atom reroots.
+
+For `P=F` this lower bound has an exact Fano-plane form.  A kept-pair witness `e` kills precisely the
+Fano lines disjoint from `e`; therefore a witness graph `H` kills all Fano omitted triples iff no Fano
+line meets every edge of `H`.  Equivalently, `H` is not vertex-covered by any Fano line.  Every graph
+with at most three witness edges is Fano-line-covered, so the first possible terminal Fano witness graph
+has four edges and must be a genuine Fano-line-uncoverable configuration, not a star, triangle, or any
+three-edge local defect.
 
 The same height language also covers the non-exact boundary.  For an arbitrary zero-sum-free boundary
 `X`, define the available import height

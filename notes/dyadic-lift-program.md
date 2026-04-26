@@ -1459,6 +1459,8 @@ unique nonzero even kernel vector `1_U`.  Equivalently the quotient is parity-ma
 `deg_U(i)=tau_i [MOD 2]`, and the single remaining bit is
 `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.  Thus the insoluble mixed-word endpoint has rank at most two
 after closed-support localization; larger kernels are reducible, not terminal atoms.
+It also has no twisted twins: for `|U|>2`, two equal columns of `M_U` would give the forbidden even
+kernel vector `e_i+e_j`.
 In the parity-matched constant-type case, `tau` is constant and `deg_Q(i)=tau [MOD 2]`, so `1_U` lies
 in the kernel.  If `|U|` is odd, the constant bit `c` can always satisfy the single all-ones
 compatibility equation.  But the full selector already closes any constant-type constant-parity quotient
@@ -1581,6 +1583,8 @@ signed `E_3` equation.
 Moreover a fixed kept pair is disjoint from at most two triples of a packing on seven points.  Hence
 killing an external packing `P` internally requires at least `ceil(|P|/2)` distinct kept-pair witnesses;
 Fano ambiguity needs at least four.
+For `P` Fano, the exact graph shadow is that the internal witness graph is not covered by any Fano line;
+all three-edge witness graphs are line-covered.
 For a non-exact boundary, replace `h_X` by the maximum available import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`.  Terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every graph-compatible export.  The exact top is just the case

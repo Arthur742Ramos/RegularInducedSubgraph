@@ -1745,12 +1745,22 @@ What remains justified after audit is:
     - more sharply now, the only primitive localized support in those cubic roots is the same-trace
       `P_3` kernel itself, and that kernel is already excluded by the closed same-trace
       internal-distinguisher theorem on the residual fixed fiber;
-    - therefore neither cubic-root `m = 3` template survives, and the endpoint-extension `m = 4`
-      lift cannot survive either; this only empties the **finite localized host-template** frontier,
-      while the global aggregate `beta_m` theorem still needs q-marker / weighted mixed-trace
-      splitting;
-    - raw parity pairing on `R` is too weak, because it misses the carry contribution hidden inside
-      those aggregate complement-orbit coefficients;
+     - therefore neither cubic-root `m = 3` template survives, and the endpoint-extension `m = 4`
+       lift cannot survive either; this only empties the **finite localized host-template** frontier,
+       while the global aggregate `beta_m` theorem still needs q-marker / weighted mixed-trace
+       splitting;
+    - on the first-bit exact-boundary side, the Davenport top has an exact import height/carry
+      inequality; deficit-zero fully compatible four-blocks collapse to the positive atom `e_i^4`;
+      the atom is now a seven-point omitted-triple table with external trace candidates `C_ext` and
+      internal candidates `C_int subset K_3(J_int)`;
+    - after trace-twin quotienting, ambiguous `C_ext` is a triple packing; terminality is
+      `C_ext cap C_int = empty`, and a Fano ambiguity requires an internal witness graph not covered
+      by any Fano line, in particular at least four kept-pair witnesses;
+    - the odd-word boundary residual also has a minimal Arf normal form: after closed-support
+      localization, the even kernel of `A(Q[U])+diag(tau)` is exactly `{0,1_U}`, the obstruction is one
+      whole-class half-edge bit, and equal twisted columns are impossible for `|U| > 2`;
+     - raw parity pairing on `R` is too weak, because it misses the carry contribution hidden inside
+       those aggregate complement-orbit coefficients;
    - the Section `18` obstruction shows that current `m`-bit data alone do not force this, and
      low-rank shadow space by itself is not enough.
 

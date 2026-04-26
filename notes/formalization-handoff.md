@@ -1933,10 +1933,12 @@ Recommended attack:
    Add the minimal Arf-kernel normal form.  If an affine-inconsistent quotient is minimal under passing
    to a bad closed support, then its even kernel is exactly `{0,1_U}`.  An even kernel vector with zero
    Arf pairing gives the proper bad support `U Delta K`; one with odd Arf pairing is itself a proper bad
-   support.  Therefore `|U|` is even, `1_U in ker M_U`, `sum_U r_i=1`, and `dim ker M_U<=2`; if odd
-   kernel vectors exist, they are a complementary pair modulo `1_U`.  Formalize the equivalent
-   whole-class parity statement `deg_U(i)=tau_i [MOD 2]` and quadratic bit
-   `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.
+    support.  Therefore `|U|` is even, `1_U in ker M_U`, `sum_U r_i=1`, and `dim ker M_U<=2`; if odd
+    kernel vectors exist, they are a complementary pair modulo `1_U`.  Formalize the equivalent
+    whole-class parity statement `deg_U(i)=tau_i [MOD 2]` and quadratic bit
+    `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.
+   Formalize the no-twisted-twins corollary: for `|U|>2`, equal columns of `M_U` would put
+   `e_i+e_j` in the even kernel, contradicting `{0,1_U}`.
    In the constant `tau` parity-matched case (`deg_Q(i)=tau [MOD 2]`), `1_U` is in the kernel; if
    `|U|` is odd, some constant bit is always compatible.  The full selector already closes
    constant-type constant-parity quotient sets above `m/2` by pair words, so keep the Arf bit only as a
@@ -2039,6 +2041,8 @@ Recommended attack:
    Add the packing-transversal bound: for each kept pair `e`, the family `{O in P:e cap O=empty}` has
    size at most two, since it is a triple packing on five points.  Thus terminality of an external
    packing `P` requires at least `ceil(|P|/2)` distinct internal kept-pair witnesses; Fano requires four.
+   In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
+   iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Generalize the height inequality to non-exact boundaries with
    `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}` (or unavailable).  For every graph-compatible export `Y`,
    terminality gives `H_X(sigma(Y))-|Y|<=m-|B|`; exact Davenport top is the special case `H_X=h_X`.

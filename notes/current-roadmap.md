@@ -4896,6 +4896,8 @@ after localizing to a bad closed support, the even kernel is exactly `{0,1_U}`, 
 `1_U in ker(A(Q[U])+diag(tau))`, `dim ker<=2`, and the only remaining obstruction bit is
 `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.  Any larger even kernel gives a proper closed support and is not
 an irreducible whole-class obstruction.
+For `|U|>2` the minimal Arf core also has no twisted twins: equal columns of `A+diag(tau)` give the
+forbidden even kernel vector `e_i+e_j`.
 At the exact Davenport boundary top `X=e_1^3...e_r^3`, the import budget is also fixed: if
 `h_X(sum_i a_i e_i)=sum_i a_i` for `0<=a_i<=3`, then exporting `Y` from the retained side and importing
 the forced matching boundary value leaves size `|B|-|Y|+h_X(sigma(Y))`.  Hence every graph-compatible
@@ -4961,6 +4963,8 @@ from `C_int subset K_3(J_int)`; in the Fano case every line must be killed by an
 signed `E_3` failure.
 A fixed kept pair is disjoint from at most two triples of a packing, so terminal ambiguous packing `P`
 requires at least `ceil(|P|/2)` distinct internal kept-pair witnesses; Fano requires four.
+Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
+three-edge witness graph is line-covered.
 For non-exact boundaries, use the maximum import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`; terminal exports satisfy
 `H_X(sigma(Y))-|Y|<=m-|B|`.  Exact top is the explicit box-height case.
