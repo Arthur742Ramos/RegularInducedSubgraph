@@ -1252,6 +1252,8 @@ degree patterns are empty/C4/matching/K4 for `k=0,4`, majority-type K3 or minori
 `k=1,3`, and no full-carrier closure for `k=2`.
 Thus the pure all-edge scalar residual is a finite signed-quotient problem: nonregular sign graph in uniform
 type, not one of the two closers in `1/3` type, and arbitrary sign graph in `2/2` type.
+It routes to the existing scalar-mismatch table: for atom rows `q_G=r_G-S_G`, any chosen triple requests
+degrees `lambda-q_G`, so residue `3` or a non-`000/110/211/222` graphical pattern is the scalar certificate.
 Shortened-pair-hit petals obey strict cross-defect: if the lift uses `q=2,3` source vertices and hits `r`
 other atoms, then `delta_other>=r` or `r+1`, respectively.
 Consequently `q=2` is tight only with one omission per hit atom, while `q=3` forces a singleton hit in a

@@ -13078,6 +13078,30 @@ uniform type (k=0 or 4):  the sign graph is not regular;
 This separates the all-edge scalar obstruction from the target-code work: it is a finite signed-quotient
 problem on four atom residues.
 
+The finite signed quotient is exactly a quotient-level scalar-mismatch instance.  Put
+
+```text
+q_G = r_G-S_G        [MOD 4].
+```
+
+For any three chosen atom rows and any candidate final residue `lambda`, the shifted self-layer requests the
+three internal degrees
+
+```text
+d_G = lambda-q_G        [MOD 4].
+```
+
+If one requested value is `3`, this is the endpoint-residue scalar kill.  If all three requested values have
+representatives in `{0,1,2}`, scalar success is governed by the same four graphical triples
+
+```text
+000, 110, 211, 222.
+```
+
+Thus every nonclosing signed quotient is not a new target-avoidance form; it is a finite scalar-mismatch
+certificate on atom rows, with the same partial-swap shielding requirements as the original ternary
+self-layer branch.
+
 If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
 cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
 source atom `G` (`q=2` or `3`) and hitting `r` other packed atoms.  Since this full lift crosses atoms,

@@ -5619,6 +5619,8 @@ for `k=0,4` triangular atoms, empty/C4/matching/K4; for `k=1,3`, the K3 on the m
 centered at the minority type; for `k=2`, none.
 Equivalently, the pure all-edge scalar residual is just: nonregular sign graph in uniform type, neither
 closing graph in `1/3` type, and arbitrary sign graph in `2/2` type.
+With `q_G=r_G-S_G`, any three atom rows request self-degrees `lambda-q_G`; residue `3` or failure of the
+`000/110/211/222` graphical table is exactly the existing ternary scalar-mismatch certificate.
 If a forced petal hits the shortened pair and lifts with `q=2` or `3` source vertices while hitting `r` other
 atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+1` for `q=3`; the remaining
 petals must compensate those omissions.

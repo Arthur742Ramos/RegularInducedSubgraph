@@ -2169,6 +2169,8 @@ when all atoms have the same type, majority K3 or minority-centered star when th
 full-carrier closure for a `2/2` type split.
 Thus nonclosure is exactly a finite signed-quotient obstruction: nonregular sign graph in uniform type,
 neither closer in `1/3`, or any sign graph in `2/2`.
+Equivalently, for atom-row residues `q_G=r_G-S_G`, every three-row scalar test is the usual
+`lambda-q_G` degree request, with endpoint residue `3` or a failed `000/110/211/222` pattern.
 Shortened-pair-hit petals obey the same finite omission table: `q=2` is tight only with one omission per hit
 atom, and `q=3` needs a singleton hit in a size-three/larger target to supply the extra omission.
 The only all-small tight hit mode is `q=2`; it folds back into the corner/F incidence tables with the

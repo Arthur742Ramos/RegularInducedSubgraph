@@ -2665,6 +2665,8 @@ Recommended attack:
     minority-centered star for `k=1,3`, and no full-carrier closure for `k=2`.
     Repackage nonclosure as: nonregular sign graph for uniform type, neither closing graph for `1/3`, and all
     sign graphs for `2/2`.
+    Route signed-quotient nonclosure to the scalar-mismatch table: with `q_G=r_G-S_G`, three atom rows request
+    degrees `lambda-q_G`; residue `3` or a non-`000/110/211/222` pattern is the scalar certificate.
     Add shortened-pair-hit strict defect: a forced petal using `q=2,3` source vertices and hitting `r` other
     atoms has `delta_other>=r` or `r+1`, respectively; remaining petals compensate those omissions.
     Record the small-profile hit table: `q=2` tight means exactly one omission in every hit atom; `q=3`
