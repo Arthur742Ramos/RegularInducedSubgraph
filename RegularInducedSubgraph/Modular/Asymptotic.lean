@@ -2538,6 +2538,56 @@ theorem hasExactSmallModulusAffineCrossSelector_two_thirteen_of_cliqueOrIndepSet
     (j := 2) (m := 13) (N := 53248) hbound (by decide)
 
 /--
+The `m = 14`, `j = 2` higher-bit affine selector field is reduced to the exact Ramsey
+threshold `R(14,14) <= 57344`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_two_fourteen_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 14 14 57344) :
+    HasExactSmallModulusAffineCrossSelector 2 14 :=
+  hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    (j := 2) (m := 14) (N := 57344) hbound (by decide)
+
+/--
+The `m = 15`, `j = 2` higher-bit affine selector field is reduced to the exact Ramsey
+threshold `R(15,15) <= 61440`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_two_fifteen_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 15 15 61440) :
+    HasExactSmallModulusAffineCrossSelector 2 15 :=
+  hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    (j := 2) (m := 15) (N := 61440) hbound (by decide)
+
+/--
+The `m = 16`, `j = 2` higher-bit affine selector field is reduced to the exact Ramsey
+threshold `R(16,16) <= 65536`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_two_sixteen_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 16 16 65536) :
+    HasExactSmallModulusAffineCrossSelector 2 16 :=
+  hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    (j := 2) (m := 16) (N := 65536) hbound (by decide)
+
+/--
+The `m = 15`, `j = 3` higher-bit affine selector field is reduced to the exact Ramsey
+threshold `R(15,15) <= 3932160`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_three_fifteen_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 15 15 3932160) :
+    HasExactSmallModulusAffineCrossSelector 3 15 :=
+  hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    (j := 3) (m := 15) (N := 3932160) hbound (by decide)
+
+/--
+The `m = 16`, `j = 3` higher-bit affine selector field is reduced to the exact Ramsey
+threshold `R(16,16) <= 4194304`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_three_sixteen_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 16 16 4194304) :
+    HasExactSmallModulusAffineCrossSelector 3 16 :=
+  hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    (j := 3) (m := 16) (N := 4194304) hbound (by decide)
+
+/--
 Binomial Ramsey alone cannot close the `13 <= m` tail's first `j = 2` affine field nor the
 first remaining `j = 3` affine field.  The exact replacement targets are the sharper
 bounds `R(13,13) <= 53248` and `R(14,14) <= 3670016`, respectively.
