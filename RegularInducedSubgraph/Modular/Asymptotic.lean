@@ -13634,6 +13634,1002 @@ theorem
           Usable degreeIntoAnchor ρ appendResidue :=
   h.finalRepairSpectrum.exists_missingExtreme_antiHorn_of_not_contains_extremes hnot
 
+/-- Target-wise damage profile induced by old-side vertices on one mixed target. -/
+def FirstBitTerminalTargetDamageAt
+    {Old Target : Type*} (A : Finset Old) (Damage : Old → Target → ℕ)
+    (target : Target) : ℕ :=
+  ∑ a in A, Damage a target
+
+/-- Imported target-damage profile budget on the mixed target layer at scale `L`. -/
+def FirstBitTerminalTargetDamageProfileBudget
+    {Old Target : Type*} (A : Finset Old) (Tmix : ℕ → Finset Target)
+    (Damage : Old → Target → ℕ) (L damageProfileBudget : ℕ) : Prop :=
+  (∑ target in Tmix L, FirstBitTerminalTargetDamageAt A Damage target) ≤
+    damageProfileBudget
+
+/-- Sparse target rows have pointwise damage bounded by the sparse import. -/
+def FirstBitTerminalSparseTargetDamageBound
+    {Old Target : Type*} (A : Finset Old) (SparseTarget : Finset Target)
+    (Damage : Old → Target → ℕ) (sparseDamageBound : ℕ) : Prop :=
+  ∀ target : Target, target ∈ SparseTarget →
+    FirstBitTerminalTargetDamageAt A Damage target ≤ sparseDamageBound
+
+/-- Dense target rows are controlled only in aggregate. -/
+def FirstBitTerminalDenseTargetDamageBound
+    {Old Target : Type*} (A : Finset Old) (DenseTarget : Finset Target)
+    (Damage : Old → Target → ℕ) (denseDamageBudget : ℕ) : Prop :=
+  (∑ target in DenseTarget, FirstBitTerminalTargetDamageAt A Damage target) ≤
+    denseDamageBudget
+
+/-- Scale-`L` low-polarity control on the mixed target layer `Tmix L`. -/
+def FirstBitTerminalScaleLowPolarityControl
+    {Target : Type*} (Tmix : ℕ → Finset Target) (Polar : Target → ℕ)
+    (L lowPolarityScale : ℕ) : Prop :=
+  ∀ target : Target, target ∈ Tmix L → Polar target ≤ lowPolarityScale * (L + 1)
+
+/-- Homogeneous bucket comparison for the mixed target layer. -/
+def FirstBitTerminalHomogeneousBucketComparison
+    {Target Bucket : Type*} (TmixL : Finset Target)
+    (bucketOf : Target → Bucket) (bucketProfile : Bucket → ℕ)
+    (bucketSlack : ℕ) : Prop :=
+  ∀ x : Target, x ∈ TmixL → ∀ y : Target, y ∈ TmixL →
+    bucketProfile (bucketOf x) ≤ bucketProfile (bucketOf y) + bucketSlack ∧
+      bucketProfile (bucketOf y) ≤ bucketProfile (bucketOf x) + bucketSlack
+
+/-- Dyadic localization to one homogeneous bucket at scale `L`. -/
+def FirstBitTerminalDyadicHomogeneousBucketLocalization
+    {Target Bucket : Type*} (Tmix : ℕ → Finset Target)
+    (bucketOf : Target → Bucket) (homogeneousBucket : Bucket)
+    (bucketProfile : Bucket → ℕ) (L dyadicBucketSlack : ℕ) : Prop :=
+  (∀ target : Target, target ∈ Tmix L → bucketOf target = homogeneousBucket) ∧
+    FirstBitTerminalHomogeneousBucketComparison
+      (Tmix L) bucketOf bucketProfile dyadicBucketSlack
+
+/-- Selector names for mixed target-core imports. -/
+inductive FirstBitTerminalMixedTargetCoreSelector : Type
+  | targetDamageProfile
+  | sparseTargetBound
+  | denseTargetBound
+  | scaleLowPolarity
+  | homogeneousBucketComparison
+  | dyadicHomogeneousBucket
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalMixedTargetCoreSelector
+
+/-- The proof obligation attached to each mixed target-core selector. -/
+def obligation
+    {Old Target Bucket : Type*} (A : Finset Old)
+    (SparseTarget DenseTarget : Finset Target)
+    (Damage : Old → Target → ℕ) (Polar : Target → ℕ)
+    (Tmix : ℕ → Finset Target)
+    (L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ)
+    (bucketOf : Target → Bucket) (homogeneousBucket : Bucket)
+    (bucketProfile : Bucket → ℕ) (bucketSlack dyadicBucketSlack : ℕ) :
+    FirstBitTerminalMixedTargetCoreSelector → Prop
+  | targetDamageProfile =>
+      FirstBitTerminalTargetDamageProfileBudget A Tmix Damage L damageProfileBudget
+  | sparseTargetBound =>
+      FirstBitTerminalSparseTargetDamageBound A SparseTarget Damage sparseDamageBound
+  | denseTargetBound =>
+      FirstBitTerminalDenseTargetDamageBound A DenseTarget Damage denseDamageBudget
+  | scaleLowPolarity =>
+      FirstBitTerminalScaleLowPolarityControl Tmix Polar L lowPolarityScale
+  | homogeneousBucketComparison =>
+      FirstBitTerminalHomogeneousBucketComparison
+        (Tmix L) bucketOf bucketProfile bucketSlack
+  | dyadicHomogeneousBucket =>
+      FirstBitTerminalDyadicHomogeneousBucketLocalization
+        Tmix bucketOf homogeneousBucket bucketProfile L dyadicBucketSlack
+
+end FirstBitTerminalMixedTargetCoreSelector
+
+/--
+Assumption-explicit mixed target-core certificate.  It records the target-damage profile,
+sparse/dense target bounds, scale-`L` low-polarity control, and homogeneous dyadic bucket
+localization without asserting any closure theorem unconditionally.
+-/
+structure FirstBitTerminalMixedTargetCoreCertificate
+    {Old Target Bucket : Type*} (A : Finset Old)
+    (SparseTarget DenseTarget : Finset Target)
+    (Damage : Old → Target → ℕ) (Polar : Target → ℕ)
+    (Tmix : ℕ → Finset Target)
+    (L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ)
+    (bucketOf : Target → Bucket) (homogeneousBucket : Bucket)
+    (bucketProfile : Bucket → ℕ) (bucketSlack dyadicBucketSlack : ℕ) : Prop where
+  targetDamageProfile :
+    FirstBitTerminalTargetDamageProfileBudget A Tmix Damage L damageProfileBudget
+  sparseTargetBound :
+    FirstBitTerminalSparseTargetDamageBound A SparseTarget Damage sparseDamageBound
+  denseTargetBound :
+    FirstBitTerminalDenseTargetDamageBound A DenseTarget Damage denseDamageBudget
+  scaleLowPolarity :
+    FirstBitTerminalScaleLowPolarityControl Tmix Polar L lowPolarityScale
+  homogeneousBucketComparison :
+    FirstBitTerminalHomogeneousBucketComparison
+      (Tmix L) bucketOf bucketProfile bucketSlack
+  dyadicHomogeneousBucket :
+    FirstBitTerminalDyadicHomogeneousBucketLocalization
+      Tmix bucketOf homogeneousBucket bucketProfile L dyadicBucketSlack
+
+/-- Construct the mixed target-core certificate from its explicit assumptions. -/
+theorem firstBitTerminalMixedTargetCoreCertificate_of_assumptions
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (hprofile :
+      FirstBitTerminalTargetDamageProfileBudget A Tmix Damage L damageProfileBudget)
+    (hsparse :
+      FirstBitTerminalSparseTargetDamageBound A SparseTarget Damage sparseDamageBound)
+    (hdense :
+      FirstBitTerminalDenseTargetDamageBound A DenseTarget Damage denseDamageBudget)
+    (hlow :
+      FirstBitTerminalScaleLowPolarityControl Tmix Polar L lowPolarityScale)
+    (hbucket :
+      FirstBitTerminalHomogeneousBucketComparison
+        (Tmix L) bucketOf bucketProfile bucketSlack)
+    (hdyadic :
+      FirstBitTerminalDyadicHomogeneousBucketLocalization
+        Tmix bucketOf homogeneousBucket bucketProfile L dyadicBucketSlack) :
+    FirstBitTerminalMixedTargetCoreCertificate
+      A SparseTarget DenseTarget Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack where
+  targetDamageProfile := hprofile
+  sparseTargetBound := hsparse
+  denseTargetBound := hdense
+  scaleLowPolarity := hlow
+  homogeneousBucketComparison := hbucket
+  dyadicHomogeneousBucket := hdyadic
+
+/-- Project the target-damage profile from a mixed target-core certificate. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.to_targetDamageProfile
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalTargetDamageProfileBudget A Tmix Damage L damageProfileBudget :=
+  h.targetDamageProfile
+
+/-- Project the sparse target bound from a mixed target-core certificate. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.to_sparseTargetBound
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalSparseTargetDamageBound A SparseTarget Damage sparseDamageBound :=
+  h.sparseTargetBound
+
+/-- Project the dense target bound from a mixed target-core certificate. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.to_denseTargetBound
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalDenseTargetDamageBound A DenseTarget Damage denseDamageBudget :=
+  h.denseTargetBound
+
+/-- Project scale-`L` low-polarity control from a mixed target-core certificate. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.to_scaleLowPolarity
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalScaleLowPolarityControl Tmix Polar L lowPolarityScale :=
+  h.scaleLowPolarity
+
+/-- Project homogeneous bucket comparison from a mixed target-core certificate. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.to_homogeneousBucketComparison
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalHomogeneousBucketComparison
+      (Tmix L) bucketOf bucketProfile bucketSlack :=
+  h.homogeneousBucketComparison
+
+/-- Project dyadic homogeneous bucket localization from a mixed target-core certificate. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.to_dyadicHomogeneousBucket
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalDyadicHomogeneousBucketLocalization
+      Tmix bucketOf homogeneousBucket bucketProfile L dyadicBucketSlack :=
+  h.dyadicHomogeneousBucket
+
+/-- Apply the sparse target bound to one target row. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.sparseTargetDamage_le
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack)
+    {target : Target} (htarget : target ∈ SparseTarget) :
+    FirstBitTerminalTargetDamageAt A Damage target ≤ sparseDamageBound :=
+  h.sparseTargetBound target htarget
+
+/-- Apply scale-`L` low-polarity control to one mixed target. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.polar_le_of_mem_tmix
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack)
+    {target : Target} (htarget : target ∈ Tmix L) :
+    Polar target ≤ lowPolarityScale * (L + 1) :=
+  h.scaleLowPolarity target htarget
+
+/-- Any dyadically localized mixed target belongs to the named homogeneous bucket. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.bucketOf_eq_of_mem_tmix
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack)
+    {target : Target} (htarget : target ∈ Tmix L) :
+    bucketOf target = homogeneousBucket :=
+  h.dyadicHomogeneousBucket.1 target htarget
+
+/-- Compare bucket profiles of two mixed targets using the homogeneous bucket import. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.bucketProfile_comparable
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack)
+    {x y : Target} (hx : x ∈ Tmix L) (hy : y ∈ Tmix L) :
+    bucketProfile (bucketOf x) ≤ bucketProfile (bucketOf y) + bucketSlack ∧
+      bucketProfile (bucketOf y) ≤ bucketProfile (bucketOf x) + bucketSlack :=
+  h.homogeneousBucketComparison x hx y hy
+
+/-- Project the obligation named by a mixed target-core selector. -/
+theorem FirstBitTerminalMixedTargetCoreCertificate.obligation
+    {Old Target Bucket : Type*} {A : Finset Old}
+    {SparseTarget DenseTarget : Finset Target}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack)
+    (selector : FirstBitTerminalMixedTargetCoreSelector) :
+    FirstBitTerminalMixedTargetCoreSelector.obligation
+      A SparseTarget DenseTarget Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack selector := by
+  cases selector
+  · exact h.targetDamageProfile
+  · exact h.sparseTargetBound
+  · exact h.denseTargetBound
+  · exact h.scaleLowPolarity
+  · exact h.homogeneousBucketComparison
+  · exact h.dyadicHomogeneousBucket
+
+/-- Co-cut/self-layer certificate bundled beside the mixed target-core imports. -/
+structure FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+    {Old Shadow Target Bucket : Type*}
+    (A : Finset Old) (T2 PureT2 : Finset Shadow)
+    (SparseTarget DenseTarget : Finset Target)
+    (pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ)
+    (targetDamage : Old → ℕ) (pureProfile : Shadow → ℕ)
+    (pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ)
+    (Damage : Old → Target → ℕ) (Polar : Target → ℕ)
+    (Tmix : ℕ → Finset Target)
+    (L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ)
+    (bucketOf : Target → Bucket) (homogeneousBucket : Bucket)
+    (bucketProfile : Bucket → ℕ) (bucketSlack dyadicBucketSlack : ℕ) : Prop where
+  coCutSelfLayer :
+    FirstBitTerminalCoCutSelfLayerCertificate
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+  mixedTargetCore :
+    FirstBitTerminalMixedTargetCoreCertificate
+      A SparseTarget DenseTarget Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+
+/-- Build co-cut/self-layer plus mixed target-core imports from independent parts. -/
+theorem firstBitTerminalCoCutSelfLayerMixedTargetCoreImports_of_parts
+    {Old Shadow Target Bucket : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (hcocut :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack)
+    (hmixed :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack where
+  coCutSelfLayer := hcocut
+  mixedTargetCore := hmixed
+
+/-- Construct co-cut/self-layer plus mixed target-core imports from explicit assumptions. -/
+theorem firstBitTerminalCoCutSelfLayerMixedTargetCoreImports_of_assumptions
+    {Old Shadow Target Bucket : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (hpair :
+      FirstBitTerminalCoCutAllPairsAveragedPairExchangeInequality
+        T2 pairExchangeDamage pairExchangeBudget)
+    (hbiquadratic :
+      FirstBitTerminalCoCutBiquadraticDomination T2 coCutCharge biquadraticScale)
+    (halmost :
+      FirstBitTerminalGlobalAlmostConstantPureT2Vertices
+        T2 PureT2 pureProfile almostConstantSlack)
+    (hdamage :
+      FirstBitTerminalCoCutTargetDamageBudget A targetDamage targetDamageBudget)
+    (hprofile :
+      FirstBitTerminalTargetDamageProfileBudget A Tmix Damage L damageProfileBudget)
+    (hsparse :
+      FirstBitTerminalSparseTargetDamageBound A SparseTarget Damage sparseDamageBound)
+    (hdense :
+      FirstBitTerminalDenseTargetDamageBound A DenseTarget Damage denseDamageBudget)
+    (hlow :
+      FirstBitTerminalScaleLowPolarityControl Tmix Polar L lowPolarityScale)
+    (hbucket :
+      FirstBitTerminalHomogeneousBucketComparison
+        (Tmix L) bucketOf bucketProfile bucketSlack)
+    (hdyadic :
+      FirstBitTerminalDyadicHomogeneousBucketLocalization
+        Tmix bucketOf homogeneousBucket bucketProfile L dyadicBucketSlack) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack :=
+  firstBitTerminalCoCutSelfLayerMixedTargetCoreImports_of_parts
+    (firstBitTerminalCoCutSelfLayerCertificate_of_assumptions
+      hpair hbiquadratic halmost hdamage)
+    (firstBitTerminalMixedTargetCoreCertificate_of_assumptions
+      hprofile hsparse hdense hlow hbucket hdyadic)
+
+/-- Project co-cut/self-layer imports from the mixed target-core bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports.to_coCutSelfLayer
+    {Old Shadow Target Bucket : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalCoCutSelfLayerCertificate
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack :=
+  h.coCutSelfLayer
+
+/-- Project mixed target-core imports from the co-cut/self-layer bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports.to_mixedTargetCore
+    {Old Shadow Target Bucket : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalMixedTargetCoreCertificate
+      A SparseTarget DenseTarget Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack :=
+  h.mixedTargetCore
+
+/-- Apply a selected mixed target-core obligation from the co-cut/mixed-core import bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports.mixedTargetCore_obligation
+    {Old Shadow Target Bucket : Type*}
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack)
+    (selector : FirstBitTerminalMixedTargetCoreSelector) :
+    FirstBitTerminalMixedTargetCoreSelector.obligation
+      A SparseTarget DenseTarget Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack selector :=
+  h.mixedTargetCore.obligation selector
+
+/--
+Final-facing wrapper that keeps the existing co-cut/self-layer repair-spectrum surface together with
+the mixed target-core certificate.
+-/
+structure
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    {Old Shadow Target Bucket : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 PureT2 : Finset Shadow)
+    (SparseTarget DenseTarget : Finset Target)
+    (pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ)
+    (targetDamage : Old → ℕ) (pureProfile : Shadow → ℕ)
+    (pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ)
+    (Damage : Old → Target → ℕ) (Polar : Target → ℕ)
+    (Tmix : ℕ → Finset Target)
+    (L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ)
+    (bucketOf : Target → Bucket) (homogeneousBucket : Bucket)
+    (bucketProfile : Bucket → ℕ) (bucketSlack dyadicBucketSlack : ℕ)
+    (Q : Old → Finset Shadow)
+    (RepairSpectrum : Finset (Fin 4)) (R44 : ℕ)
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (appendResidue : Fin 4)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop) : Prop where
+  finalCoCutSelfLayer :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+      Basis WithHoles PositiveAtom
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint
+  mixedTargetCore :
+    FirstBitTerminalMixedTargetCoreCertificate
+      A SparseTarget DenseTarget Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+
+/-- Build the final mixed target-core wrapper from the co-cut final wrapper and mixed core. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore_of_parts
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hmixed :
+      FirstBitTerminalMixedTargetCoreCertificate
+        A SparseTarget DenseTarget Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+      Basis WithHoles PositiveAtom
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  finalCoCutSelfLayer := hfinal
+  mixedTargetCore := hmixed
+
+/-- Build the final mixed target-core wrapper from explicit mixed-core assumptions. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore_of_mixedCoreAssumptions
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hprofile :
+      FirstBitTerminalTargetDamageProfileBudget A Tmix Damage L damageProfileBudget)
+    (hsparse :
+      FirstBitTerminalSparseTargetDamageBound A SparseTarget Damage sparseDamageBound)
+    (hdense :
+      FirstBitTerminalDenseTargetDamageBound A DenseTarget Damage denseDamageBudget)
+    (hlow :
+      FirstBitTerminalScaleLowPolarityControl Tmix Polar L lowPolarityScale)
+    (hbucket :
+      FirstBitTerminalHomogeneousBucketComparison
+        (Tmix L) bucketOf bucketProfile bucketSlack)
+    (hdyadic :
+      FirstBitTerminalDyadicHomogeneousBucketLocalization
+        Tmix bucketOf homogeneousBucket bucketProfile L dyadicBucketSlack) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+      Basis WithHoles PositiveAtom
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore_of_parts
+    hfinal
+    (firstBitTerminalMixedTargetCoreCertificate_of_assumptions
+      hprofile hsparse hdense hlow hbucket hdyadic)
+
+/-- Forget mixed target-core fields and recover the existing final co-cut/self-layer wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore.to_finalCoCutSelfLayer
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+      Basis WithHoles PositiveAtom
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.finalCoCutSelfLayer
+
+/-- Project the mixed target-core certificate from the final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore.to_mixedTargetCore
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalMixedTargetCoreCertificate
+      A SparseTarget DenseTarget Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack :=
+  h.mixedTargetCore
+
+/-- Export co-cut/self-layer and mixed target-core imports from the final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore.to_coCutSelfLayerMixedTargetCore
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCoreImports
+      A T2 PureT2 SparseTarget DenseTarget
+      pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack where
+  coCutSelfLayer := h.finalCoCutSelfLayer.coCutSelfLayer
+  mixedTargetCore := h.mixedTargetCore
+
+/-- Recover the available-cut positive-atom final wrapper from the mixed target-core surface. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore.to_availableCutPositiveAtom
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom :=
+  h.finalCoCutSelfLayer.finalRepairSpectrum.finalFiniteCore.finalAvailableCut
+
+/-- Apply an available cut through the final mixed target-core wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore.positiveAtom_of_available
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    {capacity d rho : ℕ} {coeff : Fin 4}
+    (havailable : FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff)
+    (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.to_availableCutPositiveAtom.positiveAtom_of_available havailable hbasis
+
+/-- Apply a selected mixed target-core obligation from the final mixed target-core wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore.mixedTargetCore_obligation
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow Target Bucket : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {SparseTarget DenseTarget : Finset Target}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Damage : Old → Target → ℕ} {Polar : Target → ℕ}
+    {Tmix : ℕ → Finset Target}
+    {L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale : ℕ}
+    {bucketOf : Target → Bucket} {homogeneousBucket : Bucket}
+    {bucketProfile : Bucket → ℕ} {bucketSlack dyadicBucketSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumCoCutSelfLayerAndMixedTargetCore
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 SparseTarget DenseTarget
+        pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Damage Polar Tmix
+        L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+        bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (selector : FirstBitTerminalMixedTargetCoreSelector) :
+    FirstBitTerminalMixedTargetCoreSelector.obligation
+      A SparseTarget DenseTarget Damage Polar Tmix
+      L damageProfileBudget sparseDamageBound denseDamageBudget lowPolarityScale
+      bucketOf homogeneousBucket bucketProfile bucketSlack dyadicBucketSlack selector :=
+  h.mixedTargetCore.obligation selector
+
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
   ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
