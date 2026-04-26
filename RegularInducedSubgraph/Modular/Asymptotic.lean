@@ -22444,6 +22444,958 @@ theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.to_activeCriticalityWit
 end FirstBitTerminalActiveCoverLiftExclusionFrontier
 
 /--
+Two-residue deletion-label frontier for the near-threshold terminal core.  The full core `J`
+is split into the pure residue side `R` and the Gallai side `C`; the base label is the
+two-level function with value `0` on `R` and `2` on `C`.  The hereditary label
+`epsilonU U` records the relabeling after deleting `J \ U`, while the selector predicate is
+kept assumption-backed by the constant-value equation on `U \ E`.
+-/
+structure FirstBitTerminalTwoResidueDeletionLabelFrontier
+    {Vertex : Type*} [DecidableEq Vertex]
+    (coreVertices residueVertices gallaiClass : Finset Vertex)
+    (epsilon : Vertex → ℤ)
+    (epsilonU : Finset Vertex → Vertex → ℤ)
+    (degreeInto : Finset Vertex → Vertex → ℤ)
+    (pureRLabel pureCLabel : Vertex → ℤ)
+    (selectorSet : Finset Vertex → Finset Vertex → Finset Vertex)
+    (mixedSelector : Finset Vertex → Finset Vertex → Prop)
+    (twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+      pureRestrictionCompatibility : Prop) : Prop where
+  core_eq_residue_union_gallai : coreVertices = residueVertices ∪ gallaiClass
+  residue_gallai_disjoint : Disjoint residueVertices gallaiClass
+  epsilon_zero_on_residue : ∀ v : Vertex, v ∈ residueVertices → epsilon v = 0
+  epsilon_two_on_gallai : ∀ v : Vertex, v ∈ gallaiClass → epsilon v = 2
+  epsilonU_eq_deleteDegree :
+    ∀ U : Finset Vertex, U ⊆ coreVertices → ∀ v : Vertex, v ∈ U →
+      epsilonU U v = epsilon v - degreeInto (coreVertices \ U) v
+  selectorSet_eq_delete :
+    ∀ U E : Finset Vertex, U ⊆ coreVertices → E ⊆ U → selectorSet U E = U \ E
+  selector_iff_constant :
+    ∀ U E : Finset Vertex, U ⊆ coreVertices → E ⊆ U →
+      mixedSelector U E ↔
+        ∃ k : ℤ, ∀ v : Vertex, v ∈ selectorSet U E →
+          epsilonU U v - degreeInto E v = k
+  pureRLabel_eq :
+    ∀ v : Vertex, v ∈ residueVertices → pureRLabel v = -(degreeInto gallaiClass v)
+  pureCLabel_eq :
+    ∀ v : Vertex, v ∈ gallaiClass → pureCLabel v = 2 - degreeInto residueVertices v
+  pureR_restricts_twoLevel :
+    ∀ v : Vertex, v ∈ residueVertices → pureRLabel v = epsilon v - degreeInto gallaiClass v
+  pureC_restricts_twoLevel :
+    ∀ v : Vertex, v ∈ gallaiClass → pureCLabel v = epsilon v - degreeInto residueVertices v
+  twoLevelDeletionLabelCert : twoLevelDeletionLabel
+  hereditaryRelabelingCert : hereditaryRelabeling
+  selectorConstantEquationCert : selectorConstantEquation
+  pureRestrictionCompatibilityCert : pureRestrictionCompatibility
+
+/-- Build the two-residue deletion-label frontier from explicit certificate data. -/
+theorem firstBitTerminalTwoResidueDeletionLabelFrontier_of_assumptions
+    {Vertex : Type*} [DecidableEq Vertex]
+    {coreVertices residueVertices gallaiClass : Finset Vertex}
+    {epsilon : Vertex → ℤ}
+    {epsilonU : Finset Vertex → Vertex → ℤ}
+    {degreeInto : Finset Vertex → Vertex → ℤ}
+    {pureRLabel pureCLabel : Vertex → ℤ}
+    {selectorSet : Finset Vertex → Finset Vertex → Finset Vertex}
+    {mixedSelector : Finset Vertex → Finset Vertex → Prop}
+    {twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+      pureRestrictionCompatibility : Prop}
+    (hcore : coreVertices = residueVertices ∪ gallaiClass)
+    (hdisjoint : Disjoint residueVertices gallaiClass)
+    (hzero : ∀ v : Vertex, v ∈ residueVertices → epsilon v = 0)
+    (htwo : ∀ v : Vertex, v ∈ gallaiClass → epsilon v = 2)
+    (hepsilonU :
+      ∀ U : Finset Vertex, U ⊆ coreVertices → ∀ v : Vertex, v ∈ U →
+        epsilonU U v = epsilon v - degreeInto (coreVertices \ U) v)
+    (hselectorSet :
+      ∀ U E : Finset Vertex, U ⊆ coreVertices → E ⊆ U → selectorSet U E = U \ E)
+    (hselectorIff :
+      ∀ U E : Finset Vertex, U ⊆ coreVertices → E ⊆ U →
+        mixedSelector U E ↔
+          ∃ k : ℤ, ∀ v : Vertex, v ∈ selectorSet U E →
+            epsilonU U v - degreeInto E v = k)
+    (hpureR :
+      ∀ v : Vertex, v ∈ residueVertices → pureRLabel v = -(degreeInto gallaiClass v))
+    (hpureC :
+      ∀ v : Vertex, v ∈ gallaiClass → pureCLabel v = 2 - degreeInto residueVertices v)
+    (hpureRRestricts :
+      ∀ v : Vertex, v ∈ residueVertices → pureRLabel v = epsilon v - degreeInto gallaiClass v)
+    (hpureCRestricts :
+      ∀ v : Vertex, v ∈ gallaiClass → pureCLabel v = epsilon v - degreeInto residueVertices v)
+    (htwoLevel : twoLevelDeletionLabel)
+    (hhereditary : hereditaryRelabeling)
+    (hselectorEquation : selectorConstantEquation)
+    (hpureCompatibility : pureRestrictionCompatibility) :
+    FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+      epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+      twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+      pureRestrictionCompatibility where
+  core_eq_residue_union_gallai := hcore
+  residue_gallai_disjoint := hdisjoint
+  epsilon_zero_on_residue := hzero
+  epsilon_two_on_gallai := htwo
+  epsilonU_eq_deleteDegree := hepsilonU
+  selectorSet_eq_delete := hselectorSet
+  selector_iff_constant := hselectorIff
+  pureRLabel_eq := hpureR
+  pureCLabel_eq := hpureC
+  pureR_restricts_twoLevel := hpureRRestricts
+  pureC_restricts_twoLevel := hpureCRestricts
+  twoLevelDeletionLabelCert := htwoLevel
+  hereditaryRelabelingCert := hhereditary
+  selectorConstantEquationCert := hselectorEquation
+  pureRestrictionCompatibilityCert := hpureCompatibility
+
+section FirstBitTerminalTwoResidueDeletionLabelFrontier
+
+variable {Vertex : Type*} [DecidableEq Vertex]
+variable {coreVertices residueVertices gallaiClass : Finset Vertex}
+variable {epsilon : Vertex → ℤ}
+variable {epsilonU : Finset Vertex → Vertex → ℤ}
+variable {degreeInto : Finset Vertex → Vertex → ℤ}
+variable {pureRLabel pureCLabel : Vertex → ℤ}
+variable {selectorSet : Finset Vertex → Finset Vertex → Finset Vertex}
+variable {mixedSelector : Finset Vertex → Finset Vertex → Prop}
+variable {twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+  pureRestrictionCompatibility : Prop}
+
+/-- The core is exactly the union of the two residue sides, with no overlap. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.corePartition
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility) :
+    coreVertices = residueVertices ∪ gallaiClass ∧ Disjoint residueVertices gallaiClass :=
+  ⟨h.core_eq_residue_union_gallai, h.residue_gallai_disjoint⟩
+
+/-- On the residue side `R`, the two-level base label is zero. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.epsilon_zero_of_mem_residue
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    {v : Vertex} (hv : v ∈ residueVertices) :
+    epsilon v = 0 :=
+  h.epsilon_zero_on_residue v hv
+
+/-- On the Gallai side `C`, the two-level base label is two. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.epsilon_two_of_mem_gallai
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    {v : Vertex} (hv : v ∈ gallaiClass) :
+    epsilon v = 2 :=
+  h.epsilon_two_on_gallai v hv
+
+/-- The hereditary label on `U` is obtained by charging the deleted part `J \ U`. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.epsilonU_eq
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    {U : Finset Vertex} (hU : U ⊆ coreVertices) {v : Vertex} (hv : v ∈ U) :
+    epsilonU U v = epsilon v - degreeInto (coreVertices \ U) v :=
+  h.epsilonU_eq_deleteDegree U hU v hv
+
+/-- The selector carrier associated to deleting `E` from `U` is exactly `U \ E`. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.selectorSet_eq
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    {U E : Finset Vertex} (hU : U ⊆ coreVertices) (hE : E ⊆ U) :
+    selectorSet U E = U \ E :=
+  h.selectorSet_eq_delete U E hU hE
+
+/-- Selectorhood is equivalent to constancy of `epsilonU - deg_E` on `U \ E`. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.mixedSelector_iff_constant
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    {U E : Finset Vertex} (hU : U ⊆ coreVertices) (hE : E ⊆ U) :
+    mixedSelector U E ↔
+      ∃ k : ℤ, ∀ v : Vertex, v ∈ selectorSet U E → epsilonU U v - degreeInto E v = k :=
+  h.selector_iff_constant U E hU hE
+
+/-- The pure `R` label is the restriction `-deg_C`. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.pureRLabel_eq_neg_degreeInto_gallai
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    {v : Vertex} (hv : v ∈ residueVertices) :
+    pureRLabel v = -(degreeInto gallaiClass v) :=
+  h.pureRLabel_eq v hv
+
+/-- The pure `C` label is the restriction `2 - deg_R`. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.pureCLabel_eq_two_sub_degreeInto_residue
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    {v : Vertex} (hv : v ∈ gallaiClass) :
+    pureCLabel v = 2 - degreeInto residueVertices v :=
+  h.pureCLabel_eq v hv
+
+/-- The pure `R` label is a restriction of the two-level deletion label. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.pureR_restricts_epsilon
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    {v : Vertex} (hv : v ∈ residueVertices) :
+    pureRLabel v = epsilon v - degreeInto gallaiClass v :=
+  h.pureR_restricts_twoLevel v hv
+
+/-- The pure `C` label is a restriction of the two-level deletion label. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.pureC_restricts_epsilon
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    {v : Vertex} (hv : v ∈ gallaiClass) :
+    pureCLabel v = epsilon v - degreeInto residueVertices v :=
+  h.pureC_restricts_twoLevel v hv
+
+/-- Project the two-level deletion-label marker. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.to_twoLevelDeletionLabel
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility) :
+    twoLevelDeletionLabel :=
+  h.twoLevelDeletionLabelCert
+
+/-- Project the hereditary relabeling marker. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.to_hereditaryRelabeling
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility) :
+    hereditaryRelabeling :=
+  h.hereditaryRelabelingCert
+
+/-- Project the selector-constant equation marker. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.to_selectorConstantEquation
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility) :
+    selectorConstantEquation :=
+  h.selectorConstantEquationCert
+
+/-- Project the pure-restriction compatibility marker. -/
+theorem FirstBitTerminalTwoResidueDeletionLabelFrontier.to_pureRestrictionCompatibility
+    (h :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility) :
+    pureRestrictionCompatibility :=
+  h.pureRestrictionCompatibilityCert
+
+end FirstBitTerminalTwoResidueDeletionLabelFrontier
+
+/--
+Hereditary mixed deletion-core frontier for the full two-residue near-threshold core.  It
+connects the two-level label on `(J, epsilon)` to the existing near-threshold deletion-template
+frontier and records, as explicit assumptions, the bad-vertex deletion-core form and the
+bad-vertex-free mixed selector equation.
+-/
+structure FirstBitTerminalHereditaryMixedDeletionCoreFrontier
+    {Vertex : Type*} [DecidableEq Vertex]
+    (coreVertices residueVertices gallaiClass goodCore badVertices : Finset Vertex)
+    (m s : ℕ)
+    (epsilon mixedBaseLabel : Vertex → ℤ)
+    (epsilonU : Finset Vertex → Vertex → ℤ)
+    (degreeInto : Finset Vertex → Vertex → ℤ)
+    (pureRLabel pureCLabel : Vertex → ℤ)
+    (selectorSet : Finset Vertex → Finset Vertex → Finset Vertex)
+    (mixedSelector : Finset Vertex → Finset Vertex → Prop)
+    (singleDeletionResidual : Vertex → Finset Vertex)
+    (pairDeletionResidual : Vertex → Vertex → Finset Vertex)
+    (singleDeletedLabel : Vertex → Vertex → ℤ)
+    (pairDeletedLabel : Vertex → Vertex → Vertex → ℤ)
+    (nearThresholdArithmetic selectorDeletionNormalForm
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+      twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+      pureRestrictionCompatibility mixedTwoResidueTarget badVertexDeletionCore
+      badVertexFreeMixedResidual hereditaryMixedDeletionCore : Prop) : Prop where
+  twoResidueDeletionLabelFrontierCert :
+    FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+      epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+      twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+      pureRestrictionCompatibility
+  nearThresholdDeletionTemplateFrontierCert :
+    FirstBitTerminalNearThresholdDeletionTemplateFrontier coreVertices gallaiClass m s
+      mixedBaseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel
+      pairDeletedLabel nearThresholdArithmetic selectorDeletionNormalForm
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+  mixedBaseLabel_eq_epsilon :
+    ∀ v : Vertex, v ∈ coreVertices → mixedBaseLabel v = epsilon v
+  badVertices_subset_core : badVertices ⊆ coreVertices
+  goodCore_eq_delete_bad : goodCore = coreVertices \ badVertices
+  badVertexFree_selector_iff_constant :
+    ∀ U E : Finset Vertex, U ⊆ goodCore → E ⊆ U →
+      mixedSelector U E ↔
+        ∃ k : ℤ, ∀ v : Vertex, v ∈ selectorSet U E →
+          epsilonU U v - degreeInto E v = k
+  mixedTwoResidueTargetCert : mixedTwoResidueTarget
+  badVertexDeletionCoreCert : badVertexDeletionCore
+  badVertexFreeMixedResidualCert : badVertexFreeMixedResidual
+  hereditaryMixedDeletionCoreCert : hereditaryMixedDeletionCore
+
+/-- Build the hereditary mixed deletion-core frontier from explicit subfrontier certificates. -/
+theorem firstBitTerminalHereditaryMixedDeletionCoreFrontier_of_frontiers
+    {Vertex : Type*} [DecidableEq Vertex]
+    {coreVertices residueVertices gallaiClass goodCore badVertices : Finset Vertex}
+    {m s : ℕ}
+    {epsilon mixedBaseLabel : Vertex → ℤ}
+    {epsilonU : Finset Vertex → Vertex → ℤ}
+    {degreeInto : Finset Vertex → Vertex → ℤ}
+    {pureRLabel pureCLabel : Vertex → ℤ}
+    {selectorSet : Finset Vertex → Finset Vertex → Finset Vertex}
+    {mixedSelector : Finset Vertex → Finset Vertex → Prop}
+    {singleDeletionResidual : Vertex → Finset Vertex}
+    {pairDeletionResidual : Vertex → Vertex → Finset Vertex}
+    {singleDeletedLabel : Vertex → Vertex → ℤ}
+    {pairDeletedLabel : Vertex → Vertex → Vertex → ℤ}
+    {nearThresholdArithmetic selectorDeletionNormalForm
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+      twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+      pureRestrictionCompatibility mixedTwoResidueTarget badVertexDeletionCore
+      badVertexFreeMixedResidual hereditaryMixedDeletionCore : Prop}
+    (htwoResidue :
+      FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+        epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+        twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+        pureRestrictionCompatibility)
+    (hnear :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier coreVertices gallaiClass m s
+        mixedBaseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel
+        pairDeletedLabel nearThresholdArithmetic selectorDeletionNormalForm
+        sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate)
+    (hbase : ∀ v : Vertex, v ∈ coreVertices → mixedBaseLabel v = epsilon v)
+    (hbadSub : badVertices ⊆ coreVertices)
+    (hgood : goodCore = coreVertices \ badVertices)
+    (hbadFreeSelector :
+      ∀ U E : Finset Vertex, U ⊆ goodCore → E ⊆ U →
+        mixedSelector U E ↔
+          ∃ k : ℤ, ∀ v : Vertex, v ∈ selectorSet U E →
+            epsilonU U v - degreeInto E v = k)
+    (hmixedTarget : mixedTwoResidueTarget)
+    (hbadCore : badVertexDeletionCore)
+    (hbadFree : badVertexFreeMixedResidual)
+    (hhereditaryCore : hereditaryMixedDeletionCore) :
+    FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+      gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+      pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+      pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+      selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+      sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+      selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+      badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore where
+  twoResidueDeletionLabelFrontierCert := htwoResidue
+  nearThresholdDeletionTemplateFrontierCert := hnear
+  mixedBaseLabel_eq_epsilon := hbase
+  badVertices_subset_core := hbadSub
+  goodCore_eq_delete_bad := hgood
+  badVertexFree_selector_iff_constant := hbadFreeSelector
+  mixedTwoResidueTargetCert := hmixedTarget
+  badVertexDeletionCoreCert := hbadCore
+  badVertexFreeMixedResidualCert := hbadFree
+  hereditaryMixedDeletionCoreCert := hhereditaryCore
+
+section FirstBitTerminalHereditaryMixedDeletionCoreFrontier
+
+variable {Vertex : Type*} [DecidableEq Vertex]
+variable {coreVertices residueVertices gallaiClass goodCore badVertices : Finset Vertex}
+variable {m s : ℕ}
+variable {epsilon mixedBaseLabel : Vertex → ℤ}
+variable {epsilonU : Finset Vertex → Vertex → ℤ}
+variable {degreeInto : Finset Vertex → Vertex → ℤ}
+variable {pureRLabel pureCLabel : Vertex → ℤ}
+variable {selectorSet : Finset Vertex → Finset Vertex → Finset Vertex}
+variable {mixedSelector : Finset Vertex → Finset Vertex → Prop}
+variable {singleDeletionResidual : Vertex → Finset Vertex}
+variable {pairDeletionResidual : Vertex → Vertex → Finset Vertex}
+variable {singleDeletedLabel : Vertex → Vertex → ℤ}
+variable {pairDeletedLabel : Vertex → Vertex → Vertex → ℤ}
+variable {nearThresholdArithmetic selectorDeletionNormalForm
+  sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+  twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+  pureRestrictionCompatibility mixedTwoResidueTarget badVertexDeletionCore
+  badVertexFreeMixedResidual hereditaryMixedDeletionCore : Prop}
+
+/-- Recover the two-residue deletion-label frontier from the mixed deletion core. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.to_twoResidueDeletionLabelFrontier
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore) :
+    FirstBitTerminalTwoResidueDeletionLabelFrontier coreVertices residueVertices gallaiClass
+      epsilon epsilonU degreeInto pureRLabel pureCLabel selectorSet mixedSelector
+      twoLevelDeletionLabel hereditaryRelabeling selectorConstantEquation
+      pureRestrictionCompatibility :=
+  h.twoResidueDeletionLabelFrontierCert
+
+/-- Recover the concrete near-threshold deletion-template frontier on the mixed core. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.to_nearThresholdDeletionTemplateFrontier
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore) :
+    FirstBitTerminalNearThresholdDeletionTemplateFrontier coreVertices gallaiClass m s
+      mixedBaseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel
+      pairDeletedLabel nearThresholdArithmetic selectorDeletionNormalForm
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate :=
+  h.nearThresholdDeletionTemplateFrontierCert
+
+/-- The near-threshold template label agrees with the two-level base label on the full core. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.mixedBaseLabel_eq_epsilon_of_mem
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore)
+    {v : Vertex} (hv : v ∈ coreVertices) :
+    mixedBaseLabel v = epsilon v :=
+  h.mixedBaseLabel_eq_epsilon v hv
+
+/-- The good mixed core is obtained by deleting the recorded bad vertices. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.goodCore_eq
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore) :
+    goodCore = coreVertices \ badVertices :=
+  h.goodCore_eq_delete_bad
+
+/-- Bad vertices are drawn from the full mixed core. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.badVertices_subset
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore) :
+    badVertices ⊆ coreVertices :=
+  h.badVertices_subset_core
+
+/-- On the bad-vertex-free core, mixed selectorhood is the constant deletion-label equation. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.badVertexFree_mixedSelector_iff_constant
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore)
+    {U E : Finset Vertex} (hU : U ⊆ goodCore) (hE : E ⊆ U) :
+    mixedSelector U E ↔
+      ∃ k : ℤ, ∀ v : Vertex, v ∈ selectorSet U E → epsilonU U v - degreeInto E v = k :=
+  h.badVertexFree_selector_iff_constant U E hU hE
+
+/-- Project the mixed two-residue target marker. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.to_mixedTwoResidueTarget
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore) :
+    mixedTwoResidueTarget :=
+  h.mixedTwoResidueTargetCert
+
+/-- Project the bad-vertex deletion-core marker. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.to_badVertexDeletionCore
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore) :
+    badVertexDeletionCore :=
+  h.badVertexDeletionCoreCert
+
+/-- Project the bad-vertex-free residual marker. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.to_badVertexFreeMixedResidual
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore) :
+    badVertexFreeMixedResidual :=
+  h.badVertexFreeMixedResidualCert
+
+/-- Project the hereditary mixed deletion-core marker. -/
+theorem FirstBitTerminalHereditaryMixedDeletionCoreFrontier.to_hereditaryMixedDeletionCore
+    (h :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore) :
+    hereditaryMixedDeletionCore :=
+  h.hereditaryMixedDeletionCoreCert
+
+end FirstBitTerminalHereditaryMixedDeletionCoreFrontier
+
+/--
+Near-threshold mixed-selector frontier.  This packages a particular deletion pair `E ⊆ U` in
+the bad-vertex-free mixed core, connects it to the residual split frontier through the
+near-threshold branch, and explicitly carries the remaining mixed-selector assumptions rather
+than asserting that the full terminal proof is closed.
+-/
+structure FirstBitTerminalNearThresholdMixedSelectorFrontier
+    {Vertex : Type*} [DecidableEq Vertex]
+    (coreVertices residueVertices gallaiClass goodCore badVertices U E W : Finset Vertex)
+    (m s : ℕ)
+    (epsilon mixedBaseLabel : Vertex → ℤ)
+    (epsilonU : Finset Vertex → Vertex → ℤ)
+    (degreeInto : Finset Vertex → Vertex → ℤ)
+    (pureRLabel pureCLabel : Vertex → ℤ)
+    (selectorSet : Finset Vertex → Finset Vertex → Finset Vertex)
+    (mixedSelector : Finset Vertex → Finset Vertex → Prop)
+    (singleDeletionResidual : Vertex → Finset Vertex)
+    (pairDeletionResidual : Vertex → Vertex → Finset Vertex)
+    (singleDeletedLabel : Vertex → Vertex → ℤ)
+    (pairDeletedLabel : Vertex → Vertex → Vertex → ℤ)
+    (labeledDeletionCoreFrontier ternaryPacketRepairFrontier ternaryTargetRealization
+      ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate
+      sTwoDeletionTemplate sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch
+      splitTheorem nearThresholdArithmetic selectorDeletionNormalForm twoLevelDeletionLabel
+      hereditaryRelabeling selectorConstantEquation pureRestrictionCompatibility
+      mixedTwoResidueTarget badVertexDeletionCore badVertexFreeMixedResidual
+      hereditaryMixedDeletionCore nearThresholdMixedSelector mixedSelectorReduction
+      remainingMixedSelectorAssumptions : Prop) : Prop where
+  hereditaryMixedDeletionCoreFrontierCert :
+    FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+      gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+      pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+      pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+      selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+      sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+      selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+      badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+  labeledResidualSplitFrontierCert :
+    FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+      ternaryPacketRepairFrontier
+      (FirstBitTerminalNearThresholdDeletionTemplateFrontier coreVertices gallaiClass m s
+        mixedBaseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel
+        pairDeletedLabel nearThresholdArithmetic selectorDeletionNormalForm
+        sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate)
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure nearThresholdBounds
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate largeOutsideBranch
+      nearThresholdBranch splitTheorem
+  nearThresholdBranchCert : nearThresholdBranch
+  selectorU_subset_goodCore : U ⊆ goodCore
+  deleted_subset_U : E ⊆ U
+  selectorSet_eq_W : selectorSet U E = W
+  W_eq_delete : W = U \ E
+  selectorEquationCert : mixedSelector U E
+  selectorEquation_constant :
+    ∃ k : ℤ, ∀ v : Vertex, v ∈ W → epsilonU U v - degreeInto E v = k
+  nearThresholdMixedSelectorCert : nearThresholdMixedSelector
+  mixedSelectorReductionCert : mixedSelectorReduction
+  remainingMixedSelectorAssumptionsCert : remainingMixedSelectorAssumptions
+
+/-- Build the near-threshold mixed-selector frontier from the mixed core and residual split data. -/
+theorem firstBitTerminalNearThresholdMixedSelectorFrontier_of_frontiers
+    {Vertex : Type*} [DecidableEq Vertex]
+    {coreVertices residueVertices gallaiClass goodCore badVertices U E W : Finset Vertex}
+    {m s : ℕ}
+    {epsilon mixedBaseLabel : Vertex → ℤ}
+    {epsilonU : Finset Vertex → Vertex → ℤ}
+    {degreeInto : Finset Vertex → Vertex → ℤ}
+    {pureRLabel pureCLabel : Vertex → ℤ}
+    {selectorSet : Finset Vertex → Finset Vertex → Finset Vertex}
+    {mixedSelector : Finset Vertex → Finset Vertex → Prop}
+    {singleDeletionResidual : Vertex → Finset Vertex}
+    {pairDeletionResidual : Vertex → Vertex → Finset Vertex}
+    {singleDeletedLabel : Vertex → Vertex → ℤ}
+    {pairDeletedLabel : Vertex → Vertex → Vertex → ℤ}
+    {labeledDeletionCoreFrontier ternaryPacketRepairFrontier ternaryTargetRealization
+      ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate
+      sTwoDeletionTemplate sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch
+      splitTheorem nearThresholdArithmetic selectorDeletionNormalForm twoLevelDeletionLabel
+      hereditaryRelabeling selectorConstantEquation pureRestrictionCompatibility
+      mixedTwoResidueTarget badVertexDeletionCore badVertexFreeMixedResidual
+      hereditaryMixedDeletionCore nearThresholdMixedSelector mixedSelectorReduction
+      remainingMixedSelectorAssumptions : Prop}
+    (hcore :
+      FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+        selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore)
+    (hsplit :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier
+        (FirstBitTerminalNearThresholdDeletionTemplateFrontier coreVertices gallaiClass m s
+          mixedBaseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel
+          pairDeletedLabel nearThresholdArithmetic selectorDeletionNormalForm
+          sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate)
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure nearThresholdBounds
+        sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate largeOutsideBranch
+        nearThresholdBranch splitTheorem)
+    (hbranch : nearThresholdBranch)
+    (hU : U ⊆ goodCore)
+    (hE : E ⊆ U)
+    (hselectorSet : selectorSet U E = W)
+    (hW : W = U \ E)
+    (hselector : mixedSelector U E)
+    (hconstant : ∃ k : ℤ, ∀ v : Vertex, v ∈ W → epsilonU U v - degreeInto E v = k)
+    (hmixedSelector : nearThresholdMixedSelector)
+    (hreduction : mixedSelectorReduction)
+    (hremaining : remainingMixedSelectorAssumptions) :
+    FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+      gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+      pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+      pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+      ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+      largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+      selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+      selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+      badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+      nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions where
+  hereditaryMixedDeletionCoreFrontierCert := hcore
+  labeledResidualSplitFrontierCert := hsplit
+  nearThresholdBranchCert := hbranch
+  selectorU_subset_goodCore := hU
+  deleted_subset_U := hE
+  selectorSet_eq_W := hselectorSet
+  W_eq_delete := hW
+  selectorEquationCert := hselector
+  selectorEquation_constant := hconstant
+  nearThresholdMixedSelectorCert := hmixedSelector
+  mixedSelectorReductionCert := hreduction
+  remainingMixedSelectorAssumptionsCert := hremaining
+
+section FirstBitTerminalNearThresholdMixedSelectorFrontier
+
+variable {Vertex : Type*} [DecidableEq Vertex]
+variable {coreVertices residueVertices gallaiClass goodCore badVertices U E W : Finset Vertex}
+variable {m s : ℕ}
+variable {epsilon mixedBaseLabel : Vertex → ℤ}
+variable {epsilonU : Finset Vertex → Vertex → ℤ}
+variable {degreeInto : Finset Vertex → Vertex → ℤ}
+variable {pureRLabel pureCLabel : Vertex → ℤ}
+variable {selectorSet : Finset Vertex → Finset Vertex → Finset Vertex}
+variable {mixedSelector : Finset Vertex → Finset Vertex → Prop}
+variable {singleDeletionResidual : Vertex → Finset Vertex}
+variable {pairDeletionResidual : Vertex → Vertex → Finset Vertex}
+variable {singleDeletedLabel : Vertex → Vertex → ℤ}
+variable {pairDeletedLabel : Vertex → Vertex → Vertex → ℤ}
+variable {labeledDeletionCoreFrontier ternaryPacketRepairFrontier ternaryTargetRealization
+  ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate
+  sTwoDeletionTemplate sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch
+  splitTheorem nearThresholdArithmetic selectorDeletionNormalForm twoLevelDeletionLabel
+  hereditaryRelabeling selectorConstantEquation pureRestrictionCompatibility
+  mixedTwoResidueTarget badVertexDeletionCore badVertexFreeMixedResidual
+  hereditaryMixedDeletionCore nearThresholdMixedSelector mixedSelectorReduction
+  remainingMixedSelectorAssumptions : Prop}
+
+/-- Recover the hereditary mixed deletion-core frontier. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.to_hereditaryMixedDeletionCoreFrontier
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    FirstBitTerminalHereditaryMixedDeletionCoreFrontier coreVertices residueVertices
+      gallaiClass goodCore badVertices m s epsilon mixedBaseLabel epsilonU degreeInto
+      pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+      pairDeletionResidual singleDeletedLabel pairDeletedLabel nearThresholdArithmetic
+      selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+      sThreeDeletionTemplate twoLevelDeletionLabel hereditaryRelabeling
+      selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+      badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore :=
+  h.hereditaryMixedDeletionCoreFrontierCert
+
+/-- Recover the residual split frontier used to enter the near-threshold branch. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.to_labeledResidualSplitFrontier
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+      ternaryPacketRepairFrontier
+      (FirstBitTerminalNearThresholdDeletionTemplateFrontier coreVertices gallaiClass m s
+        mixedBaseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel
+        pairDeletedLabel nearThresholdArithmetic selectorDeletionNormalForm
+        sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate)
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure nearThresholdBounds
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate largeOutsideBranch
+      nearThresholdBranch splitTheorem :=
+  h.labeledResidualSplitFrontierCert
+
+/-- Recover the concrete near-threshold deletion-template frontier from the mixed-selector package. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.to_nearThresholdDeletionTemplateFrontier
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    FirstBitTerminalNearThresholdDeletionTemplateFrontier coreVertices gallaiClass m s
+      mixedBaseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel
+      pairDeletedLabel nearThresholdArithmetic selectorDeletionNormalForm
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate :=
+  h.hereditaryMixedDeletionCoreFrontierCert.nearThresholdDeletionTemplateFrontierCert
+
+/-- Project the near-threshold branch certificate from the residual split. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.to_nearThresholdBounds
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    nearThresholdBounds :=
+  h.labeledResidualSplitFrontierCert.nearThreshold_bounds h.nearThresholdBranchCert
+
+/-- Project all three near-threshold finite deletion templates from the branch certificate. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.deletionTemplates_of_branch
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    sOneDeletionTemplate ∧ sTwoDeletionTemplate ∧ sThreeDeletionTemplate :=
+  h.labeledResidualSplitFrontierCert.deletionTemplates_of_nearThreshold h.nearThresholdBranchCert
+
+/-- The displayed selector carrier is exactly `U \ E`. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.candidate_eq_delete
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    W = U \ E :=
+  h.W_eq_delete
+
+/-- The displayed near-threshold candidate satisfies the mixed selector predicate. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.mixedSelector_candidate
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    mixedSelector U E :=
+  h.selectorEquationCert
+
+/-- The candidate selector has a constant value of `epsilonU - deg_E` on `W`. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.selectorConstant_on_W
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    ∃ k : ℤ, ∀ v : Vertex, v ∈ W → epsilonU U v - degreeInto E v = k :=
+  h.selectorEquation_constant
+
+/-- The bad-vertex-free core also supplies the selector constant equation on `selectorSet U E`. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.selectorConstant_from_badVertexFree
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    ∃ k : ℤ, ∀ v : Vertex, v ∈ selectorSet U E →
+      epsilonU U v - degreeInto E v = k :=
+  (h.hereditaryMixedDeletionCoreFrontierCert.badVertexFree_selector_iff_constant U E
+    h.selectorU_subset_goodCore h.deleted_subset_U).mp h.selectorEquationCert
+
+/-- Project the mixed two-residue target from the underlying hereditary core. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.to_mixedTwoResidueTarget
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    mixedTwoResidueTarget :=
+  h.hereditaryMixedDeletionCoreFrontierCert.mixedTwoResidueTargetCert
+
+/-- Project the near-threshold mixed-selector marker. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.to_nearThresholdMixedSelector
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    nearThresholdMixedSelector :=
+  h.nearThresholdMixedSelectorCert
+
+/-- Project the reduction marker linking the mixed selector to the near-threshold branch. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.to_mixedSelectorReduction
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    mixedSelectorReduction :=
+  h.mixedSelectorReductionCert
+
+/-- Project the explicitly retained assumptions; no full closure is claimed without this field. -/
+theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.to_remainingMixedSelectorAssumptions
+    (h :
+      FirstBitTerminalNearThresholdMixedSelectorFrontier coreVertices residueVertices
+        gallaiClass goodCore badVertices U E W m s epsilon mixedBaseLabel epsilonU degreeInto
+        pureRLabel pureCLabel selectorSet mixedSelector singleDeletionResidual
+        pairDeletionResidual singleDeletedLabel pairDeletedLabel labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+        nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+        largeOutsideBranch nearThresholdBranch splitTheorem nearThresholdArithmetic
+        selectorDeletionNormalForm twoLevelDeletionLabel hereditaryRelabeling
+        selectorConstantEquation pureRestrictionCompatibility mixedTwoResidueTarget
+        badVertexDeletionCore badVertexFreeMixedResidual hereditaryMixedDeletionCore
+        nearThresholdMixedSelector mixedSelectorReduction remainingMixedSelectorAssumptions) :
+    remainingMixedSelectorAssumptions :=
+  h.remainingMixedSelectorAssumptionsCert
+
+end FirstBitTerminalNearThresholdMixedSelectorFrontier
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
