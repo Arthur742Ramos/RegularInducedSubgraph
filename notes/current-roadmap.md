@@ -4851,6 +4851,10 @@ In particular, odd `t` and odd `|B|` force even `|D|`.
 At the atom level, a defective old-balanced `S` with defect `phi_S` admits a signed repair only if
 `c(m-|D|)=|D|r-2e(D)` and `|S|c=|D|delta_S+sum_S phi_S [MOD 4]`.
 For `|D|=1`, this forces `c=0,r=0` or `c=1,r=m-1`, and all atom defects lie in `{c,c-1}`.
+For `|D|<4`, the defect support must lie in `{c,c-1,...,c-|D|}` with `0<=c<=|D|`; `|D|=3` is the first
+small correction size with no pointwise support restriction.
+The `25m/8` class margin also gives, for `m>24`, an augmented atom with `|S|=delta_S=0`, so
+`sum_S phi_S=-2e(S)`.
 
 ## Supporting work that is useful but not on the critical path
 

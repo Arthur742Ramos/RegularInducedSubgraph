@@ -860,6 +860,9 @@ The signed atom scalar tests are
 `d r=2e(D)`.
 For `|D|=1`, `c` is a bit, so either `c=0,r=0` or `c=1,r=m-1`; the defect values on `S` must lie in
 the adjacent pair `{c,c-1}`.
+More generally, if `d=|D|<4`, then `c` is an actual integer `0<=c<=d`, the defect support lies in
+`{c,c-1,...,c-d}`, and `c(m-d)=d r-2e(D) [MOD 4]`.  Thus `d=2` allows only three consecutive defect
+residues; `d=3` is the first size with no pointwise support restriction.
 
 The `h_0`-class has a little unused rank margin.  Since `|C|>25m/8`, Olson can be run on
 `m-1+a` fixed `Z/4Z` coordinates whenever `3(m-1+a)<|C|`.  Thus one may add at least one auxiliary
@@ -868,6 +871,10 @@ coordinate, and for large `m` about `m/24` of them.  This can force scalar side 
 ```text
 |S|=0,        delta_S=0,        or        sum_{s in S} deg_R(s)=0        [MOD 4].
 ```
+
+For `m>24`, two auxiliary coordinates are affordable; using the constant and anchor-adjacency
+coordinates gives a nonempty old-balanced atom with `|S|=0` and `delta_S=0`, so
+`sum_S phi_S=-2e(S) [MOD 4]`.
 
 This does not close the self-layer by itself: the atom condition remains pointwise,
 `r+delta_S-deg_W(s)-deg_S(s)=0` for every `s in S`.  Any successful use of the extra `25m/8` slack must

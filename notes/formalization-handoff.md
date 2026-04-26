@@ -1397,6 +1397,9 @@ Recommended attack:
    `|S|c=|S|r+(|S|-m+|D|)delta_S-2e(S) [MOD 4]`.
    For `|D|=1`, record the pointwise specialization: `c` is `0` or `1`, so either `c=0,r=0` or
    `c=1,r=m-1`, and every `phi_S(s)` lies in `{c,c-1}`.
+   For `d=|D|<4`, record the small-deletion spectrum:
+   `0<=c<=d`, `phi_S(S) subset {c,c-1,...,c-d}`, and
+   `c(m-d)=d r-2e(D) [MOD 4]`.
 
    The class-size margin also allows augmented Olson statements.  Since `|C|>25m/8`, one may add
    `a` fixed `Z/4Z` coordinates to the `m-1` old-difference coordinates whenever
@@ -1404,6 +1407,8 @@ Recommended attack:
    as `|S|=0`, `delta_S=0`, or `sum_{s in S} deg_R(s)=0` modulo `4`.  This is only scalar control; the
    formal terminal lemma still needs pointwise vanishing of
    `r+delta_S-deg_W(s)-deg_S(s)` on every vertex of the atom.
+   For `m>24`, formalize the two-coordinate normalization using constant `1` and anchor adjacency:
+   `|S|=0`, `delta_S=0`, hence `sum_S phi_S=-2e(S) [MOD 4]`.
 
    A formal inverse-Davenport route should include the maximal-boundary sumset separation.  If
    `Sigma_l(X)` is the set of sums of `l` old-vectors from `X`, then cardinal maximality gives no

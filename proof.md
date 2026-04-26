@@ -6365,6 +6365,23 @@ so either `c=0,r=0`, or `c=1,r=m-1`.  Moreover every atom defect must lie in the
 two-residue support is not an adjacent pair compatible with the old residue, cannot be repaired by a
 single old deletion.
 
+More generally, if `d=|D|<4`, the constant `c` is represented by the actual integer
+`0<=c<=d`, and every defect value must lie in the cyclic interval
+
+```text
+phi_S(S) subset {c,c-1,...,c-d}        [MOD 4].
+```
+
+The scalar condition is then
+
+```text
+c(m-d)=d r-2e(D)        [MOD 4],
+```
+
+with `0<=e(D)<=binom(d,2)`.  Thus `d=2` permits only three consecutive defect residues, while `d=3`
+is the first deletion size with no pointwise residue-support restriction.  Any proof that all defective
+atoms have four-residue support automatically rules out repairs by fewer than three old deletions.
+
 There is still a small amount of unused Davenport slack in the class `C`.  Since
 
 ```text
@@ -6388,6 +6405,23 @@ addition to old-balance, scalar congruences such as
 ```
 
 depending on the chosen auxiliary coordinate.
+
+In particular, once `m>24` two auxiliary coordinates are affordable.  Taking the constant coordinate
+and the anchor-adjacency coordinate gives a nonempty old-balanced atom with
+
+```text
+|S|=0,        delta_S=0        [MOD 4].
+```
+
+For such a normalized atom the aggregate defect collapses to
+
+```text
+sum_{s in S} phi_S(s)=-2e(S)        [MOD 4].
+```
+
+Thus an even internal edge count is the scalar precondition for append-only zero defect, while an odd
+internal edge count forces any repair to be genuinely signed.  This does not solve the pointwise
+defect, but it removes two degrees of scalar freedom in the large-`m` atom branch.
 
 This margin is useful but not yet a proof.  These augmented Olson atoms only control scalar data of
 `S`; the append condition is still the pointwise equation
