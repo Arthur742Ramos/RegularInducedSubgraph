@@ -882,6 +882,9 @@ Refining the Davenport group by a size mod-`4` coordinate gives constant-trace p
 handshaking, and their cross-count condition is just `mp==0 mod 4`.
 Consequently the trace branch is controlled by `m mod 4`: `p=0` for odd `m`, `p` even for
 `m==2 mod 4`, and no trace restriction for `m==0 mod 4`.
+Minimal size-refined packets are zero-sum atoms in `(Z/4)^m`, hence have size at most `3m+1` and contain
+no smaller constant-trace size-`0 mod 4` subpacket.  The critical chamber contains two disjoint atoms,
+all internally anti-selector at their matching residues.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

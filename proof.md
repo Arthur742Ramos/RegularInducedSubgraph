@@ -9984,6 +9984,22 @@ Thus in the odd critical case every size-`0 mod 4` packet is actually zero-trace
 while in the `2 mod 4` case only the parity of the constant trace can vary.  The `m==0 mod 4` branch is
 the only one in which all four constant traces survive.
 
+Choose such a packet minimal in the size-refined trace group.  Then it is a packet atom: no proper
+nonempty subpacket has both constant trace to `S` and size `0 mod 4`.  Equivalently, the associated
+sequence in `(Z/4Z)^m` is a minimal zero-sum sequence, so the atom has size at most `3m+1`.  Terminality
+therefore reduces the packet endpoint to the following finite atom obstruction:
+
+```text
+X is a size-0 mod 4 constant-trace atom in one U_t,
+mp==0 mod 4,
+H[X] is not residue-(a+p-t) regular modulo 4.
+```
+
+The largest outside degree chamber in a critical bucket contains two disjoint such atoms.  Hence a
+terminal bucket must support two disjoint trace atoms in one chamber, while every atom and every union of
+disjoint atoms fails the matching internal residue test.  No further trace-subpacket reduction is hidden
+inside these atoms.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

@@ -1819,6 +1819,8 @@ Using size mod `4` as an extra Davenport coordinate yields constant-trace packet
 for these the handshaking filter is automatic and `mp==0 mod 4`.
 Hence odd `m` forces zero trace, `m==2 mod 4` forces even trace, and `m==0 mod 4` is the only unrestricted
 trace branch.
+Minimal size-refined packets are atoms of size at most `3m+1`; a critical chamber contains two disjoint
+atoms, and terminality forbids each atom and atom-union from the matching internal residue.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

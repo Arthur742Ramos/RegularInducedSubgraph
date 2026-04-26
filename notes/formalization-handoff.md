@@ -2216,6 +2216,9 @@ Recommended attack:
     `|X|==0 mod 4`.  For these packets handshaking is automatic and cross-count reduces to `mp==0 mod 4`.
     Add the case split for `mp==0 mod 4`: odd `m` forces `p=0`, `m==2 mod 4` forces `p in {0,2}`, and
     `m==0 mod 4` imposes no condition on `p`.
+    Add the atom refinement: choose a minimal zero-sum packet in the size-refined trace group.  It has size
+    at most `3m+1`, no proper nonempty constant-trace size-`0 mod 4` subpacket, and terminality forbids it
+    (and unions of disjoint such atoms) from being internally regular at the matching residue.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

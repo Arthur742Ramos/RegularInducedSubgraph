@@ -5114,6 +5114,9 @@ degree chamber contain a constant-trace packet with `|X|==0 mod 4`; then handsha
 cross-count reduces to `mp==0 mod 4`.
 So the packet endpoint splits by `m mod 4`: odd `m` forces `p=0`, `m==2 mod 4` allows only `p=0,2`, and
 `m==0 mod 4` allows all traces.
+Choosing packets minimal in the size-refined trace group gives atom packets of size at most `3m+1`, with
+no proper nonempty constant-trace size-`0 mod 4` subpacket; terminality forbids every such atom and every
+union of disjoint atoms from passing the matching internal residue test.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and
