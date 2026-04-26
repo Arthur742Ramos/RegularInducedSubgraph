@@ -4475,6 +4475,132 @@ theorem augmentedOneThreeAtomRegular_three_iff
   · rintro ⟨hτbitEq, hσbitEq, hυbitEq, hτσEq, hτυEq, hσυEq⟩
     refine ⟨?_, ?_, ?_, ?_⟩ <;> omega
 
+/-- A repaired-residue spectrum is full when it contains all four regular four-vertex residues. -/
+def ContainsAllFourResidues (spectrum : Finset ℕ) : Prop :=
+  0 ∈ spectrum ∧ 1 ∈ spectrum ∧ 2 ∈ spectrum ∧ 3 ∈ spectrum
+
+lemma ContainsAllFourResidues.mem_of_lt_four {spectrum : Finset ℕ} {d : ℕ}
+    (hfull : ContainsAllFourResidues spectrum) (hd : d < 4) : d ∈ spectrum := by
+  rcases hfull with ⟨h0, h1, h2, h3⟩
+  interval_cases d <;> assumption
+
+/--
+Same-type `2+2` sieve rule.  If an equal-bit boundary pair has its matching repaired
+residue in the spectrum, and terminality forbids every such augmented atom, then any retained
+same-type pair must have edge status opposite to the boundary-pair status.
+-/
+theorem augmentedTwoTwoSameType_forces_opposite_of_residue_forbidden
+    {spectrum : Finset ℕ} {e ε : ℕ} {τ : Fin 8} {i k : Fin 3}
+    (he : e ≤ 1) (hε : ε ≤ 1)
+    (hbits : boundaryTripleBit τ i = boundaryTripleBit τ k)
+    (hres : e + 2 * boundaryTripleBit τ i ∈ spectrum)
+    (hforbid :
+      ∀ d ∈ spectrum, ¬ AugmentedTwoTwoAtomRegular d e ε τ τ i k) :
+    ε + e = 1 := by
+  have hdge : e ≤ e + 2 * boundaryTripleBit τ i := by omega
+  have hcross :
+      AugmentedTwoTwoCrossSquareRegular (2 * boundaryTripleBit τ i) τ τ i k := by
+    unfold AugmentedTwoTwoCrossSquareRegular
+    refine ⟨?_, ?_, ?_, ?_⟩ <;> omega
+  have hcross' :
+      AugmentedTwoTwoCrossSquareRegular
+        ((e + 2 * boundaryTripleBit τ i) - e) τ τ i k := by
+    have hsub : (e + 2 * boundaryTripleBit τ i) - e = 2 * boundaryTripleBit τ i := by
+      omega
+    simpa [hsub] using hcross
+  have hne : ε ≠ e := by
+    intro hεe
+    have hatom :
+        AugmentedTwoTwoAtomRegular (e + 2 * boundaryTripleBit τ i) e ε τ τ i k := by
+      exact
+        (augmentedTwoTwoAtomRegular_iff_crossSquare
+          (d := e + 2 * boundaryTripleBit τ i) (e := e) (ε := ε)
+          hdge τ τ i k).2
+          ⟨hεe, hcross'⟩
+    exact hforbid (e + 2 * boundaryTripleBit τ i) hres hatom
+  omega
+
+/-- Full-spectrum corollary of the same-type `2+2` rule. -/
+theorem augmentedTwoTwoSameType_forces_opposite_of_fullSpectrum_forbidden
+    {spectrum : Finset ℕ} {e ε : ℕ} {τ : Fin 8} {i k : Fin 3}
+    (hfull : ContainsAllFourResidues spectrum)
+    (he : e ≤ 1) (hε : ε ≤ 1)
+    (hbits : boundaryTripleBit τ i = boundaryTripleBit τ k)
+    (hforbid :
+      ∀ d ∈ spectrum, ¬ AugmentedTwoTwoAtomRegular d e ε τ τ i k) :
+    ε + e = 1 := by
+  have hbit : boundaryTripleBit τ i ≤ 1 := boundaryTripleBit_le_one τ i
+  exact
+    augmentedTwoTwoSameType_forces_opposite_of_residue_forbidden
+      he hε hbits
+      (ContainsAllFourResidues.mem_of_lt_four hfull (by omega))
+      hforbid
+
+/--
+If a full spectrum gives two equal-bit same-type `2+2` prescriptions for the same retained pair, the
+boundary statuses must agree.  Thus two equal-bit boundary pairs with different statuses make the
+corresponding retained boundary type a singleton branch.
+-/
+theorem augmentedTwoTwoSameType_equalBit_prescriptions_agree
+    {spectrum : Finset ℕ} {e₁ e₂ ε : ℕ} {τ : Fin 8} {i k p l : Fin 3}
+    (hfull : ContainsAllFourResidues spectrum)
+    (he₁ : e₁ ≤ 1) (he₂ : e₂ ≤ 1) (hε : ε ≤ 1)
+    (hbits₁ : boundaryTripleBit τ i = boundaryTripleBit τ k)
+    (hbits₂ : boundaryTripleBit τ p = boundaryTripleBit τ l)
+    (hforbid₁ :
+      ∀ d ∈ spectrum, ¬ AugmentedTwoTwoAtomRegular d e₁ ε τ τ i k)
+    (hforbid₂ :
+      ∀ d ∈ spectrum, ¬ AugmentedTwoTwoAtomRegular d e₂ ε τ τ p l) :
+    e₁ = e₂ := by
+  have hopp₁ :
+      ε + e₁ = 1 :=
+    augmentedTwoTwoSameType_forces_opposite_of_fullSpectrum_forbidden
+      hfull he₁ hε hbits₁ hforbid₁
+  have hopp₂ :
+      ε + e₂ = 1 :=
+    augmentedTwoTwoSameType_forces_opposite_of_fullSpectrum_forbidden
+      hfull he₂ hε hbits₂ hforbid₂
+  omega
+
+/--
+Extreme-residue `1+3` terminal rule: repaired residue `0` forbids an independent retained triple
+inside a boundary-miss class.
+-/
+theorem augmentedOneThree_forbidden_zero_no_independent_miss_triple
+    {spectrum : Finset ℕ} {τ σ υ : Fin 8} {eτσ eτυ eσυ : ℕ} {i : Fin 3}
+    (hzero : 0 ∈ spectrum)
+    (hforbid :
+      ∀ d ∈ spectrum, ¬ AugmentedOneThreeAtomRegular d τ σ υ eτσ eτυ eσυ i)
+    (hτ : boundaryTripleBit τ i = 0) (hσ : boundaryTripleBit σ i = 0)
+    (hυ : boundaryTripleBit υ i = 0)
+    (hτσ : eτσ = 0) (hτυ : eτυ = 0) (hσυ : eσυ = 0) :
+    False := by
+  have hatom : AugmentedOneThreeAtomRegular 0 τ σ υ eτσ eτυ eσυ i := by
+    exact
+      (augmentedOneThreeAtomRegular_zero_iff τ σ υ eτσ eτυ eσυ i).2
+        ⟨hτ, hσ, hυ, hτσ, hτυ, hσυ⟩
+  exact hforbid 0 hzero hatom
+
+/--
+Extreme-residue `1+3` terminal rule: repaired residue `3` forbids a retained triangle inside a
+boundary-hit class.
+-/
+theorem augmentedOneThree_forbidden_three_no_clique_hit_triple
+    {spectrum : Finset ℕ} {τ σ υ : Fin 8} {eτσ eτυ eσυ : ℕ} {i : Fin 3}
+    (hthree : 3 ∈ spectrum)
+    (hforbid :
+      ∀ d ∈ spectrum, ¬ AugmentedOneThreeAtomRegular d τ σ υ eτσ eτυ eσυ i)
+    (hτσle : eτσ ≤ 1) (hτυle : eτυ ≤ 1) (hσυle : eσυ ≤ 1)
+    (hτ : boundaryTripleBit τ i = 1) (hσ : boundaryTripleBit σ i = 1)
+    (hυ : boundaryTripleBit υ i = 1)
+    (hτσ : eτσ = 1) (hτυ : eτυ = 1) (hσυ : eσυ = 1) :
+    False := by
+  have hatom : AugmentedOneThreeAtomRegular 3 τ σ υ eτσ eτυ eσυ i := by
+    exact
+      (augmentedOneThreeAtomRegular_three_iff hτσle hτυle hσυle).2
+        ⟨hτ, hσ, hυ, hτσ, hτυ, hσυ⟩
+  exact hforbid 3 hthree hatom
+
 /--
 The exact `j = 6` (`q = 64`) regular exact-subbucket selector slice of the D=5 terminal
 frontier.  This is the first genuine tail slice after the existing `q = 32` split.
