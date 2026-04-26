@@ -38282,6 +38282,753 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade.toRemain
     h.toRemainingAssumptionR1010 = h.toHasCliqueOrIndepSetBound_10_10_39246 := by
   exact Subsingleton.elim _ _
 
+/--
+Final public distribution bundle for downstream proof-md current-frontier consumers.  This is the
+next packaging layer over `RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade`: it
+keeps that facade as the canonical public entry point while also exposing the distribution bundle
+and surface, release/archive/public/dashboard/handoff layers, final manifest and ledger, audit and
+coverage summaries, import routes, normalization and theorem checklists, downstream imports, target
+rows, numerical consequences, and remaining assumption-backed rows.  It only repackages the current
+frontier; the localized `R(4,5) <= 27` input remains an explicit carried field.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  publicDistributionFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v
+  distributionBundle : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v
+  distributionFacade : RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v
+  consumerReleaseFacade : RamseyTenR45CurrentFrontierProofMdFinalConsumerReleaseFacade G s v
+  consumerArchiveFacade : RamseyTenR45CurrentFrontierProofMdFinalConsumerArchiveFacade G s v
+  archiveFacade : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchiveFacade G s v
+  releaseArchive : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v
+  releaseBundle : RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v
+  publicArchive : RamseyTenR45CurrentFrontierProofMdFinalPublicArchive G s v
+  publicExport : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v
+  dashboard : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v
+  handoffManifest : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v
+  finalConsumerHandoff : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v
+  finalManifest : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v
+  finalLedger : RamseyTenR45CurrentFrontierProofMdFinalLedger G s v
+  publicAuditSummary : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v
+  coverageCertificate : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v
+  auditChecklist : RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v
+  consumerExport : RamseyTenR45CurrentFrontierProofMdConsumerExport G s v
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  normalizationRoute : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  publicFacade : RamseyTenR45CurrentFrontierPublicFacade G s v
+  consumerSurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  unifiedFinalConsumerImport : RamseyTenR45UnifiedFinalConsumerImport G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final public distribution facades materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v where
+  publicDistributionFacade := h
+  distributionBundle := h.toProofMdFinalDistributionBundle
+  distributionFacade := h.toProofMdFinalDistributionFacade
+  consumerReleaseFacade := h.toProofMdFinalConsumerReleaseFacade
+  consumerArchiveFacade := h.toProofMdFinalConsumerArchiveFacade
+  archiveFacade := h.toProofMdFinalReleaseArchiveFacade
+  releaseArchive := h.toProofMdFinalReleaseArchive
+  releaseBundle := h.toProofMdFinalReleaseBundle
+  publicArchive := h.toProofMdFinalPublicArchive
+  publicExport := h.toProofMdFinalPublicExport
+  dashboard := h.toProofMdFinalDashboard
+  handoffManifest := h.toProofMdHandoffManifest
+  finalConsumerHandoff := h.toProofMdFinalConsumerHandoff
+  finalManifest := h.toProofMdFinalManifest
+  finalLedger := h.toProofMdFinalLedger
+  publicAuditSummary := h.toProofMdPublicAuditSummary
+  coverageCertificate := h.toProofMdCoverageCertificate
+  auditChecklist := h.toProofMdAuditChecklist
+  consumerExport := h.toProofMdConsumerExport
+  proofMdImport := h.toProofMdImport
+  proofMdNormalizationChecklist := h.toProofMdNormalizationChecklist
+  normalizationRoute := h.toCurrentFrontierNormalizationRoute
+  theoremChecklist := h.toCurrentFrontierTheoremChecklist
+  publicFacade := h.toCurrentFrontierPublicFacade
+  consumerSurface := h.toCurrentFrontierConsumerSurface
+  unifiedFinalConsumerImport := h.toUnifiedFinalConsumerImport
+  finalDownstreamImport := h.toFinalDownstreamImport
+  consumerNormalization := h.toConsumerNormalization
+  topRowFinalImport := h.toTopRowFinalImport
+  targetRows := h.toCurrentFrontierTargetRows
+  numericalConsequences := h.toFinalNumericalConsequences
+  remainingAssumptionRows := h.toRemainingAssumptionRows
+  exact42Row := h.toThreeTenFortyTwo
+  localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+  admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Row := h.toTenLeF_40960
+  regularTenAt40960Row := fun H hcard =>
+    h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Final distribution bundles materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Final distribution facades materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Final consumer release facades materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerReleaseFacade.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerReleaseFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Final consumer archive facades materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerArchiveFacade.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerArchiveFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Final release archive facades materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchiveFacade.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchiveFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Terminal release archives materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Final release bundles materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Final public archives materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicArchive.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Final public exports materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Final dashboards materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Handoff manifests materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Final consumer handoffs materialize the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle
+
+/-- Select the final public distribution facade from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v :=
+  h.publicDistributionFacade
+
+/-- Select the final distribution bundle from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v :=
+  h.distributionBundle
+
+/-- Select the final distribution facade from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v :=
+  h.distributionFacade
+
+/-- Synonym exposing the distribution facade as the public bundle distribution surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toFinalDistributionSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v :=
+  h.toProofMdFinalDistributionFacade
+
+/-- Select the final consumer release facade from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalConsumerReleaseFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerReleaseFacade G s v :=
+  h.consumerReleaseFacade
+
+/-- Select the final consumer archive facade from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalConsumerArchiveFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerArchiveFacade G s v :=
+  h.consumerArchiveFacade
+
+/-- Select the final release archive facade from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalReleaseArchiveFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchiveFacade G s v :=
+  h.archiveFacade
+
+/-- Select the terminal release archive from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalReleaseArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.releaseArchive
+
+/-- Select the final release bundle from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v :=
+  h.releaseBundle
+
+/-- Select the final public archive from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicArchive G s v :=
+  h.publicArchive
+
+/-- Select the final public export from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v :=
+  h.publicExport
+
+/-- Select the final dashboard from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v :=
+  h.dashboard
+
+/-- Select the handoff manifest from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v :=
+  h.handoffManifest
+
+/-- Select the final consumer handoff from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalConsumerHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v :=
+  h.finalConsumerHandoff
+
+/-- Select the final manifest from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.finalManifest
+
+/-- Select the final ledger from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalLedger G s v :=
+  h.finalLedger
+
+/-- Select the public audit summary from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdPublicAuditSummary
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v :=
+  h.publicAuditSummary
+
+/-- Select the coverage certificate from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v :=
+  h.coverageCertificate
+
+/-- Select the audit checklist from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdAuditChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v :=
+  h.auditChecklist
+
+/-- Select the consumer export from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdConsumerExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdConsumerExport G s v :=
+  h.consumerExport
+
+/-- Select the proof-md import route from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.proofMdImport
+
+/-- Select the proof-md normalization checklist from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.proofMdNormalizationChecklist
+
+/-- Select the current-frontier normalization route from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.normalizationRoute
+
+/-- Select the theorem checklist from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.theoremChecklist
+
+/-- Select the public current-frontier facade from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toCurrentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierPublicFacade G s v :=
+  h.publicFacade
+
+/-- Select the current-frontier consumer surface from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.consumerSurface
+
+/-- Select the unified final-consumer import from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toUnifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.unifiedFinalConsumerImport
+
+/-- Select the final downstream import from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the consumer-normalization import from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.consumerNormalization
+
+/-- Select the exact-`42` top-row final import from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalImport
+
+/-- Select the current-frontier target rows from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select the final numerical consequences from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select the remaining assumption-backed rows from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Final public distribution bundle route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Final public distribution bundle route to the localized current-frontier `R(4,5) <= 27` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Final public distribution bundle route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Final public distribution bundle route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Final public distribution bundle route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Final public distribution bundle route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Remaining low-row exact-`42` assumption projection from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toRemainingAssumptionThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toThreeTenFortyTwo
+
+/-- Remaining localized `R(4,5) <= 27` assumption projection from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toRemainingAssumptionR45TwentySeven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Remaining propagated `R(10,10) <= 39246` assumption projection from the final public distribution bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toRemainingAssumptionR1010
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Flat constructor exposing final public distribution bundles from final public distribution facades. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle_of_proofMdFinalPublicDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionBundle
+
+/-- Flat constructor exposing final public distribution bundles from final distribution bundles. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle_of_proofMdFinalDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.toProofMdFinalPublicDistributionBundle
+
+/-- Final public distribution facades round-trip through final public distribution bundles. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle_toProofMdFinalPublicDistributionFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    h.toProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final distribution bundles round-trip through final public distribution bundles. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle.toProofMdFinalPublicDistributionBundle_toProofMdFinalDistributionBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionBundle.toProofMdFinalDistributionBundle = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final distribution facades round-trip through final public distribution bundles. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade.toProofMdFinalPublicDistributionBundle_toProofMdFinalDistributionFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v) :
+    h.toProofMdFinalPublicDistributionBundle.toProofMdFinalDistributionFacade = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final consumer release facades round-trip through final public distribution bundles. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerReleaseFacade.toProofMdFinalPublicDistributionBundle_toProofMdFinalConsumerReleaseFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerReleaseFacade G s v) :
+    h.toProofMdFinalPublicDistributionBundle.toProofMdFinalConsumerReleaseFacade = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on final manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toProofMdFinalManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toProofMdFinalManifest = h.toProofMdFinalManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on final ledgers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toProofMdFinalLedger_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toProofMdFinalLedger = h.toProofMdFinalLedger := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on public audit summaries. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toProofMdPublicAuditSummary_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toProofMdPublicAuditSummary =
+      h.toProofMdPublicAuditSummary := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on coverage certificates. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toProofMdCoverageCertificate_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toProofMdCoverageCertificate =
+      h.toProofMdCoverageCertificate := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on import routes. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toProofMdImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toProofMdImport = h.toProofMdImport := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on normalization checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toProofMdNormalizationChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toProofMdNormalizationChecklist =
+      h.toProofMdNormalizationChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on theorem checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toCurrentFrontierTheoremChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toCurrentFrontierTheoremChecklist =
+      h.toCurrentFrontierTheoremChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on downstream imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toFinalDownstreamImport =
+      h.toFinalDownstreamImport := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on numerical consequences. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through public facades on remaining assumptions. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toRemainingAssumptionRows =
+      h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through distribution bundles on final manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalDistributionBundle_toProofMdFinalManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toProofMdFinalDistributionBundle.toProofMdFinalManifest = h.toProofMdFinalManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize through distribution surfaces on final manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toFinalDistributionSurface_toProofMdFinalManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toFinalDistributionSurface.toProofMdFinalManifest = h.toProofMdFinalManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize target rows with the remaining-assumption row view. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toCurrentFrontierTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toCurrentFrontierTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize remaining exact-`42` assumptions with the public row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toRemainingAssumptionThreeTenFortyTwo_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toRemainingAssumptionThreeTenFortyTwo = h.toThreeTenFortyTwo := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize remaining localized `R(4,5)` assumptions with the public row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toRemainingAssumptionR45TwentySeven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toRemainingAssumptionR45TwentySeven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final public distribution bundles normalize remaining `R(10,10)` assumptions with the public row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toRemainingAssumptionR1010_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    h.toRemainingAssumptionR1010 = h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
