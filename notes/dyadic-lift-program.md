@@ -1118,8 +1118,13 @@ at most one forced lift can hit the shortened partner, and any forced lift missi
 support.  Thus two-atom deletion endpoints are only zero-gain pivots.
 Zero-gain saturation removes pivots meeting another packed atom; pair pivots can only exchange with leftover
 singletons, so saturated packings with no leftover singletons have no pair atoms.
-Hence no-leftover saturated packings have all four atoms of size at least three; in particular `|A|>=12`,
-and the all-pair `|A|=8` packing is impossible.
+Lift-locality further excludes three-atoms without leftover singletons, so no-leftover saturated packings
+have all four atoms of size at least four; in particular `|A|>=16`.
+In general the leftover count is a budget: zero-gain exchanges need one leftover singleton, while equality
+pure absorption at atom `B_j` needs `|B_j|-1`; without that budget, only strict absorption or lift-collision
+can remain.
+Pair atoms become local pair-exchange components: both endpoint deletions pivot through leftover singletons,
+and a common leftover gives a support triangle on the pair plus that singleton.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

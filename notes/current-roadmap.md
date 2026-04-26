@@ -5451,9 +5451,15 @@ forbidden positive support.  Thus the only two-atom deletion endpoint is a zero-
 In a zero-gain-saturated packing, a pair-atom pivot that meets another packed atom would create a larger
 block, so surviving pivots are only same-size exchanges with leftover singletons.  With no leftover
 singletons, no saturated packing can contain a pair atom.
-Thus a saturated packing with no leftover singletons has four atoms all of size at least three, so `|A|>=12`;
-for `|A|<=11`, every deficit-one packing has a leftover singleton, and the all-pair `|A|=8` packing is
-impossible.
+Lift-locality also excludes three-atoms when there are no leftover singletons: their only nonpositive
+boundary lifts would require leftover vertices.  Thus no-leftover saturated packings have four atoms of size
+at least four and `|A|>=16`; for `|A|<=15`, every deficit-one packing has a leftover singleton.
+More generally, leftover singletons are a budget: zero-gain shortened-block exchanges require `L>=1`, and
+equality pure absorption at atom `B_j` requires `L>=|B_j|-1`; otherwise deletion repair is strict absorption
+with positive slack or genuine lift-collision.
+Pair atoms are completely local in this budget: for `B={a,b}`, both deletion pivots must be pairs `{b,l}`
+and `{a,l'}` with leftover singletons, giving a local pair-exchange component; a common leftover forms a
+support triangle.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

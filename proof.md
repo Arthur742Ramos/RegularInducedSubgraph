@@ -12123,11 +12123,50 @@ with a leftover singleton atom `l`.  Consequently, if a saturated deficit-one pa
 singletons, it cannot contain a pair atom at all.  If it has one leftover singleton, pair pivots can only
 swap the deleted vertex with that singleton.
 
-This gives a useful size cutoff.  A zero-gain-saturated deficit-one packing with `L=0` has four
-non-singleton atoms and none of them is a pair, so all four atoms have size at least three and `|A|>=12`.
-Equivalently, in every saturated rank-three endpoint with `|A|<=11`, each deficit-one packing has at least
-one leftover singleton.  The all-pair four-atom packing at `|A|=8` is therefore impossible in the saturated
-rank-three branch.
+This gives a useful size cutoff, and the lift-locality sharpens it once more.  A zero-gain-saturated
+deficit-one packing with `L=0` has no pair atom.  It also has no three-atom: for a deletion from a
+three-atom, collision is impossible by the same positive-member argument; a nonpositive shortened-block
+unlift would be a zero-gain same-size exchange and needs a leftover singleton; and equality pure absorption
+would need two leftover singletons.  Therefore all four atoms have size at least four, and `|A|>=16`.
+Equivalently, in every saturated rank-three endpoint with `|A|<=15`, each deficit-one packing has at least
+one leftover singleton.  The all-pair four-atom packing at `|A|=8` is therefore only the first excluded case
+of a larger no-leftover exclusion.
+
+More generally the leftover count is a budget.  Let `L` be the number of leftover singleton atoms of the
+four-atom packing.  A zero-gain shortened-block lift at an atom `B_j` is a same-size exchange and therefore
+uses exactly one leftover singleton.  An equality pure absorption at `B_j` uses `|B_j|-1` leftover
+singletons.  Hence:
+
+```text
+shortened-block zero lift at B_j      => L>=1,
+equality pure absorption at B_j       => L>=|B_j|-1.
+```
+
+If these inequalities fail, the only nonpositive full lifts are strict pure absorptions with slack
+
+```text
+slack = |B_j|-2-g^- > 0,
+```
+
+or there is no disjoint full lift because of deleted-vertex collision.  Thus the saturated rank-three
+endpoint is now `L`-budgeted: small leftover budget forces deletion repair into strict absorption inside
+large atoms or into genuine lift-collision; zero-gain boundary motion is possible only when the leftover
+budget pays for it.
+
+For pair atoms this budgeted endpoint is completely local.  Let `B={a,b}` be a pair atom and let `L_0` be
+the leftover singleton set.  Since deleting either endpoint has only the zero-gain pivot option, there are
+nonempty sets
+
+```text
+L_a={l in L_0 : {b,l} in F_Z},
+L_b={l in L_0 : {a,l} in F_Z}.
+```
+
+The original atom `{a,b}` together with these pivot pairs is the entire zero-gain orbit of `B`: every pivot
+exchanges one endpoint of the pair with a leftover singleton, and no pivot touches another packed atom.  If
+`L_a cap L_b` is nonempty, the pair atom lies in a support triangle `{a,b,l}`.  If the two sets are disjoint,
+the pivot orbit is a two-sided exchange fan from the pair to distinct leftover singletons.  Thus pair atoms
+are visible as local pair-exchange components attached to the leftover budget.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

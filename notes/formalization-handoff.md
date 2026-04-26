@@ -2511,8 +2511,12 @@ Recommended attack:
     Add pair-pivot saturation: a zero-gain pair pivot meeting another packed atom creates a larger block and
     contradicts zero-gain saturation; surviving pair pivots are same-size exchanges with leftover singletons,
     so saturated packings with no leftover singletons have no pair atoms.
-    Derive the no-leftover cutoff: if `L=0`, all four atoms have size at least three, so `|A|>=12`; the
-    all-pair `|A|=8` saturated rank-three packing is impossible.
+    Derive the no-leftover cutoff: if `L=0`, pair atoms are excluded by pivot saturation and three-atoms are
+    excluded by lift-locality, so all four atoms have size at least four and `|A|>=16`.
+    Record leftover-budget rules: zero-gain shortened-block exchanges require `L>=1`; equality pure
+    absorption at atom `B_j` requires `L>=|B_j|-1`; otherwise repairs are strict absorption or lift-collision.
+    Formalize pair-exchange components: for a pair atom `{a,b}`, endpoint deletions force pivot pairs
+    `{b,l}` and `{a,l'}` with leftover singletons; common leftovers form support triangles.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.
