@@ -5571,6 +5571,9 @@ Fully split ternary targets are transpose-rigid: after unit-edge discharge, an `
 size-three atoms is mutual `F`, and the `3x3` trace matrix is a permutation matrix or its complement.
 Thus every `F` atom-pair is cross-regular with degree `1` or `2`; the only non-quotient all-ternary endpoint
 is the pure all-edge minimum.
+Terminality forces every `F` edge to join opposite internal types: if two empty atoms or two triangular atoms
+were `F`-adjacent, their union would be a two-atom selector.  Hence the `F`-edge graph is bipartite in the
+empty/triangle type split.
 The pure all-edge minimum further splits into only two phase types inside the parity tetrahedron: the three
 edge supports either share one parity word (star phase) or form the triangle avoiding one parity word
 (triangle phase), with only the `2+1` multiplicity choice left on each size-three edge target.

@@ -1211,6 +1211,8 @@ With pair targets, the finite minima are analogous: `3,3,3,2` has `FFP_x`, `F E_
 with all omissions distinct.
 Fully split size-three traces are transpose-rigid: after unit-edge discharge, an `F` target is mutual `F`
 and its trace matrix is a permutation matrix or complement, hence cross-regular of degree `1` or `2`.
+An `F` edge between two atoms of the same internal type would make their union a two-atom selector, so every
+surviving `F` edge crosses the empty/triangle type split.
 The pure all-edge minimum has only star phase (three edge supports share a parity word) or triangle phase
 (three edge supports avoid one parity word), plus the `2+1` multiplicities on the size-three edge targets.
 For a symmetric all-ternary cycle, transposing the two-atom trace matrix forces every mutual edge target to

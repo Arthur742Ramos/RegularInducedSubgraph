@@ -2621,6 +2621,8 @@ Recommended attack:
     Formalize fully split transpose rigidity: a `3x3` trace with three same-parity column labels and
     same-parity row labels cannot have row support size `1` or `2`; row support size `3` forces a permutation
     matrix or its complement, so `F` atom-pairs are mutual and cross-regular of degree `1` or `2`.
+    Add the `F`-edge terminality rule: same internal type on an `F` edge makes the two-atom union a selector,
+    so every surviving `F` edge crosses the empty/triangle type split.
     For the all-edge permutation minimum, formalize the phase split: the three parity edges form either a
     star through one parity word or the triangle avoiding one parity word, and each size-three edge target
     has only a `2+1` label multiplicity choice.

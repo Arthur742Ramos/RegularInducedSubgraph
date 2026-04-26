@@ -2131,6 +2131,8 @@ With pair targets, `3,3,3,2` has only `FFP_x`, `F E_iP_j` (`i!=j`), or `E_iE_jP_
 omissions, and `3,3,2,2` has only `F P_iP_j` (`i!=j`) or `E_iP_jP_k` with distinct omissions.
 An `F` trace between two size-three atoms is transpose-rigid after unit-edge discharge: it is mutual `F`,
 with trace matrix a permutation or complement, so the atom-pair is cross-regular of degree `1` or `2`.
+If an `F` edge joins two atoms of the same internal type, their union is a forbidden two-atom selector; hence
+all surviving `F` edges cross the empty/triangle type split.
 The pure all-edge minimum has only star or triangle phase in the four-word parity tetrahedron, plus `2+1`
 multiplicity on each size-three edge target.
 In a symmetric all-ternary cycle, mutual edge targets pass the transpose test only when the edge contains an

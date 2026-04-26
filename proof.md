@@ -12805,6 +12805,33 @@ the permutation case and cross-degree `2` in the complement-permutation case.  C
 pattern containing an `F` edge has a quotient-regular atom-pair; the only non-quotient all-ternary endpoint
 is the pure all-edge minimum considered next.
 
+Terminality orients these `F` edges by internal type.  Since a size-three selector atom is empty or
+triangular, two `F`-adjacent atoms `G,H` have union degrees
+
+```text
+r_G+c_{GH},        r_H+c_{GH},
+```
+
+where `c_{GH}` is the common cross-degree `1` or `2`.  If `r_G=r_H`, the union `G union H` is a selector
+meeting exactly two atoms, a positive-gain forbidden support.  Hence every surviving `F` edge joins an empty
+atom to a triangular atom.  In particular the `F`-edge graph is bipartite in the internal type split: it has
+no same-type edge and no odd `F` cycle.
+
+Thus the whole `F`-containing all-ternary branch has a finite graph form.  On the four size-three atoms, draw
+an `F` edge for every fully split atom-pair and label every remaining corner edge by the coordinate `i` it
+omits.  The `F` graph is bipartite across the empty/triangle type split, and the high-outdegree condition at
+a vertex `G` says:
+
+```text
+deg_F(G) >= 2:  no condition on the remaining corner edge;
+deg_F(G) = 1:   the two corner edges at G have distinct omitted coordinates;
+deg_F(G) = 0:   the three corner edges at G omit all three coordinates.
+```
+
+Consequently the previous pure all-edge Latin model is exactly the `deg_F=0` case at every vertex; every
+other all-ternary endpoint is a typed bipartite `F`-graph with these local omission labels and quotient-regular
+`F` edges.
+
 It remains useful to split the pure all-edge minimum by phase.  Fix one parity tetrahedron, say the even
 words.  An edge target `E_i` is specified by the constant value of coordinate `i`; its two labels are the two
 even words with that coordinate value.  For the permutation edge-triangle `E_1,E_2,E_3`, the three label
