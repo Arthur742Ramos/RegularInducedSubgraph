@@ -5035,6 +5035,25 @@ biquadratic cut-domination term
 `binom(deg_B(u),2)binom(|X|-deg_X(u),2)+binom(|B|-deg_B(u),2)binom(deg_X(u),2)` for every unpaid
 `2`-error vertex `u`; hence such vertices must be globally almost constant across the cut unless the
 target layer pays the pair damage.
+The target-damage term is explicit:
+`Damage(t)=sum_{i!=j}N_B^i(t)N_X^j(t)`, where `N_B^i(t)` and `N_X^j(t)` count export/import pairs seeing
+`t` in exactly `i,j` endpoints.  If both sides have size at least three, zero polarity means one-corner
+sparse/dense across the cut, while zero target damage means the target vertex is cut-constant.  Thus mixed
+`T_2` polarity can only be paid by mixed target cut profiles.
+A direct charging lemma follows: for `U subset T_2`,
+`|U|min_U Polar <= |T|max_T Damage + binom(|X|,2)(|B|-1)|T|`.  Therefore any `T_2` subset that is
+linearly mixed on both sides of the cut has size `O(|T|)`; after charging it to the target layer, the
+remaining pure-`T_2` residual is one-corner polarized.
+The exact zero-polarized endpoint closes: sparse vertices induce maximum degree at most one, dense
+vertices have complement maximum degree at most one, and either side would contain an outside-only
+congruent set larger than `m` if it had more than `2m` vertices.  Hence zero-polarity `T_2` contributes at
+most `4m`; only the intermediate low-polarity band remains.
+At scale `L`, if `|B|,|X|>=2L` and `Polar(u)<binom(L,2)^2`, then `u` is either `L`-sparse on both sides
+or `L`-dense on both sides.  These two sets have size at most `Lm` each by degeneracy/complement
+degeneracy.  Hence
+`|T_2|<=2Lm+(|T|max_T Damage+binom(|X|,2)(|B|-1)|T|)/binom(L,2)^2`.
+The same `Lm` sparse/dense bound applies inside the target layer itself.  After discarding `O(Lm)`
+one-corner target vertices, only scale-mixed target profiles can pay for scale-mixed `T_2` polarity.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

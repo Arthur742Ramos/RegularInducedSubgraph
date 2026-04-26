@@ -2130,6 +2130,25 @@ Recommended attack:
     `binom(deg_B(u),2)binom(|X|-deg_X(u),2)+binom(|B|-deg_B(u),2)binom(deg_X(u),2)`, bounded by total
     target pair-damage and exported/imported target terms.  This is the biquadratic domination version of
     the final co-cut endpoint.
+    Add the target-damage profile: `Damage(t)=sum_{i!=j}N_B^i(t)N_X^j(t)` with
+    `N_B^0=binom(b-beta,2)`, `N_B^1=beta(b-beta)`, `N_B^2=binom(beta,2)` and similarly on `X`.
+    Formalize the zero cases for `b,x>=3`: zero `Polar` iff the vertex is one-corner sparse or dense
+    across the cut, and zero `Damage` iff the target vertex is cut-constant with the same value on both
+    sides.
+    Add the charging corollary: for `U subset T_2`,
+    `|U|min_U Polar <= |T|max_T Damage + binom(|X|,2)(|B|-1)|T|`.  Deduce that any linearly mixed
+    `T_2` subset has size `O(|T|)`, leaving a one-corner sparse/dense polarized residual after charging to
+    the target layer.
+    Formalize the zero-polar endpoint: if
+    `U^-={u:deg_B(u)<=1 and deg_X(u)<=1}`, then `G[U^-]` has maximum degree at most one, so terminality
+    gives `|U^-|<=2m`; dually the dense set `U^+` has complement maximum degree at most one and also has
+    size at most `2m`.
+    Add the scale version: for `L>=2` and `|B|,|X|>=2L`, `Polar(u)<binom(L,2)^2` implies `u` is either
+    `L`-sparse or `L`-dense across the cut.  Degeneracy gives at most `Lm` vertices of each type, yielding
+    `|T_2|<=2Lm+(|T|max_T Damage+binom(|X|,2)(|B|-1)|T|)/binom(L,2)^2`.
+    Formalize that the same `Lm` sparse/dense bound applies to arbitrary retained subsets, especially the
+    target layer.  Thus only scale-mixed target vertices can contribute nontrivially to the damage budget
+    after `O(Lm)` one-corner target vertices are removed.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

@@ -813,6 +813,25 @@ and all import pairs gives, for each unpaid `u in T_2`, the biquadratic contribu
 `binom(deg_B(u),2)binom(|X|-deg_X(u),2)+binom(|B|-deg_B(u),2)binom(deg_X(u),2)`, bounded by total target
 pair-damage.  Therefore any unpaid pure `2`-error vertex must be almost constant on both sides of the
 cut, unless the target layer pays for many pair exchanges.
+More precisely, target damage for `t in T` is
+`sum_{i!=j}N_B^i(t)N_X^j(t)`, with `N_B^i,N_X^j` the pair-degree counts.  For side sizes at least three,
+zero polarity is exactly one-corner sparse or one-corner dense, while zero target damage is exactly a
+cut-constant target vertex.  The final accounting problem is therefore mixed `T_2` polarity versus mixed
+target cut profiles.
+The accounting gives the charging bound
+`|U|min_U Polar <= |T|max_T Damage + binom(|X|,2)(|B|-1)|T|` for every `U subset T_2`.
+Thus the linearly mixed part of `T_2` is `O(|T|)` and can be charged to the target layer; the residual
+selector problem is one-corner polarized.
+The exact zero-polarized part is bounded: the sparse side induces maximum degree at most one and the
+dense side has complement maximum degree at most one, so each has at most `2m` vertices in a terminal
+configuration.  Otherwise isolated/matching components, or their complements, give an outside-only
+congruent set larger than `m`.
+More generally, at scale `L`, low-polarity vertices with `Polar<binom(L,2)^2` are `L`-sparse or
+`L`-dense when both cut sides have size at least `2L`; these two pieces have size at most `Lm` each.
+Therefore
+`|T_2|<=2Lm+(|T|max_T Damage+binom(|X|,2)(|B|-1)|T|)/binom(L,2)^2`.
+The same degeneracy/complement-degeneracy bound applies to sparse/dense target vertices.  Hence the only
+target mass that can pay for mixed `T_2` polarity is itself scale-mixed across the cut.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

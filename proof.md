@@ -9446,6 +9446,156 @@ sides or dense on both sides, up to one-corner exceptions.  This biquadratic dom
 unrestricted analogue of the exact-basis majority rule, and it is the current sharp local form of the
 terminal co-cut/self-layer selector.
 
+The target-damage side is also explicit.  For any vertex `v`, put `b=|B|`, `x=|X|`,
+`beta=deg_B(v)`, and `xi=deg_X(v)`, and define
+
+```text
+N_B^0(v)=binom(b-beta,2),      N_B^1(v)=beta(b-beta),      N_B^2(v)=binom(beta,2),
+N_X^0(v)=binom(x-xi,2),        N_X^1(v)=xi(x-xi),          N_X^2(v)=binom(xi,2).
+```
+
+Then the number of export/import pair exchanges that damage a target vertex `t` is
+
+```text
+Damage_{B,X}(t)=sum_{i != j} N_B^i(t) N_X^j(t).
+```
+
+Consequently the all-pairs terminal inequality can be written without hidden language as
+
+```text
+sum_{u in T_2} Polar_{B,X}(u) + ImportedTargetPairs
+ <= sum_{t in T} Damage_{B,X}(t) + binom(x,2)(b-1)|T|,
+```
+
+where
+
+```text
+Polar_{B,X}(u)
+ = binom(deg_B(u),2) binom(x-deg_X(u),2)
+   + binom(b-deg_B(u),2) binom(deg_X(u),2).
+```
+
+The exact zero cases are important.  If `b,x>=3`, then `Polar_{B,X}(u)=0` iff either
+
+```text
+deg_B(u)<=1 and deg_X(u)<=1,
+```
+
+or
+
+```text
+b-deg_B(u)<=1 and x-deg_X(u)<=1.
+```
+
+Thus an unpaid zero-polarity `T_2` vertex is genuinely one-corner sparse or one-corner dense across the
+whole cut.  Similarly, `Damage_{B,X}(t)=0` for a target vertex with `b,x>=3` iff `t` is constant on both
+sides of the cut with the same value: it misses `B union X`, or it sees `B union X`.  Hence terminality
+has a clean accounting form: mixed `T_2` polarity must be paid by mixed target cut profiles; cut-constant
+target vertices cannot pay for it.
+
+This gives a useful charging corollary.  For `U subset T_2`, let
+
+```text
+P_U=min_{u in U} Polar_{B,X}(u),        D_T=max_{t in T} Damage_{B,X}(t).
+```
+
+Dropping the nonnegative imported-target term from the exact inequality gives
+
+```text
+|U| P_U <= |T| D_T + binom(x,2)(b-1)|T|.
+```
+
+Thus every family of `T_2` vertices with uniformly large cut-polarity has size controlled by the target
+layer.  In particular, if `U` is linearly mixed on both sides of the cut, in the sense that
+
+```text
+epsilon b <= deg_B(u) <= (1-epsilon)b,
+epsilon x <= deg_X(u) <= (1-epsilon)x        for every u in U,
+```
+
+then `P_U` is a positive `epsilon`-multiple of `b^2 x^2`, while `D_T<=binom(b,2)binom(x,2)`.  Hence
+`|U|=O_epsilon(|T|)` (with only the displayed lower-order exported-target term).  After charging this
+mixed part to the target layer, the residual pure `T_2` branch is one-corner polarized: every unpaid
+vertex is close to sparse on both sides or close to dense on both sides of the cut.
+
+The exact zero-polarized endpoint closes.  Let
+
+```text
+U^-={u in T_2:deg_B(u)<=1 and deg_X(u)<=1},
+U^+={u in T_2:b-deg_B(u)<=1 and x-deg_X(u)<=1}.
+```
+
+Since `U^- subset B`, the induced graph on `U^-` has maximum degree at most one.  It is a disjoint union
+of isolated vertices and matching edges.  If more than `m` vertices lie in isolated components, they form
+an outside-only congruent set of degree `0`; if more than `m` vertices lie in matching components, the
+union of those edges is an outside-only congruent set of degree `1`.  Therefore terminality forces
+
+```text
+|U^-|<=2m.
+```
+
+The dense part is the complement of the same argument.  In the complement graph on `U^+`, maximum degree
+is at most one.  Complement-isolated vertices form a clique in the original graph, and complement-matching
+edges form a clique with one missing mate at each vertex; in either case the original induced degrees are
+constant.  Hence
+
+```text
+|U^+|<=2m.
+```
+
+Thus zero-polarity pure `T_2` vertices contribute at most `4m` in a terminal one-large-class
+counterexample.  After the mixed-polarity charging above, the only remaining self-layer mass is the
+intermediate low-polarity band where at least one of the four factors
+`deg_B`, `b-deg_B`, `deg_X`, `x-deg_X` is small but not one-corner exact.  This isolates the final
+multi-scale accounting problem.
+
+The intermediate band has an exact scale form.  Fix an integer `L>=2` with `b,x>=2L`.  If
+
+```text
+Polar_{B,X}(u) < binom(L,2)^2,
+```
+
+then the two products in `Polar` cannot both contain factors at least `L`; hence either
+
+```text
+deg_B(u)<L and deg_X(u)<L,
+```
+
+or
+
+```text
+b-deg_B(u)<L and x-deg_X(u)<L.
+```
+
+The other two logical combinations would force `b<2L` or `x<2L`.  Thus low-polarity vertices are
+`L`-sparse or `L`-dense.  The `L`-sparse vertices induce maximum degree less than `L`, and therefore
+contain an independent set of size at least their cardinality divided by `L`; terminality gives at most
+`Lm` such vertices.  Dually, the `L`-dense vertices have complement maximum degree less than `L`, so they
+also have size at most `Lm`.  Combining this with the charging inequality gives the scale bound
+
+```text
+|T_2|
+ <= 2Lm
+    + ( |T| D_T + binom(x,2)(b-1)|T| ) / binom(L,2)^2.
+```
+
+This is the first quantitative form of the final selector.  The residual is no longer structural but
+optimization/accounting: choose a scale `L` and use target-layer information to make the second term
+linear in `m`.
+
+The same sparse/dense bound applies to every retained layer, including the target layer.  For any
+`U subset B`, if every vertex of `U` is `L`-sparse across the cut, then `G[U]` has maximum degree less than
+`L`, so `|U|<=Lm` in a terminal graph.  If every vertex of `U` is `L`-dense across the cut, then the
+complement graph on `U` has maximum degree less than `L`, and again `|U|<=Lm`.  Therefore, after deleting
+`O(Lm)` target vertices, every remaining target vertex has a genuinely mixed cut profile at scale `L`.
+
+Thus the final accounting core has a symmetric description: the linearly or scale-mixed part of `T_2` is
+charged to the scale-mixed part of `T`, while all sparse/dense pieces on either side are already linearly
+bounded by degeneracy or complement degeneracy.  In this form, a terminal counterexample must contain a
+large target layer whose vertices are themselves mixed across the selected/discarded cut and whose
+`Damage_{B,X}` budget pays for the mixed `T_2` polarity.  No cut-constant or one-corner target mass can
+participate in the payment.
+
 One stronger way to prove it would be a global fixed-point coloring
 `gamma : V(H) -> Z/4Z` satisfying
 

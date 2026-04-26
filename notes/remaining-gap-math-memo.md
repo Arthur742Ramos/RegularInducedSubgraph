@@ -1763,6 +1763,19 @@ In the unconstrained selector, all pair exchanges are legal.  Averaging over all
 a biquadratic domination term for each unpaid `T_2` vertex:
 `binom(deg_B(u),2)binom(|X|-deg_X(u),2)+binom(|B|-deg_B(u),2)binom(deg_X(u),2)`.
 Thus pure `2`-errors must be globally almost constant across the cut unless target damage pays.
+Target damage has the exact profile `sum_{i!=j}N_B^i(t)N_X^j(t)`.  With both cut sides of size at least
+three, zero polarity means one-corner sparse/dense, and zero target damage means cut-constant.  The final
+accounting is mixed `T_2` polarity paid by mixed target cut profiles.
+For `U subset T_2`, `|U|min_U Polar <= |T|max_T Damage+binom(|X|,2)(|B|-1)|T|`; hence the linearly mixed
+part of `T_2` is `O(|T|)`.  The remaining terminal selector is one-corner polarized.
+The exact zero-polarized part is bounded by `4m`: sparse vertices induce maximum degree at most one, and
+dense vertices have complement maximum degree at most one, so larger sets contain congruent isolated or
+matching components (or complements).
+At scale `L`, low-polarity means `L`-sparse or `L`-dense, giving at most `2Lm` vertices, and the rest is
+charged by
+`(|T|max_T Damage+binom(|X|,2)(|B|-1)|T|)/binom(L,2)^2`.
+Sparse/dense target vertices obey the same `Lm` bound, so only scale-mixed target profiles can pay for
+mixed `T_2` polarity.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

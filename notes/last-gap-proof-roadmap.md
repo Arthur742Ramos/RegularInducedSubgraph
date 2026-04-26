@@ -1791,7 +1791,16 @@ What remains justified after audit is:
       target-stability plus the endpoint-exclusive mod-`4` layer theorem, leaving the terminal co-cut
       self-layer selector as the live first-bit obstruction; in the unconstrained selector, averaging over
       all export/import pairs gives a biquadratic domination inequality forcing unpaid pure `T_2` vertices
-      to be globally almost constant across the selected/discarded cut unless target damage pays;
+      to be globally almost constant across the selected/discarded cut unless target damage pays; target
+      damage itself is `sum_{i!=j}N_B^iN_X^j`, so zero-polarity vertices are one-corner sparse/dense while
+      zero-damage target vertices are cut-constant; the charging bound
+      `|U|min_U Polar <= |T|max_T Damage+binom(|X|,2)(|B|-1)|T|` controls all linearly mixed `T_2` mass by
+      the target layer and leaves a one-corner polarized residual; the exact zero-polarized sparse/dense
+      endpoint contributes at most `4m` by the matching/anti-matching congruent-set argument, leaving only
+      the intermediate low-polarity band; at scale `L`, that band is `L`-sparse or `L`-dense and has size
+      at most `2Lm`, with the rest charged by `binom(L,2)^(-2)` times the target-damage budget; sparse/dense
+      target vertices satisfy the same `Lm` bound, so only scale-mixed target profiles can pay for mixed
+      `T_2` polarity;
       Fano itself needs four kept-pair
       witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual
