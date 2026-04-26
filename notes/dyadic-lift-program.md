@@ -1072,6 +1072,8 @@ or small-active zero-filter capacity.
 If no residue has a rank-three projected support, the active dimensions are all at most seven; since their
 sum is `2(m-2)`, this low-rank pure high-active case has `m<=16`.  For `m>=17`, a rank-three support is
 forced.
+Thus for every retained `T` and outgoing triple `X`, the terminal is scalar-killed, small-active
+zero-filter capacity, low-rank bounded (`m<=16`), or rank-three high-active.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

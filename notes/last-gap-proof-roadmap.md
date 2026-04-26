@@ -1974,6 +1974,8 @@ What remains justified after audit is:
       small-active zero-filter capacity;
       if all high-active residues avoid rank-three projected supports, then `sum |A_k|=2(m-2)` and
       `|A_k|<=7` give `m<=16`; for `m>=17` a rank-three support is forced;
+      uniformly in every retained `T` and outgoing triple `X`, terminality is scalar-killed, small-active
+      zero-filter, low-rank bounded, or rank-three high-active;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;

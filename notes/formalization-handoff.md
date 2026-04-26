@@ -2458,6 +2458,8 @@ Recommended attack:
     scalar-killed or small-active zero-filter capacity.
     Add the large-core rank-three forcing: `sum_k |A_k|=2(m-2)` and no rank-three support implies
     `|A_k|<=7` for all high-active residues, hence `m<=16`.
+    Package this as a universal `X`-dichotomy for every retained `T` and outgoing triple `X`: scalar-killed,
+    small-active zero-filter, low-rank bounded, or rank-three high-active.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

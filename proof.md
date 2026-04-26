@@ -11319,6 +11319,19 @@ then the pair-only/singleton endpoint table gives `a_k<=7` for all `k`.  Hence `
 `m<=16`.  Therefore, for `m>=17`, a pure high-active target-avoidance terminal necessarily has a
 rank-three projected support in at least one residue.
 
+Consequently the ternary terminal can be stated uniformly in the outgoing triple.  For every retained
+`(m+1)`-set `T` and every `X subset T` with `|X|=3`, one of the following holds:
+
+```text
+1. some residue is scalar-killed;
+2. some residue is small-active zero-filter capacity;
+3. m<=16 and all four residues are high-active low-rank endpoints;
+4. some residue has a high-active rank-three projected support.
+```
+
+For `m>=17`, the third line disappears.  This is the current universal `X`-dichotomy for the first-bit
+terminal obstruction.
+
 If both opposite residues `k` and `k+2` are in the high-active full-minor target-avoidance branch on a
 shared coordinate certificate, the singleton-shadow collapse gives an antipodal trace core.  On that shared
 coordinate set, the outside trace multiset contains
@@ -12017,8 +12030,8 @@ large-outside ternary target avoidance:
   pair-only endpoints stop at |A|=7, zero-filter repairs privately bridge Delta=|A|-3-mu_Z, and the four
   kappa covers for fixed T,X obey active/filter complement coherence with antipodal trace cores for
   opposite high-active endpoints; pure high-active target-avoidance for all four residues forces m>=10,
-  and if no rank-three support appears then m<=16, while small-active target avoidance is a finite
-  zero-filter blocker with essential single-zero repairs;
+  and if no rank-three support appears then m<=16; uniformly in T,X, terminality is scalar-killed,
+  small-active zero-filter, low-rank bounded, or rank-three high-active;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

@@ -5311,6 +5311,9 @@ for `m<=9` some residue is scalar-killed or small-active zero-filter capacity.
 Also `sum_k |A_k|=2(m-2)`; if all four high-active residues avoid rank-three supports, then all
 `|A_k|<=7`, so `m<=16`.  Thus for `m>=17`, pure high-active target avoidance forces a rank-three projected
 support in some residue.
+Uniformly for every retained `(m+1)`-set `T` and outgoing triple `X`, the terminal is therefore:
+scalar-killed residue, small-active zero-filter capacity, low-rank high-active with `m<=16`, or a
+high-active rank-three projected support.
 After coordinate switching, `h` is `{0,1}`-valued; realization is three outside columns vanishing on the
 zero coordinates and disjointly covering the one coordinates.
 Thus the target branch is a critical filtered three-cover: zero coordinates filter admissible columns, and
