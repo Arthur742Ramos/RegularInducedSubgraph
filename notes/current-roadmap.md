@@ -5054,6 +5054,16 @@ degeneracy.  Hence
 `|T_2|<=2Lm+(|T|max_T Damage+binom(|X|,2)(|B|-1)|T|)/binom(L,2)^2`.
 The same `Lm` sparse/dense bound applies inside the target layer itself.  After discarding `O(Lm)`
 one-corner target vertices, only scale-mixed target profiles can pay for scale-mixed `T_2` polarity.
+Quantitatively,
+`sum_{t in T}Damage(t)<=|T_mix(L)|binom(|B|,2)binom(|X|,2)+C L^2m|B||X|(|B|+|X|)`.
+Substitution into the all-pairs inequality shows that every nonlinear term is carried by the mixed-target
+core `T_mix(L)`.
+Dyadic bucketing of the four cut factors
+`deg_B,b-deg_B,deg_X,|X|-deg_X` localizes the remaining obstruction to one homogeneous mixed bucket:
+within that bucket `Damage` and `Polar` have the same scale, so pair-exchange terminality compares
+cardinalities of mixed `T_2` and mixed target vertices up to logarithmic loss.
+Refining the mixed target bucket by `deg_B mod 4` and `deg_X mod 4` fixes all external cut contributions;
+the remaining statement is an internal principal-submatrix mod-`4` selector on one cut-homogeneous bucket.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

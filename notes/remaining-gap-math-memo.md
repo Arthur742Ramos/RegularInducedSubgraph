@@ -1776,6 +1776,14 @@ charged by
 `(|T|max_T Damage+binom(|X|,2)(|B|-1)|T|)/binom(L,2)^2`.
 Sparse/dense target vertices obey the same `Lm` bound, so only scale-mixed target profiles can pay for
 mixed `T_2` polarity.
+Summed over targets,
+`sum_T Damage <= |T_mix(L)|binom(|B|,2)binom(|X|,2)+C L^2m|B||X|(|B|+|X|)`.
+The final nonlinear term is therefore the mixed-target core `T_mix(L)`.
+After dyadic bucketing of the four cut factors, the core is homogeneous: `Damage` and `Polar` are
+comparable in one bucket, so terminality compares mixed `T_2` and mixed target cardinalities up to
+logarithmic loss.
+After refining by `deg_B,deg_X mod 4`, all external residues are fixed and the last statement is an
+internal principal-submatrix mod-`4` selector on a cut-homogeneous mixed bucket.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

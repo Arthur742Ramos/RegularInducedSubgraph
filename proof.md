@@ -9596,6 +9596,87 @@ large target layer whose vertices are themselves mixed across the selected/disca
 `Damage_{B,X}` budget pays for the mixed `T_2` polarity.  No cut-constant or one-corner target mass can
 participate in the payment.
 
+One can make this last sentence quantitative without using a maximum-damage vertex.  Let `T_mix(L)` be
+the target vertices for which neither the sparse nor dense alternative at scale `L` holds.  For a
+target vertex that is `L`-sparse, the profile formula gives
+
+```text
+Damage_{B,X}(t) <= C L b x(b+x)
+```
+
+for an absolute constant `C`; the same estimate holds for `L`-dense vertices by complementing.  Since the
+sparse and dense target parts have size at most `Lm` each,
+
+```text
+sum_{t in T} Damage_{B,X}(t)
+ <= |T_mix(L)| binom(b,2)binom(x,2) + C L^2 m b x(b+x).
+```
+
+Substituting this in the exact all-pairs inequality yields the scale-decomposed form
+
+```text
+|T_2|
+ <= 2Lm
+    + |T_mix(L)| binom(b,2)binom(x,2) / binom(L,2)^2
+    + C L^2 m b x(b+x) / binom(L,2)^2
+    + binom(x,2)(b-1)|T| / binom(L,2)^2.
+```
+
+Thus a terminal obstruction at scale `L` has to put a large amount of mass into `T_mix(L)`, the target
+vertices which are themselves mixed across the selected/discarded cut.  Sparse/dense target vertices and
+zero-polarized `T_2` vertices are already linear; the only remaining nonlinear term is the mixed-target
+core.
+
+The mixed-target core can be dyadically localized.  For a mixed vertex `v`, record the four cut factors
+
+```text
+deg_B(v),        b-deg_B(v),        deg_X(v),        x-deg_X(v).
+```
+
+Bucket each factor by powers of two between `L` and the corresponding side size.  On a fixed bucket
+`(A,A',C,C')`, every target vertex has
+
+```text
+Damage_{B,X}(t) = Theta(AA'CC')
+```
+
+up to an absolute constant, and every `T_2` vertex in the matching polarity bucket has
+
+```text
+Polar_{B,X}(u) = Theta(AA'CC').
+```
+
+Therefore, after losing only an absolute logarithmic factor in the four cut parameters, terminality gives
+a single bucket in which the number of mixed `T_2` vertices is controlled by the number of mixed target
+vertices in the corresponding bucket, plus the already linear sparse/dense error.  Equivalently, the
+final obstruction can be assumed cut-profile homogeneous: all live vertices have the same four dyadic cut
+scales, and the pair-exchange inequality compares their cardinalities rather than heterogeneous weights.
+
+This homogeneous mixed-core form is equivalent to a finite weighted principal-submatrix selector: after
+normalizing by the common weight `AA'CC'`, either the bucket has more mixed `T_2` vertices than target
+vertices and a pair exchange improves the target layer, or the target bucket itself carries the remaining
+self-layer obstruction.  Thus no diffuse cut-profile phenomenon remains; the final gap is concentrated in
+one dyadic mixed target bucket.
+
+Refine that bucket once more by the two residues
+
+```text
+deg_B(v) [MOD 4],        deg_X(v) [MOD 4].
+```
+
+One residue subbucket loses only a factor `16`.  On it, all external cut contributions are fixed modulo
+`4`.  Therefore a pure-discard exit from the target bucket is exactly the following internal selector:
+find `S` in the subbucket with
+
+```text
+deg_{G[S]}(s)=constant        [MOD 4]        for every s in S,
+```
+
+and `|S|>m` after adding the already selected compatible part.  Equivalently, the final homogeneous
+mixed-bucket obstruction is a principal-submatrix mod-`4` row-sum selector in a graph whose vertices have
+comparable degrees and codegrees to both sides of the ambient cut.  All boundary arithmetic, old-vector
+data, positive atoms, and one-corner polarized pieces have been removed from this last statement.
+
 One stronger way to prove it would be a global fixed-point coloring
 `gamma : V(H) -> Z/4Z` satisfying
 

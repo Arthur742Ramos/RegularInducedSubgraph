@@ -1800,7 +1800,10 @@ What remains justified after audit is:
       the intermediate low-polarity band; at scale `L`, that band is `L`-sparse or `L`-dense and has size
       at most `2Lm`, with the rest charged by `binom(L,2)^(-2)` times the target-damage budget; sparse/dense
       target vertices satisfy the same `Lm` bound, so only scale-mixed target profiles can pay for mixed
-      `T_2` polarity;
+      `T_2` polarity; the summed-damage estimate isolates the only nonlinear term as the mixed-target core
+      `T_mix(L)`, and dyadic bucketing of the four cut factors reduces it to one homogeneous mixed bucket
+      where `Damage` and `Polar` have comparable scale; refining by `deg_B,deg_X mod 4` fixes external
+      residues and leaves an internal principal-submatrix mod-`4` selector on that cut-homogeneous bucket;
       Fano itself needs four kept-pair
       witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual

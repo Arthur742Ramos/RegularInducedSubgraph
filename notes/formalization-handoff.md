@@ -2149,6 +2149,15 @@ Recommended attack:
     Formalize that the same `Lm` sparse/dense bound applies to arbitrary retained subsets, especially the
     target layer.  Thus only scale-mixed target vertices can contribute nontrivially to the damage budget
     after `O(Lm)` one-corner target vertices are removed.
+    Add the summed-damage estimate:
+    `sum_T Damage <= |T_mix(L)|binom(b,2)binom(x,2)+C L^2m b x(b+x)`, obtained from
+    `Damage(t)<=C L b x(b+x)` on sparse/dense target vertices and the `Lm` bound on each such target part.
+    This identifies `T_mix(L)` as the only nonlinear target core left in the scale inequality.
+    Add dyadic cut-profile bucketing for the four factors `deg_B`, `b-deg_B`, `deg_X`, `x-deg_X`.  On each
+    homogeneous bucket, prove `Damage` and `Polar` are comparable to the same product of bucket scales, so
+    the all-pairs inequality compares mixed `T_2` and mixed target cardinalities up to bucket-count loss.
+    Add the residue refinement by `deg_B mod 4` and `deg_X mod 4`, reducing the remaining homogeneous
+    mixed target bucket to an internal principal-submatrix selector with constant degree modulo `4`.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

@@ -832,6 +832,15 @@ Therefore
 `|T_2|<=2Lm+(|T|max_T Damage+binom(|X|,2)(|B|-1)|T|)/binom(L,2)^2`.
 The same degeneracy/complement-degeneracy bound applies to sparse/dense target vertices.  Hence the only
 target mass that can pay for mixed `T_2` polarity is itself scale-mixed across the cut.
+The summed profile is
+`sum_T Damage <= |T_mix(L)|binom(|B|,2)binom(|X|,2)+C L^2m|B||X|(|B|+|X|)`.
+Thus the nonlinear part of the final inequality is exactly the mixed-target core.
+Bucketing the four cut factors dyadically makes the core homogeneous: on one bucket, `Damage` and `Polar`
+are comparable, and terminality says the mixed `T_2` bucket is paid by the mixed target bucket, up to the
+already linear sparse/dense error and a logarithmic bucket loss.
+After also refining by `deg_B,deg_X mod 4`, all external cut residues are fixed.  The final homogeneous
+bucket asks only for an internal induced subgraph with constant degree modulo `4`, i.e. a
+principal-submatrix selector on one cut-homogeneous bucket.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard
