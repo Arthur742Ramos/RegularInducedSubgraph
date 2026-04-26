@@ -38027,6 +38027,1687 @@ theorem targetStatement_of_certifiedProofMdCurrentFrontierProtectedCoreAllLargeD
   h.toTargetStatement
 
 end ProtectedCoreAllLargeDownstreamFinalConsumerRowsApi
+
+/-!
+## Final current-frontier proof-md release facade
+
+This release-facing layer packages the large-target capacity/endpoint handoff, the
+protected-core/all-large closure bundle, the first-bit final closure row, the four-exception
+residual/binary normalization packet, and the downstream final consumer rows behind a single
+assumption-backed facade.
+-/
+
+/--
+Final release facade for the current proof-md frontier.  It keeps the computationally meaningful
+terminal packets available by projection, but the only target statement it exports is the one
+already recorded by the supplied downstream final-consumer rows and large-target handoff.
+-/
+structure CertifiedProofMdCurrentFrontierFinalReleaseFacade
+    (TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      FourExceptionResidualBinaryNormalizationExtensionBundle : Type)
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop) : Type where
+  largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+  largeTargetCapacityEndpointExhaustionExtensionBundle :
+    CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+      FourExceptionResidualBinaryNormalizationExtensionBundle
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+  protectedCoreAllLargeClosureExtensionBundle :
+    CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+      (CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget
+  downstreamFinalConsumerRows :
+    CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+      (CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+      (CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget
+  targetStatement : TargetStatement
+  targetStatement_eq_downstreamFinalConsumerRows :
+    targetStatement = downstreamFinalConsumerRows.toTargetStatement
+  targetStatement_eq_largeTargetCapacityEndpointExhaustion :
+    targetStatement = largeTargetCapacityEndpointExhaustionFinalConsumerHandoff.toTargetStatement
+  firstBitFinalClosureTargetStatement_eq_targetStatement :
+    downstreamFinalConsumerRows.toFirstBitFinalClosure.toTargetStatement = targetStatement
+
+/-- Facade alias for release consumers that only want the final current-frontier package. -/
+abbrev CertifiedProofMdCurrentFrontierProofMdReleaseFacade :=
+  CertifiedProofMdCurrentFrontierFinalReleaseFacade
+
+/-- Build the final release facade from the already packaged frontier rows. -/
+def certifiedProofMdCurrentFrontierFinalReleaseFacade_of_packets
+    {TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      FourExceptionResidualBinaryNormalizationExtensionBundle : Type}
+    {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop}
+    (largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (largeTargetCapacityEndpointExhaustionExtensionBundle :
+      CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (protectedCoreFrontier :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer)
+    (allLargeAbsorptionOverlapAnchoredCollision :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget)
+    (firstBitFinalClosure :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierFinalReleaseFacade
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      FourExceptionResidualBinaryNormalizationExtensionBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget :=
+  let protectedCoreAllLargeClosureExtensionBundle :=
+    certifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle_of_packets
+      largeTargetCapacityEndpointExhaustionExtensionBundle
+      protectedCoreFrontier
+      allLargeAbsorptionOverlapAnchoredCollision
+  let downstreamFinalConsumerRows :=
+    certifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows_of_packets
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      protectedCoreAllLargeClosureExtensionBundle
+      firstBitFinalClosure
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff.toTargetStatement
+  { largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :=
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+    largeTargetCapacityEndpointExhaustionExtensionBundle :=
+      largeTargetCapacityEndpointExhaustionExtensionBundle
+    protectedCoreAllLargeClosureExtensionBundle := protectedCoreAllLargeClosureExtensionBundle
+    downstreamFinalConsumerRows := downstreamFinalConsumerRows
+    targetStatement := largeTargetCapacityEndpointExhaustionFinalConsumerHandoff.toTargetStatement
+    targetStatement_eq_downstreamFinalConsumerRows := Subsingleton.elim _ _
+    targetStatement_eq_largeTargetCapacityEndpointExhaustion := Subsingleton.elim _ _
+    firstBitFinalClosureTargetStatement_eq_targetStatement := Subsingleton.elim _ _ }
+
+/--
+Build the final release facade directly from raw assumption rows.  This is the final-facing
+constructor for proof-md/current-frontier handoff consumers: it normalizes four-exception residuals,
+adjoins large-target capacity endpoint exhaustion, closes the protected-core/all-large extension, and
+records the first-bit final closure target projection.
+-/
+def certifiedProofMdCurrentFrontierFinalReleaseFacade_of_assumptions
+    {TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      FourExceptionResidualBinaryNormalizationExtensionBundle : Type}
+    {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop}
+    (typedFGraphBranchHandoff : TypedFGraphBranchHandoff)
+    (parityTetrahedronAllEdgeLatinScalarEndpointHandoff :
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff)
+    (fourExceptionResidualBinaryNormalizationExtensionBundle :
+      FourExceptionResidualBinaryNormalizationExtensionBundle)
+    (localHostTwoExceptionPacketDischarge :
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge)
+    (localHostThreeExceptionPacketDischarge :
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge)
+    (remainingTwoTwoSkeletons : terminalFourExceptionRemainingTwoTwoSkeletons)
+    (booleanSecondDifferenceOneCornerSquare :
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare)
+    (affineTableRowColumnSwitchNormalization :
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization)
+    (balancedZeroOneZeroOneZeroZeroOneOneCompensator :
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator)
+    (signedDegreeQuotientClosureFoldback :
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback)
+    (shortenedPairHitQTwoFoldback : terminalFourExceptionShortenedPairHitQTwoFoldback)
+    (shortenedPairHitQThreeExtraRebateBranch :
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch)
+    (twoPetalPartnerFreeSplitTargetCapacityIdentity :
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity)
+    (totalDeficitRebateOneSlack : terminalLargeTargetTotalDeficitRebateOneSlack)
+    (sideSlackSumHMinusFour : terminalLargeTargetSideSlackSumHMinusFour)
+    (hFourTightTable : terminalLargeTargetHFourTightTable)
+    (hGreaterThanFourAdditionalSplitTargetSlack :
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack)
+    (hGreaterThanFourPartnerHitOmissionSlack :
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack)
+    (hGreaterThanFourAllLargeStrictDefectSlack :
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack)
+    (allTernaryEndpointExhaustion : terminalAllTernaryEndpointExhaustion)
+    (nearThresholdBoundaryDiagnostics : terminalNearThresholdBoundaryDiagnostics)
+    (protectedCoreFrontierReduction : terminalLargeTargetProtectedCoreFrontierReduction)
+    (capacityEndpointCompatibility :
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility)
+    (allLargePromotion : terminalLargeTargetProtectedCoreAllLargePromotion)
+    (strictDefectTransfer : terminalLargeTargetProtectedCoreStrictDefectTransfer)
+    (overlapCongestionBound : terminalAllLargeAbsorptionOverlapCongestionBound)
+    (anchoredCollisionBranch : terminalAllLargeAbsorptionAnchoredCollisionBranch)
+    (protectedCoreLift : terminalAllLargeAbsorptionProtectedCoreLift)
+    (noResidualLargeTarget : terminalAllLargeAbsorptionNoResidualLargeTarget)
+    (firstBitCoCut :
+      CertifiedProofMdFirstBitCoCutObligationSurface
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate) :
+    CertifiedProofMdCurrentFrontierFinalReleaseFacade
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      FourExceptionResidualBinaryNormalizationExtensionBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget :=
+  let fourExceptionResidualBinaryNormalization :=
+    certifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate_of_assumptions
+      localHostTwoExceptionPacketDischarge
+      localHostThreeExceptionPacketDischarge
+      remainingTwoTwoSkeletons
+      booleanSecondDifferenceOneCornerSquare
+      affineTableRowColumnSwitchNormalization
+      balancedZeroOneZeroOneZeroZeroOneOneCompensator
+      signedDegreeQuotientClosureFoldback
+      shortenedPairHitQTwoFoldback
+      shortenedPairHitQThreeExtraRebateBranch
+  let largeTargetCapacityEndpointExhaustion :=
+    certifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate_of_assumptions
+      twoPetalPartnerFreeSplitTargetCapacityIdentity
+      totalDeficitRebateOneSlack
+      sideSlackSumHMinusFour
+      hFourTightTable
+      hGreaterThanFourAdditionalSplitTargetSlack
+      hGreaterThanFourPartnerHitOmissionSlack
+      hGreaterThanFourAllLargeStrictDefectSlack
+      allTernaryEndpointExhaustion
+      nearThresholdBoundaryDiagnostics
+  let fourExceptionResidualBinaryNormalizationHandoff :=
+    certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff_of_packets
+      typedFGraphBranchHandoff
+      parityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      fourExceptionResidualBinaryNormalization
+      (targetStatement_of_certifiedProofMdFinalTargetConsumerCertificate
+        finalTargetConsumerCertificate)
+  let largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :=
+    certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff_of_packets
+      fourExceptionResidualBinaryNormalizationHandoff
+      largeTargetCapacityEndpointExhaustion
+  let largeTargetCapacityEndpointExhaustionExtensionBundle :=
+    certifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle_of_packets
+      fourExceptionResidualBinaryNormalizationExtensionBundle
+      largeTargetCapacityEndpointExhaustion
+  let protectedCoreFrontier :=
+    certifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate_of_assumptions
+      protectedCoreFrontierReduction
+      capacityEndpointCompatibility
+      allLargePromotion
+      strictDefectTransfer
+  let allLargeAbsorptionOverlapAnchoredCollision :=
+    certifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate_of_assumptions
+      overlapCongestionBound
+      anchoredCollisionBranch
+      protectedCoreLift
+      noResidualLargeTarget
+  let firstBitFinalClosure :=
+    certifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate_of_packets
+      firstBitCoCut
+      finalTargetConsumerCertificate
+  certifiedProofMdCurrentFrontierFinalReleaseFacade_of_packets
+    largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+    largeTargetCapacityEndpointExhaustionExtensionBundle
+    protectedCoreFrontier
+    allLargeAbsorptionOverlapAnchoredCollision
+    firstBitFinalClosure
+
+section CurrentFrontierFinalReleaseFacadeApi
+
+variable {TypedFGraphBranchHandoff
+  ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+  FourExceptionResidualBinaryNormalizationExtensionBundle : Type}
+variable {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+  terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+  terminalFourExceptionRemainingTwoTwoSkeletons
+  terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+  terminalFourExceptionAffineTableRowColumnSwitchNormalization
+  terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+  terminalFourExceptionSignedDegreeQuotientClosureFoldback
+  terminalFourExceptionShortenedPairHitQTwoFoldback
+  terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+  terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+  terminalLargeTargetTotalDeficitRebateOneSlack
+  terminalLargeTargetSideSlackSumHMinusFour
+  terminalLargeTargetHFourTightTable
+  terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+  terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+  terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+  terminalAllTernaryEndpointExhaustion
+  terminalNearThresholdBoundaryDiagnostics
+  terminalLargeTargetProtectedCoreFrontierReduction
+  terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+  terminalLargeTargetProtectedCoreAllLargePromotion
+  terminalLargeTargetProtectedCoreStrictDefectTransfer
+  terminalAllLargeAbsorptionOverlapCongestionBound
+  terminalAllLargeAbsorptionAnchoredCollisionBranch
+  terminalAllLargeAbsorptionProtectedCoreLift
+  terminalAllLargeAbsorptionNoResidualLargeTarget : Prop}
+
+/-- Project the large-target capacity/endpoint final-consumer handoff from the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics :=
+  h.largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+
+/-- Project the large-target capacity/endpoint extension bundle from the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toLargeTargetCapacityEndpointExhaustionExtensionBundle
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+      FourExceptionResidualBinaryNormalizationExtensionBundle
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics :=
+  h.largeTargetCapacityEndpointExhaustionExtensionBundle
+
+/-- Project the protected-core/all-large closure extension bundle from the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toProtectedCoreAllLargeClosureExtensionBundle
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+      (CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget :=
+  h.protectedCoreAllLargeClosureExtensionBundle
+
+/-- Project the downstream final-consumer rows from the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toDownstreamFinalConsumerRows
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+      (CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+      (CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget :=
+  h.downstreamFinalConsumerRows
+
+/-- Project the four-exception residual/binary final handoff through the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch :=
+  (h.toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff).toFourExceptionResidualBinaryNormalizationHandoff
+
+/-- Project the four-exception residual/binary terminal packet through the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toFourExceptionResidualBinaryNormalization
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch :=
+  (h.toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff).toFourExceptionResidualBinaryNormalization
+
+/-- Project large-target capacity/endpoint exhaustion through the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toLargeTargetCapacityEndpointExhaustion
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics :=
+  (h.toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff).toLargeTargetCapacityEndpointExhaustion
+
+/-- Project the protected-core frontier terminal packet through the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toProtectedCoreFrontier
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer :=
+  h.toProtectedCoreAllLargeClosureExtensionBundle.toProtectedCoreFrontier
+
+/-- Project the all-large absorption/collision packet through the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toAllLargeAbsorptionOverlapAnchoredCollision
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget :=
+  h.toProtectedCoreAllLargeClosureExtensionBundle.toAllLargeAbsorptionOverlapAnchoredCollision
+
+/-- Project the first-bit final closure row through the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toFirstBitFinalClosure
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toDownstreamFinalConsumerRows.toFirstBitFinalClosure
+
+/-- Project the first-bit co-cut surface through the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toFirstBitCoCut
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toFirstBitFinalClosure.toFirstBitCoCut
+
+/-- Project the final target consumer certificate through the release facade. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toFinalTargetConsumerCertificate
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.toFirstBitFinalClosure.toFinalTargetConsumerCertificate
+
+/-- Project the release-facing target statement. -/
+def CertifiedProofMdCurrentFrontierFinalReleaseFacade.toTargetStatement
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- Wrapper theorem exposing `TargetStatement` from the final release facade. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalReleaseFacade
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    TargetStatement :=
+  h.toTargetStatement
+
+/-- The release target is the downstream final-consumer-row target. -/
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFacade.targetStatement_eq_downstreamFinalConsumerRows
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    h.toTargetStatement = h.toDownstreamFinalConsumerRows.toTargetStatement :=
+  h.targetStatement_eq_downstreamFinalConsumerRows
+
+/-- The release target is the large-target capacity/endpoint handoff target. -/
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFacade.targetStatement_eq_largeTargetCapacityEndpointExhaustion
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    h.toTargetStatement =
+      h.toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff.toTargetStatement :=
+  h.targetStatement_eq_largeTargetCapacityEndpointExhaustion
+
+/-- The first-bit final closure row reaches the release target statement. -/
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFacade.firstBitFinalClosureTargetStatement_eq_targetStatement
+    (h :
+      CertifiedProofMdCurrentFrontierFinalReleaseFacade
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    h.toFirstBitFinalClosure.toTargetStatement = h.toTargetStatement :=
+  h.firstBitFinalClosureTargetStatement_eq_targetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFacade.of_packets_toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+    (largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (largeTargetCapacityEndpointExhaustionExtensionBundle :
+      CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (protectedCoreFrontier :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer)
+    (allLargeAbsorptionOverlapAnchoredCollision :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget)
+    (firstBitFinalClosure :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFacade_of_packets
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      largeTargetCapacityEndpointExhaustionExtensionBundle
+      protectedCoreFrontier
+      allLargeAbsorptionOverlapAnchoredCollision
+      firstBitFinalClosure).toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff =
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFacade.of_packets_toLargeTargetCapacityEndpointExhaustionExtensionBundle
+    (largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (largeTargetCapacityEndpointExhaustionExtensionBundle :
+      CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (protectedCoreFrontier :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer)
+    (allLargeAbsorptionOverlapAnchoredCollision :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget)
+    (firstBitFinalClosure :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFacade_of_packets
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      largeTargetCapacityEndpointExhaustionExtensionBundle
+      protectedCoreFrontier
+      allLargeAbsorptionOverlapAnchoredCollision
+      firstBitFinalClosure).toLargeTargetCapacityEndpointExhaustionExtensionBundle =
+      largeTargetCapacityEndpointExhaustionExtensionBundle :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFacade.of_packets_toProtectedCoreFrontier
+    (largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (largeTargetCapacityEndpointExhaustionExtensionBundle :
+      CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (protectedCoreFrontier :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer)
+    (allLargeAbsorptionOverlapAnchoredCollision :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget)
+    (firstBitFinalClosure :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFacade_of_packets
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      largeTargetCapacityEndpointExhaustionExtensionBundle
+      protectedCoreFrontier
+      allLargeAbsorptionOverlapAnchoredCollision
+      firstBitFinalClosure).toProtectedCoreFrontier =
+      protectedCoreFrontier :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFacade.of_packets_toAllLargeAbsorptionOverlapAnchoredCollision
+    (largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (largeTargetCapacityEndpointExhaustionExtensionBundle :
+      CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (protectedCoreFrontier :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer)
+    (allLargeAbsorptionOverlapAnchoredCollision :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget)
+    (firstBitFinalClosure :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFacade_of_packets
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      largeTargetCapacityEndpointExhaustionExtensionBundle
+      protectedCoreFrontier
+      allLargeAbsorptionOverlapAnchoredCollision
+      firstBitFinalClosure).toAllLargeAbsorptionOverlapAnchoredCollision =
+      allLargeAbsorptionOverlapAnchoredCollision :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFacade.of_packets_toFirstBitFinalClosure
+    (largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (largeTargetCapacityEndpointExhaustionExtensionBundle :
+      CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (protectedCoreFrontier :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer)
+    (allLargeAbsorptionOverlapAnchoredCollision :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget)
+    (firstBitFinalClosure :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFacade_of_packets
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      largeTargetCapacityEndpointExhaustionExtensionBundle
+      protectedCoreFrontier
+      allLargeAbsorptionOverlapAnchoredCollision
+      firstBitFinalClosure).toFirstBitFinalClosure =
+      firstBitFinalClosure :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalReleaseFacade.of_packets_toTargetStatement
+    (largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (largeTargetCapacityEndpointExhaustionExtensionBundle :
+      CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics)
+    (protectedCoreFrontier :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer)
+    (allLargeAbsorptionOverlapAnchoredCollision :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget)
+    (firstBitFinalClosure :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdCurrentFrontierFinalReleaseFacade_of_packets
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      largeTargetCapacityEndpointExhaustionExtensionBundle
+      protectedCoreFrontier
+      allLargeAbsorptionOverlapAnchoredCollision
+      firstBitFinalClosure).toTargetStatement =
+      largeTargetCapacityEndpointExhaustionFinalConsumerHandoff.toTargetStatement :=
+  rfl
+
+end CurrentFrontierFinalReleaseFacadeApi
 end FinalObligationDashboard
 
 
