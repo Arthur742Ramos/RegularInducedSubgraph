@@ -1748,6 +1748,9 @@ The shadows `Q_g(a)` are disjoint, and on each boundary-pattern cell every nonex
 the appropriate majority pair from the boundary triple.
 The silent core avoids every repairable regular four-block; if `{0,3}` lies in the repair spectrum, then
 `|A_g|<=|T_2|+R(4,4)-1`.
+If a larger exact-basis fiber survives, some extreme `rho` is missing from `Rep(g)`, forcing every usable
+small old deletion `D` with constant `c` to obey
+`deg_D(b_g) != rho-(r-omega(g))+c [MOD 4]`.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

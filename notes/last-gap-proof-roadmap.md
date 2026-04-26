@@ -1782,7 +1782,8 @@ What remains justified after audit is:
       old-fiber vertex, so the one-corner shadows `Q_g(a)` are disjoint and nonexceptional old pairs match
       a majority boundary pair on each boundary-pattern cell; the resulting silent core must avoid every
       repairable regular four-block, giving `|A_g|<=|T_2|+R(4,4)-1` whenever `{0,3}` lies in the repair
-      spectrum;
+      spectrum; any larger exact-basis fiber therefore has a missing Ramsey extreme, which is equivalent
+      to anti-Horn exclusions `deg_D(b_g) != rho-(r-omega(g))+c` for every usable small old deletion `D`;
       Fano itself needs four kept-pair
       witnesses; dualizing to the seven Fano
       lines, those witnesses must form an edge cover, with inclusion-minimal cores exactly the dual

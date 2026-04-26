@@ -794,6 +794,9 @@ For the silent core `A_g^0`, terminality reduces to the signed repair spectrum: 
 an induced `d'`-regular four-set for any `d' in Rep(g)`.
 If `{0,3} subset Rep(g)`, then `|A_g|<=|T_2|+R(4,4)-1`; hence any larger exact-basis fiber must have an
 old-side repair spectrum missing one Ramsey extreme.
+Writing `d=r-omega(g)`, a missing extreme `rho in {0,3}` is equivalent on every usable small deletion
+`D` with constant `c` to the anti-Horn exclusion `deg_D(b_g) != rho-d+c [MOD 4]`.
+For singleton and pair deletions this forbids one concrete adjacency count to the direction type.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

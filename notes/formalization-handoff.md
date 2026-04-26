@@ -2112,6 +2112,9 @@ Recommended attack:
     Combine with the exact-basis repair spectrum: for `A_g^0={a:Q_g(a)=empty}`, terminality implies
     `G[A_g^0]` has no induced `d'`-regular four-set for any `d' in Rep(g)`.  In particular, if
     `{0,3} subset Rep(g)`, then `|A_g|<=|T_2|+R(4,4)-1`.
+    Add the anti-Horn residual for a missing extreme.  If `d=r-omega(g)` and `rho in {0,3}` is not in
+    `Rep(g)`, then every usable old deletion `D` with constant `c` satisfies
+    `deg_D(b_g) != rho-d+c [MOD 4]`; for `|D|<=2` this is a forbidden adjacency count in `{0,1,2}`.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

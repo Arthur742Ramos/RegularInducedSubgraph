@@ -6778,6 +6778,20 @@ Thus every singleton or pair deletion adds an interval of length at most three t
 spectrum, and the interval is controlled by a concrete co-regular old pattern.  The first small deletion
 that can have no pointwise residue-support restriction is a triple.
 
+Consequently the large silent-core residual has an anti-Horn form.  Fix a direction `g`, write
+`d=r-omega(g)`, and suppose an extreme residue `rho in {0,3}` is missing from `Rep(g)`.  Then every usable
+old deletion `D` with constant `c` must avoid the single repairing count
+
+```text
+deg_D(b_g) != rho-d+c        [MOD 4].
+```
+
+For `|D|<=2` this is a literal forbidden adjacency count in `{0,1,2}`.  Thus each isolated/complete
+singleton and each co-regular pair of old vertices imposes a Horn-type exclusion on the direction type:
+the direction may see that deletion in all counts except the one that would create the missing Ramsey
+extreme.  If an exact-basis fiber is larger than the one-corner cap, one of the two extreme residues is
+missing, and all small co-regular old subwitnesses must satisfy this anti-Horn exclusion simultaneously.
+
 Consequently, for a direction type `g` define
 
 ```text
