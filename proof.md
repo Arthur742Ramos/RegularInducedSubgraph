@@ -11263,6 +11263,18 @@ filter `Z\{z}` supplies the required small-support partition, but the full filte
 particular, the all-zero target `A=emptyset` is exactly the statement that fewer than three outside columns
 vanish on all of `Z`, while every one-coordinate relaxation has three such columns.
 
+For fixed `A,Z`, the small-active capacity condition is finite.  Let
+
+```text
+c_Z(B)=#{y in O : a(y) cap A = B and a(y) cap Z = emptyset}        (B subset A).
+```
+
+A filtered three-cover exists iff there are three pairwise disjoint subsets `B_1,B_2,B_3` with union `A`
+such that, for each support value `B`, the number of indices `i` with `B_i=B` is at most `c_Z(B)`.  Hence
+failure is witnessed by a deficient support in every ordered three-block partition of `A`.  When a zero
+coordinate `z` is deleted, the same test uses `c_{Z\{z}}`; minimality says at least one formerly deficient
+partition becomes capacity-feasible for each such `z`.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

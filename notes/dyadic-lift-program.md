@@ -1019,6 +1019,8 @@ Active-coordinate deletion gives hole/double-collision/triple-collision near-cov
 deletion gives filter-breach covers hitting the removed zero coordinate.
 Small active dimension `|A|<=3` is only a finite support-capacity failure inside the zero filter; the new
 filtered-cover branch has `|A|>=4`.
+The capacity table is `c_Z(B)` for active supports `B subset A`; a cover is exactly three disjoint support
+blocks covering `A` whose multiplicities are bounded by `c_Z(B)`.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

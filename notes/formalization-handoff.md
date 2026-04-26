@@ -2399,6 +2399,9 @@ Recommended attack:
     removed zero coordinate with multiplicity `1`, `2`, or `3`.
     Add the active/filter split: if `|A|<=3`, obstruction is a finite small-support capacity failure inside
     the zero filter; the genuinely new cover case has `|A|>=4`.
+    Add the finite capacity-table criterion: `c_Z(B)` counts admissible columns with active support `B`;
+    three-cover existence is equivalent to a disjoint three-block cover of `A` respecting these
+    multiplicities, and zero-coordinate deletion changes the table to `c_{Z\{z}}`.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

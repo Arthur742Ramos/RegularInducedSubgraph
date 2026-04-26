@@ -5299,6 +5299,9 @@ or `3` at that coordinate, and every zero coordinate has a filter-breach cover h
 `1`, `2`, or `3`.
 If `|A|<=3`, only finite small-support partitions are involved; the remaining obstruction is purely
 zero-filter capacity.  The genuinely new cover branch has `|A|>=4`.
+For fixed `A,Z`, counts `c_Z(B)` of admissible columns with active support `B subset A` give an exact
+capacity test over three disjoint blocks covering `A`; deleting a zero coordinate replaces `c_Z` by
+`c_{Z\{z}}`.
 Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
 Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
 `R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.
