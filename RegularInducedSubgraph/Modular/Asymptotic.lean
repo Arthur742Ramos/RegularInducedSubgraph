@@ -6005,6 +6005,40 @@ theorem noTargetLayerPureDiscardFourSet_colorTwo_no_labelled_degree_two_four
     hdiscard a haA b hbA c hcA d hdA hab hac had hbc hbd hcd
       (by simpa [haColor, hbColor, hcColor, hdColor] using hdeg)
 
+/-- Pure-discard makes the color-`2` target slice induced-`C₄`-free. -/
+theorem noTargetLayerPureDiscardFourSet_colorTwo_inducedC4Free
+    {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
+    (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color) :
+    IsInducedC4FreeOn G (targetLayerColorSlice A0 color (2 : Fin 4)) := by
+  intro a haSlice b hbSlice c hcSlice d hdSlice hab hac had hbc hbd hcd
+    habAdj hbcAdj hcdAdj hdaAdj hacNon hbdNon
+  have haA : a ∈ A0 := (Finset.mem_filter.mp haSlice).1
+  have hbA : b ∈ A0 := (Finset.mem_filter.mp hbSlice).1
+  have hcA : c ∈ A0 := (Finset.mem_filter.mp hcSlice).1
+  have hdA : d ∈ A0 := (Finset.mem_filter.mp hdSlice).1
+  have haColor : color a = (2 : Fin 4) := (Finset.mem_filter.mp haSlice).2
+  have hbColor : color b = (2 : Fin 4) := (Finset.mem_filter.mp hbSlice).2
+  have hcColor : color c = (2 : Fin 4) := (Finset.mem_filter.mp hcSlice).2
+  have hdColor : color d = (2 : Fin 4) := (Finset.mem_filter.mp hdSlice).2
+  have hbaAdj : G.Adj b a := G.symm habAdj
+  have hadAdj : G.Adj a d := G.symm hdaAdj
+  have hcbAdj : G.Adj c b := G.symm hbcAdj
+  have hdcAdj : G.Adj d c := G.symm hcdAdj
+  have hcaNon : ¬ G.Adj c a := fun h => hacNon (G.symm h)
+  have hdbNon : ¬ G.Adj d b := fun h => hbdNon (G.symm h)
+  have haaNon : ¬ G.Adj a a := G.irrefl a
+  have hbbNon : ¬ G.Adj b b := G.irrefl b
+  have hccNon : ¬ G.Adj c c := G.irrefl c
+  have hddNon : ¬ G.Adj d d := G.irrefl d
+  exact
+    hdiscard a haA b hbA c hcA d hdA hab hac had hbc hbd hcd
+      (by
+        refine ⟨?_, ?_, ?_, ?_⟩ <;>
+          simp [targetLayerFourSetDegree, haColor, hbColor, hcColor, hdColor,
+            habAdj, hbcAdj, hcdAdj, hdaAdj, hbaAdj, hadAdj, hcbAdj, hdcAdj,
+            hacNon, hbdNon, hcaNon, hdbNon, haaNon, hbbNon, hccNon, hddNon])
+
 /-- The color-`2` target slice is capped once the pseudo-split cap surface is available. -/
 theorem targetLayerColorTwo_card_le_of_pseudoSplitCapSurface
     {C n m : ℕ} (hcap : HasTargetLayerColorTwoPseudoSplitCapSurface C)
@@ -6019,6 +6053,23 @@ theorem targetLayerColorTwo_card_le_of_pseudoSplitCapSurface
     hcap G hC4 hK4 halpha
       (noTargetLayerPureDiscardFourSet_colorTwo_no_labelled_degree_two_four
         (G := G) hdiscard)
+
+/--
+Pure-discard supplies both structural inputs requested by the pseudo-split cap surface on the
+color-`2` target slice, so only the clique and independence caps remain external.
+-/
+theorem targetLayerColorTwo_card_le_of_pseudoSplitCapSurface_pureDiscard
+    {C n m : ℕ} (hcap : HasTargetLayerColorTwoPseudoSplitCapSurface C)
+    (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
+    {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
+    (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color)
+    (hK4 : HasCliqueBoundOn G (targetLayerColorSlice A0 color (2 : Fin 4)) 3)
+    (halpha : HasIndependenceBoundOn G (targetLayerColorSlice A0 color (2 : Fin 4)) m) :
+    (targetLayerColorSlice A0 color (2 : Fin 4)).card ≤ C * m := by
+  exact
+    targetLayerColorTwo_card_le_of_pseudoSplitCapSurface hcap G hdiscard
+      (noTargetLayerPureDiscardFourSet_colorTwo_inducedC4Free (G := G) hdiscard)
+      hK4 halpha
 
 /-- A `(0,0,1,1)` mixed quartet is dominated: a color-`0` nonedge and a color-`1` edge cannot be
 mutually anticomplete. -/
@@ -6169,6 +6220,60 @@ def HasCorrectedZeroOneThreeTwoComplementDegreeTwoSelector (C : ℕ) : Prop :=
           C * m < S.card →
             ∃ u : Finset (Fin n), u ⊆ S ∧ m < u.card ∧
               InducesRegularOfDegree G u 2
+
+/--
+Endpoint-exclusive charging certificate for the corrected complement core: six endpoint classes from
+an induced matching, plus one residual class, each induce an independent set in the ambient graph.
+-/
+def HasEndpointExclusiveCharging
+    {n : ℕ} (G : SimpleGraph (Fin n)) (S : Finset (Fin n)) : Prop :=
+  ∃ charge : Fin n → Fin 7,
+    ∀ r : Fin 7, G.IsIndepSet ((S.filter fun v => charge v = r) : Set (Fin n))
+
+/-- A seven-class endpoint-exclusive charging certificate caps the packet by `7 * m`. -/
+theorem card_le_seven_mul_of_endpointExclusiveCharging
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (halpha : HasIndependenceBoundOn G S m)
+    (hcharging : HasEndpointExclusiveCharging G S) :
+    S.card ≤ 7 * m := by
+  rcases hcharging with ⟨charge, hchargeIndep⟩
+  have hsmall : ∀ r : Fin 7, (S.filter fun v => charge v = r).card ≤ m := by
+    intro r
+    exact
+      halpha (S.filter fun v => charge v = r)
+        (by intro v hv; exact (Finset.mem_filter.mp hv).1)
+        (hchargeIndep r)
+  simpa using
+    (finset_card_le_fintype_card_mul_of_fiber_bound (β := Fin 7) S charge hsmall)
+
+/--
+Narrow replacement surface for the corrected `{0,1}`/`{3,2}` complement selector: terminal
+degree-two exclusion is assumed to produce the endpoint-exclusive seven-charge certificate directly.
+-/
+def HasCorrectedZeroOneThreeTwoEndpointExclusiveCharging : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    IsInducedC4FreeOn G S →
+      HasCliqueBoundOn G S 3 →
+        HasIndependenceBoundOn G S m →
+          (∀ u : Finset (Fin n), u ⊆ S → m < u.card → ¬ InducesRegularOfDegree G u 2) →
+            HasEndpointExclusiveCharging G S
+
+/--
+Corrected complement cap from the endpoint-exclusive charging surface, avoiding the broader
+degree-two selector assumption.
+-/
+theorem correctedZeroOneThreeTwoComplement_card_le_seven_mul_of_endpointExclusiveCharging
+    (hcharging : HasCorrectedZeroOneThreeTwoEndpointExclusiveCharging)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (hC4 : IsInducedC4FreeOn G S)
+    (hK4 : HasCliqueBoundOn G S 3)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoDegreeTwo :
+      ∀ u : Finset (Fin n), u ⊆ S → m < u.card → ¬ InducesRegularOfDegree G u 2) :
+    S.card ≤ 7 * m := by
+  exact
+    card_le_seven_mul_of_endpointExclusiveCharging G halpha
+      (hcharging G hC4 hK4 halpha hnoDegreeTwo)
 
 /--
 The corrected `{0,1}`/`{3,2}` complement residual is linearly capped once the explicit
