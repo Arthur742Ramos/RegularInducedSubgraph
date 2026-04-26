@@ -5137,6 +5137,198 @@ def BoundaryTypeFiberIndependent
   ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y → ¬ G.Adj x y
 
 /--
+Gallai's half-selector size after every selected quotient vertex is expanded to a two-vertex
+pair word.  This is `2 * ceil(n / 2)`, written as `2 * ((n + 1) / 2)` for naturals.
+-/
+def gallaiPairWordHalfSelectorSize (n : ℕ) : ℕ :=
+  2 * ((n + 1) / 2)
+
+/-- The pair-word branch closes as soon as the Gallai half-selector is larger than the target. -/
+def GallaiPairWordSelectorCloses (n m : ℕ) : Prop :=
+  m < gallaiPairWordHalfSelectorSize n
+
+/--
+Even target residual at the Davenport boundary: a same pair-residue class of size `m - 1`
+only guarantees a pair-word selector of size exactly `m`.
+-/
+def GallaiPairWordEvenBoundaryDeficit (n m : ℕ) : Prop :=
+  Even m ∧ n = m - 1 ∧ gallaiPairWordHalfSelectorSize n = m
+
+/--
+Odd target residual at the Davenport boundary: a same pair-residue class of size `m - 1`
+only guarantees a pair-word selector of size exactly `m - 1`.
+-/
+def GallaiPairWordOddBoundaryDeficit (n m : ℕ) : Prop :=
+  Odd m ∧ n = m - 1 ∧ gallaiPairWordHalfSelectorSize n = m - 1
+
+/-- Same-residue homogeneous classes are closed, except for the two named boundary deficits. -/
+def HomogeneousSamePairResidueClosedOrBoundaryResidual (n m : ℕ) : Prop :=
+  GallaiPairWordSelectorCloses n m ∨
+    GallaiPairWordEvenBoundaryDeficit n m ∨
+      GallaiPairWordOddBoundaryDeficit n m
+
+/-- A quotient class has constant internal degree parity, the exact hypothesis needed by pair words. -/
+def HasConstantQuotientDegreeParity
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) : Prop := by
+  classical
+  exact ∃ p : ℕ, ∀ i ∈ U, (Q.neighborFinset i ∩ U).card ≡ p [MOD 2]
+
+/--
+All pair-word vertices have one final residue modulo `4` when the internal pair residue is `qPair`.
+The quotient degree only needs constant parity, since it is multiplied by `2`.
+-/
+def HasConstantPairWordResidueOnQuotient
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (qPair : ℕ) : Prop := by
+  classical
+  exact ∃ r : ℕ, ∀ i ∈ U, qPair + 2 * (Q.neighborFinset i ∩ U).card ≡ r [MOD 4]
+
+/-- Constant quotient degree parity is enough for a homogeneous pair-word quotient selector. -/
+theorem hasConstantPairWordResidueOnQuotient_of_constantDegreeParity
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {qPair : ℕ}
+    (hparity : HasConstantQuotientDegreeParity Q U) :
+    HasConstantPairWordResidueOnQuotient Q U qPair := by
+  classical
+  rcases hparity with ⟨p, hp⟩
+  refine ⟨qPair + 2 * p, ?_⟩
+  intro i hi
+  have hdouble :
+      2 * (Q.neighborFinset i ∩ U).card ≡ 2 * p [MOD 4] := by
+    simpa using Nat.ModEq.mul_left' 2 (hp i hi)
+  exact Nat.ModEq.add (Nat.ModEq.refl qPair) hdouble
+
+/-- Repackage the strict inequality `2 * ceil(n/2) > m` as the pair-word closure surface. -/
+theorem gallaiPairWordSelectorCloses_of_lt
+    {n m : ℕ} (h : m < gallaiPairWordHalfSelectorSize n) :
+    GallaiPairWordSelectorCloses n m :=
+  h
+
+/-- At the even Davenport boundary the Gallai pair-word selector has size exactly `m`. -/
+theorem gallaiPairWordEvenBoundaryDeficit_of_even_eq_pred
+    {n m : ℕ} (hm : Even m) (hn : n = m - 1) :
+    GallaiPairWordEvenBoundaryDeficit n m := by
+  refine ⟨hm, hn, ?_⟩
+  rcases hm with ⟨k, rfl⟩
+  rw [hn, gallaiPairWordHalfSelectorSize]
+  omega
+
+/-- At the odd Davenport boundary the Gallai pair-word selector has size exactly `m - 1`. -/
+theorem gallaiPairWordOddBoundaryDeficit_of_odd_eq_pred
+    {n m : ℕ} (hm : Odd m) (hn : n = m - 1) :
+    GallaiPairWordOddBoundaryDeficit n m := by
+  refine ⟨hm, hn, ?_⟩
+  rcases hm with ⟨k, rfl⟩
+  rw [hn, gallaiPairWordHalfSelectorSize]
+  omega
+
+/-- The same-residue homogeneous quotient branch closes when the Gallai pair selector is large. -/
+theorem homogeneousSamePairResidueClosed_of_gallaiPairWordSelector
+    {n m : ℕ} (hclose : GallaiPairWordSelectorCloses n m) :
+    HomogeneousSamePairResidueClosedOrBoundaryResidual n m :=
+  Or.inl hclose
+
+/-- Register the even boundary deficit as one of the only same-residue residuals. -/
+theorem homogeneousSamePairResidueResidual_of_evenBoundaryDeficit
+    {n m : ℕ} (h : GallaiPairWordEvenBoundaryDeficit n m) :
+    HomogeneousSamePairResidueClosedOrBoundaryResidual n m :=
+  Or.inr (Or.inl h)
+
+/-- Register the odd boundary deficit as one of the only same-residue residuals. -/
+theorem homogeneousSamePairResidueResidual_of_oddBoundaryDeficit
+    {n m : ℕ} (h : GallaiPairWordOddBoundaryDeficit n m) :
+    HomogeneousSamePairResidueClosedOrBoundaryResidual n m :=
+  Or.inr (Or.inr h)
+
+/--
+Odd-word carry equation on a homogeneous quotient class.  The quotient graph is `Q`, `U` is the
+parity class, `tau` records independent (`0`) versus triangle (`1`) whole-triple type, and `T`
+is the set where singleton words are toggled to whole-triple words.  The expression is the
+row equation for `A(Q[U]) + diag(tau)` with the half-degree carry as the affine right-hand side.
+-/
+def HomogeneousMixedOddWordCarrySolution
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ)
+    (T : Finset ι) (c : ℕ) : Prop := by
+  classical
+  exact
+    T ⊆ U ∧
+      ∀ i ∈ U,
+        (((Q.neighborFinset i ∩ U).card / 2) +
+            (Q.neighborFinset i ∩ T).card +
+              tau i * (if i ∈ T then 1 else 0)) ≡ c [MOD 2]
+
+/-- Kernel vectors of the twisted homogeneous quotient matrix `A(Q[U]) + diag(tau)` over `F_2`. -/
+def HomogeneousMixedTwistedKernelVector
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ)
+    (H : Finset ι) : Prop := by
+  classical
+  exact
+    H ⊆ U ∧
+      ∀ i ∈ U,
+        ((Q.neighborFinset i ∩ H).card +
+            tau i * (if i ∈ H then 1 else 0)) ≡ 0 [MOD 2]
+
+/-- No constant bit makes the affine odd-word carry equation soluble. -/
+def HomogeneousMixedCarryAffineInconsistency
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) : Prop :=
+  ∀ c : ℕ, ¬ ∃ T : Finset ι, HomogeneousMixedOddWordCarrySolution Q U tau T c
+
+/--
+A large twisted kernel vector closes the mixed-class endpoint: toggling it from any solution would
+force an outside-only odd-word selector larger than the terminal target.
+-/
+def HomogeneousMixedCarryLargeKernelClosure
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) : Prop :=
+  ∃ H : Finset ι, HomogeneousMixedTwistedKernelVector Q U tau H ∧ m < U.card + H.card
+
+/-- The irreducible small-kernel side: every twisted kernel vector stays below the target slack. -/
+def HomogeneousMixedCarrySmallKernel
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) : Prop :=
+  ∀ H : Finset ι, HomogeneousMixedTwistedKernelVector Q U tau H → U.card + H.card ≤ m
+
+/--
+The narrowed homogeneous mixed-class endpoint: either a large kernel vector closes the branch, or the
+affine carry equation has a dual inconsistency.  The only unclosed case is the conjunction of
+small-kernel and affine consistency.
+-/
+def HomogeneousMixedCarryClosedByKernelOrInconsistency
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) : Prop :=
+  HomogeneousMixedCarryLargeKernelClosure Q U tau m ∨
+    HomogeneousMixedCarryAffineInconsistency Q U tau
+
+/-- Expose the large-kernel branch as a closure of the mixed homogeneous carry endpoint. -/
+theorem homogeneousMixedCarryClosed_of_largeKernel
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ} {m : ℕ}
+    (h : HomogeneousMixedCarryLargeKernelClosure Q U tau m) :
+    HomogeneousMixedCarryClosedByKernelOrInconsistency Q U tau m :=
+  Or.inl h
+
+/-- Expose affine inconsistency as the dual closure of the mixed homogeneous carry endpoint. -/
+theorem homogeneousMixedCarryClosed_of_affineInconsistency
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ} {m : ℕ}
+    (h : HomogeneousMixedCarryAffineInconsistency Q U tau) :
+    HomogeneousMixedCarryClosedByKernelOrInconsistency Q U tau m :=
+  Or.inr h
+
+/--
+Abstract homogeneous mixed-class frontier surface.  Future graph work only needs to prove this
+algebraic dichotomy for the quotient classes left after the Gallai pair-word deficits.
+-/
+def HasHomogeneousMixedCarryKernelOrInconsistencyReduction : Prop :=
+  ∀ {ι : Type*} [Fintype ι] [DecidableEq ι]
+      (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ),
+    HomogeneousMixedCarryClosedByKernelOrInconsistency Q U tau m
+
+/--
 Selector-facing support-size-six parity-compression branch: if one even and one odd boundary type are
 missing and every realized type fiber is already homogeneous, the large packet closes through the
 large realized fiber and freezes the dropped tail.
@@ -6984,6 +7176,36 @@ theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_aggre
       (triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfaces
         htrace hcoreLength hpendant hzeroTrace)
       G htriangle hC4 halpha hnoLayer
+
+/--
+Aggregate mod-four frontier package with the homogeneous quotient algebra recorded alongside the
+already graph-facing terminal surfaces.
+-/
+structure ModFourAggregateFrontierSurfacesWithHomogeneousCarry : Prop where
+  trace : HasTriangleFreeInducedC4FreeModFourShortestOddCoreTrace
+  coreLength : HasTriangleFreeInducedC4FreeModFourOddCoreLengthBound
+  pendant : HasTriangleFreeInducedC4FreeModFourPendantFiberAggregateCharging
+  zeroTrace : HasTriangleFreeInducedC4FreeModFourZeroTraceAggregateRecursion
+  homogeneousCarry : HasHomogeneousMixedCarryKernelOrInconsistencyReduction
+
+/-- Forget the homogeneous quotient algebra field and recover the existing aggregate layer cap. -/
+theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithHomogeneousCarry
+    (h : ModFourAggregateFrontierSurfacesWithHomogeneousCarry) :
+    TriangleFreeInducedC4FreeModFourLayerCap 14 :=
+  triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfaces
+    h.trace h.coreLength h.pendant h.zeroTrace
+
+/-- Corrected-complement bridge using the aggregate frontier package plus homogeneous carry surface. -/
+theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_aggregateFrontierSurfacesWithHomogeneousCarry
+    (h : ModFourAggregateFrontierSurfacesWithHomogeneousCarry)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ 14 * m :=
+  correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_aggregateFrontierSurfaces
+    h.trace h.coreLength h.pendant h.zeroTrace G htriangle hC4 halpha hnoLayer
 
 /--
 Conditional selector for the corrected `{0,1}`/`{3,2}` complement surface.  A linearly large
