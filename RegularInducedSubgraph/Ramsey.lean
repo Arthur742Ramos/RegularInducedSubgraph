@@ -15329,6 +15329,272 @@ theorem RamseyTenR45MiddleDegreeLocalLedgerBundle.toMiddleDegreeSplitCertificate
     NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
   h.middleDegreeSplits
 
+/-- The named degree-`9` endpoint middle-degree ledgers bundled without endpoint assumptions. -/
+theorem ramseyTenR45MiddleDegreeLocalLedgerBundle :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle where
+  degreeTenSplits :=
+    noRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits :=
+    noRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits :=
+    noRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits :=
+    noRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+
+/--
+Top-row exact-`42` profile data paired with the degree-`9` endpoint middle-degree ledgers.
+This selector object is local: it carries no endpoint residuals and therefore makes no
+`R(4,5)` claim by itself.
+-/
+structure RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+
+/-- Build the local top-row/middle-ledger certificate from separate profile components. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v)
+    (hledger : RamseyTenR45MiddleDegreeLocalLedgerBundle) :
+    RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v where
+  topRowProfile :=
+    ramseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation_of_commonSum_countProfile
+      hcommon hcount
+  localLedgers := hledger
+
+/-- Select the profiled top-row branch from the local top-row/middle-ledger certificate. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the combined common-sum/count-profile obligation from the local certificate. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.toCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v :=
+  h.topRowProfile
+
+/-- Select the common-sum part of the profiled top row from the local certificate. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_commonSum
+    h.toCommonSumCountProfile
+
+/-- Select the count-profile part of the profiled top row from the local certificate. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_countProfile
+    h.toCommonSumCountProfile
+
+/-- Extract raw common-sum bounds from the local top-row/middle-ledger certificate. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.common_sum_bounds
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    65 ≤ Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 72 :=
+  ramseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation_common_sum_bounds
+    h.topRowProfile
+
+/-- Extract raw singleton/duplicated/triple count-profile bounds from the local certificate. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.count_profile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27 ∧
+      5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          2 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card ∧
+        1 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            3 ≤ (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card :=
+  ramseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation_count_profile
+    h.topRowProfile
+
+/-- Select the middle-degree local ledger bundle paired with the profiled top row. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the degree-`10` middle split ledger paired with the profiled top row. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.toDegreeTenSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.localLedgers.toDegreeTenSplitCertificate
+
+/-- Select the degree-`11` middle split ledger paired with the profiled top row. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.toDegreeElevenSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.localLedgers.toDegreeElevenSplitCertificate
+
+/-- Select the degree-`12` middle split ledger paired with the profiled top row. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.toDegreeTwelveSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.localLedgers.toDegreeTwelveSplitCertificate
+
+/-- Select the uniform middle-degree split ledger paired with the profiled top row. -/
+theorem RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.toMiddleDegreeSplitCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.localLedgers.toMiddleDegreeSplitCertificate
+
+/--
+Exact-`42` profiled low-row status paired with the degree-`9` endpoint middle-degree ledgers.
+The `R(4,5)` endpoint assumptions are intentionally absent; downstream Ramsey-10 wrappers must
+provide them explicitly.
+-/
+structure RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers : Prop where
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+
+/-- Attach a local middle-degree ledger bundle to a profiled exact-`42` surface. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.ofExact42ProfileAndLocalLedgers
+    (hprofile : RamseyThreeTenExact42ThreeRowProfileSurface)
+    (hledger : RamseyTenR45MiddleDegreeLocalLedgerBundle) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers where
+  exact42Profile := hprofile
+  localLedgers := hledger
+  threeTenFortyTwo :=
+    hasCliqueOrIndepSetBound_3_10_42_of_exact42_three_row_profile_surface hprofile
+
+/-- The named exact-`42` status using the established middle-degree local ledgers. -/
+theorem RamseyThreeTenExact42ThreeRowProfileSurface.toProfileStatusWithMiddleDegreeLocalLedgers
+    (h : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.ofExact42ProfileAndLocalLedgers
+    h ramseyTenR45MiddleDegreeLocalLedgerBundle
+
+/-- Select the profiled exact-`42` surface from the status package. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toExact42ProfileSurface
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select the middle-degree local ledger bundle from the exact-`42` status package. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toLocalLedgerBundle
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the low-row `R(3,10) <= 42` consequence from the exact-`42` status package. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toThreeTenFortyTwo
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Select the `R(3,8) <= 28` input carried by the profiled exact-`42` surface. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toThreeEightTwentyEight
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    HasCliqueOrIndepSetBound 3 8 28 :=
+  h.exact42Profile.r3_8
+
+/-- Select the regular-`8` exact-distribution certificate from the exact-`42` status. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toRegular8Certificate
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+      s.card = 36 →
+      (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8) →
+      RamseyThreeNineRegular8ExactDistributionSingletonCapObligation G s :=
+  h.exact42Profile.regular8
+
+/--
+Select the exact-`42` window solver whose top row is expressed through common-sum and
+count-profile obligations.
+-/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toDegreeWindow42ProfileSolver
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+      s.card = 42 →
+      (∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10) →
+      RamseyThreeTenDegreeWindowExact42ThreeRowProfileBranches G s →
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t :=
+  h.exact42Profile.degreeWindow42Profiles
+
+/-- Select the degree-`10` middle split ledger from the exact-`42` status. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toDegreeTenSplitCertificate
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.localLedgers.toDegreeTenSplitCertificate
+
+/-- Select the degree-`11` middle split ledger from the exact-`42` status. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toDegreeElevenSplitCertificate
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.localLedgers.toDegreeElevenSplitCertificate
+
+/-- Select the degree-`12` middle split ledger from the exact-`42` status. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toDegreeTwelveSplitCertificate
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.localLedgers.toDegreeTwelveSplitCertificate
+
+/-- Select the uniform middle-degree split ledger from the exact-`42` status. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toMiddleDegreeSplitCertificate
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.localLedgers.toMiddleDegreeSplitCertificate
+
+/-- Pair a profiled top-row branch with the exact-`42` status' middle-degree ledgers. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toTopRowProfileCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v where
+  topRowProfile := htop
+  localLedgers := h.localLedgers
+
+/-- Pair separate common-sum/count-profile top-row obligations with the status' ledgers. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toTopRowProfileCertificate_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers G s v :=
+  RamseyThreeTenExact42TopRowProfileCertificateWithMiddleDegreeLocalLedgers.ofCommonSumCountProfile
+    hcommon hcount h.localLedgers
+
 /--
 Generic local-ledger handoff: a named local certificate is paired with the relaxed
 `R(4,5) <= 27` table, the final Ramsey-10 status, and the global consequence projection.
@@ -15731,6 +15997,160 @@ theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toExact42ProfileHandoff
     r45TwentySevenTable := h.r45TwentySevenTable
     finalStatus := h.finalStatus
     globalConsequences := h.globalConsequences }
+
+/-- Build the profiled middle-degree handoff from exact-`42` status plus explicit endpoints. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toProfiledMiddleDegreeHandoff
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    RamseyTenR45ProfiledMiddleDegreeHandoff := by
+  let hfinal := RamseyTenR45EndpointResiduals.toFinalStatus hendpoints
+  exact
+    { endpointResiduals := hendpoints
+      localLedgers := h.localLedgers
+      exact42Profile := h.exact42Profile
+      threeTenFortyTwo := h.threeTenFortyTwo
+      r45TwentySevenTable := RamseyTenR45EndpointResiduals.toR45TwentySevenTable hendpoints
+      finalStatus := hfinal
+      globalConsequences := RamseyTenR45FinalStatus.toGlobalConsequenceBundle hfinal }
+
+/--
+Build the endpoint/exact-`42` profile certificate from exact-`42` status plus explicit
+endpoint residual assumptions.
+-/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toMiddleDegreeEndpointCertificateWithExact42Profile
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile := by
+  let hfinal := RamseyTenR45EndpointResiduals.toFinalStatus hendpoints
+  let hmiddle : RamseyTenR45MiddleDegreeEndpointCertificate :=
+    { endpointResiduals := hendpoints
+      endpointCertificate := RamseyTenR45EndpointResiduals.toCertificate hendpoints
+      degreeTenSplits := h.localLedgers.degreeTenSplits
+      degreeElevenSplits := h.localLedgers.degreeElevenSplits
+      degreeTwelveSplits := h.localLedgers.degreeTwelveSplits
+      middleDegreeSplits := h.localLedgers.middleDegreeSplits
+      r45TwentySevenTable := RamseyTenR45EndpointResiduals.toR45TwentySevenTable hendpoints
+      finalStatus := hfinal }
+  exact
+    { endpointProfileCertificate :=
+        { endpointCertificate := hmiddle.endpointCertificate
+          exact42Profile := h.exact42Profile
+          threeTenFortyTwo := h.threeTenFortyTwo }
+      middleDegreeCertificate := hmiddle
+      exact42WithMiddleSplits :=
+        { exact42Profile := h.exact42Profile
+          degreeTenSplits := h.localLedgers.degreeTenSplits
+          degreeElevenSplits := h.localLedgers.degreeElevenSplits
+          degreeTwelveSplits := h.localLedgers.degreeTwelveSplits
+          middleDegreeSplits := h.localLedgers.middleDegreeSplits
+          threeTenFortyTwo := h.threeTenFortyTwo }
+      finalStatus := hfinal }
+
+/-- Explicit endpoint bridge from exact-`42` profile status into the profiled handoff API. -/
+theorem ramseyTenR45ProfiledMiddleDegreeHandoff_of_exact42ProfileStatus_and_endpointResiduals
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    RamseyTenR45ProfiledMiddleDegreeHandoff :=
+  hstatus.toProfiledMiddleDegreeHandoff hendpoints
+
+/-- Explicit endpoint bridge from exact-`42` profile status into the endpoint certificate API. -/
+theorem ramseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile_of_exact42ProfileStatus_and_endpointResiduals
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile :=
+  hstatus.toMiddleDegreeEndpointCertificateWithExact42Profile hendpoints
+
+/-- Explicit residual assumptions bridge into the profiled middle-degree handoff API. -/
+theorem ramseyTenR45ProfiledMiddleDegreeHandoff_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45ProfiledMiddleDegreeHandoff :=
+  hstatus.toProfiledMiddleDegreeHandoff ⟨h8, h9, h13⟩
+
+/-- Explicit residual assumptions bridge into the endpoint/exact-`42` certificate API. -/
+theorem ramseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile :=
+  hstatus.toMiddleDegreeEndpointCertificateWithExact42Profile ⟨h8, h9, h13⟩
+
+/-- Final-status wrapper from exact-`42` status and explicit endpoint residual assumptions. -/
+theorem ramseyTenR45FinalStatus_of_exact42ProfileStatus_and_endpointResiduals
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    RamseyTenR45FinalStatus :=
+  (hstatus.toProfiledMiddleDegreeHandoff hendpoints).toFinalStatus
+
+/-- Localized `R(4,5) <= 27` wrapper with the endpoint residual assumptions explicit. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_exact42ProfileStatus_and_endpointResiduals
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  RamseyTenR45FinalStatus.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    ((hstatus.toProfiledMiddleDegreeHandoff hendpoints).toFinalStatus)
+
+/-- Current `R(10,10)` status wrapper with the endpoint residual assumptions explicit. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_exact42ProfileStatus_and_endpointResiduals
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  (hstatus.toProfiledMiddleDegreeHandoff hendpoints).toFinalStatus.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Regular-induced-subgraph wrapper with the endpoint residual assumptions explicit. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_exact42ProfileStatus_and_endpointResiduals
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  RamseyTenR45GlobalConsequenceBundle.toHasRegularInducedSubgraphOfCard_ten_40960
+    ((hstatus.toProfiledMiddleDegreeHandoff hendpoints).toGlobalConsequenceBundle) G hcard
+
+/-- Final-status wrapper from exact-`42` status and the three explicit endpoint residuals. -/
+theorem ramseyTenR45FinalStatus_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45FinalStatus :=
+  ramseyTenR45FinalStatus_of_exact42ProfileStatus_and_endpointResiduals
+    hstatus ⟨h8, h9, h13⟩
+
+/-- Localized `R(4,5) <= 27` wrapper with all three endpoint residuals explicit. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  hasCliqueOrIndepSetBound_four_five_twenty_seven_of_exact42ProfileStatus_and_endpointResiduals
+    hstatus ⟨h8, h9, h13⟩
+
+/-- Current `R(10,10)` wrapper with all three endpoint residuals explicit. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  hasCliqueOrIndepSetBound_10_10_39246_of_exact42ProfileStatus_and_endpointResiduals
+    hstatus ⟨h8, h9, h13⟩
+
+/-- Regular-induced-subgraph wrapper with all three endpoint residuals explicit. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  hasRegularInducedSubgraphOfCard_ten_40960_of_exact42ProfileStatus_and_endpointResiduals
+    hstatus ⟨h8, h9, h13⟩ G hcard
 
 /-- Construct the full profiled middle-degree handoff from explicit endpoint assumptions. -/
 theorem ramseyTenR45ProfiledMiddleDegreeHandoff_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
