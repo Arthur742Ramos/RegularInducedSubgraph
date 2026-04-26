@@ -1785,4 +1785,571 @@ theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseFinalConsumer
       terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
     TargetStatement :=
   h.targetStatement_viaExternalBlock
+
+/-- Promote a no-leftover selector handoff directly to the public-release final consumer facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade.toPublicReleaseFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.ofNoLeftoverSelectorHandoffFacade h
+
+/--
+Combined no-leftover/current-frontier packet cited by public-release consumers.  It keeps the
+non-first-bit frontier assumptions adjacent to the terminal no-leftover deletion assumptions without
+rebuilding any of the selector or handoff facades.
+-/
+structure ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+    (terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop) :
+    Type where
+  currentFrontierAssumptions : ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket
+  noLeftoverAssumptions :
+    ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+
+/-- Extract the no-leftover/current-frontier packet from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.ofFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision where
+  currentFrontierAssumptions := h.toCurrentFrontierAssumptionPacket
+  noLeftoverAssumptions := h.toNoLeftoverDeletionAssumptionPacket
+
+/-- Expose the no-leftover/current-frontier packet from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toNoLeftoverCurrentFrontierPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.ofFinalConsumerFacade h
+
+/-- Extract the no-leftover/current-frontier packet from the no-leftover selector handoff. -/
+def ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.ofNoLeftoverSelectorHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toPublicReleaseFinalConsumerFacade.toNoLeftoverCurrentFrontierPacket
+
+/-- Recover the current-frontier assumption packet from the no-leftover/current-frontier packet. -/
+def ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.toCurrentFrontierAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket :=
+  h.currentFrontierAssumptions
+
+/-- Recover the no-leftover deletion packet from the no-leftover/current-frontier packet. -/
+def ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.toNoLeftoverDeletionAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverAssumptions
+
+/-- Project strict cross-atom defect control from the no-leftover/current-frontier packet. -/
+def ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.toTerminalStrictCrossAtomDefect
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalStrictCrossAtomDefect :=
+  h.noLeftoverAssumptions.toTerminalStrictCrossAtomDefect
+
+/-- Project the no-leftover four-four-atom deletion dichotomy from the combined packet. -/
+def ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.toNoLeftoverFourFourAtomDeletionDichotomy
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverFourFourAtomDeletionDichotomy :=
+  h.noLeftoverAssumptions.toNoLeftoverFourFourAtomDeletionDichotomy
+
+/-- Project the no-leftover unit-strict-absorption/lift-collision consequence. -/
+def ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.toNoLeftoverUnitStrictAbsorptionOrLiftCollision
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverAssumptions.toNoLeftoverUnitStrictAbsorptionOrLiftCollision
+
+/-- A combined no-leftover/current-frontier packet plus the current selector endpoint closes the target. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket_and_currentSelectorEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (selectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint) :
+    TargetStatement :=
+  targetStatement_of_proofMdLargeSupportColoringCurrentFrontierAssumptionPacket_and_currentSelectorEndpoint
+    h.currentFrontierAssumptions selectorEndpoint
+
+/-- The combined packet plus the current selector endpoint also closes the external-block target route. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket_and_currentSelectorEndpoint_viaExternalBlock
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision)
+    (selectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint) :
+    TargetStatement :=
+  targetStatement_of_proofMdLargeSupportColoringCurrentFrontierAssumptionPacket_and_currentSelectorEndpoint_viaExternalBlock
+    h.currentFrontierAssumptions selectorEndpoint
+
+@[simp] theorem ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.ofFinalConsumerFacade_currentFrontierAssumptions
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.ofFinalConsumerFacade h).currentFrontierAssumptions =
+      h.toCurrentFrontierAssumptionPacket :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.ofFinalConsumerFacade_noLeftoverAssumptions
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket.ofFinalConsumerFacade h).noLeftoverAssumptions =
+      h.toNoLeftoverDeletionAssumptionPacket :=
+  rfl
+
+/--
+Public-release/current-frontier citation bundle.  This is a non-duplicative citation layer: it keeps
+the final consumer facade as the source of truth while naming the selector endpoint, handoff wrappers,
+large-support selector, combined no-leftover/current-frontier packet, and final target wrappers that
+downstream files are expected to consume.
+-/
+structure ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+    (terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop) :
+    Type where
+  finalConsumerFacade :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  publicReleaseBundle : FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle
+  largeSupportSelector : HasLargeEvenDegreeModFourLoss32InducedSubgraph
+  currentSelectorEndpoint : FirstBitLargeSupportColoringCurrentSelectorEndpoint
+  currentFrontierSelectorHandoff :
+    ProofMdLargeSupportColoringCurrentFrontierSelectorEndpointHandoffFacade
+  externalBlockSelectorHandoff :
+    ProofMdLargeSupportColoringExternalBlockSelectorEndpointHandoffFacade
+  externalBlockHandoff : ProofMdLargeSupportColoringExternalBlockHandoffFacade
+  noLeftoverSelectorHandoff :
+    ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  noLeftoverCurrentFrontierPacket :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision
+  targetStatement : TargetStatement
+  targetStatement_viaExternalBlock : TargetStatement
+
+/-- Build the public-release/current-frontier citation bundle from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision where
+  finalConsumerFacade := h
+  publicReleaseBundle := h.toPublicFinalArchiveReleaseBundle
+  largeSupportSelector := h.largeEvenDegreeModFourLoss32
+  currentSelectorEndpoint := h.toCurrentSelectorEndpoint
+  currentFrontierSelectorHandoff := h.toCurrentFrontierSelectorEndpointHandoffFacade
+  externalBlockSelectorHandoff := h.toExternalBlockSelectorEndpointHandoffFacade
+  externalBlockHandoff := h.toExternalBlockHandoffFacade
+  noLeftoverSelectorHandoff := h.toNoLeftoverSelectorHandoffFacade
+  noLeftoverCurrentFrontierPacket := h.toNoLeftoverCurrentFrontierPacket
+  targetStatement := h.targetStatement
+  targetStatement_viaExternalBlock := h.targetStatement_viaExternalBlock
+
+/-- Expose the public-release/current-frontier citation bundle from the final consumer facade. -/
+def ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade.toPublicReleaseCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade h
+
+/-- Build the citation bundle from a no-leftover selector handoff. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofNoLeftoverSelectorHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toPublicReleaseFinalConsumerFacade.toPublicReleaseCurrentFrontierCitationBundle
+
+/-- Attach no-leftover assumptions and cite a selector-endpoint handoff as the current frontier. -/
+def ProofMdLargeSupportColoringCurrentFrontierSelectorEndpointHandoffFacade.toPublicReleaseCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierSelectorEndpointHandoffFacade)
+    (noLeftoverAssumptions :
+      ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  (h.toPublicReleaseFinalConsumerFacade noLeftoverAssumptions).toPublicReleaseCurrentFrontierCitationBundle
+
+/-- Attach no-leftover assumptions and cite a current-frontier handoff facade. -/
+def ProofMdLargeSupportColoringCurrentFrontierHandoffFacade.toPublicReleaseCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierHandoffFacade)
+    (noLeftoverAssumptions :
+      ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toSelectorEndpointHandoffFacade.toPublicReleaseCurrentFrontierCitationBundle noLeftoverAssumptions
+
+/-- Attach no-leftover assumptions and cite a current-frontier consumer bundle. -/
+def ProofMdLargeSupportColoringCurrentFrontierConsumerBundle.toPublicReleaseCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierConsumerBundle)
+    (noLeftoverAssumptions :
+      ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toSelectorEndpointHandoffFacade.toPublicReleaseCurrentFrontierCitationBundle noLeftoverAssumptions
+
+/-- Attach no-leftover assumptions and cite a current-frontier certificate. -/
+def ProofMdLargeSupportColoringCurrentFrontierCertificate.toPublicReleaseCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierCertificate)
+    (noLeftoverAssumptions :
+      ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+        terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+        terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toSelectorEndpointHandoffFacade.toPublicReleaseCurrentFrontierCitationBundle noLeftoverAssumptions
+
+/-- Expose a no-leftover selector handoff as the public-release/current-frontier citation bundle. -/
+def ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade.toPublicReleaseCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofNoLeftoverSelectorHandoffFacade h
+
+/-- Recover the final consumer facade from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toPublicReleaseFinalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.finalConsumerFacade
+
+/-- Recover the public/final/archive/release bundle from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toPublicFinalArchiveReleaseBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitLargeSupportColoringPublicFinalArchiveReleaseBundle :=
+  h.publicReleaseBundle
+
+/-- Recover the large-support loss-`32` selector from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toLargeEvenDegreeModFourLoss32
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    HasLargeEvenDegreeModFourLoss32InducedSubgraph :=
+  h.largeSupportSelector
+
+/-- Recover the current selector endpoint from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toCurrentSelectorEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitLargeSupportColoringCurrentSelectorEndpoint :=
+  h.currentSelectorEndpoint
+
+/-- Recover the current-frontier selector handoff from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toCurrentFrontierSelectorEndpointHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringCurrentFrontierSelectorEndpointHandoffFacade :=
+  h.currentFrontierSelectorHandoff
+
+/-- Recover the external-block selector handoff from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toExternalBlockSelectorEndpointHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringExternalBlockSelectorEndpointHandoffFacade :=
+  h.externalBlockSelectorHandoff
+
+/-- Recover the external-block handoff facade from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toExternalBlockHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringExternalBlockHandoffFacade :=
+  h.externalBlockHandoff
+
+/-- Recover the no-leftover selector handoff from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toNoLeftoverSelectorHandoffFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringCurrentFrontierNoLeftoverSelectorHandoffFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverSelectorHandoff
+
+/-- Recover the combined no-leftover/current-frontier packet from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toNoLeftoverCurrentFrontierPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringPublicReleaseNoLeftoverCurrentFrontierPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverCurrentFrontierPacket
+
+/-- Recover the current-frontier assumption packet from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toCurrentFrontierAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringCurrentFrontierAssumptionPacket :=
+  h.noLeftoverCurrentFrontierPacket.toCurrentFrontierAssumptionPacket
+
+/-- Recover the no-leftover deletion packet from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toNoLeftoverDeletionAssumptionPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    ProofMdLargeSupportColoringNoLeftoverDeletionAssumptionPacket
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.noLeftoverCurrentFrontierPacket.toNoLeftoverDeletionAssumptionPacket
+
+/-- Selector assumptions exposed by the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.firstBitSelectors
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    FirstBitCurrentSelectorAssumptions :=
+  h.currentSelectorEndpoint.toCurrentSelectorAssumptions
+
+/-- Full loss-`32` selector exposed by the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.evenDegreeModFourLoss32
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  h.currentSelectorEndpoint.evenDegreeModFourLoss32
+
+/-- Loss-`64` parity lift exposed by the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.parityToModFourLoss64FixedWitnessLift
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    HasParityToModFourLoss64FixedWitnessLift :=
+  h.currentSelectorEndpoint.parityToModFourLoss64FixedWitnessLift
+
+/-- Project strict cross-atom defect control from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toTerminalStrictCrossAtomDefect
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalStrictCrossAtomDefect :=
+  h.toNoLeftoverDeletionAssumptionPacket.toTerminalStrictCrossAtomDefect
+
+/-- Project the no-leftover four-four-atom deletion dichotomy from the citation bundle. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toNoLeftoverFourFourAtomDeletionDichotomy
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverFourFourAtomDeletionDichotomy :=
+  h.toNoLeftoverDeletionAssumptionPacket.toNoLeftoverFourFourAtomDeletionDichotomy
+
+/-- Project the no-leftover unit-strict-absorption/lift-collision consequence. -/
+def ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.toNoLeftoverUnitStrictAbsorptionOrLiftCollision
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision :=
+  h.toNoLeftoverDeletionAssumptionPacket.toNoLeftoverUnitStrictAbsorptionOrLiftCollision
+
+/-- The public-release/current-frontier citation bundle closes the target statement. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- The citation bundle also closes the target through the external-block route. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle_viaExternalBlock
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  h.targetStatement_viaExternalBlock
+
+/-- The final consumer facade closes the target through the current-frontier citation bundle. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseFinalConsumerFacade_viaCurrentFrontierCitationBundle
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  targetStatement_of_proofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle
+    h.toPublicReleaseCurrentFrontierCitationBundle
+
+/-- The final consumer facade closes the external-block target through the citation bundle. -/
+theorem targetStatement_of_proofMdLargeSupportColoringPublicReleaseFinalConsumerFacade_viaCurrentFrontierCitationBundle_externalBlock
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    TargetStatement :=
+  targetStatement_of_proofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle_viaExternalBlock
+    h.toPublicReleaseCurrentFrontierCitationBundle
+
+@[simp] theorem ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade_finalConsumerFacade
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade h).finalConsumerFacade = h :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade_currentSelectorEndpoint
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade h).currentSelectorEndpoint =
+      h.toCurrentSelectorEndpoint :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade_externalBlockHandoff
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade h).externalBlockHandoff =
+      h.toExternalBlockHandoffFacade :=
+  rfl
+
+@[simp] theorem ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade_noLeftoverCurrentFrontierPacket
+    {terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision : Prop}
+    (h : ProofMdLargeSupportColoringPublicReleaseFinalConsumerFacade
+      terminalStrictCrossAtomDefect terminalNoLeftoverFourFourAtomDeletionDichotomy
+      terminalNoLeftoverUnitStrictAbsorptionOrLiftCollision) :
+    (ProofMdLargeSupportColoringPublicReleaseCurrentFrontierCitationBundle.ofFinalConsumerFacade h).noLeftoverCurrentFrontierPacket =
+      h.toNoLeftoverCurrentFrontierPacket :=
+  rfl
+
 end RegularInducedSubgraph
