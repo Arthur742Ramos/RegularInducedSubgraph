@@ -6213,6 +6213,155 @@ theorem threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion_un
     hasThreeConsecutiveClassModFourSelector hterminal
 
 /--
+Core-residue obstruction used by the mod-four layer recursion: no nonempty selected subfamily of
+odd core residues has total residue `0 mod 4`.
+-/
+def HasNoNonemptyOddCoreResidueSubfamilyModFourZero
+    {ι : Type*} [DecidableEq ι] (cores : Finset ι) (residue : ι → ℕ) : Prop :=
+  ∀ sub : Finset ι, sub ⊆ cores → sub.Nonempty →
+    ¬ ((∑ i in sub, residue i) ≡ 0 [MOD 4])
+
+/-- Pair extraction from the nonempty-subfamily mod-four obstruction. -/
+theorem noNonemptyOddCoreResidueSubfamilyModFourZero_pair
+    {ι : Type*} [DecidableEq ι] {cores : Finset ι} {residue : ι → ℕ}
+    (hno : HasNoNonemptyOddCoreResidueSubfamilyModFourZero cores residue)
+    {a b : ι} (ha : a ∈ cores) (hb : b ∈ cores) (hab : a ≠ b) :
+    ¬ ((residue a + residue b) ≡ 0 [MOD 4]) := by
+  intro hmod
+  have hsubset : ({a, b} : Finset ι) ⊆ cores := by
+    intro x hx
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+    rcases hx with rfl | rfl
+    · exact ha
+    · exact hb
+  have hne : ({a, b} : Finset ι).Nonempty := ⟨a, by simp⟩
+  have hsum : (∑ x in ({a, b} : Finset ι), residue x) = residue a + residue b := by
+    simp [hab]
+  exact (hno ({a, b} : Finset ι) hsubset hne) (by simpa [hsum] using hmod)
+
+/-- Four-core extraction from the nonempty-subfamily mod-four obstruction. -/
+theorem noNonemptyOddCoreResidueSubfamilyModFourZero_quad
+    {ι : Type*} [DecidableEq ι] {cores : Finset ι} {residue : ι → ℕ}
+    (hno : HasNoNonemptyOddCoreResidueSubfamilyModFourZero cores residue)
+    {a b c d : ι} (ha : a ∈ cores) (hb : b ∈ cores) (hc : c ∈ cores) (hd : d ∈ cores)
+    (hab : a ≠ b) (hac : a ≠ c) (had : a ≠ d)
+    (hbc : b ≠ c) (hbd : b ≠ d) (hcd : c ≠ d) :
+    ¬ ((residue a + residue b + residue c + residue d) ≡ 0 [MOD 4]) := by
+  intro hmod
+  have hsubset : ({a, b, c, d} : Finset ι) ⊆ cores := by
+    intro x hx
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+    rcases hx with rfl | rfl | rfl | rfl
+    · exact ha
+    · exact hb
+    · exact hc
+    · exact hd
+  have hne : ({a, b, c, d} : Finset ι).Nonempty := ⟨a, by simp⟩
+  have hsum :
+      (∑ x in ({a, b, c, d} : Finset ι), residue x) =
+        residue a + residue b + residue c + residue d := by
+    simp [hab, hac, had, hbc, hbd, hcd]
+  exact (hno ({a, b, c, d} : Finset ι) hsubset hne) (by simpa [hsum] using hmod)
+
+/--
+Among four odd mod-four residues (`1` or `3`), either an opposite-residue pair or the whole
+quadruple sums to `0 mod 4`.
+-/
+lemma odd_modFour_residue_four_has_zero_pair_or_quad
+    {a b c d : ℕ}
+    (ha : a = 1 ∨ a = 3) (hb : b = 1 ∨ b = 3)
+    (hc : c = 1 ∨ c = 3) (hd : d = 1 ∨ d = 3) :
+    (a + b) ≡ 0 [MOD 4] ∨ (a + c) ≡ 0 [MOD 4] ∨
+      (a + d) ≡ 0 [MOD 4] ∨ (b + c) ≡ 0 [MOD 4] ∨
+        (b + d) ≡ 0 [MOD 4] ∨ (c + d) ≡ 0 [MOD 4] ∨
+          (a + b + c + d) ≡ 0 [MOD 4] := by
+  rcases ha with rfl | rfl <;> rcases hb with rfl | rfl <;>
+    rcases hc with rfl | rfl <;> rcases hd with rfl | rfl <;> decide
+
+/--
+If all core residues are odd (`1` or `3`) and both opposite pairs and same-residue quadruples are
+terminally forbidden, then at most three cores can be chosen.
+-/
+theorem oddCoreResidueFamily_card_le_three_of_pair_quad_exclusion
+    {ι : Type*} [DecidableEq ι] {cores : Finset ι} {residue : ι → ℕ}
+    (hresidue : ∀ i ∈ cores, residue i = 1 ∨ residue i = 3)
+    (hpair :
+      ∀ a ∈ cores, ∀ b ∈ cores, a ≠ b → ¬ ((residue a + residue b) ≡ 0 [MOD 4]))
+    (hquad :
+      ∀ a ∈ cores, ∀ b ∈ cores, ∀ c ∈ cores, ∀ d ∈ cores,
+        a ≠ b → a ≠ c → a ≠ d → b ≠ c → b ≠ d → c ≠ d →
+          ¬ ((residue a + residue b + residue c + residue d) ≡ 0 [MOD 4])) :
+    cores.card ≤ 3 := by
+  by_contra hnot
+  have hlarge : 3 < cores.card := Nat.lt_of_not_ge hnot
+  rcases Finset.three_lt_card.mp hlarge with
+    ⟨a, ha, b, hb, c, hc, d, hd, hab, hac, had, hbc, hbd, hcd⟩
+  have hzero :=
+    odd_modFour_residue_four_has_zero_pair_or_quad
+      (hresidue a ha) (hresidue b hb) (hresidue c hc) (hresidue d hd)
+  rcases hzero with hAB | hAC | hAD | hBC | hBD | hCD | hABCD
+  · exact (hpair a ha b hb hab) hAB
+  · exact (hpair a ha c hc hac) hAC
+  · exact (hpair a ha d hd had) hAD
+  · exact (hpair b hb c hc hbc) hBC
+  · exact (hpair b hb d hd hbd) hBD
+  · exact (hpair c hc d hd hcd) hCD
+  · exact (hquad a ha b hb c hc d hd hab hac had hbc hbd hcd) hABCD
+
+/-- The nonempty-subfamily mod-four obstruction implies the at-most-three core bound. -/
+theorem oddCoreResidueFamily_card_le_three_of_noNonemptySubfamilyModFourZero
+    {ι : Type*} [DecidableEq ι] {cores : Finset ι} {residue : ι → ℕ}
+    (hresidue : ∀ i ∈ cores, residue i = 1 ∨ residue i = 3)
+    (hno : HasNoNonemptyOddCoreResidueSubfamilyModFourZero cores residue) :
+    cores.card ≤ 3 := by
+  exact
+    oddCoreResidueFamily_card_le_three_of_pair_quad_exclusion hresidue
+      (fun a ha b hb hab =>
+        noNonemptyOddCoreResidueSubfamilyModFourZero_pair hno ha hb hab)
+      (fun a ha b hb c hc d hd hab hac had hbc hbd hcd =>
+        noNonemptyOddCoreResidueSubfamilyModFourZero_quad hno ha hb hc hd
+          hab hac had hbc hbd hcd)
+
+/--
+Crude `66m/5` terminal-layer accounting: total core length `≤ 11m/5`, at most three pendant
+families of size `≤ 3m`, and one final bipartite layer of size `≤ 2m`.
+-/
+theorem modFourTerminalLayer_total_card_le_sixtySix_fifths_of_core_bounds
+    {coreCount coreSize pendantSize bipartiteSize totalSize m : ℕ}
+    (hcoreCount : coreCount ≤ 3)
+    (hcoreSize : 5 * coreSize ≤ 11 * m)
+    (hpendant : pendantSize ≤ coreCount * (3 * m))
+    (hbipartite : bipartiteSize ≤ 2 * m)
+    (htotal : totalSize ≤ coreSize + pendantSize + bipartiteSize) :
+    5 * totalSize ≤ 66 * m := by
+  have hpendantNine : pendantSize ≤ 9 * m := by
+    calc
+      pendantSize ≤ coreCount * (3 * m) := hpendant
+      _ ≤ 3 * (3 * m) := Nat.mul_le_mul_right (3 * m) hcoreCount
+      _ = 9 * m := by ring
+  nlinarith
+
+/--
+Residue form of the `66m/5` accounting: the no-zero-subfamily condition supplies the at-most-three
+core bound before the pendant and bipartite estimates are combined.
+-/
+theorem modFourTerminalLayer_total_card_le_sixtySix_fifths_of_residue_core_family
+    {ι : Type*} [DecidableEq ι] {cores : Finset ι} {residue : ι → ℕ}
+    {coreSize pendantSize bipartiteSize totalSize m : ℕ}
+    (hresidue : ∀ i ∈ cores, residue i = 1 ∨ residue i = 3)
+    (hno : HasNoNonemptyOddCoreResidueSubfamilyModFourZero cores residue)
+    (hcoreSize : 5 * coreSize ≤ 11 * m)
+    (hpendant : pendantSize ≤ cores.card * (3 * m))
+    (hbipartite : bipartiteSize ≤ 2 * m)
+    (htotal : totalSize ≤ coreSize + pendantSize + bipartiteSize) :
+    5 * totalSize ≤ 66 * m := by
+  have hcoreCount : cores.card ≤ 3 :=
+    oddCoreResidueFamily_card_le_three_of_noNonemptySubfamilyModFourZero hresidue hno
+  exact
+    modFourTerminalLayer_total_card_le_sixtySix_fifths_of_core_bounds
+      hcoreCount hcoreSize hpendant hbipartite htotal
+
+/--
 The standalone mod-four layer obstruction from the terminal core: a nonempty induced set whose
 cardinality is `0 mod 4` and whose induced degrees are all `2 mod 4`.
 -/
@@ -6253,6 +6402,72 @@ def TriangleFreeInducedC4FreeModFourLayerCap (C : ℕ) : Prop :=
         HasIndependenceBoundOn G S m →
           HasNoNonemptyModFourDegreeTwoLayerOn G S →
             S.card ≤ C * m
+
+/--
+Core-decomposition surface for the documented mod-four layer proof.  The selected odd cores are
+indexed by `Fin coreCount`; their residues have no nonempty `0 mod 4` subfamily, the total core
+length is bounded by `11m/5`, pendant fibres cost at most `3m` per core, and the terminal bipartite
+layer costs at most `2m`.
+-/
+def HasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          HasNoNonemptyModFourDegreeTwoLayerOn G S →
+            ∃ coreCount coreSize pendantSize bipartiteSize : ℕ,
+              ∃ residue : Fin coreCount → ℕ,
+                (∀ i : Fin coreCount, residue i = 1 ∨ residue i = 3) ∧
+                  HasNoNonemptyOddCoreResidueSubfamilyModFourZero
+                    (Finset.univ : Finset (Fin coreCount)) residue ∧
+                  5 * coreSize ≤ 11 * m ∧
+                    pendantSize ≤ coreCount * (3 * m) ∧
+                      bipartiteSize ≤ 2 * m ∧
+                        S.card ≤ coreSize + pendantSize + bipartiteSize
+
+/--
+The core-decomposition surface proves a concrete `14m` mod-four layer cap.  Internally this is the
+documented `66m/5` estimate, rounded up to an integer coefficient.
+-/
+theorem triangleFreeInducedC4FreeModFourLayer_card_le_fourteen_mul_of_coreDecomposition
+    (hdecomp : HasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ 14 * m := by
+  rcases hdecomp G htriangle hC4 halpha hnoLayer with
+    ⟨coreCount, coreSize, pendantSize, bipartiteSize, residue,
+      hresidue, hnoResidue, hcoreSize, hpendant, hbipartite, hcover⟩
+  have hresidueUniv :
+      ∀ i ∈ (Finset.univ : Finset (Fin coreCount)), residue i = 1 ∨ residue i = 3 := by
+    intro i _hi
+    exact hresidue i
+  have hpendantUniv :
+      pendantSize ≤ (Finset.univ : Finset (Fin coreCount)).card * (3 * m) := by
+    simpa using hpendant
+  have h66 :
+      5 * S.card ≤ 66 * m :=
+    modFourTerminalLayer_total_card_le_sixtySix_fifths_of_residue_core_family
+      (cores := (Finset.univ : Finset (Fin coreCount))) (residue := residue)
+      (coreSize := coreSize) (pendantSize := pendantSize)
+      (bipartiteSize := bipartiteSize) (totalSize := S.card) (m := m)
+      hresidueUniv hnoResidue hcoreSize hpendantUniv hbipartite hcover
+  have hround : 66 * m ≤ 5 * (14 * m) := by
+    nlinarith
+  apply Nat.le_of_mul_le_mul_left (c := 5)
+  · exact le_trans h66 hround
+  · decide
+
+/-- Package the core-decomposition surface as the corresponding rounded mod-four layer cap. -/
+theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_coreDecomposition
+    (hdecomp : HasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition) :
+    TriangleFreeInducedC4FreeModFourLayerCap 14 := by
+  intro n m G S htriangle hC4 halpha hnoLayer
+  exact
+    triangleFreeInducedC4FreeModFourLayer_card_le_fourteen_mul_of_coreDecomposition
+      hdecomp G htriangle hC4 halpha hnoLayer
 
 /-- An exact induced `2`-regular set of `0 mod 4` cardinality is a mod-four degree-two layer. -/
 theorem isModFourDegreeTwoLayer_of_inducesRegularOfDegree_two
@@ -6319,6 +6534,23 @@ theorem correctedZeroOneThreeTwoComplement_card_le_of_modFour_layerSelector
   exact
     triangleFreeInducedC4FreeModFourLayer_card_le_of_selector
       hselector G htriangle hC4 halpha hnoLayer
+
+/--
+Corrected-complement bridge using the formalized mod-four core-decomposition accounting directly,
+with the `66m/5` estimate rounded to `14m`.
+-/
+theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_coreDecomposition
+    (hdecomp : HasTriangleFreeInducedC4FreeModFourLayerCoreDecomposition)
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ 14 * m := by
+  exact
+    correctedZeroOneThreeTwoComplement_card_le_of_modFour_layerCap
+      (triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_coreDecomposition hdecomp)
+      G htriangle hC4 halpha hnoLayer
 
 /--
 Conditional selector for the corrected `{0,1}`/`{3,2}` complement surface.  A linearly large
