@@ -39030,6 +39030,652 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toRemain
   exact Subsingleton.elim _ _
 
 
+/--
+Explicit checklist for the remaining Ramsey/R45 current-frontier obligations that are still carried
+through the final public distribution bundle.  This exposes the localized `R(4,5) <= 27` row as a
+transported assumption-backed endpoint package, alongside the exact-`42` top-row ledgers and split
+certificates that downstream proof-md consumers need to keep the final release honest.
+-/
+structure RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  publicDistributionBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  consumerSurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  endpointDownstreamImport : RamseyTenR45EndpointDownstreamImport
+  endpointReady : RamseyTenR45EndpointReadyCertificate
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointResidualCertificate : RamseyTenR45EndpointResidualCertificate
+  middleDegreeEndpointCertificate : RamseyTenR45MiddleDegreeEndpointCertificate
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalCertificateBundle : RamseyTenR45FinalCertificateBundle
+  finalBundleSelector : RamseyTenR45FinalBundleSelectorSurface
+  topRowReady : RamseyThreeTenExact42TopRowReadyCertificate G s v
+  topRowFinalHandoff : RamseyThreeTenExact42TopRowFinalHandoff G s v
+  topRowSelector : RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v
+  topRowSelectorHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v)
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  exact42ProfileHandoff :
+    RamseyTenR45LocalLedgerHandoff RamseyThreeTenExact42ThreeRowProfileSurface
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  degreeTenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+
+/-- Final public distribution bundles materialize the explicit remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v := by
+  let hs := h.toCurrentFrontierConsumerSurface
+  exact
+    { publicDistributionBundle := h
+      remainingAssumptionRows := h.toRemainingAssumptionRows
+      consumerSurface := hs
+      finalDownstreamImport := h.toFinalDownstreamImport
+      endpointDownstreamImport := hs.endpointImport
+      endpointReady := hs.endpointReady
+      endpointResiduals := hs.endpointResiduals
+      endpointResidualCertificate := hs.endpointCertificate
+      middleDegreeEndpointCertificate := hs.middleDegreeCertificate
+      r45TwentySevenTable := hs.r45TwentySevenTable
+      finalCertificateBundle := hs.finalBundle
+      finalBundleSelector := hs.finalBundleSelector
+      topRowReady := hs.topRowReady
+      topRowFinalHandoff := hs.topRowFinalHandoff
+      topRowSelector := hs.topRowSelector
+      topRowSelectorHandoff := hs.topRowSelectorHandoff
+      exact42Status := hs.exact42Status
+      exact42Profile := hs.exact42Profile
+      exact42WithMiddleSplits := hs.exact42WithMiddleSplits
+      exact42ProfileHandoff := hs.exact42ProfileHandoff
+      localLedgers := hs.localLedgers
+      degreeTenSplits := hs.degreeTenSplits
+      degreeElevenSplits := hs.degreeElevenSplits
+      degreeTwelveSplits := hs.degreeTwelveSplits
+      middleDegreeSplits := hs.middleDegreeSplits
+      degreeTenHandoff := hs.degreeTenHandoff
+      degreeElevenHandoff := hs.degreeElevenHandoff
+      degreeTwelveHandoff := hs.degreeTwelveHandoff
+      middleDegreeHandoff := hs.middleDegreeHandoff
+      topRowProfile := hs.topRowProfile
+      topRowCommonSum := hs.topRowCommonSum
+      topRowCountProfile := hs.topRowCountProfile
+      exact42Row := h.toThreeTenFortyTwo
+      localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246 }
+
+/-- Final public distribution facades materialize the explicit remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.toProofMdFinalPublicDistributionBundle.toProofMdR45RemainingObligationChecklist
+
+/-- Final distribution bundles materialize the explicit remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.toProofMdFinalPublicDistributionBundle.toProofMdR45RemainingObligationChecklist
+
+/-- Select the final public distribution bundle from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.publicDistributionBundle
+
+/-- Select the remaining assumption row view from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Select the current-frontier consumer surface from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.consumerSurface
+
+/-- Select the endpoint downstream import from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toEndpointDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45EndpointDownstreamImport :=
+  h.endpointDownstreamImport
+
+/-- Select endpoint residuals from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the endpoint residual certificate from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toEndpointResidualCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45EndpointResidualCertificate :=
+  h.endpointResidualCertificate
+
+/-- Select the middle-degree endpoint certificate from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toMiddleDegreeEndpointCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45MiddleDegreeEndpointCertificate :=
+  h.middleDegreeEndpointCertificate
+
+/-- Select the relaxed `27`-vertex R45 table from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select the final certificate bundle from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toFinalCertificateBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45FinalCertificateBundle :=
+  h.finalCertificateBundle
+
+/-- Select the final bundle selector surface from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toFinalBundleSelectorSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45FinalBundleSelectorSurface :=
+  h.finalBundleSelector
+
+/-- Select the exact-`42` status from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the exact-`42` three-row profile surface from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toExact42ProfileSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select local middle-degree ledgers from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the degree-`10` split certificate from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toDegreeTenSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.degreeTenSplits
+
+/-- Select the degree-`11` split certificate from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toDegreeElevenSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.degreeElevenSplits
+
+/-- Select the degree-`12` split certificate from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toDegreeTwelveSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.degreeTwelveSplits
+
+/-- Select the uniform middle-degree split certificate from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toMiddleDegreeSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.middleDegreeSplits
+
+/-- Select the top-row profile obligation from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the top-row common-sum obligation from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the top-row count-profile obligation from the remaining-obligation checklist. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Remaining-obligation checklist route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Remaining-obligation checklist route to the localized `R(4,5) <= 27` carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Remaining-obligation checklist route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- The remaining-obligation checklist normalizes its carried R45 row with its remaining rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toRemainingAssumptionRows_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    h.toRemainingAssumptionRows.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/--
+Final checkpoint/release bundle for proof-md current-frontier consumers.  It wraps the final public
+distribution bundle with a dedicated remaining-obligation checklist, making the localized R45
+endpoint package, top-row exact-`42` ledgers, public manifests, audit artifacts, and theorem rows
+available from a single release-style handle without strengthening any carried Ramsey assumptions.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  publicDistributionBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v
+  remainingObligations : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  publicDistributionFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v
+  distributionBundle : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v
+  distributionFacade : RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v
+  finalManifest : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v
+  finalLedger : RamseyTenR45CurrentFrontierProofMdFinalLedger G s v
+  publicAuditSummary : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v
+  coverageCertificate : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v
+  auditChecklist : RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v
+  consumerExport : RamseyTenR45CurrentFrontierProofMdConsumerExport G s v
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  normalizationRoute : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  middleDegreeEndpointCertificate : RamseyTenR45MiddleDegreeEndpointCertificate
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final public distribution bundles materialize the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalCheckpointReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v := by
+  let hr := h.toProofMdR45RemainingObligationChecklist
+  exact
+    { publicDistributionBundle := h
+      remainingObligations := hr
+      publicDistributionFacade := h.toProofMdFinalPublicDistributionFacade
+      distributionBundle := h.toProofMdFinalDistributionBundle
+      distributionFacade := h.toProofMdFinalDistributionFacade
+      finalManifest := h.toProofMdFinalManifest
+      finalLedger := h.toProofMdFinalLedger
+      publicAuditSummary := h.toProofMdPublicAuditSummary
+      coverageCertificate := h.toProofMdCoverageCertificate
+      auditChecklist := h.toProofMdAuditChecklist
+      consumerExport := h.toProofMdConsumerExport
+      proofMdImport := h.toProofMdImport
+      proofMdNormalizationChecklist := h.toProofMdNormalizationChecklist
+      normalizationRoute := h.toCurrentFrontierNormalizationRoute
+      theoremChecklist := h.toCurrentFrontierTheoremChecklist
+      targetRows := h.toCurrentFrontierTargetRows
+      remainingAssumptionRows := h.toRemainingAssumptionRows
+      numericalConsequences := h.toFinalNumericalConsequences
+      endpointResiduals := hr.toEndpointResiduals
+      middleDegreeEndpointCertificate := hr.toMiddleDegreeEndpointCertificate
+      exact42Status := hr.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+      localLedgers := hr.toLocalLedgerBundle
+      exact42Row := h.toThreeTenFortyTwo
+      localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+      admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+      extremalF40960Row := h.toTenLeF_40960
+      regularTenAt40960Row := fun H hcard =>
+        h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard }
+
+/-- Final public distribution facades materialize the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade.toProofMdFinalCheckpointReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v :=
+  h.toProofMdFinalPublicDistributionBundle.toProofMdFinalCheckpointReleaseBundle
+
+/-- Final distribution bundles materialize the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle.toProofMdFinalCheckpointReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v :=
+  h.toProofMdFinalPublicDistributionBundle.toProofMdFinalCheckpointReleaseBundle
+
+/-- Select the final public distribution bundle from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.publicDistributionBundle
+
+/-- Select the remaining-obligation checklist from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.remainingObligations
+
+/-- Select the final public distribution facade from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalPublicDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v :=
+  h.publicDistributionFacade
+
+/-- Select the final distribution bundle from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v :=
+  h.distributionBundle
+
+/-- Select the final distribution facade from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v :=
+  h.distributionFacade
+
+/-- Select the final manifest from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.finalManifest
+
+/-- Select the final ledger from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalLedger G s v :=
+  h.finalLedger
+
+/-- Select the public audit summary from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdPublicAuditSummary
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v :=
+  h.publicAuditSummary
+
+/-- Select the coverage certificate from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v :=
+  h.coverageCertificate
+
+/-- Select the proof-md import from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.proofMdImport
+
+/-- Select the proof-md normalization checklist from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.proofMdNormalizationChecklist
+
+/-- Select the theorem checklist from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.theoremChecklist
+
+/-- Select the target rows from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select the remaining assumption rows from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Select compact numerical consequences from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select endpoint residuals from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the middle-degree endpoint certificate from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toMiddleDegreeEndpointCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45MiddleDegreeEndpointCertificate :=
+  h.middleDegreeEndpointCertificate
+
+/-- Select the exact-`42` status from the checkpoint/release bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Checkpoint/release route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Checkpoint/release route to the localized `R(4,5) <= 27` carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Checkpoint/release route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Checkpoint/release route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Checkpoint/release route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Checkpoint/release route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Flat constructor exposing checkpoint/release bundles from final public distribution bundles. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle_of_finalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v :=
+  h.toProofMdFinalCheckpointReleaseBundle
+
+/-- Flat projection from the checkpoint/release bundle to the remaining-obligation checklist. -/
+theorem ramseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist_of_finalCheckpointReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.toProofMdR45RemainingObligationChecklist
+
+/-- Checkpoint/release bundles normalize their public distribution bundle through the public facade. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalPublicDistributionFacade_toProofMdFinalPublicDistributionBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toProofMdFinalPublicDistributionBundle =
+      h.toProofMdFinalPublicDistributionBundle := by
+  exact Subsingleton.elim _ _
+
+/-- Checkpoint/release bundles normalize their remaining assumptions with target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toCurrentFrontierTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    h.toCurrentFrontierTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Checkpoint/release bundles normalize their R45 row with the remaining-obligation checklist. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdR45RemainingObligationChecklist_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    h.toProofMdR45RemainingObligationChecklist.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
