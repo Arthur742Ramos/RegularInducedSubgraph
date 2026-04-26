@@ -15026,6 +15026,37 @@ theorem RamseyTenR45GlobalConsequenceBundle.toTenLeF_40960
     (h : RamseyTenR45GlobalConsequenceBundle) : 10 ≤ F 40960 :=
   h.f40960
 
+/-- Rehydrate the final-status handoff from the global consequence projection. -/
+theorem RamseyTenR45GlobalConsequenceBundle.toFinalStatus
+    (h : RamseyTenR45GlobalConsequenceBundle) : RamseyTenR45FinalStatus where
+  r45TwentySeven := h.r45TwentySeven
+  r10Ten39246 := h.r10Ten39246
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.admissibleTenAt40960
+  f40960 := h.f40960
+
+/-- Extract the global consequence projection from the endpoint-residual certificate. -/
+theorem RamseyTenR45EndpointResidualCertificate.toGlobalConsequenceBundle
+    (h : RamseyTenR45EndpointResidualCertificate) : RamseyTenR45GlobalConsequenceBundle :=
+  h.finalStatus.toGlobalConsequenceBundle
+
+/-- Extract the global consequence projection from the compact endpoint/exact-`42` certificate. -/
+theorem RamseyTenR45EndpointResidualCertificateWithExact42Profile.toGlobalConsequenceBundle
+    (h : RamseyTenR45EndpointResidualCertificateWithExact42Profile) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.toFinalStatus.toGlobalConsequenceBundle
+
+/-- Extract the global consequence projection from the profiled endpoint bridge. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface.toGlobalConsequenceBundle
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.toFinalStatus.toGlobalConsequenceBundle
+
+/-- Extract the global consequence projection from the expanded middle-degree certificate. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificate.toGlobalConsequenceBundle
+    (h : RamseyTenR45MiddleDegreeEndpointCertificate) : RamseyTenR45GlobalConsequenceBundle :=
+  h.finalStatus.toGlobalConsequenceBundle
+
 /--
 Local degree-`9` endpoint middle-band ledgers, grouped without any global Ramsey
 consequence fields.  Consumers that only need the exact degree-`10`/`11`/`12` non-neighbor
@@ -15094,6 +15125,15 @@ theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.toMiddleD
     (h : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits) :
     NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
   h.middleDegreeSplits
+
+/-- Forget the exact-`42` surface and keep only the local middle-degree ledger bundle. -/
+theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.toLocalLedgerBundle
+    (h : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle where
+  degreeTenSplits := h.degreeTenSplits
+  degreeElevenSplits := h.degreeElevenSplits
+  degreeTwelveSplits := h.degreeTwelveSplits
+  middleDegreeSplits := h.middleDegreeSplits
 
 /-- Extract the low-row `R(3,10) <= 42` consequence from the exact-`42`/middle-split pairing. -/
 theorem RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits.toThreeTenFortyTwo
@@ -15253,6 +15293,18 @@ theorem RamseyTenR45MiddleDegreeEndpointCertificate.toLocalLedgerBundle
   degreeTwelveSplits := h.degreeTwelveSplits
   middleDegreeSplits := h.middleDegreeSplits
 
+/-- Extract the local middle-degree ledger bundle from the combined exact-`42` handoff. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toLocalLedgerBundle
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.middleDegreeCertificate.toLocalLedgerBundle
+
+/-- Extract the global consequence projection from the combined exact-`42` handoff. -/
+theorem RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile.toGlobalConsequenceBundle
+    (h : RamseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.finalStatus.toGlobalConsequenceBundle
+
 /-- Local ledger bundles expose the exact degree-`10` split certificate. -/
 theorem RamseyTenR45MiddleDegreeLocalLedgerBundle.toDegreeTenSplitCertificate
     (h : RamseyTenR45MiddleDegreeLocalLedgerBundle) :
@@ -15327,6 +15379,17 @@ theorem RamseyTenR45LocalLedgerHandoff.toHasRegularInducedSubgraphOfCard_ten_409
     HasRegularInducedSubgraphOfCard G 10 :=
   h.globalConsequences.toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
 
+/-- Consume a local-ledger handoff as the admissible-bound formulation. -/
+theorem RamseyTenR45LocalLedgerHandoff.toTenMemAdmissibleBounds_40960
+    {P : Prop} (h : RamseyTenR45LocalLedgerHandoff P) :
+    10 ∈ admissibleBounds 40960 :=
+  h.globalConsequences.toTenMemAdmissibleBounds_40960
+
+/-- Consume a local-ledger handoff as the extremal-function lower bound. -/
+theorem RamseyTenR45LocalLedgerHandoff.toTenLeF_40960
+    {P : Prop} (h : RamseyTenR45LocalLedgerHandoff P) : 10 ≤ F 40960 :=
+  h.globalConsequences.toTenLeF_40960
+
 /-- The degree-`10` split certificate plus endpoint residuals form a local/global handoff. -/
 theorem ramseyTenR45DegreeTenSplitHandoff_of_endpointResiduals
     (hendpoints : RamseyTenR45EndpointResiduals)
@@ -15382,6 +15445,50 @@ theorem ramseyTenR45MiddleDegreeSplitHandoff_of_endpointResiduals
       r45TwentySevenTable := RamseyTenR45EndpointResiduals.toR45TwentySevenTable hendpoints
       finalStatus := hfinal
       globalConsequences := RamseyTenR45FinalStatus.toGlobalConsequenceBundle hfinal }
+
+/-- Explicit endpoint assumptions plus the degree-`10` split certificate form a local/global handoff. -/
+theorem ramseyTenR45DegreeTenSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeTen :
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  ramseyTenR45DegreeTenSplitHandoff_of_endpointResiduals ⟨h8, h9, h13⟩ hdegreeTen
+
+/-- Explicit endpoint assumptions plus the degree-`11` split certificate form a local/global handoff. -/
+theorem ramseyTenR45DegreeElevenSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeEleven :
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  ramseyTenR45DegreeElevenSplitHandoff_of_endpointResiduals ⟨h8, h9, h13⟩ hdegreeEleven
+
+/-- Explicit endpoint assumptions plus the degree-`12` split certificate form a local/global handoff. -/
+theorem ramseyTenR45DegreeTwelveSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeTwelve :
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  ramseyTenR45DegreeTwelveSplitHandoff_of_endpointResiduals ⟨h8, h9, h13⟩ hdegreeTwelve
+
+/-- Explicit endpoint assumptions plus the uniform middle-degree split certificate form a handoff. -/
+theorem ramseyTenR45MiddleDegreeSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hmiddle :
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  ramseyTenR45MiddleDegreeSplitHandoff_of_endpointResiduals ⟨h8, h9, h13⟩ hmiddle
 
 /-- Consume the degree-`10` split handoff as the relaxed `R(4,5) <= 27` table. -/
 theorem ramseyTenR45TwentySevenTable_of_endpointResiduals_and_degreeTenSplits
@@ -15527,6 +15634,34 @@ theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toGlobalConsequenceBundle
     RamseyTenR45GlobalConsequenceBundle :=
   h.globalConsequences
 
+/-- Consume the profiled handoff as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.globalConsequences.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Consume the profiled handoff as the current `R(10,10)` frontier. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.globalConsequences.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Consume the profiled handoff as the regular induced `10`-subgraph theorem at `40960`. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.globalConsequences.toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Consume the profiled handoff as the admissible-bound formulation. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff) : 10 ∈ admissibleBounds 40960 :=
+  h.globalConsequences.toTenMemAdmissibleBounds_40960
+
+/-- Consume the profiled handoff as the extremal-function lower bound. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toTenLeF_40960
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff) : 10 ≤ F 40960 :=
+  h.globalConsequences.toTenLeF_40960
+
 /-- Recover the expanded middle-degree endpoint certificate from the profiled handoff. -/
 theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toMiddleDegreeEndpointCertificate
     (h : RamseyTenR45ProfiledMiddleDegreeHandoff) :
@@ -15610,6 +15745,189 @@ theorem ramseyTenR45ProfiledMiddleDegreeHandoff_of_degreeEight_degreeNine_degree
   exact
     RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface.toProfiledMiddleDegreeHandoff
       hbridge
+
+/--
+Final-facing certificate bundle for downstream consumers that need endpoint residuals, the
+middle-degree local ledgers, the exact-`42` profile surface, and all global Ramsey-10 consequences
+without repeatedly destructuring the profiled handoff.
+-/
+structure RamseyTenR45FinalCertificateBundle : Prop where
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointCertificate : RamseyTenR45EndpointResidualCertificate
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+
+/-- Package a profiled middle-degree handoff into the final-facing certificate bundle. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toFinalCertificateBundle
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff) : RamseyTenR45FinalCertificateBundle where
+  endpointResiduals := h.endpointResiduals
+  endpointCertificate := RamseyTenR45EndpointResiduals.toCertificate h.endpointResiduals
+  localLedgers := h.localLedgers
+  exact42Profile := h.exact42Profile
+  exact42WithMiddleSplits :=
+    { exact42Profile := h.exact42Profile
+      degreeTenSplits := h.localLedgers.degreeTenSplits
+      degreeElevenSplits := h.localLedgers.degreeElevenSplits
+      degreeTwelveSplits := h.localLedgers.degreeTwelveSplits
+      middleDegreeSplits := h.localLedgers.middleDegreeSplits
+      threeTenFortyTwo := h.threeTenFortyTwo }
+  threeTenFortyTwo := h.threeTenFortyTwo
+  r45TwentySevenTable := h.r45TwentySevenTable
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+
+/-- Construct the final-facing certificate bundle from explicit endpoint assumptions. -/
+theorem ramseyTenR45FinalCertificateBundle_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    RamseyTenR45FinalCertificateBundle :=
+  (ramseyTenR45ProfiledMiddleDegreeHandoff_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    h8 h9 h13 hexact42).toFinalCertificateBundle
+
+/-- Select endpoint residuals from the final-facing certificate bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toEndpointResiduals
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the expanded endpoint certificate from the final-facing certificate bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toEndpointResidualCertificate
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45EndpointResidualCertificate :=
+  h.endpointCertificate
+
+/-- Select the local middle-degree ledger bundle from the final-facing certificate bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toLocalLedgerBundle
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the profiled exact-`42` surface from the final-facing certificate bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toExact42ProfileSurface
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select the exact-`42` profile together with middle-degree ledgers from the final bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toExact42WithMiddleSplits
+    (h : RamseyTenR45FinalCertificateBundle) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the low-row `R(3,10) <= 42` consequence from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toThreeTenFortyTwo
+    (h : RamseyTenR45FinalCertificateBundle) : HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Select the relaxed `R(4,5) <= 27` table from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toR45TwentySevenTable
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select the final Ramsey-10 status from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toFinalStatus
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select the global consequence bundle from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toGlobalConsequenceBundle
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select the exact degree-`10` split certificate from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toDegreeTenSplitCertificate
+    (h : RamseyTenR45FinalCertificateBundle) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.localLedgers.degreeTenSplits
+
+/-- Select the exact degree-`11` split certificate from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toDegreeElevenSplitCertificate
+    (h : RamseyTenR45FinalCertificateBundle) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.localLedgers.degreeElevenSplits
+
+/-- Select the exact degree-`12` split certificate from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toDegreeTwelveSplitCertificate
+    (h : RamseyTenR45FinalCertificateBundle) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.localLedgers.degreeTwelveSplits
+
+/-- Select the uniform degree-`10`/`11`/`12` split certificate from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toMiddleDegreeSplitCertificate
+    (h : RamseyTenR45FinalCertificateBundle) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.localLedgers.middleDegreeSplits
+
+/-- Select the degree-`10` local/global handoff from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toDegreeTenSplitHandoff
+    (h : RamseyTenR45FinalCertificateBundle) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  { ledger := h.localLedgers.degreeTenSplits
+    r45TwentySevenTable := h.r45TwentySevenTable
+    finalStatus := h.finalStatus
+    globalConsequences := h.globalConsequences }
+
+/-- Select the degree-`11` local/global handoff from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toDegreeElevenSplitHandoff
+    (h : RamseyTenR45FinalCertificateBundle) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  { ledger := h.localLedgers.degreeElevenSplits
+    r45TwentySevenTable := h.r45TwentySevenTable
+    finalStatus := h.finalStatus
+    globalConsequences := h.globalConsequences }
+
+/-- Select the degree-`12` local/global handoff from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toDegreeTwelveSplitHandoff
+    (h : RamseyTenR45FinalCertificateBundle) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  { ledger := h.localLedgers.degreeTwelveSplits
+    r45TwentySevenTable := h.r45TwentySevenTable
+    finalStatus := h.finalStatus
+    globalConsequences := h.globalConsequences }
+
+/-- Select the uniform middle-degree local/global handoff from the final-facing bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toMiddleDegreeSplitHandoff
+    (h : RamseyTenR45FinalCertificateBundle) :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  { ledger := h.localLedgers.middleDegreeSplits
+    r45TwentySevenTable := h.r45TwentySevenTable
+    finalStatus := h.finalStatus
+    globalConsequences := h.globalConsequences }
+
+/-- Consume the final-facing bundle as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45FinalCertificateBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45FinalCertificateBundle) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.globalConsequences.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Consume the final-facing bundle as the current `R(10,10)` frontier. -/
+theorem RamseyTenR45FinalCertificateBundle.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45FinalCertificateBundle) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.globalConsequences.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Consume the final-facing bundle as the regular induced `10`-subgraph theorem at `40960`. -/
+theorem RamseyTenR45FinalCertificateBundle.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45FinalCertificateBundle)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.globalConsequences.toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Consume the final-facing bundle as the admissible-bound formulation. -/
+theorem RamseyTenR45FinalCertificateBundle.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45FinalCertificateBundle) : 10 ∈ admissibleBounds 40960 :=
+  h.globalConsequences.toTenMemAdmissibleBounds_40960
+
+/-- Consume the final-facing bundle as the extremal-function lower bound. -/
+theorem RamseyTenR45FinalCertificateBundle.toTenLeF_40960
+    (h : RamseyTenR45FinalCertificateBundle) : 10 ≤ F 40960 :=
+  h.globalConsequences.toTenLeF_40960
 
 /-- Final status wrapper from explicit endpoints plus the profiled exact-`42` surface. -/
 theorem ramseyTenR45FinalStatus_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
@@ -15700,6 +16018,36 @@ theorem hasRegularInducedSubgraphOfCard_ten_40960_of_degreeEight_degreeNine_degr
     HasRegularInducedSubgraphOfCard G 10 :=
   (ramseyTenR45MiddleDegreeEndpointCertificateWithExact42Profile_of_degreeEight_degreeNine_degreeThirteen
     h8 h9 h13 hexact42).toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Explicit endpoints plus an exact-`42` profile produce the global consequence bundle. -/
+theorem ramseyTenR45GlobalConsequenceBundle_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  (ramseyTenR45FinalCertificateBundle_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    h8 h9 h13 hexact42).toGlobalConsequenceBundle
+
+/-- Final-facing admissible-bound wrapper from endpoints, middle ledgers, and exact-`42` profile. -/
+theorem ten_mem_admissibleBounds_40960_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    10 ∈ admissibleBounds 40960 :=
+  (ramseyTenR45FinalCertificateBundle_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    h8 h9 h13 hexact42).toTenMemAdmissibleBounds_40960
+
+/-- Final-facing extremal-function wrapper from endpoints, middle ledgers, and exact-`42` profile. -/
+theorem ten_le_F_40960_of_degreeEight_degreeNine_degreeThirteen_exact42Profile_middleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    10 ≤ F 40960 :=
+  (ramseyTenR45FinalCertificateBundle_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    h8 h9 h13 hexact42).toTenLeF_40960
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
