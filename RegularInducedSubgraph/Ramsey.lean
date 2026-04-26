@@ -17686,6 +17686,369 @@ theorem ten_le_F_40960_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThir
     10 ≤ F 40960 :=
   ten_le_F_40960_of_exact42ProfileStatus_and_endpointResiduals hstatus ⟨h8, h9, h13⟩
 
+/--
+Endpoint-residual ready certificate: endpoint assumptions, middle-degree split ledgers, and the
+global Ramsey-10 consequences are materialized together so consumers can project any layer without
+rebuilding the endpoint/middle/global chain.
+-/
+structure RamseyTenR45EndpointReadyCertificate : Prop where
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointCertificate : RamseyTenR45EndpointResidualCertificate
+  middleDegreeCertificate : RamseyTenR45MiddleDegreeEndpointCertificate
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  degreeEightEndpoint : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix
+  degreeNineEndpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven
+  degreeThirteenEndpoint : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard G 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Endpoint residuals packaged into the ready certificate with middle-degree and global fields. -/
+theorem RamseyTenR45EndpointResiduals.toEndpointReadyCertificate
+    (h : RamseyTenR45EndpointResiduals) : RamseyTenR45EndpointReadyCertificate := by
+  let hmiddle := RamseyTenR45EndpointResiduals.toMiddleDegreeCertificate h
+  let hfinal := RamseyTenR45EndpointResiduals.toFinalStatus h
+  let hglobal := RamseyTenR45FinalStatus.toGlobalConsequenceBundle hfinal
+  exact
+    { endpointResiduals := h
+      endpointCertificate := RamseyTenR45EndpointResiduals.toCertificate h
+      middleDegreeCertificate := hmiddle
+      localLedgers := RamseyTenR45MiddleDegreeEndpointCertificate.toLocalLedgerBundle hmiddle
+      degreeEightEndpoint := h.degreeEight
+      degreeNineEndpoint := h.degreeNine
+      degreeThirteenEndpoint := h.degreeThirteen
+      degreeTenSplits := hmiddle.degreeTenSplits
+      degreeElevenSplits := hmiddle.degreeElevenSplits
+      degreeTwelveSplits := hmiddle.degreeTwelveSplits
+      middleDegreeSplits := hmiddle.middleDegreeSplits
+      r45TwentySevenTable := RamseyTenR45EndpointResiduals.toR45TwentySevenTable h
+      finalStatus := hfinal
+      globalConsequences := hglobal
+      finalConsequences := RamseyTenR45GlobalConsequenceBundle.toFinalConsequenceSurface hglobal
+      r45TwentySeven := hglobal.r45TwentySeven
+      r10Ten39246 := hglobal.r10Ten39246
+      regularTenAt40960 := hglobal.regularTenAt40960
+      admissibleTenAt40960 := hglobal.admissibleTenAt40960
+      f40960 := hglobal.f40960 }
+
+/-- Build the endpoint ready certificate from the three explicit endpoint assumptions. -/
+theorem ramseyTenR45EndpointReadyCertificate_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45EndpointReadyCertificate :=
+  RamseyTenR45EndpointResiduals.toEndpointReadyCertificate ⟨h8, h9, h13⟩
+
+/-- Select endpoint residuals from the endpoint ready certificate. -/
+theorem RamseyTenR45EndpointReadyCertificate.toEndpointResiduals
+    (h : RamseyTenR45EndpointReadyCertificate) : RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the expanded endpoint certificate from the endpoint ready certificate. -/
+theorem RamseyTenR45EndpointReadyCertificate.toEndpointResidualCertificate
+    (h : RamseyTenR45EndpointReadyCertificate) : RamseyTenR45EndpointResidualCertificate :=
+  h.endpointCertificate
+
+/-- Select the middle-degree endpoint certificate from the endpoint ready certificate. -/
+theorem RamseyTenR45EndpointReadyCertificate.toMiddleDegreeEndpointCertificate
+    (h : RamseyTenR45EndpointReadyCertificate) : RamseyTenR45MiddleDegreeEndpointCertificate :=
+  h.middleDegreeCertificate
+
+/-- Select the local middle-degree ledger bundle from the endpoint ready certificate. -/
+theorem RamseyTenR45EndpointReadyCertificate.toLocalLedgerBundle
+    (h : RamseyTenR45EndpointReadyCertificate) : RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the global consequence bundle from the endpoint ready certificate. -/
+theorem RamseyTenR45EndpointReadyCertificate.toGlobalConsequenceBundle
+    (h : RamseyTenR45EndpointReadyCertificate) : RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select the final consequence surface from the endpoint ready certificate. -/
+theorem RamseyTenR45EndpointReadyCertificate.toFinalConsequenceSurface
+    (h : RamseyTenR45EndpointReadyCertificate) : RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume the endpoint ready certificate as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45EndpointReadyCertificate.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45EndpointReadyCertificate) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume the endpoint ready certificate as the current `R(10,10)` frontier. -/
+theorem RamseyTenR45EndpointReadyCertificate.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45EndpointReadyCertificate) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume the endpoint ready certificate as the regular induced `10`-subgraph statement. -/
+theorem RamseyTenR45EndpointReadyCertificate.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45EndpointReadyCertificate)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.regularTenAt40960 G hcard
+
+/-- Consume the endpoint ready certificate as the admissible-bound statement. -/
+theorem RamseyTenR45EndpointReadyCertificate.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45EndpointReadyCertificate) : 10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume the endpoint ready certificate as the extremal-function lower bound. -/
+theorem RamseyTenR45EndpointReadyCertificate.toTenLeF_40960
+    (h : RamseyTenR45EndpointReadyCertificate) : 10 ≤ F 40960 :=
+  h.f40960
+
+/--
+Full Ramsey-10 ready certificate: endpoint-ready data plus the exact-`42` profile surface and the
+final bundle/selector APIs are carried in one assumption-explicit object.
+-/
+structure RamseyTenR45ReadyCertificate : Prop where
+  endpointReady : RamseyTenR45EndpointReadyCertificate
+  finalBundle : RamseyTenR45FinalCertificateBundle
+  selectorSurface : RamseyTenR45FinalBundleSelectorSurface
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointCertificate : RamseyTenR45EndpointResidualCertificate
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  degreeEightEndpoint : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix
+  degreeNineEndpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven
+  degreeThirteenEndpoint : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+  r45TwentySeven : HasCliqueOrIndepSetBound 4 5 27
+  r10Ten39246 : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard G 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Package a final certificate bundle as the one-stop ready certificate. -/
+theorem RamseyTenR45FinalCertificateBundle.toReadyCertificate
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45ReadyCertificate := by
+  let hendpointReady := RamseyTenR45EndpointResiduals.toEndpointReadyCertificate h.endpointResiduals
+  let hselector := RamseyTenR45FinalCertificateBundle.toFinalBundleSelectorSurface h
+  let hstatus :=
+    RamseyTenR45FinalCertificateBundle.toExact42ProfileStatusWithMiddleDegreeLocalLedgers h
+  let hfinalConsequences := RamseyTenR45FinalCertificateBundle.toFinalConsequenceSurface h
+  exact
+    { endpointReady := hendpointReady
+      finalBundle := h
+      selectorSurface := hselector
+      endpointResiduals := h.endpointResiduals
+      endpointCertificate := h.endpointCertificate
+      localLedgers := h.localLedgers
+      exact42Status := hstatus
+      exact42Profile := h.exact42Profile
+      exact42WithMiddleSplits := h.exact42WithMiddleSplits
+      degreeEightEndpoint := h.endpointResiduals.degreeEight
+      degreeNineEndpoint := h.endpointResiduals.degreeNine
+      degreeThirteenEndpoint := h.endpointResiduals.degreeThirteen
+      degreeTenSplits := h.localLedgers.degreeTenSplits
+      degreeElevenSplits := h.localLedgers.degreeElevenSplits
+      degreeTwelveSplits := h.localLedgers.degreeTwelveSplits
+      middleDegreeSplits := h.localLedgers.middleDegreeSplits
+      threeTenFortyTwo := h.threeTenFortyTwo
+      r45TwentySevenTable := h.r45TwentySevenTable
+      finalStatus := h.finalStatus
+      globalConsequences := h.globalConsequences
+      finalConsequences := hfinalConsequences
+      r45TwentySeven := h.globalConsequences.r45TwentySeven
+      r10Ten39246 := h.globalConsequences.r10Ten39246
+      regularTenAt40960 := h.globalConsequences.regularTenAt40960
+      admissibleTenAt40960 := h.globalConsequences.admissibleTenAt40960
+      f40960 := h.globalConsequences.f40960 }
+
+/-- Profiled middle-degree handoffs can be consumed as ready certificates. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toReadyCertificate
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff) : RamseyTenR45ReadyCertificate :=
+  h.toFinalCertificateBundle.toReadyCertificate
+
+/-- Combined endpoint/exact-`42` bridges can be consumed as ready certificates. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface.toReadyCertificate
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowProfileSurface) :
+    RamseyTenR45ReadyCertificate :=
+  h.toProfiledMiddleDegreeHandoff.toReadyCertificate
+
+/-- Exact-`42` status plus endpoint residuals produce the ready certificate. -/
+theorem RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers.toReadyCertificate
+    (h : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    RamseyTenR45ReadyCertificate :=
+  (h.toFinalCertificateBundle hendpoints).toReadyCertificate
+
+/-- Ready certificate from exact-`42` status and explicit endpoint residuals. -/
+theorem ramseyTenR45ReadyCertificate_of_exact42ProfileStatus_and_endpointResiduals
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (hendpoints : RamseyTenR45EndpointResiduals) :
+    RamseyTenR45ReadyCertificate :=
+  hstatus.toReadyCertificate hendpoints
+
+/-- Ready certificate from exact-`42` status and the three explicit endpoint assumptions. -/
+theorem ramseyTenR45ReadyCertificate_of_exact42ProfileStatus_degreeEight_degreeNine_degreeThirteen
+    (hstatus : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers)
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45ReadyCertificate :=
+  hstatus.toReadyCertificate ⟨h8, h9, h13⟩
+
+/-- Ready certificate from explicit endpoint assumptions plus a profiled exact-`42` surface. -/
+theorem ramseyTenR45ReadyCertificate_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hexact42 : RamseyThreeTenExact42ThreeRowProfileSurface) :
+    RamseyTenR45ReadyCertificate :=
+  (ramseyTenR45FinalCertificateBundle_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
+    h8 h9 h13 hexact42).toReadyCertificate
+
+/-- Select endpoint-ready data from the full ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toEndpointReadyCertificate
+    (h : RamseyTenR45ReadyCertificate) : RamseyTenR45EndpointReadyCertificate :=
+  h.endpointReady
+
+/-- Select the final certificate bundle from the full ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toFinalCertificateBundle
+    (h : RamseyTenR45ReadyCertificate) : RamseyTenR45FinalCertificateBundle :=
+  h.finalBundle
+
+/-- Select the final-bundle selector surface from the full ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toFinalBundleSelectorSurface
+    (h : RamseyTenR45ReadyCertificate) : RamseyTenR45FinalBundleSelectorSurface :=
+  h.selectorSurface
+
+/-- Select the exact-`42` status with local middle-degree ledgers from the ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+    (h : RamseyTenR45ReadyCertificate) :
+    RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers :=
+  h.exact42Status
+
+/-- Select the local middle-degree ledger bundle from the ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toLocalLedgerBundle
+    (h : RamseyTenR45ReadyCertificate) : RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the profiled exact-`42` surface from the ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toExact42ProfileSurface
+    (h : RamseyTenR45ReadyCertificate) : RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select the exact-`42` profile paired with middle-degree ledgers from the ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toExact42WithMiddleSplits
+    (h : RamseyTenR45ReadyCertificate) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select global consequences from the ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toGlobalConsequenceBundle
+    (h : RamseyTenR45ReadyCertificate) : RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select final consequences from the ready certificate. -/
+theorem RamseyTenR45ReadyCertificate.toFinalConsequenceSurface
+    (h : RamseyTenR45ReadyCertificate) : RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume the ready certificate as the low-row exact-`42` consequence. -/
+theorem RamseyTenR45ReadyCertificate.toThreeTenFortyTwo
+    (h : RamseyTenR45ReadyCertificate) : HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Consume the ready certificate as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45ReadyCertificate.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45ReadyCertificate) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Consume the ready certificate as the current `R(10,10)` frontier. -/
+theorem RamseyTenR45ReadyCertificate.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45ReadyCertificate) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume the ready certificate as the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45ReadyCertificate.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45ReadyCertificate)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.regularTenAt40960 G hcard
+
+/-- Consume the ready certificate as the admissible-bound conclusion. -/
+theorem RamseyTenR45ReadyCertificate.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45ReadyCertificate) : 10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Consume the ready certificate as the extremal-function lower bound. -/
+theorem RamseyTenR45ReadyCertificate.toTenLeF_40960
+    (h : RamseyTenR45ReadyCertificate) : 10 ≤ F 40960 :=
+  h.f40960
+
+/-- A ready certificate supplies a top-row selector paired with local middle-degree ledgers. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowSelectorWithLocalLedgers
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v :=
+  h.exact42Status.toTopRowSelectorWithLocalLedgers htop
+
+/-- A ready certificate supplies a top-row selector from common-sum/count-profile components. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowSelectorWithLocalLedgers_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v :=
+  h.exact42Status.toTopRowSelectorWithLocalLedgers_ofCommonSumCountProfile hcommon hcount
+
+/-- A ready certificate turns a top-row selector into a local/global handoff. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowSelectorHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (htop : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v) :=
+  { ledger := h.toTopRowSelectorWithLocalLedgers htop
+    r45TwentySevenTable := h.r45TwentySevenTable
+    finalStatus := h.finalStatus
+    globalConsequences := h.globalConsequences }
+
+/-- A ready certificate turns common-sum/count-profile components into a local/global handoff. -/
+theorem RamseyTenR45ReadyCertificate.toTopRowSelectorHandoff_ofCommonSumCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45ReadyCertificate)
+    (hcommon : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v)
+    (hcount : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v) :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v) :=
+  { ledger := h.toTopRowSelectorWithLocalLedgers_ofCommonSumCountProfile hcommon hcount
+    r45TwentySevenTable := h.r45TwentySevenTable
+    finalStatus := h.finalStatus
+    globalConsequences := h.globalConsequences }
+
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
