@@ -16030,6 +16030,731 @@ theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImport
     principalBucketShadowFrontier :=
   h.shadowFrontier
 
+
+/-- The `m * p` trace branch selected by a size-refined packet atom. -/
+def FirstBitTerminalPacketAtomTraceBranch (m p : ℕ) (traceResidue : Fin 4) : Prop :=
+  (m * p) ≡ traceResidue.val [MOD 4]
+
+/-- Cardinality and trace-branch surface for a size-refined packet atom. -/
+def FirstBitTerminalPacketAtomCardinalityTraceBranch
+    {Target : Type*} (packet : Finset Target) (m p : ℕ) (traceResidue : Fin 4) : Prop :=
+  packet.card = m * p ∧ FirstBitTerminalPacketAtomTraceBranch m p traceResidue
+
+/-- The terminal zero-trace surface: the packet has size `m * p` and `m * p = 0 mod 4`. -/
+def FirstBitTerminalPacketAtomMpZeroTraceSurface
+    {Target : Type*} (packet : Finset Target) (m p : ℕ) : Prop :=
+  FirstBitTerminalPacketAtomCardinalityTraceBranch packet m p (0 : Fin 4)
+
+/-- Project the cardinality equation from a packet atom trace branch. -/
+theorem FirstBitTerminalPacketAtomCardinalityTraceBranch.card_eq
+    {Target : Type*} {packet : Finset Target} {m p : ℕ} {traceResidue : Fin 4}
+    (h : FirstBitTerminalPacketAtomCardinalityTraceBranch packet m p traceResidue) :
+    packet.card = m * p :=
+  h.1
+
+/-- Project the mod-four trace branch from a packet atom trace branch. -/
+theorem FirstBitTerminalPacketAtomCardinalityTraceBranch.to_traceBranch
+    {Target : Type*} {packet : Finset Target} {m p : ℕ} {traceResidue : Fin 4}
+    (h : FirstBitTerminalPacketAtomCardinalityTraceBranch packet m p traceResidue) :
+    FirstBitTerminalPacketAtomTraceBranch m p traceResidue :=
+  h.2
+
+/-- Project the cardinality equation from the zero-trace surface. -/
+theorem FirstBitTerminalPacketAtomMpZeroTraceSurface.card_eq
+    {Target : Type*} {packet : Finset Target} {m p : ℕ}
+    (h : FirstBitTerminalPacketAtomMpZeroTraceSurface packet m p) :
+    packet.card = m * p :=
+  h.1
+
+/-- Project `m * p = 0 mod 4` from the zero-trace surface. -/
+theorem FirstBitTerminalPacketAtomMpZeroTraceSurface.mp_modEq_zero
+    {Target : Type*} {packet : Finset Target} {m p : ℕ}
+    (h : FirstBitTerminalPacketAtomMpZeroTraceSurface packet m p) :
+    (m * p) ≡ 0 [MOD 4] := by
+  simpa [FirstBitTerminalPacketAtomTraceBranch] using h.2
+
+/-- A packet atom has constant trace on its support. -/
+def FirstBitTerminalPacketAtomConstantTrace
+    {Target : Type*} (support : Finset Target) (targetTrace : Target → Fin 4)
+    (traceResidue : Fin 4) : Prop :=
+  ∀ target : Target, target ∈ support → targetTrace target = traceResidue
+
+/-- A support has no proper subpacket satisfying the supplied subpacket predicate. -/
+def FirstBitTerminalPacketAtomNoProperSubpacket
+    {Target : Type*} (support : Finset Target) (subpacketWitness : Finset Target → Prop) : Prop :=
+  ∀ subpacket : Finset Target, subpacket ⊆ support → subpacket.card < support.card →
+    ¬ subpacketWitness subpacket
+
+/-- No smaller nonempty subpacket has the same defect residue as the ambient atom. -/
+def FirstBitTerminalPacketAtomMinimalForDefect
+    {Target : Type*} (support : Finset Target) (defect : Finset Target → ℕ)
+    (defectResidue : Fin 4) (subpacketWitness : Finset Target → Prop) : Prop :=
+  ∀ subpacket : Finset Target, subpacket ⊆ support → subpacket.Nonempty →
+    subpacket.card < support.card → subpacketWitness subpacket →
+      ¬ (defect subpacket ≡ defectResidue.val [MOD 4])
+
+/-- Apply constant-trace information to one target in an atom support. -/
+theorem FirstBitTerminalPacketAtomConstantTrace.trace_eq_of_mem
+    {Target : Type*} {support : Finset Target} {targetTrace : Target → Fin 4}
+    {traceResidue : Fin 4}
+    (h : FirstBitTerminalPacketAtomConstantTrace support targetTrace traceResidue)
+    {target : Target} (htarget : target ∈ support) :
+    targetTrace target = traceResidue :=
+  h target htarget
+
+/-- Use the no-proper-subpacket assumption on a smaller subpacket. -/
+theorem FirstBitTerminalPacketAtomNoProperSubpacket.not_witness_of_card_lt
+    {Target : Type*} {support subpacket : Finset Target}
+    {subpacketWitness : Finset Target → Prop}
+    (h : FirstBitTerminalPacketAtomNoProperSubpacket support subpacketWitness)
+    (hsub : subpacket ⊆ support) (hcard : subpacket.card < support.card) :
+    ¬ subpacketWitness subpacket :=
+  h subpacket hsub hcard
+
+/-- Use defect minimality to forbid a smaller subpacket with the atom defect residue. -/
+theorem FirstBitTerminalPacketAtomMinimalForDefect.not_same_defect_of_subpacket
+    {Target : Type*} {support subpacket : Finset Target} {defect : Finset Target → ℕ}
+    {defectResidue : Fin 4} {subpacketWitness : Finset Target → Prop}
+    (h : FirstBitTerminalPacketAtomMinimalForDefect support defect defectResidue subpacketWitness)
+    (hsub : subpacket ⊆ support) (hne : subpacket.Nonempty)
+    (hcard : subpacket.card < support.card) (hwitness : subpacketWitness subpacket) :
+    ¬ (defect subpacket ≡ defectResidue.val [MOD 4]) :=
+  h subpacket hsub hne hcard hwitness
+
+/--
+A single size-refined constant-trace packet atom.  The fields record only imported facts: support
+inclusion, the refined size equation, constant trace, and the two minimality/no-subpacket exclusions.
+-/
+structure FirstBitTerminalSizeRefinedPacketAtomCertificate
+    {Target Atom : Type*} (packet : Finset Target) (atom : Atom)
+    (atomSupport : Atom → Finset Target) (targetTrace : Target → Fin 4)
+    (atomTrace : Atom → Fin 4) (atomSize packetMultiplier packetPeriod : Atom → ℕ)
+    (subpacketWitness : Finset Target → Prop) (defect : Finset Target → ℕ) : Prop where
+  supportSubsetPacket : atomSupport atom ⊆ packet
+  supportCard : (atomSupport atom).card = atomSize atom
+  cardinalityTrace :
+    FirstBitTerminalPacketAtomCardinalityTraceBranch (atomSupport atom)
+      (packetMultiplier atom) (packetPeriod atom) (atomTrace atom)
+  constantTrace :
+    FirstBitTerminalPacketAtomConstantTrace (atomSupport atom) targetTrace (atomTrace atom)
+  noProperSubpacket :
+    FirstBitTerminalPacketAtomNoProperSubpacket (atomSupport atom) subpacketWitness
+  minimalDefect :
+    FirstBitTerminalPacketAtomMinimalForDefect (atomSupport atom) defect (atomTrace atom)
+      subpacketWitness
+
+/-- Build a size-refined packet atom certificate from its named assumptions. -/
+theorem firstBitTerminalSizeRefinedPacketAtomCertificate_of_assumptions
+    {Target Atom : Type*} {packet : Finset Target} {atom : Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    (hsupport : atomSupport atom ⊆ packet)
+    (hcard : (atomSupport atom).card = atomSize atom)
+    (htraceCard :
+      FirstBitTerminalPacketAtomCardinalityTraceBranch (atomSupport atom)
+        (packetMultiplier atom) (packetPeriod atom) (atomTrace atom))
+    (hconstant :
+      FirstBitTerminalPacketAtomConstantTrace (atomSupport atom) targetTrace (atomTrace atom))
+    (hnosub : FirstBitTerminalPacketAtomNoProperSubpacket (atomSupport atom) subpacketWitness)
+    (hminimal :
+      FirstBitTerminalPacketAtomMinimalForDefect (atomSupport atom) defect (atomTrace atom)
+        subpacketWitness) :
+    FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect where
+  supportSubsetPacket := hsupport
+  supportCard := hcard
+  cardinalityTrace := htraceCard
+  constantTrace := hconstant
+  noProperSubpacket := hnosub
+  minimalDefect := hminimal
+
+/-- Project the support inclusion from a size-refined packet atom certificate. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomCertificate.to_supportSubsetPacket
+    {Target Atom : Type*} {packet : Finset Target} {atom : Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    (h : FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect) :
+    atomSupport atom ⊆ packet :=
+  h.supportSubsetPacket
+
+/-- Project the explicit atom size equation. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomCertificate.support_card_eq_size
+    {Target Atom : Type*} {packet : Finset Target} {atom : Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    (h : FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect) :
+    (atomSupport atom).card = atomSize atom :=
+  h.supportCard
+
+/-- Project the refined cardinality equation `|atom| = m * p`. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomCertificate.support_card_eq_mul
+    {Target Atom : Type*} {packet : Finset Target} {atom : Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    (h : FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect) :
+    (atomSupport atom).card = packetMultiplier atom * packetPeriod atom :=
+  h.cardinalityTrace.card_eq
+
+/-- Project the trace branch selected by the atom size. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomCertificate.to_traceBranch
+    {Target Atom : Type*} {packet : Finset Target} {atom : Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    (h : FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect) :
+    FirstBitTerminalPacketAtomTraceBranch (packetMultiplier atom) (packetPeriod atom)
+      (atomTrace atom) :=
+  h.cardinalityTrace.to_traceBranch
+
+/-- A zero atom trace gives the `m * p = 0 mod 4` surface for that atom support. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomCertificate.to_mpZeroTraceSurface_of_trace_zero
+    {Target Atom : Type*} {packet : Finset Target} {atom : Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    (h : FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect)
+    (hzero : atomTrace atom = (0 : Fin 4)) :
+    FirstBitTerminalPacketAtomMpZeroTraceSurface (atomSupport atom)
+      (packetMultiplier atom) (packetPeriod atom) := by
+  refine ⟨h.cardinalityTrace.card_eq, ?_⟩
+  simpa [FirstBitTerminalPacketAtomTraceBranch, hzero] using h.cardinalityTrace.to_traceBranch
+
+/-- Apply the atom constant-trace field to a target in the support. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomCertificate.targetTrace_eq_of_mem
+    {Target Atom : Type*} {packet : Finset Target} {atom : Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    (h : FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect)
+    {target : Target} (htarget : target ∈ atomSupport atom) :
+    targetTrace target = atomTrace atom :=
+  h.constantTrace target htarget
+
+/-- Apply the no-proper-subpacket field to a smaller subpacket. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomCertificate.not_subpacketWitness_of_card_lt
+    {Target Atom : Type*} {packet subpacket : Finset Target} {atom : Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    (h : FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect)
+    (hsub : subpacket ⊆ atomSupport atom) (hcard : subpacket.card < (atomSupport atom).card) :
+    ¬ subpacketWitness subpacket :=
+  h.noProperSubpacket subpacket hsub hcard
+
+/-- Apply defect minimality to a smaller certified subpacket. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomCertificate.not_same_defect_of_subpacket
+    {Target Atom : Type*} {packet subpacket : Finset Target} {atom : Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    (h : FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect)
+    (hsub : subpacket ⊆ atomSupport atom) (hne : subpacket.Nonempty)
+    (hcard : subpacket.card < (atomSupport atom).card)
+    (hwitness : subpacketWitness subpacket) :
+    ¬ (defect subpacket ≡ (atomTrace atom).val [MOD 4]) :=
+  h.minimalDefect subpacket hsub hne hcard hwitness
+
+/-- Named defect-vector coordinates for packet atoms. -/
+structure FirstBitTerminalPacketAtomDefectVector (Atom : Type*) where
+  internalDefect : Atom → ℕ
+  boundaryDefect : Atom → ℕ
+  traceDefect : Atom → ℕ
+  totalDefect : Atom → ℕ
+
+/-- The total defect vector is the sum of its internal, boundary, and trace coordinates modulo four. -/
+def FirstBitTerminalPacketAtomDefectVectorCoherent
+    {Atom : Type*} (atoms : Finset Atom)
+    (defectVector : FirstBitTerminalPacketAtomDefectVector Atom) : Prop :=
+  ∀ atom : Atom, atom ∈ atoms →
+    defectVector.totalDefect atom ≡
+      defectVector.internalDefect atom + defectVector.boundaryDefect atom +
+        defectVector.traceDefect atom [MOD 4]
+
+/-- Cross-corrections convert two single-atom total defects into the recorded pair defect. -/
+def FirstBitTerminalPacketAtomCrossCorrectionCoherent
+    {Atom : Type*} (atoms : Finset Atom)
+    (defectVector : FirstBitTerminalPacketAtomDefectVector Atom)
+    (crossCorrection pairDefect : Atom → Atom → ℕ) : Prop :=
+  ∀ left : Atom, left ∈ atoms → ∀ right : Atom, right ∈ atoms → left ≠ right →
+    pairDefect left right ≡
+      defectVector.totalDefect left + defectVector.totalDefect right +
+        crossCorrection left right [MOD 4]
+
+/-- Cross-corrections are symmetric on the atom family. -/
+def FirstBitTerminalPacketAtomCrossCorrectionSymmetric
+    {Atom : Type*} (atoms : Finset Atom) (crossCorrection : Atom → Atom → ℕ) : Prop :=
+  ∀ left : Atom, left ∈ atoms → ∀ right : Atom, right ∈ atoms →
+    crossCorrection left right = crossCorrection right left
+
+/-- Defect of a union of atoms: single-atom totals plus all ordered cross-corrections. -/
+def FirstBitTerminalPacketAtomUnionDefect
+    {Atom : Type*} (defectVector : FirstBitTerminalPacketAtomDefectVector Atom)
+    (crossCorrection : Atom → Atom → ℕ) (subatoms : Finset Atom) : ℕ :=
+  (∑ atom in subatoms, defectVector.totalDefect atom) +
+    ∑ left in subatoms, ∑ right in subatoms, crossCorrection left right
+
+/-- The supports of distinct atoms in a family are disjoint. -/
+def FirstBitTerminalPacketAtomDisjointSupports
+    {Target Atom : Type*} (atoms : Finset Atom) (atomSupport : Atom → Finset Target) : Prop :=
+  ∀ left : Atom, left ∈ atoms → ∀ right : Atom, right ∈ atoms → left ≠ right →
+    Disjoint (atomSupport left) (atomSupport right)
+
+/-- No allowed nonempty union of disjoint atoms has total defect cancelling to zero modulo four. -/
+def FirstBitTerminalPacketAtomUnionAntiCancellation
+    {Atom : Type*} (atoms : Finset Atom)
+    (defectVector : FirstBitTerminalPacketAtomDefectVector Atom)
+    (crossCorrection : Atom → Atom → ℕ) (unionAllowed : Finset Atom → Prop) : Prop :=
+  ∀ subatoms : Finset Atom, subatoms ⊆ atoms → subatoms.Nonempty → unionAllowed subatoms →
+    ¬ (FirstBitTerminalPacketAtomUnionDefect defectVector crossCorrection subatoms ≡ 0 [MOD 4])
+
+/-- Defect-vector and cross-correction package for a packet-atom family. -/
+structure FirstBitTerminalPacketAtomDefectCorrectionCertificate
+    {Atom : Type*} (atoms : Finset Atom)
+    (defectVector : FirstBitTerminalPacketAtomDefectVector Atom)
+    (crossCorrection pairDefect : Atom → Atom → ℕ) : Prop where
+  vectorCoherent : FirstBitTerminalPacketAtomDefectVectorCoherent atoms defectVector
+  crossCorrectionCoherent :
+    FirstBitTerminalPacketAtomCrossCorrectionCoherent atoms defectVector crossCorrection pairDefect
+  crossCorrectionSymmetric :
+    FirstBitTerminalPacketAtomCrossCorrectionSymmetric atoms crossCorrection
+  crossCorrectionDiagonalZero : ∀ atom : Atom, atom ∈ atoms → crossCorrection atom atom = 0
+
+/-- Build a defect-correction certificate from its named assumptions. -/
+theorem firstBitTerminalPacketAtomDefectCorrectionCertificate_of_assumptions
+    {Atom : Type*} {atoms : Finset Atom}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    (hvector : FirstBitTerminalPacketAtomDefectVectorCoherent atoms defectVector)
+    (hcross :
+      FirstBitTerminalPacketAtomCrossCorrectionCoherent atoms defectVector crossCorrection pairDefect)
+    (hsymm : FirstBitTerminalPacketAtomCrossCorrectionSymmetric atoms crossCorrection)
+    (hdiag : ∀ atom : Atom, atom ∈ atoms → crossCorrection atom atom = 0) :
+    FirstBitTerminalPacketAtomDefectCorrectionCertificate atoms defectVector crossCorrection pairDefect
+    where
+  vectorCoherent := hvector
+  crossCorrectionCoherent := hcross
+  crossCorrectionSymmetric := hsymm
+  crossCorrectionDiagonalZero := hdiag
+
+/-- Project total-defect vector coherence for one atom. -/
+theorem FirstBitTerminalPacketAtomDefectCorrectionCertificate.totalDefect_modEq
+    {Atom : Type*} {atoms : Finset Atom}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    (h : FirstBitTerminalPacketAtomDefectCorrectionCertificate atoms defectVector crossCorrection
+      pairDefect)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    defectVector.totalDefect atom ≡
+      defectVector.internalDefect atom + defectVector.boundaryDefect atom +
+        defectVector.traceDefect atom [MOD 4] :=
+  h.vectorCoherent atom hatom
+
+/-- Project a pair-defect cross-correction equation. -/
+theorem FirstBitTerminalPacketAtomDefectCorrectionCertificate.pairDefect_modEq
+    {Atom : Type*} {atoms : Finset Atom}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    (h : FirstBitTerminalPacketAtomDefectCorrectionCertificate atoms defectVector crossCorrection
+      pairDefect)
+    {left right : Atom} (hleft : left ∈ atoms) (hright : right ∈ atoms) (hne : left ≠ right) :
+    pairDefect left right ≡
+      defectVector.totalDefect left + defectVector.totalDefect right +
+        crossCorrection left right [MOD 4] :=
+  h.crossCorrectionCoherent left hleft right hright hne
+
+/-- Project symmetry of cross-corrections. -/
+theorem FirstBitTerminalPacketAtomDefectCorrectionCertificate.crossCorrection_symm
+    {Atom : Type*} {atoms : Finset Atom}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    (h : FirstBitTerminalPacketAtomDefectCorrectionCertificate atoms defectVector crossCorrection
+      pairDefect)
+    {left right : Atom} (hleft : left ∈ atoms) (hright : right ∈ atoms) :
+    crossCorrection left right = crossCorrection right left :=
+  h.crossCorrectionSymmetric left hleft right hright
+
+/-- Project diagonal vanishing of cross-corrections. -/
+theorem FirstBitTerminalPacketAtomDefectCorrectionCertificate.crossCorrection_diag_zero
+    {Atom : Type*} {atoms : Finset Atom}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    (h : FirstBitTerminalPacketAtomDefectCorrectionCertificate atoms defectVector crossCorrection
+      pairDefect)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    crossCorrection atom atom = 0 :=
+  h.crossCorrectionDiagonalZero atom hatom
+
+/-- Atom-union anti-cancellation certificate with support disjointness and defect corrections. -/
+structure FirstBitTerminalPacketAtomUnionAntiCancellationCertificate
+    {Target Atom : Type*} (packet : Finset Target) (atoms : Finset Atom)
+    (atomSupport : Atom → Finset Target)
+    (defectVector : FirstBitTerminalPacketAtomDefectVector Atom)
+    (crossCorrection pairDefect : Atom → Atom → ℕ)
+    (unionAllowed : Finset Atom → Prop) : Prop where
+  supportSubsetPacket : ∀ atom : Atom, atom ∈ atoms → atomSupport atom ⊆ packet
+  disjointSupports : FirstBitTerminalPacketAtomDisjointSupports atoms atomSupport
+  defectCorrection :
+    FirstBitTerminalPacketAtomDefectCorrectionCertificate atoms defectVector crossCorrection pairDefect
+  antiCancellation :
+    FirstBitTerminalPacketAtomUnionAntiCancellation atoms defectVector crossCorrection unionAllowed
+
+/-- Build an atom-union anti-cancellation certificate from named assumptions. -/
+theorem firstBitTerminalPacketAtomUnionAntiCancellationCertificate_of_assumptions
+    {Target Atom : Type*} {packet : Finset Target} {atoms : Finset Atom}
+    {atomSupport : Atom → Finset Target}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    {unionAllowed : Finset Atom → Prop}
+    (hsupport : ∀ atom : Atom, atom ∈ atoms → atomSupport atom ⊆ packet)
+    (hdisjoint : FirstBitTerminalPacketAtomDisjointSupports atoms atomSupport)
+    (hdefect :
+      FirstBitTerminalPacketAtomDefectCorrectionCertificate atoms defectVector crossCorrection pairDefect)
+    (hanti :
+      FirstBitTerminalPacketAtomUnionAntiCancellation atoms defectVector crossCorrection unionAllowed) :
+    FirstBitTerminalPacketAtomUnionAntiCancellationCertificate packet atoms atomSupport defectVector
+      crossCorrection pairDefect unionAllowed where
+  supportSubsetPacket := hsupport
+  disjointSupports := hdisjoint
+  defectCorrection := hdefect
+  antiCancellation := hanti
+
+/-- Project support inclusion for one atom in an anti-cancellation certificate. -/
+theorem FirstBitTerminalPacketAtomUnionAntiCancellationCertificate.support_subset_packet
+    {Target Atom : Type*} {packet : Finset Target} {atoms : Finset Atom}
+    {atomSupport : Atom → Finset Target}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    {unionAllowed : Finset Atom → Prop}
+    (h : FirstBitTerminalPacketAtomUnionAntiCancellationCertificate packet atoms atomSupport
+      defectVector crossCorrection pairDefect unionAllowed)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    atomSupport atom ⊆ packet :=
+  h.supportSubsetPacket atom hatom
+
+/-- Project disjointness of two distinct atom supports. -/
+theorem FirstBitTerminalPacketAtomUnionAntiCancellationCertificate.disjoint_of_ne
+    {Target Atom : Type*} {packet : Finset Target} {atoms : Finset Atom}
+    {atomSupport : Atom → Finset Target}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    {unionAllowed : Finset Atom → Prop}
+    (h : FirstBitTerminalPacketAtomUnionAntiCancellationCertificate packet atoms atomSupport
+      defectVector crossCorrection pairDefect unionAllowed)
+    {left right : Atom} (hleft : left ∈ atoms) (hright : right ∈ atoms) (hne : left ≠ right) :
+    Disjoint (atomSupport left) (atomSupport right) :=
+  h.disjointSupports left hleft right hright hne
+
+/-- Project the defect-correction subcertificate from an anti-cancellation certificate. -/
+theorem FirstBitTerminalPacketAtomUnionAntiCancellationCertificate.to_defectCorrection
+    {Target Atom : Type*} {packet : Finset Target} {atoms : Finset Atom}
+    {atomSupport : Atom → Finset Target}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    {unionAllowed : Finset Atom → Prop}
+    (h : FirstBitTerminalPacketAtomUnionAntiCancellationCertificate packet atoms atomSupport
+      defectVector crossCorrection pairDefect unionAllowed) :
+    FirstBitTerminalPacketAtomDefectCorrectionCertificate atoms defectVector crossCorrection pairDefect :=
+  h.defectCorrection
+
+/-- Apply anti-cancellation to a nonempty allowed union of atoms. -/
+theorem FirstBitTerminalPacketAtomUnionAntiCancellationCertificate.not_unionDefect_modEq_zero
+    {Target Atom : Type*} {packet : Finset Target} {atoms subatoms : Finset Atom}
+    {atomSupport : Atom → Finset Target}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    {unionAllowed : Finset Atom → Prop}
+    (h : FirstBitTerminalPacketAtomUnionAntiCancellationCertificate packet atoms atomSupport
+      defectVector crossCorrection pairDefect unionAllowed)
+    (hsub : subatoms ⊆ atoms) (hne : subatoms.Nonempty) (hallowed : unionAllowed subatoms) :
+    ¬ (FirstBitTerminalPacketAtomUnionDefect defectVector crossCorrection subatoms ≡ 0 [MOD 4]) :=
+  h.antiCancellation subatoms hsub hne hallowed
+
+/-- Family-level package: each atom has a size-refined certificate and unions cannot cancel defects. -/
+structure FirstBitTerminalSizeRefinedPacketAtomFamilyCertificate
+    {Target Atom : Type*} (packet : Finset Target) (atoms : Finset Atom)
+    (atomSupport : Atom → Finset Target) (targetTrace : Target → Fin 4)
+    (atomTrace : Atom → Fin 4) (atomSize packetMultiplier packetPeriod : Atom → ℕ)
+    (subpacketWitness : Finset Target → Prop) (defect : Finset Target → ℕ)
+    (defectVector : FirstBitTerminalPacketAtomDefectVector Atom)
+    (crossCorrection pairDefect : Atom → Atom → ℕ)
+    (unionAllowed : Finset Atom → Prop) : Prop where
+  atomCertificate : ∀ atom : Atom, atom ∈ atoms →
+    FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect
+  unionAntiCancellation :
+    FirstBitTerminalPacketAtomUnionAntiCancellationCertificate packet atoms atomSupport defectVector
+      crossCorrection pairDefect unionAllowed
+
+/-- Build a size-refined packet atom family certificate from its atom and union pieces. -/
+theorem firstBitTerminalSizeRefinedPacketAtomFamilyCertificate_of_parts
+    {Target Atom : Type*} {packet : Finset Target} {atoms : Finset Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    {unionAllowed : Finset Atom → Prop}
+    (hatoms : ∀ atom : Atom, atom ∈ atoms →
+      FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+        atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect)
+    (hunion :
+      FirstBitTerminalPacketAtomUnionAntiCancellationCertificate packet atoms atomSupport defectVector
+        crossCorrection pairDefect unionAllowed) :
+    FirstBitTerminalSizeRefinedPacketAtomFamilyCertificate packet atoms atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect defectVector
+      crossCorrection pairDefect unionAllowed where
+  atomCertificate := hatoms
+  unionAntiCancellation := hunion
+
+/-- Project one size-refined atom certificate from a family certificate. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomFamilyCertificate.atom_certificate
+    {Target Atom : Type*} {packet : Finset Target} {atoms : Finset Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    {unionAllowed : Finset Atom → Prop}
+    (h : FirstBitTerminalSizeRefinedPacketAtomFamilyCertificate packet atoms atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect defectVector
+      crossCorrection pairDefect unionAllowed)
+    {atom : Atom} (hatom : atom ∈ atoms) :
+    FirstBitTerminalSizeRefinedPacketAtomCertificate packet atom atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect :=
+  h.atomCertificate atom hatom
+
+/-- Project union anti-cancellation from a family certificate. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomFamilyCertificate.to_unionAntiCancellation
+    {Target Atom : Type*} {packet : Finset Target} {atoms : Finset Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    {unionAllowed : Finset Atom → Prop}
+    (h : FirstBitTerminalSizeRefinedPacketAtomFamilyCertificate packet atoms atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect defectVector
+      crossCorrection pairDefect unionAllowed) :
+    FirstBitTerminalPacketAtomUnionAntiCancellationCertificate packet atoms atomSupport defectVector
+      crossCorrection pairDefect unionAllowed :=
+  h.unionAntiCancellation
+
+/-- Apply family anti-cancellation to a nonempty allowed union. -/
+theorem FirstBitTerminalSizeRefinedPacketAtomFamilyCertificate.not_unionDefect_modEq_zero
+    {Target Atom : Type*} {packet : Finset Target} {atoms subatoms : Finset Atom}
+    {atomSupport : Atom → Finset Target} {targetTrace : Target → Fin 4}
+    {atomTrace : Atom → Fin 4} {atomSize packetMultiplier packetPeriod : Atom → ℕ}
+    {subpacketWitness : Finset Target → Prop} {defect : Finset Target → ℕ}
+    {defectVector : FirstBitTerminalPacketAtomDefectVector Atom}
+    {crossCorrection pairDefect : Atom → Atom → ℕ}
+    {unionAllowed : Finset Atom → Prop}
+    (h : FirstBitTerminalSizeRefinedPacketAtomFamilyCertificate packet atoms atomSupport targetTrace
+      atomTrace atomSize packetMultiplier packetPeriod subpacketWitness defect defectVector
+      crossCorrection pairDefect unionAllowed)
+    (hsub : subatoms ⊆ atoms) (hne : subatoms.Nonempty) (hallowed : unionAllowed subatoms) :
+    ¬ (FirstBitTerminalPacketAtomUnionDefect defectVector crossCorrection subatoms ≡ 0 [MOD 4]) :=
+  h.unionAntiCancellation.not_unionDefect_modEq_zero hsub hne hallowed
+
+/-- Selector names for the size-refined packet-atom frontier. -/
+inductive FirstBitTerminalPacketAtomFrontierSelector : Type
+  | sizeRefinedAtoms
+  | defectCorrection
+  | unionAntiCancellation
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalPacketAtomFrontierSelector
+
+/-- The proof obligation attached to each packet-atom frontier selector. -/
+def obligation
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation : Prop) :
+    FirstBitTerminalPacketAtomFrontierSelector → Prop
+  | sizeRefinedAtoms => sizeRefinedAtoms
+  | defectCorrection => defectCorrection
+  | unionAntiCancellation => unionAntiCancellation
+
+end FirstBitTerminalPacketAtomFrontierSelector
+
+/-- Combined packet-atom frontier imports: size-refined atoms, defect correction, and anti-cancellation. -/
+structure FirstBitTerminalPacketAtomFrontierImports
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation : Prop) : Prop where
+  sizeRefinedAtomsCert : sizeRefinedAtoms
+  defectCorrectionCert : defectCorrection
+  unionAntiCancellationCert : unionAntiCancellation
+
+/-- Build the packet-atom frontier import surface from independent parts. -/
+theorem firstBitTerminalPacketAtomFrontierImports_of_parts
+    {sizeRefinedAtoms defectCorrection unionAntiCancellation : Prop}
+    (hsize : sizeRefinedAtoms) (hdefect : defectCorrection) (hanti : unionAntiCancellation) :
+    FirstBitTerminalPacketAtomFrontierImports sizeRefinedAtoms defectCorrection
+      unionAntiCancellation where
+  sizeRefinedAtomsCert := hsize
+  defectCorrectionCert := hdefect
+  unionAntiCancellationCert := hanti
+
+/-- Project the size-refined atom component from packet-atom frontier imports. -/
+theorem FirstBitTerminalPacketAtomFrontierImports.to_sizeRefinedAtoms
+    {sizeRefinedAtoms defectCorrection unionAntiCancellation : Prop}
+    (h : FirstBitTerminalPacketAtomFrontierImports sizeRefinedAtoms defectCorrection
+      unionAntiCancellation) :
+    sizeRefinedAtoms :=
+  h.sizeRefinedAtomsCert
+
+/-- Project the defect-correction component from packet-atom frontier imports. -/
+theorem FirstBitTerminalPacketAtomFrontierImports.to_defectCorrection
+    {sizeRefinedAtoms defectCorrection unionAntiCancellation : Prop}
+    (h : FirstBitTerminalPacketAtomFrontierImports sizeRefinedAtoms defectCorrection
+      unionAntiCancellation) :
+    defectCorrection :=
+  h.defectCorrectionCert
+
+/-- Project the anti-cancellation component from packet-atom frontier imports. -/
+theorem FirstBitTerminalPacketAtomFrontierImports.to_unionAntiCancellation
+    {sizeRefinedAtoms defectCorrection unionAntiCancellation : Prop}
+    (h : FirstBitTerminalPacketAtomFrontierImports sizeRefinedAtoms defectCorrection
+      unionAntiCancellation) :
+    unionAntiCancellation :=
+  h.unionAntiCancellationCert
+
+/-- Project the obligation named by a packet-atom frontier selector. -/
+theorem FirstBitTerminalPacketAtomFrontierImports.obligation
+    {sizeRefinedAtoms defectCorrection unionAntiCancellation : Prop}
+    (h : FirstBitTerminalPacketAtomFrontierImports sizeRefinedAtoms defectCorrection
+      unionAntiCancellation)
+    (selector : FirstBitTerminalPacketAtomFrontierSelector) :
+    FirstBitTerminalPacketAtomFrontierSelector.obligation sizeRefinedAtoms defectCorrection
+      unionAntiCancellation selector := by
+  cases selector
+  · exact h.sizeRefinedAtomsCert
+  · exact h.defectCorrectionCert
+  · exact h.unionAntiCancellationCert
+
+/-- Selectors for the combined packet-atom and principal-bucket shadow import bundle. -/
+inductive FirstBitTerminalPacketAtomPrincipalBucketShadowSelector : Type
+  | packetAtomFrontier
+  | principalBucketShadowFrontier
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalPacketAtomPrincipalBucketShadowSelector
+
+/-- The proof obligation attached to each packet-atom/principal-bucket shadow selector. -/
+def obligation (packetAtomFrontier principalBucketShadowFrontier : Prop) :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowSelector → Prop
+  | packetAtomFrontier => packetAtomFrontier
+  | principalBucketShadowFrontier => principalBucketShadowFrontier
+
+end FirstBitTerminalPacketAtomPrincipalBucketShadowSelector
+
+/--
+Combined import surface tying size-refined packet atoms and defect anti-cancellation to the existing
+principal-bucket shadow frontier.  Both sides remain explicit assumptions.
+-/
+structure FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+    (packetAtomFrontier principalBucketShadowFrontier : Prop) : Prop where
+  packetAtomFrontierCert : packetAtomFrontier
+  principalBucketShadowFrontierCert : principalBucketShadowFrontier
+
+/-- Build the packet-atom/principal-bucket shadow import bundle from its two parts. -/
+theorem firstBitTerminalPacketAtomPrincipalBucketShadowImports_of_parts
+    {packetAtomFrontier principalBucketShadowFrontier : Prop}
+    (hpacket : packetAtomFrontier) (hshadow : principalBucketShadowFrontier) :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowImports packetAtomFrontier
+      principalBucketShadowFrontier where
+  packetAtomFrontierCert := hpacket
+  principalBucketShadowFrontierCert := hshadow
+
+/-- Project packet-atom frontier imports from the combined packet-atom/shadow bundle. -/
+theorem FirstBitTerminalPacketAtomPrincipalBucketShadowImports.to_packetAtomFrontier
+    {packetAtomFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalPacketAtomPrincipalBucketShadowImports packetAtomFrontier
+      principalBucketShadowFrontier) :
+    packetAtomFrontier :=
+  h.packetAtomFrontierCert
+
+/-- Project principal-bucket shadow imports from the combined packet-atom/shadow bundle. -/
+theorem FirstBitTerminalPacketAtomPrincipalBucketShadowImports.to_principalBucketShadowFrontier
+    {packetAtomFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalPacketAtomPrincipalBucketShadowImports packetAtomFrontier
+      principalBucketShadowFrontier) :
+    principalBucketShadowFrontier :=
+  h.principalBucketShadowFrontierCert
+
+/-- Project the obligation named by a packet-atom/principal-bucket shadow selector. -/
+theorem FirstBitTerminalPacketAtomPrincipalBucketShadowImports.obligation
+    {packetAtomFrontier principalBucketShadowFrontier : Prop}
+    (h : FirstBitTerminalPacketAtomPrincipalBucketShadowImports packetAtomFrontier
+      principalBucketShadowFrontier)
+    (selector : FirstBitTerminalPacketAtomPrincipalBucketShadowSelector) :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowSelector.obligation packetAtomFrontier
+      principalBucketShadowFrontier selector := by
+  cases selector
+  · exact h.packetAtomFrontierCert
+  · exact h.principalBucketShadowFrontierCert
+
+/-- Add packet-atom frontier imports to the co-cut/mixed-core/principal-bucket shadow bundle. -/
+structure FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports
+    (coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier : Prop) : Prop where
+  shadowImports :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier
+  packetAtomFrontierCert : packetAtomFrontier
+
+/-- Build the co-cut/mixed-core/principal-bucket shadow plus packet-atom bundle. -/
+theorem firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports_of_parts
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier : Prop}
+    (hbase : coCutMixedPrincipalImports) (hshadow : principalBucketShadowFrontier)
+    (hpacket : packetAtomFrontier) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier where
+  shadowImports :=
+    firstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports_of_parts
+      hbase hshadow
+  packetAtomFrontierCert := hpacket
+
+/-- Forget packet-atom fields and recover the principal-bucket shadow bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports.to_shadowImports
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier) :
+    FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier :=
+  h.shadowImports
+
+/-- Project the packet-atom frontier from the co-cut/mixed-core/principal-bucket shadow bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports.to_packetAtomFrontier
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier) :
+    packetAtomFrontier :=
+  h.packetAtomFrontierCert
+
+/-- Project the base co-cut/mixed-core/principal-bucket imports from the enriched bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports.to_baseImports
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier) :
+    coCutMixedPrincipalImports :=
+  h.shadowImports.to_baseImports
+
+/-- Project the principal-bucket shadow frontier from the enriched bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports.to_shadowFrontier
+    {coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier : Prop}
+    (h : FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketShadowPacketAtomImports
+      coCutMixedPrincipalImports principalBucketShadowFrontier packetAtomFrontier) :
+    principalBucketShadowFrontier :=
+  h.shadowImports.to_shadowFrontier
+
 /-- Co-cut/self-layer plus mixed target-core imports bundled with principal-bucket frontier imports. -/
 structure FirstBitTerminalCoCutSelfLayerMixedTargetCorePrincipalBucketImports
     {Old Shadow Target Bucket RowSig CoRowSig : Type*}
