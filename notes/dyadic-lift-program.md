@@ -846,6 +846,14 @@ In deletion form, for `D` the removed layer, this asks for
 large-complement deletion equation.
 Splitting this congruence gives the Gallai parity co-cut equation plus the centered cut-pair parity
 equation on the same deletion layer, so the carry line is the only remaining unsynchronized bit.
+The equivalent pruning form fixes `c` and repeatedly deletes every vertex violating
+`deg_D(v)==deg_H(v)-c mod 4`; a terminal bucket is exactly one in which every such pruning process
+avalanches down to at most `m` retained vertices.
+Equivalently, the complement iteration keeps only vertices whose current induced degree is `c mod 4`.
+The remaining theorem is that some induced chamber has a mod-`4` residue-core larger than `m`.
+Terminal buckets therefore have a hereditary four-residue degeneracy certificate: for each residue `c`,
+every induced chamber can delete all but at most `m` vertices through current degrees not equal to `c`.
+The formulation is self-dual under complement, with residue shift `c -> |S|-1-c` on a retained set `S`.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

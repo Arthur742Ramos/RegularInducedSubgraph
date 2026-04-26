@@ -9708,6 +9708,59 @@ equation for the same deletion layer.  Thus the terminal principal bucket is exa
 co-cut selector for the graph-neighbour parity and the cut-pair parity.  Any proof that selects `D` by
 only the first line merely produces a parity-regular retained set; it has not synchronized the carry bit.
 
+The deletion equation also has a canonical pruning dynamics.  Fix `c in Z/4Z` and an initial deletion set
+`D_0`.  Define
+
+```text
+D_{t+1}=D_t union {v notin D_t : deg_{D_t}(v) != deg_H(v)-c [MOD 4]}.
+```
+
+The retained sets `S_t=V(H)\D_t` are nested.  If the process stabilizes at `D_infty` with
+`|S_infty|>m`, then `S_infty` is a principal selector of residue `c`.  Hence a terminal bucket has the
+following avalanche property:
+
+```text
+for every c and every D_0, the pruning closure leaves |V(H)\D_infty| <= m.
+```
+
+This is stronger than the finite layer-refinement obstruction.  The usual Gallai start is the first
+parity line of this pruning process; terminality says that every attempt to repair the carry by deleting
+violators must avalanche through all but `m` vertices.
+
+In complement form the same dynamics is the residue-core peeling
+
+```text
+S_{t+1}={v in S_t : deg_{H[S_t]}(v)==c [MOD 4]}.
+```
+
+Indeed `deg_{D_t}(v)=deg_H(v)-deg_{H[S_t]}(v)`.  Thus the final principal selector is equivalent to the
+existence, for some induced starting chamber `S_0` and residue `c`, of a mod-`4` degree-`c` core larger
+than `m`.  A terminal bucket is therefore mod-`4` core-degenerate in every residue: every induced chamber
+has all four residue-cores of size at most `m`.
+
+Equivalently, for every induced chamber `U` and residue `c`, there is an ordering of all but at most `m`
+vertices of `U`,
+
+```text
+u_1,u_2,...,u_{|U|-m'},
+```
+
+where `m'<=m`, such that `u_i` has degree not congruent to `c` in the current induced graph on
+`U\{u_1,...,u_{i-1}\}`.  This is the mod-`4` analogue of a degeneracy ordering, but with the forbidden
+degree class depending on `c`.  Therefore any minimal terminal bucket carries four hereditary elimination
+orders, one avoiding each residue class.
+
+The residue-core formulation is self-dual.  For any retained set `S`,
+
+```text
+deg_{\overline H[S]}(v)=|S|-1-deg_{H[S]}(v).
+```
+
+Thus `H[S]` has constant residue `c` modulo `4` if and only if the complement bucket has constant residue
+`|S|-1-c` modulo `4` on the same set.  All terminal assertions above are therefore complement-invariant:
+row-twin and co-twin exits, dense and codense exits, and residue-core degeneracy must hold on both sides
+with the same threshold `m`.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

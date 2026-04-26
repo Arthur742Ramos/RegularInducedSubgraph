@@ -1788,6 +1788,14 @@ In deletion form this is `deg_D(v)==deg_H(v)-c mod 4` on all retained vertices, 
 layer.
 Bitwise this is Gallai's co-cut parity equation plus the centered cut-pair carry equation on the same
 deletion layer.
+In pruning form, repeatedly delete vertices violating this equation for a fixed residue `c`; any stable
+complement larger than `m` closes, so a terminal bucket forces every such process to avalanche below
+scale `m`.
+Equivalently, iterating `S -> {v in S: deg_{H[S]}(v)==c mod 4}` never leaves a stable core larger than
+`m` for any residue or induced starting chamber.
+Equivalently again, for each residue every induced chamber has an elimination ordering deleting all but
+at most `m` vertices through current degrees avoiding that residue.
+The formulation is complement-self-dual, shifting the retained residue from `c` to `|S|-1-c`.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

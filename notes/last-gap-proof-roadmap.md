@@ -1806,7 +1806,11 @@ What remains justified after audit is:
       residues and leaves an internal principal-submatrix mod-`4` selector on that cut-homogeneous bucket;
       equivalently, a deletion layer `D` must satisfy `deg_D(v)==deg_H(v)-c mod 4` on every retained
       vertex, i.e. the Gallai parity co-cut equation plus the centered cut-pair carry equation on the same
-      support, so terminal buckets are rigid against all large-complement deletion equations;
+      support; in pruning form, repeatedly deleting violators must avalanche below scale `m` for every
+      residue and initial deletion set, equivalently every induced chamber has all four mod-`4`
+      residue-cores of size at most `m`, equivalently four hereditary elimination orders deleting through
+      current degrees avoiding each residue; the whole formulation is complement-self-dual with residue
+      shift `c -> |S|-1-c`, so terminal buckets are rigid against all large-complement deletion equations;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

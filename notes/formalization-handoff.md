@@ -2164,6 +2164,19 @@ Recommended attack:
     Add the bit split: the same equation is equivalent to the Gallai parity equation for `deg_D(v)` and
     the centered cut-pair parity equation
     `#{ {x,y} subset D : vx,vy in E(H) } == floor((deg_H(v)-c)/2) mod 2` on the same retained support.
+    Formalize the pruning closure: starting from `D_0`, repeatedly add every retained violator of
+    `deg_D(v)==deg_H(v)-c mod 4`; if the stable complement has size greater than `m`, it is a selector.
+    Terminal principal buckets are therefore precisely buckets where every residue and every initial
+    deletion set avalanches to a complement of size at most `m`.
+    Add the equivalent complement-side residue-core formulation
+    `S_{t+1}={v in S_t : deg_{H[S_t]}(v)==c mod 4}`; terminality means every induced starting chamber has
+    all four stable residue-cores of size at most `m`.
+    Add the equivalent elimination-order certificate: for each induced chamber `U` and residue `c`, all
+    but at most `m` vertices of `U` can be ordered so that each deleted vertex has current degree not
+    congruent to `c mod 4`.
+    Add complement self-duality:
+    `deg_complement[S](v)=|S|-1-deg_H[S](v)`, so a residue-`c` selector in `H` is a
+    residue-`|S|-1-c` selector in the complement on the same support.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

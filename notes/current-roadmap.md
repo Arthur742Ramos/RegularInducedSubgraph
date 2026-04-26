@@ -5070,6 +5070,16 @@ large-complement deletion equation.
 Bitwise, this is the simultaneous co-cut system consisting of the Gallai parity equation for `deg_D(v)`
 and the centered pair-neighbour equation counting unordered pairs in `N(v) cap D`; the second line is the
 unsynchronized carry bit.
+Equivalently, for every residue `c` and initial deletion set `D_0`, the pruning rule deleting every
+retained vertex with `deg_D(v)!=deg_H(v)-c mod 4` must avalanche until at most `m` vertices remain;
+otherwise the stable retained set is the desired selector.
+In complement form this is the residue-core map
+`S -> {v in S : deg_{H[S]}(v)==c mod 4}`.  Terminal buckets are exactly those whose every induced chamber
+has all four mod-`4` residue-cores of size at most `m`.
+Equivalently, every induced chamber has four elimination orders deleting all but at most `m` vertices,
+where the order for residue `c` deletes only vertices whose current degree is not `c mod 4`.
+The selector condition is complement-self-dual because complementing shifts the residue on `S` by
+`|S|-1-c`; every terminal core/deletion assertion must therefore hold in both graph and complement.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and
