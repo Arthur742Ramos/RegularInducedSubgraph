@@ -8869,32 +8869,33 @@ for every graph-compatible export.  The exact Davenport-top case is the special 
 `H_X=h_X` is the coordinate sum on the basis box `0<=a_i<=3`.  Near-top boundary stability is thus needed
 only to lower-bound `H_X` on many export values; the exchange inequality itself is already exact.
 
-In the basis-with-holes regime this lower bound is immediate.  Suppose an inverse theorem has placed
-`X` inside the exact box `e_1^3...e_r^3` with `rho` missing boundary copies.  Then every exact-box
-representative of value `g` loses at most `rho` vertices after intersecting with `X`, so
+In the basis-with-holes regime the correct statement is capacity-restricted, not an effective-deficit
+loss.  Suppose `X` contains `c_i<=3` copies of `e_i`, and write the exact-box representative of
+`g` as `g=sum_i a_i e_i` with `0<=a_i<=3`.  Then
 
 ```text
-H_X(g) >= h_box(g)-rho.
+H_X(g)=sum_i a_i        if a_i<=c_i for every i,
+H_X(g)=-infty           otherwise.
 ```
 
-Consequently terminality implies the exact-top inequalities with effective deficit `d+rho`:
+A missing copy can make a residue unavailable; it does not merely lower the height of the same residue.
+Thus holes are compatibility restrictions.  For every available export value, terminality gives the
+same exact-top inequality
 
 ```text
-h_box(sigma(Y))-|Y| <= d+rho
+h_box(sigma(Y))-|Y| <= d,
 ```
 
-for every graph-compatible export `Y`.  The carry inequality and the complementary-cut bound therefore
-survive verbatim after replacing `d` by `d+rho`.  Thus near-top inverse Davenport is only needed to
-produce a basis box with small hole count; once that is known, the boundary arithmetic is already
-absorbed into the same weighted trace calculus.
+while an unavailable value is already boundary-incompatible.  Consequently the carry inequality and the
+complementary-cut bound survive verbatim on two-sided available cuts, with no `rho` error term.
 
-In particular the four-block collapse survives at effective deficit one.  Let
-`d_eff=d+rho<=1`, and suppose a minimal old-balanced four-block has all singleton and pair cuts
-two-sided-compatible in the basis box.  The complementary-cut bound gives support at most one for every
-singleton and pair cut.  Hence all four old-coordinate values lie on one coordinate.  The singleton
-height inequality gives coefficients only in `{1,2}`; since four coefficients in `{1,2}` sum to `0 mod 4`
-without a proper zero-sum subblock only when all four are `1`, the block is again the positive atom
-`e_i^4`.  Thus a one-hole/one-deficit near-top boundary still has no new four-block coordinate atom.
+In particular the four-block collapse survives on the available part.  If `d<=1` and a minimal
+old-balanced four-block has all singleton and pair cuts two-sided-compatible and available in the
+capacity box, the complementary-cut bound gives support at most one for every singleton and pair cut.
+Hence all four old-coordinate values lie on one coordinate.  The singleton height inequality gives
+coefficients only in `{1,2}`; since four coefficients in `{1,2}` sum to `0 mod 4` without a proper
+zero-sum subblock only when all four are `1`, the block is again the positive atom `e_i^4`.  Holed
+coordinates therefore create immediate label incompatibilities rather than new four-block atoms.
 
 Thus a plausible final route is now precise: prove a stability/inverse-Davenport boundary theorem
 adapted to the value-coupled exchange.  The required input is not another zero-sum existence theorem;

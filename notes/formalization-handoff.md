@@ -2047,12 +2047,13 @@ Recommended attack:
    `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}` (or unavailable).  For every graph-compatible export `Y`,
    terminality gives `H_X(sigma(Y))-|Y|<=m-|B|`; exact Davenport top is the special case `H_X=h_X`.
    Near-top stability lemmas should provide lower bounds on this height function.
-   Formalize the basis-with-holes transfer: if `X` is contained in an exact basis box with `rho` missing
-   copies, then `H_X(g)>=h_box(g)-rho`; terminality gives
-   `h_box(sigma(Y))-|Y|<=m-|B|+rho`.  Therefore all exact-top carry and cut inequalities remain valid
-   with effective deficit `d+rho`.
-   Add the small-effective-deficit corollary: if `d+rho<=1` and a minimal four-block has all singleton
-   and pair cuts two-sided-compatible, then all four values lie on one coordinate, coefficients are in
+   Formalize the corrected basis-with-holes transfer: if `X` is a coordinate subbox with capacities
+   `c_i<=3`, then for `g=sum a_i e_i`, `0<=a_i<=3`, one has `H_X(g)=sum a_i` when all `a_i<=c_i`, and
+   `H_X(g)` is unavailable otherwise.  There is no uniform `h_box(g)-rho` lower bound for the same
+   residue.  Exact-top carry and cut inequalities remain valid with the original deficit `d` on
+   two-sided available cuts; unavailable cuts are label-incompatible.
+   Add the available-cut corollary: if `d<=1` and a minimal four-block has all singleton and pair cuts
+   two-sided-compatible and available, then all four values lie on one coordinate, coefficients are in
    `{1,2}`, and minimality forces the positive atom `e_i^4`.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph

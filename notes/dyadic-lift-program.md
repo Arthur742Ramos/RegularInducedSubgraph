@@ -1589,13 +1589,14 @@ For a non-exact boundary, replace `h_X` by the maximum available import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`.  Terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every graph-compatible export.  The exact top is just the case
 `H_X=h_X`; near-top inverse Davenport input is needed only to give useful lower bounds on `H_X`.
-If stability places `X` in an exact basis box with `rho` missing copies, then
-`H_X(g)>=h_box(g)-rho`, so all exact-top inequalities hold with effective deficit `d+rho`.  In
-particular the carry inequality and the complementary-cut support bound survive unchanged after replacing
-`d` by `d+rho`.
-Therefore the four-block coordinate collapse survives for `d+rho<=1`: two-sided-compatible singleton and
-pair cuts force one-coordinate support, the singleton height bound leaves coefficients in `{1,2}`, and
-minimality plus total sum zero forces the positive atom `e_i^4`.
+If stability places `X` in a coordinate subbox with capacities `c_i<=3`, then
+`H_X(sum a_i e_i)=sum a_i` exactly when `a_i<=c_i` for all `i`, and is unavailable otherwise.  Holes
+therefore delete residues rather than contributing a uniform `rho` height loss.  On available values the
+exact-top inequalities hold with the original deficit `d`; unavailable values are already
+boundary-incompatible.
+Therefore the four-block coordinate collapse survives on two-sided available cuts for `d<=1`: singleton
+and pair cuts force one-coordinate support, the singleton height bound leaves coefficients in `{1,2}`,
+and minimality plus total sum zero forces the positive atom `e_i^4`.
 
 So the remaining input is an inverse/stability theorem for value-coupled zero-sum-free boundaries,
 not another ordinary zero-sum extraction.
