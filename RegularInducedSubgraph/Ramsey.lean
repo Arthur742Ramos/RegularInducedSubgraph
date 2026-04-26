@@ -10490,6 +10490,298 @@ theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_boun
     · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl hb5)))))
   · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr hupper)))))
 
+/--
+Central exact-`42` singleton-cap bridge: the five central bands can be consumed only
+through their singleton caps, while retaining the top-band triple-overlap witness.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_central_interval_singleton_cap_bands
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hcentral :
+      33 ≤
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 71) :
+    (33 ≤
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 40 ∧
+        (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 31) ∨
+    (41 ≤
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 48 ∧
+        (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 30) ∨
+    (49 ≤
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 56 ∧
+        (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 29) ∨
+    (57 ≤
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 64 ∧
+        (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 28) ∨
+    (65 ≤
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 71 ∧
+        (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27 ∧
+        ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+          3 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) := by
+  classical
+  have hbands :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_central_interval_distribution_bands_with_singleton_caps
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hcentral
+  rcases hbands with hb1 | hb2 | hb3 | hb4 | hb5
+  · rcases hb1 with ⟨hlo, hhi, _hhigh, hones⟩
+    exact Or.inl ⟨hlo, hhi, hones⟩
+  · rcases hb2 with ⟨hlo, hhi, _hhigh, hones⟩
+    exact Or.inr (Or.inl ⟨hlo, hhi, hones⟩)
+  · rcases hb3 with ⟨hlo, hhi, _hhigh, hones⟩
+    exact Or.inr (Or.inr (Or.inl ⟨hlo, hhi, hones⟩))
+  · rcases hb4 with ⟨hlo, hhi, _hhigh, hones⟩
+    exact Or.inr (Or.inr (Or.inr (Or.inl ⟨hlo, hhi, hones⟩)))
+  · rcases hb5 with ⟨hlo, hhi, _hhigh, hones, htriple⟩
+    exact Or.inr (Or.inr (Or.inr (Or.inr ⟨hlo, hhi, hones, htriple⟩)))
+
+/--
+Central exact-`42` case eliminator: any central band whose singleton count exceeds
+its band cap reduces to one of the named singleton-count contradiction surfaces.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_central_band_singleton_overflow
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          ((33 ≤
+                Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+              Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 40 ∧
+              32 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x =>
+                  (((s.erase (v : α)).erase x).filter
+                    (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card) ∨
+            (41 ≤
+                Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+              Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 48 ∧
+              31 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x =>
+                  (((s.erase (v : α)).erase x).filter
+                    (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card) ∨
+            (49 ≤
+                Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+              Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 56 ∧
+              30 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x =>
+                  (((s.erase (v : α)).erase x).filter
+                    (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card) ∨
+            (57 ≤
+                Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+              Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 64 ∧
+              29 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x =>
+                  (((s.erase (v : α)).erase x).filter
+                    (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card) ∨
+            (65 ≤
+                Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+              Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+                  (fun x =>
+                    (((s.erase (v : α)).erase x).filter
+                      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 71 ∧
+              28 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+                (fun x =>
+                  (((s.erase (v : α)).erase x).filter
+                    (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card))) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  rcases hcert with ⟨v, hdegv, hcase⟩
+  rcases hcase with hcase | hcase | hcase | hcase | hcase
+  · rcases hcase with ⟨hlo, _hhi, hsingletonsGe⟩
+    exact
+      ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_thirty_three_and_singleton_count_ge_thirty_two
+        (G := G) (s := s) hcard hdegree ⟨v, hdegv, hlo, hsingletonsGe⟩
+  · rcases hcase with ⟨hlo, _hhi, hsingletonsGe⟩
+    exact
+      ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_forty_one_and_singleton_count_ge_thirty_one
+        (G := G) (s := s) hcard hdegree ⟨v, hdegv, hlo, hsingletonsGe⟩
+  · rcases hcase with ⟨hlo, _hhi, hsingletonsGe⟩
+    exact
+      ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_forty_nine_and_singleton_count_ge_thirty
+        (G := G) (s := s) hcard hdegree ⟨v, hdegv, hlo, hsingletonsGe⟩
+  · rcases hcase with ⟨hlo, _hhi, hsingletonsGe⟩
+    exact
+      ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_fifty_seven_and_singleton_count_ge_twenty_nine
+        (G := G) (s := s) hcard hdegree ⟨v, hdegv, hlo, hsingletonsGe⟩
+  · rcases hcase with ⟨hlo, _hhi, hsingletonsGe⟩
+    exact
+      ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_sixty_five_and_singleton_count_ge_twenty_eight
+        (G := G) (s := s) hcard hdegree ⟨v, hdegv, hlo, hsingletonsGe⟩
+
+/--
+Top exact-`42` band eliminator: in the `≥ 65` band, either too many singleton
+contributors or the absence of a triple-overlap witness is a named contradiction.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_top_band_bad_certificate
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          65 ≤
+            Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+          (28 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ∨
+            ¬ ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+              3 ≤ (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  rcases hcert with ⟨v, hdegv, hsumGe, hbad⟩
+  rcases hbad with hsingletonsGe | hnoTriple
+  · exact
+      ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_sixty_five_and_singleton_count_ge_twenty_eight
+        (G := G) (s := s) hcard hdegree ⟨v, hdegv, hsumGe, hsingletonsGe⟩
+  · exact
+      ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_sixty_five_and_no_triple_overlap
+        (G := G) (s := s) hcard ⟨v, hdegv, hsumGe, hnoTriple⟩
+
+/--
+Upper-bound exact-`42` eliminator: at the `72` boundary, singleton overflow and a
+one-or-zero triple-overlap count both reduce to existing contradiction surfaces.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_upper_boundary_bad_certificate
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 72 ∧
+          (28 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+              (fun x =>
+                (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ∨
+            (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+              (fun x =>
+                3 ≤ (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card ≤ 1)) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  rcases hcert with ⟨v, hdegv, hsumEq, hbad⟩
+  rcases hbad with hsingletonsGe | htripleLe
+  · have hsumGe :
+        65 ≤
+          Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) := by
+      omega
+    exact
+      ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_ge_sixty_five_and_singleton_count_ge_twenty_eight
+        (G := G) (s := s) hcard hdegree ⟨v, hdegv, hsumGe, hsingletonsGe⟩
+  · exact
+      ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_common_neighbor_sum_eq_seventy_two_and_triple_overlap_count_le_one
+        (G := G) (s := s) hcard hdegree ⟨v, hdegv, hsumEq, htripleLe⟩
+
 /-- Arithmetic ledger for the `R(3,10) <= 42` degree-window reduction. -/
 theorem ramseyThreeTenDegreeWindow_reduction_gap :
     51 - 42 = 9 ∧
