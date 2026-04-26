@@ -23396,6 +23396,792 @@ theorem FirstBitTerminalNearThresholdMixedSelectorFrontier.to_remainingMixedSele
 end FirstBitTerminalNearThresholdMixedSelectorFrontier
 
 /--
+Full-minor critical filtered-cover frontier for the terminal first-bit cover.  The displayed
+`fullActiveCoordinates`/`fullZeroFilter` pair is the unreduced endpoint; every proper shadow is
+kept as an explicit filtered-cover assumption, while the active-cover lift-exclusion and the
+two-residue mixed-selector frontiers remain visible inputs.
+-/
+structure FirstBitTerminalFullMinorCriticalFilteredCoverFrontier
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    {capacityFrontier : Prop}
+    {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+    {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+    {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+    {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+    {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+    {relaxationFrontier : Prop}
+    {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+    {criticalityWitness : Coord → Prop}
+    {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+    {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+    (fullActiveCoordinates fullZeroFilter : Finset Coord)
+    (fullCapacityTable : Finset Coord → ℕ)
+    (shadowZeroFilter : Finset Coord → Finset Coord)
+    (shadowFilteredCoverFeasible : Finset Coord → Finset Coord → Prop)
+    (twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+      remainingFullMinorAssumptions : Prop) : Prop where
+  activeCoverLiftExclusionFrontierCert :
+    FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+      nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+      activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness
+  twoResidueTerminalFrontierCert : twoResidueTerminalFrontier
+  fullActive_subset_coordinates : fullActiveCoordinates ⊆ coordinates
+  fullZero_subset_zeroCoordinates : fullZeroFilter ⊆ zeroCoordinates
+  fullActive_fullZero_disjoint : Disjoint fullActiveCoordinates fullZeroFilter
+  fullMinorCriticalFilteredCoverCert : fullMinorCriticalFilteredCover
+  properShadowFeasibilityCert : properShadowFeasibility
+  properShadowFilteredCover :
+    ∀ A' Z' : Finset Coord, A' ⊆ fullActiveCoordinates → Z' ⊆ fullZeroFilter →
+      A' ∪ Z' ≠ fullActiveCoordinates ∪ fullZeroFilter →
+        Z' = shadowZeroFilter A' → shadowFilteredCoverFeasible A' Z'
+  remainingFullMinorAssumptionsCert : remainingFullMinorAssumptions
+
+/-- Build the full-minor critical filtered-cover frontier from its visible API inputs. -/
+theorem firstBitTerminalFullMinorCriticalFilteredCoverFrontier_of_frontiers
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    {capacityFrontier : Prop}
+    {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+    {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+    {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+    {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+    {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+    {relaxationFrontier : Prop}
+    {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+    {criticalityWitness : Coord → Prop}
+    {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+    {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+    {fullActiveCoordinates fullZeroFilter : Finset Coord}
+    {fullCapacityTable : Finset Coord → ℕ}
+    {shadowZeroFilter : Finset Coord → Finset Coord}
+    {shadowFilteredCoverFeasible : Finset Coord → Finset Coord → Prop}
+    {twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+      remainingFullMinorAssumptions : Prop}
+    (hactive :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness)
+    (htwoResidue : twoResidueTerminalFrontier)
+    (hfullActive : fullActiveCoordinates ⊆ coordinates)
+    (hfullZero : fullZeroFilter ⊆ zeroCoordinates)
+    (hfullDisjoint : Disjoint fullActiveCoordinates fullZeroFilter)
+    (hcritical : fullMinorCriticalFilteredCover)
+    (hproper : properShadowFeasibility)
+    (hshadows :
+      ∀ A' Z' : Finset Coord, A' ⊆ fullActiveCoordinates → Z' ⊆ fullZeroFilter →
+        A' ∪ Z' ≠ fullActiveCoordinates ∪ fullZeroFilter →
+          Z' = shadowZeroFilter A' → shadowFilteredCoverFeasible A' Z')
+    (hremaining : remainingFullMinorAssumptions) :
+    FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+      fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+      twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+      remainingFullMinorAssumptions where
+  activeCoverLiftExclusionFrontierCert := hactive
+  twoResidueTerminalFrontierCert := htwoResidue
+  fullActive_subset_coordinates := hfullActive
+  fullZero_subset_zeroCoordinates := hfullZero
+  fullActive_fullZero_disjoint := hfullDisjoint
+  fullMinorCriticalFilteredCoverCert := hcritical
+  properShadowFeasibilityCert := hproper
+  properShadowFilteredCover := hshadows
+  remainingFullMinorAssumptionsCert := hremaining
+
+section FirstBitTerminalFullMinorCriticalFilteredCoverFrontier
+
+variable {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {coverFeasible : Finset Coord → Prop}
+variable {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+  coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+  zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch : Prop}
+variable {criticalFrontier : Prop}
+variable {activeCoordinates zeroFilter : Finset Coord}
+variable {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+variable {block0 block1 block2 : Finset Coord}
+variable {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+variable {capacityFrontier : Prop}
+variable {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+variable {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+variable {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+variable {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+variable {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+variable {relaxationFrontier : Prop}
+variable {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+variable {criticalityWitness : Coord → Prop}
+variable {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+variable {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+variable {fullActiveCoordinates fullZeroFilter : Finset Coord}
+variable {fullCapacityTable : Finset Coord → ℕ}
+variable {shadowZeroFilter : Finset Coord → Finset Coord}
+variable {shadowFilteredCoverFeasible : Finset Coord → Finset Coord → Prop}
+variable {twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+  remainingFullMinorAssumptions : Prop}
+
+/-- Project the active-cover lift-exclusion frontier from the full-minor cover package. -/
+theorem FirstBitTerminalFullMinorCriticalFilteredCoverFrontier.to_activeCoverLiftExclusionFrontier
+    (h :
+      FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+        fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        remainingFullMinorAssumptions) :
+    FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+      nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+      activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness :=
+  h.activeCoverLiftExclusionFrontierCert
+
+/-- Project the filtered capacity-table frontier through the active lift-exclusion field. -/
+theorem FirstBitTerminalFullMinorCriticalFilteredCoverFrontier.to_filteredCoverCapacityTableFrontier
+    (h :
+      FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+        fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        remainingFullMinorAssumptions) :
+    FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+      zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+      smallActiveSupportAlternatives filteredDisjointCover :=
+  h.activeCoverLiftExclusionFrontierCert.to_filteredCoverCapacityTableFrontier
+
+/-- Project the two-residue terminal frontier carried alongside the cover API. -/
+theorem FirstBitTerminalFullMinorCriticalFilteredCoverFrontier.to_twoResidueTerminalFrontier
+    (h :
+      FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+        fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        remainingFullMinorAssumptions) :
+    twoResidueTerminalFrontier :=
+  h.twoResidueTerminalFrontierCert
+
+/-- Apply the proper-shadow filtered-cover criterion recorded in the full-minor package. -/
+theorem FirstBitTerminalFullMinorCriticalFilteredCoverFrontier.properShadowFilteredCover_of_eq
+    (h :
+      FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+        fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        remainingFullMinorAssumptions)
+    {A' Z' : Finset Coord} (hA : A' ⊆ fullActiveCoordinates) (hZ : Z' ⊆ fullZeroFilter)
+    (hproper : A' ∪ Z' ≠ fullActiveCoordinates ∪ fullZeroFilter)
+    (hZeq : Z' = shadowZeroFilter A') :
+    shadowFilteredCoverFeasible A' Z' :=
+  h.properShadowFilteredCover A' Z' hA hZ hproper hZeq
+
+/-- Project the remaining assumptions; this package is not a closed terminal proof by itself. -/
+theorem FirstBitTerminalFullMinorCriticalFilteredCoverFrontier.to_remainingFullMinorAssumptions
+    (h :
+      FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+        fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        remainingFullMinorAssumptions) :
+    remainingFullMinorAssumptions :=
+  h.remainingFullMinorAssumptionsCert
+
+end FirstBitTerminalFullMinorCriticalFilteredCoverFrontier
+
+/--
+Singleton-shadow collapse frontier.  This is the assumption-backed consequence of full
+minor-criticality: singleton shadows are feasible, the empty support has multiplicity at least two,
+and every active singleton support is present.  Remaining collapse assumptions are carried explicitly.
+-/
+structure FirstBitTerminalSingletonShadowCollapseFrontier
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    {capacityFrontier : Prop}
+    {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+    {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+    {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+    {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+    {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+    {relaxationFrontier : Prop}
+    {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+    {criticalityWitness : Coord → Prop}
+    {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+    {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+    (fullActiveCoordinates fullZeroFilter : Finset Coord)
+    (fullCapacityTable : Finset Coord → ℕ)
+    (shadowZeroFilter : Finset Coord → Finset Coord)
+    (shadowFilteredCoverFeasible : Finset Coord → Finset Coord → Prop)
+    (twoResidueTerminalFrontier fullMinorCriticalFilteredCover singletonShadowCollapse
+      remainingFullMinorAssumptions remainingSingletonCollapseAssumptions : Prop) : Prop where
+  fullMinorCriticalFilteredCoverFrontierCert :
+    FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+      fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+      twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+      remainingFullMinorAssumptions
+  singletonShadowCollapseCert : singletonShadowCollapse
+  singletonShadowFilteredCover :
+    ∀ a : Coord, a ∈ fullActiveCoordinates →
+      shadowFilteredCoverFeasible {a} (shadowZeroFilter {a})
+  emptySupportCapacity_ge_two : 2 ≤ fullCapacityTable ∅
+  singletonSupport_present : ∀ a : Coord, a ∈ fullActiveCoordinates → 1 ≤ fullCapacityTable {a}
+  remainingSingletonCollapseAssumptionsCert : remainingSingletonCollapseAssumptions
+
+/-- Build the singleton-shadow collapse frontier from the full-minor frontier and collapse data. -/
+theorem firstBitTerminalSingletonShadowCollapseFrontier_of_fullMinor
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    {capacityFrontier : Prop}
+    {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+    {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+    {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+    {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+    {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+    {relaxationFrontier : Prop}
+    {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+    {criticalityWitness : Coord → Prop}
+    {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+    {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+    {fullActiveCoordinates fullZeroFilter : Finset Coord}
+    {fullCapacityTable : Finset Coord → ℕ}
+    {shadowZeroFilter : Finset Coord → Finset Coord}
+    {shadowFilteredCoverFeasible : Finset Coord → Finset Coord → Prop}
+    {twoResidueTerminalFrontier fullMinorCriticalFilteredCover singletonShadowCollapse
+      remainingFullMinorAssumptions remainingSingletonCollapseAssumptions : Prop}
+    (hfull :
+      FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+        fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        remainingFullMinorAssumptions)
+    (hcollapse : singletonShadowCollapse)
+    (hsingletonShadow :
+      ∀ a : Coord, a ∈ fullActiveCoordinates →
+        shadowFilteredCoverFeasible {a} (shadowZeroFilter {a}))
+    (hempty : 2 ≤ fullCapacityTable ∅)
+    (hsingleton : ∀ a : Coord, a ∈ fullActiveCoordinates → 1 ≤ fullCapacityTable {a})
+    (hremaining : remainingSingletonCollapseAssumptions) :
+    FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates
+      fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+      twoResidueTerminalFrontier fullMinorCriticalFilteredCover singletonShadowCollapse
+      remainingFullMinorAssumptions remainingSingletonCollapseAssumptions where
+  fullMinorCriticalFilteredCoverFrontierCert := hfull
+  singletonShadowCollapseCert := hcollapse
+  singletonShadowFilteredCover := hsingletonShadow
+  emptySupportCapacity_ge_two := hempty
+  singletonSupport_present := hsingleton
+  remainingSingletonCollapseAssumptionsCert := hremaining
+
+section FirstBitTerminalSingletonShadowCollapseFrontier
+
+variable {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {coverFeasible : Finset Coord → Prop}
+variable {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+  coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+  zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch : Prop}
+variable {criticalFrontier : Prop}
+variable {activeCoordinates zeroFilter : Finset Coord}
+variable {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+variable {block0 block1 block2 : Finset Coord}
+variable {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+variable {capacityFrontier : Prop}
+variable {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+variable {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+variable {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+variable {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+variable {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+variable {relaxationFrontier : Prop}
+variable {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+variable {criticalityWitness : Coord → Prop}
+variable {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+variable {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+variable {fullActiveCoordinates fullZeroFilter : Finset Coord}
+variable {fullCapacityTable : Finset Coord → ℕ}
+variable {shadowZeroFilter : Finset Coord → Finset Coord}
+variable {shadowFilteredCoverFeasible : Finset Coord → Finset Coord → Prop}
+variable {twoResidueTerminalFrontier fullMinorCriticalFilteredCover singletonShadowCollapse
+  remainingFullMinorAssumptions remainingSingletonCollapseAssumptions : Prop}
+
+/-- Project the full-minor critical filtered-cover frontier from singleton collapse. -/
+theorem FirstBitTerminalSingletonShadowCollapseFrontier.to_fullMinorCriticalFilteredCoverFrontier
+    (h :
+      FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+        fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+        remainingSingletonCollapseAssumptions) :
+    FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+      fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+      twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+      remainingFullMinorAssumptions :=
+  h.fullMinorCriticalFilteredCoverFrontierCert
+
+/-- Project the active-cover lift-exclusion frontier through singleton collapse. -/
+theorem FirstBitTerminalSingletonShadowCollapseFrontier.to_activeCoverLiftExclusionFrontier
+    (h :
+      FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+        fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+        remainingSingletonCollapseAssumptions) :
+    FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+      nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+      activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness :=
+  h.fullMinorCriticalFilteredCoverFrontierCert.to_activeCoverLiftExclusionFrontier
+
+/-- Project the two-residue terminal frontier through singleton collapse. -/
+theorem FirstBitTerminalSingletonShadowCollapseFrontier.to_twoResidueTerminalFrontier
+    (h :
+      FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+        fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+        remainingSingletonCollapseAssumptions) :
+    twoResidueTerminalFrontier :=
+  h.fullMinorCriticalFilteredCoverFrontierCert.to_twoResidueTerminalFrontier
+
+/-- Apply singleton-shadow feasibility for an active singleton. -/
+theorem FirstBitTerminalSingletonShadowCollapseFrontier.singletonShadowFilteredCover_of_mem
+    (h :
+      FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+        fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+        remainingSingletonCollapseAssumptions)
+    {a : Coord} (ha : a ∈ fullActiveCoordinates) :
+    shadowFilteredCoverFeasible {a} (shadowZeroFilter {a}) :=
+  h.singletonShadowFilteredCover a ha
+
+/-- The singleton-shadow collapse forces at least two empty supports in the full table. -/
+theorem FirstBitTerminalSingletonShadowCollapseFrontier.two_le_emptySupportCapacity
+    (h :
+      FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+        fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+        remainingSingletonCollapseAssumptions) :
+    2 ≤ fullCapacityTable ∅ :=
+  h.emptySupportCapacity_ge_two
+
+/-- The singleton-shadow collapse forces every active singleton support to be present. -/
+theorem FirstBitTerminalSingletonShadowCollapseFrontier.one_le_singletonSupportCapacity
+    (h :
+      FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+        fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+        remainingSingletonCollapseAssumptions)
+    {a : Coord} (ha : a ∈ fullActiveCoordinates) :
+    1 ≤ fullCapacityTable {a} :=
+  h.singletonSupport_present a ha
+
+/-- Project the explicitly retained singleton-collapse assumptions. -/
+theorem FirstBitTerminalSingletonShadowCollapseFrontier.to_remainingSingletonCollapseAssumptions
+    (h :
+      FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+        fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+        remainingSingletonCollapseAssumptions) :
+    remainingSingletonCollapseAssumptions :=
+  h.remainingSingletonCollapseAssumptionsCert
+
+end FirstBitTerminalSingletonShadowCollapseFrontier
+
+/--
+Genuine four-active endpoint of the singleton-shadow cover collapse.  The API records the
+singleton-only shape: all singleton supports are present, two empty supports remain, and every
+non-singleton support inside the four active coordinates is absent and essential.
+-/
+structure FirstBitTerminalFourActiveSingletonOnlyCoverFrontier
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    {capacityFrontier : Prop}
+    {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+    {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+    {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+    {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+    {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+    {relaxationFrontier : Prop}
+    {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+    {criticalityWitness : Coord → Prop}
+    {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+    {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+    (fullActiveCoordinates fullZeroFilter : Finset Coord)
+    (fullCapacityTable : Finset Coord → ℕ)
+    (shadowZeroFilter : Finset Coord → Finset Coord)
+    (shadowFilteredCoverFeasible : Finset Coord → Finset Coord → Prop)
+    (nonSingletonSupportEssential : Finset Coord → Prop)
+    (twoResidueTerminalFrontier fullMinorCriticalFilteredCover singletonShadowCollapse
+      singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+      remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+      remainingFourActiveAssumptions : Prop) : Prop where
+  singletonShadowCollapseFrontierCert :
+    FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+      fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+      fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+      remainingSingletonCollapseAssumptions
+  active_card_eq_four : fullActiveCoordinates.card = 4
+  singletonOnlyFourActiveEndpointCert : singletonOnlyFourActiveEndpoint
+  allSingletonSupports_present :
+    ∀ a : Coord, a ∈ fullActiveCoordinates → 1 ≤ fullCapacityTable {a}
+  twoEmptySupports_present : 2 ≤ fullCapacityTable ∅
+  nonSingletonSupports_absent :
+    ∀ B : Finset Coord, B ⊆ fullActiveCoordinates → 2 ≤ B.card → fullCapacityTable B = 0
+  nonSingletonSupports_essential :
+    ∀ B : Finset Coord, B ⊆ fullActiveCoordinates → 2 ≤ B.card →
+      nonSingletonSupportEssential B
+  essentialMissingNonSingletonBlockersCert : essentialMissingNonSingletonBlockers
+  remainingFourActiveAssumptionsCert : remainingFourActiveAssumptions
+
+/-- Build the four-active singleton-only cover frontier from singleton collapse and endpoint data. -/
+theorem firstBitTerminalFourActiveSingletonOnlyCoverFrontier_of_singletonShadowCollapse
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    {capacityFrontier : Prop}
+    {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+    {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+    {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+    {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+    {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+    {relaxationFrontier : Prop}
+    {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+    {criticalityWitness : Coord → Prop}
+    {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+    {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+    {fullActiveCoordinates fullZeroFilter : Finset Coord}
+    {fullCapacityTable : Finset Coord → ℕ}
+    {shadowZeroFilter : Finset Coord → Finset Coord}
+    {shadowFilteredCoverFeasible : Finset Coord → Finset Coord → Prop}
+    {nonSingletonSupportEssential : Finset Coord → Prop}
+    {twoResidueTerminalFrontier fullMinorCriticalFilteredCover singletonShadowCollapse
+      singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+      remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+      remainingFourActiveAssumptions : Prop}
+    (hcollapse :
+      FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+        fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+        remainingSingletonCollapseAssumptions)
+    (hcard : fullActiveCoordinates.card = 4)
+    (hendpoint : singletonOnlyFourActiveEndpoint)
+    (hsingletons : ∀ a : Coord, a ∈ fullActiveCoordinates → 1 ≤ fullCapacityTable {a})
+    (hempty : 2 ≤ fullCapacityTable ∅)
+    (habsent :
+      ∀ B : Finset Coord, B ⊆ fullActiveCoordinates → 2 ≤ B.card → fullCapacityTable B = 0)
+    (hessential :
+      ∀ B : Finset Coord, B ⊆ fullActiveCoordinates → 2 ≤ B.card →
+        nonSingletonSupportEssential B)
+    (hblockers : essentialMissingNonSingletonBlockers)
+    (hremaining : remainingFourActiveAssumptions) :
+    FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates
+      fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+      nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+      singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+      remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+      remainingFourActiveAssumptions where
+  singletonShadowCollapseFrontierCert := hcollapse
+  active_card_eq_four := hcard
+  singletonOnlyFourActiveEndpointCert := hendpoint
+  allSingletonSupports_present := hsingletons
+  twoEmptySupports_present := hempty
+  nonSingletonSupports_absent := habsent
+  nonSingletonSupports_essential := hessential
+  essentialMissingNonSingletonBlockersCert := hblockers
+  remainingFourActiveAssumptionsCert := hremaining
+
+section FirstBitTerminalFourActiveSingletonOnlyCoverFrontier
+
+variable {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {coverFeasible : Finset Coord → Prop}
+variable {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+  coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+  zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch : Prop}
+variable {criticalFrontier : Prop}
+variable {activeCoordinates zeroFilter : Finset Coord}
+variable {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+variable {block0 block1 block2 : Finset Coord}
+variable {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+variable {capacityFrontier : Prop}
+variable {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+variable {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+variable {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+variable {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+variable {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+variable {relaxationFrontier : Prop}
+variable {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+variable {criticalityWitness : Coord → Prop}
+variable {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+variable {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+variable {fullActiveCoordinates fullZeroFilter : Finset Coord}
+variable {fullCapacityTable : Finset Coord → ℕ}
+variable {shadowZeroFilter : Finset Coord → Finset Coord}
+variable {shadowFilteredCoverFeasible : Finset Coord → Finset Coord → Prop}
+variable {nonSingletonSupportEssential : Finset Coord → Prop}
+variable {twoResidueTerminalFrontier fullMinorCriticalFilteredCover singletonShadowCollapse
+  singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+  remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+  remainingFourActiveAssumptions : Prop}
+
+/-- Project the singleton-shadow collapse frontier from the four-active endpoint. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.to_singletonShadowCollapseFrontier
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions) :
+    FirstBitTerminalSingletonShadowCollapseFrontier fullActiveCoordinates fullZeroFilter
+      fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible twoResidueTerminalFrontier
+      fullMinorCriticalFilteredCover singletonShadowCollapse remainingFullMinorAssumptions
+      remainingSingletonCollapseAssumptions :=
+  h.singletonShadowCollapseFrontierCert
+
+/-- Project the full-minor critical filtered-cover frontier from the four-active endpoint. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.to_fullMinorCriticalFilteredCoverFrontier
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions) :
+    FirstBitTerminalFullMinorCriticalFilteredCoverFrontier fullActiveCoordinates
+      fullZeroFilter fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+      twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+      remainingFullMinorAssumptions :=
+  h.singletonShadowCollapseFrontierCert.to_fullMinorCriticalFilteredCoverFrontier
+
+/-- Project the active-cover lift-exclusion frontier from the four-active endpoint. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.to_activeCoverLiftExclusionFrontier
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions) :
+    FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+      nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+      activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness :=
+  h.singletonShadowCollapseFrontierCert.to_activeCoverLiftExclusionFrontier
+
+/-- Project the two-residue terminal frontier from the four-active singleton-only endpoint. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.to_twoResidueTerminalFrontier
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions) :
+    twoResidueTerminalFrontier :=
+  h.singletonShadowCollapseFrontierCert.to_twoResidueTerminalFrontier
+
+/-- The genuine endpoint has exactly four active coordinates. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.fullActive_card_eq_four
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions) :
+    fullActiveCoordinates.card = 4 :=
+  h.active_card_eq_four
+
+/-- Every singleton support in the genuine four-active endpoint is present. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.one_le_singletonSupportCapacity
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions)
+    {a : Coord} (ha : a ∈ fullActiveCoordinates) :
+    1 ≤ fullCapacityTable {a} :=
+  h.allSingletonSupports_present a ha
+
+/-- At least two empty supports remain in the genuine four-active endpoint. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.two_le_emptySupportCapacity
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions) :
+    2 ≤ fullCapacityTable ∅ :=
+  h.twoEmptySupports_present
+
+/-- Pair, triple, and full supports inside the four-active endpoint are absent. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.nonSingletonSupport_absent
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions)
+    {B : Finset Coord} (hB : B ⊆ fullActiveCoordinates) (hcard : 2 ≤ B.card) :
+    fullCapacityTable B = 0 :=
+  h.nonSingletonSupports_absent B hB hcard
+
+/-- Every missing non-singleton support in the four-active endpoint is recorded as essential. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.nonSingletonSupport_essential
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions)
+    {B : Finset Coord} (hB : B ⊆ fullActiveCoordinates) (hcard : 2 ≤ B.card) :
+    nonSingletonSupportEssential B :=
+  h.nonSingletonSupports_essential B hB hcard
+
+/-- Project the marker collecting the essential missing non-singleton blockers. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.to_essentialMissingNonSingletonBlockers
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions) :
+    essentialMissingNonSingletonBlockers :=
+  h.essentialMissingNonSingletonBlockersCert
+
+/-- Project the remaining four-active endpoint assumptions. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.to_remainingFourActiveAssumptions
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions) :
+    remainingFourActiveAssumptions :=
+  h.remainingFourActiveAssumptionsCert
+
+/-- Compact conjunction of the singleton-only capacity facts. -/
+theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.singletonOnlyCapacitySummary
+    (h :
+      FirstBitTerminalFourActiveSingletonOnlyCoverFrontier fullActiveCoordinates fullZeroFilter
+        fullCapacityTable shadowZeroFilter shadowFilteredCoverFeasible
+        nonSingletonSupportEssential twoResidueTerminalFrontier fullMinorCriticalFilteredCover
+        singletonShadowCollapse singletonOnlyFourActiveEndpoint essentialMissingNonSingletonBlockers
+        remainingFullMinorAssumptions remainingSingletonCollapseAssumptions
+        remainingFourActiveAssumptions) :
+    (2 ≤ fullCapacityTable ∅) ∧
+      (∀ a : Coord, a ∈ fullActiveCoordinates → 1 ≤ fullCapacityTable {a}) ∧
+        (∀ B : Finset Coord, B ⊆ fullActiveCoordinates → 2 ≤ B.card →
+          fullCapacityTable B = 0 ∧ nonSingletonSupportEssential B) :=
+  ⟨h.twoEmptySupports_present, h.allSingletonSupports_present,
+    fun B hB hcard => ⟨h.nonSingletonSupports_absent B hB hcard,
+      h.nonSingletonSupports_essential B hB hcard⟩⟩
+
+end FirstBitTerminalFourActiveSingletonOnlyCoverFrontier
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
