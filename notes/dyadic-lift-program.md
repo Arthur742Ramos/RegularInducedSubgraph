@@ -984,6 +984,19 @@ This has a hereditary bad-vertex elimination form for each `lambda`, and label-r
 large constant-label row or complement-row classes close, and modules lift after a residue shift.
 For `U subset R`, labels inherit as `b_U=b-deg_{R\U}`.  Thus size-`m+1` subbuckets only say `b_U` is
 nonconstant; the useful structure is that the original label comes from the parent co-cut into `C`.
+On an `(m+1)` retained set `T`, the residue coloring is `psi_T=b-deg_{R\T}`; swaps update it by
+`1_{vy}-1_{vx}` on old vertices.  The residual is exactly a no-flattening condition for this swap system.
+Balanced swaps use the same formula with `deg_Y-deg_X`, unifying row-promotion, no-split, and packet
+repair tests.
+For fixed outgoing `X`, this splits into incoming affine target hit on `T\X` and shifted self-layer
+regularity on the incoming packet `Y`.
+For one-swaps, the incoming target is a forced binary trace template whenever
+`phi_x=psi_T-1_{vx}` lies in an adjacent residue pair; terminality says every such viable template is
+absent or fails the scalar condition.
+For two-swaps, the target is a `{0,1,2}`-valued three-way trace partition for an outside pair plus two
+shifted scalar equations.
+For `r`-swaps, `Theta_X=kappa-psi_T+deg_X` prescribes bounded old-vertex multiplicities `0..r`; the
+residual is finite target-packet realization plus shifted self-layer.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

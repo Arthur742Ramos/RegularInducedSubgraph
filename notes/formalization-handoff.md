@@ -2352,6 +2352,24 @@ Recommended attack:
     Add hereditary relabeling: for `U subset R`, selectors lift with `b_U(v)=b(v)-deg_{R\U}(v)`.  Record
     that the size-`m+1` full-set condition is only nonconstancy of `b_U`, so one must use the parent co-cut
     origin `b=deg_C mod 4`.
+    Add the `(m+1)`-set swap calculus: `psi_T(v)=b(v)-deg_{R\T}(v)`, selector iff `psi_T` is constant; for
+    `T'=(T\{x}) union {y}`, old vertices change by `1_{vy}-1_{vx}` and the new vertex has
+    `b(y)-deg_{R\T}(y)-1_{xy}`.
+    Add the balanced multi-swap formula: for `X subset T`, `Y outside T`, `|X|=|Y|`, old vertices change by
+    `deg_Y-deg_X`, while new vertices have `b-deg_{R\T}+deg_Y-deg_X`.  Selector closure is constancy of
+    these expressions on the swapped set.
+    Add the incoming-target/self-layer split for fixed outgoing `X` and residue `kappa`: old vertices
+    require `deg_Y(v)=kappa-psi_T(v)+deg_X(v)`, and then incoming vertices require
+    `b(y)-deg_{R\T}(y)+deg_Y(y)-deg_X(y)=kappa`.
+    Add the one-swap missing-template normal form: with `phi_x=psi_T-1_{vx}`, a flattening one-swap to
+    residue `kappa` is possible only if `phi_x` is contained in `{kappa,kappa-1}`; then the outside trace
+    is forced and terminality says no outside vertex also satisfies the scalar condition.
+    Add the two-swap template: for `X={x1,x2}`, `theta_X=kappa-psi_T+1_{vx1}+1_{vx2}` must be
+    `{0,1,2}`-valued, prescribing a no/one/two-hit partition for an incoming pair, followed by the two
+    shifted scalar equations including the `y1y2` edge and the edges to `x1,x2`.
+    Add the general `r`-swap template: `Theta_X=kappa-psi_T+deg_X` must have representatives in
+    `{0,...,r}` prescribing old-vertex incoming multiplicities; every realizing `Y` must satisfy the
+    shifted self-layer equations.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

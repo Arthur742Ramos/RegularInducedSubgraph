@@ -1914,6 +1914,17 @@ For each `lambda`, this is equivalent to a bad-vertex elimination down to `m`; l
 constant-label twin/cotwin classes larger than `m` close, giving `4*2^r>|R|/m`.
 The obstruction is hereditary with relabeling `b_U=b-deg_{R\U}`; size-`m+1` subbuckets only force
 nonconstant inherited label, so the parent co-cut origin of `b` remains essential.
+For retained `T` of size `m+1`, `psi_T=b-deg_{R\T}` is nonconstant; one-swaps update old colors by
+`1_{vy}-1_{vx}`.  A terminal residual is a no-flattening local optimum for these swaps.
+Balanced swaps update by `deg_Y-deg_X`; singleton, pair, and packet repair equations are one formula.
+For fixed outgoing `X`, balanced repair splits into incoming affine target hit on `T\X` and shifted
+self-layer regularity on `Y`.
+For one-swaps, viable flattening is equivalent to `phi_x=psi_T-1_{vx}` taking two adjacent residues, after
+which the outside trace template is forced and terminality says it is absent.
+For two-swaps, the viable target is a `{0,1,2}`-valued partition of old vertices for an outside pair, plus
+two shifted scalar equations.
+For `r`-swaps, `Theta_X=kappa-psi_T+deg_X` prescribes bounded multiplicities `0..r`; after realizing that
+template, terminality is shifted self-layer failure.
 For Fano ambiguity this means the witness graph is not covered by any Fano line; all three-edge witness
 graphs are line-covered.
 Dualizing to Fano lines, pair witnesses form an edge-cover graph; terminality is no isolated dual line,

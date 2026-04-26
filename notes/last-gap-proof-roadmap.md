@@ -1898,6 +1898,18 @@ What remains justified after audit is:
       `4*2^r>|R|/m` in graph and complement;
       the residual is hereditary with relabeling `b_U=b-deg_{R\U}`, so the one-over-threshold form only
       forces inherited-label nonconstancy and the parent co-cut coupling must still be used;
+      on retained `(m+1)`-sets the coloring `psi_T=b-deg_{R\T}` must remain nonconstant under every
+      one-swap, with exact update `psi(v)->psi(v)+1_{vy}-1_{vx}`;
+      balanced swaps update by `deg_Y-deg_X`, so row-promotion, no-split, and packet repairs are one
+      labeled co-cut flattening formula;
+      for fixed outgoing `X`, this again splits into incoming affine target avoidance versus shifted
+      self-layer failure on the incoming packet;
+      for one-swaps this is a missing-template test: if `psi_T-1_{vx}` lies in an adjacent residue pair,
+      the required outside trace is forced and no outside vertex may realize it with the scalar condition;
+      for two-swaps the target is a `{0,1,2}`-valued partition for an incoming pair plus two shifted
+      self-layer scalar equations;
+      for `r`-swaps, `Theta_X=kappa-psi_T+deg_X` prescribes bounded old-vertex multiplicities `0..r`,
+      followed by shifted self-layer equations on `Y`;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

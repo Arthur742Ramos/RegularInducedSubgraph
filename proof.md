@@ -10965,6 +10965,134 @@ vertices with a nonconstant label survives the full-set test.  The remaining inf
 coupling, namely that the label is not arbitrary but is the co-cut degree `deg_C mod 4` from the opposite
 Gallai residue class, and that every subbucket inherits the correction `-deg_{R\U}`.
 
+For a retained set `T subset R` of size `m+1`, write its current labeled residue as
+
+```text
+psi_T(v)=b(v)-deg_{R\T}(v)        [MOD 4]        (v in T).
+```
+
+Then `T` is a selector iff `psi_T` is constant.  Terminality is therefore the assertion that every
+`(m+1)`-set has at least two `psi_T`-colors.  The one-swap calculus is exact.  If
+`x in T`, `y in R\T`, and `T'=(T\{x}) union {y}`, then for `v in T\{x}`,
+
+```text
+psi_T'(v)=psi_T(v)+1_{vy}-1_{vx}        [MOD 4],
+```
+
+while the incoming vertex has
+
+```text
+psi_T'(y)=b(y)-deg_{R\T}(y)-1_{xy}      [MOD 4].
+```
+
+Thus any proof of the first-bit selector may equivalently show that a nonconstant `psi_T` coloring on an
+`(m+1)`-set can be flattened by one or more such swaps.  A terminal counterexample is a local optimum for
+this swap system: every swap keeps at least two colors.  This is the labeled co-cut version of the
+small-extension equations around a maximum core.
+
+More generally, for a balanced swap `X subset T`, `Y subset R\T` with `|X|=|Y|`, put
+`T'=(T\X) union Y`.  Then
+
+```text
+psi_T'(v)=psi_T(v)+deg_Y(v)-deg_X(v)                         (v in T\X),
+psi_T'(y)=b(y)-deg_{R\T}(y)+deg_Y(y)-deg_X(y)                 (y in Y).
+```
+
+Thus a balanced swap closes the first-bit residual exactly when these two displayed expressions are
+constant on `(T\X) union Y`.  The one-swap row-promotion, two-swap no-split, and larger packet-repair
+equations are all instances of this single formula.  A terminal labeled residual is therefore a
+balanced-swap local optimum at every `(m+1)` retained set.
+
+Separating the two lines gives the exact incoming-target/self-layer split.  Fix `T`, a deleted part
+`X subset T`, and a desired final residue `kappa`.  An incoming packet `Y subset R\T`, `|Y|=|X|`, must
+first hit the old-vertex target
+
+```text
+deg_Y(v)=kappa-psi_T(v)+deg_X(v)        [MOD 4]        (v in T\X).
+```
+
+If this target is hit, the remaining condition is the shifted self-layer on the new packet:
+
+```text
+b(y)-deg_{R\T}(y)+deg_Y(y)-deg_X(y)=kappa        [MOD 4]        (y in Y).
+```
+
+Thus every failed balanced swap is blocked either by incoming affine target avoidance or by shifted
+self-layer failure after the target is hit.  This is exactly the same dichotomy as in the atom-quotient
+repair equations, now written at the raw first-bit labeled co-cut level.
+
+For one-swaps this becomes a missing-template statement.  Fix `x in T` and `kappa in Z/4Z`, and define on
+`T\{x}` the adjusted color
+
+```text
+phi_x(v)=psi_T(v)-1_{vx}        [MOD 4].
+```
+
+An incoming vertex `y` can flatten `T\{x}` to residue `kappa` only if
+
+```text
+1_{vy}=kappa-phi_x(v)        [MOD 4]        (v in T\{x}),
+```
+
+so the right-hand side must lie in `{0,1}` for every `v`.  Equivalently, `phi_x` uses only the two adjacent
+values `{kappa,kappa-1}`.  When this binary condition holds, the required trace is forced:
+
+```text
+N(y) cap (T\{x}) = {v : phi_x(v)=kappa-1},
+```
+
+and the new-vertex scalar condition is
+
+```text
+b(y)-deg_{R\T}(y)-1_{xy}=kappa        [MOD 4].
+```
+
+Thus a terminal labeled residual has the following one-swap normal form: for every `T`, `x`, and `kappa`,
+either the adjusted coloring `phi_x` is not contained in an adjacent residue pair, or the unique binary
+trace template above has no outside vertex satisfying the scalar condition.  This is the raw
+principal-submatrix version of row-promotion failure.
+
+For two-swaps the corresponding target is a pair-template.  Fix `X={x_1,x_2} subset T` and `kappa`.  On
+`T\X`, put
+
+```text
+theta_X(v)=kappa-psi_T(v)+1_{vx_1}+1_{vx_2}        [MOD 4].
+```
+
+An incoming pair `Y={y_1,y_2}` can hit the old-vertex target only if `theta_X(v)` lies in `{0,1,2}` for
+every `v`, because it must equal `1_{vy_1}+1_{vy_2}`.  When this holds, the pair must realize a prescribed
+three-way partition of `T\X`: no hit, exactly one hit, or two hits.  After that incoming target is met, the
+new-vertex equations are
+
+```text
+b(y_i)-deg_{R\T}(y_i)+1_{y_i y_{3-i}}-1_{y_i x_1}-1_{y_i x_2}=kappa
+        [MOD 4]        (i=1,2).
+```
+
+Thus the first non-row-promotion repair is an opposite-pair/no-split template: either the required
+three-way trace partition has no outside pair, or every pair realizing it fails one of the two shifted
+self-layer scalar equations.
+
+For `r`-swaps the same template is finite.  If `X subset T` has size `r`, define
+
+```text
+Theta_X(v)=kappa-psi_T(v)+deg_X(v)        [MOD 4]        (v in T\X).
+```
+
+An incoming `r`-packet can hit the old-vertex target only if every `Theta_X(v)` has a representative in
+`{0,1,...,r}` congruent modulo `4`; this prescribed representative is the number of incoming vertices
+adjacent to `v`.  Thus `Theta_X` prescribes a bounded multiplicity partition of the old vertices.  After
+that partition is realized, the shifted self-layer equations on the incoming packet are
+
+```text
+b(y)-deg_{R\T}(y)+deg_Y(y)-deg_X(y)=kappa        [MOD 4]        (y in Y).
+```
+
+So, for each fixed outgoing packet `X`, the first-bit residual is a finite bounded-target packet problem:
+either the old-vertex multiplicity template is unrealizable by an outside packet of size `|X|`, or every
+realization fails the shifted self-layer.  This is the raw labeled analogue of the finite atom-quotient
+packet repair branch.
+
 The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
 theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with
 `vx` and `vy` edges of the original graph; then the degree of `v` in `K[W]` is exactly the carry

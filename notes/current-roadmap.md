@@ -5253,6 +5253,23 @@ complement.
 The residual is hereditary with relabeling `b_U(v)=b(v)-deg_{R\U}(v)`.  Hence every `m+1` subbucket has
 nonconstant `b_U`; this one-over-threshold condition is vacuous by itself, so the remaining content is the
 parent coupling `b=deg_C mod 4` plus the inherited correction.
+For an `(m+1)` retained set `T`, put `psi_T(v)=b(v)-deg_{R\T}(v)`.  Then `T` is a selector iff `psi_T` is
+constant, and swapping `x in T` with `y outside T` changes old vertices by `1_{vy}-1_{vx}` and gives
+`psi(y)=b(y)-deg_{R\T}(y)-1_{xy}`.  A terminal residual is a local optimum for this swap-flattening system.
+For a balanced swap `X subset T`, `Y outside T`, old colors change by `deg_Y-deg_X`, and new colors are
+`b-deg_{R\T}+deg_Y-deg_X`; singleton, pair, and packet repairs are all instances of this formula.
+For fixed outgoing `X` and desired residue `kappa`, the repair splits into an incoming target
+`deg_Y(v)=kappa-psi_T(v)+deg_X(v)` on `T\X`, followed by the shifted self-layer
+`b(y)-deg_{R\T}(y)+deg_Y(y)-deg_X(y)=kappa` on `Y`.
+For one-swaps, with `phi_x=psi_T-1_{vx}`, either `phi_x` is not contained in an adjacent pair
+`{kappa,kappa-1}`, or the forced binary outside trace
+`N(y)cap(T\{x})={v:phi_x(v)=kappa-1}` has no vertex satisfying the scalar condition.
+For two-swaps, `theta_X=kappa-psi_T+1_{vx_1}+1_{vx_2}` must be `{0,1,2}`-valued and prescribes the
+no-hit/one-hit/two-hit partition for an incoming pair; any realizing pair must then pass two shifted
+self-layer scalar equations.
+For general `r`, `Theta_X=kappa-psi_T+deg_X` prescribes, when possible, the exact multiplicity
+`0..r` of incoming neighbors at each old vertex; the residual is a finite bounded-target packet problem
+followed by shifted self-layer failure.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is
