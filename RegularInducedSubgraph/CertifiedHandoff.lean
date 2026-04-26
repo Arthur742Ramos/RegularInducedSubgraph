@@ -37109,6 +37109,924 @@ theorem nearThresholdBoundaryDiagnostics_of_certifiedProofMdCurrentFrontierFinal
   h.toLargeTargetCapacityEndpointExhaustion.toNearThresholdBoundaryDiagnostics
 
 end FinalConsumerLargeTargetCapacityEndpointExhaustionApi
+
+/-!
+## Protected-core/all-large closure final-consumer handoff
+
+This layer packages the newest proof-md frontier rows that sit after the large-target
+capacity/endpoint handoff. It keeps the protected-core frontier, the all-large absorption
+split, and the first-bit final closure as assumption-backed packets; the only exposed
+`TargetStatement` is projected from already supplied consumer rows.
+-/
+
+/--
+Terminal packet for the large-target protected-core frontier: reduction to the protected core,
+compatibility with the capacity/endpoint ledger, promotion into the all-large branch, and the
+strict-defect transfer used by downstream consumers.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+    (terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer : Prop) :
+    Type where
+  protectedCoreFrontierReduction : terminalLargeTargetProtectedCoreFrontierReduction
+  capacityEndpointCompatibility : terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+  allLargePromotion : terminalLargeTargetProtectedCoreAllLargePromotion
+  strictDefectTransfer : terminalLargeTargetProtectedCoreStrictDefectTransfer
+
+/-- Build the protected-core frontier packet from its four terminal assumptions. -/
+def certifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate_of_assumptions
+    {terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer : Prop}
+    (protectedCoreFrontierReduction : terminalLargeTargetProtectedCoreFrontierReduction)
+    (capacityEndpointCompatibility : terminalLargeTargetProtectedCoreCapacityEndpointCompatibility)
+    (allLargePromotion : terminalLargeTargetProtectedCoreAllLargePromotion)
+    (strictDefectTransfer : terminalLargeTargetProtectedCoreStrictDefectTransfer) :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer where
+  protectedCoreFrontierReduction := protectedCoreFrontierReduction
+  capacityEndpointCompatibility := capacityEndpointCompatibility
+  allLargePromotion := allLargePromotion
+  strictDefectTransfer := strictDefectTransfer
+
+/-- Facade alias for protected-core frontier terminal consumers. -/
+abbrev CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierFacade
+    (terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer : Prop) : Type :=
+  CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+    terminalLargeTargetProtectedCoreFrontierReduction
+    terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+    terminalLargeTargetProtectedCoreAllLargePromotion
+    terminalLargeTargetProtectedCoreStrictDefectTransfer
+
+section LargeTargetProtectedCoreFrontierTerminalApi
+
+variable {terminalLargeTargetProtectedCoreFrontierReduction
+  terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+  terminalLargeTargetProtectedCoreAllLargePromotion
+  terminalLargeTargetProtectedCoreStrictDefectTransfer : Prop}
+
+/-- Project the protected-core reduction row. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate.toProtectedCoreFrontierReduction
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer) :
+    terminalLargeTargetProtectedCoreFrontierReduction :=
+  h.protectedCoreFrontierReduction
+
+/-- Project the protected-core compatibility with the large-target endpoint ledger. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate.toCapacityEndpointCompatibility
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer) :
+    terminalLargeTargetProtectedCoreCapacityEndpointCompatibility :=
+  h.capacityEndpointCompatibility
+
+/-- Project the protected-core promotion into the all-large branch. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate.toAllLargePromotion
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer) :
+    terminalLargeTargetProtectedCoreAllLargePromotion :=
+  h.allLargePromotion
+
+/-- Project the protected-core strict-defect transfer row. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate.toStrictDefectTransfer
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer) :
+    terminalLargeTargetProtectedCoreStrictDefectTransfer :=
+  h.strictDefectTransfer
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate.of_assumptions_toProtectedCoreFrontierReduction
+    (protectedCoreFrontierReduction : terminalLargeTargetProtectedCoreFrontierReduction)
+    (capacityEndpointCompatibility : terminalLargeTargetProtectedCoreCapacityEndpointCompatibility)
+    (allLargePromotion : terminalLargeTargetProtectedCoreAllLargePromotion)
+    (strictDefectTransfer : terminalLargeTargetProtectedCoreStrictDefectTransfer) :
+    (certifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate_of_assumptions
+      protectedCoreFrontierReduction
+      capacityEndpointCompatibility
+      allLargePromotion
+      strictDefectTransfer).toProtectedCoreFrontierReduction =
+      protectedCoreFrontierReduction :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate.of_assumptions_toCapacityEndpointCompatibility
+    (protectedCoreFrontierReduction : terminalLargeTargetProtectedCoreFrontierReduction)
+    (capacityEndpointCompatibility : terminalLargeTargetProtectedCoreCapacityEndpointCompatibility)
+    (allLargePromotion : terminalLargeTargetProtectedCoreAllLargePromotion)
+    (strictDefectTransfer : terminalLargeTargetProtectedCoreStrictDefectTransfer) :
+    (certifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate_of_assumptions
+      protectedCoreFrontierReduction
+      capacityEndpointCompatibility
+      allLargePromotion
+      strictDefectTransfer).toCapacityEndpointCompatibility =
+      capacityEndpointCompatibility :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate.of_assumptions_toAllLargePromotion
+    (protectedCoreFrontierReduction : terminalLargeTargetProtectedCoreFrontierReduction)
+    (capacityEndpointCompatibility : terminalLargeTargetProtectedCoreCapacityEndpointCompatibility)
+    (allLargePromotion : terminalLargeTargetProtectedCoreAllLargePromotion)
+    (strictDefectTransfer : terminalLargeTargetProtectedCoreStrictDefectTransfer) :
+    (certifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate_of_assumptions
+      protectedCoreFrontierReduction
+      capacityEndpointCompatibility
+      allLargePromotion
+      strictDefectTransfer).toAllLargePromotion = allLargePromotion :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate.of_assumptions_toStrictDefectTransfer
+    (protectedCoreFrontierReduction : terminalLargeTargetProtectedCoreFrontierReduction)
+    (capacityEndpointCompatibility : terminalLargeTargetProtectedCoreCapacityEndpointCompatibility)
+    (allLargePromotion : terminalLargeTargetProtectedCoreAllLargePromotion)
+    (strictDefectTransfer : terminalLargeTargetProtectedCoreStrictDefectTransfer) :
+    (certifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate_of_assumptions
+      protectedCoreFrontierReduction
+      capacityEndpointCompatibility
+      allLargePromotion
+      strictDefectTransfer).toStrictDefectTransfer = strictDefectTransfer :=
+  rfl
+
+end LargeTargetProtectedCoreFrontierTerminalApi
+
+/--
+Terminal packet for the all-large absorption branch: overlap-congestion control, the anchored
+collision branch, the lift from protected-core rows, and the no-residual-large-target discharge.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+    (terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop) :
+    Type where
+  overlapCongestionBound : terminalAllLargeAbsorptionOverlapCongestionBound
+  anchoredCollisionBranch : terminalAllLargeAbsorptionAnchoredCollisionBranch
+  protectedCoreLift : terminalAllLargeAbsorptionProtectedCoreLift
+  noResidualLargeTarget : terminalAllLargeAbsorptionNoResidualLargeTarget
+
+/-- Build the all-large absorption/collision packet from terminal assumptions. -/
+def certifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate_of_assumptions
+    {terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop}
+    (overlapCongestionBound : terminalAllLargeAbsorptionOverlapCongestionBound)
+    (anchoredCollisionBranch : terminalAllLargeAbsorptionAnchoredCollisionBranch)
+    (protectedCoreLift : terminalAllLargeAbsorptionProtectedCoreLift)
+    (noResidualLargeTarget : terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget where
+  overlapCongestionBound := overlapCongestionBound
+  anchoredCollisionBranch := anchoredCollisionBranch
+  protectedCoreLift := protectedCoreLift
+  noResidualLargeTarget := noResidualLargeTarget
+
+/-- Facade alias for all-large absorption/collision terminal consumers. -/
+abbrev CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionFacade
+    (terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop) : Type :=
+  CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+    terminalAllLargeAbsorptionOverlapCongestionBound
+    terminalAllLargeAbsorptionAnchoredCollisionBranch
+    terminalAllLargeAbsorptionProtectedCoreLift
+    terminalAllLargeAbsorptionNoResidualLargeTarget
+
+section AllLargeAbsorptionOverlapAnchoredCollisionTerminalApi
+
+variable {terminalAllLargeAbsorptionOverlapCongestionBound
+  terminalAllLargeAbsorptionAnchoredCollisionBranch
+  terminalAllLargeAbsorptionProtectedCoreLift
+  terminalAllLargeAbsorptionNoResidualLargeTarget : Prop}
+
+/-- Project the all-large overlap-congestion bound. -/
+def CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate.toOverlapCongestionBound
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    terminalAllLargeAbsorptionOverlapCongestionBound :=
+  h.overlapCongestionBound
+
+/-- Project the anchored-collision branch. -/
+def CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate.toAnchoredCollisionBranch
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    terminalAllLargeAbsorptionAnchoredCollisionBranch :=
+  h.anchoredCollisionBranch
+
+/-- Project the protected-core lift into all-large absorption. -/
+def CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate.toProtectedCoreLift
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    terminalAllLargeAbsorptionProtectedCoreLift :=
+  h.protectedCoreLift
+
+/-- Project the no-residual-large-target discharge. -/
+def CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate.toNoResidualLargeTarget
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    terminalAllLargeAbsorptionNoResidualLargeTarget :=
+  h.noResidualLargeTarget
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate.of_assumptions_toOverlapCongestionBound
+    (overlapCongestionBound : terminalAllLargeAbsorptionOverlapCongestionBound)
+    (anchoredCollisionBranch : terminalAllLargeAbsorptionAnchoredCollisionBranch)
+    (protectedCoreLift : terminalAllLargeAbsorptionProtectedCoreLift)
+    (noResidualLargeTarget : terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    (certifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate_of_assumptions
+      overlapCongestionBound anchoredCollisionBranch protectedCoreLift noResidualLargeTarget).toOverlapCongestionBound =
+      overlapCongestionBound :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate.of_assumptions_toAnchoredCollisionBranch
+    (overlapCongestionBound : terminalAllLargeAbsorptionOverlapCongestionBound)
+    (anchoredCollisionBranch : terminalAllLargeAbsorptionAnchoredCollisionBranch)
+    (protectedCoreLift : terminalAllLargeAbsorptionProtectedCoreLift)
+    (noResidualLargeTarget : terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    (certifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate_of_assumptions
+      overlapCongestionBound anchoredCollisionBranch protectedCoreLift noResidualLargeTarget).toAnchoredCollisionBranch =
+      anchoredCollisionBranch :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate.of_assumptions_toProtectedCoreLift
+    (overlapCongestionBound : terminalAllLargeAbsorptionOverlapCongestionBound)
+    (anchoredCollisionBranch : terminalAllLargeAbsorptionAnchoredCollisionBranch)
+    (protectedCoreLift : terminalAllLargeAbsorptionProtectedCoreLift)
+    (noResidualLargeTarget : terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    (certifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate_of_assumptions
+      overlapCongestionBound anchoredCollisionBranch protectedCoreLift noResidualLargeTarget).toProtectedCoreLift =
+      protectedCoreLift :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate.of_assumptions_toNoResidualLargeTarget
+    (overlapCongestionBound : terminalAllLargeAbsorptionOverlapCongestionBound)
+    (anchoredCollisionBranch : terminalAllLargeAbsorptionAnchoredCollisionBranch)
+    (protectedCoreLift : terminalAllLargeAbsorptionProtectedCoreLift)
+    (noResidualLargeTarget : terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    (certifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate_of_assumptions
+      overlapCongestionBound anchoredCollisionBranch protectedCoreLift noResidualLargeTarget).toNoResidualLargeTarget =
+      noResidualLargeTarget :=
+  rfl
+
+end AllLargeAbsorptionOverlapAnchoredCollisionTerminalApi
+
+/--
+First-bit final closure row used by downstream consumers: it carries the co-cut surface together
+with the small final target consumer and records their target-statement projection as data.
+-/
+structure CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Type where
+  firstBitCoCut :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate
+  targetStatement : TargetStatement
+  targetStatement_eq_finalTargetConsumerCertificate :
+    targetStatement =
+      targetStatement_of_certifiedProofMdFinalTargetConsumerCertificate
+        finalTargetConsumerCertificate
+
+/-- Build the first-bit final closure row from the co-cut surface and target consumer. -/
+def certifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate_of_packets
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (firstBitCoCut :
+      CertifiedProofMdFirstBitCoCutObligationSurface
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate) :
+    CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  firstBitCoCut := firstBitCoCut
+  finalTargetConsumerCertificate := finalTargetConsumerCertificate
+  targetStatement :=
+    targetStatement_of_certifiedProofMdFinalTargetConsumerCertificate
+      finalTargetConsumerCertificate
+  targetStatement_eq_finalTargetConsumerCertificate := rfl
+
+section FirstBitFinalClosureHandoffApi
+
+/-- Project the first-bit/co-cut surface from the final closure row. -/
+def CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate.toFirstBitCoCut
+    (h :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut
+
+/-- Project the small final target consumer from the first-bit closure row. -/
+def CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate.toFinalTargetConsumerCertificate
+    (h :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.finalTargetConsumerCertificate
+
+/-- Project final first-bit branch wrappers through the closure row. -/
+def CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate.toFirstBitFinalBranchWrappers
+    (h :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappers :=
+  h.firstBitCoCut.toFinalBranchWrappers
+
+/-- Project the available-cut final first-bit wrapper through the closure row. -/
+def CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate.toFirstBitAvailableCutFinalWrapper
+    (h :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom :=
+  h.firstBitCoCut.toAvailableCutFinalWrapper
+
+/-- Project post-quotient anchored-packing imports through the closure row. -/
+def CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate.toPostQuotientAnchoredPacking
+    (h :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut.toPostQuotientAnchoredPacking
+
+/-- Project the first-bit final closure target statement. -/
+def CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate.toTargetStatement
+    (h :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- Wrapper theorem exposing the target statement from the first-bit final closure row. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+    (h :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  h.toTargetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate.of_packets_toFirstBitCoCut
+    (firstBitCoCut :
+      CertifiedProofMdFirstBitCoCutObligationSurface
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate) :
+    (certifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate_of_packets
+      firstBitCoCut finalTargetConsumerCertificate).toFirstBitCoCut = firstBitCoCut :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate.of_packets_toFinalTargetConsumerCertificate
+    (firstBitCoCut :
+      CertifiedProofMdFirstBitCoCutObligationSurface
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate) :
+    (certifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate_of_packets
+      firstBitCoCut finalTargetConsumerCertificate).toFinalTargetConsumerCertificate =
+      finalTargetConsumerCertificate :=
+  rfl
+
+end FirstBitFinalClosureHandoffApi
+
+/--
+Extension bundle adjoining the protected-core and all-large absorption packets to the large-target
+capacity/endpoint extension bundle.
+-/
+structure CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+    (LargeTargetCapacityEndpointExhaustionExtensionBundle : Type)
+    (terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop) : Type where
+  largeTargetCapacityEndpointExhaustionExtensionBundle :
+    LargeTargetCapacityEndpointExhaustionExtensionBundle
+  protectedCoreFrontier :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+  allLargeAbsorptionOverlapAnchoredCollision :
+    CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget
+
+/-- Build the protected-core/all-large extension bundle from the prior extension bundle and packets. -/
+def certifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle_of_packets
+    {LargeTargetCapacityEndpointExhaustionExtensionBundle : Type}
+    {terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop}
+    (largeTargetCapacityEndpointExhaustionExtensionBundle :
+      LargeTargetCapacityEndpointExhaustionExtensionBundle)
+    (protectedCoreFrontier :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer)
+    (allLargeAbsorptionOverlapAnchoredCollision :
+      CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+      LargeTargetCapacityEndpointExhaustionExtensionBundle
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget where
+  largeTargetCapacityEndpointExhaustionExtensionBundle :=
+    largeTargetCapacityEndpointExhaustionExtensionBundle
+  protectedCoreFrontier := protectedCoreFrontier
+  allLargeAbsorptionOverlapAnchoredCollision := allLargeAbsorptionOverlapAnchoredCollision
+
+section ProtectedCoreAllLargeClosureExtensionBundleApi
+
+variable {LargeTargetCapacityEndpointExhaustionExtensionBundle : Type}
+variable {terminalLargeTargetProtectedCoreFrontierReduction
+  terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+  terminalLargeTargetProtectedCoreAllLargePromotion
+  terminalLargeTargetProtectedCoreStrictDefectTransfer
+  terminalAllLargeAbsorptionOverlapCongestionBound
+  terminalAllLargeAbsorptionAnchoredCollisionBranch
+  terminalAllLargeAbsorptionProtectedCoreLift
+  terminalAllLargeAbsorptionNoResidualLargeTarget : Prop}
+
+/-- Project the underlying large-target capacity/endpoint extension bundle. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle.toLargeTargetCapacityEndpointExhaustionExtensionBundle
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    LargeTargetCapacityEndpointExhaustionExtensionBundle :=
+  h.largeTargetCapacityEndpointExhaustionExtensionBundle
+
+/-- Project the protected-core terminal packet from the extension bundle. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle.toProtectedCoreFrontier
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer :=
+  h.protectedCoreFrontier
+
+/-- Project the all-large absorption/collision terminal packet from the extension bundle. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle.toAllLargeAbsorptionOverlapAnchoredCollision
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget :=
+  h.allLargeAbsorptionOverlapAnchoredCollision
+
+end ProtectedCoreAllLargeClosureExtensionBundleApi
+/--
+Downstream final-consumer rows for the protected-core/all-large closure layer.  The row keeps the
+large-target endpoint handoff opaque, exposes the protected-core/all-large extension bundle and the
+first-bit final closure row, and records the target-statement projections as assumption-backed data.
+-/
+structure CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+    (LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      LargeTargetCapacityEndpointExhaustionExtensionBundle : Type)
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop) : Type where
+  largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+    LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+  protectedCoreAllLargeClosureExtensionBundle :
+    CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+      LargeTargetCapacityEndpointExhaustionExtensionBundle
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget
+  firstBitFinalClosure :
+    CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  largeTargetCapacityEndpointExhaustionTargetStatement : TargetStatement
+  targetStatement : TargetStatement
+  targetStatement_eq_largeTargetCapacityEndpointExhaustion :
+    targetStatement = largeTargetCapacityEndpointExhaustionTargetStatement
+  firstBitFinalClosureTargetStatement_eq_targetStatement :
+    firstBitFinalClosure.toTargetStatement = targetStatement
+
+/-- Build downstream final-consumer rows from the opaque large-target row and closure packets. -/
+def certifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows_of_packets
+    {LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      LargeTargetCapacityEndpointExhaustionExtensionBundle : Type}
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget : Prop}
+    (largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :
+      LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff)
+    (protectedCoreAllLargeClosureExtensionBundle :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget)
+    (firstBitFinalClosure :
+      CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (largeTargetCapacityEndpointExhaustionTargetStatement : TargetStatement) :
+    CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+      LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+      LargeTargetCapacityEndpointExhaustionExtensionBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget where
+  largeTargetCapacityEndpointExhaustionFinalConsumerHandoff :=
+    largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+  protectedCoreAllLargeClosureExtensionBundle := protectedCoreAllLargeClosureExtensionBundle
+  firstBitFinalClosure := firstBitFinalClosure
+  largeTargetCapacityEndpointExhaustionTargetStatement :=
+    largeTargetCapacityEndpointExhaustionTargetStatement
+  targetStatement := largeTargetCapacityEndpointExhaustionTargetStatement
+  targetStatement_eq_largeTargetCapacityEndpointExhaustion := rfl
+  firstBitFinalClosureTargetStatement_eq_targetStatement := Subsingleton.elim _ _
+
+section ProtectedCoreAllLargeDownstreamFinalConsumerRowsApi
+
+variable {LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+  LargeTargetCapacityEndpointExhaustionExtensionBundle : Type}
+variable {terminalLargeTargetProtectedCoreFrontierReduction
+  terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+  terminalLargeTargetProtectedCoreAllLargePromotion
+  terminalLargeTargetProtectedCoreStrictDefectTransfer
+  terminalAllLargeAbsorptionOverlapCongestionBound
+  terminalAllLargeAbsorptionAnchoredCollisionBranch
+  terminalAllLargeAbsorptionProtectedCoreLift
+  terminalAllLargeAbsorptionNoResidualLargeTarget : Prop}
+
+/-- Project the opaque large-target endpoint final-consumer handoff row. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows.toLargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+        LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff :=
+  h.largeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+
+/-- Project the protected-core/all-large closure extension bundle. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows.toProtectedCoreAllLargeClosureExtensionBundle
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+        LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierProtectedCoreAllLargeClosureExtensionBundle
+      LargeTargetCapacityEndpointExhaustionExtensionBundle
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget :=
+  h.protectedCoreAllLargeClosureExtensionBundle
+
+/-- Project the protected-core terminal packet from the downstream rows. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows.toProtectedCoreFrontier
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+        LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetProtectedCoreFrontierCertificate
+      terminalLargeTargetProtectedCoreFrontierReduction
+      terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+      terminalLargeTargetProtectedCoreAllLargePromotion
+      terminalLargeTargetProtectedCoreStrictDefectTransfer :=
+  h.protectedCoreAllLargeClosureExtensionBundle.toProtectedCoreFrontier
+
+/-- Project the all-large absorption/collision terminal packet from the downstream rows. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows.toAllLargeAbsorptionOverlapAnchoredCollision
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+        LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierTerminalAllLargeAbsorptionOverlapAnchoredCollisionCertificate
+      terminalAllLargeAbsorptionOverlapCongestionBound
+      terminalAllLargeAbsorptionAnchoredCollisionBranch
+      terminalAllLargeAbsorptionProtectedCoreLift
+      terminalAllLargeAbsorptionNoResidualLargeTarget :=
+  h.protectedCoreAllLargeClosureExtensionBundle.toAllLargeAbsorptionOverlapAnchoredCollision
+
+/-- Project the first-bit final closure row from the downstream rows. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows.toFirstBitFinalClosure
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+        LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    CertifiedProofMdCurrentFrontierFirstBitFinalClosureHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitFinalClosure
+
+/-- Project the large-target endpoint target statement recorded in the downstream rows. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows.toLargeTargetCapacityEndpointExhaustionTargetStatement
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+        LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    TargetStatement :=
+  h.largeTargetCapacityEndpointExhaustionTargetStatement
+
+/-- Project the normalized downstream final-consumer target statement. -/
+def CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows.toTargetStatement
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+        LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- The downstream rows expose the same target statement as the first-bit final closure row. -/
+theorem CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows.firstBitFinalClosureTargetStatement_eq_targetStatement
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+        LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    h.toFirstBitFinalClosure.toTargetStatement = h.toTargetStatement :=
+  h.firstBitFinalClosureTargetStatement_eq_targetStatement
+
+/-- Wrapper theorem exposing `TargetStatement` from the downstream final-consumer rows. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+    (h :
+      CertifiedProofMdCurrentFrontierProtectedCoreAllLargeDownstreamFinalConsumerRows
+        LargeTargetCapacityEndpointExhaustionFinalConsumerHandoff
+        LargeTargetCapacityEndpointExhaustionExtensionBundle
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        terminalLargeTargetProtectedCoreFrontierReduction
+        terminalLargeTargetProtectedCoreCapacityEndpointCompatibility
+        terminalLargeTargetProtectedCoreAllLargePromotion
+        terminalLargeTargetProtectedCoreStrictDefectTransfer
+        terminalAllLargeAbsorptionOverlapCongestionBound
+        terminalAllLargeAbsorptionAnchoredCollisionBranch
+        terminalAllLargeAbsorptionProtectedCoreLift
+        terminalAllLargeAbsorptionNoResidualLargeTarget) :
+    TargetStatement :=
+  h.toTargetStatement
+
+end ProtectedCoreAllLargeDownstreamFinalConsumerRowsApi
 end FinalObligationDashboard
 
 
