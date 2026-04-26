@@ -19514,6 +19514,1038 @@ theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toTarge
     h.toTargetStatement = h.toFinalPublicArchiveReleaseFacade.toTargetStatement :=
   h.targetStatement_eq_facade
 
+/-!
+## Final consumer archive/release bridge-blocker handoff
+
+The final consumer archive/release facade above is the stable import point for the current proof-md
+frontier.  The layer below adds a narrow terminal bridge-blocker narrative: rank-three trace pinning,
+zero-gain saturation, and four-atom bridge blockers are carried as explicit assumptions, so downstream
+consumers can import them together with the archive/release surfaces without treating them as closed
+final proof.
+-/
+
+/--
+Assumption-backed terminal bridge-blocker packet for the current frontier.  Each field is an explicit
+frontier assumption: the packet records the rank-three trace-pinning closure, the zero-gain saturation
+barrier, and the four-atom bridge blockers without proving any of them unconditionally.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop) :
+    Type where
+  rankThreeBridgeClosure : terminalRankThreeBridgeClosure
+  zeroGainSaturation : terminalZeroGainSaturation
+  fourAtomBridgeBlockers : terminalFourAtomBridgeBlockers
+
+/-- Project the rank-three bridge-closure assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions.toRankThreeBridgeClosure
+    {terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    terminalRankThreeBridgeClosure :=
+  h.rankThreeBridgeClosure
+
+/-- Project the zero-gain saturation assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions.toZeroGainSaturation
+    {terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    terminalZeroGainSaturation :=
+  h.zeroGainSaturation
+
+/-- Project the four-atom bridge-blocker assumption. -/
+def CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions.toFourAtomBridgeBlockers
+    {terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop}
+    (h : CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    terminalFourAtomBridgeBlockers :=
+  h.fourAtomBridgeBlockers
+
+/--
+Archive/release handoff for final consumers with explicit terminal bridge-blocker assumptions.
+It keeps the existing final consumer archive/release facade as the canonical source of public,
+downstream, Ramsey, terminal, first-bit, target, checklist, audit, and numerical projections while
+pairing it with the rank-three/zero-gain/four-atom blocker packet.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop)
+    (terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop) :
+    Type where
+  finalConsumerArchiveReleaseFacade :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  bridgeBlockerAssumptions :
+    CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers
+
+section FinalConsumerArchiveReleaseBridgeBlockerApi
+
+variable {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+variable {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+variable {packingSize : AnchoredPacking → ℕ}
+variable {WitnessCountAtLeast : ℕ → ℕ → Prop}
+variable {TwoDisjointTemplatesNeedTwo : Prop}
+variable {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+variable {v : ↑(s : Set α)}
+variable {sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop}
+variable {terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers : Prop}
+
+/-- Promote a final consumer archive/release facade to the bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers where
+  finalConsumerArchiveReleaseFacade := h
+  bridgeBlockerAssumptions := bridgeBlockerAssumptions
+
+/-- Non-dot constructor for the bridge-blocker handoff from the consumer archive/release facade. -/
+def certifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff_of_finalConsumerArchiveReleaseFacade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions
+
+/-- Promote a final public archive/release facade to the bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalPublicArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions
+
+/-- Promote a final public archive release to the bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalPublicArchiveRelease.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicArchiveRelease
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions
+
+/-- Promote a final public archive bundle to the bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalPublicArchiveBundle.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicArchiveBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions
+
+/-- Promote a final public release bundle to the bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalPublicReleaseBundle.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicReleaseBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions
+
+/-- Promote a final public handoff export to the bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalPublicHandoffExport.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalPublicHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions
+
+/-- Promote a final consumer dashboard to the bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions
+
+/-- Promote a final handoff manifest to the bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalHandoffManifest.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions
+
+/-- Promote a final consumer handoff export to the bridge-blocker handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport.toFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions
+
+/-- Project the canonical final consumer archive/release facade from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalConsumerArchiveReleaseFacade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.finalConsumerArchiveReleaseFacade
+
+/-- Project the terminal bridge-blocker assumption packet from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toBridgeBlockerAssumptions
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers :=
+  h.bridgeBlockerAssumptions
+
+/-- Project the final public archive/release facade from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalPublicArchiveReleaseFacade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalPublicArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalPublicArchiveReleaseFacade
+
+/-- Project the final public archive release from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalPublicArchiveRelease
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalPublicArchiveRelease
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalPublicArchiveRelease
+
+/-- Project the final public release bundle from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalPublicReleaseBundle
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalPublicReleaseBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalPublicReleaseBundle
+
+/-- Project the final public handoff export from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalPublicHandoffExport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalPublicHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalPublicHandoffExport
+
+/-- Project the final consumer dashboard from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalConsumerDashboard
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerDashboard
+
+/-- Project the final handoff manifest from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalHandoffManifest
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalHandoffManifest
+
+/-- Project the final consumer handoff export from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalConsumerHandoffExport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalConsumerHandoffExport
+
+/-- Project the public handoff summary from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toPublicHandoffSummary
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierPublicHandoffSummary
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toPublicHandoffSummary
+
+/-- Project the final public checklist from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalPublicChecklist
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalPublicChecklist
+
+/-- Project the public audit checklist from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toPublicAuditChecklist
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toPublicAuditChecklist
+
+/-- Project the downstream audit ledger from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toDownstreamAuditLedger
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toDownstreamAuditLedger
+
+/-- Project the downstream manifest from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toDownstreamManifest
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierDownstreamManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toDownstreamManifest
+
+/-- Project the downstream obligation matrix from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toDownstreamObligationMatrix
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierDownstreamObligationMatrix
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toDownstreamObligationMatrix
+
+/-- Project the consumer obligation export from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toConsumerObligationExport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierConsumerObligationExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toConsumerObligationExport
+
+/-- Project the remaining assumption-backed surfaces from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalRemainingAssumptionSurfaces
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierFinalRemainingAssumptionSurfaces
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalRemainingAssumptionSurfaces
+
+/-- Project the Ramsey current-frontier consumer surface from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toRamseyCurrentFrontierConsumerSurface
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toFinalConsumerArchiveReleaseFacade.toRamseyCurrentFrontierConsumerSurface
+
+/-- Project the Ramsey proof-md import from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toRamseyCurrentFrontierProofMdImport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toFinalConsumerArchiveReleaseFacade.toRamseyCurrentFrontierProofMdImport
+
+/-- Project the terminal rank-three bridge closure from the handoff assumption packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toTerminalRankThreeBridgeClosure
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    terminalRankThreeBridgeClosure :=
+  h.toBridgeBlockerAssumptions.toRankThreeBridgeClosure
+
+/-- Project the terminal zero-gain saturation assumption from the handoff packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toTerminalZeroGainSaturation
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    terminalZeroGainSaturation :=
+  h.toBridgeBlockerAssumptions.toZeroGainSaturation
+
+/-- Project the terminal four-atom bridge blockers from the handoff packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toTerminalFourAtomBridgeBlockers
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    terminalFourAtomBridgeBlockers :=
+  h.toBridgeBlockerAssumptions.toFourAtomBridgeBlockers
+
+/-- Project the terminal packet-atom public export from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toTerminalPacketAtomPublicExport
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomPublicExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toTerminalPacketAtomPublicExport
+
+/-- Project the terminal mixed-core imports from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toTerminalMixedCore
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.toFinalConsumerArchiveReleaseFacade.toTerminalMixedCore
+
+/-- Project the first-bit co-cut assumptions from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFirstBitCoCut
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toFinalConsumerArchiveReleaseFacade.toFirstBitCoCut
+
+/-- Project the packet-atom frontier imports from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toPacketAtomFrontierImports
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    FirstBitTerminalPacketAtomFrontierImports
+      sizeRefinedAtoms defectCorrection unionAntiCancellation :=
+  h.toFinalConsumerArchiveReleaseFacade.toPacketAtomFrontierImports
+
+/-- Project the packet-atom shadow imports from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toPacketAtomShadowImports
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+      (FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerArchiveReleaseFacade.toPacketAtomShadowImports
+
+/-- Project the q16 terminal Ramsey bound from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toCliqueOrIndepSetBound16
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    HasCliqueOrIndepSetBound 16 16 8388607 :=
+  h.toFinalConsumerArchiveReleaseFacade.toCliqueOrIndepSetBound16
+
+/-- Project the terminal dyadic tail route from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toTerminalTailFromFive
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive :=
+  h.toFinalConsumerArchiveReleaseFacade.toTerminalTailFromFive
+
+/-- Project the higher-bit fixed-witness targets from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toHigherBitFixedWitnessTargetsFromEleven
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven :=
+  h.toFinalConsumerArchiveReleaseFacade.toHigherBitFixedWitnessTargetsFromEleven
+
+/-- Project the target-statement bundle from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toTargetStatementBundle
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toFinalConsumerArchiveReleaseFacade.toTargetStatementBundle
+
+/-- Project the final target consumer certificate from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalTargetConsumerCertificate
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.toFinalConsumerArchiveReleaseFacade.toFinalTargetConsumerCertificate
+
+/-- Project compact Ramsey numerical consequences from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toFinalNumericalConsequences
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toTargetStatementBundle.toCurrentFrontierTargetImports.toFinalNumericalConsequences
+
+/-- Project the target statement from the handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff.toTargetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    TargetStatement :=
+  h.toFinalConsumerArchiveReleaseFacade.toTargetStatement
+
+/-- The bridge-blocker handoff exposes the certified target statement carried by its facade. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseHandoff
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+      terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    TargetStatement :=
+  h.toTargetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions.mk_toRankThreeBridgeClosure
+    (rankThree : terminalRankThreeBridgeClosure)
+    (zeroGain : terminalZeroGainSaturation)
+    (fourAtom : terminalFourAtomBridgeBlockers) :
+    (CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions.mk
+      rankThree zeroGain fourAtom).toRankThreeBridgeClosure = rankThree :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions.mk_toZeroGainSaturation
+    (rankThree : terminalRankThreeBridgeClosure)
+    (zeroGain : terminalZeroGainSaturation)
+    (fourAtom : terminalFourAtomBridgeBlockers) :
+    (CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions.mk
+      rankThree zeroGain fourAtom).toZeroGainSaturation = zeroGain :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions.mk_toFourAtomBridgeBlockers
+    (rankThree : terminalRankThreeBridgeClosure)
+    (zeroGain : terminalZeroGainSaturation)
+    (fourAtom : terminalFourAtomBridgeBlockers) :
+    (CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions.mk
+      rankThree zeroGain fourAtom).toFourAtomBridgeBlockers = fourAtom :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff_facade
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    (h.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions).toFinalConsumerArchiveReleaseFacade = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff_assumptions
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    (h.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions).toBridgeBlockerAssumptions =
+      bridgeBlockerAssumptions :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff_publicSummary
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    (h.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions).toPublicHandoffSummary =
+      h.toPublicHandoffSummary :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff_rankThreeClosure
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    (h.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions).toTerminalRankThreeBridgeClosure =
+      bridgeBlockerAssumptions.toRankThreeBridgeClosure :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff_zeroGainSaturation
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    (h.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions).toTerminalZeroGainSaturation =
+      bridgeBlockerAssumptions.toZeroGainSaturation :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff_fourAtomBlockers
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    (h.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions).toTerminalFourAtomBridgeBlockers =
+      bridgeBlockerAssumptions.toFourAtomBridgeBlockers :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff_targetStatement
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    (h.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions).toTargetStatement =
+      h.toTargetStatement :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade.toFinalConsumerArchiveReleaseHandoff_numericalConsequences
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerArchiveReleaseFacade
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier)
+    (bridgeBlockerAssumptions :
+      CertifiedProofMdCurrentFrontierTerminalBridgeBlockerAssumptions
+        terminalRankThreeBridgeClosure terminalZeroGainSaturation terminalFourAtomBridgeBlockers) :
+    (h.toFinalConsumerArchiveReleaseHandoff bridgeBlockerAssumptions).toFinalNumericalConsequences =
+      h.toTargetStatementBundle.toCurrentFrontierTargetImports.toFinalNumericalConsequences :=
+  rfl
+
+end FinalConsumerArchiveReleaseBridgeBlockerApi
+
 end FinalObligationDashboard
 
 end RegularInducedSubgraph
