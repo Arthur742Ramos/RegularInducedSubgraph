@@ -943,6 +943,11 @@ d' = d + deg_D(b_g)-c
 is repaired, where `b_g` is any vertex of the direction type.  For `|D|<4`, this is just the catalogue
 of singleton, pair, or triple deletions whose external degree into the kept old witness is constant;
 the residue shift is `|N_W(b_g) cap D|-c`.
+For a singleton, either `c=0,r=0` and the deleted old vertex is isolated from the kept old witness,
+giving shift `1_{b_gx}`, or `c=1,r=m-1` and it is complete to the kept old witness, giving shift
+`1_{b_gx}-1`.  For a pair `{x,y}`, with `e=1_{xy}` and `a=|N_W(b_g) cap {x,y}|`, the three cases are:
+anticomplete pair with `r=e [MOD 2]` and shift `a`; split pair with `m-2=2(r-e) [MOD 4]` and shift
+`a-1`; complete pair with `m-2=r-e [MOD 2]` and shift `a-2`.
 
 Thus, with `Delta_<(4)(g)` the set of these small shifts, terminality should be read
 residue-by-residue:
@@ -974,6 +979,11 @@ rigidity: the spectrum cannot contain both middle residues, and it cannot contai
 unless the fiber is Ramsey-small.  Singleton/pair/triple co-regular deletions in `W` remain useful
 because each nonzero shift adds one of the hereditary constraints in the displayed list, but
 `Delta_<(4)(g)={0}` still needs a separate argument.
+Since the empty deletion always contributes shift `0`, two distinct nonzero shifts in
+`Delta_<(4)(g)` would give three repaired residues.  Every three-residue subset contains either both
+extremes `{0,3}` or both middle residues `{1,2}`.  Hence any terminal exact-basis direction with
+`|C_g|>=R(4,4)` and `|C_g|>2m+5` has `Delta_<(4)(g) subset {0,sigma_g}` for one nonzero shift at most;
+all usable singleton and pair deletion shifts against such a direction must coincide.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has

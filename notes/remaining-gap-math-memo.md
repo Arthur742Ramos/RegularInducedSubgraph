@@ -1606,6 +1606,13 @@ At the atom level, a defective old-balanced `S` with defect `phi_S` admits a sig
 For `|D|=1`, this forces `c=0,r=0` or `c=1,r=m-1`, and all atom defects lie in `{c,c-1}`.
 For `|D|<4`, the defect support must lie in `{c,c-1,...,c-|D|}` with `0<=c<=|D|`; `|D|=3` is the first
 small correction size with no pointwise support restriction.
+In exact-basis direction spectra, singleton shifts come only from old vertices isolated from or complete
+to the kept old witness; pair shifts come from anticomplete, split, or complete old pairs, with shifts
+`a`, `a-1`, or `a-2` according to `a=|N_W(b_g) cap D|`.
+Since the empty deletion gives shift `0`, any terminal direction with
+`|C_g|>=R(4,4)` and `|C_g|>2m+5` has at most one nonzero small-deletion shift; otherwise the repaired
+spectrum contains three residues and hence either both Ramsey extremes or both middle pseudo-split
+residues.
 The `25m/8` class margin also gives, for `m>24`, an augmented atom with `|S|=delta_S=0`, so
 `sum_S phi_S=-2e(S)`.
 

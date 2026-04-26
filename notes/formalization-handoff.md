@@ -1400,6 +1400,10 @@ Recommended attack:
    For `d=|D|<4`, record the small-deletion spectrum:
    `0<=c<=d`, `phi_S(S) subset {c,c-1,...,c-d}`, and
    `c(m-d)=d r-2e(D) [MOD 4]`.
+   For exact-basis direction spectra, add the singleton/pair table.  Singleton: isolated old vertex has
+   `c=0,r=0,shift=1_{b_gx}`; complete old vertex has `c=1,r=m-1,shift=1_{b_gx}-1`.  Pair
+   `{x,y}` with `e=1_{xy}`, `a=|N_W(b_g) cap {x,y}|`: anticomplete gives `r=e [MOD 2]`, shift `a`;
+   split gives `m-2=2(r-e) [MOD 4]`, shift `a-1`; complete gives `m-2=r-e [MOD 2]`, shift `a-2`.
 
    The class-size margin also allows augmented Olson statements.  Since `|C|>25m/8`, one may add
    `a` fixed `Z/4Z` coordinates to the `m-1` old-difference coordinates whenever
@@ -1502,6 +1506,9 @@ Recommended attack:
    miss at least one middle residue, and it cannot contain both extreme residues unless the fiber is
    Ramsey-small.  Singleton rigidity `Rep(g)={d}` or `Delta_<(4)(g)={0}` needs a separate argument and
    should not be formalized from Ramsey alone.
+   But since shift `0` is always present, two distinct nonzero shifts force three repaired residues and
+   hence either the Ramsey-extreme pair or the middle pseudo-split pair.  Therefore a terminal direction
+   with `|C_g|>=R(4,4)` and `|C_g|>2m+5` has `Delta_<(4)(g) subset {0,sigma_g}`.
 
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is

@@ -6559,6 +6559,26 @@ each case the direction residue shifts by `|N_W(b_g) cap D|-c`.  Therefore a ter
 direction is one whose old-neighbourhood type avoids all extremal shifts supplied by these small
 internal subwitnesses of `W`.
 
+The first two levels can be tabulated without any hidden quantifier.  For `D={x}`, the usable cases are
+
+```text
+c=0: x is isolated from W\{x},        r=0,          shift=1_{b_g x} in {0,1};
+c=1: x is complete to W\{x},          r=m-1,        shift=1_{b_g x}-1 in {3,0}.
+```
+
+For `D={x,y}` with `e=1_{xy}` and `a=|N_W(b_g) cap {x,y}|`, the usable cases are
+
+```text
+c=0: {x,y} is anticomplete to E,      r=e [MOD 2],                 shift=a in {0,1,2};
+c=1: every vertex of E sees one of x,y,
+     m-2=2(r-e) [MOD 4],                                      shift=a-1 in {3,0,1};
+c=2: {x,y} is complete to E,          m-2=r-e [MOD 2],             shift=a-2 in {2,3,0}.
+```
+
+Thus every singleton or pair deletion adds an interval of length at most three to the direction repair
+spectrum, and the interval is controlled by a concrete co-regular old pattern.  The first small deletion
+that can have no pointwise residue-support restriction is a triple.
+
 Consequently, for a direction type `g` define
 
 ```text
@@ -6613,6 +6633,26 @@ terminal direction has one of the following sparse spectra: one middle residue; 
 one middle together with one extreme.  Each nonzero old-deletion shift is still valuable, because it adds
 one of the forbidden hereditary constraints in the displayed list, but singleton rigidity
 `Delta_<(4)(g)={0}` requires an additional argument and is not a consequence of Ramsey alone.
+
+There is nevertheless a strong large-fiber corollary.  Since `0 in Delta_<(4)(g)` from the empty
+deletion, two distinct nonzero shifts would make `d+Delta_<(4)(g)` contain at least three residues.
+Every three-residue subset of `Z/4Z` contains either both extremes `{0,3}` or both middle residues
+`{1,2}`.  Therefore, if
+
+```text
+|C_g| >= R(4,4)        and        |C_g|>2m+5,
+```
+
+then a terminal exact-basis direction satisfies
+
+```text
+Delta_<(4)(g) subset {0,sigma_g}        for some sigma_g in Z/4Z.
+```
+
+Thus any very large direction has at most one nonzero small-deletion shift.  In particular, the
+singleton/pair table above becomes a rigid old-witness constraint: all usable isolated, universal,
+anticomplete, split, and complete old pairs must give the same shift against that direction, or else the
+fiber falls into the Ramsey or pseudo-split bounded branch.
 
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
