@@ -39676,6 +39676,459 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMd
       h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
   exact Subsingleton.elim _ _
 
+/--
+Final consumer audit package for the Ramsey/R45 proof-md current frontier.  It extends the
+checkpoint/release bundle with the remaining-obligation checklist, endpoint certificates, middle
+degree local ledger handoffs, exact-`42` top-row surfaces, and the carried R45/R1010 rows that final
+consumers cite.  This is only an assumption-backed repackaging: the localized `R(4,5) <= 27` row is
+kept as a transported field rather than strengthened to any unconditional sharp endpoint.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  checkpointReleaseBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v
+  publicDistributionBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v
+  remainingObligations : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  publicDistributionFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v
+  distributionBundle : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v
+  distributionFacade : RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v
+  finalManifest : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v
+  finalLedger : RamseyTenR45CurrentFrontierProofMdFinalLedger G s v
+  publicAuditSummary : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v
+  coverageCertificate : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v
+  auditChecklist : RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  consumerSurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  endpointDownstreamImport : RamseyTenR45EndpointDownstreamImport
+  endpointReady : RamseyTenR45EndpointReadyCertificate
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointResidualCertificate : RamseyTenR45EndpointResidualCertificate
+  middleDegreeEndpointCertificate : RamseyTenR45MiddleDegreeEndpointCertificate
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalCertificateBundle : RamseyTenR45FinalCertificateBundle
+  finalBundleSelector : RamseyTenR45FinalBundleSelectorSurface
+  topRowReady : RamseyThreeTenExact42TopRowReadyCertificate G s v
+  topRowFinalHandoff : RamseyThreeTenExact42TopRowFinalHandoff G s v
+  topRowSelector : RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v
+  topRowSelectorHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      (RamseyThreeTenExact42TopRowSelectorWithMiddleDegreeLocalLedgers G s v)
+  exact42Status : RamseyThreeTenExact42ProfileStatusWithMiddleDegreeLocalLedgers
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  exact42ProfileHandoff :
+    RamseyTenR45LocalLedgerHandoff RamseyThreeTenExact42ThreeRowProfileSurface
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  degreeTenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeHandoff :
+    RamseyTenR45LocalLedgerHandoff
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Checkpoint/release bundles materialize the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalConsumerAuditPackage
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v := by
+  let hp := h.toProofMdFinalPublicDistributionBundle
+  let hr := h.toProofMdR45RemainingObligationChecklist
+  exact
+    { checkpointReleaseBundle := h
+      publicDistributionBundle := hp
+      remainingObligations := hr
+      publicDistributionFacade := h.toProofMdFinalPublicDistributionFacade
+      distributionBundle := h.toProofMdFinalDistributionBundle
+      distributionFacade := h.toProofMdFinalDistributionFacade
+      finalManifest := h.toProofMdFinalManifest
+      finalLedger := h.toProofMdFinalLedger
+      publicAuditSummary := h.toProofMdPublicAuditSummary
+      coverageCertificate := h.toProofMdCoverageCertificate
+      auditChecklist := h.auditChecklist
+      proofMdImport := h.toProofMdImport
+      proofMdNormalizationChecklist := h.toProofMdNormalizationChecklist
+      theoremChecklist := h.toCurrentFrontierTheoremChecklist
+      targetRows := h.toCurrentFrontierTargetRows
+      remainingAssumptionRows := h.toRemainingAssumptionRows
+      numericalConsequences := h.toFinalNumericalConsequences
+      consumerSurface := hp.toCurrentFrontierConsumerSurface
+      finalDownstreamImport := hp.toFinalDownstreamImport
+      endpointDownstreamImport := hr.toEndpointDownstreamImport
+      endpointReady := hr.endpointReady
+      endpointResiduals := h.toEndpointResiduals
+      endpointResidualCertificate := hr.toEndpointResidualCertificate
+      middleDegreeEndpointCertificate := h.toMiddleDegreeEndpointCertificate
+      r45TwentySevenTable := hr.toR45TwentySevenTable
+      finalCertificateBundle := hr.toFinalCertificateBundle
+      finalBundleSelector := hr.toFinalBundleSelectorSurface
+      topRowReady := hr.topRowReady
+      topRowFinalHandoff := hr.topRowFinalHandoff
+      topRowSelector := hr.topRowSelector
+      topRowSelectorHandoff := hr.topRowSelectorHandoff
+      exact42Status := h.toExact42ProfileStatusWithMiddleDegreeLocalLedgers
+      exact42Profile := hr.toExact42ProfileSurface
+      exact42WithMiddleSplits := hr.exact42WithMiddleSplits
+      exact42ProfileHandoff := hr.exact42ProfileHandoff
+      localLedgers := h.localLedgers
+      degreeTenSplits := hr.toDegreeTenSplits
+      degreeElevenSplits := hr.toDegreeElevenSplits
+      degreeTwelveSplits := hr.toDegreeTwelveSplits
+      middleDegreeSplits := hr.toMiddleDegreeSplits
+      degreeTenHandoff := hr.degreeTenHandoff
+      degreeElevenHandoff := hr.degreeElevenHandoff
+      degreeTwelveHandoff := hr.degreeTwelveHandoff
+      middleDegreeHandoff := hr.middleDegreeHandoff
+      topRowProfile := hr.toTopRowProfile
+      topRowCommonSum := hr.toCommonSum
+      topRowCountProfile := hr.toCountProfile
+      exact42Row := h.toThreeTenFortyTwo
+      localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+      admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+      extremalF40960Row := h.toTenLeF_40960
+      regularTenAt40960Row := fun H hcard =>
+        h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard }
+
+/-- Final public distribution bundles materialize the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle.toProofMdFinalConsumerAuditPackage
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v :=
+  h.toProofMdFinalCheckpointReleaseBundle.toProofMdFinalConsumerAuditPackage
+
+/-- Final public distribution facades materialize the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade.toProofMdFinalConsumerAuditPackage
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v :=
+  h.toProofMdFinalPublicDistributionBundle.toProofMdFinalConsumerAuditPackage
+
+/-- Final distribution bundles materialize the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle.toProofMdFinalConsumerAuditPackage
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v :=
+  h.toProofMdFinalPublicDistributionBundle.toProofMdFinalConsumerAuditPackage
+
+/-- Select the checkpoint/release bundle from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toProofMdFinalCheckpointReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v :=
+  h.checkpointReleaseBundle
+
+/-- Select the final public distribution bundle from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.publicDistributionBundle
+
+/-- Select the remaining-obligation checklist from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.remainingObligations
+
+/-- Select the current-frontier consumer surface from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.consumerSurface
+
+/-- Select the final downstream import from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select endpoint residuals from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the endpoint residual certificate from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toEndpointResidualCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45EndpointResidualCertificate :=
+  h.endpointResidualCertificate
+
+/-- Select the middle-degree endpoint certificate from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toMiddleDegreeEndpointCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45MiddleDegreeEndpointCertificate :=
+  h.middleDegreeEndpointCertificate
+
+/-- Select the relaxed `27`-vertex R45 table from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select the final certificate bundle from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toFinalCertificateBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45FinalCertificateBundle :=
+  h.finalCertificateBundle
+
+/-- Select the exact-`42` profile surface from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toExact42ProfileSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select local middle-degree ledgers from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the uniform middle-degree split certificate from the final consumer audit package. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toMiddleDegreeSplits
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.middleDegreeSplits
+
+/-- Final consumer audit route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Final consumer audit route to the localized `R(4,5) <= 27` carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Final consumer audit route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Final consumer audit route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Final consumer audit route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Final consumer audit route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Flat constructor exposing final consumer audit packages from checkpoint/release bundles. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage_of_finalCheckpointReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v :=
+  h.toProofMdFinalConsumerAuditPackage
+
+/-- Final consumer audit packages normalize their target rows with remaining assumptions. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toCurrentFrontierTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    h.targetRows = h.remainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final consumer audit packages normalize their R45 row with their remaining-obligation checklist. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toProofMdR45RemainingObligationChecklist_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    h.toProofMdR45RemainingObligationChecklist.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Final consumer audit packages normalize their R1010 row with the checkpoint/release bundle. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toProofMdFinalCheckpointReleaseBundle_toHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    h.toProofMdFinalCheckpointReleaseBundle.toHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/--
+Minimal citation bundle for final proof-md consumers.  It strips the audit package down to the
+canonical public handles and theorem rows that downstream files should cite, while still retaining
+the remaining-obligation checklist so the localized R45 input is visibly assumption-backed.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  auditPackage : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v
+  checkpointReleaseBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v
+  publicDistributionBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v
+  remainingObligations : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final consumer audit packages materialize the minimal citation bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toProofMdFinalConsumerCitationBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v where
+  auditPackage := h
+  checkpointReleaseBundle := h.toProofMdFinalCheckpointReleaseBundle
+  publicDistributionBundle := h.toProofMdFinalPublicDistributionBundle
+  remainingObligations := h.toProofMdR45RemainingObligationChecklist
+  endpointResiduals := h.toEndpointResiduals
+  exact42Row := h.toThreeTenFortyTwo
+  localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+  admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Row := h.toTenLeF_40960
+  regularTenAt40960Row := fun H hcard =>
+    h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Checkpoint/release bundles materialize the minimal final-consumer citation bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdFinalConsumerCitationBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v :=
+  h.toProofMdFinalConsumerAuditPackage.toProofMdFinalConsumerCitationBundle
+
+/-- Select the final consumer audit package from the citation bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toProofMdFinalConsumerAuditPackage
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v :=
+  h.auditPackage
+
+/-- Citation-bundle route to the localized `R(4,5) <= 27` carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Citation-bundle route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Citation-bundle route to the final regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Citation bundles normalize their R45 row with the underlying audit package. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toProofMdFinalConsumerAuditPackage_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    h.toProofMdFinalConsumerAuditPackage.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
