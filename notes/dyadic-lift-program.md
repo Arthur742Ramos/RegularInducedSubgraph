@@ -1526,6 +1526,12 @@ Equivalently define
 `mu-nu notin D_3(|p\q|,|q\p|)`.  Hence identical traces with different `mu` block, complementary traces
 with even `mu-nu` block, and the remaining pairwise failures are just the small private-size entries of
 this `D_3` table.
+The internal four-set line is identical after conditioning on the kept pair.  With
+`lambda(v)=L_A(v)+deg_{R_i}(v)`, kept vertices `u,v notin O` require
+`deg_O(u)-deg_O(v)=lambda(u)-lambda(v)`.  Since `O` avoids `u,v`, the allowable residues are
+`E_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=5-a-b} [MOD 4]`, using private neighbourhood sizes inside
+`R_i\{u,v}`.  Thus external trace pairs use `D_3` and internal kept pairs use `E_3`; both are anti-Horn
+constraints on the same omitted triple.
 For a non-exact boundary, replace `h_X` by the maximum available import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`.  Terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every graph-compatible export.  The exact top is just the case

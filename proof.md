@@ -8571,6 +8571,39 @@ Consequently identical traces with different `mu` block immediately, and complem
 `mu-nu` block immediately.  All other failures are small private-size defects recorded by the same
 `D_3` table.  This is the first genuinely finite anti-Horn compression of the positive atom.
 
+The internal four-set line has the same form.  Put
+
+```text
+lambda(v)=L_A(v)+deg_{R_i}(v)        [MOD 4].
+```
+
+For kept vertices `u,v notin O`, internal equality requires
+
+```text
+deg_O(u)-deg_O(v)=lambda(u)-lambda(v)        [MOD 4].
+```
+
+Since `O` is disjoint from `{u,v}`, this is the same signed three-subset equation on the remaining five
+points, with private sizes
+
+```text
+a_{uv}=|N_{R_i}(u)\N_{R_i}(v) \ {u,v}|,
+b_{uv}=|N_{R_i}(v)\N_{R_i}(u) \ {u,v}|.
+```
+
+Define
+
+```text
+E_3(a,b)={x-y [MOD 4] :
+          0<=x<=a, 0<=y<=b, 0<=3-x-y<=5-a-b}.
+```
+
+Then a kept pair `u,v` is internally compatible with some omitted triple only if
+`lambda(u)-lambda(v) in E_3(a_{uv},b_{uv})`, and a particular omitted triple must satisfy the
+corresponding signed equation for every kept pair.  Therefore both parts of the positive-atom rerooting
+problem are now anti-Horn constraints on omitted triples: external trace pairs use `D_3`, internal kept
+pairs use `E_3`.
+
 The same height language also covers the non-exact boundary.  For an arbitrary zero-sum-free boundary
 `X`, define the available import height
 
