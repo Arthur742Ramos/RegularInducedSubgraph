@@ -1381,15 +1381,22 @@ Recommended attack:
    deletions as singleton/pair/triple subsets whose degree into every kept old vertex is constant; the
    shift is `|N_W(b_g) cap D|-c [MOD 4]`.
 
-   Define `Delta_<(4)(g)` to be the set of these shifts.  A Ramsey-large terminal direction fiber must
-   satisfy `(d+Delta_<(4)(g)) cap {0,3}=empty`; otherwise an independent four-set or clique four-set in
-   the fiber is repaired.  Since `0 in Delta_<(4)(g)` via `D=empty`, any Ramsey-large terminal active
-   direction has required residue `1` or `2`.
+   Define `Delta_<(4)(g)` to be the set of these shifts.  Terminality is residue-by-residue:
 
-   In that middle-residue branch, formalize the first hereditary obstruction as follows: if `d=1`, the
-   direction fiber has no induced `2K_2`; if `d=2`, it has no induced `C_4`, unless an old-deletion shift
-   has already moved residue `0` or `3` into `Rep(g)`.  Larger same-direction regular blocks provide
-   additional exclusions but are not yet a closure.
+   ```text
+   0 in d+Delta_<(4)(g)  =>  no independent four-set in the direction;
+   3 in d+Delta_<(4)(g)  =>  no clique four-set in the direction;
+   1 in d+Delta_<(4)(g)  =>  no induced 2K_2 in the direction;
+   2 in d+Delta_<(4)(g)  =>  no induced C_4 in the direction.
+   ```
+
+   Only the simultaneous presence of both `0` and `3` gives the constant Ramsey bound `R(4,4)`.
+   Therefore do not formalize the earlier overstrong claim that a large terminal direction has
+   `(d+Delta_<(4)(g)) cap {0,3}=empty` or that its required residue must be `1` or `2`.
+
+   In a middle-residue branch, formalize the first hereditary obstruction as follows: repaired residue
+   `1` forbids induced `2K_2`; repaired residue `2` forbids induced `C_4`.  Larger same-direction regular
+   blocks provide additional exclusions but are not yet a closure.
 
    Note the complement symmetry: `2K_2` and `C_4` are complementary four-vertex regular graphs.  If
    both middle residues lie in `Rep(g)`, a terminal large fiber must avoid both patterns; any remaining
@@ -1402,11 +1409,10 @@ Recommended attack:
    pseudo-split direction fiber has size at most about `2m+5`.  Therefore a direction fiber
    substantially larger than `2m` must have `Rep(g)` missing at least one middle residue.
 
-   Combining this with the exclusion of repairable residues `0` and `3`, a direction fiber above the
-   pseudo-split cap has `Rep(g)={d}`.  Formal consequence: every usable `D subset W`, `|D|<4`, with
-   `deg_D(w)=c` on `W\D` must satisfy `deg_D(b_g)=c` for the direction's old-neighbourhood type.
-   Singleton, pair, and triple co-regular deletions in `W` therefore become rigid membership tests for
-   very large terminal directions.
+   The corrected conclusion above the pseudo-split cap is only a spectrum-hole statement: `Rep(g)` must
+   miss at least one middle residue, and it cannot contain both extreme residues unless the fiber is
+   Ramsey-small.  Singleton rigidity `Rep(g)={d}` or `Delta_<(4)(g)={0}` needs a separate argument and
+   should not be formalized from Ramsey alone.
 
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is
@@ -1461,6 +1467,20 @@ Recommended attack:
    independence in every boundary-miss class by `2`, residue `3` bounds clique number in every
    boundary-hit class by `2`, and residues `1,2` give the isolated-hitter/path-middle one-corner
    constraints.
+
+   Useful corollary for rich spectra: if `Rep(g_i)` contains all four residues, then every retained
+   boundary type `tau in {0,1}^3` is forced by the `2+2` rules to be a clique, an independent set, or a
+   singleton.  For each boundary pair on which `tau` has equal bits, the internal retained edge status
+   must be the complement of that boundary-pair status; inconsistent prescriptions bound the type by one
+   vertex, while consistent prescriptions make it homogeneous and hence size at most `m` by outside-only
+   maximality.  Complementary one-hit type pairs are also forced complete or empty.
+
+   Shape-specific caps: if the boundary triple has one or two edges, then types `000` and `111` have
+   inconsistent prescriptions and size at most one, while the other six types are homogeneous; the signed
+   `3+1` rule forbids the one homogeneous type that completes the boundary triple to its regular residue,
+   giving `|C_i|<=5m+2`.  If the boundary triple is independent, repaired residue `0` forbids type
+   `000`, all other types are cliques, and repaired residue `3` bounds them by two vertices, giving
+   `|C_i|<=14`.  The triangle case is complementary and also gives `|C_i|<=14`.
 
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified

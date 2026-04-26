@@ -6052,27 +6052,28 @@ Delta_<(4)(g)={deg_D(b_g)-c :
                |D|<4 and deg_D(w)=c for every w in W\D}.
 ```
 
-Then the four-block repair spectrum is `d+Delta_<(4)(g)`.  If the direction fiber has at least
-`R(4,4)` vertices, terminality forces
+Then the four-block repair spectrum is `d+Delta_<(4)(g)`.  The correct terminal consequence is
+residue-by-residue, not the stronger false conclusion that all extreme residues are absent:
 
 ```text
-(d+Delta_<(4)(g)) cap {0,3}=empty.
+0 in d+Delta_<(4)(g)  =>  C_g has no independent four-set,
+3 in d+Delta_<(4)(g)  =>  C_g has no clique four-set,
+1 in d+Delta_<(4)(g)  =>  C_g has no induced 2K_2,
+2 in d+Delta_<(4)(g)  =>  C_g has no induced C_4.
 ```
 
-Indeed a Ramsey-large fiber contains either an independent four-set or a clique four-set, and these are
-regular residues `0` and `3`.  Thus the exact-basis obstruction has a strict dichotomy: either every
-active direction fiber is Ramsey-small, or every Ramsey-large active direction has a middle-only repair
-spectrum.  Since `0 in Delta_<(4)(g)` from `D=empty`, a Ramsey-large active direction in a terminal
-configuration must in particular have required residue `d in {1,2}`.
+Only the simultaneous presence of both extremes gives a constant Ramsey bound:
+if `{0,3} subset d+Delta_<(4)(g)`, then `|C_g|<R(4,4)`.  Thus a large terminal
+direction need not have middle-only spectrum; it may carry one extreme residue, in which case the
+corresponding independence or clique number is at most three.  The append-only residue `d` is always in
+the spectrum, so the required residue itself may be `0` or `3`; that branch must be controlled by
+outside-only maximality or by the augmented boundary sieve, not by Ramsey alone.
 
-In the remaining middle-only case the forbidden four-block has a standard graph name.  If `d=1`, a
-closing four-block is an induced matching `2K_2`; hence a terminal direction with no repairable
-extremal shift must be `2K_2`-free.  If `d=2`, a closing four-block is an induced `C_4`; hence the
-terminal direction is induced-`C_4`-free.  Larger constant-defect repairs say more: in the `d=1` case
-there is no induced `1 mod 4` regular block of size `0 mod 4` whose residue lies in the shifted spectrum,
-and similarly for `d=2` with `2 mod 4` regular blocks.  But the first visible hereditary obstruction is
-precisely `2K_2`-free or induced-`C_4`-free, plus the absence of small old-deletion shifts to residues
-`0` and `3`.
+The middle residues still have concrete first obstructions.  If `1` lies in the repair spectrum, a
+terminal direction is induced-`2K_2`-free.  If `2` lies in the repair spectrum, it is induced-`C_4`-free.
+Larger constant-defect repairs say more: there is no induced regular block of size `0 mod 4` whose
+residue lies in the shifted spectrum and whose old-side correction has surplus.  But the first visible
+hereditary obstruction is exactly the list above.
 
 The two middle obstructions are complements on four vertices: the complement of `2K_2` is `C_4`.
 Thus if a direction's deletion spectrum ever contains both middle residues `1` and `2`, a terminal
@@ -6091,22 +6092,13 @@ counterexample with a direction fiber substantially larger than `2m` must have a
 missing one of the two middle residues.  This turns the large-fiber obstruction into a finite
 old-deletion spectrum problem rather than an arbitrary hereditary graph problem.
 
-Combining this with the Ramsey-extreme exclusion gives a sharper rigidity.  In a terminal direction
-fiber larger than the pseudo-split cap, the repair spectrum cannot contain `0` or `3`, and it cannot
-contain both `1` and `2`.  Since the append-only residue `d` is always in the spectrum, the spectrum is
-forced to be the singleton `{d}`.  Equivalently,
-
-```text
-Delta_<(4)(g)={0}
-```
-
-for every usable deletion `D` of size `<4`.  Thus every singleton, pair, or triple deletion in `W` whose
-degree into `W\D` is constant must see the direction's old-neighbourhood type with the same constant.
-For example, if a vertex `u in W` is either isolated from or complete to `W\{u}`, then every very large
-terminal direction type must respectively miss or contain `u`.  Pair and triple co-regular deletions
-give analogous rigid intersection tests.  Large exact-basis directions are therefore not arbitrary
-middle-residue hereditary graphs; their old-neighbourhood types are fixed by all small co-regular
-subwitnesses inside `W`.
+The earlier tempting singleton-spectrum conclusion was too strong.  What is actually forced above the
+pseudo-split cap is only a **spectrum-hole** condition: the repair spectrum cannot contain both middle
+residues, and if it contains both extreme residues then the direction is Ramsey-small.  Hence a large
+terminal direction has one of the following sparse spectra: one middle residue; one extreme residue; or
+one middle together with one extreme.  Each nonzero old-deletion shift is still valuable, because it adds
+one of the forbidden hereditary constraints in the displayed list, but singleton rigidity
+`Delta_<(4)(g)={0}` requires an additional argument and is not a consequence of Ramsey alone.
 
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
@@ -6258,6 +6250,29 @@ boundary-hit class to have clique number at most `2`; the middle residues impose
 isolated-hitter and path-middle constraints.  This spectrum-parametric form is stronger than the earlier
 Ramsey-only use of `Rep(g_i)`: repaired extreme residues constrain pairs and triples through the fixed
 boundary triple even when the retained fiber is far below `R(4,4)`.
+
+At the opposite end from the sparse spectrum-hole branch, suppose the repair spectrum contains all four
+residues.  Then the `2+2` table alone almost compresses the retained fiber by its eight boundary types.
+For a fixed type `tau in {0,1}^3`, any boundary pair on which `tau` has equal bits forces the edge status
+between two vertices of type `tau` to be the complement of the boundary-pair status.  If two such
+boundary pairs have different statuses, the type has size at most one.  Otherwise the whole type class is
+a clique or an independent set, and so has size at most `m` by outside-only maximality.  Similarly, for
+two complementary one-hit types on a boundary pair, the bipartite graph between the two type classes is
+forced to be either complete or empty.  Thus rich repair spectra leave only a bounded eight-type blow-up;
+the genuinely flexible large-direction case is exactly the spectrum-hole case isolated above.
+
+The resulting cap depends on the boundary triple, and the signed `3+1` rule removes one more type.  If
+the triple has one or two edges, the all-equal types `000` and `111` receive inconsistent prescriptions
+from two equal-bit boundary pairs, so they have size at most one; the other six types are homogeneous and
+have size at most `m`.  The repaired residue matching the boundary triple's own degree pattern forbids
+one of those six types by the `3+1` table.  Hence a full-spectrum direction with a nonconstant boundary
+triple has size at most `5m+2`.
+
+If the boundary triple is independent, every type is forced to be a clique by the `2+2` rules.  The
+repaired residue `0` forbids type `000` by the `3+1` table, while the repaired residue `3` one-corner
+rule bounds every type hitting at least one boundary vertex by `2`.  Thus the cap is `14`.  The triangle
+case is complementary: type `111` is forbidden by the repaired residue `3`, and the repaired residue `0`
+one-corner rule bounds every remaining type by `2`, again giving cap `14`.
 
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with

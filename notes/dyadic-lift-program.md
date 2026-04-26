@@ -835,16 +835,24 @@ is repaired, where `b_g` is any vertex of the direction type.  For `|D|<4`, this
 of singleton, pair, or triple deletions whose external degree into the kept old witness is constant;
 the residue shift is `|N_W(b_g) cap D|-c`.
 
-Thus, with `Delta_<(4)(g)` the set of these small shifts, a Ramsey-large terminal direction fiber must
-satisfy `(d+Delta_<(4)(g)) cap {0,3}=empty`; otherwise an independent four-set or clique four-set in
-the fiber is repaired.  Since `0` is always a shift from `D=empty`, every Ramsey-large active terminal
-direction has required residue in `{1,2}` and has no small old deletion shifting it to an extremal
-residue.
+Thus, with `Delta_<(4)(g)` the set of these small shifts, terminality should be read
+residue-by-residue:
 
-The middle residues have concrete first obstructions: required residue `1` means the direction fiber is
-induced-`2K_2`-free, while required residue `2` means it is induced-`C_4`-free, unless a small old
-deletion shifts an independent set or clique into the repair spectrum.  Larger same-direction regular
-blocks give stronger exclusions, but these two hereditary classes are the visible terminal branch.
+```text
+0 in d+Delta_<(4)(g)  =>  no independent four-set in the direction;
+3 in d+Delta_<(4)(g)  =>  no clique four-set in the direction;
+1 in d+Delta_<(4)(g)  =>  no induced 2K_2 in the direction;
+2 in d+Delta_<(4)(g)  =>  no induced C_4 in the direction.
+```
+
+Only if both `0` and `3` lie in the repair spectrum does Ramsey bound the direction by `R(4,4)`.
+Therefore the old "middle-only" conclusion was too strong: a large terminal direction may still carry
+one extreme residue, and that branch must be controlled by outside-only maximality or by the augmented
+boundary sieve.
+
+The middle residues have concrete first obstructions: repaired residue `1` means the direction fiber is
+induced-`2K_2`-free, while repaired residue `2` means it is induced-`C_4`-free.  Larger same-direction
+regular blocks give stronger exclusions, but these two hereditary classes are the visible terminal branch.
 Since `2K_2` and `C_4` are complements, any direction whose repair spectrum contains both middle
 residues is forced into the much narrower class avoiding both patterns; remaining large examples must
 be controlled by the outside-only maximum constraint on repeated cyclic/split-like blocks.
@@ -852,10 +860,11 @@ Using the pseudo-split characterization of `(2K_2,C_4)`-free graphs, such a dire
 a clique part, an independent part, and at most a five-cycle core.  Because no clique or independent
 set inside a chamber can exceed `m=|W|`, a pseudo-split direction has size only about `2m+5`.  Thus
 any much larger direction fiber must have a repair spectrum missing one of the middle residues.
-Together with the Ramsey exclusion of residues `0` and `3`, this forces the repair spectrum of a very
-large terminal direction to be the singleton `{d}`; equivalently every usable deletion `D subset W` with
-`|D|<4` has shift `deg_D(b_g)-c=0`.  Singleton/pair/triple co-regular deletions in `W` therefore impose
-rigid intersection tests on the direction's old-neighbourhood type.
+The corrected conclusion above the pseudo-split cap is a spectrum-hole condition, not singleton
+rigidity: the spectrum cannot contain both middle residues, and it cannot contain both extreme residues
+unless the fiber is Ramsey-small.  Singleton/pair/triple co-regular deletions in `W` remain useful
+because each nonzero shift adds one of the hereditary constraints in the displayed list, but
+`Delta_<(4)(g)={0}` still needs a separate argument.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has
@@ -897,6 +906,17 @@ In the signed form, replace `d_i` by each residue `s in Rep(g_i)`.  Repaired ext
 act before Ramsey: `0 in Rep(g_i)` gives independence number at most `2` in every boundary-miss class,
 and `3 in Rep(g_i)` gives clique number at most `2` in every boundary-hit class, while the `2+2`
 boundary-pair restrictions use `q=s-e`.
+If `Rep(g_i)` contains all four residues, the `2+2` rules force each of the eight retained boundary
+types to be a clique, an independent set, or a singleton: equal-bit boundary pairs prescribe the internal
+edge status as the complement of the boundary-pair status, and inconsistent prescriptions leave at most
+one vertex.  Cross-pairs of complementary one-hit types are likewise forced complete or empty.  Thus rich
+spectra reduce to a bounded eight-type blow-up; the flexible terminal case is the sparse spectrum-hole
+branch.
+More sharply, a one-edge or two-edge boundary triple gives cap `5m+2` for a full-spectrum direction:
+types `000` and `111` are singleton, the six remaining types are homogeneous, and the signed `3+1` rule
+forbids the one type that completes the boundary triple to its regular residue.  An independent boundary
+triple gives cap `14`: type `000` is forbidden by repaired residue `0`, all other types are cliques and
+repaired residue `3` bounds them by two vertices.  A triangle gives the complementary cap `14`.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it
