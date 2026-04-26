@@ -42015,6 +42015,320 @@ theorem FirstBitTerminalNoLeftoverProofMdCurrentFrontierCitationBundle.markerBun
 end FirstBitTerminalNoLeftoverProofMdCurrentFrontierCitationBundle
 
 /--
+Downstream terminal consumer facade for the proof-md/current-frontier citation bundle.  It keeps
+the citation bundle as the only imported proof object, then exposes the release certificate,
+all-large closure, protected-core frontier, foldback endpoints, current no-leftover endpoint, and
+terminal release endpoint to a final consumer rule.
+-/
+structure FirstBitTerminalNoLeftoverFinalCitationConsumerFacade
+    (currentFrontierCertificate finalClosureFacade
+      fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+      shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+      protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+      currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+      terminalNoLeftoverReleaseEndpoint proofMdCurrentFrontierTerminalEndpoint
+      downstreamTerminalConsumerEndpoint : Prop) : Prop where
+  citationBundle :
+    FirstBitTerminalNoLeftoverProofMdCurrentFrontierCitationBundle currentFrontierCertificate
+      finalClosureFacade fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+      shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate signedQuotientScalarClosureEndpoint
+      typedFGraphBranchEndpoint largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint
+      currentNoLeftoverFrontierEndpoint noLeftoverAllLargeCurrentFrontierEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      terminalNoLeftoverClosureEndpoint currentFrontierTerminalCheckpointEndpoint
+      terminalNoLeftoverFoldbackNormalizationEndpoint terminalNoLeftoverReleaseEndpoint
+      proofMdCurrentFrontierTerminalEndpoint
+  downstreamTerminalConsumerEndpointCert :
+    FirstBitTerminalNoLeftoverReleaseCertificateFacade currentFrontierCertificate finalClosureFacade
+        fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+        shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+        signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+        largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+        noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+        protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+        currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+        terminalNoLeftoverReleaseEndpoint →
+      fourExceptionResidualBinaryNormalizationEndpoint → signedDegreeQuotientFoldback →
+        shortenedPairHitQ2Foldback → shortenedPairHitQ3ExtraRebate →
+          signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+            largeTargetProtectedCoreEndpoint → largeTargetReductionEndpoint →
+              currentNoLeftoverFrontierEndpoint → noLeftoverAllLargeCurrentFrontierEndpoint →
+                allLargeAbsorptionCollisionFoldbackEndpoint →
+                  protectedCoreAllLargeFoldbackEndpoint → terminalNoLeftoverClosureEndpoint →
+                    currentFrontierTerminalCheckpointEndpoint →
+                      terminalNoLeftoverFoldbackNormalizationEndpoint →
+                        terminalNoLeftoverReleaseEndpoint →
+                          proofMdCurrentFrontierTerminalEndpoint →
+                            downstreamTerminalConsumerEndpoint
+
+/-- Build the downstream terminal consumer facade from the citation bundle and consumer rule. -/
+theorem firstBitTerminalNoLeftoverFinalCitationConsumerFacade_of_citation
+    {currentFrontierCertificate finalClosureFacade
+      fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+      shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+      protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+      currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+      terminalNoLeftoverReleaseEndpoint proofMdCurrentFrontierTerminalEndpoint
+      downstreamTerminalConsumerEndpoint : Prop}
+    (hcitation :
+      FirstBitTerminalNoLeftoverProofMdCurrentFrontierCitationBundle currentFrontierCertificate
+        finalClosureFacade fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+        shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate signedQuotientScalarClosureEndpoint
+        typedFGraphBranchEndpoint largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint
+        currentNoLeftoverFrontierEndpoint noLeftoverAllLargeCurrentFrontierEndpoint
+        allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+        terminalNoLeftoverClosureEndpoint currentFrontierTerminalCheckpointEndpoint
+        terminalNoLeftoverFoldbackNormalizationEndpoint terminalNoLeftoverReleaseEndpoint
+        proofMdCurrentFrontierTerminalEndpoint)
+    (hconsumer :
+      FirstBitTerminalNoLeftoverReleaseCertificateFacade currentFrontierCertificate finalClosureFacade
+          fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+          shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+          signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+          largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+          noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+          protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+          currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+          terminalNoLeftoverReleaseEndpoint →
+        fourExceptionResidualBinaryNormalizationEndpoint → signedDegreeQuotientFoldback →
+          shortenedPairHitQ2Foldback → shortenedPairHitQ3ExtraRebate →
+            signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+              largeTargetProtectedCoreEndpoint → largeTargetReductionEndpoint →
+                currentNoLeftoverFrontierEndpoint → noLeftoverAllLargeCurrentFrontierEndpoint →
+                  allLargeAbsorptionCollisionFoldbackEndpoint →
+                    protectedCoreAllLargeFoldbackEndpoint → terminalNoLeftoverClosureEndpoint →
+                      currentFrontierTerminalCheckpointEndpoint →
+                        terminalNoLeftoverFoldbackNormalizationEndpoint →
+                          terminalNoLeftoverReleaseEndpoint →
+                            proofMdCurrentFrontierTerminalEndpoint →
+                              downstreamTerminalConsumerEndpoint) :
+    FirstBitTerminalNoLeftoverFinalCitationConsumerFacade currentFrontierCertificate finalClosureFacade
+      fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+      shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+      protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+      currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+      terminalNoLeftoverReleaseEndpoint proofMdCurrentFrontierTerminalEndpoint
+      downstreamTerminalConsumerEndpoint where
+  citationBundle := hcitation
+  downstreamTerminalConsumerEndpointCert := hconsumer
+
+section FirstBitTerminalNoLeftoverFinalCitationConsumerFacade
+
+variable {currentFrontierCertificate finalClosureFacade
+  fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+  shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+  signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+  largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+  noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+  protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+  currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+  terminalNoLeftoverReleaseEndpoint proofMdCurrentFrontierTerminalEndpoint
+  downstreamTerminalConsumerEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalNoLeftoverFinalCitationConsumerFacade currentFrontierCertificate finalClosureFacade
+    fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+    shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+    signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+    largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+    noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+    protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+    currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+    terminalNoLeftoverReleaseEndpoint proofMdCurrentFrontierTerminalEndpoint
+    downstreamTerminalConsumerEndpoint)
+
+/-- Recover the proof-md/current-frontier citation bundle consumed by the final facade. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_citationBundle :
+    FirstBitTerminalNoLeftoverProofMdCurrentFrontierCitationBundle currentFrontierCertificate
+      finalClosureFacade fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+      shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate signedQuotientScalarClosureEndpoint
+      typedFGraphBranchEndpoint largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint
+      currentNoLeftoverFrontierEndpoint noLeftoverAllLargeCurrentFrontierEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      terminalNoLeftoverClosureEndpoint currentFrontierTerminalCheckpointEndpoint
+      terminalNoLeftoverFoldbackNormalizationEndpoint terminalNoLeftoverReleaseEndpoint
+      proofMdCurrentFrontierTerminalEndpoint :=
+  h.citationBundle
+
+/-- Recover the release certificate facade from the final citation consumer. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_releaseCertificateFacade :
+    FirstBitTerminalNoLeftoverReleaseCertificateFacade currentFrontierCertificate finalClosureFacade
+      fourExceptionResidualBinaryNormalizationEndpoint signedDegreeQuotientFoldback
+      shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      largeTargetProtectedCoreEndpoint largeTargetReductionEndpoint currentNoLeftoverFrontierEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint allLargeAbsorptionCollisionFoldbackEndpoint
+      protectedCoreAllLargeFoldbackEndpoint terminalNoLeftoverClosureEndpoint
+      currentFrontierTerminalCheckpointEndpoint terminalNoLeftoverFoldbackNormalizationEndpoint
+      terminalNoLeftoverReleaseEndpoint :=
+  h.citationBundle.to_releaseCertificateFacade
+
+/-- Project the four-exception residual/binary normalization endpoint. -/
+@[simp] theorem
+    FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_fourExceptionResidualBinaryNormalizationEndpoint :
+    fourExceptionResidualBinaryNormalizationEndpoint :=
+  h.citationBundle.to_fourExceptionResidualBinaryNormalizationEndpoint
+
+/-- Project the signed-degree quotient foldback marker. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_signedDegreeQuotientFoldback :
+    signedDegreeQuotientFoldback :=
+  h.citationBundle.to_signedDegreeQuotientFoldback
+
+/-- Project the q=2 shortened-pair foldback marker. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_shortenedPairHitQ2Foldback :
+    shortenedPairHitQ2Foldback :=
+  h.citationBundle.to_shortenedPairHitQ2Foldback
+
+/-- Project the q=3 shortened-pair extra-rebate marker. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_shortenedPairHitQ3ExtraRebate :
+    shortenedPairHitQ3ExtraRebate :=
+  h.citationBundle.to_shortenedPairHitQ3ExtraRebate
+
+/-- Project the signed-quotient scalar closure endpoint. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.citationBundle.to_signedQuotientScalarClosureEndpoint
+
+/-- Project the typed `F`-graph branch endpoint. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_typedFGraphBranchEndpoint :
+    typedFGraphBranchEndpoint :=
+  h.citationBundle.to_typedFGraphBranchEndpoint
+
+/-- Project the protected-core large-target frontier marker. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_largeTargetProtectedCoreEndpoint :
+    largeTargetProtectedCoreEndpoint :=
+  h.citationBundle.to_largeTargetProtectedCoreEndpoint
+
+/-- Project the large-target reduction endpoint. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_largeTargetReductionEndpoint :
+    largeTargetReductionEndpoint :=
+  h.citationBundle.to_largeTargetReductionEndpoint
+
+/-- Project the current no-leftover frontier endpoint. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_currentNoLeftoverFrontierEndpoint :
+    currentNoLeftoverFrontierEndpoint :=
+  h.citationBundle.to_currentNoLeftoverFrontierEndpoint
+
+/-- Project the no-leftover/all-large current-frontier endpoint. -/
+@[simp] theorem
+    FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_noLeftoverAllLargeCurrentFrontierEndpoint :
+    noLeftoverAllLargeCurrentFrontierEndpoint :=
+  h.citationBundle.to_noLeftoverAllLargeCurrentFrontierEndpoint
+
+/-- Project the all-large absorption/collision foldback endpoint. -/
+@[simp] theorem
+    FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_allLargeAbsorptionCollisionFoldbackEndpoint :
+    allLargeAbsorptionCollisionFoldbackEndpoint :=
+  h.citationBundle.to_allLargeAbsorptionCollisionFoldbackEndpoint
+
+/-- Project the protected-core/all-large foldback endpoint. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_protectedCoreAllLargeFoldbackEndpoint :
+    protectedCoreAllLargeFoldbackEndpoint :=
+  h.citationBundle.to_protectedCoreAllLargeFoldbackEndpoint
+
+/-- Project the terminal no-leftover closure endpoint. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_terminalNoLeftoverClosureEndpoint :
+    terminalNoLeftoverClosureEndpoint :=
+  h.citationBundle.to_terminalNoLeftoverClosureEndpoint
+
+/-- Project the current-frontier terminal checkpoint endpoint. -/
+@[simp] theorem
+    FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_currentFrontierTerminalCheckpointEndpoint :
+    currentFrontierTerminalCheckpointEndpoint :=
+  h.citationBundle.to_currentFrontierTerminalCheckpointEndpoint
+
+/-- Project the terminal foldback-normalization endpoint. -/
+@[simp] theorem
+    FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_terminalNoLeftoverFoldbackNormalizationEndpoint :
+    terminalNoLeftoverFoldbackNormalizationEndpoint :=
+  h.citationBundle.to_terminalNoLeftoverFoldbackNormalizationEndpoint
+
+/-- Project the terminal no-leftover release endpoint. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_terminalNoLeftoverReleaseEndpoint :
+    terminalNoLeftoverReleaseEndpoint :=
+  h.citationBundle.to_terminalNoLeftoverReleaseEndpoint
+
+/-- Project the proof-md/current-frontier terminal endpoint. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_proofMdCurrentFrontierTerminalEndpoint :
+    proofMdCurrentFrontierTerminalEndpoint :=
+  h.citationBundle.to_proofMdCurrentFrontierTerminalEndpoint
+
+/-- Apply the downstream terminal consumer rule to all endpoints exported by the citation bundle. -/
+@[simp] theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.to_downstreamTerminalConsumerEndpoint :
+    downstreamTerminalConsumerEndpoint :=
+  h.downstreamTerminalConsumerEndpointCert
+    h.to_releaseCertificateFacade
+    h.to_fourExceptionResidualBinaryNormalizationEndpoint
+    h.to_signedDegreeQuotientFoldback
+    h.to_shortenedPairHitQ2Foldback
+    h.to_shortenedPairHitQ3ExtraRebate
+    h.to_signedQuotientScalarClosureEndpoint
+    h.to_typedFGraphBranchEndpoint
+    h.to_largeTargetProtectedCoreEndpoint
+    h.to_largeTargetReductionEndpoint
+    h.to_currentNoLeftoverFrontierEndpoint
+    h.to_noLeftoverAllLargeCurrentFrontierEndpoint
+    h.to_allLargeAbsorptionCollisionFoldbackEndpoint
+    h.to_protectedCoreAllLargeFoldbackEndpoint
+    h.to_terminalNoLeftoverClosureEndpoint
+    h.to_currentFrontierTerminalCheckpointEndpoint
+    h.to_terminalNoLeftoverFoldbackNormalizationEndpoint
+    h.to_terminalNoLeftoverReleaseEndpoint
+    h.to_proofMdCurrentFrontierTerminalEndpoint
+
+/-- Foldback endpoints re-exported by the downstream terminal consumer facade. -/
+theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.foldbackEndpointBundle :
+    fourExceptionResidualBinaryNormalizationEndpoint ∧ signedDegreeQuotientFoldback ∧
+      shortenedPairHitQ2Foldback ∧ shortenedPairHitQ3ExtraRebate ∧
+        signedQuotientScalarClosureEndpoint ∧ typedFGraphBranchEndpoint ∧
+          largeTargetProtectedCoreEndpoint ∧ largeTargetReductionEndpoint :=
+  h.citationBundle.foldbackEndpointBundle
+
+/-- All-large closure endpoints re-exported by the downstream terminal consumer facade. -/
+theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.allLargeClosureBundle :
+    currentNoLeftoverFrontierEndpoint ∧ noLeftoverAllLargeCurrentFrontierEndpoint ∧
+      allLargeAbsorptionCollisionFoldbackEndpoint ∧ protectedCoreAllLargeFoldbackEndpoint ∧
+        terminalNoLeftoverClosureEndpoint :=
+  h.citationBundle.allLargeClosureBundle
+
+/-- Terminal checkpoint/release endpoints re-exported by the downstream consumer facade. -/
+theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.terminalReleaseCheckpointBundle :
+    currentFrontierTerminalCheckpointEndpoint ∧ terminalNoLeftoverFoldbackNormalizationEndpoint ∧
+      terminalNoLeftoverClosureEndpoint ∧ terminalNoLeftoverReleaseEndpoint ∧
+        proofMdCurrentFrontierTerminalEndpoint ∧ downstreamTerminalConsumerEndpoint :=
+  ⟨h.to_currentFrontierTerminalCheckpointEndpoint,
+    h.to_terminalNoLeftoverFoldbackNormalizationEndpoint,
+    h.to_terminalNoLeftoverClosureEndpoint,
+    h.to_terminalNoLeftoverReleaseEndpoint,
+    h.to_proofMdCurrentFrontierTerminalEndpoint,
+    h.to_downstreamTerminalConsumerEndpoint⟩
+
+/-- Compact downstream terminal consumer marker bundle. -/
+theorem FirstBitTerminalNoLeftoverFinalCitationConsumerFacade.markerBundle :
+    fourExceptionResidualBinaryNormalizationEndpoint ∧ largeTargetProtectedCoreEndpoint ∧
+      currentNoLeftoverFrontierEndpoint ∧ noLeftoverAllLargeCurrentFrontierEndpoint ∧
+        terminalNoLeftoverReleaseEndpoint ∧ proofMdCurrentFrontierTerminalEndpoint ∧
+          downstreamTerminalConsumerEndpoint :=
+  ⟨h.to_fourExceptionResidualBinaryNormalizationEndpoint,
+    h.to_largeTargetProtectedCoreEndpoint,
+    h.to_currentNoLeftoverFrontierEndpoint,
+    h.to_noLeftoverAllLargeCurrentFrontierEndpoint,
+    h.to_terminalNoLeftoverReleaseEndpoint,
+    h.to_proofMdCurrentFrontierTerminalEndpoint,
+    h.to_downstreamTerminalConsumerEndpoint⟩
+
+end FirstBitTerminalNoLeftoverFinalCitationConsumerFacade
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
