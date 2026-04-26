@@ -5614,6 +5614,211 @@ def IsInducedC4FreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
         ¬ G.Adj a c → ¬ G.Adj b d → False
 
 /--
+Singleton miss layer-gradient inequality.  With target layer `A0`, an exported vertex `y`
+cannot see many more vertices in the miss layer than it sees in the target layer, up to the
+specified slack.
+-/
+def SingletonMissLayerGradient
+    {n : ℕ} (G : SimpleGraph (Fin n)) (B A0 Aminus : Finset (Fin n)) (slack : ℕ) :
+    Prop := by
+  classical
+  exact
+    ∀ y ∈ B,
+      (G.neighborFinset y ∩ Aminus).card ≤ (G.neighborFinset y ∩ A0).card + slack
+
+/--
+Singleton hit layer-gradient inequality.  The hit layer is measured by missed vertices:
+an exported vertex `y` cannot miss many more vertices in `Aplus` than in the target layer.
+-/
+def SingletonHitLayerGradient
+    {n : ℕ} (G : SimpleGraph (Fin n)) (B A0 Aplus : Finset (Fin n)) (slack : ℕ) :
+    Prop := by
+  classical
+  exact
+    ∀ y ∈ B,
+      (Aplus \ G.neighborFinset y).card ≤ (A0 \ G.neighborFinset y).card + slack
+
+/--
+Two-hit pair layer-gradient inequality.  A retained pair must dominate the opposite layer
+unless target-layer vertices with the corresponding common-neighbour deficit pay for the failure.
+-/
+def TwoHitPairLayerGradient
+    {n : ℕ} (G : SimpleGraph (Fin n)) (B A0 A2 : Finset (Fin n)) (slack : ℕ) :
+    Prop := by
+  classical
+  exact
+    ∀ y ∈ B, ∀ z ∈ B, y ≠ z →
+      (A2 \ (G.neighborFinset y ∪ G.neighborFinset z)).card ≤
+        (A0 \ (G.neighborFinset y ∩ G.neighborFinset z)).card + slack
+
+/--
+Two-miss pair layer-gradient inequality.  A retained pair cannot have many common neighbours in
+the opposite miss layer unless the target layer supplies the corresponding union-neighbour payment.
+-/
+def TwoMissPairLayerGradient
+    {n : ℕ} (G : SimpleGraph (Fin n)) (B A0 Aminus2 : Finset (Fin n)) (slack : ℕ) :
+    Prop := by
+  classical
+  exact
+    ∀ y ∈ B, ∀ z ∈ B, y ≠ z →
+      (Aminus2 ∩ (G.neighborFinset y ∩ G.neighborFinset z)).card ≤
+        (A0 ∩ (G.neighborFinset y ∪ G.neighborFinset z)).card + slack
+
+/--
+If the target layer is empty and the singleton miss inequality has no slack, the miss layer is
+independent inside the direction graph.
+-/
+theorem singletonMissLayerGradient_empty_target_forces_independent
+    {n : ℕ} (G : SimpleGraph (Fin n)) {B A0 Aminus : Finset (Fin n)}
+    (hA0 : A0 = ∅) (hAminusB : Aminus ⊆ B)
+    (hmiss : SingletonMissLayerGradient G B A0 Aminus 0) :
+    G.IsIndepSet (Aminus : Set (Fin n)) := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  intro x hx y hy _hxy hxy
+  have hyB : y ∈ B := hAminusB hy
+  have hzeroCard : (G.neighborFinset y ∩ Aminus).card = 0 := by
+    exact Nat.eq_zero_of_le_zero (by simpa [hA0] using hmiss y hyB)
+  have hempty : G.neighborFinset y ∩ Aminus = ∅ := Finset.card_eq_zero.mp hzeroCard
+  have hyx : G.Adj y x := G.symm hxy
+  have hxMem : x ∈ G.neighborFinset y ∩ Aminus := by
+    exact Finset.mem_inter.mpr ⟨by simpa [SimpleGraph.mem_neighborFinset] using hyx, hx⟩
+  simpa [hempty] using hxMem
+
+/--
+If the target layer is empty, the singleton hit inequality with the one exported-vertex slack forces
+the hit layer to be a clique.
+-/
+theorem singletonHitLayerGradient_empty_target_forces_clique
+    {n : ℕ} (G : SimpleGraph (Fin n)) {B A0 Aplus : Finset (Fin n)}
+    (hA0 : A0 = ∅) (hAplusB : Aplus ⊆ B)
+    (hhit : SingletonHitLayerGradient G B A0 Aplus 1) :
+    G.IsClique (Aplus : Set (Fin n)) := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  intro x hx y hy hxy
+  by_contra hnot
+  have hyB : y ∈ B := hAplusB hy
+  have hsmall : (Aplus \ G.neighborFinset y).card ≤ 1 := by
+    simpa [hA0] using hhit y hyB
+  rw [Finset.card_le_one] at hsmall
+  have hnot_yx : ¬ G.Adj y x := by
+    intro hyx
+    exact hnot (G.symm hyx)
+  have hxNot : x ∉ G.neighborFinset y := by
+    simpa [SimpleGraph.mem_neighborFinset] using hnot_yx
+  have hyNot : y ∉ G.neighborFinset y := by
+    simpa [SimpleGraph.mem_neighborFinset] using (G.irrefl y)
+  have hxMem : x ∈ Aplus \ G.neighborFinset y := Finset.mem_sdiff.mpr ⟨hx, hxNot⟩
+  have hyMem : y ∈ Aplus \ G.neighborFinset y := Finset.mem_sdiff.mpr ⟨hy, hyNot⟩
+  exact hxy (hsmall x hxMem y hyMem)
+
+/--
+Empty target plus the exact two-hit pair inequality says every retained pair dominates the
+opposite layer.
+-/
+theorem twoHitPairLayerGradient_empty_target_forces_pair_domination
+    {n : ℕ} (G : SimpleGraph (Fin n)) {B A0 A2 : Finset (Fin n)}
+    (hA0 : A0 = ∅)
+    (htwoHit : TwoHitPairLayerGradient G B A0 A2 0)
+    {y z x : Fin n} (hyB : y ∈ B) (hzB : z ∈ B) (hyz : y ≠ z) (hx2 : x ∈ A2) :
+    x ∈ G.neighborFinset y ∪ G.neighborFinset z := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hzeroCard :
+      (A2 \ (G.neighborFinset y ∪ G.neighborFinset z)).card = 0 := by
+    exact Nat.eq_zero_of_le_zero (by simpa [hA0] using htwoHit y hyB z hzB hyz)
+  have hempty :
+      A2 \ (G.neighborFinset y ∪ G.neighborFinset z) = ∅ :=
+    Finset.card_eq_zero.mp hzeroCard
+  by_contra hxnot
+  have hxMem : x ∈ A2 \ (G.neighborFinset y ∪ G.neighborFinset z) :=
+    Finset.mem_sdiff.mpr ⟨hx2, hxnot⟩
+  simpa [hempty] using hxMem
+
+/--
+Consequently, if the opposite layer itself sits in the retained packet, the exact two-hit
+empty-target inequality makes that layer a clique.
+-/
+theorem twoHitPairLayerGradient_empty_target_forces_clique
+    {n : ℕ} (G : SimpleGraph (Fin n)) {B A0 A2 : Finset (Fin n)}
+    (hA0 : A0 = ∅) (hA2B : A2 ⊆ B)
+    (htwoHit : TwoHitPairLayerGradient G B A0 A2 0) :
+    G.IsClique (A2 : Set (Fin n)) := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  intro x hx y hy hxy
+  have hxB : x ∈ B := hA2B hx
+  have hyB : y ∈ B := hA2B hy
+  have hxDom :
+      x ∈ G.neighborFinset x ∪ G.neighborFinset y :=
+    twoHitPairLayerGradient_empty_target_forces_pair_domination
+      (G := G) hA0 htwoHit hxB hyB hxy hx
+  have hxSelf : x ∉ G.neighborFinset x := by
+    simpa [SimpleGraph.mem_neighborFinset] using (G.irrefl x)
+  rcases Finset.mem_union.mp hxDom with hxSelfMem | hxyMem
+  · exact False.elim (hxSelf hxSelfMem)
+  · exact G.symm ((SimpleGraph.mem_neighborFinset G y x).mp hxyMem)
+
+/-- Empty target plus the exact two-miss pair inequality forbids common neighbours in that layer. -/
+theorem twoMissPairLayerGradient_empty_target_forces_no_common_miss
+    {n : ℕ} (G : SimpleGraph (Fin n)) {B A0 Aminus2 : Finset (Fin n)}
+    (hA0 : A0 = ∅)
+    (htwoMiss : TwoMissPairLayerGradient G B A0 Aminus2 0)
+    {y z x : Fin n} (hyB : y ∈ B) (hzB : z ∈ B) (hyz : y ≠ z) (hxminus2 : x ∈ Aminus2) :
+    ¬ (x ∈ G.neighborFinset y ∧ x ∈ G.neighborFinset z) := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hzeroCard :
+      (Aminus2 ∩ (G.neighborFinset y ∩ G.neighborFinset z)).card = 0 := by
+    exact Nat.eq_zero_of_le_zero (by simpa [hA0] using htwoMiss y hyB z hzB hyz)
+  have hempty :
+      Aminus2 ∩ (G.neighborFinset y ∩ G.neighborFinset z) = ∅ :=
+    Finset.card_eq_zero.mp hzeroCard
+  rintro ⟨hxy, hxz⟩
+  have hxMem : x ∈ Aminus2 ∩ (G.neighborFinset y ∩ G.neighborFinset z) :=
+    Finset.mem_inter.mpr ⟨hxminus2, Finset.mem_inter.mpr ⟨hxy, hxz⟩⟩
+  simpa [hempty] using hxMem
+
+/--
+Empty-target cap for the one-boundary-type residual.  If the three off-target layers cover the
+retained packet, the singleton miss/hit gradients and the exact two-hit gradient reduce the packet
+to one independent layer of size at most `3` and two clique layers of size at most `m`.
+-/
+theorem oneBoundary_emptyTarget_card_le_two_mul_add_three_of_layerGradients
+    {n m : ℕ} (G : SimpleGraph (Fin n)) {B A0 Aminus Aplus A2 : Finset (Fin n)}
+    (hA0 : A0 = ∅)
+    (hcover : B ⊆ (Aminus ∪ Aplus) ∪ A2)
+    (hAminusB : Aminus ⊆ B) (hAplusB : Aplus ⊆ B) (hA2B : A2 ⊆ B)
+    (hmiss : SingletonMissLayerGradient G B A0 Aminus 0)
+    (hhit : SingletonHitLayerGradient G B A0 Aplus 1)
+    (htwoHit : TwoHitPairLayerGradient G B A0 A2 0)
+    (hmissCap : HasIndependenceBoundOn G B 3)
+    (hcliqueCap : HasCliqueBoundOn G B m) :
+    B.card ≤ 2 * m + 3 := by
+  classical
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  have hAminussmall : Aminus.card ≤ 3 :=
+    hmissCap Aminus hAminusB
+      (singletonMissLayerGradient_empty_target_forces_independent
+        (G := G) hA0 hAminusB hmiss)
+  have hAplussmall : Aplus.card ≤ m :=
+    hcliqueCap Aplus hAplusB
+      (singletonHitLayerGradient_empty_target_forces_clique
+        (G := G) hA0 hAplusB hhit)
+  have hA2small : A2.card ≤ m :=
+    hcliqueCap A2 hA2B
+      (twoHitPairLayerGradient_empty_target_forces_clique
+        (G := G) hA0 hA2B htwoHit)
+  have hBcard : B.card ≤ ((Aminus ∪ Aplus) ∪ A2).card :=
+    Finset.card_le_card hcover
+  have hUnion2 : ((Aminus ∪ Aplus) ∪ A2).card ≤ (Aminus ∪ Aplus).card + A2.card :=
+    Finset.card_union_le (Aminus ∪ Aplus) A2
+  have hUnion1 : (Aminus ∪ Aplus).card ≤ Aminus.card + Aplus.card :=
+    Finset.card_union_le Aminus Aplus
+  omega
+
+/--
 Arithmetic selector for three consecutive classes in a `C₅`/chain blow-up: after deleting at most
 three vertices in total, the two end-class selections and the middle-class selection have matching
 mod-`4` induced degree residues.

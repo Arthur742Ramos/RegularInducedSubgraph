@@ -6430,7 +6430,18 @@ side to pay for missed vertices; exact target-stability therefore forces every r
 A_0=empty        =>        |B| <= 2m+O(1)
 ```
 
-in the one-type residual.  Any large surviving `{0,1}`/`{3,2}` branch must therefore have a nonempty
+Lean formalization note.  The labelled layer-gradient surface is now named in
+`RegularInducedSubgraph/Modular/Asymptotic.lean`:
+`SingletonMissLayerGradient`, `SingletonHitLayerGradient`,
+`TwoHitPairLayerGradient`, and `TwoMissPairLayerGradient`.  The empty-target
+bridge
+`oneBoundary_emptyTarget_card_le_two_mul_add_three_of_layerGradients`
+proves the concrete cap `|B| <= 2m+3` from the no-slack miss gradient, the
+one-slack hit gradient, the exact two-hit domination gradient, and the existing
+clique/independence caps.
+
+This is the formal version of the empty-target degeneration in the one-type residual.  Any large
+surviving `{0,1}`/`{3,2}` branch must therefore have a nonempty
 target layer `A_0`; the final obstruction is not an unlabelled hereditary graph but a labelled graph
 whose off-target layers are dominated by, or paid for by, the target layer.
 
