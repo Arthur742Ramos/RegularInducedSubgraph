@@ -3221,6 +3221,27 @@ theorem neighbor_count_bounds_of_adjacent_degree_eight
   · omega
   · exact hcrossLe
 
+/-- A degree-`8` vertex has the full adjacent ledger against any neighbor. -/
+theorem adjacent_degree_eight_split_ledgers
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv : G.Adj u v) (hdegu : G.degree u = 8) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 4 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).filter (G.Adj u)).card =
+        G.degree u - 1 - (G.neighborFinset u ∩ G.neighborFinset v).card ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).filter (G.Adj u)).card =
+        7 - (G.neighborFinset u ∩ G.neighborFinset v).card ∧
+      3 ≤ (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).filter
+        (G.Adj u)).card ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).filter
+        (G.Adj u)).card ≤ 8 := by
+  have hbounds := neighbor_count_bounds_of_adjacent_degree_eight G hnoK4 hnoI5 huv hdegu
+  have hledger :=
+    neighbor_in_nonNeighborFinset_card_eq_degree_sub_one_sub_common_neighbor_card_of_adjacent
+      G huv
+  exact ⟨hbounds.1, hledger, hbounds.2.1, hbounds.2.2.1, hbounds.2.2.2⟩
+
 /-- A non-neighbor of a degree-`8` endpoint has the exact `8 + common` split. -/
 theorem neighbor_count_bounds_of_nonadjacent_degree_eight
     {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
@@ -3240,6 +3261,34 @@ theorem neighbor_count_bounds_of_nonadjacent_degree_eight
       G hcard hnoK4 hnoI5 huv_ne huv hdegv
   · exact common_neighbor_card_le_five_of_nonadjacent_degree_eight
       G hcard hnoK4 hnoI5 huv_ne huv hdegv
+
+/-- A degree-`8` endpoint has the full nonadjacent ledger against every non-neighbor. -/
+theorem nonadjacent_degree_eight_split_ledgers
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 26)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v) (hdegv : G.degree v = 8) :
+    (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 ∧
+      G.degree u = (G.neighborFinset u ∩ G.neighborFinset v).card + 8 ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8 ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 5 := by
+  have hbounds :=
+    neighbor_count_bounds_of_nonadjacent_degree_eight
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hnon :
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 :=
+    common_non_neighbor_in_nonNeighborhood_card_eq_eight_of_degree_eight
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hdegree :
+      G.degree u = (G.neighborFinset u ∩ G.neighborFinset v).card + 8 :=
+    degree_eq_eight_add_common_neighbor_card_of_nonadjacent_degree_eight
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  exact ⟨hbounds.1, hnon, hdegree, hbounds.2.1, hbounds.2.2⟩
 
 /-- A degree-`13` neighbor of a degree-`8` endpoint has the exact `4 + 8` split. -/
 theorem neighbor_counts_eq_of_degree_thirteen_adjacent_degree_eight
@@ -3751,8 +3800,8 @@ theorem hasCliqueOrIndepSetBound_four_five_twenty_six_iff_noCounterexample :
 /--
 Degree-`8` endpoint residual for the sharp `R(4,5) <= 26` frontier.  The obligation keeps the
 standard 26-vertex degree window and local Ramsey surfaces, and additionally exposes the exact
-degree-`8` non-neighborhood regularity, adjacent/nonadjacent split ledgers, and the global caps on
-the degree-`8` class.
+degree-`8` non-neighborhood regularity, adjacent/nonadjacent split ledgers, common-nonneighbor
+ledgers, and the global caps on the degree-`8` class.
 -/
 def NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix : Prop :=
   ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj],
@@ -3788,9 +3837,28 @@ def NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix : Prop :=
             (G.Adj u)).card ∧
           (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).filter
             (G.Adj u)).card ≤ 8) →
+      (∀ {u v : α}, G.Adj u v → G.degree u = 8 →
+        (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 4 ∧
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).filter
+            (G.Adj u)).card =
+              G.degree u - 1 - (G.neighborFinset u ∩ G.neighborFinset v).card ∧
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).filter
+            (G.Adj u)).card = 7 - (G.neighborFinset u ∩ G.neighborFinset v).card ∧
+          3 ≤ (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).filter
+            (G.Adj u)).card ∧
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).filter
+            (G.Adj u)).card ≤ 8) →
       (∀ {u v : α}, u ≠ v → ¬ G.Adj u v → G.degree v = 8 →
         (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
             (G.Adj u)).card = 8 ∧
+          (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8 ∧
+          (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 5) →
+      (∀ {u v : α}, u ≠ v → ¬ G.Adj u v → G.degree v = 8 →
+        (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (G.Adj u)).card = 8 ∧
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (fun w => ¬ G.Adj u w)).card = 8 ∧
+          G.degree u = (G.neighborFinset u ∩ G.neighborFinset v).card + 8 ∧
           (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8 ∧
           (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 5) →
       (∀ {u v : α}, G.Adj u v → G.degree u = 13 → G.degree v = 8 →
@@ -3803,6 +3871,9 @@ def NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix : Prop :=
             (G.Adj u)).card = 8) →
       (∀ {u v : α}, u ≠ v → ¬ G.Adj u v → G.degree u = 8 → G.degree v = 8 →
         (G.neighborFinset u ∩ G.neighborFinset v).card = 0) →
+      (∀ {a b c : α}, a ≠ b → a ≠ c → b ≠ c →
+        G.degree a = 8 → G.degree b = 8 → G.degree c = 8 →
+        ¬ G.Adj a b → ¬ G.Adj a c → ¬ G.Adj b c → False) →
       (∀ {a b c : α}, a ≠ c → G.degree a = 8 → G.degree c = 8 →
         G.Adj a b → G.Adj b c → G.Adj a c) →
       (∀ w : α, G.IsClique (((G.neighborFinset w).filter (fun u => G.degree u = 8)) : Set α)) →
@@ -3864,8 +3935,15 @@ theorem noRamseyFourFiveCounterexampleOnTwentySix_of_degreeEightEndpoint
       intro u v huv hdegu
       exact neighbor_count_bounds_of_adjacent_degree_eight G hnoK4 hnoI5 huv hdegu)
     (by
+      intro u v huv hdegu
+      exact adjacent_degree_eight_split_ledgers G hnoK4 hnoI5 huv hdegu)
+    (by
       intro u v huv_ne huv hdegv
       exact neighbor_count_bounds_of_nonadjacent_degree_eight
+        G hcard hnoK4 hnoI5 huv_ne huv hdegv)
+    (by
+      intro u v huv_ne huv hdegv
+      exact nonadjacent_degree_eight_split_ledgers
         G hcard hnoK4 hnoI5 huv_ne huv hdegv)
     (by
       intro u v huv hdegu hdegv
@@ -3879,6 +3957,10 @@ theorem noRamseyFourFiveCounterexampleOnTwentySix_of_degreeEightEndpoint
       intro u v huv_ne huv hdegu hdegv
       exact common_neighbor_card_eq_zero_of_nonadjacent_degree_eight_degree_eight
         G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv)
+    (by
+      intro a b c hab_ne hac_ne hbc_ne hdega hdegb hdegc hab hac hbc
+      exact not_three_pairwise_nonadjacent_degree_eight
+        G hcard hnoK4 hnoI5 hab_ne hac_ne hbc_ne hdega hdegb hdegc hab hac hbc)
     (by
       intro a b c hac_ne hdega hdegc hab hbc
       exact degree_eight_two_step_path_closes
