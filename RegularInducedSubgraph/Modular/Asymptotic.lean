@@ -19375,6 +19375,846 @@ theorem FirstBitTerminalMemoryFreePrefixFullnessFrontier.obligation
 end FirstBitTerminalMemoryFreePrefixFullnessFrontier
 
 /--
+Bad-vertex elimination certificate for the labeled deletion-core frontier.  The certificate keeps the
+per-residue elimination step, the terminal cores of size at most `m`, and the label-refined rank
+bound as explicit assumptions.
+-/
+structure FirstBitTerminalLabeledBadVertexEliminationFrontier
+    {Vertex Residue : Type*}
+    (badVertices terminalCore : Residue → Finset Vertex) (m : Nat)
+    (residueEliminationStep badVertexFreeResidual labelRefinedRankBound : Prop) :
+    Prop where
+  residueEliminationStepCert : residueEliminationStep
+  eliminatesBadVertices :
+    ∀ residue : Residue, ∀ v : Vertex, v ∈ badVertices residue → v ∉ terminalCore residue
+  residualCoreSmall : ∀ residue : Residue, (terminalCore residue).card ≤ m
+  badVertexFreeResidualCert : badVertexFreeResidual
+  labelRefinedRankBoundCert : labelRefinedRankBound
+
+/-- Build a labeled bad-vertex elimination frontier from its assumption-backed fields. -/
+theorem firstBitTerminalLabeledBadVertexEliminationFrontier_of_assumptions
+    {Vertex Residue : Type*}
+    {badVertices terminalCore : Residue → Finset Vertex} {m : Nat}
+    {residueEliminationStep badVertexFreeResidual labelRefinedRankBound : Prop}
+    (hstep : residueEliminationStep)
+    (helim :
+      ∀ residue : Residue, ∀ v : Vertex, v ∈ badVertices residue → v ∉ terminalCore residue)
+    (hsmall : ∀ residue : Residue, (terminalCore residue).card ≤ m)
+    (hfree : badVertexFreeResidual) (hrank : labelRefinedRankBound) :
+    FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+      residueEliminationStep badVertexFreeResidual labelRefinedRankBound where
+  residueEliminationStepCert := hstep
+  eliminatesBadVertices := helim
+  residualCoreSmall := hsmall
+  badVertexFreeResidualCert := hfree
+  labelRefinedRankBoundCert := hrank
+
+section FirstBitTerminalLabeledBadVertexEliminationFrontier
+
+variable {Vertex Residue : Type*}
+variable {badVertices terminalCore : Residue → Finset Vertex} {m : Nat}
+variable {residueEliminationStep badVertexFreeResidual labelRefinedRankBound : Prop}
+
+/-- Project the per-residue elimination step certificate. -/
+theorem FirstBitTerminalLabeledBadVertexEliminationFrontier.to_residueEliminationStep
+    (h :
+      FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+        residueEliminationStep badVertexFreeResidual labelRefinedRankBound) :
+    residueEliminationStep :=
+  h.residueEliminationStepCert
+
+/-- Bad vertices are absent from the terminal residual core after elimination. -/
+theorem FirstBitTerminalLabeledBadVertexEliminationFrontier.badVertex_not_mem_terminalCore
+    (h :
+      FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+        residueEliminationStep badVertexFreeResidual labelRefinedRankBound)
+    {residue : Residue} {v : Vertex} (hbad : v ∈ badVertices residue) :
+    v ∉ terminalCore residue :=
+  h.eliminatesBadVertices residue v hbad
+
+/-- Every terminal residual core has size at most the stopping threshold `m`. -/
+theorem FirstBitTerminalLabeledBadVertexEliminationFrontier.terminalCore_card_le
+    (h :
+      FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+        residueEliminationStep badVertexFreeResidual labelRefinedRankBound)
+    (residue : Residue) :
+    (terminalCore residue).card ≤ m :=
+  h.residualCoreSmall residue
+
+/-- Project the bad-vertex-free residual certificate. -/
+theorem FirstBitTerminalLabeledBadVertexEliminationFrontier.to_badVertexFreeResidual
+    (h :
+      FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+        residueEliminationStep badVertexFreeResidual labelRefinedRankBound) :
+    badVertexFreeResidual :=
+  h.badVertexFreeResidualCert
+
+/-- Project the label-refined rank bound carried by the elimination frontier. -/
+theorem FirstBitTerminalLabeledBadVertexEliminationFrontier.to_labelRefinedRankBound
+    (h :
+      FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+        residueEliminationStep badVertexFreeResidual labelRefinedRankBound) :
+    labelRefinedRankBound :=
+  h.labelRefinedRankBoundCert
+
+end FirstBitTerminalLabeledBadVertexEliminationFrontier
+
+/--
+Relabeling package for hereditary subbuckets of a labeled deletion core.  The displayed equality
+`hereditaryLabel = shiftedHereditaryLabel` is the API surface for the note
+`b_U(v) = b(v) - deg_{R \ U}(v)`, while `parentCoCutLabel` records the parent co-cut origin.
+-/
+structure FirstBitTerminalLabeledDeletionCoreRelabeling
+    {Vertex Subbucket Label : Type*}
+    (coreVertices : Finset Vertex) (subbucketVertices : Subbucket → Finset Vertex)
+    (label parentCoCutLabel : Vertex → Label)
+    (hereditaryLabel shiftedHereditaryLabel : Subbucket → Vertex → Label)
+    (parentCoCutOrigin labelShiftConservativity moduleLiftAfterRelabeling
+      hereditarySubbucketClosure : Prop) : Prop where
+  parentCoCutOriginCert : parentCoCutOrigin
+  parentCoCutLabel_eq : ∀ v : Vertex, v ∈ coreVertices → label v = parentCoCutLabel v
+  hereditaryRelabeling_eq :
+    ∀ U : Subbucket, ∀ v : Vertex, v ∈ subbucketVertices U →
+      hereditaryLabel U v = shiftedHereditaryLabel U v
+  labelShiftConservativityCert : labelShiftConservativity
+  moduleLiftAfterRelabelingCert : moduleLiftAfterRelabeling
+  hereditarySubbucketClosureCert : hereditarySubbucketClosure
+
+/-- Build the hereditary relabeling package from its assumption-backed fields. -/
+theorem firstBitTerminalLabeledDeletionCoreRelabeling_of_assumptions
+    {Vertex Subbucket Label : Type*}
+    {coreVertices : Finset Vertex} {subbucketVertices : Subbucket → Finset Vertex}
+    {label parentCoCutLabel : Vertex → Label}
+    {hereditaryLabel shiftedHereditaryLabel : Subbucket → Vertex → Label}
+    {parentCoCutOrigin labelShiftConservativity moduleLiftAfterRelabeling
+      hereditarySubbucketClosure : Prop}
+    (horigin : parentCoCutOrigin)
+    (hparent : ∀ v : Vertex, v ∈ coreVertices → label v = parentCoCutLabel v)
+    (hrelabel :
+      ∀ U : Subbucket, ∀ v : Vertex, v ∈ subbucketVertices U →
+        hereditaryLabel U v = shiftedHereditaryLabel U v)
+    (hshift : labelShiftConservativity)
+    (hmodule : moduleLiftAfterRelabeling) (hhereditary : hereditarySubbucketClosure) :
+    FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+      parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+      labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure where
+  parentCoCutOriginCert := horigin
+  parentCoCutLabel_eq := hparent
+  hereditaryRelabeling_eq := hrelabel
+  labelShiftConservativityCert := hshift
+  moduleLiftAfterRelabelingCert := hmodule
+  hereditarySubbucketClosureCert := hhereditary
+
+section FirstBitTerminalLabeledDeletionCoreRelabeling
+
+variable {Vertex Subbucket Label : Type*}
+variable {coreVertices : Finset Vertex} {subbucketVertices : Subbucket → Finset Vertex}
+variable {label parentCoCutLabel : Vertex → Label}
+variable {hereditaryLabel shiftedHereditaryLabel : Subbucket → Vertex → Label}
+variable {parentCoCutOrigin labelShiftConservativity moduleLiftAfterRelabeling
+  hereditarySubbucketClosure : Prop}
+
+/-- Project the parent co-cut origin certificate. -/
+theorem FirstBitTerminalLabeledDeletionCoreRelabeling.to_parentCoCutOrigin
+    (h :
+      FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+        parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure) :
+    parentCoCutOrigin :=
+  h.parentCoCutOriginCert
+
+/-- On the parent core, the label is the parent co-cut degree label. -/
+theorem FirstBitTerminalLabeledDeletionCoreRelabeling.parentLabel_eq_parentCoCutLabel
+    (h :
+      FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+        parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure)
+    {v : Vertex} (hv : v ∈ coreVertices) :
+    label v = parentCoCutLabel v :=
+  h.parentCoCutLabel_eq v hv
+
+/-- Hereditary subbucket labels agree with the shifted parent labels. -/
+theorem FirstBitTerminalLabeledDeletionCoreRelabeling.hereditaryLabel_eq_shifted
+    (h :
+      FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+        parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure)
+    {U : Subbucket} {v : Vertex} (hv : v ∈ subbucketVertices U) :
+    hereditaryLabel U v = shiftedHereditaryLabel U v :=
+  h.hereditaryRelabeling_eq U v hv
+
+/-- Project label-shift conservativity through hereditary relabeling. -/
+theorem FirstBitTerminalLabeledDeletionCoreRelabeling.to_labelShiftConservativity
+    (h :
+      FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+        parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure) :
+    labelShiftConservativity :=
+  h.labelShiftConservativityCert
+
+/-- Project module lifting after relabeling. -/
+theorem FirstBitTerminalLabeledDeletionCoreRelabeling.to_moduleLiftAfterRelabeling
+    (h :
+      FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+        parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure) :
+    moduleLiftAfterRelabeling :=
+  h.moduleLiftAfterRelabelingCert
+
+/-- Project hereditary subbucket closure. -/
+theorem FirstBitTerminalLabeledDeletionCoreRelabeling.to_hereditarySubbucketClosure
+    (h :
+      FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+        parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure) :
+    hereditarySubbucketClosure :=
+  h.hereditarySubbucketClosureCert
+
+end FirstBitTerminalLabeledDeletionCoreRelabeling
+
+/-- Selectors for the labeled deletion-core terminal frontier. -/
+inductive FirstBitTerminalLabeledDeletionCoreFrontierSelector : Type
+  | memoryFreePrefixFullness
+  | graphIntrinsicQuotient
+  | selectorEquation
+  | hereditaryRelabeling
+  | badVertexElimination
+  | moduleExit
+  | falseTwinExit
+  | trueTwinExit
+  | labelRefinedRankBound
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalLabeledDeletionCoreFrontierSelector
+
+/-- The proof obligation attached to each labeled deletion-core selector. -/
+def obligation
+    (memoryFreePrefixFullness graphIntrinsicQuotient selectorEquation hereditaryRelabeling
+      badVertexElimination moduleExit falseTwinExit trueTwinExit labelRefinedRankBound : Prop) :
+    FirstBitTerminalLabeledDeletionCoreFrontierSelector → Prop
+  | memoryFreePrefixFullness => memoryFreePrefixFullness
+  | graphIntrinsicQuotient => graphIntrinsicQuotient
+  | selectorEquation => selectorEquation
+  | hereditaryRelabeling => hereditaryRelabeling
+  | badVertexElimination => badVertexElimination
+  | moduleExit => moduleExit
+  | falseTwinExit => falseTwinExit
+  | trueTwinExit => trueTwinExit
+  | labelRefinedRankBound => labelRefinedRankBound
+
+end FirstBitTerminalLabeledDeletionCoreFrontierSelector
+
+/--
+Assumption-backed labeled deletion-core frontier for the terminal first-bit residual.  It connects the
+memory-free prefix-fullness surface to the deletion-core selector equation, hereditary relabeling,
+bad-vertex elimination, module/twin exits, and the label-refined rank bound without closing the
+remaining proof obligations.
+-/
+structure FirstBitTerminalLabeledDeletionCoreFrontier
+    {Packet Quotient LowerProfile TerminalResidue RowAction Vertex Label Subbucket : Type*}
+    (terminalPackets : Finset Packet) (quotientOf : Packet → Quotient)
+    (lowerProfile : Packet → LowerProfile) (terminalResidue : Packet → TerminalResidue)
+    (carrierRowAction : Packet → RowAction)
+    (deletionEquation selfLayerEquation : Packet → Prop)
+    (quotientDeletionEquation quotientSelfLayerEquation : Quotient → Prop)
+    (affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization coverHolonomyNormalForm
+      pathProvenance remainingObstruction historicalPathBookkeeping prefixFullness
+      missingCornerSquare : Prop)
+    (coreVertices deletedVertices selectorVertices : Finset Vertex)
+    (badVertices terminalCore : Label → Finset Vertex) (m : Nat)
+    (label parentCoCutLabel deleteDegree shiftedLabel : Vertex → Label)
+    (subbucketVertices : Subbucket → Finset Vertex)
+    (hereditaryLabel shiftedHereditaryLabel : Subbucket → Vertex → Label)
+    (parentCoCutOrigin selectorCoreLargeGallaiClass residueEliminationStep
+      badVertexFreeResidual labelShiftConservativity moduleLiftAfterRelabeling
+      hereditarySubbucketClosure moduleExit falseTwinExit trueTwinExit constantFalseTwinClass
+      constantTrueTwinClass labelRefinedRankBound : Prop) : Prop where
+  memoryFreePrefixFullnessFrontier :
+    FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+      lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+      quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+      oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+      historicalPathBookkeeping prefixFullness missingCornerSquare
+  selectorCoreLargeGallaiClassCert : selectorCoreLargeGallaiClass
+  selectorComplement :
+    ∀ v : Vertex, v ∈ coreVertices → (v ∈ selectorVertices ↔ v ∉ deletedVertices)
+  deletionSelectorEquation :
+    ∀ v : Vertex, v ∈ coreVertices → (v ∉ deletedVertices ↔ deleteDegree v = shiftedLabel v)
+  parentLabel_eq_coCut :
+    ∀ v : Vertex, v ∈ coreVertices → label v = parentCoCutLabel v
+  relabeling :
+    FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+      parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+      labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure
+  badVertexEliminationFrontier :
+    FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+      residueEliminationStep badVertexFreeResidual labelRefinedRankBound
+  moduleExitCert : moduleExit
+  falseTwinExitCert : falseTwinExit
+  trueTwinExitCert : trueTwinExit
+  moduleLiftCloses : moduleLiftAfterRelabeling → moduleExit
+  falseTwinClassCloses : constantFalseTwinClass → falseTwinExit
+  trueTwinClassCloses : constantTrueTwinClass → trueTwinExit
+
+/-- Build the labeled deletion-core frontier from the memory-free surface and labeled certificates. -/
+theorem firstBitTerminalLabeledDeletionCoreFrontier_of_parts
+    {Packet Quotient LowerProfile TerminalResidue RowAction Vertex Label Subbucket : Type*}
+    {terminalPackets : Finset Packet} {quotientOf : Packet → Quotient}
+    {lowerProfile : Packet → LowerProfile} {terminalResidue : Packet → TerminalResidue}
+    {carrierRowAction : Packet → RowAction}
+    {deletionEquation selfLayerEquation : Packet → Prop}
+    {quotientDeletionEquation quotientSelfLayerEquation : Quotient → Prop}
+    {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+      stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization coverHolonomyNormalForm
+      pathProvenance remainingObstruction historicalPathBookkeeping prefixFullness
+      missingCornerSquare : Prop}
+    {coreVertices deletedVertices selectorVertices : Finset Vertex}
+    {badVertices terminalCore : Label → Finset Vertex} {m : Nat}
+    {label parentCoCutLabel deleteDegree shiftedLabel : Vertex → Label}
+    {subbucketVertices : Subbucket → Finset Vertex}
+    {hereditaryLabel shiftedHereditaryLabel : Subbucket → Vertex → Label}
+    {parentCoCutOrigin selectorCoreLargeGallaiClass residueEliminationStep
+      badVertexFreeResidual labelShiftConservativity moduleLiftAfterRelabeling
+      hereditarySubbucketClosure moduleExit falseTwinExit trueTwinExit constantFalseTwinClass
+      constantTrueTwinClass labelRefinedRankBound : Prop}
+    (hmemory :
+      FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare)
+    (hlarge : selectorCoreLargeGallaiClass)
+    (hselectorComplement :
+      ∀ v : Vertex, v ∈ coreVertices → (v ∈ selectorVertices ↔ v ∉ deletedVertices))
+    (hequation :
+      ∀ v : Vertex, v ∈ coreVertices → (v ∉ deletedVertices ↔ deleteDegree v = shiftedLabel v))
+    (hparentLabel : ∀ v : Vertex, v ∈ coreVertices → label v = parentCoCutLabel v)
+    (hrelabeling :
+      FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+        parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure)
+    (hbad :
+      FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+        residueEliminationStep badVertexFreeResidual labelRefinedRankBound)
+    (hmoduleExit : moduleExit) (hfalseTwinExit : falseTwinExit) (htrueTwinExit : trueTwinExit)
+    (hmoduleCloses : moduleLiftAfterRelabeling → moduleExit)
+    (hfalseCloses : constantFalseTwinClass → falseTwinExit)
+    (htrueCloses : constantTrueTwinClass → trueTwinExit) :
+    FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+      lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+      quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+      oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+      historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+      selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+      subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+      selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+      labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+      falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+      labelRefinedRankBound where
+  memoryFreePrefixFullnessFrontier := hmemory
+  selectorCoreLargeGallaiClassCert := hlarge
+  selectorComplement := hselectorComplement
+  deletionSelectorEquation := hequation
+  parentLabel_eq_coCut := hparentLabel
+  relabeling := hrelabeling
+  badVertexEliminationFrontier := hbad
+  moduleExitCert := hmoduleExit
+  falseTwinExitCert := hfalseTwinExit
+  trueTwinExitCert := htrueTwinExit
+  moduleLiftCloses := hmoduleCloses
+  falseTwinClassCloses := hfalseCloses
+  trueTwinClassCloses := htrueCloses
+
+section FirstBitTerminalLabeledDeletionCoreFrontier
+
+variable {Packet Quotient LowerProfile TerminalResidue RowAction Vertex Label Subbucket : Type*}
+variable {terminalPackets : Finset Packet} {quotientOf : Packet → Quotient}
+variable {lowerProfile : Packet → LowerProfile} {terminalResidue : Packet → TerminalResidue}
+variable {carrierRowAction : Packet → RowAction}
+variable {deletionEquation selfLayerEquation : Packet → Prop}
+variable {quotientDeletionEquation quotientSelfLayerEquation : Quotient → Prop}
+variable {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+  stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization coverHolonomyNormalForm
+  pathProvenance remainingObstruction historicalPathBookkeeping prefixFullness
+  missingCornerSquare : Prop}
+variable {coreVertices deletedVertices selectorVertices : Finset Vertex}
+variable {badVertices terminalCore : Label → Finset Vertex} {m : Nat}
+variable {label parentCoCutLabel deleteDegree shiftedLabel : Vertex → Label}
+variable {subbucketVertices : Subbucket → Finset Vertex}
+variable {hereditaryLabel shiftedHereditaryLabel : Subbucket → Vertex → Label}
+variable {parentCoCutOrigin selectorCoreLargeGallaiClass residueEliminationStep
+  badVertexFreeResidual labelShiftConservativity moduleLiftAfterRelabeling
+  hereditarySubbucketClosure moduleExit falseTwinExit trueTwinExit constantFalseTwinClass
+  constantTrueTwinClass labelRefinedRankBound : Prop}
+
+/-- Project the underlying memory-free prefix-fullness frontier. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.to_memoryFreePrefixFullnessFrontier
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+      lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+      quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+      oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+      historicalPathBookkeeping prefixFullness missingCornerSquare :=
+  h.memoryFreePrefixFullnessFrontier
+
+/-- Project graph-intrinsic quotient conservativity through the labeled deletion-core package. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.to_graphIntrinsicQuotient
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+      lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+      quotientDeletionEquation quotientSelfLayerEquation :=
+  h.memoryFreePrefixFullnessFrontier.graphIntrinsicQuotient
+
+/-- Project the large labeled Gallai-class certificate for the deletion core. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.to_selectorCoreLargeGallaiClass
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    selectorCoreLargeGallaiClass :=
+  h.selectorCoreLargeGallaiClassCert
+
+/-- In the core, the selected set is the complement of the deleted set. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.selected_iff_not_deleted
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    {v : Vertex} (hv : v ∈ coreVertices) :
+    v ∈ selectorVertices ↔ v ∉ deletedVertices :=
+  h.selectorComplement v hv
+
+/-- The deletion complement is characterized by the labeled degree equation. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.not_deleted_iff_deleteDegree_eq_shiftedLabel
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    {v : Vertex} (hv : v ∈ coreVertices) :
+    v ∉ deletedVertices ↔ deleteDegree v = shiftedLabel v :=
+  h.deletionSelectorEquation v hv
+
+/-- The selector equation surface: selected core vertices are exactly those with the shifted label. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.selected_iff_deleteDegree_eq_shiftedLabel
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    {v : Vertex} (hv : v ∈ coreVertices) :
+    v ∈ selectorVertices ↔ deleteDegree v = shiftedLabel v :=
+  Iff.trans (h.selectorComplement v hv) (h.deletionSelectorEquation v hv)
+
+/-- A selected core vertex satisfies the labeled deletion selector equation. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.deleteDegree_eq_shiftedLabel_of_mem_selector
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    {v : Vertex} (hv : v ∈ coreVertices) (hselected : v ∈ selectorVertices) :
+    deleteDegree v = shiftedLabel v :=
+  (FirstBitTerminalLabeledDeletionCoreFrontier.selected_iff_deleteDegree_eq_shiftedLabel
+    h hv).1 hselected
+
+/-- The parent label still records the parent co-cut origin on the deletion core. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.parentLabel_eq_parentCoCutLabel
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    {v : Vertex} (hv : v ∈ coreVertices) :
+    label v = parentCoCutLabel v :=
+  h.parentLabel_eq_coCut v hv
+
+/-- Project the hereditary relabeling package. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.to_relabeling
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+      parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+      labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure :=
+  h.relabeling
+
+/-- Hereditary subbucket labels inherit by shifting off the parent complement degrees. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.hereditaryLabel_eq_shifted
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    {U : Subbucket} {v : Vertex} (hv : v ∈ subbucketVertices U) :
+    hereditaryLabel U v = shiftedHereditaryLabel U v :=
+  h.relabeling.hereditaryRelabeling_eq U v hv
+
+/-- Project the bad-vertex elimination frontier. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.to_badVertexEliminationFrontier
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+      residueEliminationStep badVertexFreeResidual labelRefinedRankBound :=
+  h.badVertexEliminationFrontier
+
+/-- Bad vertices do not survive inside the terminal core of their residue. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.badVertex_not_mem_terminalCore
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    {residue : Label} {v : Vertex} (hbad : v ∈ badVertices residue) :
+    v ∉ terminalCore residue :=
+  h.badVertexEliminationFrontier.eliminatesBadVertices residue v hbad
+
+/-- The terminal core left after bad-vertex elimination has cardinality at most `m`. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.terminalCore_card_le
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    (residue : Label) :
+    (terminalCore residue).card ≤ m :=
+  h.badVertexEliminationFrontier.residualCoreSmall residue
+
+/-- Project the label-refined rank bound from the labeled deletion-core frontier. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.to_labelRefinedRankBound
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    labelRefinedRankBound :=
+  h.badVertexEliminationFrontier.labelRefinedRankBoundCert
+
+/-- Project the module exit certificate. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.to_moduleExit
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    moduleExit :=
+  h.moduleExitCert
+
+/-- Modules lift after relabeling into the module-exit branch. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.moduleExit_of_moduleLiftAfterRelabeling
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    moduleLiftAfterRelabeling → moduleExit :=
+  h.moduleLiftCloses
+
+/-- Project the false-twin exit certificate. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.to_falseTwinExit
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    falseTwinExit :=
+  h.falseTwinExitCert
+
+/-- Constant-label false-twin classes close via the false-twin exit branch. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.falseTwinExit_of_constantLabel
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    constantFalseTwinClass → falseTwinExit :=
+  h.falseTwinClassCloses
+
+/-- Project the true-twin exit certificate. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.to_trueTwinExit
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    trueTwinExit :=
+  h.trueTwinExitCert
+
+/-- Constant-label true-twin classes close via the true-twin exit branch. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.trueTwinExit_of_constantLabel
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    constantTrueTwinClass → trueTwinExit :=
+  h.trueTwinClassCloses
+
+/-- Project the terminal deletion-equation comparison through all labeled frontier layers. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.deletionEquation_iff_quotient
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    deletionEquation packet ↔ quotientDeletionEquation (quotientOf packet) :=
+  h.memoryFreePrefixFullnessFrontier.deletionEquation_iff_quotient hpacket
+
+/-- The labeled deletion-core package retains the memory-free prefix-fullness alternative. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.prefixFullness_or_missingCorner
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound) :
+    prefixFullness ∨ missingCornerSquare :=
+  h.memoryFreePrefixFullnessFrontier.prefixFullness_or_missingCorner
+
+/-- Project a selected obligation from the labeled deletion-core frontier. -/
+theorem FirstBitTerminalLabeledDeletionCoreFrontier.obligation
+    (h :
+      FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+        selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+        subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+        falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+        labelRefinedRankBound)
+    (selector : FirstBitTerminalLabeledDeletionCoreFrontierSelector) :
+    FirstBitTerminalLabeledDeletionCoreFrontierSelector.obligation
+      (FirstBitTerminalMemoryFreePrefixFullnessFrontier terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+        inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+        oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+        historicalPathBookkeeping prefixFullness missingCornerSquare)
+      (FirstBitTerminalGraphIntrinsicQuotientConservativity terminalPackets quotientOf
+        lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+        quotientDeletionEquation quotientSelfLayerEquation)
+      (∀ v : Vertex, v ∈ coreVertices → (v ∈ selectorVertices ↔ deleteDegree v = shiftedLabel v))
+      (FirstBitTerminalLabeledDeletionCoreRelabeling coreVertices subbucketVertices label
+        parentCoCutLabel hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+        labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure)
+      (FirstBitTerminalLabeledBadVertexEliminationFrontier badVertices terminalCore m
+        residueEliminationStep badVertexFreeResidual labelRefinedRankBound)
+      moduleExit falseTwinExit trueTwinExit labelRefinedRankBound selector := by
+  cases selector
+  · exact h.memoryFreePrefixFullnessFrontier
+  · exact h.memoryFreePrefixFullnessFrontier.graphIntrinsicQuotient
+  · intro v hv
+    exact FirstBitTerminalLabeledDeletionCoreFrontier.selected_iff_deleteDegree_eq_shiftedLabel h hv
+  · exact h.relabeling
+  · exact h.badVertexEliminationFrontier
+  · exact h.moduleExitCert
+  · exact h.falseTwinExitCert
+  · exact h.trueTwinExitCert
+  · exact h.badVertexEliminationFrontier.labelRefinedRankBoundCert
+
+end FirstBitTerminalLabeledDeletionCoreFrontier
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
