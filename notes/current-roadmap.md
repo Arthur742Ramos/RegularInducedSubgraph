@@ -5441,6 +5441,11 @@ For a full projected repair family with gain `g^-`, the lift gain is one of
 the deleted vertex; this four-case formula is the exact multi-support deletion endpoint.
 The only remaining lift obstruction is collision: a projected repair family has no disjoint full lift only
 when at least two projected supports are forced to lift through the same deleted vertex.
+Consequently, at a size-two atom every repair family with `g^->=2` is collision-forced, while `g^-=1`
+survives only as a zero-gain shortened-block unlift; at a size-three atom pure absorption is possible only
+for `g^-=1`.
+Equivalently, a two-atom deletion endpoint is a zero-gain pivot or a forced collision star; there is no
+absorption case.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

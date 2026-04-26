@@ -2006,6 +2006,9 @@ What remains justified after audit is:
       `g^-`, `g^- - 1`, `g^-`, or `g^- + 2 - |B_j|`;
       absence of a disjoint full lift is exactly lift-collision by at least two supports forced through the
       deleted vertex;
+      small atoms sharpen this: size-two atoms force collision for projected gain at least two and size-three
+      atoms purely absorb only unit gain;
+      two-atom deletion endpoints are zero-gain pivots or forced collision stars;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;

@@ -12064,6 +12064,25 @@ or lift-collision because two projected supports are forced through the same del
 In particular, any projected repair family with at most one `a`-forced member has a disjoint full lift and is
 controlled entirely by the four-case gain formula above.
 
+Small atoms now have no hidden absorption.  If `|B_j|=2`, every disjoint full lift of a projected repair
+family with `g^->=2` has positive gain, so terminality forces lift-collision by at least two `a`-forced
+members.  For `g^-=1`, the only nonpositive disjoint full lift is the shortened-block unlift
+`h=1,t=0`; it is a zero-gain replacement.  If `|B_j|=3`, pure absorption can be nonpositive only for
+`g^-=1`.  Therefore all high-gain deletion repair at atoms of size two or three is collision-forced or
+blocked by a positive lift; genuine absorption starts only at atoms of size at least four for gain at least
+two.
+
+Consequently a size-two atom has a binary deletion endpoint.  For each of its two vertices `a`, every
+minimal projected positive-gain repair after deleting `a` is either
+
+```text
+zero-gain pivot:  g^-=1, it hits the other vertex of the atom, and its unlifted lift is tight;
+collision star:   at least two members are forced to lift through a.
+```
+
+There is no absorption case at a two-atom.  Thus a deficit-one packing whose non-singleton atoms are all
+pairs reduces the deletion side to zero-gain pivots and forced collision stars only.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

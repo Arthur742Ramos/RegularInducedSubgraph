@@ -1109,6 +1109,9 @@ For a whole projected repair family with gain `g^-`, lift gains are exactly
 the deleted vertex.
 If no disjoint full lift exists, at least two projected supports are forced through the deleted vertex; this
 lift-collision is the only nongain obstruction.
+For size-two atoms, projected gain at least two is therefore collision-forced, and unit gain survives only as
+a zero-gain shortened-block unlift; size-three atoms can purely absorb only unit gain.
+So two-atom deletion endpoints are exactly zero-gain pivots or forced collision stars.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

@@ -2034,6 +2034,9 @@ For a projected repair family with gain `g^-`, the full lift gain is one of
 `g^-`, `g^- - 1`, `g^-`, or `g^- + 2 - |B_j|`, determined by shortened-block contact and use of `a`.
 The only nongain lift obstruction is collision: at least two projected supports are forced through the
 deleted vertex.
+At size-two atoms, gain `>=2` repairs are collision-forced and gain `1` survives only as a zero-gain
+shortened-block unlift; size-three atoms purely absorb only unit gain.
+Thus two-atom deletion endpoints are zero-gain pivots or forced collision stars, with no absorption case.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,
