@@ -621,6 +621,59 @@ theorem card_lt_of_no_clique_or_indep
   · exact hnoClique hclique
   · exact hnoIndep hindep
 
+/--
+Endpoint form for finite Ramsey bounds.  It is enough to prove the clique/independent-set
+alternative on full `N`-vertex types; an arbitrary larger host set can be cut down to an induced
+subgraph on exactly `N` vertices.
+-/
+theorem hasCliqueOrIndepSetBound_of_exact_card {a b N : ℕ}
+    (hexact :
+      ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α),
+        Fintype.card α = N →
+          (∃ t : Finset α, G.IsNClique a t) ∨ ∃ t : Finset α, G.IsNIndepSet b t) :
+    HasCliqueOrIndepSetBound a b N := by
+  intro α _ G s hs
+  classical
+  rcases Finset.exists_subset_card_eq (s := s) (n := N) hs with ⟨u, hus, hucard⟩
+  let H : SimpleGraph ↑(u : Set α) := inducedOn G u
+  have hHcard : Fintype.card ↑(u : Set α) = N := by
+    simpa [hucard] using (Fintype.card_coe u)
+  rcases hexact H hHcard with hClique | hIndep
+  · left
+    rcases hClique with ⟨t, htClique⟩
+    refine ⟨t.map ⟨Subtype.val, Subtype.val_injective⟩, ?_, ?_⟩
+    · intro x hx
+      rcases Finset.mem_map.mp hx with ⟨v, _hv, rfl⟩
+      exact hus v.2
+    · rw [SimpleGraph.isNClique_iff] at htClique ⊢
+      constructor
+      · rw [SimpleGraph.isClique_iff]
+        intro x hx y hy hxy
+        rcases Finset.mem_map.mp hx with ⟨vx, hvx, rfl⟩
+        rcases Finset.mem_map.mp hy with ⟨vy, hvy, rfl⟩
+        have hvxy : vx ≠ vy := by
+          intro h
+          exact hxy (by simpa [h])
+        simpa [H, inducedOn] using htClique.1 hvx hvy hvxy
+      · simpa using htClique.2
+  · right
+    rcases hIndep with ⟨t, htIndep⟩
+    refine ⟨t.map ⟨Subtype.val, Subtype.val_injective⟩, ?_, ?_⟩
+    · intro x hx
+      rcases Finset.mem_map.mp hx with ⟨v, _hv, rfl⟩
+      exact hus v.2
+    · rw [SimpleGraph.isNIndepSet_iff] at htIndep ⊢
+      constructor
+      · rw [SimpleGraph.isIndepSet_iff] at htIndep ⊢
+        intro x hx y hy hxy
+        rcases Finset.mem_map.mp hx with ⟨vx, hvx, rfl⟩
+        rcases Finset.mem_map.mp hy with ⟨vy, hvy, rfl⟩
+        have hvxy : vx ≠ vy := by
+          intro h
+          exact hxy (by simpa [h])
+        simpa [H, inducedOn] using htIndep.1 hvx hvy hvxy
+      · simpa using htIndep.2
+
 /-- Internal degree in an induced finite vertex set, written as an external neighbor intersection. -/
 theorem inducedOn_degree_eq_card_neighborFinset_inter
     {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
@@ -2970,6 +3023,38 @@ input; the `R(5,5)` input is then the parity-recurrence bound `51`.
 structure RamseyTenSmallTable : Prop where
   r45 : HasCliqueOrIndepSetBound 4 5 26
 
+/--
+Endpoint statement equivalent to the remaining `R(4,5) <= 26` Ramsey-table input: every full
+26-vertex graph has a `4`-clique or an independent `5`-set.
+-/
+def NoRamseyFourFiveCounterexampleOnTwentySix : Prop :=
+  ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α),
+    Fintype.card α = 26 →
+      (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
+
+/-- The exact-card endpoint form discharges the localized `R(4,5) <= 26` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_six_of_noCounterexample
+    (h : NoRamseyFourFiveCounterexampleOnTwentySix) :
+    HasCliqueOrIndepSetBound 4 5 26 :=
+  hasCliqueOrIndepSetBound_of_exact_card (a := 4) (b := 5) (N := 26) h
+
+/-- Package the exact 26-vertex endpoint as the small Ramsey-10 table. -/
+theorem ramseyTenSmallTable_of_noRamseyFourFiveCounterexampleOnTwentySix
+    (h : NoRamseyFourFiveCounterexampleOnTwentySix) : RamseyTenSmallTable :=
+  ⟨hasCliqueOrIndepSetBound_four_five_twenty_six_of_noCounterexample h⟩
+
+/--
+Relaxed Ramsey-10 table using the sharpened `R(3,k)` row and parity recurrence.  It is enough for
+the dyadic regular-10 target to know the slightly weaker off-diagonal endpoint `R(4,5) <= 27`.
+-/
+structure RamseyTenR45TwentySevenTable : Prop where
+  r45 : HasCliqueOrIndepSetBound 4 5 27
+
+/-- The original small table implies the relaxed `R(4,5) <= 27` table. -/
+theorem RamseyTenSmallTable.toR45TwentySevenTable
+    (h : RamseyTenSmallTable) : RamseyTenR45TwentySevenTable :=
+  ⟨HasCliqueOrIndepSetBound.mono h.r45 (by norm_num : 26 ≤ 27)⟩
+
 theorem hasCliqueOrIndepSetBound_10_10_of_ramseyTenSmallTable
     (h : RamseyTenSmallTable) : HasCliqueOrIndepSetBound 10 10 38543 := by
   have h36 : HasCliqueOrIndepSetBound 3 6 19 :=
@@ -3071,6 +3156,115 @@ theorem hasCliqueOrIndepSetBound_10_10_of_ramseyTenSmallTable
     HasCliqueOrIndepSetBound.step_even_mono (a := 9) (b := 9)
       (N₁ := 19272) (N₂ := 19272) (N := 38543)
       (by decide) (by decide) (by norm_num) (by norm_num) h9_10 h10_9 (by norm_num) G s hs
+
+/--
+With the current sharpened `R(3,k)` row and parity recurrence, the regular-10 Ramsey bound still
+falls below `40960` from the weaker off-diagonal input `R(4,5) <= 27`.
+-/
+theorem hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable
+    (h : RamseyTenR45TwentySevenTable) : HasCliqueOrIndepSetBound 10 10 39246 := by
+  have h36 : HasCliqueOrIndepSetBound 3 6 19 :=
+    hasCliqueOrIndepSetBound_three_six_nineteen
+  have h37 : HasCliqueOrIndepSetBound 3 7 26 :=
+    hasCliqueOrIndepSetBound_three_seven_twenty_six
+  have h38 : HasCliqueOrIndepSetBound 3 8 33 :=
+    hasCliqueOrIndepSetBound_three_eight_thirty_three
+  have h39 : HasCliqueOrIndepSetBound 3 9 42 :=
+    hasCliqueOrIndepSetBound_three_nine_forty_two
+  have h3_10 : HasCliqueOrIndepSetBound 3 10 51 :=
+    hasCliqueOrIndepSetBound_three_ten_fifty_one
+  have h46 : HasCliqueOrIndepSetBound 4 6 46 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 5) (N₁ := 19) (N₂ := 27)
+      (N := 46) (by decide) (by decide) h36 h.r45 (by norm_num)
+  have h47 : HasCliqueOrIndepSetBound 4 7 71 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 3) (b := 6)
+      (N₁ := 26) (N₂ := 46) (N := 71)
+      (by decide) (by decide) (by norm_num) (by norm_num) h37 h46 (by norm_num)
+  have h48 : HasCliqueOrIndepSetBound 4 8 104 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 7) (N₁ := 33) (N₂ := 71)
+      (N := 104) (by decide) (by decide) h38 h47 (by norm_num)
+  have h49 : HasCliqueOrIndepSetBound 4 9 145 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 3) (b := 8)
+      (N₁ := 42) (N₂ := 104) (N := 145)
+      (by decide) (by decide) (by norm_num) (by norm_num) h39 h48 (by norm_num)
+  have h4_10 : HasCliqueOrIndepSetBound 4 10 196 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 9) (N₁ := 51) (N₂ := 145)
+      (N := 196) (by decide) (by decide) h3_10 h49 (by norm_num)
+  have h55 : HasCliqueOrIndepSetBound 5 5 54 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 4) (N₁ := 27) (N₂ := 27)
+      (N := 54) (by decide) (by decide) h.r45 (HasCliqueOrIndepSetBound.symm h.r45)
+      (by norm_num)
+  have h56 : HasCliqueOrIndepSetBound 5 6 99 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 4) (b := 5)
+      (N₁ := 46) (N₂ := 54) (N := 99)
+      (by decide) (by decide) (by norm_num) (by norm_num) h46 h55 (by norm_num)
+  have h57 : HasCliqueOrIndepSetBound 5 7 170 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 6) (N₁ := 71) (N₂ := 99)
+      (N := 170) (by decide) (by decide) h47 h56 (by norm_num)
+  have h58 : HasCliqueOrIndepSetBound 5 8 273 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 4) (b := 7)
+      (N₁ := 104) (N₂ := 170) (N := 273)
+      (by decide) (by decide) (by norm_num) (by norm_num) h48 h57 (by norm_num)
+  have h59 : HasCliqueOrIndepSetBound 5 9 418 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 8) (N₁ := 145) (N₂ := 273)
+      (N := 418) (by decide) (by decide) h49 h58 (by norm_num)
+  have h5_10 : HasCliqueOrIndepSetBound 5 10 613 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 4) (b := 9)
+      (N₁ := 196) (N₂ := 418) (N := 613)
+      (by decide) (by decide) (by norm_num) (by norm_num) h4_10 h59 (by norm_num)
+  have h66 : HasCliqueOrIndepSetBound 6 6 198 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 5) (N₁ := 99) (N₂ := 99)
+      (N := 198) (by decide) (by decide) h56 h56.symm (by norm_num)
+  have h67 : HasCliqueOrIndepSetBound 6 7 367 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 5) (b := 6)
+      (N₁ := 170) (N₂ := 198) (N := 367)
+      (by decide) (by decide) (by norm_num) (by norm_num) h57 h66 (by norm_num)
+  have h68 : HasCliqueOrIndepSetBound 6 8 640 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 7) (N₁ := 273) (N₂ := 367)
+      (N := 640) (by decide) (by decide) h58 h67 (by norm_num)
+  have h69 : HasCliqueOrIndepSetBound 6 9 1057 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 5) (b := 8)
+      (N₁ := 418) (N₂ := 640) (N := 1057)
+      (by decide) (by decide) (by norm_num) (by norm_num) h59 h68 (by norm_num)
+  have h6_10 : HasCliqueOrIndepSetBound 6 10 1670 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 9) (N₁ := 613) (N₂ := 1057)
+      (N := 1670) (by decide) (by decide) h5_10 h69 (by norm_num)
+  have h77 : HasCliqueOrIndepSetBound 7 7 734 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 6) (N₁ := 367) (N₂ := 367)
+      (N := 734) (by decide) (by decide) h67 h67.symm (by norm_num)
+  have h78 : HasCliqueOrIndepSetBound 7 8 1373 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 6) (b := 7)
+      (N₁ := 640) (N₂ := 734) (N := 1373)
+      (by decide) (by decide) (by norm_num) (by norm_num) h68 h77 (by norm_num)
+  have h79 : HasCliqueOrIndepSetBound 7 9 2430 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 8) (N₁ := 1057) (N₂ := 1373)
+      (N := 2430) (by decide) (by decide) h69 h78 (by norm_num)
+  have h7_10 : HasCliqueOrIndepSetBound 7 10 4099 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 6) (b := 9)
+      (N₁ := 1670) (N₂ := 2430) (N := 4099)
+      (by decide) (by decide) (by norm_num) (by norm_num) h6_10 h79 (by norm_num)
+  have h88 : HasCliqueOrIndepSetBound 8 8 2746 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 7) (N₁ := 1373) (N₂ := 1373)
+      (N := 2746) (by decide) (by decide) h78 h78.symm (by norm_num)
+  have h89 : HasCliqueOrIndepSetBound 8 9 5175 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 7) (b := 8)
+      (N₁ := 2430) (N₂ := 2746) (N := 5175)
+      (by decide) (by decide) (by norm_num) (by norm_num) h79 h88 (by norm_num)
+  have h8_10 : HasCliqueOrIndepSetBound 8 10 9274 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 9) (N₁ := 4099) (N₂ := 5175)
+      (N := 9274) (by decide) (by decide) h7_10 h89 (by norm_num)
+  have h99 : HasCliqueOrIndepSetBound 9 9 10350 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 8) (b := 8) (N₁ := 5175) (N₂ := 5175)
+      (N := 10350) (by decide) (by decide) h89 h89.symm (by norm_num)
+  have h9_10 : HasCliqueOrIndepSetBound 9 10 19623 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 8) (b := 9)
+      (N₁ := 9274) (N₂ := 10350) (N := 19623)
+      (by decide) (by decide) (by norm_num) (by norm_num) h8_10 h99 (by norm_num)
+  have h10_9 : HasCliqueOrIndepSetBound 10 9 19623 := HasCliqueOrIndepSetBound.symm h9_10
+  intro α _ G s hs
+  exact
+    HasCliqueOrIndepSetBound.step_mono (a := 9) (b := 9) (N₁ := 19623) (N₂ := 19623)
+      (N := 39246) (by decide) (by decide) h9_10 h10_9 (by norm_num) G s hs
 
 
 /--
@@ -8318,6 +8512,23 @@ theorem hasRegularInducedSubgraphOfCard_ten_of_ramseyTenSmallTable
   have hbound : 38543 ≤ (Finset.univ : Finset V).card := by
     simpa using (le_trans (by decide : 38543 ≤ 40960) hcard)
   rcases hasCliqueOrIndepSetBound_10_10_of_ramseyTenSmallTable h G Finset.univ hbound with
+    hclique | hindep
+  · rcases hclique with ⟨s, _hs, hsclique⟩
+    simpa [hsclique.card_eq] using
+      (hasRegularInducedSubgraphOfCard_of_isClique G s hsclique.isClique)
+  · rcases hindep with ⟨s, _hs, hsindep⟩
+    simpa [hsindep.card_eq] using
+      (hasRegularInducedSubgraphOfCard_of_isIndepSet G s hsindep.isIndepSet)
+
+/-- The relaxed `R(4,5) <= 27` table is enough for the 40960-vertex regular induced 10-set target. -/
+theorem hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45TwentySevenTable
+    (h : RamseyTenR45TwentySevenTable) {V : Type} [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 := by
+  classical
+  have hbound : 39246 ≤ (Finset.univ : Finset V).card := by
+    simpa using (le_trans (by decide : 39246 ≤ 40960) hcard)
+  rcases hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable h G Finset.univ hbound with
     hclique | hindep
   · rcases hclique with ⟨s, _hs, hsclique⟩
     simpa [hsclique.card_eq] using

@@ -2789,6 +2789,15 @@ theorem hasRamseyTenRegularAtDyadicTarget_of_ramseyTenSmallTable
   exact hasRegularInducedSubgraphOfCard_ten_of_ramseyTenSmallTable h G hcard
 
 /--
+The recurrence-improved Ramsey table from `Ramsey.lean` supplies the 40960 regular-10 target from
+the weaker finite input `R(4,5) <= 27`.
+-/
+theorem hasRamseyTenRegularAtDyadicTarget_of_ramseyTenR45TwentySevenTable
+    (h : RamseyTenR45TwentySevenTable) : HasRamseyTenRegularAtDyadicTarget := by
+  intro V _ _ G hcard
+  exact hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45TwentySevenTable h G hcard
+
+/--
 The fixed-witness lift implies the cascade-wrapped lift because a cascade terminal bucket is itself
 a fixed-modulus witness and a fixed witness is a length-zero cascade.
 -/
@@ -24018,8 +24027,8 @@ theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramsey
 
 /--
 Same strongest viable handoff, with the Ramsey-10 input reduced to a small off-diagonal Ramsey
-table: `R(4,5) <= 26`.  The `R(3,k)` row is supplied by the generic binomial Ramsey
-bound, and `R(5,5) <= 52` then follows by the Ramsey recurrence.
+table: `R(4,5) <= 26`.  The sharpened `R(3,k)` row and parity recurrence in `Ramsey.lean`
+then keep the propagated `R(10,10)` bound below the `40960` dyadic target.
 -/
 theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
     (sevenVertexBooleanCertificate :
@@ -24033,6 +24042,25 @@ theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramsey
   targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenRegular_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
     sevenVertexBooleanCertificate modFourZeroLossFive
     (hasRamseyTenRegularAtDyadicTarget_of_ramseyTenSmallTable ramseyTenSmallTable)
+    terminalRegularizationFive twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+
+/--
+Same handoff as above, but Ramsey-10 is reduced to the relaxed off-diagonal endpoint
+`R(4,5) <= 27`.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenR45TwentySevenTable_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenR45TwentySevenTable : RamseyTenR45TwentySevenTable)
+    (terminalRegularizationFive : HasPolynomialCostFixedWitnessTerminalRegularization 5)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenRegular_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    sevenVertexBooleanCertificate modFourZeroLossFive
+    (hasRamseyTenRegularAtDyadicTarget_of_ramseyTenR45TwentySevenTable
+      ramseyTenR45TwentySevenTable)
     terminalRegularizationFive twiceLargeGapJAtLeastTwoSmallModulusFromEleven
 
 /--
@@ -24051,6 +24079,26 @@ theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramsey
     TargetStatement :=
   targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenSmallTable_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
     sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenSmallTable
+    (hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
+      fixedWitnessExternalBlockSelfBridgeFive)
+    twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+
+/--
+External-block version of the relaxed Ramsey-10 handoff: the isolated regular-10 target now needs
+only the `R(4,5) <= 27` table certificate.
+-/
+theorem targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenR45TwentySevenTable_and_fixedWitnessExternalBlockSelfBridgeFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    (sevenVertexBooleanCertificate :
+      ∀ x : SevenVertexEdgeCode, sevenVertexCodeHasRegularFourOrFiveBool x = true)
+    (modFourZeroLossFive : HasModFourZeroLossFiveInducedSubgraph)
+    (ramseyTenR45TwentySevenTable : RamseyTenR45TwentySevenTable)
+    (fixedWitnessExternalBlockSelfBridgeFive :
+      HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5)
+    (twiceLargeGapJAtLeastTwoSmallModulusFromEleven :
+      HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 11) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_modFourZeroLossFive_and_ramseyTenR45TwentySevenTable_and_fixedWitnessTerminalRegularizationFive_and_twiceLargeGapJAtLeastTwoSmallModulusFromEleven
+    sevenVertexBooleanCertificate modFourZeroLossFive ramseyTenR45TwentySevenTable
     (hasPolynomialCostFixedWitnessTerminalRegularization_of_hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge
       fixedWitnessExternalBlockSelfBridgeFive)
     twiceLargeGapJAtLeastTwoSmallModulusFromEleven
