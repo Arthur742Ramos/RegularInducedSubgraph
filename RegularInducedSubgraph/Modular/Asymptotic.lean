@@ -32986,6 +32986,1373 @@ theorem
 end FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI
 
 /--
+Terminal ternary-cycle profiles left after the pair-collision partner split endpoint.  The names record
+the multiset of split-dependency weights: `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`.
+-/
+inductive FirstBitTerminalTernaryCycleProfile : Type
+  | threeThreeTwoTwo
+  | threeThreeThreeTwo
+  | threeThreeThreeThree
+
+/-- Total weight carried by a terminal ternary split-dependency cycle profile. -/
+def FirstBitTerminalTernaryCycleProfile.totalWeight :
+    FirstBitTerminalTernaryCycleProfile → ℕ
+  | .threeThreeTwoTwo => 10
+  | .threeThreeThreeTwo => 11
+  | .threeThreeThreeThree => 12
+
+/-- Number of weight-three source vertices in a terminal ternary cycle profile. -/
+def FirstBitTerminalTernaryCycleProfile.threeWeightCount :
+    FirstBitTerminalTernaryCycleProfile → ℕ
+  | .threeThreeTwoTwo => 2
+  | .threeThreeThreeTwo => 3
+  | .threeThreeThreeThree => 4
+
+/-- Number of weight-two shortened-pair vertices in a terminal ternary cycle profile. -/
+def FirstBitTerminalTernaryCycleProfile.twoWeightCount :
+    FirstBitTerminalTernaryCycleProfile → ℕ
+  | .threeThreeTwoTwo => 2
+  | .threeThreeThreeTwo => 1
+  | .threeThreeThreeThree => 0
+
+/-- The terminal ternary-cycle profile namespace contains exactly the three advertised endpoint cases. -/
+theorem firstBitTerminalTernaryCycleProfile_cases
+    (profile : FirstBitTerminalTernaryCycleProfile) :
+    profile = .threeThreeTwoTwo ∨ profile = .threeThreeThreeTwo ∨
+      profile = .threeThreeThreeThree := by
+  cases profile with
+  | threeThreeTwoTwo => exact Or.inl rfl
+  | threeThreeThreeTwo => exact Or.inr (Or.inl rfl)
+  | threeThreeThreeThree => exact Or.inr (Or.inr rfl)
+
+/--
+Strict cross-defect surface for a shortened-pair-hit ternary source collision.  The dyadic endpoint
+uses the normalized `q = 2/3` line and requires the other-petal defect allowance to sit strictly below
+the exposed cross defect.
+-/
+def firstBitTernarySourceTwoThirdsShortenedPairHitStrictCrossDefect
+    (qNumer qDen delta_other deltaOtherBound crossDefect : ℕ) : Prop :=
+  qNumer = 2 ∧ qDen = 3 ∧ delta_other ≤ deltaOtherBound ∧ deltaOtherBound < crossDefect
+
+/--
+Complementary bipartition labels sourced from a size-three atom in the ternary collision branch.
+The facade is assumption-backed: it records the shortened-pair-free support formulas and the
+three-way label separation needed by the terminal dyadic first-bit argument.
+-/
+structure FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade
+    {Core SourceAtom SourceVertex Vertex Label : Type*}
+    [DecidableEq SourceAtom] [DecidableEq SourceVertex] [DecidableEq Vertex]
+    (sourceAtoms : Core → Finset SourceAtom)
+    (sourceVertices : Core → SourceAtom → Finset SourceVertex)
+    (sourceAnchorVertex : Core → SourceAtom → SourceVertex → Vertex)
+    (oppositeUnion : Core → SourceAtom → Finset Vertex)
+    (bipartitionSide : Core → SourceAtom → SourceVertex → Finset Vertex)
+    (leftSourceSupport rightSourceSupport : Core → SourceAtom → SourceVertex → Finset Vertex)
+    (labelOf : Core → SourceAtom → SourceVertex → Label)
+    (sizeThreeSourceAtom shortenedPairFreeSource : Core → SourceAtom → Prop)
+    (shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels : Prop) :
+    Prop where
+  sourceAtom_card_threeCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → (sourceVertices core source).card = 3
+  shortenedPairFreeCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → shortenedPairFreeSource core source
+  leftSupport_anchor_union_sideCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → ∀ vertex : SourceVertex,
+        vertex ∈ sourceVertices core source →
+          leftSourceSupport core source vertex =
+            ({sourceAnchorVertex core source vertex} : Finset Vertex) ∪
+              bipartitionSide core source vertex
+  rightSupport_anchor_union_complementCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → ∀ vertex : SourceVertex,
+        vertex ∈ sourceVertices core source →
+          rightSourceSupport core source vertex =
+            ({sourceAnchorVertex core source vertex} : Finset Vertex) ∪
+              (oppositeUnion core source \ bipartitionSide core source vertex)
+  source_labels_pairwise_distinctCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → ∀ left right : SourceVertex,
+        left ∈ sourceVertices core source → right ∈ sourceVertices core source →
+          left ≠ right → labelOf core source left ≠ labelOf core source right
+  shortenedPairFreeComplementaryBipartitionLabelsCert :
+    shortenedPairFreeComplementaryBipartitionLabels
+  distinctTernarySourceLabelsCert : distinctTernarySourceLabels
+
+/-- Build the ternary source complementary-bipartition label facade from explicit endpoint data. -/
+theorem firstBitTerminalTernarySourceComplementaryBipartitionLabelFacade_of_parts
+    {Core SourceAtom SourceVertex Vertex Label : Type*}
+    [DecidableEq SourceAtom] [DecidableEq SourceVertex] [DecidableEq Vertex]
+    {sourceAtoms : Core → Finset SourceAtom}
+    {sourceVertices : Core → SourceAtom → Finset SourceVertex}
+    {sourceAnchorVertex : Core → SourceAtom → SourceVertex → Vertex}
+    {oppositeUnion : Core → SourceAtom → Finset Vertex}
+    {bipartitionSide : Core → SourceAtom → SourceVertex → Finset Vertex}
+    {leftSourceSupport rightSourceSupport : Core → SourceAtom → SourceVertex → Finset Vertex}
+    {labelOf : Core → SourceAtom → SourceVertex → Label}
+    {sizeThreeSourceAtom shortenedPairFreeSource : Core → SourceAtom → Prop}
+    {shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels : Prop}
+    (hcard :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → (sourceVertices core source).card = 3)
+    (hfree :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → shortenedPairFreeSource core source)
+    (hleft :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → ∀ vertex : SourceVertex,
+          vertex ∈ sourceVertices core source →
+            leftSourceSupport core source vertex =
+              ({sourceAnchorVertex core source vertex} : Finset Vertex) ∪
+                bipartitionSide core source vertex)
+    (hright :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → ∀ vertex : SourceVertex,
+          vertex ∈ sourceVertices core source →
+            rightSourceSupport core source vertex =
+              ({sourceAnchorVertex core source vertex} : Finset Vertex) ∪
+                (oppositeUnion core source \ bipartitionSide core source vertex))
+    (hlabels :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → ∀ left right : SourceVertex,
+          left ∈ sourceVertices core source → right ∈ sourceVertices core source →
+            left ≠ right → labelOf core source left ≠ labelOf core source right)
+    (hbipartition : shortenedPairFreeComplementaryBipartitionLabels)
+    (hdistinct : distinctTernarySourceLabels) :
+    FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade sourceAtoms
+      sourceVertices sourceAnchorVertex oppositeUnion bipartitionSide leftSourceSupport
+      rightSourceSupport labelOf sizeThreeSourceAtom shortenedPairFreeSource
+      shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels where
+  sourceAtom_card_threeCert := hcard
+  shortenedPairFreeCert := hfree
+  leftSupport_anchor_union_sideCert := hleft
+  rightSupport_anchor_union_complementCert := hright
+  source_labels_pairwise_distinctCert := hlabels
+  shortenedPairFreeComplementaryBipartitionLabelsCert := hbipartition
+  distinctTernarySourceLabelsCert := hdistinct
+
+section FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade
+
+variable {Core SourceAtom SourceVertex Vertex Label : Type*}
+variable [DecidableEq SourceAtom] [DecidableEq SourceVertex] [DecidableEq Vertex]
+variable {sourceAtoms : Core → Finset SourceAtom}
+variable {sourceVertices : Core → SourceAtom → Finset SourceVertex}
+variable {sourceAnchorVertex : Core → SourceAtom → SourceVertex → Vertex}
+variable {oppositeUnion : Core → SourceAtom → Finset Vertex}
+variable {bipartitionSide : Core → SourceAtom → SourceVertex → Finset Vertex}
+variable {leftSourceSupport rightSourceSupport : Core → SourceAtom → SourceVertex → Finset Vertex}
+variable {labelOf : Core → SourceAtom → SourceVertex → Label}
+variable {sizeThreeSourceAtom shortenedPairFreeSource : Core → SourceAtom → Prop}
+variable {shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels : Prop}
+
+variable (h :
+  FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade sourceAtoms
+    sourceVertices sourceAnchorVertex oppositeUnion bipartitionSide leftSourceSupport
+    rightSourceSupport labelOf sizeThreeSourceAtom shortenedPairFreeSource
+    shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels)
+
+/-- A source atom in this facade is genuinely size three. -/
+theorem FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade.sourceAtom_card_three
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) :
+    (sourceVertices core source).card = 3 :=
+  h.sourceAtom_card_threeCert core source hsource hsize
+
+/-- Size-three sources in the facade are shortened-pair-free. -/
+theorem FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade.shortenedPairFree
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) :
+    shortenedPairFreeSource core source :=
+  h.shortenedPairFreeCert core source hsource hsize
+
+/-- Project the left complementary support formula for a source vertex. -/
+theorem
+    FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade.leftSupport_anchor_union_side
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) {vertex : SourceVertex}
+    (hvertex : vertex ∈ sourceVertices core source) :
+    leftSourceSupport core source vertex =
+      ({sourceAnchorVertex core source vertex} : Finset Vertex) ∪
+        bipartitionSide core source vertex :=
+  h.leftSupport_anchor_union_sideCert core source hsource hsize vertex hvertex
+
+/-- Project the right complementary support formula for a source vertex. -/
+theorem
+    FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade.rightSupport_anchor_union_complement
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) {vertex : SourceVertex}
+    (hvertex : vertex ∈ sourceVertices core source) :
+    rightSourceSupport core source vertex =
+      ({sourceAnchorVertex core source vertex} : Finset Vertex) ∪
+        (oppositeUnion core source \ bipartitionSide core source vertex) :=
+  h.rightSupport_anchor_union_complementCert core source hsource hsize vertex hvertex
+
+/-- The three source vertices carry pairwise distinct labels. -/
+theorem FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade.source_labels_distinct
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) {left right : SourceVertex}
+    (hleft : left ∈ sourceVertices core source) (hright : right ∈ sourceVertices core source)
+    (hne : left ≠ right) :
+    labelOf core source left ≠ labelOf core source right :=
+  h.source_labels_pairwise_distinctCert core source hsource hsize left right hleft hright hne
+
+/-- Project the complementary-bipartition label marker. -/
+theorem
+    FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade.to_shortenedPairFreeComplementaryBipartitionLabels :
+    shortenedPairFreeComplementaryBipartitionLabels :=
+  h.shortenedPairFreeComplementaryBipartitionLabelsCert
+
+/-- Project the distinct ternary source-label marker. -/
+theorem
+    FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade.to_distinctTernarySourceLabels :
+    distinctTernarySourceLabels :=
+  h.distinctTernarySourceLabelsCert
+
+end FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade
+
+/--
+No-rainbow/joint-blocker facade for the ternary source collision branch.  It keeps the two
+global obstructions separate: there is no rainbow partition of the source atom and there is no
+joint blocker spanning the three source labels.
+-/
+structure FirstBitTerminalTernaryNoRainbowJointBlockerFacade
+    {Core SourceAtom PartitionCell Blocker : Type*}
+    [DecidableEq SourceAtom] [DecidableEq PartitionCell]
+    (sourceAtoms : Core → Finset SourceAtom)
+    (sourcePartition : Core → SourceAtom → Finset PartitionCell)
+    (sizeThreeSourceAtom : Core → SourceAtom → Prop)
+    (rainbowPartition : Core → SourceAtom → Prop)
+    (jointBlocker : Core → SourceAtom → Blocker → Prop)
+    (noRainbowTernaryPartition noJointTernaryBlocker : Prop) : Prop where
+  sourcePartition_card_threeCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → (sourcePartition core source).card = 3
+  no_rainbow_partitionCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → ¬ rainbowPartition core source
+  no_joint_blockerCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → ¬ ∃ blocker : Blocker, jointBlocker core source blocker
+  noRainbowTernaryPartitionCert : noRainbowTernaryPartition
+  noJointTernaryBlockerCert : noJointTernaryBlocker
+
+/-- Build the no-rainbow/joint-blocker facade from explicit terminal obstructions. -/
+theorem firstBitTerminalTernaryNoRainbowJointBlockerFacade_of_parts
+    {Core SourceAtom PartitionCell Blocker : Type*}
+    [DecidableEq SourceAtom] [DecidableEq PartitionCell]
+    {sourceAtoms : Core → Finset SourceAtom}
+    {sourcePartition : Core → SourceAtom → Finset PartitionCell}
+    {sizeThreeSourceAtom : Core → SourceAtom → Prop}
+    {rainbowPartition : Core → SourceAtom → Prop}
+    {jointBlocker : Core → SourceAtom → Blocker → Prop}
+    {noRainbowTernaryPartition noJointTernaryBlocker : Prop}
+    (hcard :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → (sourcePartition core source).card = 3)
+    (hrainbow :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → ¬ rainbowPartition core source)
+    (hblocker :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → ¬ ∃ blocker : Blocker, jointBlocker core source blocker)
+    (hnoRainbow : noRainbowTernaryPartition)
+    (hnoBlocker : noJointTernaryBlocker) :
+    FirstBitTerminalTernaryNoRainbowJointBlockerFacade sourceAtoms sourcePartition
+      sizeThreeSourceAtom rainbowPartition jointBlocker noRainbowTernaryPartition
+      noJointTernaryBlocker where
+  sourcePartition_card_threeCert := hcard
+  no_rainbow_partitionCert := hrainbow
+  no_joint_blockerCert := hblocker
+  noRainbowTernaryPartitionCert := hnoRainbow
+  noJointTernaryBlockerCert := hnoBlocker
+
+section FirstBitTerminalTernaryNoRainbowJointBlockerFacade
+
+variable {Core SourceAtom PartitionCell Blocker : Type*}
+variable [DecidableEq SourceAtom] [DecidableEq PartitionCell]
+variable {sourceAtoms : Core → Finset SourceAtom}
+variable {sourcePartition : Core → SourceAtom → Finset PartitionCell}
+variable {sizeThreeSourceAtom : Core → SourceAtom → Prop}
+variable {rainbowPartition : Core → SourceAtom → Prop}
+variable {jointBlocker : Core → SourceAtom → Blocker → Prop}
+variable {noRainbowTernaryPartition noJointTernaryBlocker : Prop}
+
+variable (h :
+  FirstBitTerminalTernaryNoRainbowJointBlockerFacade sourceAtoms sourcePartition
+    sizeThreeSourceAtom rainbowPartition jointBlocker noRainbowTernaryPartition
+    noJointTernaryBlocker)
+
+/-- The source partition has the expected three cells. -/
+theorem FirstBitTerminalTernaryNoRainbowJointBlockerFacade.sourcePartition_card_three
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) :
+    (sourcePartition core source).card = 3 :=
+  h.sourcePartition_card_threeCert core source hsource hsize
+
+/-- No rainbow partition occurs in a terminal size-three source. -/
+theorem FirstBitTerminalTernaryNoRainbowJointBlockerFacade.no_rainbow_partition
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) :
+    ¬ rainbowPartition core source :=
+  h.no_rainbow_partitionCert core source hsource hsize
+
+/-- No joint blocker spans the terminal size-three source. -/
+theorem FirstBitTerminalTernaryNoRainbowJointBlockerFacade.no_joint_blocker
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) :
+    ¬ ∃ blocker : Blocker, jointBlocker core source blocker :=
+  h.no_joint_blockerCert core source hsource hsize
+
+/-- Project the no-rainbow marker. -/
+theorem FirstBitTerminalTernaryNoRainbowJointBlockerFacade.to_noRainbowTernaryPartition :
+    noRainbowTernaryPartition :=
+  h.noRainbowTernaryPartitionCert
+
+/-- Project the no-joint-blocker marker. -/
+theorem FirstBitTerminalTernaryNoRainbowJointBlockerFacade.to_noJointTernaryBlocker :
+    noJointTernaryBlocker :=
+  h.noJointTernaryBlockerCert
+
+end FirstBitTerminalTernaryNoRainbowJointBlockerFacade
+
+/--
+Shortened-pair-hit defect facade.  It records the normalized `q = 2/3` strict cross-defect
+inequality, the explicit `delta_other` allowance, and the compensation by a petal other than the
+shortened pair itself.
+-/
+structure FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade
+    {Core SourceAtom Collision Petal Atom : Type*}
+    [DecidableEq SourceAtom] [DecidableEq Petal] [DecidableEq Atom]
+    (sourceAtoms : Core → Finset SourceAtom)
+    (collisionPetals : Core → SourceAtom → Collision → Finset Petal)
+    (shortenedPairPetal : Core → SourceAtom → Collision → Petal)
+    (compensatingAtoms : Core → SourceAtom → Collision → Finset Atom)
+    (atomSize : Core → Atom → ℕ)
+    (qNumer qDen delta_other deltaOtherBound crossDefect :
+      Core → SourceAtom → Collision → ℕ)
+    (shortenedPairHitCollision : Core → SourceAtom → Collision → Prop)
+    (petalCompensatesShortenedPairDefect :
+      Core → SourceAtom → Collision → Petal → Atom → Prop)
+    (shortenedPairHitStrictCrossDefect twoThirdsDeltaOtherBounded
+      shortenedPairHitCompensatedByOtherPetals : Prop) : Prop where
+  twoThirds_strictCrossDefectCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      ∀ collision : Collision, shortenedPairHitCollision core source collision →
+        firstBitTernarySourceTwoThirdsShortenedPairHitStrictCrossDefect
+          (qNumer core source collision) (qDen core source collision)
+          (delta_other core source collision) (deltaOtherBound core source collision)
+          (crossDefect core source collision)
+  compensating_otherPetalCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      ∀ collision : Collision, shortenedPairHitCollision core source collision →
+        ∃ atom : Atom, atom ∈ compensatingAtoms core source collision ∧
+          3 ≤ atomSize core atom ∧
+            ∃ petal : Petal, petal ∈ collisionPetals core source collision ∧
+              petal ≠ shortenedPairPetal core source collision ∧
+                petalCompensatesShortenedPairDefect core source collision petal atom
+  shortenedPairHitStrictCrossDefectCert : shortenedPairHitStrictCrossDefect
+  twoThirdsDeltaOtherBoundedCert : twoThirdsDeltaOtherBounded
+  shortenedPairHitCompensatedByOtherPetalsCert : shortenedPairHitCompensatedByOtherPetals
+
+/-- Build the shortened-pair-hit defect facade from the strict-defect and compensation assumptions. -/
+theorem firstBitTerminalTernaryShortenedPairHitDefectCompensationFacade_of_parts
+    {Core SourceAtom Collision Petal Atom : Type*}
+    [DecidableEq SourceAtom] [DecidableEq Petal] [DecidableEq Atom]
+    {sourceAtoms : Core → Finset SourceAtom}
+    {collisionPetals : Core → SourceAtom → Collision → Finset Petal}
+    {shortenedPairPetal : Core → SourceAtom → Collision → Petal}
+    {compensatingAtoms : Core → SourceAtom → Collision → Finset Atom}
+    {atomSize : Core → Atom → ℕ}
+    {qNumer qDen delta_other deltaOtherBound crossDefect :
+      Core → SourceAtom → Collision → ℕ}
+    {shortenedPairHitCollision : Core → SourceAtom → Collision → Prop}
+    {petalCompensatesShortenedPairDefect :
+      Core → SourceAtom → Collision → Petal → Atom → Prop}
+    {shortenedPairHitStrictCrossDefect twoThirdsDeltaOtherBounded
+      shortenedPairHitCompensatedByOtherPetals : Prop}
+    (hdefect :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        ∀ collision : Collision, shortenedPairHitCollision core source collision →
+          firstBitTernarySourceTwoThirdsShortenedPairHitStrictCrossDefect
+            (qNumer core source collision) (qDen core source collision)
+            (delta_other core source collision) (deltaOtherBound core source collision)
+            (crossDefect core source collision))
+    (hcompensating :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        ∀ collision : Collision, shortenedPairHitCollision core source collision →
+          ∃ atom : Atom, atom ∈ compensatingAtoms core source collision ∧
+            3 ≤ atomSize core atom ∧
+              ∃ petal : Petal, petal ∈ collisionPetals core source collision ∧
+                petal ≠ shortenedPairPetal core source collision ∧
+                  petalCompensatesShortenedPairDefect core source collision petal atom)
+    (hstrict : shortenedPairHitStrictCrossDefect)
+    (hdelta : twoThirdsDeltaOtherBounded)
+    (hpetals : shortenedPairHitCompensatedByOtherPetals) :
+    FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade sourceAtoms
+      collisionPetals shortenedPairPetal compensatingAtoms atomSize qNumer qDen
+      delta_other deltaOtherBound crossDefect shortenedPairHitCollision
+      petalCompensatesShortenedPairDefect shortenedPairHitStrictCrossDefect
+      twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals where
+  twoThirds_strictCrossDefectCert := hdefect
+  compensating_otherPetalCert := hcompensating
+  shortenedPairHitStrictCrossDefectCert := hstrict
+  twoThirdsDeltaOtherBoundedCert := hdelta
+  shortenedPairHitCompensatedByOtherPetalsCert := hpetals
+
+section FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade
+
+variable {Core SourceAtom Collision Petal Atom : Type*}
+variable [DecidableEq SourceAtom] [DecidableEq Petal] [DecidableEq Atom]
+variable {sourceAtoms : Core → Finset SourceAtom}
+variable {collisionPetals : Core → SourceAtom → Collision → Finset Petal}
+variable {shortenedPairPetal : Core → SourceAtom → Collision → Petal}
+variable {compensatingAtoms : Core → SourceAtom → Collision → Finset Atom}
+variable {atomSize : Core → Atom → ℕ}
+variable {qNumer qDen delta_other deltaOtherBound crossDefect :
+  Core → SourceAtom → Collision → ℕ}
+variable {shortenedPairHitCollision : Core → SourceAtom → Collision → Prop}
+variable {petalCompensatesShortenedPairDefect :
+  Core → SourceAtom → Collision → Petal → Atom → Prop}
+variable {shortenedPairHitStrictCrossDefect twoThirdsDeltaOtherBounded
+  shortenedPairHitCompensatedByOtherPetals : Prop}
+
+variable (h :
+  FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade sourceAtoms
+    collisionPetals shortenedPairPetal compensatingAtoms atomSize qNumer qDen
+    delta_other deltaOtherBound crossDefect shortenedPairHitCollision
+    petalCompensatesShortenedPairDefect shortenedPairHitStrictCrossDefect
+    twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals)
+
+/-- Project the `q = 2/3`, strict-cross-defect, and `delta_other` bound for a hit collision. -/
+theorem
+    FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade.twoThirds_strictCrossDefect
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    {collision : Collision} (hcollision : shortenedPairHitCollision core source collision) :
+    firstBitTernarySourceTwoThirdsShortenedPairHitStrictCrossDefect
+      (qNumer core source collision) (qDen core source collision)
+      (delta_other core source collision) (deltaOtherBound core source collision)
+      (crossDefect core source collision) :=
+  h.twoThirds_strictCrossDefectCert core source hsource collision hcollision
+
+/-- A shortened-pair hit is compensated by a different petal on a size-at-least-three atom. -/
+theorem
+    FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade.compensating_otherPetal
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    {collision : Collision} (hcollision : shortenedPairHitCollision core source collision) :
+    ∃ atom : Atom, atom ∈ compensatingAtoms core source collision ∧
+      3 ≤ atomSize core atom ∧
+        ∃ petal : Petal, petal ∈ collisionPetals core source collision ∧
+          petal ≠ shortenedPairPetal core source collision ∧
+            petalCompensatesShortenedPairDefect core source collision petal atom :=
+  h.compensating_otherPetalCert core source hsource collision hcollision
+
+/-- Project the strict shortened-pair-hit cross-defect marker. -/
+theorem
+    FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade.to_shortenedPairHitStrictCrossDefect :
+    shortenedPairHitStrictCrossDefect :=
+  h.shortenedPairHitStrictCrossDefectCert
+
+/-- Project the `q = 2/3`, `delta_other`-bounded marker. -/
+theorem
+    FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade.to_twoThirdsDeltaOtherBounded :
+    twoThirdsDeltaOtherBounded :=
+  h.twoThirdsDeltaOtherBoundedCert
+
+/-- Project the other-petal compensation marker. -/
+theorem
+    FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade.to_shortenedPairHitCompensatedByOtherPetals :
+    shortenedPairHitCompensatedByOtherPetals :=
+  h.shortenedPairHitCompensatedByOtherPetalsCert
+
+end FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade
+
+/--
+Weighted split-dependency graph facade for ternary source collisions.  It connects the three
+source vertices and compensating petals to a weighted dependency graph and restricts terminal cycles
+to the `3,3,2,2`, `3,3,3,2`, and `3,3,3,3` profiles.
+-/
+structure FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade
+    {Core SourceAtom SourceVertex Collision Petal DependencyNode DependencyCycle : Type*}
+    [DecidableEq SourceAtom] [DecidableEq SourceVertex] [DecidableEq Petal]
+    [DecidableEq DependencyNode]
+    (sourceAtoms : Core → Finset SourceAtom)
+    (sourceVertices : Core → SourceAtom → Finset SourceVertex)
+    (collisionPetals : Core → SourceAtom → Collision → Finset Petal)
+    (sourceNode : Core → SourceAtom → SourceVertex → DependencyNode)
+    (petalNode : Core → SourceAtom → Collision → Petal → DependencyNode)
+    (splitDependencyGraph : SimpleGraph DependencyNode)
+    (nodeWeight : DependencyNode → ℕ)
+    (cycleNodes : Core → DependencyCycle → Finset DependencyNode)
+    (cycleProfile : Core → DependencyCycle → FirstBitTerminalTernaryCycleProfile)
+    (cycleRealizedByCollision : Core → DependencyCycle → Collision → Prop)
+    (sizeThreeSourceAtom : Core → SourceAtom → Prop)
+    (weightedSplitDependencyGraph ternaryCycleProfiles terminalTernaryCycleProfileWeights :
+      Prop) : Prop where
+  sourceVertex_weight_threeCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → ∀ vertex : SourceVertex,
+        vertex ∈ sourceVertices core source →
+          nodeWeight (sourceNode core source vertex) = 3
+  petal_weight_two_or_threeCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      ∀ collision : Collision, ∀ petal : Petal,
+        petal ∈ collisionPetals core source collision →
+          nodeWeight (petalNode core source collision petal) = 2 ∨
+            nodeWeight (petalNode core source collision petal) = 3
+  sourceVertex_dependency_edgeCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      sizeThreeSourceAtom core source → ∀ left right : SourceVertex,
+        left ∈ sourceVertices core source → right ∈ sourceVertices core source →
+          left ≠ right →
+            splitDependencyGraph.Adj (sourceNode core source left) (sourceNode core source right)
+  petal_dependency_edgeCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      ∀ collision : Collision, ∀ vertex : SourceVertex,
+        vertex ∈ sourceVertices core source → ∀ petal : Petal,
+          petal ∈ collisionPetals core source collision →
+            splitDependencyGraph.Adj (sourceNode core source vertex)
+              (petalNode core source collision petal)
+  cycle_profile_terminalCert :
+    ∀ core : Core, ∀ cycle : DependencyCycle,
+      cycleProfile core cycle = .threeThreeTwoTwo ∨
+        cycleProfile core cycle = .threeThreeThreeTwo ∨
+          cycleProfile core cycle = .threeThreeThreeThree
+  cycle_weight_matches_profileCert :
+    ∀ core : Core, ∀ cycle : DependencyCycle,
+      (∑ node in cycleNodes core cycle, nodeWeight node) =
+        (cycleProfile core cycle).totalWeight
+  cycle_realized_by_collisionCert :
+    ∀ core : Core, ∀ cycle : DependencyCycle, ∃ collision : Collision,
+      cycleRealizedByCollision core cycle collision
+  weightedSplitDependencyGraphCert : weightedSplitDependencyGraph
+  ternaryCycleProfilesCert : ternaryCycleProfiles
+  terminalTernaryCycleProfileWeightsCert : terminalTernaryCycleProfileWeights
+
+/-- Build the ternary weighted split-dependency facade from graph and profile assumptions. -/
+theorem firstBitTerminalTernaryWeightedSplitDependencyGraphFacade_of_parts
+    {Core SourceAtom SourceVertex Collision Petal DependencyNode DependencyCycle : Type*}
+    [DecidableEq SourceAtom] [DecidableEq SourceVertex] [DecidableEq Petal]
+    [DecidableEq DependencyNode]
+    {sourceAtoms : Core → Finset SourceAtom}
+    {sourceVertices : Core → SourceAtom → Finset SourceVertex}
+    {collisionPetals : Core → SourceAtom → Collision → Finset Petal}
+    {sourceNode : Core → SourceAtom → SourceVertex → DependencyNode}
+    {petalNode : Core → SourceAtom → Collision → Petal → DependencyNode}
+    {splitDependencyGraph : SimpleGraph DependencyNode}
+    {nodeWeight : DependencyNode → ℕ}
+    {cycleNodes : Core → DependencyCycle → Finset DependencyNode}
+    {cycleProfile : Core → DependencyCycle → FirstBitTerminalTernaryCycleProfile}
+    {cycleRealizedByCollision : Core → DependencyCycle → Collision → Prop}
+    {sizeThreeSourceAtom : Core → SourceAtom → Prop}
+    {weightedSplitDependencyGraph ternaryCycleProfiles terminalTernaryCycleProfileWeights :
+      Prop}
+    (hsourceWeight :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → ∀ vertex : SourceVertex,
+          vertex ∈ sourceVertices core source →
+            nodeWeight (sourceNode core source vertex) = 3)
+    (hpetalWeight :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        ∀ collision : Collision, ∀ petal : Petal,
+          petal ∈ collisionPetals core source collision →
+            nodeWeight (petalNode core source collision petal) = 2 ∨
+              nodeWeight (petalNode core source collision petal) = 3)
+    (hsourceEdge :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        sizeThreeSourceAtom core source → ∀ left right : SourceVertex,
+          left ∈ sourceVertices core source → right ∈ sourceVertices core source →
+            left ≠ right →
+              splitDependencyGraph.Adj (sourceNode core source left) (sourceNode core source right))
+    (hpetalEdge :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        ∀ collision : Collision, ∀ vertex : SourceVertex,
+          vertex ∈ sourceVertices core source → ∀ petal : Petal,
+            petal ∈ collisionPetals core source collision →
+              splitDependencyGraph.Adj (sourceNode core source vertex)
+                (petalNode core source collision petal))
+    (hprofile :
+      ∀ core : Core, ∀ cycle : DependencyCycle,
+        cycleProfile core cycle = .threeThreeTwoTwo ∨
+          cycleProfile core cycle = .threeThreeThreeTwo ∨
+            cycleProfile core cycle = .threeThreeThreeThree)
+    (hweight :
+      ∀ core : Core, ∀ cycle : DependencyCycle,
+        (∑ node in cycleNodes core cycle, nodeWeight node) =
+          (cycleProfile core cycle).totalWeight)
+    (hrealized :
+      ∀ core : Core, ∀ cycle : DependencyCycle, ∃ collision : Collision,
+        cycleRealizedByCollision core cycle collision)
+    (hgraph : weightedSplitDependencyGraph)
+    (hcycle : ternaryCycleProfiles)
+    (hcycleWeight : terminalTernaryCycleProfileWeights) :
+    FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade sourceAtoms sourceVertices
+      collisionPetals sourceNode petalNode splitDependencyGraph nodeWeight cycleNodes
+      cycleProfile cycleRealizedByCollision sizeThreeSourceAtom weightedSplitDependencyGraph
+      ternaryCycleProfiles terminalTernaryCycleProfileWeights where
+  sourceVertex_weight_threeCert := hsourceWeight
+  petal_weight_two_or_threeCert := hpetalWeight
+  sourceVertex_dependency_edgeCert := hsourceEdge
+  petal_dependency_edgeCert := hpetalEdge
+  cycle_profile_terminalCert := hprofile
+  cycle_weight_matches_profileCert := hweight
+  cycle_realized_by_collisionCert := hrealized
+  weightedSplitDependencyGraphCert := hgraph
+  ternaryCycleProfilesCert := hcycle
+  terminalTernaryCycleProfileWeightsCert := hcycleWeight
+
+section FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade
+
+variable {Core SourceAtom SourceVertex Collision Petal DependencyNode DependencyCycle : Type*}
+variable [DecidableEq SourceAtom] [DecidableEq SourceVertex] [DecidableEq Petal]
+variable [DecidableEq DependencyNode]
+variable {sourceAtoms : Core → Finset SourceAtom}
+variable {sourceVertices : Core → SourceAtom → Finset SourceVertex}
+variable {collisionPetals : Core → SourceAtom → Collision → Finset Petal}
+variable {sourceNode : Core → SourceAtom → SourceVertex → DependencyNode}
+variable {petalNode : Core → SourceAtom → Collision → Petal → DependencyNode}
+variable {splitDependencyGraph : SimpleGraph DependencyNode}
+variable {nodeWeight : DependencyNode → ℕ}
+variable {cycleNodes : Core → DependencyCycle → Finset DependencyNode}
+variable {cycleProfile : Core → DependencyCycle → FirstBitTerminalTernaryCycleProfile}
+variable {cycleRealizedByCollision : Core → DependencyCycle → Collision → Prop}
+variable {sizeThreeSourceAtom : Core → SourceAtom → Prop}
+variable {weightedSplitDependencyGraph ternaryCycleProfiles terminalTernaryCycleProfileWeights :
+  Prop}
+
+variable (h :
+  FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade sourceAtoms sourceVertices
+    collisionPetals sourceNode petalNode splitDependencyGraph nodeWeight cycleNodes cycleProfile
+    cycleRealizedByCollision sizeThreeSourceAtom weightedSplitDependencyGraph
+    ternaryCycleProfiles terminalTernaryCycleProfileWeights)
+
+/-- Source vertices in a terminal ternary source carry weight three in the dependency graph. -/
+theorem FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.sourceVertex_weight_three
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) {vertex : SourceVertex}
+    (hvertex : vertex ∈ sourceVertices core source) :
+    nodeWeight (sourceNode core source vertex) = 3 :=
+  h.sourceVertex_weight_threeCert core source hsource hsize vertex hvertex
+
+/-- Compensating-petal nodes have terminal weight two or three. -/
+theorem FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.petal_weight_two_or_three
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    {collision : Collision} {petal : Petal}
+    (hpetal : petal ∈ collisionPetals core source collision) :
+    nodeWeight (petalNode core source collision petal) = 2 ∨
+      nodeWeight (petalNode core source collision petal) = 3 :=
+  h.petal_weight_two_or_threeCert core source hsource collision petal hpetal
+
+/-- Distinct source vertices are adjacent in the weighted split-dependency graph. -/
+theorem FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.sourceVertex_dependency_edge
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) {left right : SourceVertex}
+    (hleft : left ∈ sourceVertices core source) (hright : right ∈ sourceVertices core source)
+    (hne : left ≠ right) :
+    splitDependencyGraph.Adj (sourceNode core source left) (sourceNode core source right) :=
+  h.sourceVertex_dependency_edgeCert core source hsource hsize left right hleft hright hne
+
+/-- Every compensating petal is linked to every source vertex in the split-dependency graph. -/
+theorem FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.petal_dependency_edge
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    {collision : Collision} {vertex : SourceVertex}
+    (hvertex : vertex ∈ sourceVertices core source) {petal : Petal}
+    (hpetal : petal ∈ collisionPetals core source collision) :
+    splitDependencyGraph.Adj (sourceNode core source vertex)
+      (petalNode core source collision petal) :=
+  h.petal_dependency_edgeCert core source hsource collision vertex hvertex petal hpetal
+
+/-- Terminal cycles have one of the three ternary source profiles. -/
+theorem FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.cycle_profile_terminal
+    {core : Core} {cycle : DependencyCycle} :
+    cycleProfile core cycle = .threeThreeTwoTwo ∨
+      cycleProfile core cycle = .threeThreeThreeTwo ∨
+        cycleProfile core cycle = .threeThreeThreeThree :=
+  h.cycle_profile_terminalCert core cycle
+
+/-- The weighted cycle sum matches the recorded terminal profile. -/
+theorem FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.cycle_weight_matches_profile
+    {core : Core} {cycle : DependencyCycle} :
+    (∑ node in cycleNodes core cycle, nodeWeight node) =
+      (cycleProfile core cycle).totalWeight :=
+  h.cycle_weight_matches_profileCert core cycle
+
+/-- Each terminal weighted cycle is realized by a ternary source collision. -/
+theorem FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.cycle_realized_by_collision
+    {core : Core} {cycle : DependencyCycle} :
+    ∃ collision : Collision, cycleRealizedByCollision core cycle collision :=
+  h.cycle_realized_by_collisionCert core cycle
+
+/-- Project the weighted split-dependency graph marker. -/
+theorem FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.to_weightedSplitDependencyGraph :
+    weightedSplitDependencyGraph :=
+  h.weightedSplitDependencyGraphCert
+
+/-- Project the ternary cycle profile marker. -/
+theorem FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.to_ternaryCycleProfiles :
+    ternaryCycleProfiles :=
+  h.ternaryCycleProfilesCert
+
+/-- Project the terminal cycle-profile weight marker. -/
+theorem
+    FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade.to_terminalTernaryCycleProfileWeights :
+    terminalTernaryCycleProfileWeights :=
+  h.terminalTernaryCycleProfileWeightsCert
+
+end FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade
+
+/--
+Public ternary source collision refinement API beyond the pair-collision partner split endpoint.
+It bundles the integrated partner split endpoint with source-level complementary labels, the
+no-rainbow/joint-blocker exclusion, shortened-pair-hit defect compensation, and the weighted
+split-dependency graph with terminal ternary-cycle profiles.
+-/
+structure FirstBitTerminalTernarySourceCollisionRefinementPublicAPI
+    {Core Pair Atom Transversal Center Face Square HostBreaker Endpoint Vertex Label Collision Petal
+      SourceAtom SourceVertex PartitionCell Blocker DependencyNode DependencyCycle : Type*}
+    [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+    [DecidableEq Endpoint] [DecidableEq Vertex] [DecidableEq Petal]
+    [DecidableEq SourceAtom] [DecidableEq SourceVertex] [DecidableEq PartitionCell]
+    [DecidableEq DependencyNode]
+    (pairAtoms : Core → Finset Pair)
+    (atomPartition : Core → Finset Atom)
+    (atomSize : Core → Atom → ℕ)
+    (selectedTransversals absentTransversals : Core → Finset Transversal)
+    (transversalAntipode : Core → Transversal → Transversal)
+    (hiddenCenter : Core → Center)
+    (centerTwoFaces : Core → Finset Face)
+    (oneCornerSquareOfFace : Core → Face → Square)
+    (hostSquareBreakerOfSquare : Core → Square → HostBreaker)
+    (fourPairNoLeftoverCore : Core → Prop)
+    (onePlusThreeStarColoring : Core → Center → Prop)
+    (actualTransversalSupport : Core → Transversal → Prop)
+    (oneCornerSquareBreaker : Core → Square → Prop)
+    (supportLocalSquareBreakerDischarged : Core → Prop)
+    (hostSquareBreakerDischarged : Core → HostBreaker → Prop)
+    (fourPairCoreDischarged : Core → Prop)
+    (endpointsOf : Core → Pair → Finset Endpoint)
+    (endpointVertex : Core → Pair → Endpoint → Vertex)
+    (pairOppositeUnion : Core → Pair → Finset Vertex)
+    (pairBipartitionSide : Core → Pair → Endpoint → Finset Vertex)
+    (leftFullSupport rightFullSupport : Core → Pair → Endpoint → Finset Vertex)
+    (pairLabelOf : Core → Pair → Endpoint → Label)
+    (splitAtoms : Core → Pair → Endpoint → Finset Atom)
+    (splitAtomRebate : Core → Pair → Endpoint → Atom → ℕ)
+    (partnerFreeCollision : Core → Pair → Collision → Prop)
+    (collisionEndpoint : Core → Pair → Collision → Endpoint)
+    (partnerFreeMinimalSplitPatternRealized :
+      Core → Pair → Collision → FirstBitTerminalPartnerFreeMinimalSplitPattern → Prop)
+    (postSquareBreakerPartnerFreeLargeOrSizeThreeSplit : Core → Pair → Collision → Prop)
+    (pairCollisionPetals : Core → Pair → Collision → Finset Petal)
+    (fullPairPetal : Core → Pair → Collision → Petal)
+    (oppositeHitCount fullPairOmissionCount : Core → Pair → Collision → ℕ)
+    (partnerHitCollision : Core → Pair → Collision → Prop)
+    (pairPetalCompensatesOmission : Core → Pair → Collision → Petal → Atom → Prop)
+    (pairCollisionSplitAtom : Core → Pair → Collision → Atom → Prop)
+    (allOppositeAtomsPairs : Core → Pair → Prop)
+    (pairAtomCollision : Core → Pair → Collision → Prop)
+    (sourceAtoms : Core → Finset SourceAtom)
+    (sourceVertices : Core → SourceAtom → Finset SourceVertex)
+    (sourceAnchorVertex : Core → SourceAtom → SourceVertex → Vertex)
+    (sourceOppositeUnion : Core → SourceAtom → Finset Vertex)
+    (sourceBipartitionSide : Core → SourceAtom → SourceVertex → Finset Vertex)
+    (leftSourceSupport rightSourceSupport : Core → SourceAtom → SourceVertex → Finset Vertex)
+    (sourceLabelOf : Core → SourceAtom → SourceVertex → Label)
+    (sizeThreeSourceAtom shortenedPairFreeSource : Core → SourceAtom → Prop)
+    (sourcePartition : Core → SourceAtom → Finset PartitionCell)
+    (rainbowPartition : Core → SourceAtom → Prop)
+    (jointBlocker : Core → SourceAtom → Blocker → Prop)
+    (sourceCollisionPetals : Core → SourceAtom → Collision → Finset Petal)
+    (shortenedPairPetal : Core → SourceAtom → Collision → Petal)
+    (compensatingAtoms : Core → SourceAtom → Collision → Finset Atom)
+    (qNumer qDen delta_other deltaOtherBound crossDefect :
+      Core → SourceAtom → Collision → ℕ)
+    (shortenedPairHitCollision ternarySourceCollision :
+      Core → SourceAtom → Collision → Prop)
+    (petalCompensatesShortenedPairDefect :
+      Core → SourceAtom → Collision → Petal → Atom → Prop)
+    (sourceNode : Core → SourceAtom → SourceVertex → DependencyNode)
+    (petalNode : Core → SourceAtom → Collision → Petal → DependencyNode)
+    (splitDependencyGraph : SimpleGraph DependencyNode)
+    (nodeWeight : DependencyNode → ℕ)
+    (cycleNodes : Core → DependencyCycle → Finset DependencyNode)
+    (cycleProfile : Core → DependencyCycle → FirstBitTerminalTernaryCycleProfile)
+    (cycleRealizedByCollision : Core → DependencyCycle → Collision → Prop)
+    (rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+      fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+      partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+      partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+      partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+      individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+      partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint
+      shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels
+      noRainbowTernaryPartition noJointTernaryBlocker shortenedPairHitStrictCrossDefect
+      twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals
+      weightedSplitDependencyGraph ternaryCycleProfiles terminalTernaryCycleProfileWeights
+      ternarySourceCollisionRefinementEndpoint : Prop) : Prop where
+  partnerSplitEndpointAPI :
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      endpointsOf endpointVertex pairOppositeUnion pairBipartitionSide leftFullSupport
+      rightFullSupport pairLabelOf splitAtoms splitAtomRebate partnerFreeCollision
+      collisionEndpoint partnerFreeMinimalSplitPatternRealized
+      postSquareBreakerPartnerFreeLargeOrSizeThreeSplit pairCollisionPetals fullPairPetal
+      oppositeHitCount fullPairOmissionCount partnerHitCollision pairPetalCompensatesOmission
+      pairCollisionSplitAtom allOppositeAtomsPairs pairAtomCollision
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+      fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+      partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+      partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+      partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+      individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+      partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint
+  sourceLabelFacade :
+    FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade sourceAtoms
+      sourceVertices sourceAnchorVertex sourceOppositeUnion sourceBipartitionSide
+      leftSourceSupport rightSourceSupport sourceLabelOf sizeThreeSourceAtom
+      shortenedPairFreeSource shortenedPairFreeComplementaryBipartitionLabels
+      distinctTernarySourceLabels
+  noRainbowJointBlockerFacade :
+    FirstBitTerminalTernaryNoRainbowJointBlockerFacade sourceAtoms sourcePartition
+      sizeThreeSourceAtom rainbowPartition jointBlocker noRainbowTernaryPartition
+      noJointTernaryBlocker
+  shortenedPairHitDefectFacade :
+    FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade sourceAtoms
+      sourceCollisionPetals shortenedPairPetal compensatingAtoms atomSize qNumer qDen
+      delta_other deltaOtherBound crossDefect shortenedPairHitCollision
+      petalCompensatesShortenedPairDefect shortenedPairHitStrictCrossDefect
+      twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals
+  weightedDependencyGraphFacade :
+    FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade sourceAtoms sourceVertices
+      sourceCollisionPetals sourceNode petalNode splitDependencyGraph nodeWeight cycleNodes
+      cycleProfile cycleRealizedByCollision sizeThreeSourceAtom weightedSplitDependencyGraph
+      ternaryCycleProfiles terminalTernaryCycleProfileWeights
+  partnerSplit_to_ternarySourceCollisionCert :
+    ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+      pairAtomCollision core pair collision → fourPairCoreDischarged core →
+        ∃ source : SourceAtom, source ∈ sourceAtoms core ∧ sizeThreeSourceAtom core source ∧
+          ternarySourceCollision core source collision
+  ternarySourceCollision_shortenedPairFree_or_hitCert :
+    ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+      ∀ collision : Collision, ternarySourceCollision core source collision →
+        shortenedPairFreeSource core source ∨ shortenedPairHitCollision core source collision
+  ternarySourceCollisionRefinementEndpointCert : ternarySourceCollisionRefinementEndpoint
+
+/-- Build the public ternary source collision refinement API from its four facades and bridge maps. -/
+theorem firstBitTerminalTernarySourceCollisionRefinementPublicAPI_of_parts
+    {Core Pair Atom Transversal Center Face Square HostBreaker Endpoint Vertex Label Collision Petal
+      SourceAtom SourceVertex PartitionCell Blocker DependencyNode DependencyCycle : Type*}
+    [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+    [DecidableEq Endpoint] [DecidableEq Vertex] [DecidableEq Petal]
+    [DecidableEq SourceAtom] [DecidableEq SourceVertex] [DecidableEq PartitionCell]
+    [DecidableEq DependencyNode]
+    {pairAtoms : Core → Finset Pair}
+    {atomPartition : Core → Finset Atom}
+    {atomSize : Core → Atom → ℕ}
+    {selectedTransversals absentTransversals : Core → Finset Transversal}
+    {transversalAntipode : Core → Transversal → Transversal}
+    {hiddenCenter : Core → Center}
+    {centerTwoFaces : Core → Finset Face}
+    {oneCornerSquareOfFace : Core → Face → Square}
+    {hostSquareBreakerOfSquare : Core → Square → HostBreaker}
+    {fourPairNoLeftoverCore : Core → Prop}
+    {onePlusThreeStarColoring : Core → Center → Prop}
+    {actualTransversalSupport : Core → Transversal → Prop}
+    {oneCornerSquareBreaker : Core → Square → Prop}
+    {supportLocalSquareBreakerDischarged : Core → Prop}
+    {hostSquareBreakerDischarged : Core → HostBreaker → Prop}
+    {fourPairCoreDischarged : Core → Prop}
+    {endpointsOf : Core → Pair → Finset Endpoint}
+    {endpointVertex : Core → Pair → Endpoint → Vertex}
+    {pairOppositeUnion : Core → Pair → Finset Vertex}
+    {pairBipartitionSide : Core → Pair → Endpoint → Finset Vertex}
+    {leftFullSupport rightFullSupport : Core → Pair → Endpoint → Finset Vertex}
+    {pairLabelOf : Core → Pair → Endpoint → Label}
+    {splitAtoms : Core → Pair → Endpoint → Finset Atom}
+    {splitAtomRebate : Core → Pair → Endpoint → Atom → ℕ}
+    {partnerFreeCollision : Core → Pair → Collision → Prop}
+    {collisionEndpoint : Core → Pair → Collision → Endpoint}
+    {partnerFreeMinimalSplitPatternRealized :
+      Core → Pair → Collision → FirstBitTerminalPartnerFreeMinimalSplitPattern → Prop}
+    {postSquareBreakerPartnerFreeLargeOrSizeThreeSplit : Core → Pair → Collision → Prop}
+    {pairCollisionPetals : Core → Pair → Collision → Finset Petal}
+    {fullPairPetal : Core → Pair → Collision → Petal}
+    {oppositeHitCount fullPairOmissionCount : Core → Pair → Collision → ℕ}
+    {partnerHitCollision : Core → Pair → Collision → Prop}
+    {pairPetalCompensatesOmission : Core → Pair → Collision → Petal → Atom → Prop}
+    {pairCollisionSplitAtom : Core → Pair → Collision → Atom → Prop}
+    {allOppositeAtomsPairs : Core → Pair → Prop}
+    {pairAtomCollision : Core → Pair → Collision → Prop}
+    {sourceAtoms : Core → Finset SourceAtom}
+    {sourceVertices : Core → SourceAtom → Finset SourceVertex}
+    {sourceAnchorVertex : Core → SourceAtom → SourceVertex → Vertex}
+    {sourceOppositeUnion : Core → SourceAtom → Finset Vertex}
+    {sourceBipartitionSide : Core → SourceAtom → SourceVertex → Finset Vertex}
+    {leftSourceSupport rightSourceSupport : Core → SourceAtom → SourceVertex → Finset Vertex}
+    {sourceLabelOf : Core → SourceAtom → SourceVertex → Label}
+    {sizeThreeSourceAtom shortenedPairFreeSource : Core → SourceAtom → Prop}
+    {sourcePartition : Core → SourceAtom → Finset PartitionCell}
+    {rainbowPartition : Core → SourceAtom → Prop}
+    {jointBlocker : Core → SourceAtom → Blocker → Prop}
+    {sourceCollisionPetals : Core → SourceAtom → Collision → Finset Petal}
+    {shortenedPairPetal : Core → SourceAtom → Collision → Petal}
+    {compensatingAtoms : Core → SourceAtom → Collision → Finset Atom}
+    {qNumer qDen delta_other deltaOtherBound crossDefect :
+      Core → SourceAtom → Collision → ℕ}
+    {shortenedPairHitCollision ternarySourceCollision :
+      Core → SourceAtom → Collision → Prop}
+    {petalCompensatesShortenedPairDefect :
+      Core → SourceAtom → Collision → Petal → Atom → Prop}
+    {sourceNode : Core → SourceAtom → SourceVertex → DependencyNode}
+    {petalNode : Core → SourceAtom → Collision → Petal → DependencyNode}
+    {splitDependencyGraph : SimpleGraph DependencyNode}
+    {nodeWeight : DependencyNode → ℕ}
+    {cycleNodes : Core → DependencyCycle → Finset DependencyNode}
+    {cycleProfile : Core → DependencyCycle → FirstBitTerminalTernaryCycleProfile}
+    {cycleRealizedByCollision : Core → DependencyCycle → Collision → Prop}
+    {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+      fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+      partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+      partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+      partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+      individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+      partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint
+      shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels
+      noRainbowTernaryPartition noJointTernaryBlocker shortenedPairHitStrictCrossDefect
+      twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals
+      weightedSplitDependencyGraph ternaryCycleProfiles terminalTernaryCycleProfileWeights
+      ternarySourceCollisionRefinementEndpoint : Prop}
+    (hpartner :
+      FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI pairAtoms atomPartition
+        atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+        centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+        onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+        supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+        endpointsOf endpointVertex pairOppositeUnion pairBipartitionSide leftFullSupport
+        rightFullSupport pairLabelOf splitAtoms splitAtomRebate partnerFreeCollision
+        collisionEndpoint partnerFreeMinimalSplitPatternRealized
+        postSquareBreakerPartnerFreeLargeOrSizeThreeSplit pairCollisionPetals fullPairPetal
+        oppositeHitCount fullPairOmissionCount partnerHitCollision pairPetalCompensatesOmission
+        pairCollisionSplitAtom allOppositeAtomsPairs pairAtomCollision
+        rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+        twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+        collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+        booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+        booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+        selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+        fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+        partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+        partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+        partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+        individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+        partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint)
+    (hlabels :
+      FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade sourceAtoms
+        sourceVertices sourceAnchorVertex sourceOppositeUnion sourceBipartitionSide
+        leftSourceSupport rightSourceSupport sourceLabelOf sizeThreeSourceAtom
+        shortenedPairFreeSource shortenedPairFreeComplementaryBipartitionLabels
+        distinctTernarySourceLabels)
+    (hblockers :
+      FirstBitTerminalTernaryNoRainbowJointBlockerFacade sourceAtoms sourcePartition
+        sizeThreeSourceAtom rainbowPartition jointBlocker noRainbowTernaryPartition
+        noJointTernaryBlocker)
+    (hdefect :
+      FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade sourceAtoms
+        sourceCollisionPetals shortenedPairPetal compensatingAtoms atomSize qNumer qDen
+        delta_other deltaOtherBound crossDefect shortenedPairHitCollision
+        petalCompensatesShortenedPairDefect shortenedPairHitStrictCrossDefect
+        twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals)
+    (hdependency :
+      FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade sourceAtoms sourceVertices
+        sourceCollisionPetals sourceNode petalNode splitDependencyGraph nodeWeight cycleNodes
+        cycleProfile cycleRealizedByCollision sizeThreeSourceAtom weightedSplitDependencyGraph
+        ternaryCycleProfiles terminalTernaryCycleProfileWeights)
+    (hbridge :
+      ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+        pairAtomCollision core pair collision → fourPairCoreDischarged core →
+          ∃ source : SourceAtom, source ∈ sourceAtoms core ∧ sizeThreeSourceAtom core source ∧
+            ternarySourceCollision core source collision)
+    (hcases :
+      ∀ core : Core, ∀ source : SourceAtom, source ∈ sourceAtoms core →
+        ∀ collision : Collision, ternarySourceCollision core source collision →
+          shortenedPairFreeSource core source ∨ shortenedPairHitCollision core source collision)
+    (hrefinement : ternarySourceCollisionRefinementEndpoint) :
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      endpointsOf endpointVertex pairOppositeUnion pairBipartitionSide leftFullSupport
+      rightFullSupport pairLabelOf splitAtoms splitAtomRebate partnerFreeCollision
+      collisionEndpoint partnerFreeMinimalSplitPatternRealized
+      postSquareBreakerPartnerFreeLargeOrSizeThreeSplit pairCollisionPetals fullPairPetal
+      oppositeHitCount fullPairOmissionCount partnerHitCollision pairPetalCompensatesOmission
+      pairCollisionSplitAtom allOppositeAtomsPairs pairAtomCollision sourceAtoms sourceVertices
+      sourceAnchorVertex sourceOppositeUnion sourceBipartitionSide leftSourceSupport
+      rightSourceSupport sourceLabelOf sizeThreeSourceAtom shortenedPairFreeSource sourcePartition
+      rainbowPartition jointBlocker sourceCollisionPetals shortenedPairPetal compensatingAtoms
+      qNumer qDen delta_other deltaOtherBound crossDefect shortenedPairHitCollision
+      ternarySourceCollision petalCompensatesShortenedPairDefect sourceNode petalNode
+      splitDependencyGraph nodeWeight cycleNodes cycleProfile cycleRealizedByCollision
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+      fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+      partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+      partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+      partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+      individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+      partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint
+      shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels
+      noRainbowTernaryPartition noJointTernaryBlocker shortenedPairHitStrictCrossDefect
+      twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals
+      weightedSplitDependencyGraph ternaryCycleProfiles terminalTernaryCycleProfileWeights
+      ternarySourceCollisionRefinementEndpoint where
+  partnerSplitEndpointAPI := hpartner
+  sourceLabelFacade := hlabels
+  noRainbowJointBlockerFacade := hblockers
+  shortenedPairHitDefectFacade := hdefect
+  weightedDependencyGraphFacade := hdependency
+  partnerSplit_to_ternarySourceCollisionCert := hbridge
+  ternarySourceCollision_shortenedPairFree_or_hitCert := hcases
+  ternarySourceCollisionRefinementEndpointCert := hrefinement
+
+section FirstBitTerminalTernarySourceCollisionRefinementPublicAPI
+
+variable {Core Pair Atom Transversal Center Face Square HostBreaker Endpoint Vertex Label Collision Petal
+  SourceAtom SourceVertex PartitionCell Blocker DependencyNode DependencyCycle : Type*}
+variable [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+variable [DecidableEq Endpoint] [DecidableEq Vertex] [DecidableEq Petal]
+variable [DecidableEq SourceAtom] [DecidableEq SourceVertex] [DecidableEq PartitionCell]
+variable [DecidableEq DependencyNode]
+variable {pairAtoms : Core → Finset Pair}
+variable {atomPartition : Core → Finset Atom}
+variable {atomSize : Core → Atom → ℕ}
+variable {selectedTransversals absentTransversals : Core → Finset Transversal}
+variable {transversalAntipode : Core → Transversal → Transversal}
+variable {hiddenCenter : Core → Center}
+variable {centerTwoFaces : Core → Finset Face}
+variable {oneCornerSquareOfFace : Core → Face → Square}
+variable {hostSquareBreakerOfSquare : Core → Square → HostBreaker}
+variable {fourPairNoLeftoverCore : Core → Prop}
+variable {onePlusThreeStarColoring : Core → Center → Prop}
+variable {actualTransversalSupport : Core → Transversal → Prop}
+variable {oneCornerSquareBreaker : Core → Square → Prop}
+variable {supportLocalSquareBreakerDischarged : Core → Prop}
+variable {hostSquareBreakerDischarged : Core → HostBreaker → Prop}
+variable {fourPairCoreDischarged : Core → Prop}
+variable {endpointsOf : Core → Pair → Finset Endpoint}
+variable {endpointVertex : Core → Pair → Endpoint → Vertex}
+variable {pairOppositeUnion : Core → Pair → Finset Vertex}
+variable {pairBipartitionSide : Core → Pair → Endpoint → Finset Vertex}
+variable {leftFullSupport rightFullSupport : Core → Pair → Endpoint → Finset Vertex}
+variable {pairLabelOf : Core → Pair → Endpoint → Label}
+variable {splitAtoms : Core → Pair → Endpoint → Finset Atom}
+variable {splitAtomRebate : Core → Pair → Endpoint → Atom → ℕ}
+variable {partnerFreeCollision : Core → Pair → Collision → Prop}
+variable {collisionEndpoint : Core → Pair → Collision → Endpoint}
+variable {partnerFreeMinimalSplitPatternRealized :
+  Core → Pair → Collision → FirstBitTerminalPartnerFreeMinimalSplitPattern → Prop}
+variable {postSquareBreakerPartnerFreeLargeOrSizeThreeSplit : Core → Pair → Collision → Prop}
+variable {pairCollisionPetals : Core → Pair → Collision → Finset Petal}
+variable {fullPairPetal : Core → Pair → Collision → Petal}
+variable {oppositeHitCount fullPairOmissionCount : Core → Pair → Collision → ℕ}
+variable {partnerHitCollision : Core → Pair → Collision → Prop}
+variable {pairPetalCompensatesOmission : Core → Pair → Collision → Petal → Atom → Prop}
+variable {pairCollisionSplitAtom : Core → Pair → Collision → Atom → Prop}
+variable {allOppositeAtomsPairs : Core → Pair → Prop}
+variable {pairAtomCollision : Core → Pair → Collision → Prop}
+variable {sourceAtoms : Core → Finset SourceAtom}
+variable {sourceVertices : Core → SourceAtom → Finset SourceVertex}
+variable {sourceAnchorVertex : Core → SourceAtom → SourceVertex → Vertex}
+variable {sourceOppositeUnion : Core → SourceAtom → Finset Vertex}
+variable {sourceBipartitionSide : Core → SourceAtom → SourceVertex → Finset Vertex}
+variable {leftSourceSupport rightSourceSupport : Core → SourceAtom → SourceVertex → Finset Vertex}
+variable {sourceLabelOf : Core → SourceAtom → SourceVertex → Label}
+variable {sizeThreeSourceAtom shortenedPairFreeSource : Core → SourceAtom → Prop}
+variable {sourcePartition : Core → SourceAtom → Finset PartitionCell}
+variable {rainbowPartition : Core → SourceAtom → Prop}
+variable {jointBlocker : Core → SourceAtom → Blocker → Prop}
+variable {sourceCollisionPetals : Core → SourceAtom → Collision → Finset Petal}
+variable {shortenedPairPetal : Core → SourceAtom → Collision → Petal}
+variable {compensatingAtoms : Core → SourceAtom → Collision → Finset Atom}
+variable {qNumer qDen delta_other deltaOtherBound crossDefect :
+  Core → SourceAtom → Collision → ℕ}
+variable {shortenedPairHitCollision ternarySourceCollision :
+  Core → SourceAtom → Collision → Prop}
+variable {petalCompensatesShortenedPairDefect :
+  Core → SourceAtom → Collision → Petal → Atom → Prop}
+variable {sourceNode : Core → SourceAtom → SourceVertex → DependencyNode}
+variable {petalNode : Core → SourceAtom → Collision → Petal → DependencyNode}
+variable {splitDependencyGraph : SimpleGraph DependencyNode}
+variable {nodeWeight : DependencyNode → ℕ}
+variable {cycleNodes : Core → DependencyCycle → Finset DependencyNode}
+variable {cycleProfile : Core → DependencyCycle → FirstBitTerminalTernaryCycleProfile}
+variable {cycleRealizedByCollision : Core → DependencyCycle → Collision → Prop}
+variable {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+  twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+  collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+  booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+  booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+  selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+  fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+  partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+  partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+  partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+  individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+  partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint
+  shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels
+  noRainbowTernaryPartition noJointTernaryBlocker shortenedPairHitStrictCrossDefect
+  twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals
+  weightedSplitDependencyGraph ternaryCycleProfiles terminalTernaryCycleProfileWeights
+  ternarySourceCollisionRefinementEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalTernarySourceCollisionRefinementPublicAPI pairAtoms atomPartition
+    atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+    centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+    onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+    supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+    endpointsOf endpointVertex pairOppositeUnion pairBipartitionSide leftFullSupport
+    rightFullSupport pairLabelOf splitAtoms splitAtomRebate partnerFreeCollision
+    collisionEndpoint partnerFreeMinimalSplitPatternRealized
+    postSquareBreakerPartnerFreeLargeOrSizeThreeSplit pairCollisionPetals fullPairPetal
+    oppositeHitCount fullPairOmissionCount partnerHitCollision pairPetalCompensatesOmission
+    pairCollisionSplitAtom allOppositeAtomsPairs pairAtomCollision sourceAtoms sourceVertices
+    sourceAnchorVertex sourceOppositeUnion sourceBipartitionSide leftSourceSupport
+    rightSourceSupport sourceLabelOf sizeThreeSourceAtom shortenedPairFreeSource sourcePartition
+    rainbowPartition jointBlocker sourceCollisionPetals shortenedPairPetal compensatingAtoms
+    qNumer qDen delta_other deltaOtherBound crossDefect shortenedPairHitCollision
+    ternarySourceCollision petalCompensatesShortenedPairDefect sourceNode petalNode
+    splitDependencyGraph nodeWeight cycleNodes cycleProfile cycleRealizedByCollision
+    rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+    twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+    collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+    booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+    booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+    selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+    fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+    partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+    partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+    partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+    individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+    partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint
+    shortenedPairFreeComplementaryBipartitionLabels distinctTernarySourceLabels
+    noRainbowTernaryPartition noJointTernaryBlocker shortenedPairHitStrictCrossDefect
+    twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals
+    weightedSplitDependencyGraph ternaryCycleProfiles terminalTernaryCycleProfileWeights
+    ternarySourceCollisionRefinementEndpoint)
+
+/-- Project the existing integrated partner split endpoint API. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.to_partnerSplitEndpointPublicAPI :
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      endpointsOf endpointVertex pairOppositeUnion pairBipartitionSide leftFullSupport
+      rightFullSupport pairLabelOf splitAtoms splitAtomRebate partnerFreeCollision
+      collisionEndpoint partnerFreeMinimalSplitPatternRealized
+      postSquareBreakerPartnerFreeLargeOrSizeThreeSplit pairCollisionPetals fullPairPetal
+      oppositeHitCount fullPairOmissionCount partnerHitCollision pairPetalCompensatesOmission
+      pairCollisionSplitAtom allOppositeAtomsPairs pairAtomCollision
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+      fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+      partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+      partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+      partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+      individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+      partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint :=
+  h.partnerSplitEndpointAPI
+
+/-- Project the size-three source complementary-bipartition label facade. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.to_sourceComplementaryBipartitionLabelFacade :
+    FirstBitTerminalTernarySourceComplementaryBipartitionLabelFacade sourceAtoms
+      sourceVertices sourceAnchorVertex sourceOppositeUnion sourceBipartitionSide
+      leftSourceSupport rightSourceSupport sourceLabelOf sizeThreeSourceAtom
+      shortenedPairFreeSource shortenedPairFreeComplementaryBipartitionLabels
+      distinctTernarySourceLabels :=
+  h.sourceLabelFacade
+
+/-- Project the no-rainbow/joint-blocker facade. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.to_noRainbowJointBlockerFacade :
+    FirstBitTerminalTernaryNoRainbowJointBlockerFacade sourceAtoms sourcePartition
+      sizeThreeSourceAtom rainbowPartition jointBlocker noRainbowTernaryPartition
+      noJointTernaryBlocker :=
+  h.noRainbowJointBlockerFacade
+
+/-- Project the shortened-pair-hit strict-defect compensation facade. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.to_shortenedPairHitDefectCompensationFacade :
+    FirstBitTerminalTernaryShortenedPairHitDefectCompensationFacade sourceAtoms
+      sourceCollisionPetals shortenedPairPetal compensatingAtoms atomSize qNumer qDen
+      delta_other deltaOtherBound crossDefect shortenedPairHitCollision
+      petalCompensatesShortenedPairDefect shortenedPairHitStrictCrossDefect
+      twoThirdsDeltaOtherBounded shortenedPairHitCompensatedByOtherPetals :=
+  h.shortenedPairHitDefectFacade
+
+/-- Project the weighted split-dependency graph and terminal cycle-profile facade. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.to_weightedSplitDependencyGraphFacade :
+    FirstBitTerminalTernaryWeightedSplitDependencyGraphFacade sourceAtoms sourceVertices
+      sourceCollisionPetals sourceNode petalNode splitDependencyGraph nodeWeight cycleNodes
+      cycleProfile cycleRealizedByCollision sizeThreeSourceAtom weightedSplitDependencyGraph
+      ternaryCycleProfiles terminalTernaryCycleProfileWeights :=
+  h.weightedDependencyGraphFacade
+
+/-- The partner split endpoint advances a discharged pair collision to a size-three source collision. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.ternarySourceCollision_after_partnerSplit
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : pairAtomCollision core pair collision) (hdischarged : fourPairCoreDischarged core) :
+    ∃ source : SourceAtom, source ∈ sourceAtoms core ∧ sizeThreeSourceAtom core source ∧
+      ternarySourceCollision core source collision :=
+  h.partnerSplit_to_ternarySourceCollisionCert core pair collision hcollision hdischarged
+
+/--
+Support-local square-breaker discharge, routed through the existing partner split endpoint, reaches
+the ternary source collision refinement layer.
+-/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.ternarySourceCollision_after_supportLocalSquareBreaker
+    {core : Core} (hcore : fourPairNoLeftoverCore core)
+    {pair : Pair} {collision : Collision} (hcollision : pairAtomCollision core pair collision)
+    (hlocal : supportLocalSquareBreakerDischarged core) :
+    ∃ source : SourceAtom, source ∈ sourceAtoms core ∧ sizeThreeSourceAtom core source ∧
+      ternarySourceCollision core source collision :=
+  h.ternarySourceCollision_after_partnerSplit hcollision
+    (h.partnerSplitEndpointAPI.squareBreakerDischargeAPI.discharge_of_supportLocalSquareBreaker
+      hcore hlocal)
+
+/-- A ternary source collision is either shortened-pair-free or a shortened-pair hit. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.shortenedPairFree_or_hit
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    {collision : Collision} (hcollision : ternarySourceCollision core source collision) :
+    shortenedPairFreeSource core source ∨ shortenedPairHitCollision core source collision :=
+  h.ternarySourceCollision_shortenedPairFree_or_hitCert core source hsource collision hcollision
+
+/-- Project distinct labels through the public API's source-label facade. -/
+theorem FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.source_labels_distinct
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) {left right : SourceVertex}
+    (hleft : left ∈ sourceVertices core source) (hright : right ∈ sourceVertices core source)
+    (hne : left ≠ right) :
+    sourceLabelOf core source left ≠ sourceLabelOf core source right :=
+  h.sourceLabelFacade.source_labels_distinct hsource hsize hleft hright hne
+
+/-- Project the no-rainbow condition through the public API. -/
+theorem FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.no_rainbow_partition
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) :
+    ¬ rainbowPartition core source :=
+  h.noRainbowJointBlockerFacade.no_rainbow_partition hsource hsize
+
+/-- Project the no-joint-blocker condition through the public API. -/
+theorem FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.no_joint_blocker
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    (hsize : sizeThreeSourceAtom core source) :
+    ¬ ∃ blocker : Blocker, jointBlocker core source blocker :=
+  h.noRainbowJointBlockerFacade.no_joint_blocker hsource hsize
+
+/-- Project the strict `q = 2/3` shortened-pair-hit defect bound through the public API. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.twoThirds_strictCrossDefect
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    {collision : Collision} (hcollision : shortenedPairHitCollision core source collision) :
+    firstBitTernarySourceTwoThirdsShortenedPairHitStrictCrossDefect
+      (qNumer core source collision) (qDen core source collision)
+      (delta_other core source collision) (deltaOtherBound core source collision)
+      (crossDefect core source collision) :=
+  h.shortenedPairHitDefectFacade.twoThirds_strictCrossDefect hsource hcollision
+
+/-- Project other-petal compensation for a shortened-pair hit through the public API. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.compensating_otherPetal
+    {core : Core} {source : SourceAtom} (hsource : source ∈ sourceAtoms core)
+    {collision : Collision} (hcollision : shortenedPairHitCollision core source collision) :
+    ∃ atom : Atom, atom ∈ compensatingAtoms core source collision ∧
+      3 ≤ atomSize core atom ∧
+        ∃ petal : Petal, petal ∈ sourceCollisionPetals core source collision ∧
+          petal ≠ shortenedPairPetal core source collision ∧
+            petalCompensatesShortenedPairDefect core source collision petal atom :=
+  h.shortenedPairHitDefectFacade.compensating_otherPetal hsource hcollision
+
+/-- Project terminal cycle profiles through the public API's weighted dependency graph. -/
+theorem FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.cycle_profile_terminal
+    {core : Core} {cycle : DependencyCycle} :
+    cycleProfile core cycle = .threeThreeTwoTwo ∨
+      cycleProfile core cycle = .threeThreeThreeTwo ∨
+        cycleProfile core cycle = .threeThreeThreeThree :=
+  h.weightedDependencyGraphFacade.cycle_profile_terminal
+
+/-- Project the terminal cycle weight identity through the public API. -/
+theorem FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.cycle_weight_matches_profile
+    {core : Core} {cycle : DependencyCycle} :
+    (∑ node in cycleNodes core cycle, nodeWeight node) =
+      (cycleProfile core cycle).totalWeight :=
+  h.weightedDependencyGraphFacade.cycle_weight_matches_profile
+
+/-- Project the terminal ternary source collision refinement endpoint marker. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.to_ternarySourceCollisionRefinementEndpoint :
+    ternarySourceCollisionRefinementEndpoint :=
+  h.ternarySourceCollisionRefinementEndpointCert
+
+/-- Compact marker bundle for downstream terminal/dyadic handoff wrappers. -/
+theorem
+    FirstBitTerminalTernarySourceCollisionRefinementPublicAPI.ternaryRefinementMarkerBundle :
+    shortenedPairFreeComplementaryBipartitionLabels ∧ distinctTernarySourceLabels ∧
+      noRainbowTernaryPartition ∧ noJointTernaryBlocker ∧
+        shortenedPairHitStrictCrossDefect ∧ twoThirdsDeltaOtherBounded ∧
+          shortenedPairHitCompensatedByOtherPetals ∧ weightedSplitDependencyGraph ∧
+            ternaryCycleProfiles ∧ terminalTernaryCycleProfileWeights ∧
+              ternarySourceCollisionRefinementEndpoint :=
+  ⟨h.sourceLabelFacade.to_shortenedPairFreeComplementaryBipartitionLabels,
+    h.sourceLabelFacade.to_distinctTernarySourceLabels,
+    h.noRainbowJointBlockerFacade.to_noRainbowTernaryPartition,
+    h.noRainbowJointBlockerFacade.to_noJointTernaryBlocker,
+    h.shortenedPairHitDefectFacade.to_shortenedPairHitStrictCrossDefect,
+    h.shortenedPairHitDefectFacade.to_twoThirdsDeltaOtherBounded,
+    h.shortenedPairHitDefectFacade.to_shortenedPairHitCompensatedByOtherPetals,
+    h.weightedDependencyGraphFacade.to_weightedSplitDependencyGraph,
+    h.weightedDependencyGraphFacade.to_ternaryCycleProfiles,
+    h.weightedDependencyGraphFacade.to_terminalTernaryCycleProfileWeights,
+    h.ternarySourceCollisionRefinementEndpointCert⟩
+
+end FirstBitTerminalTernarySourceCollisionRefinementPublicAPI
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
