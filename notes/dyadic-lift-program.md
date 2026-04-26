@@ -1251,6 +1251,14 @@ The retained table is explicit: one retained vertex closes if it misses all sele
 `R=0`, or hits all of them and `R=2|U|-1`.  For two retained vertices with mutual edge `b`, both-zero
 columns require `b=R`, both-one columns require `2|U|+b=R+2`, and complementary columns require `|U|`
 even plus `2alpha+b=R+1`, where `alpha` is the number of pairs hit by the first retained vertex.
+Hence the all-zero column class is empty when `R=0` and independent when `R=1`; the all-one class uses
+the shifted residue `R+2-2|U|`; complementary columns must avoid the specified edge status whenever it
+is `0` or `1`.  The equality residual is now a finite column-hole problem.
+For non-pair-uniform retained vertices use the full bit-column equation.  Two retained singletons
+`z,z'` augment iff for every selected boundary pair `{x_i,y_i}` there is a common `K in {0,1,2}` with
+`zx_i+z'x_i=zy_i+z'y_i=K`, and also
+`deg_U(z)+b=deg_U(z')+b=R+K [MOD 4]`.  Thus the only nonuniform possibility is bitwise complementary
+columns on every selected boundary vertex, with the total-degree congruences fixed.
 Pair-only selectors cannot mix these classes: size-two words contribute only even cross-degrees, so the
 parity of the final residue is the parity of the internal pair residue.  Any genuine mixed-class
 selector must therefore use singleton or whole-triple words, the odd-size words that can change

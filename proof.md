@@ -7374,6 +7374,25 @@ retained trace classes are possible only in the residue holes of this table, and
 classes must have a forced edge status unless the required status is outside `{0,1}`.  Any final closure
 can now target these finitely many column-hole cases.
 
+The pair-uniform table is only the scalar subcase of the full two-retained equation.  For arbitrary
+retained singletons `z,z'`, write the two adjacencies from `z` to the selected boundary pair
+`P_i={x_i,y_i}` as a bit pair `h_i(z)=(zx_i,zy_i)`.  Then `z,z'` augment the base pair selector iff
+there is `K in {0,1,2}` such that, for every `i in U`,
+
+```text
+zx_i+z'x_i = K,
+zy_i+z'y_i = K,
+deg_U(z)+b = R+K,
+deg_U(z')+b = R+K       [MOD 4],
+```
+
+where `b=1_{zz'}` and `deg_U(z)=sum_i(zx_i+zy_i)`.  Thus either both retained vertices miss every
+selected boundary vertex (`K=0`), both hit every selected boundary vertex (`K=2`), or their bit-columns
+are complementary on every selected boundary vertex (`K=1`).  The last case allows non-pair-uniform
+vertices, but only in complementary pairs with the displayed total-degree congruences.  Hence the
+true retained equality residual is a bit-column complement obstruction; pair-uniform columns are just
+its quotient by the two coordinates inside each selected pair.
+
 Moreover, this split is forced by parity: if all selected words have size two, every cross-word
 contribution is even (`0` or `2` modulo `4` in the homogeneous quotient), so the parity of the final
 degree residue is the parity of the internal pair residue.  Pair-only selectors therefore cannot mix

@@ -1765,6 +1765,14 @@ Recommended attack:
    Expand this as the table: single all-zero requires `R=0`; single all-one requires
    `R=2|U|-1`; two both-zero requires mutual edge `b=R`; two both-one requires
    `2|U|+b=R+2`; complementary columns require `|U|` even and `2alpha+b=R+1`.
+   The all-zero retained trace class is empty for `R=0` and independent for `R=1`; the all-one class
+   follows by the shifted residue `R+2-2|U|`; complementary classes avoid the specified edge status when
+   it is `0` or `1`.
+   Also formalize the full non-pair-uniform two-retained equation: for selected pairs `{x_i,y_i}`,
+   retained `z,z'` augment iff a common `K` satisfies
+   `zx_i+z'x_i=zy_i+z'y_i=K` for all `i`, and
+   `deg_U(z)+b=deg_U(z')+b=R+K [MOD 4]`.  Nonuniform columns can only occur in bitwise complementary
+   retained pairs.
    Record the parity split: pair-only selectors cannot mix non-triangle and triangle pair classes,
    because size-two words contribute only even cross-degrees.  Mixed-class selectors must use odd-size
    singleton or whole-triple words.
