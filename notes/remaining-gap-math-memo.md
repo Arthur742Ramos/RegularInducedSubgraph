@@ -2039,6 +2039,8 @@ The three absorption trace types `A,B,C` have large intersections:
 common opposite atoms.
 Deleting a packed-block vertex creates a one-short projected packing, so criticality forces a minimal
 deletion-only positive-gain repair family whose full lifts are blocked by nonpositive total gain.
+The lift-collision side has an anchored core: two `a`-forced shadow supports have only thickened original
+lifts through the deleted vertex, so their unlifted columns are absent; other members are gain baggage.
 For a one-support repair, exact lift accounting splits into shortened-block repair (thickened lift keeps the
 same positive gain and is blocked; unlifted lift has gain one less) and large-block absorption (thickened
 lift pays `|B_j|-2`).

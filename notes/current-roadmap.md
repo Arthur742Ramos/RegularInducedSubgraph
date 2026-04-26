@@ -5447,6 +5447,9 @@ The residual all-large absorption blocker is therefore finite overlap-congestion
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
 vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
 positive-gain repair family whose every full lift has nonpositive total gain.
+The lift-collision alternative has an anchored core: any collision-blocked deletion repair contains two
+`a`-forced shadow supports whose only original lifts both use the deleted vertex `a`; their unlifted columns
+are absent, so the residual is an anchored no-split pair plus gain baggage.
 For one-support deletion repairs, the exact lift accounting splits into shortened-block repair and
 large-block absorption.  If the projected support hits the shortened block, its thickened lift has the same
 positive gain and is blocked, while its unlifted lift has gain one less.  If it misses the shortened block,

@@ -2505,6 +2505,9 @@ Recommended attack:
     Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
     short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
     total gain.
+    Add the lift-collision anchored-core reduction: any collision-blocked deletion repair contains two
+    `a`-forced projected supports whose only original lifts are thickened through the deleted vertex; their
+    unlifted columns are absent, and the rest of the family is gain baggage.
     Add exact one-support deletion lift accounting.  If the projected support hits the shortened block, its
     thickened lift has the same projected gain and is blocked while its unlifted lift has gain one less.  If
     it misses the shortened block, the thickened lift pays the large-block absorption penalty `|B_j|-2`.

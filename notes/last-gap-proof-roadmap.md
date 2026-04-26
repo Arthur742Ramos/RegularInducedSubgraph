@@ -2010,6 +2010,8 @@ What remains justified after audit is:
       `B-C=11`, `C-C=12`, reducing the residual to finite overlap-congestion;
       deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
       are blocked;
+      lift-collision contains an anchored no-split core: two `a`-forced projected supports have only
+      thickened lifts through the deleted vertex, with unlifted columns absent and the rest as gain baggage;
       one-support deletion repair has exact lift accounting: shortened-block repairs have blocked positive
       thickened lifts, while large-block absorption repairs pay the penalty `|B_j|-2`;
       consequently size-two packed blocks cannot absorb positive one-support repairs, and size-three blocks

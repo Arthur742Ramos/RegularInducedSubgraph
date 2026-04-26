@@ -12177,6 +12177,21 @@ or lift-collision because two projected supports are forced through the same del
 In particular, any projected repair family with at most one `a`-forced member has a disjoint full lift and is
 controlled entirely by the four-case gain formula above.
 
+Thus lift-collision has a finite anchored core.  In any collision-blocked deletion repair, choose two
+`a`-forced members `C_1',C_2'` of the projected disjoint family.  Their projected traces are disjoint in
+`A\{a}`, but in the original endpoint each has only the thickened lift
+
+```text
+C_i' union {a}
+```
+
+available.  The unlifted columns `C_i'` are absent; otherwise that member would not be `a`-forced.  Hence the
+minimal obstruction inside every deleted-vertex collision is an anchored no-split pair: two shadow supports
+which are simultaneously available after deleting `a`, but whose only original realizations collide at `a`.
+All other members of the projected repair family are gain baggage around this anchored pair.  Therefore the
+lift-collision side is finite anchored column data, complementary to the finite overlap-congestion data for
+strict absorption.
+
 Small atoms now have no hidden absorption.  If `|B_j|=2`, every disjoint full lift of a projected repair
 family with `g^->=2` has positive gain, so terminality forces lift-collision by at least two `a`-forced
 members.  For `g^-=1`, the only nonpositive disjoint full lift is the shortened-block unlift

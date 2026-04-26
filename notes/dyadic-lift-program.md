@@ -1113,6 +1113,8 @@ The three trace types have intersection lower bounds `A-A>=4`, `A-B>=7`, `A-C=8`
 `C-C=12`, so the residual all-large blocker is finite overlap-congestion, not separated cover geometry.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
+Lift-collision contains a finite anchored core: two `a`-forced shadow supports have only thickened lifts
+through the deleted vertex, with unlifted columns absent; the remaining repair members are gain baggage.
 In the one-support case the exact lift accounting has two types: hitting the shortened block makes the
 thickened lift keep the same positive projected gain and be blocked; missing it lets a thickened-only lift
 pay the large-block absorption penalty `|B_j|-2`.
