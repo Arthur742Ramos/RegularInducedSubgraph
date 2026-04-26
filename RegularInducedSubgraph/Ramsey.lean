@@ -30,6 +30,24 @@ private lemma indepInsertOfSubsetFilter_succ {α : Type*} [DecidableEq α] {G : 
   have hab : a ≠ b := (Finset.mem_erase.mp hbs).1.symm
   exact (SimpleGraph.compl_adj _ _ _).2 ⟨hab, hnot⟩
 
+private lemma degree_induce_finset_eq_card_filter_adj {α : Type*} [DecidableEq α]
+    (G : SimpleGraph α) (s : Finset α) (v : ↑(s : Set α)) :
+    (G.induce (s : Set α)).degree v = (s.filter fun w => G.Adj v w).card := by
+  classical
+  rw [← SimpleGraph.card_neighborFinset_eq_degree]
+  have hmap :
+      ((G.induce (s : Set α)).neighborFinset v).map
+          (Function.Embedding.subtype (· ∈ (s : Set α))) =
+        s.filter fun w => G.Adj v w := by
+    ext x
+    simp [SimpleGraph.mem_neighborFinset, SimpleGraph.induce_adj]
+  calc
+    ((G.induce (s : Set α)).neighborFinset v).card =
+        (((G.induce (s : Set α)).neighborFinset v).map
+          (Function.Embedding.subtype (· ∈ (s : Set α)))).card := by
+          rw [Finset.card_map]
+    _ = (s.filter fun w => G.Adj v w).card := by rw [hmap]
+
 /--
 A finite Ramsey bound on a prescribed vertex set: if `s` is large enough, then `G` contains either
 an `(m + 1)`-clique or an `(n + 1)`-independent set inside `s`.
@@ -251,6 +269,117 @@ theorem HasCliqueOrIndepSetBound.step_mono
     HasCliqueOrIndepSetBound (a + 1) (b + 1) N :=
   HasCliqueOrIndepSetBound.mono
     (HasCliqueOrIndepSetBound.step hN₁ hN₂ hleft hright) hN
+
+/--
+Parity-sharpened Ramsey recurrence.  If both predecessor bounds are even, the usual
+`R(a + 1, b + 1) <= R(a, b + 1) + R(a + 1, b)` recurrence loses one vertex.
+-/
+theorem HasCliqueOrIndepSetBound.step_even
+    {a b N₁ N₂ : ℕ} (hN₁ : 0 < N₁) (hN₂ : 0 < N₂)
+    (hN₁even : Even N₁) (hN₂even : Even N₂)
+    (hleft : HasCliqueOrIndepSetBound a (b + 1) N₁)
+    (hright : HasCliqueOrIndepSetBound (a + 1) b N₂) :
+    HasCliqueOrIndepSetBound (a + 1) (b + 1) (N₁ + N₂ - 1) := by
+  intro α _ G s hs
+  classical
+  by_cases hbig : N₁ + N₂ ≤ s.card
+  · exact HasCliqueOrIndepSetBound.step hN₁ hN₂ hleft hright G s hbig
+  have hcard : s.card = N₁ + N₂ - 1 := by omega
+  by_contra hnone
+  have hdegree :
+      ∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = N₁ - 1 := by
+    intro v
+    let A : Finset α := (s.erase (v : α)).filter (G.Adj (v : α))
+    let B : Finset α := (s.erase (v : α)).filter fun w => ¬ G.Adj (v : α) w
+    have hA_sub_s : A ⊆ s := by
+      intro x hx
+      exact (Finset.mem_erase.mp (Finset.mem_filter.mp hx).1).2
+    have hB_sub_s : B ⊆ s := by
+      intro x hx
+      exact (Finset.mem_erase.mp (Finset.mem_filter.mp hx).1).2
+    have hpart : A.card + B.card = (s.erase (v : α)).card := by
+      dsimp [A, B]
+      simpa using
+        (Finset.card_filter_add_card_filter_not (s := s.erase (v : α))
+          (p := G.Adj (v : α)))
+    have hA_lt : A.card < N₁ := by
+      by_contra hnot
+      have hAlarge : N₁ ≤ A.card := le_of_not_gt hnot
+      rcases hleft G A hAlarge with hclique | hindep
+      · rcases hclique with ⟨t, htA, hct⟩
+        exact hnone (Or.inl ⟨insert (v : α) t, ?_, ?_⟩)
+        · intro x hx
+          rcases Finset.mem_insert.mp hx with rfl | hx
+          · exact v.2
+          · exact hA_sub_s (htA hx)
+        · exact hct.insert (fun w hw => (Finset.mem_filter.mp (htA hw)).2)
+      · rcases hindep with ⟨t, htA, hit⟩
+        exact hnone (Or.inr ⟨t, subset_trans htA hA_sub_s, hit⟩)
+    have hB_lt : B.card < N₂ := by
+      by_contra hnot
+      have hBlarge : N₂ ≤ B.card := le_of_not_gt hnot
+      rcases hright G B hBlarge with hclique | hindep
+      · rcases hclique with ⟨t, htB, hct⟩
+        exact hnone (Or.inl ⟨t, subset_trans htB hB_sub_s, hct⟩)
+      · rcases hindep with ⟨t, htB, hit⟩
+        exact hnone (Or.inr ⟨insert (v : α) t, ?_,
+          indepInsertOfSubsetFilter_succ (G := G) (a := (v : α)) (s := s) htB hit⟩)
+        intro x hx
+        rcases Finset.mem_insert.mp hx with rfl | hx
+        · exact v.2
+        · exact hB_sub_s (htB hx)
+    have hErase : (s.erase (v : α)).card = s.card - 1 :=
+      Finset.card_erase_of_mem v.2
+    have hAeq : A.card = N₁ - 1 := by omega
+    have hA_filter : s.filter (fun w => G.Adj (v : α) w) = A := by
+      ext x
+      by_cases hxv : x = (v : α)
+      · subst x
+        simp [A]
+      · simp [A, hxv]
+    calc
+      (G.induce (s : Set α)).degree v =
+          (s.filter fun w => G.Adj (v : α) w).card :=
+        degree_induce_finset_eq_card_filter_adj G s v
+      _ = A.card := by rw [hA_filter]
+      _ = N₁ - 1 := hAeq
+  have hAllOdd :
+      ∀ v : ↑(s : Set α), Odd ((G.induce (s : Set α)).degree v) := by
+    intro v
+    rw [hdegree v]
+    rcases hN₁even with ⟨k, hk⟩
+    refine ⟨k - 1, ?_⟩
+    omega
+  have hOddDegreesEven :
+      Even #{v : ↑(s : Set α) | Odd ((G.induce (s : Set α)).degree v)} :=
+    SimpleGraph.even_card_odd_degree_vertices (G := G.induce (s : Set α))
+  have hOddDegreesCard :
+      #{v : ↑(s : Set α) | Odd ((G.induce (s : Set α)).degree v)} =
+        Fintype.card ↑(s : Set α) := by
+    simp [hAllOdd]
+  have hSubtypeCard : Fintype.card ↑(s : Set α) = s.card := by
+    exact Fintype.card_ofFinset s (by simp)
+  have hsEven : Even s.card := by
+    simpa [hOddDegreesCard, hSubtypeCard] using hOddDegreesEven
+  have hsOdd : Odd s.card := by
+    rcases hN₁even with ⟨k₁, hk₁⟩
+    rcases hN₂even with ⟨k₂, hk₂⟩
+    refine ⟨k₁ + k₂ - 1, ?_⟩
+    omega
+  rcases hsEven with ⟨ke, hke⟩
+  rcases hsOdd with ⟨ko, hko⟩
+  omega
+
+/-- Parity-sharpened Ramsey recurrence followed by monotonicity of the ambient threshold. -/
+theorem HasCliqueOrIndepSetBound.step_even_mono
+    {a b N₁ N₂ N : ℕ} (hN₁ : 0 < N₁) (hN₂ : 0 < N₂)
+    (hN₁even : Even N₁) (hN₂even : Even N₂)
+    (hleft : HasCliqueOrIndepSetBound a (b + 1) N₁)
+    (hright : HasCliqueOrIndepSetBound (a + 1) b N₂)
+    (hN : N₁ + N₂ - 1 ≤ N) :
+    HasCliqueOrIndepSetBound (a + 1) (b + 1) N :=
+  HasCliqueOrIndepSetBound.mono
+    (HasCliqueOrIndepSetBound.step_even hN₁ hN₂ hN₁even hN₂even hleft hright) hN
 
 /-- If a set has neither side of a Ramsey alternative, its cardinality is below the bound. -/
 theorem card_lt_of_no_clique_or_indep
@@ -527,6 +656,72 @@ theorem hasCliqueOrIndepSetBound_four_four_eighteen :
       (HasCliqueOrIndepSetBound.symm hasCliqueOrIndepSetBound_three_four_nine)
   intro α _ G s hs
   exact hstep (α := α) G s (by omega)
+
+/-- The parity recurrence sharpens the binomial row to `R(3,6) <= 19`. -/
+theorem hasCliqueOrIndepSetBound_three_six_nineteen :
+    HasCliqueOrIndepSetBound 3 6 19 := by
+  have h26 : HasCliqueOrIndepSetBound 2 6 6 := by
+    exact hasCliqueOrIndepSetBound_of_ramsey_finset
+      (a := 2) (b := 6) (N := 6) (by decide) (by decide) (by decide)
+  exact HasCliqueOrIndepSetBound.step_even_mono (a := 2) (b := 5)
+    (N₁ := 6) (N₂ := 14) (N := 19)
+    (by decide) (by decide) (by norm_num) (by norm_num)
+    h26 hasCliqueOrIndepSetBound_three_five_fourteen (by norm_num)
+
+/-- Recursing from `R(3,6) <= 19` gives `R(3,7) <= 26`. -/
+theorem hasCliqueOrIndepSetBound_three_seven_twenty_six :
+    HasCliqueOrIndepSetBound 3 7 26 := by
+  have h27 : HasCliqueOrIndepSetBound 2 7 7 := by
+    exact hasCliqueOrIndepSetBound_of_ramsey_finset
+      (a := 2) (b := 7) (N := 7) (by decide) (by decide) (by decide)
+  exact HasCliqueOrIndepSetBound.step_mono (a := 2) (b := 6)
+    (N₁ := 7) (N₂ := 19) (N := 26)
+    (by decide) (by decide) h27 hasCliqueOrIndepSetBound_three_six_nineteen
+    (by norm_num)
+
+/-- The parity recurrence gives `R(3,8) <= 33`. -/
+theorem hasCliqueOrIndepSetBound_three_eight_thirty_three :
+    HasCliqueOrIndepSetBound 3 8 33 := by
+  have h28 : HasCliqueOrIndepSetBound 2 8 8 := by
+    exact hasCliqueOrIndepSetBound_of_ramsey_finset
+      (a := 2) (b := 8) (N := 8) (by decide) (by decide) (by decide)
+  exact HasCliqueOrIndepSetBound.step_even_mono (a := 2) (b := 7)
+    (N₁ := 8) (N₂ := 26) (N := 33)
+    (by decide) (by decide) (by norm_num) (by norm_num)
+    h28 hasCliqueOrIndepSetBound_three_seven_twenty_six (by norm_num)
+
+/-- Recursing from `R(3,8) <= 33` gives `R(3,9) <= 42`. -/
+theorem hasCliqueOrIndepSetBound_three_nine_forty_two :
+    HasCliqueOrIndepSetBound 3 9 42 := by
+  have h29 : HasCliqueOrIndepSetBound 2 9 9 := by
+    exact hasCliqueOrIndepSetBound_of_ramsey_finset
+      (a := 2) (b := 9) (N := 9) (by decide) (by decide) (by decide)
+  exact HasCliqueOrIndepSetBound.step_mono (a := 2) (b := 8)
+    (N₁ := 9) (N₂ := 33) (N := 42)
+    (by decide) (by decide) h29 hasCliqueOrIndepSetBound_three_eight_thirty_three
+    (by norm_num)
+
+/-- The parity recurrence gives `R(3,10) <= 51`. -/
+theorem hasCliqueOrIndepSetBound_three_ten_fifty_one :
+    HasCliqueOrIndepSetBound 3 10 51 := by
+  have h2_10 : HasCliqueOrIndepSetBound 2 10 10 := by
+    exact hasCliqueOrIndepSetBound_of_ramsey_finset
+      (a := 2) (b := 10) (N := 10) (by decide) (by decide) (by decide)
+  exact HasCliqueOrIndepSetBound.step_even_mono (a := 2) (b := 9)
+    (N₁ := 10) (N₂ := 42) (N := 51)
+    (by decide) (by decide) (by norm_num) (by norm_num)
+    h2_10 hasCliqueOrIndepSetBound_three_nine_forty_two (by norm_num)
+
+/-- Recursing from `R(3,10) <= 51` gives `R(3,11) <= 62`. -/
+theorem hasCliqueOrIndepSetBound_three_eleven_sixty_two :
+    HasCliqueOrIndepSetBound 3 11 62 := by
+  have h2_11 : HasCliqueOrIndepSetBound 2 11 11 := by
+    exact hasCliqueOrIndepSetBound_of_ramsey_finset
+      (a := 2) (b := 11) (N := 11) (by decide) (by decide) (by decide)
+  exact HasCliqueOrIndepSetBound.step_mono (a := 2) (b := 10)
+    (N₁ := 11) (N₂ := 51) (N := 62)
+    (by decide) (by decide) h2_11 hasCliqueOrIndepSetBound_three_ten_fifty_one
+    (by norm_num)
 
 /--
 Unconditional degree pressure on any 26-vertex `R(4,5)` counterexample: every degree lies in
@@ -2404,111 +2599,114 @@ theorem cliqueOrIndepSetBoundTail_of_pow_six_bound {j N : ℕ}
     simpa [pow_succ] using hpoly)
 
 /--
-Small off-diagonal Ramsey table sufficient for the `40960` regular-10 target.  The generic
-binomial Ramsey bounds supply the `R(3,k)` row, so the only external finite inputs needed here
-are `R(4,5) <= 26`; the `R(5,5)` input is then the recurrence bound `52`.
+Small off-diagonal Ramsey table sufficient for the `40960` regular-10 target.  The sharpened
+`R(3,k)` row above and the parity recurrence leave `R(4,5) <= 26` as the only external finite
+input; the `R(5,5)` input is then the parity-recurrence bound `51`.
 -/
 structure RamseyTenSmallTable : Prop where
   r45 : HasCliqueOrIndepSetBound 4 5 26
 
 theorem hasCliqueOrIndepSetBound_10_10_of_ramseyTenSmallTable
-    (h : RamseyTenSmallTable) : HasCliqueOrIndepSetBound 10 10 40304 := by
-  have h36 : HasCliqueOrIndepSetBound 3 6 21 := by
-    exact hasCliqueOrIndepSetBound_of_ramsey_finset
-      (a := 3) (b := 6) (N := 21) (by decide) (by decide) (by decide)
-  have h37 : HasCliqueOrIndepSetBound 3 7 28 := by
-    exact hasCliqueOrIndepSetBound_of_ramsey_finset
-      (a := 3) (b := 7) (N := 28) (by decide) (by decide) (by decide)
-  have h38 : HasCliqueOrIndepSetBound 3 8 36 := by
-    exact hasCliqueOrIndepSetBound_of_ramsey_finset
-      (a := 3) (b := 8) (N := 36) (by decide) (by decide) (by decide)
-  have h39 : HasCliqueOrIndepSetBound 3 9 45 := by
-    exact hasCliqueOrIndepSetBound_of_ramsey_finset
-      (a := 3) (b := 9) (N := 45) (by decide) (by decide) (by decide)
-  have h3_10 : HasCliqueOrIndepSetBound 3 10 55 := by
-    exact hasCliqueOrIndepSetBound_of_ramsey_finset
-      (a := 3) (b := 10) (N := 55) (by decide) (by decide) (by decide)
-  have h46 : HasCliqueOrIndepSetBound 4 6 47 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 5) (N₁ := 21) (N₂ := 26)
-      (N := 47) (by decide) (by decide) h36 h.r45 (by norm_num)
-  have h47 : HasCliqueOrIndepSetBound 4 7 75 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 6) (N₁ := 28) (N₂ := 47)
-      (N := 75) (by decide) (by decide) h37 h46 (by norm_num)
-  have h48 : HasCliqueOrIndepSetBound 4 8 111 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 7) (N₁ := 36) (N₂ := 75)
-      (N := 111) (by decide) (by decide) h38 h47 (by norm_num)
-  have h49 : HasCliqueOrIndepSetBound 4 9 156 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 8) (N₁ := 45) (N₂ := 111)
-      (N := 156) (by decide) (by decide) h39 h48 (by norm_num)
-  have h4_10 : HasCliqueOrIndepSetBound 4 10 211 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 9) (N₁ := 55) (N₂ := 156)
-      (N := 211) (by decide) (by decide) h3_10 h49 (by norm_num)
-  have h55 : HasCliqueOrIndepSetBound 5 5 52 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 4) (N₁ := 26) (N₂ := 26)
-      (N := 52) (by decide) (by decide) h.r45 (HasCliqueOrIndepSetBound.symm h.r45)
-      (by norm_num)
-  have h56 : HasCliqueOrIndepSetBound 5 6 99 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 5) (N₁ := 47) (N₂ := 52)
-      (N := 99) (by decide) (by decide) h46 h55 (by norm_num)
-  have h57 : HasCliqueOrIndepSetBound 5 7 174 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 6) (N₁ := 75) (N₂ := 99)
-      (N := 174) (by decide) (by decide) h47 h56 (by norm_num)
-  have h58 : HasCliqueOrIndepSetBound 5 8 285 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 7) (N₁ := 111) (N₂ := 174)
-      (N := 285) (by decide) (by decide) h48 h57 (by norm_num)
-  have h59 : HasCliqueOrIndepSetBound 5 9 441 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 8) (N₁ := 156) (N₂ := 285)
-      (N := 441) (by decide) (by decide) h49 h58 (by norm_num)
-  have h5_10 : HasCliqueOrIndepSetBound 5 10 652 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 9) (N₁ := 211) (N₂ := 441)
-      (N := 652) (by decide) (by decide) h4_10 h59 (by norm_num)
-  have h66 : HasCliqueOrIndepSetBound 6 6 198 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 5) (N₁ := 99) (N₂ := 99)
-      (N := 198) (by decide) (by decide) h56 h56.symm (by norm_num)
-  have h67 : HasCliqueOrIndepSetBound 6 7 372 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 6) (N₁ := 174) (N₂ := 198)
-      (N := 372) (by decide) (by decide) h57 h66 (by norm_num)
-  have h68 : HasCliqueOrIndepSetBound 6 8 657 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 7) (N₁ := 285) (N₂ := 372)
-      (N := 657) (by decide) (by decide) h58 h67 (by norm_num)
-  have h69 : HasCliqueOrIndepSetBound 6 9 1098 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 8) (N₁ := 441) (N₂ := 657)
-      (N := 1098) (by decide) (by decide) h59 h68 (by norm_num)
-  have h6_10 : HasCliqueOrIndepSetBound 6 10 1750 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 9) (N₁ := 652) (N₂ := 1098)
-      (N := 1750) (by decide) (by decide) h5_10 h69 (by norm_num)
-  have h77 : HasCliqueOrIndepSetBound 7 7 744 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 6) (N₁ := 372) (N₂ := 372)
-      (N := 744) (by decide) (by decide) h67 h67.symm (by norm_num)
-  have h78 : HasCliqueOrIndepSetBound 7 8 1401 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 7) (N₁ := 657) (N₂ := 744)
-      (N := 1401) (by decide) (by decide) h68 h77 (by norm_num)
-  have h79 : HasCliqueOrIndepSetBound 7 9 2499 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 8) (N₁ := 1098) (N₂ := 1401)
-      (N := 2499) (by decide) (by decide) h69 h78 (by norm_num)
-  have h7_10 : HasCliqueOrIndepSetBound 7 10 4249 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 9) (N₁ := 1750) (N₂ := 2499)
-      (N := 4249) (by decide) (by decide) h6_10 h79 (by norm_num)
-  have h88 : HasCliqueOrIndepSetBound 8 8 2802 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 7) (N₁ := 1401) (N₂ := 1401)
-      (N := 2802) (by decide) (by decide) h78 h78.symm (by norm_num)
-  have h89 : HasCliqueOrIndepSetBound 8 9 5301 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 8) (N₁ := 2499) (N₂ := 2802)
-      (N := 5301) (by decide) (by decide) h79 h88 (by norm_num)
-  have h8_10 : HasCliqueOrIndepSetBound 8 10 9550 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 9) (N₁ := 4249) (N₂ := 5301)
-      (N := 9550) (by decide) (by decide) h7_10 h89 (by norm_num)
-  have h99 : HasCliqueOrIndepSetBound 9 9 10602 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 8) (b := 8) (N₁ := 5301) (N₂ := 5301)
-      (N := 10602) (by decide) (by decide) h89 h89.symm (by norm_num)
-  have h9_10 : HasCliqueOrIndepSetBound 9 10 20152 := by
-    exact HasCliqueOrIndepSetBound.step_mono (a := 8) (b := 9) (N₁ := 9550) (N₂ := 10602)
-      (N := 20152) (by decide) (by decide) h8_10 h99 (by norm_num)
-  have h10_9 : HasCliqueOrIndepSetBound 10 9 20152 := HasCliqueOrIndepSetBound.symm h9_10
+    (h : RamseyTenSmallTable) : HasCliqueOrIndepSetBound 10 10 38543 := by
+  have h36 : HasCliqueOrIndepSetBound 3 6 19 :=
+    hasCliqueOrIndepSetBound_three_six_nineteen
+  have h37 : HasCliqueOrIndepSetBound 3 7 26 :=
+    hasCliqueOrIndepSetBound_three_seven_twenty_six
+  have h38 : HasCliqueOrIndepSetBound 3 8 33 :=
+    hasCliqueOrIndepSetBound_three_eight_thirty_three
+  have h39 : HasCliqueOrIndepSetBound 3 9 42 :=
+    hasCliqueOrIndepSetBound_three_nine_forty_two
+  have h3_10 : HasCliqueOrIndepSetBound 3 10 51 :=
+    hasCliqueOrIndepSetBound_three_ten_fifty_one
+  have h46 : HasCliqueOrIndepSetBound 4 6 45 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 5) (N₁ := 19) (N₂ := 26)
+      (N := 45) (by decide) (by decide) h36 h.r45 (by norm_num)
+  have h47 : HasCliqueOrIndepSetBound 4 7 71 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 6) (N₁ := 26) (N₂ := 45)
+      (N := 71) (by decide) (by decide) h37 h46 (by norm_num)
+  have h48 : HasCliqueOrIndepSetBound 4 8 104 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 7) (N₁ := 33) (N₂ := 71)
+      (N := 104) (by decide) (by decide) h38 h47 (by norm_num)
+  have h49 : HasCliqueOrIndepSetBound 4 9 145 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 3) (b := 8)
+      (N₁ := 42) (N₂ := 104) (N := 145)
+      (by decide) (by decide) (by norm_num) (by norm_num) h39 h48 (by norm_num)
+  have h4_10 : HasCliqueOrIndepSetBound 4 10 196 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 9) (N₁ := 51) (N₂ := 145)
+      (N := 196) (by decide) (by decide) h3_10 h49 (by norm_num)
+  have h55 : HasCliqueOrIndepSetBound 5 5 51 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 4) (b := 4)
+      (N₁ := 26) (N₂ := 26) (N := 51)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h.r45 (HasCliqueOrIndepSetBound.symm h.r45) (by norm_num)
+  have h56 : HasCliqueOrIndepSetBound 5 6 96 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 5) (N₁ := 45) (N₂ := 51)
+      (N := 96) (by decide) (by decide) h46 h55 (by norm_num)
+  have h57 : HasCliqueOrIndepSetBound 5 7 167 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 6) (N₁ := 71) (N₂ := 96)
+      (N := 167) (by decide) (by decide) h47 h56 (by norm_num)
+  have h58 : HasCliqueOrIndepSetBound 5 8 271 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 7) (N₁ := 104) (N₂ := 167)
+      (N := 271) (by decide) (by decide) h48 h57 (by norm_num)
+  have h59 : HasCliqueOrIndepSetBound 5 9 416 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 8) (N₁ := 145) (N₂ := 271)
+      (N := 416) (by decide) (by decide) h49 h58 (by norm_num)
+  have h5_10 : HasCliqueOrIndepSetBound 5 10 611 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 4) (b := 9)
+      (N₁ := 196) (N₂ := 416) (N := 611)
+      (by decide) (by decide) (by norm_num) (by norm_num) h4_10 h59 (by norm_num)
+  have h66 : HasCliqueOrIndepSetBound 6 6 191 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 5) (b := 5)
+      (N₁ := 96) (N₂ := 96) (N := 191)
+      (by decide) (by decide) (by norm_num) (by norm_num) h56 h56.symm (by norm_num)
+  have h67 : HasCliqueOrIndepSetBound 6 7 358 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 6) (N₁ := 167) (N₂ := 191)
+      (N := 358) (by decide) (by decide) h57 h66 (by norm_num)
+  have h68 : HasCliqueOrIndepSetBound 6 8 629 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 7) (N₁ := 271) (N₂ := 358)
+      (N := 629) (by decide) (by decide) h58 h67 (by norm_num)
+  have h69 : HasCliqueOrIndepSetBound 6 9 1045 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 8) (N₁ := 416) (N₂ := 629)
+      (N := 1045) (by decide) (by decide) h59 h68 (by norm_num)
+  have h6_10 : HasCliqueOrIndepSetBound 6 10 1656 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 9) (N₁ := 611) (N₂ := 1045)
+      (N := 1656) (by decide) (by decide) h5_10 h69 (by norm_num)
+  have h77 : HasCliqueOrIndepSetBound 7 7 715 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 6) (b := 6)
+      (N₁ := 358) (N₂ := 358) (N := 715)
+      (by decide) (by decide) (by norm_num) (by norm_num) h67 h67.symm (by norm_num)
+  have h78 : HasCliqueOrIndepSetBound 7 8 1344 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 7) (N₁ := 629) (N₂ := 715)
+      (N := 1344) (by decide) (by decide) h68 h77 (by norm_num)
+  have h79 : HasCliqueOrIndepSetBound 7 9 2389 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 8) (N₁ := 1045) (N₂ := 1344)
+      (N := 2389) (by decide) (by decide) h69 h78 (by norm_num)
+  have h7_10 : HasCliqueOrIndepSetBound 7 10 4045 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 9) (N₁ := 1656) (N₂ := 2389)
+      (N := 4045) (by decide) (by decide) h6_10 h79 (by norm_num)
+  have h88 : HasCliqueOrIndepSetBound 8 8 2687 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 7) (b := 7)
+      (N₁ := 1344) (N₂ := 1344) (N := 2687)
+      (by decide) (by decide) (by norm_num) (by norm_num) h78 h78.symm (by norm_num)
+  have h89 : HasCliqueOrIndepSetBound 8 9 5076 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 8) (N₁ := 2389) (N₂ := 2687)
+      (N := 5076) (by decide) (by decide) h79 h88 (by norm_num)
+  have h8_10 : HasCliqueOrIndepSetBound 8 10 9121 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 9) (N₁ := 4045) (N₂ := 5076)
+      (N := 9121) (by decide) (by decide) h7_10 h89 (by norm_num)
+  have h99 : HasCliqueOrIndepSetBound 9 9 10151 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 8) (b := 8)
+      (N₁ := 5076) (N₂ := 5076) (N := 10151)
+      (by decide) (by decide) (by norm_num) (by norm_num) h89 h89.symm (by norm_num)
+  have h9_10 : HasCliqueOrIndepSetBound 9 10 19272 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 8) (b := 9) (N₁ := 9121) (N₂ := 10151)
+      (N := 19272) (by decide) (by decide) h8_10 h99 (by norm_num)
+  have h10_9 : HasCliqueOrIndepSetBound 10 9 19272 := HasCliqueOrIndepSetBound.symm h9_10
   intro α _ G s hs
   exact
-    HasCliqueOrIndepSetBound.step_mono (a := 9) (b := 9) (N₁ := 20152) (N₂ := 20152)
-      (N := 40304) (by decide) (by decide) h9_10 h10_9 (by norm_num) G s hs
+    HasCliqueOrIndepSetBound.step_even_mono (a := 9) (b := 9)
+      (N₁ := 19272) (N₂ := 19272) (N := 38543)
+      (by decide) (by decide) (by norm_num) (by norm_num) h9_10 h10_9 (by norm_num) G s hs
 
 /-- The small Ramsey table is enough for the 40960-vertex regular induced 10-set target. -/
 theorem hasRegularInducedSubgraphOfCard_ten_of_ramseyTenSmallTable
@@ -2516,8 +2714,8 @@ theorem hasRegularInducedSubgraphOfCard_ten_of_ramseyTenSmallTable
     (G : SimpleGraph V) (hcard : 40960 ≤ Fintype.card V) :
     HasRegularInducedSubgraphOfCard G 10 := by
   classical
-  have hbound : 40304 ≤ (Finset.univ : Finset V).card := by
-    simpa using (le_trans (by decide : 40304 ≤ 40960) hcard)
+  have hbound : 38543 ≤ (Finset.univ : Finset V).card := by
+    simpa using (le_trans (by decide : 38543 ≤ 40960) hcard)
   rcases hasCliqueOrIndepSetBound_10_10_of_ramseyTenSmallTable h G Finset.univ hbound with
     hclique | hindep
   · rcases hclique with ⟨s, _hs, hsclique⟩
