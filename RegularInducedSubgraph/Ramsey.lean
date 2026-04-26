@@ -3540,6 +3540,67 @@ theorem hasCliqueOrIndepSetBound_3_10_42_of_3_9_36_degree_window
     omega)
 
 /--
+Degree-window reduction for the sharp low target `R(3,9) <= 36`: with the sharp
+`R(3,8) <= 28` predecessor, the only remaining exact counterexample is an
+`8`-regular residual on `36` vertices.
+-/
+theorem hasCliqueOrIndepSetBound_3_9_36_of_3_8_28_noRegular8
+    (h3_8 : HasCliqueOrIndepSetBound 3 8 28)
+    (hregular :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 36 →
+        (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8) →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 9 t) :
+    HasCliqueOrIndepSetBound 3 9 36 := by
+  have h2_9 : HasCliqueOrIndepSetBound 2 9 9 := by
+    exact hasCliqueOrIndepSetBound_of_ramsey_finset
+      (a := 2) (b := 9) (N := 9) (by decide) (by decide) (by decide)
+  refine HasCliqueOrIndepSetBound.step_of_degree_window
+    (a := 2) (b := 8) (N := 36) (N₁ := 9) (N₂ := 28)
+    (by decide : 0 < 28) h2_9 h3_8 ?_
+  intro α _ G s hcard hdegree
+  exact hregular G s hcard (by
+    intro v
+    have hv := hdegree v
+    omega)
+
+/--
+Local form of the `R(3,9) <= 36` residual: an exact `36`-vertex `8`-regular
+counterexample is triangle-free, so adjacent vertices have no common neighbor.
+-/
+theorem ramseyThreeNineRegular8_residual_constraints
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (_hcard : s.card = 36)
+    (hdegree :
+      ∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (_hnoI9 : ¬ ∃ t ⊆ s, G.IsNIndepSet 9 t) :
+    (∀ v : ↑(s : Set α), (s.filter (fun w => G.Adj (v : α) w)).card = 8) ∧
+      ∀ {u v : α}, u ∈ s → v ∈ s → G.Adj u v →
+        (((s.erase u).erase v).filter (fun w => G.Adj u w ∧ G.Adj v w)).card = 0 := by
+  constructor
+  · intro v
+    rw [← degree_induce_finset_eq_card_filter_adj G s v]
+    exact hdegree v
+  · intro u v hu hv huv
+    let commonNbrs : Finset α := ((s.erase u).erase v).filter fun w => G.Adj u w ∧ G.Adj v w
+    have hnotPos : ¬ 0 < commonNbrs.card := by
+      intro hpos
+      rcases Finset.card_pos.mp hpos with ⟨w, hw⟩
+      have hwCommon := hw
+      rcases Finset.mem_filter.mp hwCommon with ⟨hwErase, hwAdj⟩
+      have hw_s : w ∈ s := (Finset.mem_erase.mp (Finset.mem_erase.mp hwErase).2).2
+      exact hnoK3 ⟨{u, v, w}, ?_, SimpleGraph.is3Clique_triple_iff.mpr ⟨huv, hwAdj.1, hwAdj.2⟩⟩
+      intro x hx
+      rcases Finset.mem_insert.mp hx with rfl | hx
+      · exact hu
+      rcases Finset.mem_insert.mp hx with rfl | hx
+      · exact hv
+      have hxw : x = w := by simpa [Finset.mem_singleton] using hx
+      simpa [hxw] using hw_s
+    simpa [commonNbrs] using Nat.eq_zero_of_not_pos hnotPos
+
+/--
 Concrete local constraints on any exact `42`-vertex degree-window residual for
 `R(3,10)`: degrees are in `{6,7,8,9}`, and every edge has no common neighbor because
 the residual is triangle-free.
@@ -3581,6 +3642,100 @@ theorem ramseyThreeTenDegreeWindow_residual_constraints
       have hxw : x = w := by simpa [Finset.mem_singleton] using hx
       simpa [hxw] using hw_s
     simpa [commonNbrs] using Nat.eq_zero_of_not_pos hnotPos
+
+/--
+In a triangle-free/no-independent-`10` residual, a degree-`9` vertex dominates
+its non-neighbors at distance two: every vertex not adjacent to it has a common
+neighbor with it.  Otherwise that vertex could be added to the independent
+neighborhood of size `9`.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_dominates
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9) :
+    ∀ {x : α}, x ∈ s → ¬ G.Adj (v : α) x →
+      ∃ w ∈ s, G.Adj (v : α) w ∧ G.Adj x w := by
+  classical
+  intro x hx hxv
+  let Nv : Finset α := s.filter fun w => G.Adj (v : α) w
+  have hdeg_eq : (G.induce (s : Set α)).degree v = Nv.card := by
+    simpa [Nv] using degree_induce_finset_eq_card_filter_adj G s v
+  have hNvCard : Nv.card = 9 := by
+    rw [← hdeg_eq]
+    exact hdegv
+  by_contra hcommon
+  have hNvIndep : G.IsNIndepSet 9 Nv := by
+    rw [SimpleGraph.isNIndepSet_iff]
+    constructor
+    · rw [SimpleGraph.isIndepSet_iff]
+      intro a ha b hb hab
+      by_contra habAdj
+      have hva : G.Adj (v : α) a := (Finset.mem_filter.mp ha).2
+      have hvb : G.Adj (v : α) b := (Finset.mem_filter.mp hb).2
+      exact hnoK3 ⟨{(v : α), a, b}, ?_,
+        SimpleGraph.is3Clique_triple_iff.mpr ⟨hva, hvb, habAdj⟩⟩
+      intro y hy
+      rcases Finset.mem_insert.mp hy with rfl | hy
+      · exact v.2
+      rcases Finset.mem_insert.mp hy with rfl | hy
+      · exact (Finset.mem_filter.mp ha).1
+      have hyb : y = b := by simpa [Finset.mem_singleton] using hy
+      simpa [hyb] using (Finset.mem_filter.mp hb).1
+    · exact hNvCard
+  have hNvSub : Nv ⊆ (s.erase x).filter fun w => ¬ G.Adj x w := by
+    intro w hw
+    have hw_s : w ∈ s := (Finset.mem_filter.mp hw).1
+    have hvw : G.Adj (v : α) w := (Finset.mem_filter.mp hw).2
+    have hw_ne_x : w ≠ x := by
+      intro hwx
+      subst x
+      exact hxv hvw
+    have hxw : ¬ G.Adj x w := by
+      intro hxw
+      exact hcommon ⟨w, hw_s, hvw, hxw⟩
+    exact Finset.mem_filter.mpr ⟨Finset.mem_erase.mpr ⟨hw_ne_x, hw_s⟩, hxw⟩
+  have hI10 : G.IsNIndepSet 10 (insert x Nv) := by
+    simpa using
+      (indepInsertOfSubsetFilter_succ (G := G) (a := x) (s := s) (t := Nv)
+        hNvSub hNvIndep)
+  have hInsertSub : insert x Nv ⊆ s := by
+    intro y hy
+    rcases Finset.mem_insert.mp hy with rfl | hyNv
+    · exact hx
+    · exact (Finset.mem_filter.mp hyNv).1
+  exact hnoI10 ⟨insert x Nv, hInsertSub, hI10⟩
+
+/--
+Certificate form of the degree-`9` domination constraint: the `42`-vertex
+degree-window residual is eliminated as soon as a degree-`9` vertex has a
+non-neighbor that is anti-complete to its neighborhood.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_eliminated_of_degree_nine_anticomplete
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcert :
+      ∃ v : ↑(s : Set α),
+        (G.induce (s : Set α)).degree v = 9 ∧
+          ∃ x ∈ s, ¬ G.Adj (v : α) x ∧
+            ∀ w ∈ s, G.Adj (v : α) w → ¬ G.Adj x w) :
+    (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  have hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+    intro hI10
+    exact hdone (Or.inr hI10)
+  rcases hcert with ⟨v, hdegv, x, hx, hxv, hanti⟩
+  rcases ramseyThreeTenDegreeWindow_residual_degree_nine_dominates
+      (G := G) (s := s) (hnoK3 := hnoK3) (hnoI10 := hnoI10) (v := v)
+      hdegv hx hxv with
+    ⟨w, hw, hvw, hxw⟩
+  exact False.elim ((hanti w hw hvw) hxw)
 
 /-- Arithmetic ledger for the `R(3,10) <= 42` degree-window reduction. -/
 theorem ramseyThreeTenDegreeWindow_reduction_gap :
