@@ -12857,6 +12857,21 @@ The uniform-type line is therefore exactly the pure corner/Latin line.  All none
 quotient-regular cross-type atom-pair and are governed by the displayed omitted-coordinate constraints on the
 remaining corner edges.
 
+The scalar shadow of this typed graph is also explicit.  At a fixed atom `G`, ignore the constant
+contributions from `F` edges and look only at the incident corner edges.  If a corner edge omits coordinate
+`i` and has sign `s`, then its contribution to the three vertices of `G` is `3s` at vertex `i` and `2-s` at
+the other two vertices, hence the omitted vertex differs from the other two by `2` modulo `4`.  Therefore:
+
+```text
+deg_F(G)=3:  no corner contribution, so G is cross-flat;
+deg_F(G)=2:  one corner edge; its omitted vertex is the unique exceptional row;
+deg_F(G)=1:  two corner edges with distinct omissions; the third vertex is the unique exceptional row;
+deg_F(G)=0:  three corner edges with all omissions; G is cross-flat, as in the Latin calculation.
+```
+
+In the two middle cases the exceptional row differs from the other two rows by exactly `2` modulo `4`.
+Thus every `F`-containing all-ternary endpoint has a one-exception-per-nonflat-atom scalar profile.
+
 It remains useful to split the pure all-edge minimum by phase.  Fix one parity tetrahedron, say the even
 words.  An edge target `E_i` is specified by the constant value of coordinate `i`; its two labels are the two
 even words with that coordinate value.  For the permutation edge-triangle `E_1,E_2,E_3`, the three label
