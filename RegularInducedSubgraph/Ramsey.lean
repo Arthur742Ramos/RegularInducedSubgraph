@@ -44937,6 +44937,317 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProo
     h.toProofMdTargetRowsHasRegularInducedSubgraphOfCard_ten_40960 H hcard =
       h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard := by
   exact Subsingleton.elim _ _
+
+/--
+Final archive distribution/consumer facade for proof-md handoff users.  It packages the final
+archive/public handoff with the downstream release consumer handle, public distribution facade,
+release/archive citation handles, target-row projections, endpoint residuals, and the
+assumption-backed Ramsey rows that downstream proof-md release notes cite.  The localized
+`R(4,5) <= 27` row remains an explicit carried current-frontier row rather than an unconditional
+endpoint theorem.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  archivePublicHandoffFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v
+  downstreamReleaseConsumerFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade G s v
+  publicDistributionFacade : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v
+  publicReleaseCitation : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v
+  downstreamConsumerCitationBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v
+  finalReleasePublicTargetSurface :
+    RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v
+  finalReleaseConsumerBundle : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  proofMdTargetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  proofMdTargetRowsExact42Projection : HasCliqueOrIndepSetBound 3 10 42
+  archiveLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  publicDistributionLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  publicReleaseCitationLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  downstreamConsumerCitationLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  proofMdTargetRowsPropagatedR1010Projection : HasCliqueOrIndepSetBound 10 10 39246
+  publicDistributionPropagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  proofMdTargetRowsAdmissibleTenAt40960Projection : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+  proofMdTargetRowsExtremalF40960Projection : 10 ≤ F 40960
+  regularInducedSubgraphConsumer :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  proofMdTargetRowsRegularTenAt40960Projection :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  publicDistributionRegularTenAt40960Row :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Archive/public handoff facades materialize the final archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalArchiveDistributionConsumerFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v := by
+  let hp := h.toProofMdFinalPublicDistributionFacade
+  exact
+    { archivePublicHandoffFacade := h
+      downstreamReleaseConsumerFacade := h.toProofMdFinalDownstreamReleaseConsumerFacade
+      publicDistributionFacade := hp
+      publicReleaseCitation := h.toProofMdPublicReleaseCitation
+      downstreamConsumerCitationBundle := h.toProofMdFinalConsumerCitationBundle
+      finalReleasePublicTargetSurface := h.toProofMdFinalReleasePublicTargetSurface
+      finalReleaseConsumerBundle := h.toProofMdFinalReleaseConsumerBundle
+      targetRows := h.toCurrentFrontierTargetRows
+      proofMdTargetRows := h.toProofMdTargetRows
+      remainingAssumptionRows := h.toRemainingAssumptionRows
+      endpointResiduals := h.toEndpointResiduals
+      r45TwentySevenTable := h.toR45TwentySevenTable
+      proofMdTargetRowsExact42Projection := h.toProofMdTargetRowsThreeTenFortyTwo
+      archiveLocalizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      publicDistributionLocalizedR45Row :=
+        h.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven
+      publicReleaseCitationLocalizedR45Row :=
+        h.toPublicReleaseCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+      downstreamConsumerCitationLocalizedR45Row :=
+        h.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+      propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+      proofMdTargetRowsPropagatedR1010Projection :=
+        h.toProofMdTargetRowsHasCliqueOrIndepSetBound_10_10_39246
+      publicDistributionPropagatedR1010Row := hp.toHasCliqueOrIndepSetBound_10_10_39246
+      admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+      proofMdTargetRowsAdmissibleTenAt40960Projection :=
+        h.toProofMdTargetRowsTenMemAdmissibleBounds_40960
+      extremalF40960Row := h.toTenLeF_40960
+      proofMdTargetRowsExtremalF40960Projection := h.toProofMdTargetRowsTenLeF_40960
+      regularInducedSubgraphConsumer := fun H hcard =>
+        h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+      proofMdTargetRowsRegularTenAt40960Projection := fun H hcard =>
+        h.toProofMdTargetRowsHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+      publicDistributionRegularTenAt40960Row := fun H hcard =>
+        hp.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard }
+
+/-- Final downstream/release facades materialize the archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalArchiveDistributionConsumerFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v :=
+  h.toProofMdFinalArchivePublicHandoffFacade.toProofMdFinalArchiveDistributionConsumerFacade
+
+/-- Public-release citations materialize the archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalArchiveDistributionConsumerFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v :=
+  h.toProofMdFinalArchivePublicHandoffFacade.toProofMdFinalArchiveDistributionConsumerFacade
+
+/-- Final consumer citation bundles materialize the archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toProofMdFinalArchiveDistributionConsumerFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v :=
+  h.toProofMdPublicReleaseCitation.toProofMdFinalArchiveDistributionConsumerFacade
+
+/-- Select the archive/public handoff from the archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toProofMdFinalArchivePublicHandoffFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v :=
+  h.archivePublicHandoffFacade
+
+/-- Select the public distribution facade from the archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toProofMdFinalPublicDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v :=
+  h.publicDistributionFacade
+
+/-- Select the final consumer citation bundle from the archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toProofMdFinalConsumerCitationBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v :=
+  h.downstreamConsumerCitationBundle
+
+/-- Select target rows from the archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select proof-md target rows from the archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toProofMdTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.proofMdTargetRows
+
+/-- Select remaining-assumption rows from the archive distribution/consumer facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Archive distribution/consumer route to the carried localized R45 row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.archiveLocalizedR45Row
+
+/-- Archive distribution/consumer route to the public-distribution localized R45 row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.publicDistributionLocalizedR45Row
+
+/-- Archive distribution/consumer route to the downstream consumer citation localized R45 row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.downstreamConsumerCitationLocalizedR45Row
+
+/-- Archive distribution/consumer route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Archive distribution/consumer route to the public-distribution propagated `R(10,10)` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toPublicDistributionHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.publicDistributionPropagatedR1010Row
+
+/-- Archive distribution/consumer route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Archive distribution/consumer route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Archive distribution/consumer route to the regular induced `10`-subgraph consumer theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularInducedSubgraphConsumer H hcard
+
+/-- Archive distribution/consumer route to the public-distribution regular induced consumer theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toPublicDistributionHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.publicDistributionRegularTenAt40960Row H hcard
+
+/-- Archive distribution/consumer facades round-trip through archive/public handoffs. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toProofMdFinalArchivePublicHandoffFacade_toProofMdFinalArchiveDistributionConsumerFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    h.toProofMdFinalArchivePublicHandoffFacade.toProofMdFinalArchiveDistributionConsumerFacade = h := by
+  exact Subsingleton.elim _ _
+
+/-- Archive distribution/consumer facades normalize target rows with proof-md target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toCurrentFrontierTargetRows_toProofMdTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    h.toCurrentFrontierTargetRows = h.toProofMdTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Archive distribution/consumer facades normalize proof-md target rows with remaining assumptions. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toProofMdTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    h.toProofMdTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Archive distribution/consumer facades normalize public-distribution R45 with the facade row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    h.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive distribution/consumer facades normalize downstream-consumer citation R45 with the facade row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    h.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive distribution/consumer facades normalize public-distribution R1010 with the facade row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toPublicDistributionHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v) :
+    h.toPublicDistributionHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/-- Archive distribution/consumer facades normalize public-distribution regular induced consumers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade.toPublicDistributionHasRegularInducedSubgraphOfCard_ten_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchiveDistributionConsumerFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    h.toPublicDistributionHasRegularInducedSubgraphOfCard_ten_40960 H hcard =
+      h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
