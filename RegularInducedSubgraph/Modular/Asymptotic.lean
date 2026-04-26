@@ -37966,6 +37966,1476 @@ theorem FirstBitTerminalTypedFGraphBranchPublicAPI.typedFGraphBranchMarkerBundle
 
 end FirstBitTerminalTypedFGraphBranchPublicAPI
 
+
+/-- Local-host discharge cases at the four-exception residual/binary frontier. -/
+inductive FirstBitTerminalFourExceptionLocalHostDischargeKind : Type
+  | twoException
+  | threeException
+
+/-- Exhaust the two local-host discharge cases. -/
+theorem firstBitTerminalFourExceptionLocalHostDischargeKind_cases
+    (kind : FirstBitTerminalFourExceptionLocalHostDischargeKind) :
+    kind = .twoException ∨ kind = .threeException := by
+  cases kind with
+  | twoException => exact Or.inl rfl
+  | threeException => exact Or.inr rfl
+
+/-- The two sides of a four-exception `2/2` skeleton. -/
+inductive FirstBitTerminalFourExceptionTwoTwoSkeletonSide : Type
+  | leftPair
+  | rightPair
+
+/-- Exhaust the two sides of a four-exception `2/2` skeleton. -/
+theorem firstBitTerminalFourExceptionTwoTwoSkeletonSide_cases
+    (side : FirstBitTerminalFourExceptionTwoTwoSkeletonSide) :
+    side = .leftPair ∨ side = .rightPair := by
+  cases side with
+  | leftPair => exact Or.inl rfl
+  | rightPair => exact Or.inr rfl
+
+/-- Balanced dyadic compensator patterns used by the residual/binary normalization layer. -/
+inductive FirstBitTerminalBalancedDyadicCompensatorPattern : Type
+  | pattern0101
+  | pattern0011
+
+/-- Exhaust the balanced `0101/0011` compensator patterns. -/
+theorem firstBitTerminalBalancedDyadicCompensatorPattern_cases
+    (pattern : FirstBitTerminalBalancedDyadicCompensatorPattern) :
+    pattern = .pattern0101 ∨ pattern = .pattern0011 := by
+  cases pattern with
+  | pattern0101 => exact Or.inl rfl
+  | pattern0011 => exact Or.inr rfl
+
+/-- Shortened-pair-hit dyadic outcomes: q=2 folds back, q=3 pays an extra rebate. -/
+inductive FirstBitTerminalShortenedPairHitDyadicFoldbackOutcome : Type
+  | q2Foldback
+  | q3ExtraRebate
+
+/-- Exhaust the shortened-pair-hit q=2/q=3 foldback alternatives. -/
+theorem firstBitTerminalShortenedPairHitDyadicFoldbackOutcome_cases
+    (outcome : FirstBitTerminalShortenedPairHitDyadicFoldbackOutcome) :
+    outcome = .q2Foldback ∨ outcome = .q3ExtraRebate := by
+  cases outcome with
+  | q2Foldback => exact Or.inl rfl
+  | q3ExtraRebate => exact Or.inr rfl
+
+/-- Boolean second-difference equation for a one-corner square, recorded modulo four. -/
+def FirstBitTerminalBooleanSecondDifferenceOneCornerSquareEquation
+    (x00 x01 x10 x11 cornerCorrection : ℕ) : Prop :=
+  firstBitIntModFourEq
+    ((((x00 : ℤ) - (x01 : ℤ)) - (x10 : ℤ)) + (x11 : ℤ))
+    (cornerCorrection : ℤ)
+
+/-- Exact equality implies the one-corner Boolean second-difference congruence. -/
+theorem firstBitTerminalBooleanSecondDifferenceOneCornerSquareEquation_of_eq
+    {x00 x01 x10 x11 cornerCorrection : ℕ}
+    (h : (((x00 : ℤ) - (x01 : ℤ)) - (x10 : ℤ)) + (x11 : ℤ) =
+      (cornerCorrection : ℤ)) :
+    FirstBitTerminalBooleanSecondDifferenceOneCornerSquareEquation
+      x00 x01 x10 x11 cornerCorrection :=
+  firstBitIntModFourEq_of_eq h
+
+/-- Affine cross-table equation for the residual/binary four-exception layer. -/
+def FirstBitTerminalFourExceptionAffineCrossTableEquation
+    (base rowCoeff columnCoeff crossCoeff value : ℕ) : Prop :=
+  firstBitIntModFourEq
+    ((((base : ℤ) + (rowCoeff : ℤ)) + (columnCoeff : ℤ)) + (crossCoeff : ℤ))
+    (value : ℤ)
+
+/-- Exact equality implies the affine cross-table congruence. -/
+theorem firstBitTerminalFourExceptionAffineCrossTableEquation_of_eq
+    {base rowCoeff columnCoeff crossCoeff value : ℕ}
+    (h : (((base : ℤ) + (rowCoeff : ℤ)) + (columnCoeff : ℤ)) +
+      (crossCoeff : ℤ) = (value : ℤ)) :
+    FirstBitTerminalFourExceptionAffineCrossTableEquation
+      base rowCoeff columnCoeff crossCoeff value :=
+  firstBitIntModFourEq_of_eq h
+
+/-- Balanced `0101/0011` compensator equation, recorded as a signed dyadic correction. -/
+def FirstBitTerminalBalancedDyadicCompensatorEquation
+    (pattern0101Scalar pattern0011Scalar compensatorScalar : ℕ) : Prop :=
+  firstBitIntModFourEq
+    ((pattern0101Scalar : ℤ) - (pattern0011Scalar : ℤ))
+    (compensatorScalar : ℤ)
+
+/-- Exact equality implies the balanced compensator congruence. -/
+theorem firstBitTerminalBalancedDyadicCompensatorEquation_of_eq
+    {pattern0101Scalar pattern0011Scalar compensatorScalar : ℕ}
+    (h : (pattern0101Scalar : ℤ) - (pattern0011Scalar : ℤ) =
+      (compensatorScalar : ℤ)) :
+    FirstBitTerminalBalancedDyadicCompensatorEquation
+      pattern0101Scalar pattern0011Scalar compensatorScalar :=
+  firstBitIntModFourEq_of_eq h
+
+/--
+Four-exception signed-degree foldback is the signed-quotient scalar closure equation already exposed by
+that public frontier.
+-/
+def FirstBitTerminalFourExceptionSignedDegreeQuotientClosureEquation
+    (rG SG quotientScalar closureScalar : ℕ) : Prop :=
+  FirstBitTerminalSignedQuotientScalarClosureEquation rG SG quotientScalar closureScalar
+
+/-- Reuse the existing signed-quotient scalar closure equation as the foldback equation. -/
+theorem firstBitTerminalFourExceptionSignedDegreeQuotientClosureEquation_of_signedQuotient
+    {rG SG quotientScalar closureScalar : ℕ}
+    (h : FirstBitTerminalSignedQuotientScalarClosureEquation
+      rG SG quotientScalar closureScalar) :
+    FirstBitTerminalFourExceptionSignedDegreeQuotientClosureEquation
+      rG SG quotientScalar closureScalar :=
+  h
+
+/--
+Two- and three-exception local-host discharge facade.  It records the host-side cardinality checks,
+the discharge output, and the residual binary normalization marker.
+-/
+structure FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade
+    {Core Host Exception : Type*}
+    (hosts : Core → Finset Host)
+    (exceptionsOf : Core → Host → Finset Exception)
+    (dischargeKind : Core → Host → FirstBitTerminalFourExceptionLocalHostDischargeKind)
+    (twoExceptionHost threeExceptionHost dischargedHost binaryNormalizedHost : Core → Host → Prop)
+    (twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      localHostResidualBinaryNormalization : Prop) : Prop where
+  twoExceptionHost_memCert :
+    ∀ core : Core, ∀ host : Host, twoExceptionHost core host → host ∈ hosts core
+  threeExceptionHost_memCert :
+    ∀ core : Core, ∀ host : Host, threeExceptionHost core host → host ∈ hosts core
+  twoException_cardCert :
+    ∀ core : Core, ∀ host : Host, twoExceptionHost core host →
+      (exceptionsOf core host).card = 2
+  threeException_cardCert :
+    ∀ core : Core, ∀ host : Host, threeExceptionHost core host →
+      (exceptionsOf core host).card = 3
+  twoException_kindCert :
+    ∀ core : Core, ∀ host : Host, twoExceptionHost core host →
+      dischargeKind core host = .twoException
+  threeException_kindCert :
+    ∀ core : Core, ∀ host : Host, threeExceptionHost core host →
+      dischargeKind core host = .threeException
+  discharged_of_twoExceptionCert :
+    ∀ core : Core, ∀ host : Host, twoExceptionHost core host → dischargedHost core host
+  discharged_of_threeExceptionCert :
+    ∀ core : Core, ∀ host : Host, threeExceptionHost core host → dischargedHost core host
+  normalized_of_dischargedCert :
+    ∀ core : Core, ∀ host : Host, dischargedHost core host → binaryNormalizedHost core host
+  twoExceptionLocalHostDischargeCert : twoExceptionLocalHostDischarge
+  threeExceptionLocalHostDischargeCert : threeExceptionLocalHostDischarge
+  localHostResidualBinaryNormalizationCert : localHostResidualBinaryNormalization
+
+/-- Build the two/three-exception local-host discharge facade from explicit certificates. -/
+theorem firstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade_of_parts
+    {Core Host Exception : Type*}
+    {hosts : Core → Finset Host}
+    {exceptionsOf : Core → Host → Finset Exception}
+    {dischargeKind : Core → Host → FirstBitTerminalFourExceptionLocalHostDischargeKind}
+    {twoExceptionHost threeExceptionHost dischargedHost binaryNormalizedHost : Core → Host → Prop}
+    {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      localHostResidualBinaryNormalization : Prop}
+    (htwoMem : ∀ core : Core, ∀ host : Host, twoExceptionHost core host → host ∈ hosts core)
+    (hthreeMem : ∀ core : Core, ∀ host : Host, threeExceptionHost core host → host ∈ hosts core)
+    (htwoCard : ∀ core : Core, ∀ host : Host, twoExceptionHost core host →
+      (exceptionsOf core host).card = 2)
+    (hthreeCard : ∀ core : Core, ∀ host : Host, threeExceptionHost core host →
+      (exceptionsOf core host).card = 3)
+    (htwoKind : ∀ core : Core, ∀ host : Host, twoExceptionHost core host →
+      dischargeKind core host = .twoException)
+    (hthreeKind : ∀ core : Core, ∀ host : Host, threeExceptionHost core host →
+      dischargeKind core host = .threeException)
+    (htwoDischarge : ∀ core : Core, ∀ host : Host,
+      twoExceptionHost core host → dischargedHost core host)
+    (hthreeDischarge : ∀ core : Core, ∀ host : Host,
+      threeExceptionHost core host → dischargedHost core host)
+    (hnormalized : ∀ core : Core, ∀ host : Host,
+      dischargedHost core host → binaryNormalizedHost core host)
+    (htwoMarker : twoExceptionLocalHostDischarge)
+    (hthreeMarker : threeExceptionLocalHostDischarge)
+    (hnormalizationMarker : localHostResidualBinaryNormalization) :
+    FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade hosts exceptionsOf
+      dischargeKind twoExceptionHost threeExceptionHost dischargedHost binaryNormalizedHost
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      localHostResidualBinaryNormalization where
+  twoExceptionHost_memCert := htwoMem
+  threeExceptionHost_memCert := hthreeMem
+  twoException_cardCert := htwoCard
+  threeException_cardCert := hthreeCard
+  twoException_kindCert := htwoKind
+  threeException_kindCert := hthreeKind
+  discharged_of_twoExceptionCert := htwoDischarge
+  discharged_of_threeExceptionCert := hthreeDischarge
+  normalized_of_dischargedCert := hnormalized
+  twoExceptionLocalHostDischargeCert := htwoMarker
+  threeExceptionLocalHostDischargeCert := hthreeMarker
+  localHostResidualBinaryNormalizationCert := hnormalizationMarker
+
+section FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade
+
+variable {Core Host Exception : Type*}
+variable {hosts : Core → Finset Host}
+variable {exceptionsOf : Core → Host → Finset Exception}
+variable {dischargeKind : Core → Host → FirstBitTerminalFourExceptionLocalHostDischargeKind}
+variable {twoExceptionHost threeExceptionHost dischargedHost binaryNormalizedHost : Core → Host → Prop}
+variable {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+  localHostResidualBinaryNormalization : Prop}
+
+variable (h :
+  FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade hosts exceptionsOf dischargeKind
+    twoExceptionHost threeExceptionHost dischargedHost binaryNormalizedHost
+    twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+    localHostResidualBinaryNormalization)
+
+/-- Project the two-exception local host cardinality. -/
+theorem FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade.twoException_card
+    {core : Core} {host : Host} (htwo : twoExceptionHost core host) :
+    (exceptionsOf core host).card = 2 :=
+  h.twoException_cardCert core host htwo
+
+/-- Project the three-exception local host cardinality. -/
+theorem FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade.threeException_card
+    {core : Core} {host : Host} (hthree : threeExceptionHost core host) :
+    (exceptionsOf core host).card = 3 :=
+  h.threeException_cardCert core host hthree
+
+/-- Project discharge for a two-exception local host. -/
+theorem FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade.discharged_of_twoException
+    {core : Core} {host : Host} (htwo : twoExceptionHost core host) :
+    dischargedHost core host :=
+  h.discharged_of_twoExceptionCert core host htwo
+
+/-- Project discharge for a three-exception local host. -/
+theorem FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade.discharged_of_threeException
+    {core : Core} {host : Host} (hthree : threeExceptionHost core host) :
+    dischargedHost core host :=
+  h.discharged_of_threeExceptionCert core host hthree
+
+/-- Project residual binary normalization after local-host discharge. -/
+theorem FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade.normalized_of_discharged
+    {core : Core} {host : Host} (hdischarged : dischargedHost core host) :
+    binaryNormalizedHost core host :=
+  h.normalized_of_dischargedCert core host hdischarged
+
+/-- Project the two-exception local-host discharge marker. -/
+theorem FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade.to_twoExceptionLocalHostDischarge :
+    twoExceptionLocalHostDischarge :=
+  h.twoExceptionLocalHostDischargeCert
+
+/-- Project the three-exception local-host discharge marker. -/
+theorem FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade.to_threeExceptionLocalHostDischarge :
+    threeExceptionLocalHostDischarge :=
+  h.threeExceptionLocalHostDischargeCert
+
+/-- Project the residual binary normalization marker. -/
+theorem FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade.to_localHostResidualBinaryNormalization :
+    localHostResidualBinaryNormalization :=
+  h.localHostResidualBinaryNormalizationCert
+
+end FirstBitTerminalFourExceptionTwoThreeLocalHostDischargeFacade
+
+/-- Four-exception `2/2` skeleton facade. -/
+structure FirstBitTerminalFourExceptionTwoTwoSkeletonFacade
+    {Core Host Exception : Type*}
+    (hosts : Core → Finset Host)
+    (leftExceptions rightExceptions : Core → Host → Finset Exception)
+    (twoTwoSkeleton leftPairClosed rightPairClosed skeletonBalanced : Core → Host → Prop)
+    (fourExceptionTwoTwoSkeletons leftRightPairClosure balancedTwoTwoSkeletons : Prop) : Prop where
+  skeleton_host_memCert :
+    ∀ core : Core, ∀ host : Host, twoTwoSkeleton core host → host ∈ hosts core
+  left_card_eq_twoCert :
+    ∀ core : Core, ∀ host : Host, twoTwoSkeleton core host →
+      (leftExceptions core host).card = 2
+  right_card_eq_twoCert :
+    ∀ core : Core, ∀ host : Host, twoTwoSkeleton core host →
+      (rightExceptions core host).card = 2
+  leftPairClosed_of_skeletonCert :
+    ∀ core : Core, ∀ host : Host, twoTwoSkeleton core host → leftPairClosed core host
+  rightPairClosed_of_skeletonCert :
+    ∀ core : Core, ∀ host : Host, twoTwoSkeleton core host → rightPairClosed core host
+  balanced_of_skeletonCert :
+    ∀ core : Core, ∀ host : Host, twoTwoSkeleton core host → skeletonBalanced core host
+  fourExceptionTwoTwoSkeletonsCert : fourExceptionTwoTwoSkeletons
+  leftRightPairClosureCert : leftRightPairClosure
+  balancedTwoTwoSkeletonsCert : balancedTwoTwoSkeletons
+
+/-- Build a four-exception `2/2` skeleton facade from explicit certificates. -/
+theorem firstBitTerminalFourExceptionTwoTwoSkeletonFacade_of_parts
+    {Core Host Exception : Type*}
+    {hosts : Core → Finset Host}
+    {leftExceptions rightExceptions : Core → Host → Finset Exception}
+    {twoTwoSkeleton leftPairClosed rightPairClosed skeletonBalanced : Core → Host → Prop}
+    {fourExceptionTwoTwoSkeletons leftRightPairClosure balancedTwoTwoSkeletons : Prop}
+    (hmem : ∀ core : Core, ∀ host : Host, twoTwoSkeleton core host → host ∈ hosts core)
+    (hleftCard : ∀ core : Core, ∀ host : Host, twoTwoSkeleton core host →
+      (leftExceptions core host).card = 2)
+    (hrightCard : ∀ core : Core, ∀ host : Host, twoTwoSkeleton core host →
+      (rightExceptions core host).card = 2)
+    (hleftClosed : ∀ core : Core, ∀ host : Host,
+      twoTwoSkeleton core host → leftPairClosed core host)
+    (hrightClosed : ∀ core : Core, ∀ host : Host,
+      twoTwoSkeleton core host → rightPairClosed core host)
+    (hbalanced : ∀ core : Core, ∀ host : Host,
+      twoTwoSkeleton core host → skeletonBalanced core host)
+    (hskeletons : fourExceptionTwoTwoSkeletons)
+    (hclosure : leftRightPairClosure)
+    (hbalancedMarker : balancedTwoTwoSkeletons) :
+    FirstBitTerminalFourExceptionTwoTwoSkeletonFacade hosts leftExceptions rightExceptions
+      twoTwoSkeleton leftPairClosed rightPairClosed skeletonBalanced fourExceptionTwoTwoSkeletons
+      leftRightPairClosure balancedTwoTwoSkeletons where
+  skeleton_host_memCert := hmem
+  left_card_eq_twoCert := hleftCard
+  right_card_eq_twoCert := hrightCard
+  leftPairClosed_of_skeletonCert := hleftClosed
+  rightPairClosed_of_skeletonCert := hrightClosed
+  balanced_of_skeletonCert := hbalanced
+  fourExceptionTwoTwoSkeletonsCert := hskeletons
+  leftRightPairClosureCert := hclosure
+  balancedTwoTwoSkeletonsCert := hbalancedMarker
+
+section FirstBitTerminalFourExceptionTwoTwoSkeletonFacade
+
+variable {Core Host Exception : Type*}
+variable {hosts : Core → Finset Host}
+variable {leftExceptions rightExceptions : Core → Host → Finset Exception}
+variable {twoTwoSkeleton leftPairClosed rightPairClosed skeletonBalanced : Core → Host → Prop}
+variable {fourExceptionTwoTwoSkeletons leftRightPairClosure balancedTwoTwoSkeletons : Prop}
+
+variable (h :
+  FirstBitTerminalFourExceptionTwoTwoSkeletonFacade hosts leftExceptions rightExceptions
+    twoTwoSkeleton leftPairClosed rightPairClosed skeletonBalanced fourExceptionTwoTwoSkeletons
+    leftRightPairClosure balancedTwoTwoSkeletons)
+
+/-- Project the left `2` side of a `2/2` skeleton. -/
+theorem FirstBitTerminalFourExceptionTwoTwoSkeletonFacade.left_card_eq_two
+    {core : Core} {host : Host} (hskeleton : twoTwoSkeleton core host) :
+    (leftExceptions core host).card = 2 :=
+  h.left_card_eq_twoCert core host hskeleton
+
+/-- Project the right `2` side of a `2/2` skeleton. -/
+theorem FirstBitTerminalFourExceptionTwoTwoSkeletonFacade.right_card_eq_two
+    {core : Core} {host : Host} (hskeleton : twoTwoSkeleton core host) :
+    (rightExceptions core host).card = 2 :=
+  h.right_card_eq_twoCert core host hskeleton
+
+/-- Project closure of the left pair in a `2/2` skeleton. -/
+theorem FirstBitTerminalFourExceptionTwoTwoSkeletonFacade.leftPairClosed_of_skeleton
+    {core : Core} {host : Host} (hskeleton : twoTwoSkeleton core host) :
+    leftPairClosed core host :=
+  h.leftPairClosed_of_skeletonCert core host hskeleton
+
+/-- Project closure of the right pair in a `2/2` skeleton. -/
+theorem FirstBitTerminalFourExceptionTwoTwoSkeletonFacade.rightPairClosed_of_skeleton
+    {core : Core} {host : Host} (hskeleton : twoTwoSkeleton core host) :
+    rightPairClosed core host :=
+  h.rightPairClosed_of_skeletonCert core host hskeleton
+
+/-- Project the balanced `2/2` skeleton output. -/
+theorem FirstBitTerminalFourExceptionTwoTwoSkeletonFacade.balanced_of_skeleton
+    {core : Core} {host : Host} (hskeleton : twoTwoSkeleton core host) :
+    skeletonBalanced core host :=
+  h.balanced_of_skeletonCert core host hskeleton
+
+/-- Project the four-exception `2/2` skeleton marker. -/
+theorem FirstBitTerminalFourExceptionTwoTwoSkeletonFacade.to_fourExceptionTwoTwoSkeletons :
+    fourExceptionTwoTwoSkeletons :=
+  h.fourExceptionTwoTwoSkeletonsCert
+
+/-- Project the left/right pair closure marker. -/
+theorem FirstBitTerminalFourExceptionTwoTwoSkeletonFacade.to_leftRightPairClosure :
+    leftRightPairClosure :=
+  h.leftRightPairClosureCert
+
+/-- Project the balanced `2/2` skeleton marker. -/
+theorem FirstBitTerminalFourExceptionTwoTwoSkeletonFacade.to_balancedTwoTwoSkeletons :
+    balancedTwoTwoSkeletons :=
+  h.balancedTwoTwoSkeletonsCert
+
+end FirstBitTerminalFourExceptionTwoTwoSkeletonFacade
+
+/-- Boolean second-difference one-corner square facade. -/
+structure FirstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade
+    {Core Square Corner : Type*}
+    (squares : Core → Finset Square)
+    (corners : Core → Square → Finset Corner)
+    (activeCorner : Core → Square → Corner)
+    (x00 x01 x10 x11 cornerCorrection : Core → Square → ℕ)
+    (oneCornerSquare squareClosed : Core → Square → Prop)
+    (booleanSecondDifferenceOneCornerSquares oneCornerSquareClosure : Prop) : Prop where
+  square_memCert :
+    ∀ core : Core, ∀ square : Square, oneCornerSquare core square → square ∈ squares core
+  activeCorner_memCert :
+    ∀ core : Core, ∀ square : Square, oneCornerSquare core square →
+      activeCorner core square ∈ corners core square
+  secondDifference_equationCert :
+    ∀ core : Core, ∀ square : Square, oneCornerSquare core square →
+      FirstBitTerminalBooleanSecondDifferenceOneCornerSquareEquation
+        (x00 core square) (x01 core square) (x10 core square) (x11 core square)
+        (cornerCorrection core square)
+  squareClosed_of_oneCornerCert :
+    ∀ core : Core, ∀ square : Square, oneCornerSquare core square → squareClosed core square
+  booleanSecondDifferenceOneCornerSquaresCert : booleanSecondDifferenceOneCornerSquares
+  oneCornerSquareClosureCert : oneCornerSquareClosure
+
+/-- Build the Boolean second-difference one-corner square facade from explicit certificates. -/
+theorem firstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade_of_parts
+    {Core Square Corner : Type*}
+    {squares : Core → Finset Square}
+    {corners : Core → Square → Finset Corner}
+    {activeCorner : Core → Square → Corner}
+    {x00 x01 x10 x11 cornerCorrection : Core → Square → ℕ}
+    {oneCornerSquare squareClosed : Core → Square → Prop}
+    {booleanSecondDifferenceOneCornerSquares oneCornerSquareClosure : Prop}
+    (hmem : ∀ core : Core, ∀ square : Square,
+      oneCornerSquare core square → square ∈ squares core)
+    (hcorner : ∀ core : Core, ∀ square : Square,
+      oneCornerSquare core square → activeCorner core square ∈ corners core square)
+    (heq : ∀ core : Core, ∀ square : Square, oneCornerSquare core square →
+      FirstBitTerminalBooleanSecondDifferenceOneCornerSquareEquation
+        (x00 core square) (x01 core square) (x10 core square) (x11 core square)
+        (cornerCorrection core square))
+    (hclosed : ∀ core : Core, ∀ square : Square,
+      oneCornerSquare core square → squareClosed core square)
+    (hmarker : booleanSecondDifferenceOneCornerSquares)
+    (hclosure : oneCornerSquareClosure) :
+    FirstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade squares corners activeCorner
+      x00 x01 x10 x11 cornerCorrection oneCornerSquare squareClosed
+      booleanSecondDifferenceOneCornerSquares oneCornerSquareClosure where
+  square_memCert := hmem
+  activeCorner_memCert := hcorner
+  secondDifference_equationCert := heq
+  squareClosed_of_oneCornerCert := hclosed
+  booleanSecondDifferenceOneCornerSquaresCert := hmarker
+  oneCornerSquareClosureCert := hclosure
+
+section FirstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade
+
+variable {Core Square Corner : Type*}
+variable {squares : Core → Finset Square}
+variable {corners : Core → Square → Finset Corner}
+variable {activeCorner : Core → Square → Corner}
+variable {x00 x01 x10 x11 cornerCorrection : Core → Square → ℕ}
+variable {oneCornerSquare squareClosed : Core → Square → Prop}
+variable {booleanSecondDifferenceOneCornerSquares oneCornerSquareClosure : Prop}
+
+variable (h :
+  FirstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade squares corners activeCorner x00 x01
+    x10 x11 cornerCorrection oneCornerSquare squareClosed
+    booleanSecondDifferenceOneCornerSquares oneCornerSquareClosure)
+
+/-- Project the one-corner Boolean second-difference equation. -/
+theorem FirstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade.secondDifference_equation
+    {core : Core} {square : Square} (hone : oneCornerSquare core square) :
+    FirstBitTerminalBooleanSecondDifferenceOneCornerSquareEquation
+      (x00 core square) (x01 core square) (x10 core square) (x11 core square)
+      (cornerCorrection core square) :=
+  h.secondDifference_equationCert core square hone
+
+/-- Project closure of a one-corner square. -/
+theorem FirstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade.squareClosed_of_oneCorner
+    {core : Core} {square : Square} (hone : oneCornerSquare core square) :
+    squareClosed core square :=
+  h.squareClosed_of_oneCornerCert core square hone
+
+/-- Project the Boolean second-difference frontier marker. -/
+theorem FirstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade.to_booleanSecondDifferenceOneCornerSquares :
+    booleanSecondDifferenceOneCornerSquares :=
+  h.booleanSecondDifferenceOneCornerSquaresCert
+
+/-- Project the one-corner square closure marker. -/
+theorem FirstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade.to_oneCornerSquareClosure :
+    oneCornerSquareClosure :=
+  h.oneCornerSquareClosureCert
+
+end FirstBitTerminalBooleanSecondDifferenceOneCornerSquareFacade
+
+/-- Affine cross-table facade for row/column residual normalization. -/
+structure FirstBitTerminalFourExceptionAffineCrossTableFacade
+    {Core Row Column : Type*}
+    (rows : Core → Finset Row)
+    (columns : Core → Finset Column)
+    (base rowCoeff columnCoeff crossCoeff value : Core → Row → Column → ℕ)
+    (affineCell crossCellClosed rowAffineNormalized columnAffineNormalized :
+      Core → Row → Column → Prop)
+    (affineCrossTables affineCrossTableClosure : Prop) : Prop where
+  row_mem_of_affineCellCert :
+    ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → row ∈ rows core
+  column_mem_of_affineCellCert :
+    ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → column ∈ columns core
+  affineCross_equationCert :
+    ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column →
+        FirstBitTerminalFourExceptionAffineCrossTableEquation
+          (base core row column) (rowCoeff core row column) (columnCoeff core row column)
+          (crossCoeff core row column) (value core row column)
+  rowAffineNormalized_of_cellCert :
+    ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → rowAffineNormalized core row column
+  columnAffineNormalized_of_cellCert :
+    ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → columnAffineNormalized core row column
+  crossCellClosed_of_affineCellCert :
+    ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → crossCellClosed core row column
+  affineCrossTablesCert : affineCrossTables
+  affineCrossTableClosureCert : affineCrossTableClosure
+
+/-- Build the affine cross-table facade from explicit certificates. -/
+theorem firstBitTerminalFourExceptionAffineCrossTableFacade_of_parts
+    {Core Row Column : Type*}
+    {rows : Core → Finset Row}
+    {columns : Core → Finset Column}
+    {base rowCoeff columnCoeff crossCoeff value : Core → Row → Column → ℕ}
+    {affineCell crossCellClosed rowAffineNormalized columnAffineNormalized :
+      Core → Row → Column → Prop}
+    {affineCrossTables affineCrossTableClosure : Prop}
+    (hrow : ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → row ∈ rows core)
+    (hcolumn : ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → column ∈ columns core)
+    (heq : ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column →
+        FirstBitTerminalFourExceptionAffineCrossTableEquation
+          (base core row column) (rowCoeff core row column) (columnCoeff core row column)
+          (crossCoeff core row column) (value core row column))
+    (hrowNorm : ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → rowAffineNormalized core row column)
+    (hcolumnNorm : ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → columnAffineNormalized core row column)
+    (hclosed : ∀ core : Core, ∀ row : Row, ∀ column : Column,
+      affineCell core row column → crossCellClosed core row column)
+    (hmarker : affineCrossTables)
+    (hclosure : affineCrossTableClosure) :
+    FirstBitTerminalFourExceptionAffineCrossTableFacade rows columns base rowCoeff columnCoeff
+      crossCoeff value affineCell crossCellClosed rowAffineNormalized columnAffineNormalized
+      affineCrossTables affineCrossTableClosure where
+  row_mem_of_affineCellCert := hrow
+  column_mem_of_affineCellCert := hcolumn
+  affineCross_equationCert := heq
+  rowAffineNormalized_of_cellCert := hrowNorm
+  columnAffineNormalized_of_cellCert := hcolumnNorm
+  crossCellClosed_of_affineCellCert := hclosed
+  affineCrossTablesCert := hmarker
+  affineCrossTableClosureCert := hclosure
+
+section FirstBitTerminalFourExceptionAffineCrossTableFacade
+
+variable {Core Row Column : Type*}
+variable {rows : Core → Finset Row}
+variable {columns : Core → Finset Column}
+variable {base rowCoeff columnCoeff crossCoeff value : Core → Row → Column → ℕ}
+variable {affineCell crossCellClosed rowAffineNormalized columnAffineNormalized :
+  Core → Row → Column → Prop}
+variable {affineCrossTables affineCrossTableClosure : Prop}
+
+variable (h :
+  FirstBitTerminalFourExceptionAffineCrossTableFacade rows columns base rowCoeff columnCoeff
+    crossCoeff value affineCell crossCellClosed rowAffineNormalized columnAffineNormalized
+    affineCrossTables affineCrossTableClosure)
+
+/-- Project the affine cross-table equation for an active cell. -/
+theorem FirstBitTerminalFourExceptionAffineCrossTableFacade.affineCross_equation
+    {core : Core} {row : Row} {column : Column} (hcell : affineCell core row column) :
+    FirstBitTerminalFourExceptionAffineCrossTableEquation
+      (base core row column) (rowCoeff core row column) (columnCoeff core row column)
+      (crossCoeff core row column) (value core row column) :=
+  h.affineCross_equationCert core row column hcell
+
+/-- Project row-affine normalization for an active cross-table cell. -/
+theorem FirstBitTerminalFourExceptionAffineCrossTableFacade.rowAffineNormalized_of_cell
+    {core : Core} {row : Row} {column : Column} (hcell : affineCell core row column) :
+    rowAffineNormalized core row column :=
+  h.rowAffineNormalized_of_cellCert core row column hcell
+
+/-- Project column-affine normalization for an active cross-table cell. -/
+theorem FirstBitTerminalFourExceptionAffineCrossTableFacade.columnAffineNormalized_of_cell
+    {core : Core} {row : Row} {column : Column} (hcell : affineCell core row column) :
+    columnAffineNormalized core row column :=
+  h.columnAffineNormalized_of_cellCert core row column hcell
+
+/-- Project cross-cell closure for an active affine cell. -/
+theorem FirstBitTerminalFourExceptionAffineCrossTableFacade.crossCellClosed_of_affineCell
+    {core : Core} {row : Row} {column : Column} (hcell : affineCell core row column) :
+    crossCellClosed core row column :=
+  h.crossCellClosed_of_affineCellCert core row column hcell
+
+/-- Project the affine cross-table marker. -/
+theorem FirstBitTerminalFourExceptionAffineCrossTableFacade.to_affineCrossTables :
+    affineCrossTables :=
+  h.affineCrossTablesCert
+
+/-- Project the affine cross-table closure marker. -/
+theorem FirstBitTerminalFourExceptionAffineCrossTableFacade.to_affineCrossTableClosure :
+    affineCrossTableClosure :=
+  h.affineCrossTableClosureCert
+
+end FirstBitTerminalFourExceptionAffineCrossTableFacade
+
+/-- Row/column switch normalization facade. -/
+structure FirstBitTerminalRowColumnSwitchNormalizationFacade
+    {Core Row Column : Type*}
+    (rows : Core → Finset Row)
+    (columns : Core → Finset Column)
+    (rowSwitchNormalized : Core → Row → Prop)
+    (columnSwitchNormalized : Core → Column → Prop)
+    (rowColumnSwitchNormalized : Core → Prop)
+    (rowSwitchNormalization columnSwitchNormalization
+      rowColumnSwitchNormalizationFrontier : Prop) : Prop where
+  rowSwitchNormalized_of_memCert :
+    ∀ core : Core, ∀ row : Row, row ∈ rows core → rowSwitchNormalized core row
+  columnSwitchNormalized_of_memCert :
+    ∀ core : Core, ∀ column : Column,
+      column ∈ columns core → columnSwitchNormalized core column
+  coreNormalized_of_rows_columnsCert :
+    ∀ core : Core,
+      (∀ row : Row, row ∈ rows core → rowSwitchNormalized core row) →
+        (∀ column : Column, column ∈ columns core → columnSwitchNormalized core column) →
+          rowColumnSwitchNormalized core
+  rowSwitchNormalizationCert : rowSwitchNormalization
+  columnSwitchNormalizationCert : columnSwitchNormalization
+  rowColumnSwitchNormalizationFrontierCert : rowColumnSwitchNormalizationFrontier
+
+/-- Build the row/column switch normalization facade from explicit certificates. -/
+theorem firstBitTerminalRowColumnSwitchNormalizationFacade_of_parts
+    {Core Row Column : Type*}
+    {rows : Core → Finset Row}
+    {columns : Core → Finset Column}
+    {rowSwitchNormalized : Core → Row → Prop}
+    {columnSwitchNormalized : Core → Column → Prop}
+    {rowColumnSwitchNormalized : Core → Prop}
+    {rowSwitchNormalization columnSwitchNormalization
+      rowColumnSwitchNormalizationFrontier : Prop}
+    (hrow : ∀ core : Core, ∀ row : Row,
+      row ∈ rows core → rowSwitchNormalized core row)
+    (hcolumn : ∀ core : Core, ∀ column : Column,
+      column ∈ columns core → columnSwitchNormalized core column)
+    (hcore : ∀ core : Core,
+      (∀ row : Row, row ∈ rows core → rowSwitchNormalized core row) →
+        (∀ column : Column, column ∈ columns core → columnSwitchNormalized core column) →
+          rowColumnSwitchNormalized core)
+    (hrowMarker : rowSwitchNormalization)
+    (hcolumnMarker : columnSwitchNormalization)
+    (hfrontier : rowColumnSwitchNormalizationFrontier) :
+    FirstBitTerminalRowColumnSwitchNormalizationFacade rows columns rowSwitchNormalized
+      columnSwitchNormalized rowColumnSwitchNormalized rowSwitchNormalization
+      columnSwitchNormalization rowColumnSwitchNormalizationFrontier where
+  rowSwitchNormalized_of_memCert := hrow
+  columnSwitchNormalized_of_memCert := hcolumn
+  coreNormalized_of_rows_columnsCert := hcore
+  rowSwitchNormalizationCert := hrowMarker
+  columnSwitchNormalizationCert := hcolumnMarker
+  rowColumnSwitchNormalizationFrontierCert := hfrontier
+
+section FirstBitTerminalRowColumnSwitchNormalizationFacade
+
+variable {Core Row Column : Type*}
+variable {rows : Core → Finset Row}
+variable {columns : Core → Finset Column}
+variable {rowSwitchNormalized : Core → Row → Prop}
+variable {columnSwitchNormalized : Core → Column → Prop}
+variable {rowColumnSwitchNormalized : Core → Prop}
+variable {rowSwitchNormalization columnSwitchNormalization
+  rowColumnSwitchNormalizationFrontier : Prop}
+
+variable (h :
+  FirstBitTerminalRowColumnSwitchNormalizationFacade rows columns rowSwitchNormalized
+    columnSwitchNormalized rowColumnSwitchNormalized rowSwitchNormalization columnSwitchNormalization
+    rowColumnSwitchNormalizationFrontier)
+
+/-- Project row-switch normalization for a row. -/
+theorem FirstBitTerminalRowColumnSwitchNormalizationFacade.rowSwitchNormalized_of_mem
+    {core : Core} {row : Row} (hrow : row ∈ rows core) :
+    rowSwitchNormalized core row :=
+  h.rowSwitchNormalized_of_memCert core row hrow
+
+/-- Project column-switch normalization for a column. -/
+theorem FirstBitTerminalRowColumnSwitchNormalizationFacade.columnSwitchNormalized_of_mem
+    {core : Core} {column : Column} (hcolumn : column ∈ columns core) :
+    columnSwitchNormalized core column :=
+  h.columnSwitchNormalized_of_memCert core column hcolumn
+
+/-- Project core-level row/column switch normalization. -/
+theorem FirstBitTerminalRowColumnSwitchNormalizationFacade.coreNormalized_of_rows_columns
+    {core : Core}
+    (hrows : ∀ row : Row, row ∈ rows core → rowSwitchNormalized core row)
+    (hcolumns : ∀ column : Column,
+      column ∈ columns core → columnSwitchNormalized core column) :
+    rowColumnSwitchNormalized core :=
+  h.coreNormalized_of_rows_columnsCert core hrows hcolumns
+
+/-- Project the row-switch normalization marker. -/
+theorem FirstBitTerminalRowColumnSwitchNormalizationFacade.to_rowSwitchNormalization :
+    rowSwitchNormalization :=
+  h.rowSwitchNormalizationCert
+
+/-- Project the column-switch normalization marker. -/
+theorem FirstBitTerminalRowColumnSwitchNormalizationFacade.to_columnSwitchNormalization :
+    columnSwitchNormalization :=
+  h.columnSwitchNormalizationCert
+
+/-- Project the row/column switch normalization frontier marker. -/
+theorem FirstBitTerminalRowColumnSwitchNormalizationFacade.to_rowColumnSwitchNormalizationFrontier :
+    rowColumnSwitchNormalizationFrontier :=
+  h.rowColumnSwitchNormalizationFrontierCert
+
+end FirstBitTerminalRowColumnSwitchNormalizationFacade
+
+/-- Balanced `0101/0011` compensator facade. -/
+structure FirstBitTerminalBalancedDyadicCompensatorFacade
+    {Core Compensator : Type*}
+    (compensators : Core → Finset Compensator)
+    (patternOf : Core → Compensator → FirstBitTerminalBalancedDyadicCompensatorPattern)
+    (pattern0101Scalar pattern0011Scalar compensatorScalar : Core → Compensator → ℕ)
+    (pattern0101 pattern0011 balancedCompensator : Core → Compensator → Prop)
+    (balanced0101Compensators balanced0011Compensators balancedDyadicCompensators : Prop) :
+    Prop where
+  pattern_casesCert :
+    ∀ core : Core, ∀ compensator : Compensator,
+      compensator ∈ compensators core →
+        patternOf core compensator = .pattern0101 ∨
+          patternOf core compensator = .pattern0011
+  pattern0101_of_tagCert :
+    ∀ core : Core, ∀ compensator : Compensator,
+      compensator ∈ compensators core → patternOf core compensator = .pattern0101 →
+        pattern0101 core compensator
+  pattern0011_of_tagCert :
+    ∀ core : Core, ∀ compensator : Compensator,
+      compensator ∈ compensators core → patternOf core compensator = .pattern0011 →
+        pattern0011 core compensator
+  balanced_of_0101Cert :
+    ∀ core : Core, ∀ compensator : Compensator,
+      pattern0101 core compensator → balancedCompensator core compensator
+  balanced_of_0011Cert :
+    ∀ core : Core, ∀ compensator : Compensator,
+      pattern0011 core compensator → balancedCompensator core compensator
+  compensator_equationCert :
+    ∀ core : Core, ∀ compensator : Compensator,
+      balancedCompensator core compensator →
+        FirstBitTerminalBalancedDyadicCompensatorEquation
+          (pattern0101Scalar core compensator) (pattern0011Scalar core compensator)
+          (compensatorScalar core compensator)
+  balanced0101CompensatorsCert : balanced0101Compensators
+  balanced0011CompensatorsCert : balanced0011Compensators
+  balancedDyadicCompensatorsCert : balancedDyadicCompensators
+
+/-- Build the balanced compensator facade from explicit certificates. -/
+theorem firstBitTerminalBalancedDyadicCompensatorFacade_of_parts
+    {Core Compensator : Type*}
+    {compensators : Core → Finset Compensator}
+    {patternOf : Core → Compensator → FirstBitTerminalBalancedDyadicCompensatorPattern}
+    {pattern0101Scalar pattern0011Scalar compensatorScalar : Core → Compensator → ℕ}
+    {pattern0101 pattern0011 balancedCompensator : Core → Compensator → Prop}
+    {balanced0101Compensators balanced0011Compensators balancedDyadicCompensators : Prop}
+    (hcases : ∀ core : Core, ∀ compensator : Compensator,
+      compensator ∈ compensators core →
+        patternOf core compensator = .pattern0101 ∨
+          patternOf core compensator = .pattern0011)
+    (h0101 : ∀ core : Core, ∀ compensator : Compensator,
+      compensator ∈ compensators core → patternOf core compensator = .pattern0101 →
+        pattern0101 core compensator)
+    (h0011 : ∀ core : Core, ∀ compensator : Compensator,
+      compensator ∈ compensators core → patternOf core compensator = .pattern0011 →
+        pattern0011 core compensator)
+    (hbalanced0101 : ∀ core : Core, ∀ compensator : Compensator,
+      pattern0101 core compensator → balancedCompensator core compensator)
+    (hbalanced0011 : ∀ core : Core, ∀ compensator : Compensator,
+      pattern0011 core compensator → balancedCompensator core compensator)
+    (heq : ∀ core : Core, ∀ compensator : Compensator,
+      balancedCompensator core compensator →
+        FirstBitTerminalBalancedDyadicCompensatorEquation
+          (pattern0101Scalar core compensator) (pattern0011Scalar core compensator)
+          (compensatorScalar core compensator))
+    (h0101Marker : balanced0101Compensators)
+    (h0011Marker : balanced0011Compensators)
+    (hbalancedMarker : balancedDyadicCompensators) :
+    FirstBitTerminalBalancedDyadicCompensatorFacade compensators patternOf pattern0101Scalar
+      pattern0011Scalar compensatorScalar pattern0101 pattern0011 balancedCompensator
+      balanced0101Compensators balanced0011Compensators balancedDyadicCompensators where
+  pattern_casesCert := hcases
+  pattern0101_of_tagCert := h0101
+  pattern0011_of_tagCert := h0011
+  balanced_of_0101Cert := hbalanced0101
+  balanced_of_0011Cert := hbalanced0011
+  compensator_equationCert := heq
+  balanced0101CompensatorsCert := h0101Marker
+  balanced0011CompensatorsCert := h0011Marker
+  balancedDyadicCompensatorsCert := hbalancedMarker
+
+section FirstBitTerminalBalancedDyadicCompensatorFacade
+
+variable {Core Compensator : Type*}
+variable {compensators : Core → Finset Compensator}
+variable {patternOf : Core → Compensator → FirstBitTerminalBalancedDyadicCompensatorPattern}
+variable {pattern0101Scalar pattern0011Scalar compensatorScalar : Core → Compensator → ℕ}
+variable {pattern0101 pattern0011 balancedCompensator : Core → Compensator → Prop}
+variable {balanced0101Compensators balanced0011Compensators balancedDyadicCompensators : Prop}
+
+variable (h :
+  FirstBitTerminalBalancedDyadicCompensatorFacade compensators patternOf pattern0101Scalar
+    pattern0011Scalar compensatorScalar pattern0101 pattern0011 balancedCompensator
+    balanced0101Compensators balanced0011Compensators balancedDyadicCompensators)
+
+/-- Project the `0101/0011` pattern split for a compensator. -/
+theorem FirstBitTerminalBalancedDyadicCompensatorFacade.pattern_cases
+    {core : Core} {compensator : Compensator} (hmem : compensator ∈ compensators core) :
+    patternOf core compensator = .pattern0101 ∨
+      patternOf core compensator = .pattern0011 :=
+  h.pattern_casesCert core compensator hmem
+
+/-- Project balancedness from a `0101` compensator. -/
+theorem FirstBitTerminalBalancedDyadicCompensatorFacade.balanced_of_0101
+    {core : Core} {compensator : Compensator} (hpattern : pattern0101 core compensator) :
+    balancedCompensator core compensator :=
+  h.balanced_of_0101Cert core compensator hpattern
+
+/-- Project balancedness from a `0011` compensator. -/
+theorem FirstBitTerminalBalancedDyadicCompensatorFacade.balanced_of_0011
+    {core : Core} {compensator : Compensator} (hpattern : pattern0011 core compensator) :
+    balancedCompensator core compensator :=
+  h.balanced_of_0011Cert core compensator hpattern
+
+/-- Project the balanced compensator scalar equation. -/
+theorem FirstBitTerminalBalancedDyadicCompensatorFacade.compensator_equation
+    {core : Core} {compensator : Compensator}
+    (hbalanced : balancedCompensator core compensator) :
+    FirstBitTerminalBalancedDyadicCompensatorEquation
+      (pattern0101Scalar core compensator) (pattern0011Scalar core compensator)
+      (compensatorScalar core compensator) :=
+  h.compensator_equationCert core compensator hbalanced
+
+/-- Project the balanced `0101` compensator marker. -/
+theorem FirstBitTerminalBalancedDyadicCompensatorFacade.to_balanced0101Compensators :
+    balanced0101Compensators :=
+  h.balanced0101CompensatorsCert
+
+/-- Project the balanced `0011` compensator marker. -/
+theorem FirstBitTerminalBalancedDyadicCompensatorFacade.to_balanced0011Compensators :
+    balanced0011Compensators :=
+  h.balanced0011CompensatorsCert
+
+/-- Project the balanced dyadic compensator marker. -/
+theorem FirstBitTerminalBalancedDyadicCompensatorFacade.to_balancedDyadicCompensators :
+    balancedDyadicCompensators :=
+  h.balancedDyadicCompensatorsCert
+
+end FirstBitTerminalBalancedDyadicCompensatorFacade
+
+/-- Fold four-exception atoms back into the existing signed-degree quotient closure surface. -/
+structure FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade
+    {Core Atom SourceAtom Collision : Type*}
+    (fourExceptionAtom : Core → Atom → Prop)
+    (atomSource : Core → Atom → SourceAtom)
+    (atomCollision : Core → Atom → Collision)
+    (starPhase : Core → SourceAtom → Collision → Prop)
+    (rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ)
+    (signedQuotientClosed : Core → SourceAtom → Collision → Prop)
+    (foldbackClosed : Core → Atom → Prop)
+    (signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+      signedDegreeQuotientFoldback : Prop) : Prop where
+  starPhase_of_fourExceptionCert :
+    ∀ core : Core, ∀ atom : Atom,
+      fourExceptionAtom core atom → starPhase core (atomSource core atom) (atomCollision core atom)
+  signedDegreeQuotientClosureEquationCert :
+    ∀ core : Core, ∀ atom : Atom,
+      fourExceptionAtom core atom →
+        FirstBitTerminalFourExceptionSignedDegreeQuotientClosureEquation
+          (rG core (atomSource core atom) (atomCollision core atom))
+          (SG core (atomSource core atom) (atomCollision core atom))
+          (quotientScalar core (atomSource core atom) (atomCollision core atom))
+          (closureScalar core (atomSource core atom) (atomCollision core atom))
+  signedQuotientClosed_of_fourExceptionCert :
+    ∀ core : Core, ∀ atom : Atom,
+      fourExceptionAtom core atom →
+        signedQuotientClosed core (atomSource core atom) (atomCollision core atom)
+  foldbackClosed_of_fourExceptionCert :
+    ∀ core : Core, ∀ atom : Atom, fourExceptionAtom core atom → foldbackClosed core atom
+  signedQuotientScalarClosureCert : signedQuotientScalarClosure
+  signedQuotientScalarClosureEndpointCert : signedQuotientScalarClosureEndpoint
+  signedDegreeQuotientFoldbackCert : signedDegreeQuotientFoldback
+
+/-- Build signed-degree quotient foldback from explicit certificates. -/
+theorem firstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade_of_parts
+    {Core Atom SourceAtom Collision : Type*}
+    {fourExceptionAtom : Core → Atom → Prop}
+    {atomSource : Core → Atom → SourceAtom}
+    {atomCollision : Core → Atom → Collision}
+    {starPhase : Core → SourceAtom → Collision → Prop}
+    {rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ}
+    {signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+    {foldbackClosed : Core → Atom → Prop}
+    {signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+      signedDegreeQuotientFoldback : Prop}
+    (hstar : ∀ core : Core, ∀ atom : Atom,
+      fourExceptionAtom core atom → starPhase core (atomSource core atom) (atomCollision core atom))
+    (heq : ∀ core : Core, ∀ atom : Atom,
+      fourExceptionAtom core atom →
+        FirstBitTerminalFourExceptionSignedDegreeQuotientClosureEquation
+          (rG core (atomSource core atom) (atomCollision core atom))
+          (SG core (atomSource core atom) (atomCollision core atom))
+          (quotientScalar core (atomSource core atom) (atomCollision core atom))
+          (closureScalar core (atomSource core atom) (atomCollision core atom)))
+    (hclosed : ∀ core : Core, ∀ atom : Atom,
+      fourExceptionAtom core atom →
+        signedQuotientClosed core (atomSource core atom) (atomCollision core atom))
+    (hfold : ∀ core : Core, ∀ atom : Atom,
+      fourExceptionAtom core atom → foldbackClosed core atom)
+    (hscalar : signedQuotientScalarClosure)
+    (hendpoint : signedQuotientScalarClosureEndpoint)
+    (hfoldMarker : signedDegreeQuotientFoldback) :
+    FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade fourExceptionAtom
+      atomSource atomCollision starPhase rG SG quotientScalar closureScalar signedQuotientClosed
+      foldbackClosed signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+      signedDegreeQuotientFoldback where
+  starPhase_of_fourExceptionCert := hstar
+  signedDegreeQuotientClosureEquationCert := heq
+  signedQuotientClosed_of_fourExceptionCert := hclosed
+  foldbackClosed_of_fourExceptionCert := hfold
+  signedQuotientScalarClosureCert := hscalar
+  signedQuotientScalarClosureEndpointCert := hendpoint
+  signedDegreeQuotientFoldbackCert := hfoldMarker
+
+/-- Reuse the typed `F`-graph signed-quotient import for four-exception foldback. -/
+theorem firstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade_of_typedFGraphSignedQuotientImport
+    {Core Atom SourceAtom Collision : Type*}
+    {fourExceptionAtom : Core → Atom → Prop}
+    {atomSource : Core → Atom → SourceAtom}
+    {atomCollision : Core → Atom → Collision}
+    {starPhase : Core → SourceAtom → Collision → Prop}
+    {rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ}
+    {signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+    {foldbackClosed : Core → Atom → Prop}
+    {signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+      signedDegreeQuotientFoldback : Prop}
+    (hsigned :
+      FirstBitTerminalTypedFGraphSignedQuotientScalarImport starPhase rG SG quotientScalar
+        closureScalar signedQuotientClosed signedQuotientScalarClosure
+        signedQuotientScalarClosureEndpoint)
+    (hstar : ∀ core : Core, ∀ atom : Atom,
+      fourExceptionAtom core atom → starPhase core (atomSource core atom) (atomCollision core atom))
+    (hfold : ∀ core : Core, ∀ atom : Atom,
+      fourExceptionAtom core atom → foldbackClosed core atom)
+    (hfoldMarker : signedDegreeQuotientFoldback) :
+    FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade fourExceptionAtom
+      atomSource atomCollision starPhase rG SG quotientScalar closureScalar signedQuotientClosed
+      foldbackClosed signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+      signedDegreeQuotientFoldback where
+  starPhase_of_fourExceptionCert := hstar
+  signedDegreeQuotientClosureEquationCert := by
+    intro core atom hfour
+    exact hsigned.star_signedQuotient_scalar (hstar core atom hfour)
+  signedQuotientClosed_of_fourExceptionCert := by
+    intro core atom hfour
+    exact hsigned.signedQuotientClosed_of_star (hstar core atom hfour)
+  foldbackClosed_of_fourExceptionCert := hfold
+  signedQuotientScalarClosureCert := hsigned.to_signedQuotientScalarClosure
+  signedQuotientScalarClosureEndpointCert := hsigned.to_signedQuotientScalarClosureEndpoint
+  signedDegreeQuotientFoldbackCert := hfoldMarker
+
+section FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade
+
+variable {Core Atom SourceAtom Collision : Type*}
+variable {fourExceptionAtom : Core → Atom → Prop}
+variable {atomSource : Core → Atom → SourceAtom}
+variable {atomCollision : Core → Atom → Collision}
+variable {starPhase : Core → SourceAtom → Collision → Prop}
+variable {rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ}
+variable {signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+variable {foldbackClosed : Core → Atom → Prop}
+variable {signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+  signedDegreeQuotientFoldback : Prop}
+
+variable (h :
+  FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade fourExceptionAtom
+    atomSource atomCollision starPhase rG SG quotientScalar closureScalar signedQuotientClosed
+    foldbackClosed signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+    signedDegreeQuotientFoldback)
+
+/-- Project the signed-degree quotient foldback equation. -/
+theorem FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade.signedDegreeQuotientClosureEquation
+    {core : Core} {atom : Atom} (hfour : fourExceptionAtom core atom) :
+    FirstBitTerminalFourExceptionSignedDegreeQuotientClosureEquation
+      (rG core (atomSource core atom) (atomCollision core atom))
+      (SG core (atomSource core atom) (atomCollision core atom))
+      (quotientScalar core (atomSource core atom) (atomCollision core atom))
+      (closureScalar core (atomSource core atom) (atomCollision core atom)) :=
+  h.signedDegreeQuotientClosureEquationCert core atom hfour
+
+/-- Project signed-quotient closure for a four-exception atom. -/
+theorem FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade.signedQuotientClosed_of_fourException
+    {core : Core} {atom : Atom} (hfour : fourExceptionAtom core atom) :
+    signedQuotientClosed core (atomSource core atom) (atomCollision core atom) :=
+  h.signedQuotientClosed_of_fourExceptionCert core atom hfour
+
+/-- Project foldback closure for a four-exception atom. -/
+theorem FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade.foldbackClosed_of_fourException
+    {core : Core} {atom : Atom} (hfour : fourExceptionAtom core atom) :
+    foldbackClosed core atom :=
+  h.foldbackClosed_of_fourExceptionCert core atom hfour
+
+/-- Project the signed-quotient scalar closure endpoint marker. -/
+theorem FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.signedQuotientScalarClosureEndpointCert
+
+/-- Project the signed-degree quotient foldback marker. -/
+theorem FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade.to_signedDegreeQuotientFoldback :
+    signedDegreeQuotientFoldback :=
+  h.signedDegreeQuotientFoldbackCert
+
+end FirstBitTerminalFourExceptionSignedDegreeQuotientFoldbackFacade
+
+/-- Shortened-pair-hit q=2/q=3 dyadic foldback facade. -/
+structure FirstBitTerminalShortenedPairHitDyadicFoldbackFacade
+    {Core SourceAtom Collision : Type*}
+    (shortenedPairHit : Core → SourceAtom → Collision → Prop)
+    (outcomeOf : Core → SourceAtom → Collision →
+      FirstBitTerminalShortenedPairHitDyadicFoldbackOutcome)
+    (q2Foldback q3ExtraRebate extraRebateBalanced foldbackClosed :
+      Core → SourceAtom → Collision → Prop)
+    (shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      shortenedPairHitDyadicFoldbackFrontier : Prop) : Prop where
+  outcome_casesCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision →
+        outcomeOf core source collision = .q2Foldback ∨
+          outcomeOf core source collision = .q3ExtraRebate
+  q2Foldback_of_outcomeCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision →
+        outcomeOf core source collision = .q2Foldback → q2Foldback core source collision
+  q3ExtraRebate_of_outcomeCert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision →
+        outcomeOf core source collision = .q3ExtraRebate → q3ExtraRebate core source collision
+  foldbackClosed_of_q2Cert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      q2Foldback core source collision → foldbackClosed core source collision
+  extraRebateBalanced_of_q3Cert :
+    ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      q3ExtraRebate core source collision → extraRebateBalanced core source collision
+  shortenedPairHitQ2FoldbackCert : shortenedPairHitQ2Foldback
+  shortenedPairHitQ3ExtraRebateCert : shortenedPairHitQ3ExtraRebate
+  shortenedPairHitDyadicFoldbackFrontierCert : shortenedPairHitDyadicFoldbackFrontier
+
+/-- Build the shortened-pair-hit q=2/q=3 foldback facade from explicit certificates. -/
+theorem firstBitTerminalShortenedPairHitDyadicFoldbackFacade_of_parts
+    {Core SourceAtom Collision : Type*}
+    {shortenedPairHit : Core → SourceAtom → Collision → Prop}
+    {outcomeOf : Core → SourceAtom → Collision →
+      FirstBitTerminalShortenedPairHitDyadicFoldbackOutcome}
+    {q2Foldback q3ExtraRebate extraRebateBalanced foldbackClosed :
+      Core → SourceAtom → Collision → Prop}
+    {shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      shortenedPairHitDyadicFoldbackFrontier : Prop}
+    (hcases : ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision →
+        outcomeOf core source collision = .q2Foldback ∨
+          outcomeOf core source collision = .q3ExtraRebate)
+    (hq2 : ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision →
+        outcomeOf core source collision = .q2Foldback → q2Foldback core source collision)
+    (hq3 : ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      shortenedPairHit core source collision →
+        outcomeOf core source collision = .q3ExtraRebate → q3ExtraRebate core source collision)
+    (hfold : ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      q2Foldback core source collision → foldbackClosed core source collision)
+    (hrebate : ∀ core : Core, ∀ source : SourceAtom, ∀ collision : Collision,
+      q3ExtraRebate core source collision → extraRebateBalanced core source collision)
+    (hq2Marker : shortenedPairHitQ2Foldback)
+    (hq3Marker : shortenedPairHitQ3ExtraRebate)
+    (hfrontier : shortenedPairHitDyadicFoldbackFrontier) :
+    FirstBitTerminalShortenedPairHitDyadicFoldbackFacade shortenedPairHit outcomeOf q2Foldback
+      q3ExtraRebate extraRebateBalanced foldbackClosed shortenedPairHitQ2Foldback
+      shortenedPairHitQ3ExtraRebate shortenedPairHitDyadicFoldbackFrontier where
+  outcome_casesCert := hcases
+  q2Foldback_of_outcomeCert := hq2
+  q3ExtraRebate_of_outcomeCert := hq3
+  foldbackClosed_of_q2Cert := hfold
+  extraRebateBalanced_of_q3Cert := hrebate
+  shortenedPairHitQ2FoldbackCert := hq2Marker
+  shortenedPairHitQ3ExtraRebateCert := hq3Marker
+  shortenedPairHitDyadicFoldbackFrontierCert := hfrontier
+
+section FirstBitTerminalShortenedPairHitDyadicFoldbackFacade
+
+variable {Core SourceAtom Collision : Type*}
+variable {shortenedPairHit : Core → SourceAtom → Collision → Prop}
+variable {outcomeOf : Core → SourceAtom → Collision →
+  FirstBitTerminalShortenedPairHitDyadicFoldbackOutcome}
+variable {q2Foldback q3ExtraRebate extraRebateBalanced foldbackClosed :
+  Core → SourceAtom → Collision → Prop}
+variable {shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+  shortenedPairHitDyadicFoldbackFrontier : Prop}
+
+variable (h :
+  FirstBitTerminalShortenedPairHitDyadicFoldbackFacade shortenedPairHit outcomeOf q2Foldback
+    q3ExtraRebate extraRebateBalanced foldbackClosed shortenedPairHitQ2Foldback
+    shortenedPairHitQ3ExtraRebate shortenedPairHitDyadicFoldbackFrontier)
+
+/-- Project the q=2/q=3 outcome split for a shortened-pair hit. -/
+theorem FirstBitTerminalShortenedPairHitDyadicFoldbackFacade.outcome_cases
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision) :
+    outcomeOf core source collision = .q2Foldback ∨
+      outcomeOf core source collision = .q3ExtraRebate :=
+  h.outcome_casesCert core source collision hhit
+
+/-- Project q=2 foldback from the outcome tag. -/
+theorem FirstBitTerminalShortenedPairHitDyadicFoldbackFacade.q2Foldback_of_outcome
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision)
+    (houtcome : outcomeOf core source collision = .q2Foldback) :
+    q2Foldback core source collision :=
+  h.q2Foldback_of_outcomeCert core source collision hhit houtcome
+
+/-- Project q=3 extra rebate from the outcome tag. -/
+theorem FirstBitTerminalShortenedPairHitDyadicFoldbackFacade.q3ExtraRebate_of_outcome
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hhit : shortenedPairHit core source collision)
+    (houtcome : outcomeOf core source collision = .q3ExtraRebate) :
+    q3ExtraRebate core source collision :=
+  h.q3ExtraRebate_of_outcomeCert core source collision hhit houtcome
+
+/-- Project foldback closure from q=2 foldback. -/
+theorem FirstBitTerminalShortenedPairHitDyadicFoldbackFacade.foldbackClosed_of_q2
+    {core : Core} {source : SourceAtom} {collision : Collision}
+    (hq2 : q2Foldback core source collision) :
+    foldbackClosed core source collision :=
+  h.foldbackClosed_of_q2Cert core source collision hq2
+
+/-- Project the q=2 foldback marker. -/
+theorem FirstBitTerminalShortenedPairHitDyadicFoldbackFacade.to_shortenedPairHitQ2Foldback :
+    shortenedPairHitQ2Foldback :=
+  h.shortenedPairHitQ2FoldbackCert
+
+/-- Project the q=3 extra-rebate marker. -/
+theorem FirstBitTerminalShortenedPairHitDyadicFoldbackFacade.to_shortenedPairHitQ3ExtraRebate :
+    shortenedPairHitQ3ExtraRebate :=
+  h.shortenedPairHitQ3ExtraRebateCert
+
+/-- Project the shortened-pair-hit dyadic foldback frontier marker. -/
+theorem FirstBitTerminalShortenedPairHitDyadicFoldbackFacade.to_shortenedPairHitDyadicFoldbackFrontier :
+    shortenedPairHitDyadicFoldbackFrontier :=
+  h.shortenedPairHitDyadicFoldbackFrontierCert
+
+end FirstBitTerminalShortenedPairHitDyadicFoldbackFacade
+
+
+/-- Direct endpoint import from the signed-quotient scalar-closure public API. -/
+structure FirstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport
+    (signedQuotientScalarClosureEndpoint : Prop) : Prop where
+  signedQuotientScalarClosureEndpointCert : signedQuotientScalarClosureEndpoint
+
+/-- Build the signed-quotient endpoint import from its endpoint marker. -/
+theorem firstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport_of_parts
+    {signedQuotientScalarClosureEndpoint : Prop}
+    (hendpoint : signedQuotientScalarClosureEndpoint) :
+    FirstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport
+      signedQuotientScalarClosureEndpoint where
+  signedQuotientScalarClosureEndpointCert := hendpoint
+
+/-- Reuse the existing signed-quotient scalar-closure public API as a direct endpoint import. -/
+theorem firstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport_of_publicAPI
+    {Core Atom Trace Target SourceAtom Collision K4 : Type*}
+    {ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+      remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+      parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+      pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+      symmetricAllTernaryStarPhaseEndpoint : Prop}
+    {activeAtoms : Core → Finset Atom}
+    {fTargets : Core → Atom → Finset Target}
+    {forwardFTrace transposeFTrace : Core → Atom → Trace → Prop}
+    {traceSupport : Core → Trace → Finset Target}
+    {fullySplitAtom transposeRigidAtom : Core → Atom → Prop}
+    {traces : Core → Finset Trace}
+    {alternativeOf : Core → Trace → FirstBitTerminalPermutationComplementTraceAlternative}
+    {permutationTrace complementTrace : Core → Trace → Prop}
+    {atoms : Core → Finset Atom}
+    {crossAtomPair crossRegularPair pairTraceAligned : Core → Atom → Atom → Prop}
+    {allEdgeCollision starPhase : Core → SourceAtom → Collision → Prop}
+    {rG SG latinScalar quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ}
+    {latinClosed signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+    {signedK4s : Core → Finset K4}
+    {atomsOfK4 triangularAtomsOfK4 : Core → K4 → Finset Atom}
+    {closureClass : Core → K4 → FirstBitTerminalSignedK4TriangularAtomCountClass}
+    {signedK4Closed : Core → K4 → Prop}
+    {shortenedPairHit : Core → SourceAtom → Collision → Prop}
+    {omissionKind :
+      Core → SourceAtom → Collision → FirstBitTerminalShortenedPairHitFiniteOmissionKind}
+    {omittedAtoms compensatingAtoms : Core → SourceAtom → Collision → Finset Atom}
+    {omissionResolved : Core → SourceAtom → Collision → Prop}
+    {mutualFullySplitFTrace fullySplitTransposeRigidity permutationTraceFrontier
+      complementTraceFrontier crossRegularAtomPairs crossRegularTraceAlignment
+      allEdgeLatinScalarFrontier signedQuotientScalarClosure signedK4ClosureClassification
+      signedK4TriangularAtomClosure shortenedPairHitFiniteOmissionTable
+      shortenedPairHitFiniteOmissionsResolved signedQuotientScalarClosureEndpoint : Prop}
+    (h :
+      FirstBitTerminalFullySplitTransposeSignedQuotientScalarClosurePublicAPI
+        ternarySourceCollisionRefinementEndpoint pairCollisionPartnerSplitEndpoint
+        remainingSmallAtomCollisionCoreAssumptions parityTetrahedronRigidity targetTypeTable
+        parityTargetIncidence highOutdegreeTargetIncidence allTernary3333IncidenceProfiles
+        pairIncidenceProfiles allEdgeStarTrianglePhaseSplit trianglePhaseExcluded
+        symmetricAllTernaryStarPhaseEndpoint activeAtoms fTargets forwardFTrace transposeFTrace
+        traceSupport fullySplitAtom transposeRigidAtom traces alternativeOf permutationTrace
+        complementTrace atoms crossAtomPair crossRegularPair pairTraceAligned allEdgeCollision
+        starPhase rG SG latinScalar quotientScalar closureScalar latinClosed signedQuotientClosed
+        signedK4s atomsOfK4 triangularAtomsOfK4 closureClass signedK4Closed shortenedPairHit
+        omissionKind omittedAtoms compensatingAtoms omissionResolved mutualFullySplitFTrace
+        fullySplitTransposeRigidity permutationTraceFrontier complementTraceFrontier
+        crossRegularAtomPairs crossRegularTraceAlignment allEdgeLatinScalarFrontier
+        signedQuotientScalarClosure signedK4ClosureClassification signedK4TriangularAtomClosure
+        shortenedPairHitFiniteOmissionTable shortenedPairHitFiniteOmissionsResolved
+        signedQuotientScalarClosureEndpoint) :
+    FirstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport
+      signedQuotientScalarClosureEndpoint where
+  signedQuotientScalarClosureEndpointCert := h.to_signedQuotientScalarClosureEndpoint
+
+section FirstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport
+
+variable {signedQuotientScalarClosureEndpoint : Prop}
+variable (h :
+  FirstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport
+    signedQuotientScalarClosureEndpoint)
+
+/-- Project the signed-quotient scalar closure endpoint from its direct import. -/
+theorem FirstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.signedQuotientScalarClosureEndpointCert
+
+end FirstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport
+
+/-- Minimal imports from the typed `F`-graph branch and signed-quotient scalar closure APIs. -/
+structure FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports
+    (signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint : Prop) : Prop where
+  signedQuotientScalarClosureEndpointCert : signedQuotientScalarClosureEndpoint
+  typedFGraphBranchEndpointCert : typedFGraphBranchEndpoint
+
+/-- Build the typed `F`/signed-quotient import bundle from endpoint markers. -/
+theorem firstBitTerminalFourExceptionTypedFGraphSignedQuotientImports_of_parts
+    {signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint : Prop}
+    (hsigned : signedQuotientScalarClosureEndpoint)
+    (htyped : typedFGraphBranchEndpoint) :
+    FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint where
+  signedQuotientScalarClosureEndpointCert := hsigned
+  typedFGraphBranchEndpointCert := htyped
+
+/-- Combine the direct signed-quotient public import with a typed `F` endpoint marker. -/
+theorem firstBitTerminalFourExceptionTypedFGraphSignedQuotientImports_of_signedEndpointImport
+    {signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint : Prop}
+    (hsigned :
+      FirstBitTerminalFourExceptionSignedQuotientScalarClosureEndpointImport
+        signedQuotientScalarClosureEndpoint)
+    (htyped : typedFGraphBranchEndpoint) :
+    FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint where
+  signedQuotientScalarClosureEndpointCert :=
+    hsigned.to_signedQuotientScalarClosureEndpoint
+  typedFGraphBranchEndpointCert := htyped
+
+/-- Reuse the existing typed `F`-graph branch public API as imports for this frontier. -/
+theorem firstBitTerminalFourExceptionTypedFGraphSignedQuotientImports_of_typedFGraphBranchPublicAPI
+    {Core Atom FEdge FType Trace Left Right Coord SourceAtom Collision : Type*}
+    {atoms : Core → Finset Atom}
+    {fEdges : Core → Finset FEdge}
+    {edgeLeft edgeRight : Core → FEdge → Atom}
+    {atomType : Core → Atom → FType}
+    {terminalFEdge typeCrossingFEdge typedFEdgeClosed : Core → FEdge → Prop}
+    {fEdgeTerminality typedFEdgeTypeCrossing : Prop}
+    {traces : Core → Finset Trace}
+    {traceKind : Core → Trace → FirstBitTerminalTypedFMonochromeTraceKind}
+    {monochromeTrace allZeroTrace allOneTrace traceRigidAtom : Core → Atom → Trace → Prop}
+    {allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity : Prop}
+    {edgeTrace : Core → FEdge → Trace}
+    {monochromeFEdge excludedFEdge : Core → FEdge → Prop}
+    {monochromeFEdgeExclusion : Prop}
+    {leftPart : Core → Finset Left}
+    {rightPart : Core → Finset Right}
+    {caseOf : Core → FirstBitTerminalTypedFBipartiteCase}
+    {uniformEmpty minoritySubstar k22Subgraph typedBipartiteResolved : Core → Prop}
+    {typedBipartiteUniformEmpty typedBipartiteMinoritySubstar typedBipartiteK22
+      typedBipartiteCaseSplit : Prop}
+    {coordinates omittedCoordinates : Core → Atom → Finset Coord}
+    {omittedCoordinateAllowed omittedCoordinateResolved : Core → Atom → Coord → Prop}
+    {localOmittedCoordinateConstraints : Prop}
+    {fDegree atomRG atomSG atomExceptionScalar atomProfileScalar : Core → Atom → ℕ}
+    {degreeOneOrTwoAtom oneExceptionScalarProfile : Core → Atom → Prop}
+    {degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier : Prop}
+    {starPhase : Core → SourceAtom → Collision → Prop}
+    {rG SG quotientScalar closureScalar : Core → SourceAtom → Collision → ℕ}
+    {signedQuotientClosed : Core → SourceAtom → Collision → Prop}
+    {signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+      typedFGraphBranchEndpoint : Prop}
+    (h :
+      FirstBitTerminalTypedFGraphBranchPublicAPI atoms fEdges edgeLeft edgeRight atomType
+        terminalFEdge typeCrossingFEdge typedFEdgeClosed fEdgeTerminality typedFEdgeTypeCrossing
+        traces traceKind monochromeTrace allZeroTrace allOneTrace traceRigidAtom
+        allZeroTraceRigidity allOneTraceRigidity monochromeTraceRigidity edgeTrace monochromeFEdge
+        excludedFEdge monochromeFEdgeExclusion leftPart rightPart caseOf uniformEmpty minoritySubstar
+        k22Subgraph typedBipartiteResolved typedBipartiteUniformEmpty typedBipartiteMinoritySubstar
+        typedBipartiteK22 typedBipartiteCaseSplit coordinates omittedCoordinates
+        omittedCoordinateAllowed omittedCoordinateResolved localOmittedCoordinateConstraints fDegree
+        atomRG atomSG atomExceptionScalar atomProfileScalar degreeOneOrTwoAtom
+        oneExceptionScalarProfile degreeOneOrTwoScalarProfile oneExceptionScalarProfileFrontier
+        starPhase rG SG quotientScalar closureScalar signedQuotientClosed
+        signedQuotientScalarClosure signedQuotientScalarClosureEndpoint
+        typedFGraphBranchEndpoint) :
+    FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint where
+  signedQuotientScalarClosureEndpointCert := h.to_signedQuotientScalarClosureEndpoint
+  typedFGraphBranchEndpointCert := h.to_typedFGraphBranchEndpoint
+
+section FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports
+
+variable {signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint : Prop}
+variable (h :
+  FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports
+    signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint)
+
+/-- Project the signed-quotient scalar closure endpoint from the import bundle. -/
+theorem FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.signedQuotientScalarClosureEndpointCert
+
+/-- Project the typed `F`-graph branch endpoint from the import bundle. -/
+theorem FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports.to_typedFGraphBranchEndpoint :
+    typedFGraphBranchEndpoint :=
+  h.typedFGraphBranchEndpointCert
+
+end FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports
+
+/-- Prop-level bundle for the four-exception residual/binary normalization frontier. -/
+structure FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle
+    (twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint : Prop) : Prop where
+  twoExceptionLocalHostDischargeCert : twoExceptionLocalHostDischarge
+  threeExceptionLocalHostDischargeCert : threeExceptionLocalHostDischarge
+  fourExceptionTwoTwoSkeletonsCert : fourExceptionTwoTwoSkeletons
+  booleanSecondDifferenceOneCornerSquaresCert : booleanSecondDifferenceOneCornerSquares
+  affineCrossTablesCert : affineCrossTables
+  rowColumnSwitchNormalizationFrontierCert : rowColumnSwitchNormalizationFrontier
+  balancedDyadicCompensatorsCert : balancedDyadicCompensators
+  signedDegreeQuotientFoldbackCert : signedDegreeQuotientFoldback
+  shortenedPairHitQ2FoldbackCert : shortenedPairHitQ2Foldback
+  shortenedPairHitQ3ExtraRebateCert : shortenedPairHitQ3ExtraRebate
+  signedQuotientScalarClosureEndpointCert : signedQuotientScalarClosureEndpoint
+  typedFGraphBranchEndpointCert : typedFGraphBranchEndpoint
+  fourExceptionResidualBinaryNormalizationEndpointCert : fourExceptionResidualBinaryNormalizationEndpoint
+
+/-- Build the four-exception residual/binary normalization frontier bundle from imports and markers. -/
+theorem firstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle_of_imports
+    {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint : Prop}
+    (himports :
+      FirstBitTerminalFourExceptionTypedFGraphSignedQuotientImports
+        signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint)
+    (htwo : twoExceptionLocalHostDischarge)
+    (hthree : threeExceptionLocalHostDischarge)
+    (hskeleton : fourExceptionTwoTwoSkeletons)
+    (hsquare : booleanSecondDifferenceOneCornerSquares)
+    (haffine : affineCrossTables)
+    (hswitch : rowColumnSwitchNormalizationFrontier)
+    (hcompensator : balancedDyadicCompensators)
+    (hfoldback : signedDegreeQuotientFoldback)
+    (hq2 : shortenedPairHitQ2Foldback)
+    (hq3 : shortenedPairHitQ3ExtraRebate)
+    (hendpoint : fourExceptionResidualBinaryNormalizationEndpoint) :
+    FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint where
+  twoExceptionLocalHostDischargeCert := htwo
+  threeExceptionLocalHostDischargeCert := hthree
+  fourExceptionTwoTwoSkeletonsCert := hskeleton
+  booleanSecondDifferenceOneCornerSquaresCert := hsquare
+  affineCrossTablesCert := haffine
+  rowColumnSwitchNormalizationFrontierCert := hswitch
+  balancedDyadicCompensatorsCert := hcompensator
+  signedDegreeQuotientFoldbackCert := hfoldback
+  shortenedPairHitQ2FoldbackCert := hq2
+  shortenedPairHitQ3ExtraRebateCert := hq3
+  signedQuotientScalarClosureEndpointCert :=
+    himports.to_signedQuotientScalarClosureEndpoint
+  typedFGraphBranchEndpointCert := himports.to_typedFGraphBranchEndpoint
+  fourExceptionResidualBinaryNormalizationEndpointCert := hendpoint
+
+section FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle
+
+variable {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+  fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+  rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+  signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+  signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+  fourExceptionResidualBinaryNormalizationEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle
+    twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+    fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+    rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+    signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+    signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+    fourExceptionResidualBinaryNormalizationEndpoint)
+
+/-- Project the signed-degree quotient foldback marker from the normalization bundle. -/
+theorem FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle.to_signedDegreeQuotientFoldback :
+    signedDegreeQuotientFoldback :=
+  h.signedDegreeQuotientFoldbackCert
+
+/-- Project the q=2 shortened-pair foldback marker from the normalization bundle. -/
+theorem FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle.to_shortenedPairHitQ2Foldback :
+    shortenedPairHitQ2Foldback :=
+  h.shortenedPairHitQ2FoldbackCert
+
+/-- Project the q=3 shortened-pair extra-rebate marker from the normalization bundle. -/
+theorem FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle.to_shortenedPairHitQ3ExtraRebate :
+    shortenedPairHitQ3ExtraRebate :=
+  h.shortenedPairHitQ3ExtraRebateCert
+
+/-- Project the typed `F`-graph branch endpoint from the normalization bundle. -/
+theorem FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle.to_typedFGraphBranchEndpoint :
+    typedFGraphBranchEndpoint :=
+  h.typedFGraphBranchEndpointCert
+
+/-- Project the residual/binary normalization endpoint. -/
+theorem FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle.to_fourExceptionResidualBinaryNormalizationEndpoint :
+    fourExceptionResidualBinaryNormalizationEndpoint :=
+  h.fourExceptionResidualBinaryNormalizationEndpointCert
+
+/-- Compact marker tuple exported by the four-exception residual/binary normalization bundle. -/
+theorem FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle.markerBundle :
+    twoExceptionLocalHostDischarge ∧ threeExceptionLocalHostDischarge ∧
+      fourExceptionTwoTwoSkeletons ∧ booleanSecondDifferenceOneCornerSquares ∧
+        affineCrossTables ∧ rowColumnSwitchNormalizationFrontier ∧
+          balancedDyadicCompensators ∧ signedDegreeQuotientFoldback ∧
+            shortenedPairHitQ2Foldback ∧ shortenedPairHitQ3ExtraRebate ∧
+              signedQuotientScalarClosureEndpoint ∧ typedFGraphBranchEndpoint ∧
+                fourExceptionResidualBinaryNormalizationEndpoint :=
+  ⟨h.twoExceptionLocalHostDischargeCert,
+    h.threeExceptionLocalHostDischargeCert,
+    h.fourExceptionTwoTwoSkeletonsCert,
+    h.booleanSecondDifferenceOneCornerSquaresCert,
+    h.affineCrossTablesCert,
+    h.rowColumnSwitchNormalizationFrontierCert,
+    h.balancedDyadicCompensatorsCert,
+    h.signedDegreeQuotientFoldbackCert,
+    h.shortenedPairHitQ2FoldbackCert,
+    h.shortenedPairHitQ3ExtraRebateCert,
+    h.signedQuotientScalarClosureEndpointCert,
+    h.typedFGraphBranchEndpointCert,
+    h.fourExceptionResidualBinaryNormalizationEndpointCert⟩
+
+end FirstBitTerminalFourExceptionResidualBinaryNormalizationFrontierBundle
+
 /--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
