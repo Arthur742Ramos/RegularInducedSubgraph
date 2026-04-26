@@ -29801,6 +29801,990 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdPublicAu
       h.toFinalNumericalConsequences := by
   exact Subsingleton.elim _ _
 
+/--
+Reader-facing manifest for the final proof-md handoff.  It keeps the final consumer handoff as
+the root certificate and republishes the audit, coverage, normalization, import, row, and numerical
+surfaces a proof-md reader checks without changing the current-frontier assumptions.
+-/
+structure RamseyTenR45CurrentFrontierProofMdHandoffManifest
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  finalConsumerHandoff : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v
+  publicAuditSummary : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v
+  coverageCertificate : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v
+  auditChecklist : RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v
+  consumerExport : RamseyTenR45CurrentFrontierProofMdConsumerExport G s v
+  finalLedger : RamseyTenR45CurrentFrontierProofMdFinalLedger G s v
+  finalManifest : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  normalizationRoute : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  publicFacade : RamseyTenR45CurrentFrontierPublicFacade G s v
+  unifiedFinalConsumerImport : RamseyTenR45UnifiedFinalConsumerImport G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+
+/-- Final consumer handoffs materialize the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v where
+  finalConsumerHandoff := h
+  publicAuditSummary := h.toProofMdPublicAuditSummary
+  coverageCertificate := h.toProofMdCoverageCertificate
+  auditChecklist := h.toProofMdAuditChecklist
+  consumerExport := h.toProofMdConsumerExport
+  finalLedger := h.toProofMdFinalLedger
+  finalManifest := h.toProofMdFinalManifest
+  proofMdImport := h.toProofMdImport
+  proofMdNormalizationChecklist := h.toProofMdNormalizationChecklist
+  normalizationRoute := h.toCurrentFrontierNormalizationRoute
+  theoremChecklist := h.toCurrentFrontierTheoremChecklist
+  targetRows := h.toCurrentFrontierTargetRows
+  numericalConsequences := h.toFinalNumericalConsequences
+  publicFacade := h.toCurrentFrontierPublicFacade
+  unifiedFinalConsumerImport := h.toUnifiedFinalConsumerImport
+  finalDownstreamImport := h.toFinalDownstreamImport
+  consumerNormalization := h.toConsumerNormalization
+  topRowFinalImport := h.toTopRowFinalImport
+  exact42Row := h.toThreeTenFortyTwo
+  localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960Row := fun H hcard => h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+  admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Row := h.toTenLeF_40960
+
+/-- Public audit summaries materialize the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicAuditSummary.toProofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v) :
+    RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v :=
+  h.toProofMdFinalConsumerHandoff.toProofMdHandoffManifest
+
+/-- Coverage certificates materialize the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdCoverageCertificate.toProofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v) :
+    RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v :=
+  h.toProofMdFinalConsumerHandoff.toProofMdHandoffManifest
+
+/-- Consumer exports materialize the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdConsumerExport.toProofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdConsumerExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v :=
+  h.toProofMdFinalConsumerHandoff.toProofMdHandoffManifest
+
+/-- Select the final consumer handoff from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalConsumerHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v :=
+  h.finalConsumerHandoff
+
+/-- Select the public audit summary from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdPublicAuditSummary
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v :=
+  h.publicAuditSummary
+
+/-- Select the coverage certificate from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v :=
+  h.coverageCertificate
+
+/-- Select the audit checklist from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdAuditChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v :=
+  h.auditChecklist
+
+/-- Select the consumer export from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdConsumerExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdConsumerExport G s v :=
+  h.consumerExport
+
+/-- Select the final ledger from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalLedger G s v :=
+  h.finalLedger
+
+/-- Select the final manifest from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.finalManifest
+
+/-- Select the proof-md import from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.proofMdImport
+
+/-- Select the proof-md normalization checklist from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.proofMdNormalizationChecklist
+
+/-- Select the normalization route from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.normalizationRoute
+
+/-- Select the theorem checklist from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.theoremChecklist
+
+/-- Select target rows from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select compact numerical consequences from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select the public facade from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toCurrentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierPublicFacade G s v :=
+  h.publicFacade
+
+/-- Select the unified final-consumer import from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toUnifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.unifiedFinalConsumerImport
+
+/-- Select the final downstream import from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the consumer-normalization import from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.consumerNormalization
+
+/-- Select the exact-`42` top-row final import from the reader-facing handoff manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalImport
+
+/-- Reader-facing manifest route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Reader-facing manifest route to the localized current-frontier `R(4,5) <= 27` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Reader-facing manifest route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Reader-facing manifest route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Reader-facing manifest route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Reader-facing manifest route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/--
+Stable proof-md reader dashboard.  This final dashboard is a single public API object for proof-md
+readers: it contains the handoff manifest plus the handoff, summary, audit, coverage, import,
+normalization, facade, target-row, and numerical-consequence surfaces it normalizes to.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalDashboard
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  handoffManifest : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v
+  finalConsumerHandoff : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v
+  publicAuditSummary : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v
+  coverageCertificate : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v
+  auditChecklist : RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v
+  consumerExport : RamseyTenR45CurrentFrontierProofMdConsumerExport G s v
+  finalLedger : RamseyTenR45CurrentFrontierProofMdFinalLedger G s v
+  finalManifest : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  normalizationRoute : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  publicFacade : RamseyTenR45CurrentFrontierPublicFacade G s v
+  unifiedFinalConsumerImport : RamseyTenR45UnifiedFinalConsumerImport G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+
+/-- Handoff manifests materialize the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v where
+  handoffManifest := h
+  finalConsumerHandoff := h.toProofMdFinalConsumerHandoff
+  publicAuditSummary := h.toProofMdPublicAuditSummary
+  coverageCertificate := h.toProofMdCoverageCertificate
+  auditChecklist := h.toProofMdAuditChecklist
+  consumerExport := h.toProofMdConsumerExport
+  finalLedger := h.toProofMdFinalLedger
+  finalManifest := h.toProofMdFinalManifest
+  proofMdImport := h.toProofMdImport
+  proofMdNormalizationChecklist := h.toProofMdNormalizationChecklist
+  normalizationRoute := h.toCurrentFrontierNormalizationRoute
+  theoremChecklist := h.toCurrentFrontierTheoremChecklist
+  targetRows := h.toCurrentFrontierTargetRows
+  numericalConsequences := h.toFinalNumericalConsequences
+  publicFacade := h.toCurrentFrontierPublicFacade
+  unifiedFinalConsumerImport := h.toUnifiedFinalConsumerImport
+  finalDownstreamImport := h.toFinalDownstreamImport
+  consumerNormalization := h.toConsumerNormalization
+  topRowFinalImport := h.toTopRowFinalImport
+  exact42Row := h.toThreeTenFortyTwo
+  localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960Row := fun H hcard => h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+  admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Row := h.toTenLeF_40960
+
+/-- Final consumer handoffs materialize the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v :=
+  h.toProofMdHandoffManifest.toProofMdFinalDashboard
+
+/-- Public audit summaries materialize the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicAuditSummary.toProofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v :=
+  h.toProofMdHandoffManifest.toProofMdFinalDashboard
+
+/-- Coverage certificates materialize the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdCoverageCertificate.toProofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v :=
+  h.toProofMdHandoffManifest.toProofMdFinalDashboard
+
+/-- Select the handoff manifest from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v :=
+  h.handoffManifest
+
+/-- Select the final consumer handoff from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdFinalConsumerHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v :=
+  h.finalConsumerHandoff
+
+/-- Select the public audit summary from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdPublicAuditSummary
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v :=
+  h.publicAuditSummary
+
+/-- Select the coverage certificate from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v :=
+  h.coverageCertificate
+
+/-- Select the audit checklist from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdAuditChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v :=
+  h.auditChecklist
+
+/-- Select the consumer export from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdConsumerExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdConsumerExport G s v :=
+  h.consumerExport
+
+/-- Select the final ledger from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdFinalLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalLedger G s v :=
+  h.finalLedger
+
+/-- Select the final manifest from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.finalManifest
+
+/-- Select the proof-md import from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.proofMdImport
+
+/-- Select the proof-md normalization checklist from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.proofMdNormalizationChecklist
+
+/-- Select the normalization route from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.normalizationRoute
+
+/-- Select the theorem checklist from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.theoremChecklist
+
+/-- Select target rows from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select compact numerical consequences from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select the public facade from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toCurrentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierPublicFacade G s v :=
+  h.publicFacade
+
+/-- Select the unified final-consumer import from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toUnifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.unifiedFinalConsumerImport
+
+/-- Select the final downstream import from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the consumer-normalization import from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.consumerNormalization
+
+/-- Select the exact-`42` top-row final import from the stable proof-md reader dashboard. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalImport
+
+/-- Stable proof-md dashboard route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Stable proof-md dashboard route to the localized current-frontier `R(4,5) <= 27` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Stable proof-md dashboard route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Stable proof-md dashboard route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Stable proof-md dashboard route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Stable proof-md dashboard route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Flat constructor exposing handoff manifests from final consumer handoffs. -/
+theorem ramseyTenR45CurrentFrontierProofMdHandoffManifest_of_proofMdFinalConsumerHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v :=
+  h.toProofMdHandoffManifest
+
+/-- Flat constructor exposing final dashboards from final consumer handoffs. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalDashboard_of_proofMdFinalConsumerHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v :=
+  h.toProofMdFinalDashboard
+
+/-- Flat projection to public audit summaries from final dashboards. -/
+theorem ramseyTenR45CurrentFrontierProofMdPublicAuditSummary_of_proofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v :=
+  h.toProofMdPublicAuditSummary
+
+/-- Flat projection to target rows from final dashboards. -/
+theorem ramseyTenR45CurrentFrontierTargetRows_of_proofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.toCurrentFrontierTargetRows
+
+/-- Flat projection to compact numerical consequences from final dashboards. -/
+theorem ramseyTenR45FinalNumericalConsequences_of_proofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.toFinalNumericalConsequences
+
+/-- Final handoffs round-trip through reader-facing handoff manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toProofMdFinalConsumerHandoff_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toProofMdFinalConsumerHandoff = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on public audit summaries. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toProofMdPublicAuditSummary_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toProofMdPublicAuditSummary =
+      h.toProofMdPublicAuditSummary := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on coverage certificates. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toProofMdCoverageCertificate_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toProofMdCoverageCertificate =
+      h.toProofMdCoverageCertificate := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on audit checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toProofMdAuditChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toProofMdAuditChecklist = h.toProofMdAuditChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on consumer exports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toProofMdConsumerExport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toProofMdConsumerExport = h.toProofMdConsumerExport := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on final ledgers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toProofMdFinalLedger_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toProofMdFinalLedger = h.toProofMdFinalLedger := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on final manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toProofMdFinalManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toProofMdFinalManifest = h.toProofMdFinalManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on proof-md imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toProofMdImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toProofMdImport = h.toProofMdImport := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on normalization checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toProofMdNormalizationChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toProofMdNormalizationChecklist =
+      h.toProofMdNormalizationChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on normalization routes. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toCurrentFrontierNormalizationRoute_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toCurrentFrontierNormalizationRoute =
+      h.toCurrentFrontierNormalizationRoute := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on theorem checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toCurrentFrontierTheoremChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toCurrentFrontierTheoremChecklist =
+      h.toCurrentFrontierTheoremChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through reader-facing handoff manifests on numerical consequences. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdHandoffManifest_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdHandoffManifest.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
+/-- Handoff manifests round-trip through final dashboards. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalDashboard_toProofMdHandoffManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalDashboard.toProofMdHandoffManifest = h := by
+  exact Subsingleton.elim _ _
+
+/-- Handoff manifests normalize through final dashboards on final consumer handoffs. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalDashboard_toProofMdFinalConsumerHandoff_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalDashboard.toProofMdFinalConsumerHandoff =
+      h.toProofMdFinalConsumerHandoff := by
+  exact Subsingleton.elim _ _
+
+/-- Handoff manifests normalize through final dashboards on public audit summaries. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalDashboard_toProofMdPublicAuditSummary_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalDashboard.toProofMdPublicAuditSummary =
+      h.toProofMdPublicAuditSummary := by
+  exact Subsingleton.elim _ _
+
+/-- Handoff manifests normalize through final dashboards on coverage certificates. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalDashboard_toProofMdCoverageCertificate_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalDashboard.toProofMdCoverageCertificate =
+      h.toProofMdCoverageCertificate := by
+  exact Subsingleton.elim _ _
+
+/-- Handoff manifests normalize through final dashboards on final manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalDashboard_toProofMdFinalManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalDashboard.toProofMdFinalManifest = h.toProofMdFinalManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Handoff manifests normalize through final dashboards on target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalDashboard_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalDashboard.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Handoff manifests normalize through final dashboards on numerical consequences. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalDashboard_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalDashboard.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs round-trip through final dashboards. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toProofMdFinalConsumerHandoff_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toProofMdFinalConsumerHandoff = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on handoff manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toProofMdHandoffManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toProofMdHandoffManifest =
+      h.toProofMdHandoffManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on public audit summaries. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toProofMdPublicAuditSummary_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toProofMdPublicAuditSummary =
+      h.toProofMdPublicAuditSummary := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on coverage certificates. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toProofMdCoverageCertificate_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toProofMdCoverageCertificate =
+      h.toProofMdCoverageCertificate := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on audit checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toProofMdAuditChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toProofMdAuditChecklist = h.toProofMdAuditChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on final manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toProofMdFinalManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toProofMdFinalManifest = h.toProofMdFinalManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on proof-md imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toProofMdImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toProofMdImport = h.toProofMdImport := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on normalization routes. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toCurrentFrontierNormalizationRoute_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toCurrentFrontierNormalizationRoute =
+      h.toCurrentFrontierNormalizationRoute := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on numerical consequences. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
+/-- Final handoffs normalize through final dashboards on public facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalDashboard_toCurrentFrontierPublicFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalDashboard.toCurrentFrontierPublicFacade =
+      h.toCurrentFrontierPublicFacade := by
+  exact Subsingleton.elim _ _
+
+/-- Final dashboards normalize through their handoff manifests on final handoffs. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdHandoffManifest_toProofMdFinalConsumerHandoff_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdHandoffManifest.toProofMdFinalConsumerHandoff =
+      h.toProofMdFinalConsumerHandoff := by
+  exact Subsingleton.elim _ _
+
+/-- Final dashboards normalize through their handoff manifests on public audit summaries. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdHandoffManifest_toProofMdPublicAuditSummary_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdHandoffManifest.toProofMdPublicAuditSummary =
+      h.toProofMdPublicAuditSummary := by
+  exact Subsingleton.elim _ _
+
+/-- Final dashboards normalize through their handoff manifests on coverage certificates. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdHandoffManifest_toProofMdCoverageCertificate_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdHandoffManifest.toProofMdCoverageCertificate =
+      h.toProofMdCoverageCertificate := by
+  exact Subsingleton.elim _ _
+
+/-- Final dashboards normalize through their public audit summaries on coverage certificates. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdPublicAuditSummary_toProofMdCoverageCertificate_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdPublicAuditSummary.toProofMdCoverageCertificate =
+      h.toProofMdCoverageCertificate := by
+  exact Subsingleton.elim _ _
+
+/-- Final dashboards normalize through their handoff manifests on final manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdHandoffManifest_toProofMdFinalManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdHandoffManifest.toProofMdFinalManifest =
+      h.toProofMdFinalManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Final dashboards normalize through their handoff manifests on target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdHandoffManifest_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdHandoffManifest.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final dashboards normalize through their handoff manifests on numerical consequences. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdHandoffManifest_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdHandoffManifest.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
