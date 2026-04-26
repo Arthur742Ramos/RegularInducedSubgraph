@@ -5083,6 +5083,8 @@ The selector condition is complement-self-dual because complementing shifts the 
 For the loss-`32` theorem, a minimum counterexample can be assumed critical: if its maximum selector size
 is `m`, then `|H|=32m+1`, and every vertex deletion `H-z` contains a maximum selector of size `m`.
 Equivalently, every deleted vertex is omitted by some stable residue-core of size exactly `m`.
+Pairs of maximum cores `S,T` with overlap `P` and petals `A,B` satisfy the exchange equations
+`deg_A(v)-deg_B(v)=a-b mod 4` on `P`, while `deg_P+deg_A=a` on `A` and `deg_P+deg_B=b` on `B`.
 Two disjoint selector blocks `A,B` with internal residues `a,b` and constant cross-degree residues
 `p,q` merge exactly when `a+p==b+q mod 4`; terminal buckets are anti-merge for every cross-regular
 quotient solution of total lifted size greater than `m`.

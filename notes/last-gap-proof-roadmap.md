@@ -1812,7 +1812,8 @@ What remains justified after audit is:
       current degrees avoiding each residue; the whole formulation is complement-self-dual with residue
       shift `c -> |S|-1-c`, so terminal buckets are rigid against all large-complement deletion equations;
       at a minimum loss-`32` counterexample one has the critical size `|H|=32m+1` and every vertex deletion
-      already contains a stable residue-core of size `m`;
+      already contains a stable residue-core of size `m`; pairs of maximum cores satisfy an equal-petal
+      overlap exchange system;
       selector blocks merge whenever their internal and cross-degree residues satisfy the quotient
       congruence, so terminal buckets are also anti-merge for all cross-regular quotient solutions above
       scale `m`; one-vertex merge shadows force maximum residue-`0` selectors to dominate and give the

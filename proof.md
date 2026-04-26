@@ -9779,6 +9779,37 @@ Thus the terminal residue-core obstruction is not diffuse in size.  It is a crit
 `32m+1`, every one-vertex deletion has a maximum residue-core, but adding the deleted vertex to any such
 core is blocked by the one- and two-point anti-merge conditions below.
 
+Pairs of maximum cores have an exact exchange normal form.  Let `S` and `T` be maximum selectors of size
+`m`, with residues `a` and `b`, and write
+
+```text
+P=S cap T,        A=S\T,        B=T\S.
+```
+
+Then for every `v in P`,
+
+```text
+deg_A(v)-deg_B(v) == a-b        [MOD 4].
+```
+
+For every `x in A`,
+
+```text
+deg_P(x)+deg_A(x) == a        [MOD 4],
+```
+
+and for every `y in B`,
+
+```text
+deg_P(y)+deg_B(y) == b        [MOD 4].
+```
+
+Thus changing one maximum core into another is a balanced exchange between two equal-size petals `A` and
+`B`; the common intersection sees the two petals with a fixed residue difference, while each petal is
+internally synchronized after adding its degree to the overlap.  In the critical counterexample the
+family `{S_z}` supplied by vertex deletions must satisfy this exchange system for every pair of omitted
+vertices.
+
 A second exact reformulation is by merging smaller selectors.  Let `A` and `B` be disjoint induced
 selectors with internal residues `a` and `b`.  Suppose the cross-degrees are constant modulo `4` on both
 sides:

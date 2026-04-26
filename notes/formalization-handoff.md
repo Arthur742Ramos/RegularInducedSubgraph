@@ -2180,6 +2180,9 @@ Recommended attack:
     Formalize the critical minimal-counterexample normalization for the loss-`32` theorem: if `H` is a
     minimum counterexample and `m` is its maximum selector size, then `|H|=32m+1`; for every vertex `z`,
     `H-z` contains a selector of size exactly `m`, equivalently a stable residue-core of size `m`.
+    Formalize maximum-core exchange: for two maximum selectors `S,T` with residues `a,b`, overlap `P`,
+    and petals `A=S\T`, `B=T\S`, prove `deg_A(v)-deg_B(v)==a-b mod 4` on `P`,
+    `deg_P(x)+deg_A(x)==a mod 4` on `A`, and `deg_P(y)+deg_B(y)==b mod 4` on `B`.
     Formalize selector merging: disjoint selector blocks with residues `a,b` and constant cross-degree
     residues `p,q` merge iff `a+p==b+q mod 4`.  For a cross-regular family, the quotient condition is
     `r_i+sum_j p_{ij}x_j` independent of `i` modulo `4`; terminality forbids any quotient solution whose

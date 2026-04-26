@@ -1798,6 +1798,8 @@ at most `m` vertices through current degrees avoiding that residue.
 The formulation is complement-self-dual, shifting the retained residue from `c` to `|S|-1-c`.
 At the loss-`32` endpoint, a minimum counterexample is critical: `|H|=32m+1`, where `m` is the maximum
 selector size, and every vertex deletion contains a stable residue-core of size exactly `m`.
+Pairs of maximum cores obey an equal-petal exchange system: the overlap sees the two petals with fixed
+residue difference, and each petal has fixed overlap-plus-internal degree.
 Selector blocks merge when their internal residues and cross-degree residues satisfy
 `a+p==b+q mod 4`; terminal buckets forbid every cross-regular quotient merge above scale `m`.
 A maximum residue-`0` selector is dominating, and a residue-`a` selector with `|S|==a+1 mod 4` has no
