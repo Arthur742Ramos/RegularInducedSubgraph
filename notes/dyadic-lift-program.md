@@ -1221,6 +1221,8 @@ atoms to be opposite in type to both endpoints.  Thus `F`-containing all-ternary
 omissions, and vertices of `F`-degree `1` need two distinct omissions.
 The possible `F` graphs are correspondingly empty in uniform type, a minority-centered substar in `1/3` type,
 or a subgraph of `K_{2,2}` in `2/2` type.
+For such a graph, atoms of `F`-degree `0` or `3` are cross-flat, and atoms of `F`-degree `1` or `2` have a
+single exceptional row differing by `2 mod 4` from the other two rows.
 The pure all-edge minimum has only star phase (three edge supports share a parity word) or triangle phase
 (three edge supports avoid one parity word), plus the `2+1` multiplicities on the size-three edge targets.
 For a symmetric all-ternary cycle, transposing the two-atom trace matrix forces every mutual edge target to

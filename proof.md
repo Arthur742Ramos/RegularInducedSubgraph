@@ -13265,7 +13265,8 @@ large-outside ternary target avoidance:
   ternary-cycle parity codes reduce to finite target-type incidences; the all-edge all-ternary endpoint is a
   half-edge Latin K_{2,2} design, cross-residue-flat inside each atom, leaving only the signed-K_4 scalar
   equation r_G-S_G; fully split all-ternary pairs are mutual permutation/complement traces, monochrome pairs
-  are excluded, and the remaining F-containing branch is a typed bipartite F-graph;
+  are excluded, and the remaining F-containing branch is a typed bipartite F-graph with one exceptional
+  row at each atom of F-degree 1 or 2;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

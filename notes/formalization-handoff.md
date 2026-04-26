@@ -2632,6 +2632,8 @@ Recommended attack:
     omissions for `deg_F=0`.
     Record the type-count cases for the `F` graph: empty in uniform type, a substar centered at the unique
     minority atom in `1/3` type, and a subgraph of `K_{2,2}` in `2/2` type.
+    Add the scalar profile of typed `F` graphs: `F`-degree `0` or `3` atoms are cross-flat; `F`-degree `1` or
+    `2` atoms have one exceptional row whose cross-degree differs by `2 mod 4` from the other two.
     For the all-edge permutation minimum, formalize the phase split: the three parity edges form either a
     star through one parity word or the triangle avoiding one parity word, and each size-three edge target
     has only a `2+1` label multiplicity choice.

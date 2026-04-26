@@ -5583,6 +5583,8 @@ omitted-coordinate labels, and at a vertex the local condition is automatic for 
 distinct corner omissions for `deg_F=1`, and requires all three omissions for `deg_F=0`.
 By type count, the `F` graph is empty for uniform type, a substar centered at the unique minority atom for
 `1/3` type, and a subgraph of `K_{2,2}` for `2/2` type.
+Its scalar shadow is one-exception-per-nonflat-atom: atoms of `F`-degree `0` or `3` are cross-flat, while
+`F`-degree `1` or `2` leaves a unique row whose cross-degree differs from the other two by `2 mod 4`.
 The pure all-edge minimum further splits into only two phase types inside the parity tetrahedron: the three
 edge supports either share one parity word (star phase) or form the triangle avoiding one parity word
 (triangle phase), with only the `2+1` multiplicity choice left on each size-three edge target.

@@ -2092,7 +2092,8 @@ What remains justified after audit is:
       empty/triangle internal type split; monochrome size-three traces are all-zero/all-one quotient-regular
       type-crossing edges but cannot satisfy symmetric all-ternary high-outdegree; `F`-containing all-ternary
       endpoints are typed bipartite `F` graphs with local omitted-coordinate constraints on corner edges:
-      empty in uniform type, minority substar in `1/3` type, or a `K_{2,2}` subgraph in `2/2` type;
+      empty in uniform type, minority substar in `1/3` type, or a `K_{2,2}` subgraph in `2/2` type; their
+      scalar shadow is one exceptional row shifted by `2 mod 4` at each atom of `F`-degree `1` or `2`;
       all-edge minimum has only star or triangle phase plus `2+1` target multiplicities, and the symmetric
       transpose test excludes triangle phase in a genuine all-ternary cycle; after unit-edge discharge, this
       becomes a half-edge Latin `K_{2,2}` design with one omitted row and column on each atom-pair, whose
