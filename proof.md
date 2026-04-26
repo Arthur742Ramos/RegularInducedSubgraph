@@ -11179,6 +11179,19 @@ These correspond to the empty graph, one edge, a two-edge path, and a triangle. 
 hypergraph emptiness splits into a residue-`3` endpoint obstruction or a missing internal graph-pattern
 obstruction over the target-realizing triples.
 
+Equivalently, for a target-realizing triple `Y={y_1,y_2,y_3}`, let `d_i` be the requested representative in
+`{0,1,2}` for `deg_Y(y_i)`.  The scalar test is the following finite table:
+
+```text
+000: no internal edges among Y;
+110: the unique edge is between the two vertices requesting 1;
+211: the vertex requesting 2 is adjacent to both vertices requesting 1, and those two are nonadjacent;
+222: all three internal edges are present.
+```
+
+Any other requested triple, including any endpoint residue `3`, is non-graphical.  Hence scalar-good
+emptiness is a finite pattern-mismatch assertion over the target-realizing triples.
+
 The target-avoidance half can be written as a capacitated 3-sum cube.  For a coordinate-minimal
 certificate `P`, let `M_P` be the multiset of outside trace columns
 
@@ -11225,6 +11238,30 @@ disjoint cover of `A`.  Full target failure says no such three-column partition 
 has two parts: deleting any active coordinate makes such a partition possible, while deleting any zero
 coordinate relaxes the admissible-column filter enough to make a partition possible.  Thus the target
 branch is a critical filtered three-cover instance.
+
+The critical filtered cover has explicit defect witnesses.  For each active coordinate `a in A`, choose a
+triple witnessing feasibility after deleting `a`.  It partitions `A\{a}` and avoids `Z`; because a full
+partition of `A` is forbidden, its multiplicity at `a` is not `1`.  Hence every active coordinate has one
+of three near-cover witnesses:
+
+```text
+hole:              multiplicity at a is 0;
+double collision:  multiplicity at a is 2;
+triple collision:  multiplicity at a is 3.
+```
+
+For each zero coordinate `z in Z`, choose a triple witnessing feasibility after deleting `z`.  It partitions
+`A` and avoids `Z\{z}`; since no admissible partition exists, at least one of its three columns hits `z`.
+Thus every zero coordinate has a filter-breach witness of multiplicity `1`, `2`, or `3` at `z`.  This is
+the exact remaining target-avoidance normal form after all size-`<=3` saturated local closures.
+
+It is useful to separate active dimension from filter dimension.  If `|A|<=3`, the disjoint-cover side has
+only the finite partition types of a set of size at most three; any obstruction is then purely that the
+zero-filtered admissible family lacks enough columns of the required small supports.  Thus the genuinely
+new target-avoidance branch has either `|A|>=4`, or is a zero-filter capacity obstruction: every relaxed
+filter `Z\{z}` supplies the required small-support partition, but the full filter `Z` does not.  In
+particular, the all-zero target `A=emptyset` is exactly the statement that fewer than three outside columns
+vanish on all of `Z`, while every one-coordinate relaxation has three such columns.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

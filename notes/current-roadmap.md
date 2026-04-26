@@ -5284,6 +5284,8 @@ large-outside target failure starts at `|P|>=4` unless the target triples exist 
 The scalar-killed side is a three-vertex graphicality test: each incoming vertex requests internal degree
 `0`, `1`, or `2` in the triple; residue `3` kills the endpoint, and the only graphical degree patterns are
 `000`, `110`, `211`, and `222`.
+For a target-realizing triple, these patterns prescribe the unique internal edge pattern: empty, the edge
+between the two `1`s, the two-edge path from the `2`, or the triangle.
 The target-avoidance side is a capacitated 3-sum cube: outside trace columns in `{0,1}^P` fail to sum to
 `h|_P` using three distinct vertices, while every coordinate projection is feasible.  Hence each coordinate
 has a single-defect realizing triple; inclusion-minimality makes every proper coordinate shadow feasible,
@@ -5292,6 +5294,11 @@ After coordinate switching, `h` is `{0,1}`-valued; realization is three outside 
 zero coordinates and disjointly covering the one coordinates.
 Thus the target branch is a critical filtered three-cover: zero coordinates filter admissible columns, and
 active coordinates must be partitioned by three admissible supports.
+Minimality supplies defect witnesses: every active coordinate has a near-cover with multiplicity `0`, `2`,
+or `3` at that coordinate, and every zero coordinate has a filter-breach cover hitting it with multiplicity
+`1`, `2`, or `3`.
+If `|A|<=3`, only finite small-support partitions are involved; the remaining obstruction is purely
+zero-filter capacity.  The genuinely new cover branch has `|A|>=4`.
 Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
 Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
 `R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.

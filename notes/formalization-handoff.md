@@ -2384,6 +2384,8 @@ Recommended attack:
     Add the scalar graphicality split: after old-target realization, each incoming vertex prescribes its
     internal degree in the incoming triple; residue `3` is impossible and the only graphical degree patterns
     are `000`, `110`, `211`, and `222`.
+    Record the edge-pattern table: `000` empty, `110` the edge between the two `1`s, `211` the two-edge path
+    centered at the `2`, and `222` triangle.
     Add the target-avoidance 3-sum normal form: for a coordinate-minimal certificate `P`, outside trace
     columns in `{0,1}^P` do not capacity-respecting sum to `h|_P` in triples, but every coordinate projection
     and hence every proper coordinate shadow does; after local closures, `|P|>=4`.
@@ -2392,6 +2394,11 @@ Recommended attack:
     covering one coordinates.
     Add the filtered three-cover form: zero coordinates define the admissible outside columns; active
     coordinates must be disjointly covered by three admissible supports, with every coordinate essential.
+    Add the defect-witness split: deleting an active coordinate gives a cover of the rest with multiplicity
+    `0`, `2`, or `3` at the deleted coordinate; deleting a zero coordinate gives a cover that hits the
+    removed zero coordinate with multiplicity `1`, `2`, or `3`.
+    Add the active/filter split: if `|A|<=3`, obstruction is a finite small-support capacity failure inside
+    the zero filter; the genuinely new cover case has `|A|>=4`.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

@@ -1008,12 +1008,17 @@ Those are exactly the saturated local alternatives already closed, so the irredu
 certificate has size at least `4`.
 On the scalar side, every target-realizing incoming triple must realize one of the internal degree patterns
 `000`, `110`, `211`, or `222`; residue `3` at an endpoint is immediately impossible.
+The patterns prescribe respectively empty, one-edge, two-edge-path, and triangle internal graphs.
 On the target side, the remaining obstruction is a critical capacitated 3-sum cube: `h` is not a sum of
 three outside trace columns, but every proper coordinate shadow is; after local closures its dimension is
 at least `4`.
 Coordinate switching makes `h` `{0,1}`-valued, so this is a critical three-column disjoint-cover problem.
 The zero coordinates define an admissibility filter; the one coordinates must be partitioned by three
 admissible supports, and every coordinate is essential to this failure.
+Active-coordinate deletion gives hole/double-collision/triple-collision near-covers; zero-coordinate
+deletion gives filter-breach covers hitting the removed zero coordinate.
+Small active dimension `|A|<=3` is only a finite support-capacity failure inside the zero filter; the new
+filtered-cover branch has `|A|>=4`.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

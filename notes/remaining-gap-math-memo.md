@@ -1936,11 +1936,16 @@ The saturated local closures remove those size-`<=3` certificates, so an irreduc
 branch has certificate size at least `4`.
 The scalar-killed branch is finite too: incoming endpoints request internal degrees, residue `3` is
 impossible, and the graphical three-vertex patterns are `000`, `110`, `211`, and `222`.
+These prescribe empty, one-edge, two-edge path, and triangle internal graphs.
 The target-avoidance branch is a critical capacitated 3-sum cube: no three outside trace columns sum to
 `h`, but every proper coordinate shadow is feasible; irreducible dimension is at least `4`.
 After coordinate switching, it is a critical three-column disjoint-cover problem with `{0,1}` target.
 Zero coordinates filter admissible columns; one coordinates must be partitioned by three admissible
 supports.
+Each active coordinate has a hole/collision near-cover of multiplicity `0`, `2`, or `3`; each zero
+coordinate has a filter-breach cover of multiplicity `1`, `2`, or `3`.
+If `|A|<=3`, this is only a zero-filter small-support capacity obstruction; the new filtered-cover case has
+`|A|>=4`.
 If `|R|=m+s`, `s<=3`, terminality inside `R` is the finite list that `b-deg_D` is nonconstant on `R\D`
 for every `|D|<=s-1`.
 The full two-residue core is equivalently `epsilon(v)-deg_D(v)=const` on `J\D`, with `epsilon=0` on `R`
