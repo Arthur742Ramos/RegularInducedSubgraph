@@ -1100,6 +1100,8 @@ Gain-zero replacements preserve the one-defect packing, so the blocker is taken 
 positive-gain exclusions persist throughout the zero-gain orbit.
 Lexicographic saturation localizes zero-gain supports: they meet at most one packed atom, and then only as a
 same-size exchange with leftover vertices.
+Thus cross-atom supports have strict atom defect `delta>=pi`; in the first no-leftover four-four-atom core,
+supports crossing two, three, or four atoms have size at most `6`, `9`, or `12`.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
 In the one-support case the exact lift accounting has two types: hitting the shortened block makes the

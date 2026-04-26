@@ -11985,6 +11985,19 @@ contradicting saturation.  Hence a zero-gain support meets at most one packed bl
 block `B_i`, then `|C|=|B_i|`; it is only a same-size exchange of that atom with some leftover vertices.  In
 particular, every tight atom-defect replacement is local to a single atom.
 
+Therefore every genuine cross-atom support has **strict** atom defect.  If `C` meets `pi_P(C)>=2` atoms of
+the four-atom partition, then zero gain is impossible as well as positive gain, so
+
+```text
+delta_P(C) >= pi_P(C).
+```
+
+Equivalently, a support crossing `r` atoms omits at least `r` vertices from the packed atoms it meets.  In
+the first no-leftover core `|A|=16`, where the four atoms all have size four, a support crossing two atoms
+has size at most six, crossing three atoms has size at most nine, and crossing all four atoms has size at
+most twelve.  The no-leftover core is therefore a strict cross-defect four-block system, not merely a
+nonpositive-gain system.
+
 Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
 `P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
 `B_j\{a}` lowers the saving by exactly one, so the projected packing in `A\{a}` has saving `|A|-5`, one

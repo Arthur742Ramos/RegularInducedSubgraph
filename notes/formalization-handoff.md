@@ -2489,6 +2489,8 @@ Recommended attack:
     orbit.
     Derive zero-gain locality: in a lexicographically saturated packing, a zero-gain support cannot meet two
     packed atoms; if it meets one, it has the same size as that atom.
+    Add strict cross-defect corollary: supports meeting `r>=2` atoms satisfy `delta>=r`; in the first
+    no-leftover four-four-atom core, cross-support sizes are bounded by `6/9/12`.
     Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
     short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
     total gain.

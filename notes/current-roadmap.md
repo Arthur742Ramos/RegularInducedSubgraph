@@ -5429,6 +5429,9 @@ Gain-zero replacements preserve the deficit-one packing; choose a zero-gain-satu
 lexicographically maximal in block-size profile, so every zero-gain move is terminal and profile-nonincreasing.
 In such a saturated packing, every zero-gain support is local: it meets at most one packed atom, and if it
 does then it has the same size as that atom.
+Therefore cross-atom supports have strict atom defect: if a support meets `r>=2` atoms, it omits at least
+`r` packed-atom vertices.  In the first no-leftover `|A|=16` core of four four-atoms, two-/three-/four-atom
+supports have sizes at most `6/9/12`.
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
 vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
 positive-gain repair family whose every full lift has nonpositive total gain.

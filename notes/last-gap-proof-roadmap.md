@@ -1998,6 +1998,8 @@ What remains justified after audit is:
       replacement orbit;
       zero-gain supports in a lexicographically saturated packing are local same-size exchanges with at most
       one packed atom;
+      cross-atom supports have strict atom defect `delta>=pi`, giving `6/9/12` size caps in the first
+      no-leftover four-four-atom core;
       deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
       are blocked;
       one-support deletion repair has exact lift accounting: shortened-block repairs have blocked positive
