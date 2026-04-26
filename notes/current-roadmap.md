@@ -5629,6 +5629,8 @@ must expose a singleton hit in a size-three/larger target, giving extra rebate b
 Consequently the only tight shortened-pair-hit mode is `q=2`, and it is exactly the same corner/F incidence
 calculus with the shortened pair counted as a pair target; `q=3` or singleton-hit size-three petals leave the
 all-small tight residual.
+Thus the all-ternary no-leftover cycle has no independent target-code endpoint after square discharge: it is
+either the signed-quotient scalar-mismatch branch or an extra-rebate/large-target branch.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.
@@ -5652,6 +5654,8 @@ the same `+deg_Y-deg_X` old-vertex formula and shifted incoming self-layer with 
 Because `|J|>2m`, every mixed `(m+1)`-set has `|J\T|>=m`; for `m>=3`, a ternary incoming packet exists
 somewhere in the two-level outside reservoir.  Thus pure near-threshold templates are only boundary
 diagnostics: the genuine mixed terminal obstruction is again the ternary target/scalar packet problem
+with the two-level label `epsilon`.  So near-threshold adds no new structural endpoint beyond finite
+pure-boundary deletion diagnostics.
 The `m<=2` bases are excluded by the two-vertex selector and the four-color triangle Ramsey bound
 `R_4(3)=51`, so no separate small-base exception remains.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every

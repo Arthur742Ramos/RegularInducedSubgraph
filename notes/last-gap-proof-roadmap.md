@@ -2110,6 +2110,10 @@ What remains justified after audit is:
       shortened-pair-hit petals have a finite omission table: `q=2` is one-omission-per-hit tight, while
       `q=3` forces a singleton hit in a size-three/larger target; the only all-small tight hit mode is `q=2`
       and folds back into the corner/F incidence tables;
+      after square discharge, the no-leftover all-ternary target-code branch has only signed-quotient scalar
+      mismatch or extra-rebate/large-target exits;
+      near-threshold pure deletion templates are boundary diagnostics only; mixed near-threshold obstructions
+      are the same ternary target/scalar packet problem with the two-level label `epsilon`;
       shortened-pair-hit petals satisfy strict cross-defect `delta_other>=r` or `r+1` according as they use
       two or three source vertices;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers

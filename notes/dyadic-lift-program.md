@@ -1260,9 +1260,13 @@ Consequently `q=2` is tight only with one omission per hit atom, while `q=3` for
 size-three/larger target unless a larger atom supplies the extra omission.
 The only all-small tight hit mode is therefore `q=2`, which folds into the same corner/F incidence tables
 with the shortened pair treated as a pair target.
+Consequently the all-ternary no-leftover target-code branch is exhausted after square discharge: surviving
+all-ternary endpoints are signed-quotient scalar mismatch or extra-rebate/large-target exits.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.
+The near-threshold pure deletion templates are therefore boundary diagnostics only, not a separate mixed
+structural endpoint.
 The cases `m<=2` are finite-Ramsey closed: any pair is a selector for `m=1`, and `R_4(3)=51<65` gives a
 monochromatic residue triangle when `m=2` under the counterexample inequality.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,

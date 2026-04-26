@@ -13138,6 +13138,14 @@ as a pair target in the `3,3,3,2` or `3,3,2,2` tables above.  Any `q=3` petal or
 size-three target is an extra-rebate branch: it either points to a size-at-least-four split target or leaves
 the all-edge minimum and hence cannot be part of the final all-small tight residual.
 
+Combining the preceding reductions, the all-ternary no-leftover cycle has no independent target-code
+endpoint.  Unit edges and odd four-exception curvature are the one-corner square-breaker; fully split
+atom-pairs are quotient-regular `F` edges; monochrome edges are impossible; the pure all-edge line is the
+Latin signed quotient; and the remaining four-exception affine line is the same signed quotient after local
+switching.  Therefore, after the support-local square discharge, an all-ternary no-leftover endpoint is either
+an explicit scalar-mismatch quotient or an extra-rebate/large-target branch.  The target-code part of the
+all-ternary cycle is exhausted.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff
@@ -13257,6 +13265,12 @@ target/self-layer dichotomy as in the pure large-outside branch, with `epsilon` 
 one-class label.  Thus the bounded near-threshold deletion templates are boundary diagnostics for the
 pure classes; the genuine mixed terminal obstruction is again a ternary packet obstruction on the
 two-level core.
+
+Thus the near-threshold branch contributes no new structural endpoint beyond the finite pure-boundary
+deletion tests.  Whenever the obstruction is genuinely mixed and `m>=3`, it is governed by the same
+three-in/three-out packet equations as the large-outside branch, with `epsilon` in place of the one-class
+signed label.  The live first-bit obstruction is therefore uniform: target avoidance or scalar mismatch for
+a ternary packet, plus finite pure-boundary diagnostics.
 
 The tiny bases do not create another case.  If the maximum selector size were `m=1`, any two vertices would
 already be a selector.  If `m=2`, the counterexample inequality gives `n>=65`; coloring each edge by its
@@ -13389,7 +13403,8 @@ large-outside ternary target avoidance:
   row at each atom of F-degree 1 or 2; two- and three-exception packets route to local host closures, leaving
   only the four-exception 2/2 type-square skeletons, whose odd cross curvature is the one-corner square and
   whose affine remnants merge into the signed-quotient scalar obstruction; shortened-pair-hit tight cases
-  fold back into the same corner/F incidence tables;
+  fold back into the same corner/F incidence tables; consequently the no-leftover all-ternary target-code
+  branch is exhausted modulo scalar mismatch or extra-rebate/large-target exits;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

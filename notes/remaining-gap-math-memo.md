@@ -2175,8 +2175,13 @@ Shortened-pair-hit petals obey the same finite omission table: `q=2` is tight on
 atom, and `q=3` needs a singleton hit in a size-three/larger target to supply the extra omission.
 The only all-small tight hit mode is `q=2`; it folds back into the corner/F incidence tables with the
 shortened pair as a pair target.
+After square discharge, the all-ternary no-leftover target-code branch is exhausted: it becomes signed-quotient
+scalar mismatch or extra-rebate/large-target.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has
 strict defect `delta_other>=r` or `r+1`; other petals compensate the omissions.
+Near-threshold pure deletion templates are boundary diagnostics only: in the mixed two-level core, every
+`(m+1)`-set has a ternary outside packet for `m>=3`, so the live obstruction is again target/scalar with
+label `epsilon`.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

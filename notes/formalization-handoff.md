@@ -2673,6 +2673,11 @@ Recommended attack:
     cannot be tight on pair targets alone and forces a singleton hit in a size-three/larger target.
     Add the hit-branch foldback: the only all-small tight hit mode is `q=2`, which is the same corner/F
     incidence table with the shortened pair treated as a pair target; `q=3` is extra-rebate/large-target.
+    Record the all-ternary closure summary: after square discharge, the no-leftover all-ternary target-code
+    branch has only signed-quotient scalar mismatch or extra-rebate/large-target exits.
+    Record near-threshold uniformity: pure deletion templates are boundary diagnostics; every mixed
+    near-threshold obstruction with `m>=3` is the same ternary target/scalar packet problem with label
+    `epsilon`.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.
