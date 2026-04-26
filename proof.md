@@ -12654,6 +12654,27 @@ shortened-pair-free labels, each satisfying the split-rebate threshold above.  I
 splits at least two of the other three-atoms; in `3,3,3,2` it splits both other three-atoms or one
 three-atom together with the pair.
 
+If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
+cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
+source atom `G` (`q=2` or `3`) and hitting `r` other packed atoms.  Since this full lift crosses atoms,
+zero-gain saturation gives strict defect
+
+```text
+delta_G + delta_other >= r+1,        delta_G=3-q.
+```
+
+Equivalently,
+
+```text
+q=2:  delta_other >= r,
+q=3:  delta_other >= r+1.
+```
+
+Thus a shortened-pair-hit size-three collision is also a compensation template: any petal that uses two
+source vertices must omit at least one vertex from each other atom it hits on average, while a petal using
+all three source vertices must omit one additional vertex beyond that.  The other petals of the repair
+family must supply these omissions.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff
