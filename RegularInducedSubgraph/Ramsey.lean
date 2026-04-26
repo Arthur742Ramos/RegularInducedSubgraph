@@ -42881,6 +42881,630 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toRemainingAss
       h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
   exact Subsingleton.elim _ _
 
+/--
+Selector-level downstream/public target view for proof-md consumers.  It keeps the final public
+target bundle as the source of truth and records the explicit target-row projections that downstream
+files usually need; the `R(4,5) <= 27` row remains the carried assumption-backed frontier row.
+-/
+structure RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  finalPublicTargetBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  targetRowsExact42Projection : HasCliqueOrIndepSetBound 3 10 42
+  targetRowsLocalizedR45Projection : HasCliqueOrIndepSetBound 4 5 27
+  targetRowsPropagatedR1010Projection : HasCliqueOrIndepSetBound 10 10 39246
+  targetRowsAdmissibleTenAt40960Projection : 10 ∈ admissibleBounds 40960
+  targetRowsExtremalF40960Projection : 10 ≤ F 40960
+  targetRowsRegularTenAt40960Projection :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final public target bundles materialize the selector-level downstream/public target view. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdDownstreamPublicTargetSelector
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v := by
+  let ht := h.toCurrentFrontierTargetRows
+  exact
+    { finalPublicTargetBundle := h
+      targetRows := ht
+      targetRowsExact42Projection := ht.toThreeTenFortyTwo
+      targetRowsLocalizedR45Projection :=
+        ht.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      targetRowsPropagatedR1010Projection := ht.toHasCliqueOrIndepSetBound_10_10_39246
+      targetRowsAdmissibleTenAt40960Projection := ht.toTenMemAdmissibleBounds_40960
+      targetRowsExtremalF40960Projection := ht.toTenLeF_40960
+      targetRowsRegularTenAt40960Projection := fun H hcard =>
+        ht.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard }
+
+/-- Select the final public target bundle from the selector-level downstream/public target view. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toProofMdFinalPublicTargetBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.finalPublicTargetBundle
+
+/-- Select target rows from the selector-level downstream/public target view. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Selector projection to the low-row exact-`42` target row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toTargetRowsThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.targetRowsExact42Projection
+
+/-- Selector projection to the target-row localized `R(4,5) <= 27` carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.targetRowsLocalizedR45Projection
+
+/-- Selector projection to the propagated `R(10,10) <= 39246` target row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toTargetRowsHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.targetRowsPropagatedR1010Projection
+
+/-- Selector projection to the admissible-bound target row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toTargetRowsTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.targetRowsAdmissibleTenAt40960Projection
+
+/-- Selector projection to the extremal-function target row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toTargetRowsTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    10 ≤ F 40960 :=
+  h.targetRowsExtremalF40960Projection
+
+/-- Selector projection to the regular induced `10`-subgraph consumer row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toTargetRowsHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.targetRowsRegularTenAt40960Projection H hcard
+
+/-- Selectors normalize their explicit exact-`42` row with the stored target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toCurrentFrontierTargetRows_toThreeTenFortyTwo_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    h.toCurrentFrontierTargetRows.toThreeTenFortyTwo =
+      h.toTargetRowsThreeTenFortyTwo := by
+  exact Subsingleton.elim _ _
+
+/-- Selectors normalize their explicit localized R45 row with the stored target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toCurrentFrontierTargetRows_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    h.toCurrentFrontierTargetRows.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Selectors normalize their explicit R1010 row with the stored target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toCurrentFrontierTargetRows_toHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    h.toCurrentFrontierTargetRows.toHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toTargetRowsHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/--
+Downstream/public proof-md target projection bundle.  This packages the final public target bundle
+with selector, checklist, facade, release/citation, and explicit target-row projections for the low
+Ramsey rows, propagated `R(10,10)`, admissible/F bounds, and regular induced-subgraph consumers.
+-/
+structure RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  selector : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v
+  finalPublicTargetBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v
+  finalReleasePublicTargetSurface :
+    RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v
+  publicReleaseCitation : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v
+  downstreamConsumerCitationBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v
+  explicitAssumptionRows :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v
+  remainingObligationChecklist :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  publicDistributionFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v
+  finalBundleSelector : RamseyTenR45FinalBundleSelectorSurface
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  targetRowsExact42Projection : HasCliqueOrIndepSetBound 3 10 42
+  targetRowsLocalizedR45Projection : HasCliqueOrIndepSetBound 4 5 27
+  targetRowsPropagatedR1010Projection : HasCliqueOrIndepSetBound 10 10 39246
+  targetRowsAdmissibleTenAt40960Projection : 10 ∈ admissibleBounds 40960
+  targetRowsExtremalF40960Projection : 10 ≤ F 40960
+  targetRowsRegularTenAt40960Projection :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  remainingRowsLocalizedR45Projection : HasCliqueOrIndepSetBound 4 5 27
+  checklistLocalizedR45Projection : HasCliqueOrIndepSetBound 4 5 27
+  explicitRowsLocalizedR45Projection : HasCliqueOrIndepSetBound 4 5 27
+  finalBundleLocalizedR45Projection : HasCliqueOrIndepSetBound 4 5 27
+  downstreamCitationLocalizedR45Projection : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+  regularInducedSubgraphConsumer :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final public target bundles materialize the downstream/public target projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdDownstreamPublicTargetProjectionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v := by
+  let hs := h.toProofMdDownstreamPublicTargetSelector
+  let ht := h.toCurrentFrontierTargetRows
+  let ha := h.toRemainingAssumptionRows
+  let he := h.toProofMdExplicitR45ObligationRows
+  let hc := h.toProofMdR45RemainingObligationChecklist
+  exact
+    { selector := hs
+      finalPublicTargetBundle := h
+      finalReleasePublicTargetSurface := h.toProofMdFinalReleasePublicTargetSurface
+      publicReleaseCitation := h.toProofMdPublicReleaseCitation
+      downstreamConsumerCitationBundle := h.toProofMdFinalConsumerCitationBundle
+      explicitAssumptionRows := he
+      remainingObligationChecklist := hc
+      publicDistributionFacade :=
+        hc.toProofMdFinalPublicDistributionBundle.toProofMdFinalPublicDistributionFacade
+      finalBundleSelector := hc.toFinalBundleSelectorSurface
+      targetRows := ht
+      remainingAssumptionRows := ha
+      endpointResiduals := h.toEndpointResiduals
+      r45TwentySevenTable := h.toR45TwentySevenTable
+      targetRowsExact42Projection := hs.toTargetRowsThreeTenFortyTwo
+      targetRowsLocalizedR45Projection :=
+        hs.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+      targetRowsPropagatedR1010Projection :=
+        hs.toTargetRowsHasCliqueOrIndepSetBound_10_10_39246
+      targetRowsAdmissibleTenAt40960Projection := hs.toTargetRowsTenMemAdmissibleBounds_40960
+      targetRowsExtremalF40960Projection := hs.toTargetRowsTenLeF_40960
+      targetRowsRegularTenAt40960Projection := fun H hcard =>
+        hs.toTargetRowsHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+      remainingRowsLocalizedR45Projection :=
+        ha.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      checklistLocalizedR45Projection := hc.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      explicitRowsLocalizedR45Projection := he.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      finalBundleLocalizedR45Projection := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      downstreamCitationLocalizedR45Projection :=
+        h.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+      propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+      admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+      extremalF40960Row := h.toTenLeF_40960
+      regularInducedSubgraphConsumer := fun H hcard =>
+        h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard }
+
+/-- Select the selector-level view from the downstream/public target projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdDownstreamPublicTargetSelector
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v :=
+  h.selector
+
+/-- Select the final public target bundle from the downstream/public target projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdFinalPublicTargetBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v :=
+  h.finalPublicTargetBundle
+
+/-- Select the final-release public target surface from the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdFinalReleasePublicTargetSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v :=
+  h.finalReleasePublicTargetSurface
+
+/-- Select the public-release citation surface from the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.publicReleaseCitation
+
+/-- Select the downstream consumer citation bundle from the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdFinalConsumerCitationBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v :=
+  h.downstreamConsumerCitationBundle
+
+/-- Select explicit R45 assumption rows from the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdExplicitR45ObligationRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v :=
+  h.explicitAssumptionRows
+
+/-- Select the remaining-obligation checklist from the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.remainingObligationChecklist
+
+/-- Select the public distribution facade from the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdFinalPublicDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v :=
+  h.publicDistributionFacade
+
+/-- Select the final bundle selector surface from the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toFinalBundleSelectorSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45FinalBundleSelectorSurface :=
+  h.finalBundleSelector
+
+/-- Select target rows from the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select remaining-assumption rows from the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Downstream/public projection to the target-row low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.targetRowsExact42Projection
+
+/-- Downstream/public projection to the target-row localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.targetRowsLocalizedR45Projection
+
+/-- Downstream/public projection to the target-row propagated `R(10,10)` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.targetRowsPropagatedR1010Projection
+
+/-- Downstream/public projection to the target-row admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.targetRowsAdmissibleTenAt40960Projection
+
+/-- Downstream/public projection to the target-row extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    10 ≤ F 40960 :=
+  h.targetRowsExtremalF40960Projection
+
+/-- Downstream/public projection to the target-row regular induced `10`-subgraph consumer theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.targetRowsRegularTenAt40960Projection H hcard
+
+/-- Downstream/public projection to the final public target bundle's localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.finalBundleLocalizedR45Projection
+
+/-- Downstream/public projection to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Downstream/public projection to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Downstream/public projection to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Downstream/public projection to the regular induced `10`-subgraph consumer theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularInducedSubgraphConsumer H hcard
+
+/-- Final-release public target surfaces materialize the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface.toProofMdDownstreamPublicTargetProjectionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v :=
+  h.toProofMdFinalPublicTargetBundle.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Public-release citations materialize the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdDownstreamPublicTargetProjectionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v :=
+  h.toProofMdFinalPublicTargetBundle.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Final consumer citation bundles materialize the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toProofMdDownstreamPublicTargetProjectionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v :=
+  h.toProofMdPublicReleaseCitation.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Explicit R45 assumption rows materialize the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows.toProofMdDownstreamPublicTargetProjectionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v :=
+  h.toProofMdFinalPublicTargetBundle.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Remaining-obligation checklists materialize the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist.toProofMdDownstreamPublicTargetProjectionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v := by
+  let hb := h.toProofMdFinalPublicDistributionBundle.toProofMdFinalCheckpointReleaseBundle
+  let hp := hb.toProofMdPublicReleaseCitation
+  exact hp.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Public distribution facades materialize the downstream/public projection bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade.toProofMdDownstreamPublicTargetProjectionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v := by
+  let hb := h.toProofMdFinalPublicDistributionBundle.toProofMdFinalCheckpointReleaseBundle
+  let hp := hb.toProofMdPublicReleaseCitation
+  exact hp.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Selectors materialize the downstream/public projection bundle through their final public target bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toProofMdDownstreamPublicTargetProjectionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v :=
+  h.toProofMdFinalPublicTargetBundle.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Flat constructor exposing downstream/public projection bundles from final public target bundles. -/
+theorem ramseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle_of_finalPublicTargetBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v :=
+  h.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Flat constructor exposing downstream/public projection bundles from selector views. -/
+theorem ramseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle_of_downstreamPublicTargetSelector
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v :=
+  h.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Flat constructor exposing downstream/public projection bundles from remaining-obligation checklists. -/
+theorem ramseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle_of_remainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v :=
+  h.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Flat constructor exposing downstream/public projection bundles from public distribution facades. -/
+theorem ramseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle_of_finalPublicDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v :=
+  h.toProofMdDownstreamPublicTargetProjectionBundle
+
+/-- Downstream/public projection bundles round-trip through final public target bundles. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdFinalPublicTargetBundle_toProofMdDownstreamPublicTargetProjectionBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toProofMdFinalPublicTargetBundle.toProofMdDownstreamPublicTargetProjectionBundle = h := by
+  exact Subsingleton.elim _ _
+
+/-- Selector views round-trip through downstream/public projection bundles on final public targets. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector.toProofMdDownstreamPublicTargetProjectionBundle_toProofMdFinalPublicTargetBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetSelector G s v) :
+    h.toProofMdDownstreamPublicTargetProjectionBundle.toProofMdFinalPublicTargetBundle =
+      h.toProofMdFinalPublicTargetBundle := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream/public projection bundles normalize selector target rows with bundle target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdDownstreamPublicTargetSelector_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toProofMdDownstreamPublicTargetSelector.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream/public projection bundles normalize target rows with remaining-assumption rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toCurrentFrontierTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toCurrentFrontierTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream/public projection bundles normalize target-row R45 with the final public carried row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream/public projection bundles normalize remaining-row R45 with the final public carried row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toRemainingAssumptionRows_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toRemainingAssumptionRows.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream/public projection bundles normalize checklist R45 with the final public carried row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdR45RemainingObligationChecklist_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toProofMdR45RemainingObligationChecklist.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream/public projection bundles normalize explicit-row R45 with the final public carried row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdExplicitR45ObligationRows_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toProofMdExplicitR45ObligationRows.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream/public projection bundles normalize target-row R1010 with the propagated row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toTargetRowsHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream/public projection bundles normalize target-row admissibility with the public row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsTenMemAdmissibleBounds_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toTargetRowsTenMemAdmissibleBounds_40960 =
+      h.toTenMemAdmissibleBounds_40960 := by
+  exact Subsingleton.elim _ _
+
+/-- Downstream/public projection bundles normalize target-row F-bound with the public row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsTenLeF_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    h.toTargetRowsTenLeF_40960 = h.toTenLeF_40960 := by
+  exact Subsingleton.elim _ _
+
+/--
+Downstream/public projection bundles normalize target-row regular induced-subgraph consumers with
+the final public consumer theorem.
+-/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toTargetRowsHasRegularInducedSubgraphOfCard_ten_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    h.toTargetRowsHasRegularInducedSubgraphOfCard_ten_40960 H hcard =
+      h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
