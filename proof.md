@@ -9904,6 +9904,20 @@ at least two disjoint zero-trace packets in a single outside degree chamber, and
 such packets is forbidden from being an internal residue-`a-t` selector.  This is the packet quotient
 form of the terminal anti-merge obstruction.
 
+The exact merge condition only needs constant trace to `S`, not zero trace.  Quotient the trace group by
+the constant vector:
+
+```text
+(Z/4Z)^S / <(1,1,...,1)> ~= (Z/4Z)^(m-1).
+```
+
+Its Davenport constant is `3m-2`.  Therefore every chamber `U_t` of size at least `3m-2` contains a
+nonempty packet `X` for which all vertices of `S` see the same residue `p` of neighbours in `X`.
+If `H[X]` has all degrees congruent to `a+p-t mod 4`, then `S union X` is a larger selector.  Thus
+terminality forbids every constant-trace packet from being an internal selector of its matching residue.
+In the critical case the largest outside degree chamber contains two disjoint constant-trace packets, and
+all nonempty unions of a disjoint constant-trace packet family are forbidden at their matching residues.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

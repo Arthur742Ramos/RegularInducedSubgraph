@@ -870,6 +870,9 @@ quotient residue.
 For a maximum core `S`, Davenport in `(Z/4)^S` produces zero-trace packets in every outside degree chamber
 of size at least `3m+1`; terminality says no such packet, nor any union of disjoint packets in the same
 degree chamber, may have the matching internal residue needed to merge with `S`.
+Quotienting traces by the constant all-ones vector gives the sharper constant-trace packet form with
+threshold `3m-2`; a constant-trace `p` packet in degree chamber `t` may not be an internal
+residue-`a+p-t` selector.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

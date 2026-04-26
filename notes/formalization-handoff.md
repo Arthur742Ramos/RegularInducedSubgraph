@@ -2203,6 +2203,10 @@ Recommended attack:
     `S` is zero in `(Z/4)^S`.  Such a packet cannot be an internal residue-`a-t` selector, and in the
     critical case some chamber has size greater than `7m`, giving two disjoint zero-trace packets whose
     nonempty unions are all internally forbidden.
+    Formalize the sharper quotient version: modulo the constant all-ones trace, the trace group is
+    `(Z/4)^(m-1)` with Davenport constant `3m-2`; hence a chamber of size at least `3m-2` contains a
+    constant-trace packet.  If the constant trace is `p`, that packet is forbidden from being an internal
+    residue-`a+p-t` selector.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

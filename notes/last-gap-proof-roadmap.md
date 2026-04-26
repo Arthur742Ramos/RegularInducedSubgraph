@@ -1822,7 +1822,8 @@ What remains justified after audit is:
       complementary trace extensions satisfying the corrected pair residue equation;
       Davenport in `(Z/4)^S` around any maximum core gives zero-trace outside packets in large same-degree
       chambers, and criticality gives two disjoint packets in one chamber whose unions are internally
-      anti-selector;
+      anti-selector; quotienting by the all-ones trace sharpens these to constant-trace packets with
+      threshold `3m-2`, exactly matching the merge equation;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

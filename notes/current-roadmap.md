@@ -5102,6 +5102,9 @@ For a maximum core `S` of residue `a`, Davenport in `(Z/4)^S` gives zero-trace p
 degree chamber `U_t={x:deg_S(x)=t mod 4}` of size at least `3m+1`; such a packet may not be an internal
 residue-`a-t` selector.  In the critical case some `U_t` has size greater than `7m`, so two disjoint
 zero-trace packets exist in one chamber and all nonempty unions are internally forbidden.
+The exact merge condition strengthens this to constant-trace packets by quotienting `(Z/4)^S` by the
+all-ones trace: the Davenport threshold becomes `3m-2`, and a packet with constant trace `p` in chamber
+`U_t` is forbidden from being an internal residue-`a+p-t` selector.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and
