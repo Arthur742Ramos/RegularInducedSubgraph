@@ -5133,6 +5133,18 @@ For larger atom families, any cross-uniform subfamily reduces to a weighted atom
 cross-correction vectors in every large subfamily.
 On atoms with constant internal defect, the nonconstant cross-corrections form an irregularity graph; any
 quotient-solvable independent set in this graph has lifted size at most `m`.
+Finally, either a single atom has size between `m+1` and `3m+1` and is itself a compact terminal induced
+chamber with no proper size-`0 mod 4` constant-trace subpacket, or all atoms have size at most `m` and the
+largest critical chamber supplies at least five atoms for the finite quotient branch.
+Ramsey gives `m>=4`; in the small-atom branch all atom weights lie in `4,8,...,m`, the total atom weight
+is greater than `19m/4`, and no quotient-solvable subfamily has weight greater than `m`.
+Consequently the atom family contains two disjoint bundles of weights in `(m,2m]`; each must be blocked
+by defect variation, cross-irregularity, or quotient unsolvability.
+They may be chosen minimal above `m`, so each is tight (`w(B)-w_i<=m` for every atom), and their union is
+also a forbidden threshold object; if all cross-corrections are quotient-uniform, the combined
+two-bundle quotient must be unsolvable.
+Thus the small-atom endpoint has a three-certificate split for `B1`, `B2`, and `B1 union B2`: defect
+variation, cross-irregularity, or pure weighted-quotient unsolvability.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

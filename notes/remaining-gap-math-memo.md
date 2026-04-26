@@ -1833,6 +1833,16 @@ For internally regular cross-regular size-zero atoms, the two-atom quotient dang
 Large cross-uniform atom subfamilies reduce to the quotient equations
 `e_i+sum_{j!=i}c_ij=0 mod 4`; terminality forces quotient unsolvability or cross-irregularity.
 The atom irregularity graph has no quotient-solvable independent set of lifted size greater than `m`.
+Either some atom is a compact terminal chamber with `m<|X|<=3m+1`, or all atoms have size at most `m` and
+the largest critical chamber contains at least five atoms.
+Ramsey gives `m>=4`; small atoms have weights in `4,8,...,m` and no quotient-solvable subfamily of
+weight greater than `m`.
+The total atom weight `>19m/4` yields two disjoint threshold bundles of weights in `(m,2m]`, each
+terminally blocked.
+Choosing them minimal makes them tight, and their union is a further forbidden threshold bundle unless
+the combined quotient is unsolvable or cross-irregular.
+Each of `B1`, `B2`, and `B1 union B2` is blocked by defect variation, cross-irregularity, or pure
+weighted-quotient unsolvability.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

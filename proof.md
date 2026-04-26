@@ -10099,6 +10099,79 @@ every quotient-solvable independent set in R_atom has lifted size at most m.
 Thus a terminal atom family of lifted size greater than `19m/4` must either contain many internally
 nonconstant-defect atoms, have large irregularity graph, or be a quotient-free weighted `Z/4` system.
 
+There is also a useful size dichotomy.  If some atom `X_i` has `|X_i|>m`, then `H[X_i]` is itself a
+terminal induced chamber: by maximality of `m`, every mod-`4` residue-core inside `X_i` has size at most
+`m`.  It is compact, with
+
+```text
+m < |X_i| <= 3m+1,
+```
+
+and it has no proper nonempty size-`0 mod 4` constant-trace subpacket relative to `S`.  This is the
+large-atom branch.
+
+Otherwise all atoms have size at most `m`.  Since the extracted atom family covers more than `19m/4`
+vertices, the family contains at least five atoms.  This is the finite-quotient branch: one has at least
+five disjoint size-`0 mod 4` trace atoms in a single outside degree chamber, every nonempty subunion is
+anti-selector, and the obstruction must be witnessed by the atom irregularity graph or by quotient
+unsolvability over `Z/4Z`.
+
+The critical endpoint also has the Ramsey base `m>=4`: if `m<=3`, then
+`|H|=32m+1>=18` in every nontrivial case, and `R(4,4)=18` gives a clique or independent set of size `4`,
+itself a selector.  Thus every size-refined atom has size in
+
+```text
+4,8,12,...,m
+```
+
+in the small-atom branch.  The finite quotient obstruction is therefore a positive weighted atom system,
+with all weights divisible by `4`, total weight greater than `19m/4`, and no quotient-solvable subfamily
+of weight greater than `m`.
+
+This weighted system contains disjoint threshold bundles.  Order the atoms arbitrarily and take a minimal
+initial block whose total weight exceeds `m`; since every atom has weight at most `m`, this block has
+weight at most `2m`.  Removing it leaves total weight greater than `11m/4`, so the same argument gives a
+second disjoint block, again with weight in `(m,2m]`.  Therefore the small-atom branch supplies two
+disjoint atom bundles of lifted size greater than `m`.  Each bundle must be blocked independently: either
+its cross-corrections are not quotient-uniform, its internal defects are not constant on atoms, or its
+weighted `Z/4` atom quotient has no zero-row solution.
+
+Choose the two bundles minimal above the threshold.  If `B` is one such bundle with lifted weight
+`w(B)`, then
+
+```text
+m < w(B) <= 2m,        w(B)-w_i <= m for every atom i in B.
+```
+
+Equivalently every atom in `B` has weight at least the excess `w(B)-m`.  Thus minimal threshold bundles
+are tight.  Since the two bundles are disjoint, their union has weight greater than `2m` and is also a
+forbidden threshold object.  Hence terminality must block not only each bundle separately but also the
+combined bundle: if all defects are atom-constant and all cross-corrections inside and between the two
+bundles are quotient-uniform, the combined weighted `Z/4` quotient has no zero-row solution.
+
+The small-atom endpoint is therefore a finite two-bundle obstruction: two tight threshold bundles of
+size-`0 mod 4` trace atoms, each quotient-blocked, whose union is also quotient-blocked unless some
+cross-correction is genuinely nonconstant.
+
+Equivalently, each of the three threshold objects
+
+```text
+B_1,        B_2,        B_1 union B_2
+```
+
+carries one of three certificates:
+
+```text
+D: an atom has nonconstant internal defect,
+C: a directed atom-pair has nonconstant cross-correction,
+Q: all defects/cross-corrections are constant but the weighted Z/4 quotient has no zero-row solution.
+```
+
+If all three certificates are `Q`, the obstruction is purely finite and lives entirely in a weighted
+`Z/4` quotient on at least five atoms.  Otherwise the terminal graph contains a concrete local
+irregularity certificate inside one atom or between two atoms of the same outside degree chamber.  This
+three-certificate split is the current terminal normal form of the small-atom branch.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

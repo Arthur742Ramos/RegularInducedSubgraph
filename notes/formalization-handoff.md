@@ -2238,6 +2238,20 @@ Recommended attack:
     Define the atom irregularity graph on constant-defect atoms, joining two atoms when either directed
     cross-correction is nonconstant.  Formalize that every quotient-solvable independent set has lifted
     size at most `m`.
+    Add the atom-size dichotomy: if an atom has size greater than `m`, it is a compact terminal induced
+    chamber of size at most `3m+1` and has no proper size-`0 mod 4` constant-trace subpacket.  If all atoms
+    have size at most `m`, the extracted cover greater than `19m/4` contains at least five atoms.
+    Add the Ramsey base and weights: `m>=4` by `R(4,4)`, and in the small-atom branch all atom weights are
+    positive multiples of `4`; no quotient-solvable subfamily can have weight greater than `m`.
+    Add the weighted bundle lemma: from total atom weight `>19m/4` and atom weights at most `m`, extract
+    two disjoint subfamilies, each of total weight in `(m,2m]`.  Terminality blocks each by defect
+    variation, cross-irregularity, or quotient unsolvability.
+    Add the minimal tight-bundle refinement: choose each bundle minimal above `m`, so `w(B)-w_i<=m` for
+    every atom `i` in the bundle.  Their union has weight greater than `2m`; if all defects and
+    cross-corrections across both bundles are quotient-uniform, the combined quotient must be unsolvable.
+    Add the three-certificate split for each threshold object `B1`, `B2`, and `B1 union B2`: either an
+    atom has nonconstant internal defect, an ordered atom pair has nonconstant cross-correction, or the
+    fully constant weighted `Z/4` quotient has no zero-row solution.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

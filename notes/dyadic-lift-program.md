@@ -900,6 +900,17 @@ More generally, a cross-uniform atom subfamily is controlled by the quotient equ
 cross-irregular on every large subfamily.
 Equivalently, the atom irregularity graph (edges are nonconstant cross-corrections) has no
 quotient-solvable independent set of lifted size greater than `m`.
+The atom endpoint splits by size: a large atom `|X|>m` is a compact terminal chamber of size at most
+`3m+1`, while if all atoms have size at most `m`, the cover `>19m/4` forces at least five atoms and a
+finite atom-quotient obstruction.
+Here `m>=4` by `R(4,4)`, and the small-atom weights are positive multiples of `4`; no quotient-solvable
+subfamily may have total weight greater than `m`.
+Since the total small-atom weight is greater than `19m/4`, two disjoint threshold bundles of weight
+between `m` and `2m` exist; terminality must block each bundle separately.
+Taking them minimal makes them tight, and their union has weight greater than `2m`; terminality blocks
+the combined quotient as well unless cross-corrections between the bundles are nonconstant.
+Each of `B1`, `B2`, and `B1 union B2` is blocked by one of three certificates: nonconstant atom defect,
+nonconstant cross-correction, or pure weighted `Z/4` quotient unsolvability.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

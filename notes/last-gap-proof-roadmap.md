@@ -1836,7 +1836,15 @@ What remains justified after audit is:
       `d_X+c_XY==d_Y+c_YX==a+p_X+p_Y-t` in the cross-regular case; larger cross-uniform atom subfamilies
       reduce to weighted quotient equations, so terminality forces quotient unsolvability or
       cross-irregularity in every large subfamily; equivalently the atom irregularity graph has no
-      quotient-solvable independent set of lifted size above `m`;
+      quotient-solvable independent set of lifted size above `m`; either a large atom is a compact
+      terminal chamber of size between `m+1` and `3m+1`, or the small-atom branch has at least five atoms
+      and is a finite atom-quotient obstruction with positive weights divisible by `4` and no
+      quotient-solvable subfamily of weight above `m`; the total weight `>19m/4` gives two disjoint
+      threshold bundles of weights in `(m,2m]`, each blocked by defect variation, cross-irregularity, or
+      quotient unsolvability; choosing them minimal makes them tight, and their union is a further
+      forbidden threshold object unless the combined quotient is unsolvable or cross-irregular, yielding
+      a three-certificate split: defect variation, cross-irregularity, or pure weighted-quotient
+      unsolvability;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;
