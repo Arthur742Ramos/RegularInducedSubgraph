@@ -5354,6 +5354,251 @@ theorem hasFirstBitSignedAtomSmallDeletionSpectrumTables :
   · intro c phi
     exact firstBitSignedAtomDeletionSupportResidue_three c phi
 
+/-- A mod-four shift is a unit shift exactly in the two odd rows. -/
+def FirstBitModFourUnitShift (σ : Fin 4) : Prop :=
+  σ = (1 : Fin 4) ∨ σ = (3 : Fin 4)
+
+/-- The only nonzero shift that can add to itself without leaving `{0, σ}` is `2`. -/
+def FirstBitModFourSelfAddSurvivesSparse (σ : Fin 4) : Prop :=
+  σ ≠ (0 : Fin 4) ∧
+    (firstBitModFourAddTable σ σ = (0 : Fin 4) ∨
+      firstBitModFourAddTable σ σ = σ)
+
+/-- Unit shifts self-add to residue `2`, hence not to either allowed sparse row `{0, σ}`. -/
+theorem firstBitModFourUnitShift_self_add_not_zero_or_self {σ : Fin 4}
+    (hunit : FirstBitModFourUnitShift σ) :
+    ¬ (firstBitModFourAddTable σ σ = (0 : Fin 4) ∨
+      firstBitModFourAddTable σ σ = σ) := by
+  rcases hunit with rfl | rfl <;> decide
+
+/-- In the sparse self-addition test, `σ = 2` is the unique surviving nonzero branch. -/
+theorem firstBitModFourSelfAddSurvivesSparse_iff_two (σ : Fin 4) :
+    FirstBitModFourSelfAddSurvivesSparse σ ↔ σ = (2 : Fin 4) := by
+  fin_cases σ <;> decide
+
+/-- The `σ = 2` branch is exactly the nonzero self-addition branch that returns to `0`. -/
+theorem firstBitModFour_two_self_add_zero :
+    firstBitModFourAddTable (2 : Fin 4) (2 : Fin 4) = (0 : Fin 4) := by
+  decide
+
+/--
+Certificate for the small-deletion shift addition law.  The predicate `Usable` is the
+graph-facing co-regular deletion condition; this certificate records only the terminal scalar
+frontier: disjoint usable deletions whose total size is below four have additive constants and
+additive shifts modulo four.
+-/
+structure FirstBitUsableDeletionShiftAdditionCertificate
+    {α : Type*} [DecidableEq α]
+    (Usable : Finset α → ℕ → Fin 4 → Prop)
+    (D₁ D₂ : Finset α) (c₁ c₂ : ℕ) (σ₁ σ₂ : Fin 4) : Prop where
+  left : Usable D₁ c₁ σ₁
+  right : Usable D₂ c₂ σ₂
+  disjoint : Disjoint D₁ D₂
+  totalSize_lt_four : D₁.card + D₂.card < 4
+  union :
+    Usable (D₁ ∪ D₂) (c₁ + c₂) (firstBitModFourAddTable σ₁ σ₂)
+
+/-- Extract the additive union deletion from a shift-addition certificate. -/
+theorem FirstBitUsableDeletionShiftAdditionCertificate.unionShift
+    {α : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop}
+    {D₁ D₂ : Finset α} {c₁ c₂ : ℕ} {σ₁ σ₂ : Fin 4}
+    (h :
+      FirstBitUsableDeletionShiftAdditionCertificate Usable D₁ D₂ c₁ c₂ σ₁ σ₂) :
+    Usable (D₁ ∪ D₂) (c₁ + c₂) (firstBitModFourAddTable σ₁ σ₂) :=
+  h.union
+
+/--
+Surface form of the shift-addition law for all disjoint usable deletions of total size `< 4`.
+This is intentionally algebraic: the eventual graph proof supplies `Usable`, while the terminal
+frontier consumes only this additive packaging.
+-/
+structure FirstBitSmallDeletionShiftAdditionSurface
+    {α : Type*} [DecidableEq α]
+    (Usable : Finset α → ℕ → Fin 4 → Prop) : Prop where
+  add :
+    ∀ {D₁ D₂ : Finset α} {c₁ c₂ : ℕ} {σ₁ σ₂ : Fin 4},
+      Usable D₁ c₁ σ₁ →
+        Usable D₂ c₂ σ₂ →
+          Disjoint D₁ D₂ →
+            D₁.card + D₂.card < 4 →
+              FirstBitUsableDeletionShiftAdditionCertificate
+                Usable D₁ D₂ c₁ c₂ σ₁ σ₂
+
+/-- Apply the shift-addition surface and return the additive union deletion directly. -/
+theorem firstBitSmallDeletionShift_union_of_surface
+    {α : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop}
+    (hadd : FirstBitSmallDeletionShiftAdditionSurface Usable)
+    {D₁ D₂ : Finset α} {c₁ c₂ : ℕ} {σ₁ σ₂ : Fin 4}
+    (h₁ : Usable D₁ c₁ σ₁) (h₂ : Usable D₂ c₂ σ₂)
+    (hdisj : Disjoint D₁ D₂) (hsize : D₁.card + D₂.card < 4) :
+    Usable (D₁ ∪ D₂) (c₁ + c₂) (firstBitModFourAddTable σ₁ σ₂) :=
+  (hadd.add h₁ h₂ hdisj hsize).unionShift
+
+/-- Singleton-or-pair old repairs are the small repairs used by the large-fiber branch split. -/
+def FirstBitSingletonOrPairDeletion {α : Type*} (D : Finset α) : Prop :=
+  D.card = 1 ∨ D.card = 2
+
+/-- A nonzero-shift singleton/pair repair, stated against an abstract usable-deletion predicate. -/
+def FirstBitNonzeroSingletonPairRepair
+    {α : Type*} (Usable : Finset α → ℕ → Fin 4 → Prop)
+    (σ : Fin 4) (D : Finset α) : Prop :=
+  FirstBitSingletonOrPairDeletion D ∧ ∃ c : ℕ, Usable D c σ
+
+/--
+Sparse large-fiber shift frontier.  `Δ` is the small-deletion shift spectrum for one direction,
+`σ` is its only possible nonzero shift, and no graph-facing endpoint is asserted here.
+-/
+structure FirstBitLargeFiberSmallDeletionShiftFrontier
+    {α : Type*} [DecidableEq α]
+    (Usable : Finset α → ℕ → Fin 4 → Prop) (Δ : Finset (Fin 4)) (σ : Fin 4) :
+    Prop where
+  addition : FirstBitSmallDeletionShiftAdditionSurface Usable
+  zero_mem : (0 : Fin 4) ∈ Δ
+  sparse : ∀ τ ∈ Δ, τ = (0 : Fin 4) ∨ τ = σ
+  mem_of_usable : ∀ {D : Finset α} {c : ℕ} {τ : Fin 4}, Usable D c τ → τ ∈ Δ
+
+/-- The zero shift is always present in a sparse large-fiber frontier. -/
+theorem FirstBitLargeFiberSmallDeletionShiftFrontier.zeroShift_mem
+    {α : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    (h : FirstBitLargeFiberSmallDeletionShiftFrontier Usable Δ σ) :
+    (0 : Fin 4) ∈ Δ :=
+  h.zero_mem
+
+/-- Any usable small deletion contributes its shift to the large-fiber spectrum. -/
+theorem FirstBitLargeFiberSmallDeletionShiftFrontier.shift_mem_of_usable
+    {α : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ τ : Fin 4}
+    {D : Finset α} {c : ℕ}
+    (h : FirstBitLargeFiberSmallDeletionShiftFrontier Usable Δ σ)
+    (hD : Usable D c τ) :
+    τ ∈ Δ :=
+  h.mem_of_usable hD
+
+/-- In a unit-shift sparse frontier, two disjoint `σ`-repairs of total size `< 4` are impossible. -/
+theorem firstBitLargeFiber_unitShift_repairs_intersect_of_total_lt_four
+    {α : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    (hfrontier : FirstBitLargeFiberSmallDeletionShiftFrontier Usable Δ σ)
+    (hunit : FirstBitModFourUnitShift σ)
+    {D₁ D₂ : Finset α} {c₁ c₂ : ℕ}
+    (h₁ : Usable D₁ c₁ σ) (h₂ : Usable D₂ c₂ σ)
+    (_hrepair₁ : FirstBitSingletonOrPairDeletion D₁)
+    (_hrepair₂ : FirstBitSingletonOrPairDeletion D₂)
+    (hsize : D₁.card + D₂.card < 4) :
+    ¬ Disjoint D₁ D₂ := by
+  intro hdisj
+  have hunion :
+      Usable (D₁ ∪ D₂) (c₁ + c₂) (firstBitModFourAddTable σ σ) :=
+    firstBitSmallDeletionShift_union_of_surface hfrontier.addition h₁ h₂ hdisj hsize
+  have hmem : firstBitModFourAddTable σ σ ∈ Δ :=
+    hfrontier.mem_of_usable hunion
+  have hsparse :
+      firstBitModFourAddTable σ σ = (0 : Fin 4) ∨
+        firstBitModFourAddTable σ σ = σ :=
+    hfrontier.sparse (firstBitModFourAddTable σ σ) hmem
+  exact firstBitModFourUnitShift_self_add_not_zero_or_self hunit hsparse
+
+/--
+Family form of the unit-shift branch split: all nonzero singleton/pair repairs in the same
+unit-shift large fiber are intersecting whenever their disjoint union would still have size `< 4`.
+-/
+theorem firstBitLargeFiber_unitShift_nonzeroSingletonPairRepairs_intersect
+    {α : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    (hfrontier : FirstBitLargeFiberSmallDeletionShiftFrontier Usable Δ σ)
+    (hunit : FirstBitModFourUnitShift σ)
+    {D₁ D₂ : Finset α}
+    (hD₁ : FirstBitNonzeroSingletonPairRepair Usable σ D₁)
+    (hD₂ : FirstBitNonzeroSingletonPairRepair Usable σ D₂)
+    (hsize : D₁.card + D₂.card < 4) :
+    ¬ Disjoint D₁ D₂ := by
+  rcases hD₁ with ⟨hrepair₁, c₁, h₁⟩
+  rcases hD₂ with ⟨hrepair₂, c₂, h₂⟩
+  exact
+    firstBitLargeFiber_unitShift_repairs_intersect_of_total_lt_four
+      hfrontier hunit h₁ h₂ hrepair₁ hrepair₂ hsize
+
+/-- The unit branch as a reusable terminal frontier surface. -/
+def FirstBitLargeFiberUnitShiftIntersectingBranch
+    {α : Type*} [DecidableEq α]
+    (Usable : Finset α → ℕ → Fin 4 → Prop) (σ : Fin 4) : Prop :=
+  FirstBitModFourUnitShift σ ∧
+    ∀ {D₁ D₂ : Finset α},
+      FirstBitNonzeroSingletonPairRepair Usable σ D₁ →
+        FirstBitNonzeroSingletonPairRepair Usable σ D₂ →
+          D₁.card + D₂.card < 4 →
+            ¬ Disjoint D₁ D₂
+
+/-- Build the unit-branch terminal surface from the sparse large-fiber shift frontier. -/
+theorem firstBitLargeFiber_unitShiftIntersectingBranch_of_frontier
+    {α : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    (hfrontier : FirstBitLargeFiberSmallDeletionShiftFrontier Usable Δ σ)
+    (hunit : FirstBitModFourUnitShift σ) :
+    FirstBitLargeFiberUnitShiftIntersectingBranch Usable σ := by
+  refine ⟨hunit, ?_⟩
+  intro D₁ D₂ hD₁ hD₂ hsize
+  exact
+    firstBitLargeFiber_unitShift_nonzeroSingletonPairRepairs_intersect
+      hfrontier hunit hD₁ hD₂ hsize
+
+/-- The only branch where disjoint nonzero repairs can survive the sparse self-addition test. -/
+def FirstBitLargeFiberSigmaTwoDisjointSurvivalBranch (σ : Fin 4) : Prop :=
+  σ = (2 : Fin 4)
+
+/-- Self-addition survival identifies the `σ = 2` branch. -/
+theorem firstBitLargeFiberSigmaTwoDisjointSurvivalBranch_of_selfAddSurvives
+    {σ : Fin 4} (h : FirstBitModFourSelfAddSurvivesSparse σ) :
+    FirstBitLargeFiberSigmaTwoDisjointSurvivalBranch σ :=
+  (firstBitModFourSelfAddSurvivesSparse_iff_two σ).1 h
+
+/--
+Large-fiber branch split at the terminal frontier.  A nonzero sparse shift is either a unit shift,
+which forces the singleton/pair repair family to be intersecting, or it is the unique `σ = 2`
+disjoint-survival branch.  This does not claim the graph-facing endpoint is closed.
+-/
+theorem firstBitLargeFiber_nonzeroShift_terminalBranchSplit
+    {α : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    (hfrontier : FirstBitLargeFiberSmallDeletionShiftFrontier Usable Δ σ)
+    (hnonzero : σ ≠ (0 : Fin 4)) :
+    FirstBitLargeFiberUnitShiftIntersectingBranch Usable σ ∨
+      FirstBitLargeFiberSigmaTwoDisjointSurvivalBranch σ := by
+  fin_cases σ
+  · exact False.elim (hnonzero rfl)
+  · exact Or.inl
+      (firstBitLargeFiber_unitShiftIntersectingBranch_of_frontier hfrontier (Or.inl rfl))
+  · exact Or.inr rfl
+  · exact Or.inl
+      (firstBitLargeFiber_unitShiftIntersectingBranch_of_frontier hfrontier (Or.inr rfl))
+
+/--
+Terminal-facing package for the small-deletion shift frontier.  It exposes the sparse spectrum,
+the disjoint shift-addition surface, and the nonzero branch split, but deliberately stops before
+any graph-facing regular-subgraph endpoint.
+-/
+structure FirstBitSmallDeletionShiftTerminalFrontierSurfaces
+    {α : Type*} [DecidableEq α]
+    (Usable : Finset α → ℕ → Fin 4 → Prop) (Δ : Finset (Fin 4)) (σ : Fin 4) :
+    Prop where
+  frontier : FirstBitLargeFiberSmallDeletionShiftFrontier Usable Δ σ
+  branchSplit :
+    σ ≠ (0 : Fin 4) →
+      FirstBitLargeFiberUnitShiftIntersectingBranch Usable σ ∨
+        FirstBitLargeFiberSigmaTwoDisjointSurvivalBranch σ
+
+/-- A sparse large-fiber shift frontier automatically gives the terminal branch-split surface. -/
+theorem firstBitSmallDeletionShiftTerminalFrontierSurfaces_of_frontier
+    {α : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    (hfrontier : FirstBitLargeFiberSmallDeletionShiftFrontier Usable Δ σ) :
+    FirstBitSmallDeletionShiftTerminalFrontierSurfaces Usable Δ σ where
+  frontier := hfrontier
+  branchSplit := firstBitLargeFiber_nonzeroShift_terminalBranchSplit hfrontier
+
 /--
 Two-coordinate augmented atom normalization surface: the atom size and old increment vanish modulo
 four, and the aggregate defect sum is `-2e(S)` modulo four.  This records only scalar control and
