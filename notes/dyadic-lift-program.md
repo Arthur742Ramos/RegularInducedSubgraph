@@ -1024,6 +1024,8 @@ blocks covering `A` whose multiplicities are bounded by `c_Z(B)`.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.
+Active deletion gives projected three-block covers of `A\{a}`; terminality forbids every one-coordinate
+lift that toggles `a` into exactly one block.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

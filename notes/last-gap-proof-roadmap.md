@@ -1933,6 +1933,8 @@ What remains justified after audit is:
       three-block covers of `A`;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
+      active-coordinate near-covers forbid every one-coordinate lift that toggles the active coordinate
+      into exactly one support block;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on

@@ -2408,6 +2408,9 @@ Recommended attack:
     Add the private-column relaxation formula
     `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts active support `B` columns whose zero trace is
     exactly `{z}`.
+    Add active lift-exclusion: a near-cover after deleting `a` has projected blocks covering `A\{a}`;
+    replacing them by supports that put `a` in exactly one block must be capacity-deficient for every such
+    choice.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

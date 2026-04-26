@@ -5309,6 +5309,8 @@ or three-singleton alternatives with the required empty columns.
 Relaxing a zero coordinate adds only private columns `p_z(B)` whose zero-trace is exactly `{z}`; in the
 all-zero case, if only `q<=2` common-zero columns exist, every zero coordinate has at least `3-q` private
 columns.
+Active-coordinate defect witnesses have a dual lift-exclusion: their three projected support blocks cover
+`A\{a}`, and every way to toggle `a` into exactly one block is capacity-deficient.
 Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
 Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
 `R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.

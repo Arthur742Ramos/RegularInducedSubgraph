@@ -1951,6 +1951,8 @@ blocks cover `A` within those capacities.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.
+Active-coordinate relaxation gives a projected cover of `A\{a}`; every lift putting `a` into exactly one
+block is capacity-deficient.
 If `|R|=m+s`, `s<=3`, terminality inside `R` is the finite list that `b-deg_D` is nonconstant on `R\D`
 for every `|D|<=s-1`.
 The full two-residue core is equivalently `epsilon(v)-deg_D(v)=const` on `J\D`, with `epsilon=0` on `R`

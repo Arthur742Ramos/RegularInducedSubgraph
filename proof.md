@@ -11314,6 +11314,20 @@ the all-zero case this says: if `q=c_Z(empty)<=2`, then each `z in Z` has at lea
 whose trace on `Z` is exactly `{z}`.  More generally, for `|A|<=3`, each relaxed cover must repair one of
 the deficient displayed support alternatives using private `p_z(B)` capacity.
 
+Active-coordinate criticality has a parallel lift-exclusion form.  Let `a in A`, and let
+`B_1,B_2,B_3 subset A` be the supports of a near-cover after deleting `a`; the projections
+`B_i\{a}` are pairwise disjoint and cover `A\{a}`.  A full cover with the same projected blocks would be
+obtained by replacing the three supports by
+
+```text
+(B_i\{a}) union E_i,        E_i in {empty,{a}},        |E_1|+|E_2|+|E_3|=1.
+```
+
+Terminality therefore says that every such one-coordinate lift is capacity-deficient for `c_Z`.  The
+hole, double-collision, and triple-collision witnesses are exactly the cases where the original
+near-cover has `0`, `2`, or `3` of the `E_i` equal to `{a}`; every repair toggles this count to `1`, and
+all repairs are forbidden by the support-capacity table.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff
