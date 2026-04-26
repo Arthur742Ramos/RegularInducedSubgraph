@@ -2052,9 +2052,11 @@ Recommended attack:
    `H_X(g)` is unavailable otherwise.  There is no uniform `h_box(g)-rho` lower bound for the same
    residue.  Exact-top carry and cut inequalities remain valid with the original deficit `d` on
    two-sided available cuts; unavailable cuts are label-incompatible.
+   Record the coordinate two-sided availability table: capacity `3` allows nonzero coefficients
+   `{1,2,3}`, capacity `2` allows only coefficient `2`, and capacity `0` or `1` allows none.
    Add the available-cut corollary: if `d<=1` and a minimal four-block has all singleton and pair cuts
    two-sided-compatible and available, then all four values lie on one coordinate, coefficients are in
-   `{1,2}`, and minimality forces the positive atom `e_i^4`.
+   `{1,2}`, and minimality forces the positive atom `e_i^4` on a full-capacity coordinate.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

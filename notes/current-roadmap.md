@@ -4971,8 +4971,11 @@ For non-exact boundaries, use the maximum import height
 If a near-top boundary is a coordinate subbox, holes delete residue availability rather than giving a
 uniform `h_box-rho` lower bound.  On available cuts the exact-top carry and cut inequalities hold with
 the original deficit `d`; unavailable cuts are already label-incompatible.
+Two-sided availability is coordinatewise: capacity `3` allows `{1,2,3}`, capacity `2` allows only `2`,
+and capacity at most `1` allows no nonzero coefficient.
 For `d<=1`, any minimal four-block whose singleton and pair cuts are two-sided available still collapses
-to the positive atom `e_i^4`; holes create incompatibilities, not new near-top atoms.
+to the positive atom `e_i^4` on a full-capacity coordinate; holes create incompatibilities, not new
+near-top atoms.
 
 ## Supporting work that is useful but not on the critical path
 

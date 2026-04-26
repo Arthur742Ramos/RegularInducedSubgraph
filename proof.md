@@ -8888,14 +8888,26 @@ h_box(sigma(Y))-|Y| <= d,
 
 while an unavailable value is already boundary-incompatible.  Consequently the carry inequality and the
 complementary-cut bound survive verbatim on two-sided available cuts, with no `rho` error term.
+Coordinatewise, a nonzero coefficient `a` is two-sided available with its complement `-a` only as follows:
+
+```text
+c_i=3:  a in {1,2,3};
+c_i=2:  a=2 only;
+c_i<=1: no nonzero two-sided coefficient.
+```
+
+So a one-hole coordinate can support only the self-opposite coefficient `2` in a two-sided cut, and a
+two-hole coordinate cannot support any nonzero two-sided cut.
 
 In particular the four-block collapse survives on the available part.  If `d<=1` and a minimal
 old-balanced four-block has all singleton and pair cuts two-sided-compatible and available in the
 capacity box, the complementary-cut bound gives support at most one for every singleton and pair cut.
 Hence all four old-coordinate values lie on one coordinate.  The singleton height inequality gives
 coefficients only in `{1,2}`; since four coefficients in `{1,2}` sum to `0 mod 4` without a proper
-zero-sum subblock only when all four are `1`, the block is again the positive atom `e_i^4`.  Holed
-coordinates therefore create immediate label incompatibilities rather than new four-block atoms.
+zero-sum subblock only when all four are `1`, the block is again the positive atom `e_i^4`.  Since
+coefficient `1` is two-sided available only when `c_i=3`, any surviving positive atom sits on a full
+coordinate.  Holed coordinates therefore create immediate label incompatibilities rather than new
+four-block atoms.
 
 Thus a plausible final route is now precise: prove a stability/inverse-Davenport boundary theorem
 adapted to the value-coupled exchange.  The required input is not another zero-sum existence theorem;

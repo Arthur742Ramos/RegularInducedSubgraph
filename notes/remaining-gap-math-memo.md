@@ -1714,8 +1714,10 @@ Away from the exact boundary top, the same inequality uses
 In a coordinate subbox, holes delete residue availability rather than giving a uniform `h_box-rho` lower
 bound.  On available cuts the exact-top carry and cut bounds persist with the original deficit `d`;
 unavailable cuts are label-incompatible.
+Two-sided availability allows coefficients `{1,2,3}` at capacity `3`, only `2` at capacity `2`, and none
+at capacity at most `1`.
 If `d<=1`, a minimal four-block whose singleton and pair cuts are two-sided available is still forced to
-be the positive atom `e_i^4`.
+be the positive atom `e_i^4` on a full-capacity coordinate.
 
 ## 14. Pair-chamber orientation normal form
 
