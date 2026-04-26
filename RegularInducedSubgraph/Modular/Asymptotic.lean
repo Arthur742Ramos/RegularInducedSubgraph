@@ -5613,6 +5613,12 @@ def IsInducedC4FreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
       G.Adj a b → G.Adj b c → G.Adj c d → G.Adj d a →
         ¬ G.Adj a c → ¬ G.Adj b d → False
 
+/-- No triangle occurs inside the host packet. -/
+def IsTriangleFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
+  ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S,
+    a ≠ b → a ≠ c → b ≠ c →
+      G.Adj a b → G.Adj b c → G.Adj c a → False
+
 /--
 Singleton miss layer-gradient inequality.  With target layer `A0`, an exported vertex `y`
 cannot see many more vertices in the miss layer than it sees in the target layer, up to the
@@ -6045,12 +6051,12 @@ theorem targetLayerColorTwo_card_le_of_pseudoSplitCapSurface
     (G : SimpleGraph (Fin n)) [DecidableRel G.Adj]
     {A0 : Finset (Fin n)} {color : Fin n → Fin 4}
     (hdiscard : NoTargetLayerPureDiscardFourSet G A0 color)
-    (hC4 : IsInducedC4FreeOn G (targetLayerColorSlice A0 color (2 : Fin 4)))
     (hK4 : HasCliqueBoundOn G (targetLayerColorSlice A0 color (2 : Fin 4)) 3)
     (halpha : HasIndependenceBoundOn G (targetLayerColorSlice A0 color (2 : Fin 4)) m) :
     (targetLayerColorSlice A0 color (2 : Fin 4)).card ≤ C * m := by
   exact
-    hcap G hC4 hK4 halpha
+    hcap G (noTargetLayerPureDiscardFourSet_colorTwo_inducedC4Free (G := G) hdiscard)
+      hK4 halpha
       (noTargetLayerPureDiscardFourSet_colorTwo_no_labelled_degree_two_four
         (G := G) hdiscard)
 
@@ -6068,7 +6074,6 @@ theorem targetLayerColorTwo_card_le_of_pseudoSplitCapSurface_pureDiscard
     (targetLayerColorSlice A0 color (2 : Fin 4)).card ≤ C * m := by
   exact
     targetLayerColorTwo_card_le_of_pseudoSplitCapSurface hcap G hdiscard
-      (noTargetLayerPureDiscardFourSet_colorTwo_inducedC4Free (G := G) hdiscard)
       hK4 halpha
 
 /-- A `(0,0,1,1)` mixed quartet is dominated: a color-`0` nonedge and a color-`1` edge cannot be
@@ -6206,6 +6211,114 @@ theorem threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion_un
     A + B + C ≤ m + 3 :=
   threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion
     hasThreeConsecutiveClassModFourSelector hterminal
+
+/--
+The standalone mod-four layer obstruction from the terminal core: a nonempty induced set whose
+cardinality is `0 mod 4` and whose induced degrees are all `2 mod 4`.
+-/
+def IsModFourDegreeTwoLayer
+    {n : ℕ} (G : SimpleGraph (Fin n)) (u : Finset (Fin n)) : Prop := by
+  classical
+  exact
+    u.Nonempty ∧ u.card ≡ 0 [MOD 4] ∧
+      ∀ v : ↑(u : Set (Fin n)), (inducedOn G u).degree v ≡ 2 [MOD 4]
+
+/-- No mod-four degree-two layer occurs inside a host packet. -/
+def HasNoNonemptyModFourDegreeTwoLayerOn
+    {n : ℕ} (G : SimpleGraph (Fin n)) (S : Finset (Fin n)) : Prop :=
+  ∀ u : Finset (Fin n), u ⊆ S → ¬ IsModFourDegreeTwoLayer G u
+
+/--
+Selector surface matching the corrected terminal layer core: a linearly large triangle-free,
+induced-`C₄`-free packet with independence at most `m` contains a forbidden mod-four degree-two
+layer.
+-/
+def HasTriangleFreeInducedC4FreeModFourLayerSelector (C : ℕ) : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          C * m < S.card →
+            ∃ u : Finset (Fin n), u ⊆ S ∧ IsModFourDegreeTwoLayer G u
+
+/--
+Cap surface matching the corrected terminal layer core: triangle-free, induced-`C₄`-free packets
+with bounded independence and no nonempty `0 mod 4` / degree-`2 mod 4` induced layer have linear
+size.
+-/
+def TriangleFreeInducedC4FreeModFourLayerCap (C : ℕ) : Prop :=
+  ∀ {n m : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    IsTriangleFreeOn G S →
+      IsInducedC4FreeOn G S →
+        HasIndependenceBoundOn G S m →
+          HasNoNonemptyModFourDegreeTwoLayerOn G S →
+            S.card ≤ C * m
+
+/-- An exact induced `2`-regular set of `0 mod 4` cardinality is a mod-four degree-two layer. -/
+theorem isModFourDegreeTwoLayer_of_inducesRegularOfDegree_two
+    {n : ℕ} (G : SimpleGraph (Fin n)) {u : Finset (Fin n)}
+    (hne : u.Nonempty) (hcard : u.card ≡ 0 [MOD 4])
+    (hreg : InducesRegularOfDegree G u 2) :
+    IsModFourDegreeTwoLayer G u := by
+  refine ⟨hne, hcard, ?_⟩
+  rw [InducesRegularOfDegree] at hreg
+  intro v
+  have hdeg : (inducedOn G u).degree v = 2 := hreg v
+  rw [hdeg]
+  omega
+
+/--
+The selector form implies the cap form: if the packet exceeded `C * m`, the selector would produce
+exactly the layer forbidden by the terminal obstruction.
+-/
+theorem triangleFreeInducedC4FreeModFourLayer_card_le_of_selector
+    {C n m : ℕ} (hselector : HasTriangleFreeInducedC4FreeModFourLayerSelector C)
+    (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ C * m := by
+  by_contra hnot
+  have hlarge : C * m < S.card := Nat.lt_of_not_ge hnot
+  rcases hselector G htriangle hC4 halpha hlarge with ⟨u, huS, huLayer⟩
+  exact False.elim (hnoLayer u huS huLayer)
+
+/-- Package the selector surface as the corresponding mod-four layer cap. -/
+theorem triangleFreeInducedC4FreeModFourLayerCap_of_selector
+    {C : ℕ} (hselector : HasTriangleFreeInducedC4FreeModFourLayerSelector C) :
+    TriangleFreeInducedC4FreeModFourLayerCap C := by
+  intro n m G S htriangle hC4 halpha hnoLayer
+  exact
+    triangleFreeInducedC4FreeModFourLayer_card_le_of_selector
+      hselector G htriangle hC4 halpha hnoLayer
+
+/--
+Narrow corrected-complement cap obtained directly from the mod-four terminal layer core.  This is
+the standalone triangle-free/induced-`C₄`-free route documented for the terminal residual.
+-/
+theorem correctedZeroOneThreeTwoComplement_card_le_of_modFour_layerCap
+    {C n m : ℕ} (hcap : TriangleFreeInducedC4FreeModFourLayerCap C)
+    (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ C * m := by
+  exact hcap G htriangle hC4 halpha hnoLayer
+
+/-- Selector-facing version of the corrected-complement mod-four layer cap. -/
+theorem correctedZeroOneThreeTwoComplement_card_le_of_modFour_layerSelector
+    {C n m : ℕ} (hselector : HasTriangleFreeInducedC4FreeModFourLayerSelector C)
+    (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+    (htriangle : IsTriangleFreeOn G S)
+    (hC4 : IsInducedC4FreeOn G S)
+    (halpha : HasIndependenceBoundOn G S m)
+    (hnoLayer : HasNoNonemptyModFourDegreeTwoLayerOn G S) :
+    S.card ≤ C * m := by
+  exact
+    triangleFreeInducedC4FreeModFourLayer_card_le_of_selector
+      hselector G htriangle hC4 halpha hnoLayer
 
 /--
 Conditional selector for the corrected `{0,1}`/`{3,2}` complement surface.  A linearly large
