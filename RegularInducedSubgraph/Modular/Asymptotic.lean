@@ -2484,6 +2484,40 @@ theorem hasExactSmallModulusAffineCrossSelector_three_thirteen :
   hasExactSmallModulusAffineCrossSelector_of_ramseyBound (j := 3) (m := 13)
     (by decide) (by decide)
 
+/--
+The first remaining `j = 3` affine field after `(j,m) = (3,13)` is reduced to
+its exact Ramsey threshold: `R(14,14) <= 3670016` would close `(j,m) = (3,14)`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_three_fourteen_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 14 14 3670016) :
+    HasExactSmallModulusAffineCrossSelector 3 14 :=
+  hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    (j := 3) (m := 14) (N := 3670016) hbound (by decide)
+
+/--
+The smallest `j = 2` affine field is reduced to the exact Ramsey threshold
+`R(13,13) <= 53248`.
+-/
+theorem hasExactSmallModulusAffineCrossSelector_two_thirteen_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 13 13 53248) :
+    HasExactSmallModulusAffineCrossSelector 2 13 :=
+  hasExactSmallModulusAffineCrossSelector_of_cliqueOrIndepSetBound
+    (j := 2) (m := 13) (N := 53248) hbound (by decide)
+
+/--
+Binomial Ramsey alone cannot close the first remaining `j = 2` affine field nor the
+first remaining `j = 3` affine field.  The exact replacement targets are the sharper
+bounds `R(13,13) <= 53248` and `R(14,14) <= 3670016`, respectively.
+-/
+theorem smallModulusAffineCrossSelector_binomialRamsey_obstructions_at_frontier :
+    (2 ^ 2) ^ 6 * 13 = 53248 ∧
+      Nat.choose ((13 - 1) + (13 - 1)) (13 - 1) = 2704156 ∧
+      ¬ Nat.choose ((13 - 1) + (13 - 1)) (13 - 1) ≤ (2 ^ 2) ^ 6 * 13 ∧
+      (2 ^ 3) ^ 6 * 14 = 3670016 ∧
+      Nat.choose ((14 - 1) + (14 - 1)) (14 - 1) = 10400600 ∧
+      ¬ Nat.choose ((14 - 1) + (14 - 1)) (14 - 1) ≤ (2 ^ 3) ^ 6 * 14 := by
+  decide
+
 /-- The base `m = 11..16` selector package already supplies the extended `(13,3)` field. -/
 theorem higherBitSmallModulusAffineSelectorsFromElevenExtended_of_selectors
     (h : HigherBitSmallModulusAffineSelectorsFromEleven) :
@@ -2534,6 +2568,26 @@ theorem hasExactSmallModulusFixedWitnessDyadicLift_three_thirteen :
     HasExactSmallModulusFixedWitnessDyadicLift 3 13 :=
   hasExactSmallModulusFixedWitnessDyadicLift_of_ramseyBound (j := 3) (m := 13)
     (by decide) (by decide)
+
+/--
+The corresponding fixed-witness field `(j,m) = (3,14)` is reduced to the same
+exact Ramsey threshold `R(14,14) <= 3670016`.
+-/
+theorem hasExactSmallModulusFixedWitnessDyadicLift_three_fourteen_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 14 14 3670016) :
+    HasExactSmallModulusFixedWitnessDyadicLift 3 14 :=
+  hasExactSmallModulusFixedWitnessDyadicLift_of_cliqueOrIndepSetBound
+    (j := 3) (m := 14) (N := 3670016) hbound (by decide)
+
+/--
+The corresponding fixed-witness field `(j,m) = (2,13)` is reduced to the exact
+Ramsey threshold `R(13,13) <= 53248`.
+-/
+theorem hasExactSmallModulusFixedWitnessDyadicLift_two_thirteen_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 13 13 53248) :
+    HasExactSmallModulusFixedWitnessDyadicLift 2 13 :=
+  hasExactSmallModulusFixedWitnessDyadicLift_of_cliqueOrIndepSetBound
+    (j := 2) (m := 13) (N := 53248) hbound (by decide)
 
 /-- The base fixed-target package already supplies the extended `(13,3)` field. -/
 theorem higherBitSmallModulusFixedWitnessTargetsFromElevenExtended_of_targets
@@ -2589,6 +2643,44 @@ theorem hasFourToEightTargetTwelveFixedWitnessLift_of_affineCrossSelector
     HasFourToEightTargetTwelveFixedWitnessLift := by
   intro n hambient G hinput
   exact (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector hselector) hambient G hinput
+
+/--
+The `m = 11`, `4 -> 8` fixed-witness field is reduced to the exact Ramsey
+threshold `R(11,11) <= 45056`.
+-/
+theorem hasFourToEightTargetElevenFixedWitnessLift_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 11 11 45056) :
+    HasFourToEightTargetElevenFixedWitnessLift := by
+  intro n hambient G hinput
+  exact
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_cliqueOrIndepSetBound
+      (j := 2) (m := 11) (N := 45056) hbound (by decide)) hambient G hinput
+
+/--
+The `m = 12`, `4 -> 8` fixed-witness field is reduced to the exact Ramsey
+threshold `R(12,12) <= 49152`.
+-/
+theorem hasFourToEightTargetTwelveFixedWitnessLift_of_cliqueOrIndepSetBound
+    (hbound : HasCliqueOrIndepSetBound 12 12 49152) :
+    HasFourToEightTargetTwelveFixedWitnessLift := by
+  intro n hambient G hinput
+  exact
+    (hasExactSmallModulusFixedWitnessDyadicLift_of_cliqueOrIndepSetBound
+      (j := 2) (m := 12) (N := 49152) hbound (by decide)) hambient G hinput
+
+/--
+The binomial Ramsey route is numerically blocked for both remaining `4 -> 8`
+fixed-witness fields; closing them by the Ramsey-subset route requires the sharper
+bounds `R(11,11) <= 45056` and `R(12,12) <= 49152`.
+-/
+theorem fourToEightTarget_binomialRamsey_obstructions_at_frontier :
+    (2 ^ 2) ^ 6 * 11 = 45056 ∧
+      Nat.choose ((11 - 1) + (11 - 1)) (11 - 1) = 184756 ∧
+      ¬ Nat.choose ((11 - 1) + (11 - 1)) (11 - 1) ≤ (2 ^ 2) ^ 6 * 11 ∧
+      (2 ^ 2) ^ 6 * 12 = 49152 ∧
+      Nat.choose ((12 - 1) + (12 - 1)) (12 - 1) = 705432 ∧
+      ¬ Nat.choose ((12 - 1) + (12 - 1)) (12 - 1) ≤ (2 ^ 2) ^ 6 * 12 := by
+  decide
 
 /-- The uniform affine cross-selector closes the strict small-modulus dyadic residual. -/
 theorem
