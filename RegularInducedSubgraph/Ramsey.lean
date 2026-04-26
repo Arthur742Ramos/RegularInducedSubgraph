@@ -44110,6 +44110,833 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade.t
       h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard := by
   exact Subsingleton.elim _ _
 
+/--
+Final archive/public handoff facade for proof-md downstream consumers.  It packages the final
+`RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade` with the public distribution,
+release/archive citation surfaces, downstream endpoint imports, target-row projections, and the
+assumption-backed Ramsey rows.  This is only a handoff/archive wrapper: the localized
+`R(4,5) <= 27` row remains an explicit carried current-frontier field rather than an unconditional
+closure theorem.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  downstreamReleaseConsumerFacade :
+    RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade G s v
+  downstreamPublicTargetProjectionBundle :
+    RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v
+  finalPublicTargetBundle : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v
+  finalReleasePublicTargetSurface :
+    RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v
+  finalReleaseConsumerBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v
+  publicReleaseCitation : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v
+  downstreamConsumerCitationBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v
+  explicitR45ObligationRows :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v
+  remainingObligationChecklist :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  publicDistributionFacade : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v
+  publicDistributionBundle : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v
+  distributionBundle : RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v
+  distributionFacade : RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v
+  consumerReleaseFacade : RamseyTenR45CurrentFrontierProofMdFinalConsumerReleaseFacade G s v
+  consumerArchiveFacade : RamseyTenR45CurrentFrontierProofMdFinalConsumerArchiveFacade G s v
+  releaseArchiveFacade : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchiveFacade G s v
+  releaseArchive : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v
+  releaseBundle : RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v
+  consumerSurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  unifiedFinalConsumerImport : RamseyTenR45UnifiedFinalConsumerImport G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  endpointDownstreamImport : RamseyTenR45EndpointDownstreamImport
+  endpointReady : RamseyTenR45EndpointReadyCertificate
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointResidualCertificate : RamseyTenR45EndpointResidualCertificate
+  middleDegreeEndpointCertificate : RamseyTenR45MiddleDegreeEndpointCertificate
+  finalCertificateBundle : RamseyTenR45FinalCertificateBundle
+  finalBundleSelector : RamseyTenR45FinalBundleSelectorSurface
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  proofMdTargetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  proofMdTargetRowsExact42Projection : HasCliqueOrIndepSetBound 3 10 42
+  proofMdTargetRowsLocalizedR45Projection : HasCliqueOrIndepSetBound 4 5 27
+  downstreamProjectionLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  finalPublicTargetLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  checklistLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  explicitRowsLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  remainingAssumptionLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  publicDistributionLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  publicReleaseCitationLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  downstreamConsumerCitationLocalizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  proofMdTargetRowsPropagatedR1010Projection : HasCliqueOrIndepSetBound 10 10 39246
+  publicDistributionPropagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  proofMdTargetRowsAdmissibleTenAt40960Projection : 10 ∈ admissibleBounds 40960
+  publicDistributionAdmissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+  proofMdTargetRowsExtremalF40960Projection : 10 ≤ F 40960
+  publicDistributionExtremalF40960Row : 10 ≤ F 40960
+  regularInducedSubgraphConsumer :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  proofMdTargetRowsRegularTenAt40960Projection :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  publicDistributionRegularTenAt40960Row :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final downstream/release facades materialize the final archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalArchivePublicHandoffFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v := by
+  let hp := h.toProofMdFinalPublicDistributionFacade
+  let hc := h.toProofMdR45RemainingObligationChecklist
+  let hcitation := h.toProofMdPublicReleaseCitation
+  let hconsumerCitation := h.toProofMdFinalConsumerCitationBundle
+  exact
+    { downstreamReleaseConsumerFacade := h
+      downstreamPublicTargetProjectionBundle := h.toProofMdDownstreamPublicTargetProjectionBundle
+      finalPublicTargetBundle := h.toProofMdFinalPublicTargetBundle
+      finalReleasePublicTargetSurface := h.toProofMdFinalReleasePublicTargetSurface
+      finalReleaseConsumerBundle := h.toProofMdFinalReleaseConsumerBundle
+      publicReleaseCitation := hcitation
+      downstreamConsumerCitationBundle := hconsumerCitation
+      explicitR45ObligationRows := h.toProofMdExplicitR45ObligationRows
+      remainingObligationChecklist := hc
+      publicDistributionFacade := hp
+      publicDistributionBundle := hp.toProofMdFinalPublicDistributionBundle
+      distributionBundle := hp.toProofMdFinalDistributionBundle
+      distributionFacade := hp.toProofMdFinalDistributionFacade
+      consumerReleaseFacade := hp.toProofMdFinalConsumerReleaseFacade
+      consumerArchiveFacade := hp.toProofMdFinalConsumerArchiveFacade
+      releaseArchiveFacade := hp.toProofMdFinalReleaseArchiveFacade
+      releaseArchive := hp.toProofMdFinalReleaseArchive
+      releaseBundle := hp.toProofMdFinalReleaseBundle
+      consumerSurface := hp.toCurrentFrontierConsumerSurface
+      unifiedFinalConsumerImport := hp.toUnifiedFinalConsumerImport
+      finalDownstreamImport := hp.toFinalDownstreamImport
+      consumerNormalization := hp.toConsumerNormalization
+      topRowFinalImport := hp.toTopRowFinalImport
+      endpointDownstreamImport := hc.toEndpointDownstreamImport
+      endpointReady := hc.endpointReady
+      endpointResiduals := h.toEndpointResiduals
+      endpointResidualCertificate := hc.toEndpointResidualCertificate
+      middleDegreeEndpointCertificate := hc.toMiddleDegreeEndpointCertificate
+      finalCertificateBundle := hc.toFinalCertificateBundle
+      finalBundleSelector := h.toFinalBundleSelectorSurface
+      r45TwentySevenTable := h.toR45TwentySevenTable
+      targetRows := h.toCurrentFrontierTargetRows
+      proofMdTargetRows := h.toProofMdTargetRows
+      remainingAssumptionRows := h.toRemainingAssumptionRows
+      proofMdTargetRowsExact42Projection := h.toProofMdTargetRowsThreeTenFortyTwo
+      proofMdTargetRowsLocalizedR45Projection :=
+        h.toProofMdTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+      downstreamProjectionLocalizedR45Row :=
+        h.toDownstreamProjectionHasCliqueOrIndepSetBound_four_five_twenty_seven
+      finalPublicTargetLocalizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      checklistLocalizedR45Row := h.toChecklistHasCliqueOrIndepSetBound_four_five_twenty_seven
+      explicitRowsLocalizedR45Row :=
+        h.toExplicitRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+      remainingAssumptionLocalizedR45Row :=
+        h.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven
+      publicDistributionLocalizedR45Row :=
+        hp.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      publicReleaseCitationLocalizedR45Row :=
+        hcitation.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      downstreamConsumerCitationLocalizedR45Row :=
+        hconsumerCitation.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+      propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+      proofMdTargetRowsPropagatedR1010Projection :=
+        h.toProofMdTargetRowsHasCliqueOrIndepSetBound_10_10_39246
+      publicDistributionPropagatedR1010Row := hp.toHasCliqueOrIndepSetBound_10_10_39246
+      admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+      proofMdTargetRowsAdmissibleTenAt40960Projection :=
+        h.toProofMdTargetRowsTenMemAdmissibleBounds_40960
+      publicDistributionAdmissibleTenAt40960Row := hp.toTenMemAdmissibleBounds_40960
+      extremalF40960Row := h.toTenLeF_40960
+      proofMdTargetRowsExtremalF40960Projection := h.toProofMdTargetRowsTenLeF_40960
+      publicDistributionExtremalF40960Row := hp.toTenLeF_40960
+      regularInducedSubgraphConsumer := fun H hcard =>
+        h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+      proofMdTargetRowsRegularTenAt40960Projection := fun H hcard =>
+        h.toProofMdTargetRowsHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+      publicDistributionRegularTenAt40960Row := fun H hcard =>
+        hp.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard }
+
+/-- Public distribution facades materialize the final archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade.toProofMdFinalArchivePublicHandoffFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v :=
+  h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalArchivePublicHandoffFacade
+
+/-- Downstream/public projection bundles materialize the final archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle.toProofMdFinalArchivePublicHandoffFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamPublicTargetProjectionBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v :=
+  h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalArchivePublicHandoffFacade
+
+/-- Final public target bundles materialize the final archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle.toProofMdFinalArchivePublicHandoffFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicTargetBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v :=
+  h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalArchivePublicHandoffFacade
+
+/-- Public-release citations materialize the final archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalArchivePublicHandoffFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v :=
+  h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalArchivePublicHandoffFacade
+
+/-- Final-release public target surfaces materialize the final archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface.toProofMdFinalArchivePublicHandoffFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v :=
+  h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalArchivePublicHandoffFacade
+
+/-- Final-release consumer bundles materialize the final archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toProofMdFinalArchivePublicHandoffFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v :=
+  h.toProofMdFinalReleasePublicTargetSurface.toProofMdFinalArchivePublicHandoffFacade
+
+/-- Flat constructor exposing final archive/public handoff facades from downstream/release facades. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade_of_finalDownstreamReleaseConsumerFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v :=
+  h.toProofMdFinalArchivePublicHandoffFacade
+
+/-- Flat constructor exposing final archive/public handoff facades from public distribution facades. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade_of_finalPublicDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v :=
+  h.toProofMdFinalArchivePublicHandoffFacade
+
+/-- Select the final downstream/release consumer facade from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade G s v :=
+  h.downstreamReleaseConsumerFacade
+
+/-- Select the public distribution facade from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalPublicDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionFacade G s v :=
+  h.publicDistributionFacade
+
+/-- Select the public distribution bundle from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.publicDistributionBundle
+
+/-- Select the final distribution bundle from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDistributionBundle G s v :=
+  h.distributionBundle
+
+/-- Select the final distribution facade from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDistributionFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDistributionFacade G s v :=
+  h.distributionFacade
+
+/-- Select the final consumer release facade from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalConsumerReleaseFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerReleaseFacade G s v :=
+  h.consumerReleaseFacade
+
+/-- Select the final consumer archive facade from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalConsumerArchiveFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerArchiveFacade G s v :=
+  h.consumerArchiveFacade
+
+/-- Select the final release archive facade from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalReleaseArchiveFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchiveFacade G s v :=
+  h.releaseArchiveFacade
+
+/-- Select the terminal release archive from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalReleaseArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.releaseArchive
+
+/-- Select the final release bundle from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v :=
+  h.releaseBundle
+
+/-- Select the public-release citation surface from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.publicReleaseCitation
+
+/-- Select the final consumer citation bundle from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalConsumerCitationBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v :=
+  h.downstreamConsumerCitationBundle
+
+/-- Select the final-release public target surface from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalReleasePublicTargetSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleasePublicTargetSurface G s v :=
+  h.finalReleasePublicTargetSurface
+
+/-- Select the final-release consumer bundle from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalReleaseConsumerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v :=
+  h.finalReleaseConsumerBundle
+
+/-- Select target rows from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select proof-md target rows from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.proofMdTargetRows
+
+/-- Select remaining-assumption rows from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Select the final downstream import endpoint from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the endpoint downstream import from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toEndpointDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45EndpointDownstreamImport :=
+  h.endpointDownstreamImport
+
+/-- Select endpoint residuals from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the final bundle selector surface from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toFinalBundleSelectorSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45FinalBundleSelectorSurface :=
+  h.finalBundleSelector
+
+/-- Select the relaxed `27`-vertex R45 table from the archive/public handoff facade. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Archive/public handoff route to the proof-md target-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.proofMdTargetRowsExact42Projection
+
+/-- Archive/public handoff route to the proof-md target-row localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.proofMdTargetRowsLocalizedR45Projection
+
+/-- Archive/public handoff route to the final public R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.finalPublicTargetLocalizedR45Row
+
+/-- Archive/public handoff route to the downstream projection R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toDownstreamProjectionHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.downstreamProjectionLocalizedR45Row
+
+/-- Archive/public handoff route to the checklist R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toChecklistHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.checklistLocalizedR45Row
+
+/-- Archive/public handoff route to the explicit-obligation R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toExplicitRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.explicitRowsLocalizedR45Row
+
+/-- Archive/public handoff route to the remaining-assumption R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.remainingAssumptionLocalizedR45Row
+
+/-- Archive/public handoff route to the public-distribution R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.publicDistributionLocalizedR45Row
+
+/-- Archive/public handoff route to the public-release citation R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toPublicReleaseCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.publicReleaseCitationLocalizedR45Row
+
+/-- Archive/public handoff route to the downstream consumer citation R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.downstreamConsumerCitationLocalizedR45Row
+
+/-- Archive/public handoff route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Archive/public handoff route to the proof-md target-row propagated `R(10,10)` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.proofMdTargetRowsPropagatedR1010Projection
+
+/-- Archive/public handoff route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Archive/public handoff route to the proof-md target-row admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.proofMdTargetRowsAdmissibleTenAt40960Projection
+
+/-- Archive/public handoff route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Archive/public handoff route to the proof-md target-row extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    10 ≤ F 40960 :=
+  h.proofMdTargetRowsExtremalF40960Projection
+
+/-- Archive/public handoff route to the regular induced `10`-subgraph consumer theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularInducedSubgraphConsumer H hcard
+
+/-- Archive/public handoff route to the proof-md target-row regular induced consumer theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.proofMdTargetRowsRegularTenAt40960Projection H hcard
+
+/-- Archive/public handoff facades round-trip through final downstream/release facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toProofMdFinalArchivePublicHandoffFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalArchivePublicHandoffFacade = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final downstream/release facades recover their archive/public handoff's public distribution facade. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalArchivePublicHandoffFacade_toProofMdFinalPublicDistributionFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDownstreamReleaseConsumerFacade G s v) :
+    h.toProofMdFinalArchivePublicHandoffFacade.toProofMdFinalPublicDistributionFacade =
+      h.toProofMdFinalPublicDistributionFacade := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize public distribution facades through downstream/release facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toProofMdFinalPublicDistributionFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalPublicDistributionFacade =
+      h.toProofMdFinalPublicDistributionFacade := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize release archive facades through public distribution facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalPublicDistributionFacade_toProofMdFinalReleaseArchiveFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toProofMdFinalReleaseArchiveFacade =
+      h.toProofMdFinalReleaseArchiveFacade := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize consumer archive facades through public distribution facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalPublicDistributionFacade_toProofMdFinalConsumerArchiveFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toProofMdFinalConsumerArchiveFacade =
+      h.toProofMdFinalConsumerArchiveFacade := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize public-release citations through downstream/release facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toProofMdPublicReleaseCitation_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdPublicReleaseCitation =
+      h.toProofMdPublicReleaseCitation := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize consumer citations through downstream/release facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toProofMdFinalConsumerCitationBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalConsumerCitationBundle =
+      h.toProofMdFinalConsumerCitationBundle := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize final-release public target surfaces through downstream/release facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toProofMdFinalReleasePublicTargetSurface_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toProofMdFinalReleasePublicTargetSurface =
+      h.toProofMdFinalReleasePublicTargetSurface := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize target rows with proof-md target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toCurrentFrontierTargetRows_toProofMdTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toCurrentFrontierTargetRows = h.toProofMdTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize proof-md target rows with remaining-assumption rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize downstream/release R45 with the handoff R45 projection. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize proof-md target-row R45 with the handoff R45 projection. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize downstream-projection R45 with the handoff R45 projection. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toDownstreamProjectionHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toDownstreamProjectionHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize checklist R45 with the handoff R45 projection. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toChecklistHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toChecklistHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize explicit-row R45 with the handoff R45 projection. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toExplicitRowsHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toExplicitRowsHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize remaining-assumption R45 with the handoff R45 projection. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize public-distribution R45 with the handoff R45 projection. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toPublicDistributionHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize public-release citation R45 with the handoff R45 projection. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toPublicReleaseCitationHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toPublicReleaseCitationHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize downstream-consumer citation R45 with the handoff R45 projection. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toDownstreamConsumerCitationHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize downstream/release R1010 with the handoff propagated row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize proof-md target-row R1010 with the handoff propagated row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdTargetRowsHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize public-distribution R1010 with the handoff propagated row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalPublicDistributionFacade_toHasCliqueOrIndepSetBound_10_10_39246_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalPublicDistributionFacade.toHasCliqueOrIndepSetBound_10_10_39246 =
+      h.toHasCliqueOrIndepSetBound_10_10_39246 := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize downstream/release admissibility with the handoff row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toTenMemAdmissibleBounds_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toTenMemAdmissibleBounds_40960 =
+      h.toTenMemAdmissibleBounds_40960 := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize proof-md target-row admissibility with the handoff row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsTenMemAdmissibleBounds_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdTargetRowsTenMemAdmissibleBounds_40960 = h.toTenMemAdmissibleBounds_40960 := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize downstream/release F-bound with the handoff row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toTenLeF_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toTenLeF_40960 = h.toTenLeF_40960 := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize proof-md target-row F-bound with the handoff row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsTenLeF_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v) :
+    h.toProofMdTargetRowsTenLeF_40960 = h.toTenLeF_40960 := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize downstream/release regular induced-subgraph consumers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdFinalDownstreamReleaseConsumerFacade_toHasRegularInducedSubgraphOfCard_ten_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    h.toProofMdFinalDownstreamReleaseConsumerFacade.toHasRegularInducedSubgraphOfCard_ten_40960
+        H hcard =
+      h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard := by
+  exact Subsingleton.elim _ _
+
+/-- Archive/public handoffs normalize proof-md target-row regular induced-subgraph consumers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade.toProofMdTargetRowsHasRegularInducedSubgraphOfCard_ten_40960_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalArchivePublicHandoffFacade G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    h.toProofMdTargetRowsHasRegularInducedSubgraphOfCard_ten_40960 H hcard =
+      h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard := by
+  exact Subsingleton.elim _ _
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
