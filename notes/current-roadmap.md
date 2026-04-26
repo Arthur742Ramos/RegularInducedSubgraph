@@ -5288,6 +5288,9 @@ For a target-realizing triple, these patterns prescribe the unique internal edge
 between the two `1`s, the two-edge path from the `2`, or the triangle.
 Thus scalar failure is exactly extra edge for `000`, missing/extra wrong edge for `110`, missing path edge
 or extra `1-1` edge for `211`, or missing edge for `222`.
+Every scalar-killed target triple has a lower-swap shadow: each discrepant edge/nonedge must be protected
+by omitted-trace inequality or retained-scalar failure for every one- and two-vertex partial swap; otherwise
+the mismatch descends to a row/opposite-pair repair.
 The target-avoidance side is a capacitated 3-sum cube: outside trace columns in `{0,1}^P` fail to sum to
 `h|_P` using three distinct vertices, while every coordinate projection is feasible.  Hence each coordinate
 has a single-defect realizing triple; inclusion-minimality makes every proper coordinate shadow feasible,
@@ -5332,8 +5335,9 @@ partitionable into at most three supports, while every proper shadow is partitio
 Equivalently, non-singleton supports have saving `|B|-1`; the full active set has no disjoint support
 packing with total saving at least `|A|-3`, while every proper shadow does.
 Thus any support has size at most `|A|-3`; each active deletion has a projected packing with saving
-`|A|-4`, and every one-unit lift by the deleted coordinate is blocked.  With singletons present, one-block
-active shadows are impossible and two-block active shadows are only double-collision witnesses.
+`|A|-4`, and every one-unit lift by the deleted coordinate is blocked.  A singleton closes only projected
+partitions with at most two blocks; hence one-block active shadows are impossible and two-block active
+shadows are only double-collision witnesses.
 The support graph joining pairs contained in a common support has independence number at most three.  Pair
 supports alone survive only in dimensions `5,6,7` (intersecting/every-four-hit, deletion-matching-critical,
 and factor-critical respectively); from `|A|>=8` a projected support of size at least three is forced.

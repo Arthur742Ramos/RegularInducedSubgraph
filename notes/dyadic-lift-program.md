@@ -1047,12 +1047,16 @@ full-minor endpoint.
 Then target realization is equivalent to a disjoint non-singleton support packing with total saving
 `sum(|B|-1) >= |A|-3`; the endpoint is full-minor-critical failure of this excess packing.
 Consequently supports of size at least `|A|-2` are excluded, and active-deletion projected packings of
-saving `|A|-4` have all one-unit lifts blocked; one-block active shadows are impossible, and two-block
-shadows are only double-collision witnesses.
+saving `|A|-4` have all one-unit lifts blocked.  Singleton closure applies only to projected partitions
+with at most two blocks, so one-block active shadows are impossible and two-block shadows are only
+double-collision witnesses.
 The pair-support shadow graph has independence number at most three, so pair-only endpoints stop after
 `|A|=7`; from `|A|>=8` some rank-three projected support is forced.
 Zero-filter criticality is quantified by the full-family excess defect `Delta=|A|-3-mu_Z`: each zero
 relaxation must add private support saving that bridges this defect.
+On the scalar side, a target-realizing ternary mismatch is terminal only if every discrepant internal
+edge/nonedge is shielded from all one- and two-vertex partial swaps by omitted-trace or retained-scalar
+failure.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

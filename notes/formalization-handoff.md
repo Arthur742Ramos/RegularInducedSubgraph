@@ -2431,8 +2431,9 @@ Recommended attack:
     non-singleton supports with total saving `sum(|B|-1) >= |A|-3`; the endpoint is full-minor-critical
     failure of this packing.
     Record large-support exclusions `|B|<=|A|-3` and active-deletion projected near-packings of saving
-    `|A|-4` whose one-unit lifts by the deleted coordinate are blocked; one-block active shadows are
-    impossible and two-block shadows are double-collision only.
+    `|A|-4` whose one-unit lifts by the deleted coordinate are blocked; singleton closure is only for
+    projected partitions with at most two blocks, giving no one-block shadows and double-collision-only
+    two-block shadows.
     Add the support graph consequence: every four-set contains a co-supported pair, so the support graph has
     independence number at most three; pair-only endpoints occur only for `|A|<=7`.
     Define `mu_Z` as maximum disjoint-support excess and `Delta=|A|-3-mu_Z`; formalize zero relaxation as a
@@ -2441,6 +2442,8 @@ Recommended attack:
     ternary packet target/scalar dichotomy applies even when the pure `R` outside has size at most two.
     Add the tiny-base closure: pairs handle `m=1`; `R_4(3)=51` gives a monochromatic edge-residue triangle
     and hence a 3-selector for the `m=2` counterexample range.
+    Formalize the scalar lower-swap shadow: a target-realizing ternary mismatch is terminal only if every
+    one- and two-vertex partial swap is blocked by omitted-trace inequality or retained-scalar failure.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

@@ -11204,6 +11204,26 @@ The mismatch alternatives are explicit.  For a target-realizing triple:
 Together with the endpoint-residue-`3` case, these four lines are the complete scalar-killed ternary
 normal form.
 
+Scalar-killed triples have an exact lower-swap shadow.  Keep the same ternary data
+`T,X={x_1,x_2,x_3},Y={y_1,y_2,y_3},kappa`, and let `I subset {1,2,3}` be nonempty and proper.  The partial
+swap replacing `X_I` by `Y_I` with the same final residue `kappa` succeeds exactly when three conditions
+hold:
+
+```text
+deg_{Y_{\bar I}}(v)=deg_{X_{\bar I}}(v)                         for v in T\X,
+psi_T(x_j)+deg_{Y_I}(x_j)-deg_{X_I}(x_j)=kappa                  for j notin I,
+b(y_i)-deg_{R\T}(y_i)+deg_{Y_I}(y_i)-deg_{X_I}(y_i)=kappa       for i in I.
+```
+
+The first line is the omitted-trace equality: after a full ternary target is hit, a lower swap is blocked on
+old vertices only if the omitted incoming vertices fail to have the same trace as the omitted outgoing
+vertices.  The second line is the retained-outgoing scalar check, and the third is the incoming scalar
+check for the smaller packet.  Hence a scalar mismatch in a target-realizing triple is terminal only when
+each discrepant edge/nonedge is protected by one of these omitted-trace or retained-scalar failures for
+every one- and two-vertex partial swap.  In particular, an unshielded extra edge in the `000` case, wrong
+edge in the `110` case, extra `1-1` edge in the `211` case, or missing edge in the `222` case immediately
+descends to a row- or opposite-pair repair.
+
 The target-avoidance half can be written as a capacitated 3-sum cube.  For a coordinate-minimal
 certificate `P`, let `M_P` be the multiset of outside trace columns
 
@@ -11450,13 +11470,15 @@ saving at least `n-4` in the projected support family
 F_Z|_{A\{a}}={B cap (A\{a}) : B in F_Z, B cap (A\{a}) nonempty}.
 ```
 
-Terminality of `A` says that every one-unit lift of such a projected packing is blocked: thickening one
-projected support by `a`, or adding the singleton `{a}`, would raise the saving to at least `n-3` whenever
-the number of projected blocks permits it.  Since `{a}` is present, a one-block active shadow is impossible,
-and a two-block active shadow can only be a double-collision witness: both lifted supports contain `a`, so
-the two full supports overlap at `a` and cannot be used together in the full partition.  Three-block active
-shadows are the remaining hole/double/triple-collision alternatives, with all multiplicity-one repairs
-blocked.  This is the excess-packing version of the active thickening exclusions.
+Terminality of `A` says that every one-unit lift of such a projected packing is blocked.  More explicitly,
+a projected partition of `A\{a}` closes the full set if either one projected block can be thickened by `a`
+while the other projected blocks are realized without `a`, or the projected partition has at most two
+blocks all realized without `a`, in which case the present singleton `{a}` supplies the final block.  Thus
+a one-block active shadow is impossible by the large-support exclusions, and a two-block active shadow can
+survive only as a double-collision witness: both projected blocks are realized only by full supports
+containing `a`, so the two full supports overlap at `a` and cannot be used together in the full partition.
+Three-block active shadows are the remaining hole/double/triple-collision alternatives, with all
+multiplicity-one repairs blocked.  This is the excess-packing version of the active thickening exclusions.
 
 There is a coarse but useful shadow-graph consequence.  Join two active coordinates `u,v` when some full
 support `B in F_Z` contains both.  Every four-coordinate proper shadow must be partitionable into at most
@@ -11892,7 +11914,8 @@ large-outside ternary target avoidance:
   active projected near-packings have all one-unit lifts blocked, the support graph has alpha <= 3,
   pair-only endpoints stop at |A|=7, and zero-filter repairs privately bridge Delta=|A|-3-mu_Z;
 large-outside ternary scalar failure:
-  endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches;
+  endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
+  discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;
 near-threshold two-residue deletion:
   pure-residue bounded deletion templates are boundary diagnostics only; in the hereditary mixed two-level
   core every (m+1)-set has a large outside reservoir, so for m>=3 the remaining obstruction is again the

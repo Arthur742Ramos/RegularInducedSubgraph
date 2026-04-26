@@ -1973,8 +1973,8 @@ endpoint.
 With all singletons present, realization is equivalent to disjoint non-singleton supports whose savings
 sum to at least `|A|-3`; the endpoint is full-minor-critical excess-packing failure.
 Thus supports have size at most `|A|-3`; active deletions have projected saving-`|A|-4` packings with all
-one-unit lifts blocked.  One-block active shadows are impossible; two-block shadows are double-collision
-only.
+one-unit lifts blocked.  Singleton closure only applies to projected partitions with at most two blocks, so
+one-block active shadows are impossible and two-block shadows are double-collision only.
 The support graph has independence number at most three.  Pair-only endpoints are limited to `|A|=5,6,7`;
 for `|A|>=8` some projected support of size at least three is forced.
 Writing `mu_Z` for maximum full-family excess, every zero relaxation supplies private support saving that
@@ -1984,6 +1984,8 @@ least `m` outside vertices in `J\T`, so for `m>=3` the same ternary target/scala
 with label `epsilon`.
 The remaining `m<=2` bases are closed by the trivial pair selector and `R_4(3)=51`, which yields a
 monochromatic residue triangle and therefore a 3-selector.
+Scalar-killed target triples now have a lower-swap shadow: each discrepant edge/nonedge must be shielded
+from every one-/two-vertex partial swap by omitted-trace inequality or retained-scalar failure.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.
