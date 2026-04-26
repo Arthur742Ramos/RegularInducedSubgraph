@@ -6320,6 +6320,22 @@ then `|C_i| <= alpha(C_i) chi(C_i) <= 3(m+1)`.  By complement this also caps the
 is a genuine graph-structure lemma, not a consequence of Ramsey; it should be verified before being used
 as a formal import.
 
+The exact import needed for this route is small enough to isolate:
+
+```text
+2K2 sparse-colouring lemma.
+If G is 2K_2-free and alpha(G)<=3, then chi(G)<=omega(G)+1.
+```
+
+A standard proof route is the dominating-core theorem for connected `2K_2`-free graphs: every connected
+`2K_2`-free graph has a dominating clique or a dominating induced `P_3`.  In the dominating-clique case,
+one tries to colour from a maximum clique and use the `2K_2` condition to show the vertices missing each
+clique colour have nested conflicts, costing at most one extra colour.  In the dominating-`P_3` case,
+the `alpha<=3` hypothesis prevents three mutually nonadjacent private classes around the path, again
+forcing an `omega+1` colouring.  This lemma is now a separate finite graph-theory obligation; until it is
+proved or reliably cited, the `{0,1}` and `{3,2}` branches should be marked as conditionally capped, not
+closed.
+
 Second, the augmented boundary rules already give a `7m` cap for one C4-branch boundary shape.  If
 `Rep(g_i)` contains `{0,2}` and the boundary triple `X_i` is independent, then type `000` is forbidden by
 the repaired residue `0` `3+1` atom.  For every other boundary type, either some boundary pair has type

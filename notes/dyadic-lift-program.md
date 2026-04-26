@@ -928,7 +928,11 @@ The four two-residue cases are respectively: `alpha<=3` plus `2K_2`-free; `alpha
 only the first two sparse hereditary branches remain, plus the augmented boundary-type constraints.
 The `2K_2` branch would be linearly capped by the standard structural estimate
 `chi(G)<=omega(G)+1` for `2K_2`-free graphs with `alpha<=3`, giving `|C_i|<=3(m+1)`; verify this before
-formal import.  For the C4 branch, the augmented boundary rules give a direct shape cap: if
+formal import.  The isolated graph-theory obligation is the `2K_2` sparse-colouring lemma; a plausible
+route is the standard dominating-clique/dominating-`P_3` theorem for connected `2K_2`-free graphs, plus
+`alpha<=3` to keep the private classes from needing more than one extra colour.  Treat this branch as
+conditional until that lemma is proved or cited.  For the C4 branch, the augmented boundary rules give a
+direct shape cap: if
 `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and all other seven
 boundary types are cliques, so `|C_i|<=7m`.  Complementarily, `{3,1}` with a triangle boundary also gives
 `|C_i|<=7m`.
@@ -941,6 +945,10 @@ In that hardest triangle-boundary `{0,2}` case, the cube-type constraints are:
 `10*` anti-joins `01*`, `1*0` anti-joins `0*1`, and `*10` anti-joins `*01`; each miss class has
 independence number at most two; and every misser's neighbourhood in the corresponding hit class is a
 clique.  This finite eight-type cube problem is the residual sparse C4 surface.
+The anti-join graph is the distance-at-least-two graph on the 3-cube; its parity classes are four-cliques.
+Since four pairwise anti-joined nonempty types would give an independent four-set, at least one even and
+one odd type must be empty.  Thus the residual cube has support on at most six types; the remaining issue
+is bounding the surviving C4-free type classes.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it

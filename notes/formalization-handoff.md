@@ -1504,7 +1504,18 @@ Recommended attack:
    Two branch reductions are available.  For the `2K_2` branch, a standard structural theorem would give
    `chi(G)<=omega(G)+1` whenever `G` is `2K_2`-free and `alpha(G)<=3`; if imported, this caps
    `{0,1}` directions by `3(m+1)` and, by complement, caps `{3,2}` directions.  Verify this theorem before
-   formal use.  For the C4 branch, the augmented boundary rules give an internal cap: if
+   formal use.  The exact lemma to formalize or cite is:
+
+   ```text
+   2K2 sparse-colouring lemma:
+   2K_2-free and alpha<=3  =>  chi<=omega+1.
+   ```
+
+   A standard route is the dominating-clique/dominating-`P_3` theorem for connected `2K_2`-free graphs;
+   the `alpha<=3` condition should bound the private classes around the dominating core.  Until this is
+   proved, the `{0,1}` and `{3,2}` branches are conditional.
+
+   For the C4 branch, the augmented boundary rules give an internal cap: if
    `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and the other seven
    boundary types are cliques, so `|C_i|<=7m`.  Complementarily, `{3,1}` plus a triangle boundary gives
    `|C_i|<=7m`.
@@ -1526,6 +1537,11 @@ Recommended attack:
    Also formalize `alpha(M_x)<=2` for every miss class and the one-corner rule that each misser's
    neighbourhood in the corresponding hit class is a clique.  This finite eight-type cube is the residual
    sparse C4 surface; the independent-boundary `{3,1}` case is its complement.
+
+   The anti-join graph on boundary types is the distance-at-least-two graph on the 3-cube.  Its even and
+   odd parity classes are four-cliques.  Since four pairwise anti-joined nonempty types would give an
+   independent four-set, a terminal direction must omit at least one even type and at least one odd type;
+   the residual cube has support on at most six types.
 
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified
