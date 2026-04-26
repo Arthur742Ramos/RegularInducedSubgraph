@@ -2840,6 +2840,111 @@ theorem common_neighbor_card_le_five_of_nonadjacent_card_twenty_seven_degree_nin
       G hcard hnoK4 hnoI5 huv_ne huv hdegv
   omega
 
+/-- A non-neighbor of a degree-`9` endpoint has common-neighbor count `degree - 8`. -/
+theorem common_neighbor_card_eq_degree_sub_eight_of_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8 := by
+  have hdeg :=
+    degree_eq_eight_add_common_neighbor_card_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  omega
+
+/-- Two nonadjacent degree-`9` endpoints split as one common neighbor and two octets
+inside/outside the endpoint non-neighborhood. -/
+theorem neighbor_counts_eq_of_degree_nine_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 9) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 1 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 := by
+  have hside :=
+    neighbor_in_nonNeighborFinset_card_eq_eight_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hnon :=
+    common_non_neighbor_in_nonNeighborhood_card_eq_eight_of_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hdeg :=
+    degree_eq_eight_add_common_neighbor_card_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  constructor
+  · omega
+  constructor
+  · exact hside
+  · exact hnon
+
+/-- A degree-`10` non-neighbor of a degree-`9` endpoint splits as `2 + 8`. -/
+theorem neighbor_counts_eq_of_degree_ten_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 10) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 2 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 := by
+  have hside :=
+    neighbor_in_nonNeighborFinset_card_eq_eight_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hdeg :=
+    degree_eq_eight_add_common_neighbor_card_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  constructor
+  · omega
+  · exact hside
+
+/-- A degree-`11` non-neighbor of a degree-`9` endpoint splits as `3 + 8`. -/
+theorem neighbor_counts_eq_of_degree_eleven_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 11) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 3 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 := by
+  have hside :=
+    neighbor_in_nonNeighborFinset_card_eq_eight_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hdeg :=
+    degree_eq_eight_add_common_neighbor_card_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  constructor
+  · omega
+  · exact hside
+
+/-- A degree-`12` non-neighbor of a degree-`9` endpoint splits as `4 + 8`. -/
+theorem neighbor_counts_eq_of_degree_twelve_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 12) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 4 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 := by
+  have hside :=
+    neighbor_in_nonNeighborFinset_card_eq_eight_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hdeg :=
+    degree_eq_eight_add_common_neighbor_card_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  constructor
+  · omega
+  · exact hside
+
 
 /--
 In the `27`-vertex residual, a neighbor of a degree-`13` endpoint has exactly four common
@@ -4505,6 +4610,22 @@ theorem RamseyTenR45EndpointResiduals.toR45TwentySevenTable_of_degreeThirteen
     (h : RamseyTenR45EndpointResiduals) : RamseyTenR45TwentySevenTable :=
   ramseyTenR45TwentySevenTable_of_degreeThirteenEndpoint h.degreeThirteen
 
+/-- The combined endpoint-residual bridge proves the exact 27-vertex `R(4,5)` endpoint. -/
+theorem RamseyTenR45EndpointResiduals.toNoRamseyFourFiveCounterexampleOnTwentySeven
+    (h : RamseyTenR45EndpointResiduals) : NoRamseyFourFiveCounterexampleOnTwentySeven :=
+  noRamseyFourFiveCounterexampleOnTwentySeven_of_degreeNineEndpoint h.degreeNine
+
+/-- The combined endpoint-residual bridge supplies the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45EndpointResiduals.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45EndpointResiduals) : HasCliqueOrIndepSetBound 4 5 27 :=
+  hasCliqueOrIndepSetBound_four_five_twenty_seven_of_noCounterexample
+    (RamseyTenR45EndpointResiduals.toNoRamseyFourFiveCounterexampleOnTwentySeven h)
+
+/-- Final-facing alias: endpoint residuals discharge the relaxed Ramsey-10 table. -/
+theorem ramseyTenR45TwentySevenTable_of_endpointResiduals
+    (h : RamseyTenR45EndpointResiduals) : RamseyTenR45TwentySevenTable :=
+  RamseyTenR45EndpointResiduals.toR45TwentySevenTable h
+
 theorem hasCliqueOrIndepSetBound_10_10_of_ramseyTenSmallTable
     (h : RamseyTenSmallTable) : HasCliqueOrIndepSetBound 10 10 38543 := by
   have h36 : HasCliqueOrIndepSetBound 3 6 19 :=
@@ -4715,6 +4836,17 @@ theorem hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable
   exact
     HasCliqueOrIndepSetBound.step_mono (a := 9) (b := 9) (N₁ := 19623) (N₂ := 19623)
       (N := 39246) (by decide) (by decide) h9_10 h10_9 (by norm_num) G s hs
+
+/-- Endpoint residuals propagate through the relaxed table to the current `R(10,10)` frontier. -/
+theorem RamseyTenR45EndpointResiduals.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45EndpointResiduals) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_endpointResiduals h)
+
+/-- Arithmetic slack between the sharp small-table route, the relaxed endpoint route, and `40960`. -/
+theorem ramseyTenR45EndpointResiduals_arithmetic_gap :
+    39246 - 38543 = 703 ∧ 40960 - 39246 = 1714 := by
+  decide
 
 
 /--
@@ -12811,6 +12943,25 @@ theorem hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45TwentySevenTable
   · rcases hindep with ⟨s, _hs, hsindep⟩
     simpa [hsindep.card_eq] using
       (hasRegularInducedSubgraphOfCard_of_isIndepSet G s hsindep.isIndepSet)
+
+/-- Final-facing regular-subgraph wrapper from the combined endpoint residual bridge. -/
+theorem hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45EndpointResiduals
+    (h : RamseyTenR45EndpointResiduals) {V : Type} [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_endpointResiduals h) G hcard
+
+/-- Endpoint residuals give `10` as an admissible regular-induced-subgraph bound at `40960`. -/
+theorem ten_mem_admissibleBounds_40960_of_ramseyTenR45EndpointResiduals
+    (h : RamseyTenR45EndpointResiduals) : 10 ∈ admissibleBounds 40960 := by
+  intro G
+  exact hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45EndpointResiduals h G (by simp)
+
+/-- Endpoint residuals push the extremal function to at least `10` at the dyadic target. -/
+theorem ten_le_F_40960_of_ramseyTenR45EndpointResiduals
+    (h : RamseyTenR45EndpointResiduals) : 10 ≤ F 40960 :=
+  le_F_iff.2 (ten_mem_admissibleBounds_40960_of_ramseyTenR45EndpointResiduals h)
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
