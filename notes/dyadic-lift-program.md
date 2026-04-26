@@ -854,6 +854,10 @@ The remaining theorem is that some induced chamber has a mod-`4` residue-core la
 Terminal buckets therefore have a hereditary four-residue degeneracy certificate: for each residue `c`,
 every induced chamber can delete all but at most `m` vertices through current degrees not equal to `c`.
 The formulation is self-dual under complement, with residue shift `c -> |S|-1-c` on a retained set `S`.
+Selector blocks merge by the quotient rule `a_i+sum_j p_{ij}x_j=constant mod 4`; terminal buckets forbid
+every cross-regular quotient solution whose lifted size exceeds `m`.
+The one-vertex merge shadow forces maximum residue-`0` selectors to dominate and, when `|S|==a+1 mod 4`,
+forces every outside vertex to miss a residue-`a` selector; the complement gives the dual condition.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

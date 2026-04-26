@@ -1811,6 +1811,10 @@ What remains justified after audit is:
       residue-cores of size at most `m`, equivalently four hereditary elimination orders deleting through
       current degrees avoiding each residue; the whole formulation is complement-self-dual with residue
       shift `c -> |S|-1-c`, so terminal buckets are rigid against all large-complement deletion equations;
+      selector blocks merge whenever their internal and cross-degree residues satisfy the quotient
+      congruence, so terminal buckets are also anti-merge for all cross-regular quotient solutions above
+      scale `m`; one-vertex merge shadows force maximum residue-`0` selectors to dominate and give the
+      dual non-completion constraints;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

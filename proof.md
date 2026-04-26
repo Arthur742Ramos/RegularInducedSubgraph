@@ -9761,6 +9761,49 @@ Thus `H[S]` has constant residue `c` modulo `4` if and only if the complement bu
 row-twin and co-twin exits, dense and codense exits, and residue-core degeneracy must hold on both sides
 with the same threshold `m`.
 
+A second exact reformulation is by merging smaller selectors.  Let `A` and `B` be disjoint induced
+selectors with internal residues `a` and `b`.  Suppose the cross-degrees are constant modulo `4` on both
+sides:
+
+```text
+deg_B(x)==p [MOD 4] for x in A,
+deg_A(y)==q [MOD 4] for y in B.
+```
+
+Then `A union B` is a selector exactly when
+
+```text
+a+p == b+q        [MOD 4].
+```
+
+More generally, a family of pairwise cross-regular selector blocks is governed by the quotient equations
+
+```text
+r_i + sum_j p_{ij} x_j == constant        [MOD 4]
+```
+
+for the chosen block indicators `x_j`.  Thus a terminal bucket is anti-merge: every cross-regular
+quotient solution has total lifted size at most `m`.  This is the finite quotient shadow of the same
+principal-submatrix problem, but now the vertices are selector blocks rather than original vertices.
+
+The one-vertex shadow is especially useful.  If `S` is a residue-`a` selector and `x` is outside `S`,
+then `S union {x}` is a selector only in the following two uniform cases:
+
+```text
+x anticomplete to S and a==0,
+```
+
+or
+
+```text
+x complete to S and |S|==a+1        [MOD 4].
+```
+
+Therefore a maximum selector `S` of residue `0` is dominating, and whenever `|S|==a+1 [MOD 4]`, every
+outside vertex fails to be complete to `S`.  Applying the same statement in the complement gives the dual
+domination restrictions.  These are weak by themselves, but they are mandatory boundary conditions for
+any terminal bucket with a largest selector near the threshold.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

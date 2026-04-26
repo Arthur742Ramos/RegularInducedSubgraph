@@ -2177,6 +2177,13 @@ Recommended attack:
     Add complement self-duality:
     `deg_complement[S](v)=|S|-1-deg_H[S](v)`, so a residue-`c` selector in `H` is a
     residue-`|S|-1-c` selector in the complement on the same support.
+    Formalize selector merging: disjoint selector blocks with residues `a,b` and constant cross-degree
+    residues `p,q` merge iff `a+p==b+q mod 4`.  For a cross-regular family, the quotient condition is
+    `r_i+sum_j p_{ij}x_j` independent of `i` modulo `4`; terminality forbids any quotient solution whose
+    lifted block size exceeds `m`.
+    Formalize the one-vertex extension corollary: `S union {x}` is a selector iff either `x` is
+    anticomplete to a residue-`0` selector `S`, or `x` is complete to a residue-`a` selector with
+    `|S|==a+1 mod 4`.  Record the resulting domination/non-completion constraints for maximum selectors.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

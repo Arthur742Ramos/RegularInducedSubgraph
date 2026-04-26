@@ -5080,6 +5080,11 @@ Equivalently, every induced chamber has four elimination orders deleting all but
 where the order for residue `c` deletes only vertices whose current degree is not `c mod 4`.
 The selector condition is complement-self-dual because complementing shifts the residue on `S` by
 `|S|-1-c`; every terminal core/deletion assertion must therefore hold in both graph and complement.
+Two disjoint selector blocks `A,B` with internal residues `a,b` and constant cross-degree residues
+`p,q` merge exactly when `a+p==b+q mod 4`; terminal buckets are anti-merge for every cross-regular
+quotient solution of total lifted size greater than `m`.
+In particular, a maximum residue-`0` selector is dominating; and if a residue-`a` selector has
+`|S|==a+1 mod 4`, no outside vertex is complete to it.  The complement gives the dual restrictions.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

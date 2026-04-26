@@ -1796,6 +1796,10 @@ Equivalently, iterating `S -> {v in S: deg_{H[S]}(v)==c mod 4}` never leaves a s
 Equivalently again, for each residue every induced chamber has an elimination ordering deleting all but
 at most `m` vertices through current degrees avoiding that residue.
 The formulation is complement-self-dual, shifting the retained residue from `c` to `|S|-1-c`.
+Selector blocks merge when their internal residues and cross-degree residues satisfy
+`a+p==b+q mod 4`; terminal buckets forbid every cross-regular quotient merge above scale `m`.
+A maximum residue-`0` selector is dominating, and a residue-`a` selector with `|S|==a+1 mod 4` has no
+outside vertex complete to it; dual statements hold in the complement.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no
