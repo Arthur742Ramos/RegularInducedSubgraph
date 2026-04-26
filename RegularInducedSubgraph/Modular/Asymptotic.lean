@@ -24182,6 +24182,626 @@ theorem FirstBitTerminalFourActiveSingletonOnlyCoverFrontier.singletonOnlyCapaci
 end FirstBitTerminalFourActiveSingletonOnlyCoverFrontier
 
 /--
+Mixed ternary reservoir frontier for the terminal two-level core.  A mixed `(m + 1)` target
+`mixedTarget ⊆ coreVertices` leaves a recorded reservoir `coreVertices \ mixedTarget` of size at
+least `m`; for `m ≥ 3` the ternary packet availability is carried explicitly, while the remaining
+obstruction is packaged as the target/scalar dichotomy using the two-level label `epsilon`.
+Pure near-threshold deletion templates are retained only as boundary diagnostics.
+-/
+structure FirstBitTerminalMixedTernaryReservoirFrontier
+    {Vertex : Type*} [DecidableEq Vertex]
+    (coreVertices mixedTarget ternaryReservoir : Finset Vertex)
+    (m : ℕ) (epsilon dichotomyLabel : Vertex → ℤ)
+    (nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+      ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+      pureNearThresholdBoundaryDiagnostic remainingMixedTernaryReservoirAssumptions :
+      Prop) : Prop where
+  nearThresholdMixedSelectorFrontierCert : nearThresholdMixedSelectorFrontier
+  twoResidueDeletionLabelFrontierCert : twoResidueDeletionLabelFrontier
+  ternaryPacketRepairFrontierCert : ternaryPacketRepairFrontier
+  mixedTarget_subset_core : mixedTarget ⊆ coreVertices
+  mixedTarget_card_eq_succ : mixedTarget.card = m + 1
+  ternaryReservoir_eq_core_sdiff_target : ternaryReservoir = coreVertices \ mixedTarget
+  core_sdiff_mixedTarget_card_ge : m ≤ (coreVertices \ mixedTarget).card
+  ternaryPacketAvailable_of_three_le : 3 ≤ m → ternaryPacketAvailability
+  ternaryTargetScalarDichotomy :
+    ternaryTargetFrontier ∨ FirstBitPacketTerminalScalarFrontierSurfaces
+  dichotomyLabel_eq_epsilon_on_reservoir :
+    ∀ v : Vertex, v ∈ ternaryReservoir → dichotomyLabel v = epsilon v
+  pureNearThresholdBoundaryDiagnosticCert : pureNearThresholdBoundaryDiagnostic
+  remainingMixedTernaryReservoirAssumptionsCert :
+    remainingMixedTernaryReservoirAssumptions
+
+/-- Build the mixed ternary reservoir frontier from its visible assumptions. -/
+theorem firstBitTerminalMixedTernaryReservoirFrontier_of_assumptions
+    {Vertex : Type*} [DecidableEq Vertex]
+    {coreVertices mixedTarget ternaryReservoir : Finset Vertex}
+    {m : ℕ} {epsilon dichotomyLabel : Vertex → ℤ}
+    {nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+      ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+      pureNearThresholdBoundaryDiagnostic remainingMixedTernaryReservoirAssumptions :
+      Prop}
+    (hnear : nearThresholdMixedSelectorFrontier)
+    (htwo : twoResidueDeletionLabelFrontier)
+    (hternary : ternaryPacketRepairFrontier)
+    (hT : mixedTarget ⊆ coreVertices)
+    (hTcard : mixedTarget.card = m + 1)
+    (hreservoir : ternaryReservoir = coreVertices \ mixedTarget)
+    (hreservoirCard : m ≤ (coreVertices \ mixedTarget).card)
+    (havailable : 3 ≤ m → ternaryPacketAvailability)
+    (hdichotomy : ternaryTargetFrontier ∨ FirstBitPacketTerminalScalarFrontierSurfaces)
+    (hlabel : ∀ v : Vertex, v ∈ ternaryReservoir → dichotomyLabel v = epsilon v)
+    (hpure : pureNearThresholdBoundaryDiagnostic)
+    (hremaining : remainingMixedTernaryReservoirAssumptions) :
+    FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+      ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+      twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+      ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+      remainingMixedTernaryReservoirAssumptions where
+  nearThresholdMixedSelectorFrontierCert := hnear
+  twoResidueDeletionLabelFrontierCert := htwo
+  ternaryPacketRepairFrontierCert := hternary
+  mixedTarget_subset_core := hT
+  mixedTarget_card_eq_succ := hTcard
+  ternaryReservoir_eq_core_sdiff_target := hreservoir
+  core_sdiff_mixedTarget_card_ge := hreservoirCard
+  ternaryPacketAvailable_of_three_le := havailable
+  ternaryTargetScalarDichotomy := hdichotomy
+  dichotomyLabel_eq_epsilon_on_reservoir := hlabel
+  pureNearThresholdBoundaryDiagnosticCert := hpure
+  remainingMixedTernaryReservoirAssumptionsCert := hremaining
+
+section FirstBitTerminalMixedTernaryReservoirFrontier
+
+variable {Vertex : Type*} [DecidableEq Vertex]
+variable {coreVertices mixedTarget ternaryReservoir : Finset Vertex}
+variable {m : ℕ} {epsilon dichotomyLabel : Vertex → ℤ}
+variable {nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+  ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+  pureNearThresholdBoundaryDiagnostic remainingMixedTernaryReservoirAssumptions : Prop}
+
+/-- Project the near-threshold mixed-selector frontier used to enter the reservoir case. -/
+theorem FirstBitTerminalMixedTernaryReservoirFrontier.to_nearThresholdMixedSelectorFrontier
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions) :
+    nearThresholdMixedSelectorFrontier :=
+  h.nearThresholdMixedSelectorFrontierCert
+
+/-- Project the two-residue deletion-label frontier, carrying the two-level label `epsilon`. -/
+theorem FirstBitTerminalMixedTernaryReservoirFrontier.to_twoResidueDeletionLabelFrontier
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions) :
+    twoResidueDeletionLabelFrontier :=
+  h.twoResidueDeletionLabelFrontierCert
+
+/-- Project the ternary packet-repair frontier available to the mixed reservoir. -/
+theorem FirstBitTerminalMixedTernaryReservoirFrontier.to_ternaryPacketRepairFrontier
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions) :
+    ternaryPacketRepairFrontier :=
+  h.ternaryPacketRepairFrontierCert
+
+/-- The displayed mixed target really is an `(m + 1)` subset of the terminal core. -/
+theorem FirstBitTerminalMixedTernaryReservoirFrontier.mixedTarget_subset_and_card
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions) :
+    mixedTarget ⊆ coreVertices ∧ mixedTarget.card = m + 1 :=
+  ⟨h.mixedTarget_subset_core, h.mixedTarget_card_eq_succ⟩
+
+/-- The reservoir complement has the required lower bound `|J \ T| ≥ m`. -/
+theorem FirstBitTerminalMixedTernaryReservoirFrontier.coreDiff_card_ge_m
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions) :
+    m ≤ (coreVertices \ mixedTarget).card :=
+  h.core_sdiff_mixedTarget_card_ge
+
+/-- For `m ≥ 3`, expose the imported ternary packet availability in the reservoir. -/
+theorem FirstBitTerminalMixedTernaryReservoirFrontier.to_ternaryPacketAvailability
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions)
+    (hm : 3 ≤ m) :
+    ternaryPacketAvailability :=
+  h.ternaryPacketAvailable_of_three_le hm
+
+/-- Project the remaining ternary target/scalar packet dichotomy. -/
+theorem FirstBitTerminalMixedTernaryReservoirFrontier.to_targetScalarDichotomy
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions) :
+    ternaryTargetFrontier ∨ FirstBitPacketTerminalScalarFrontierSurfaces :=
+  h.ternaryTargetScalarDichotomy
+
+/-- The dichotomy label agrees with the two-level label `epsilon` on the ternary reservoir. -/
+theorem FirstBitTerminalMixedTernaryReservoirFrontier.dichotomyLabel_eq_epsilon
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions)
+    {v : Vertex} (hv : v ∈ ternaryReservoir) :
+    dichotomyLabel v = epsilon v :=
+  h.dichotomyLabel_eq_epsilon_on_reservoir v hv
+
+/-- Pure near-threshold deletion templates are retained only as boundary diagnostics. -/
+theorem
+    FirstBitTerminalMixedTernaryReservoirFrontier.to_pureNearThresholdBoundaryDiagnostic
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions) :
+    pureNearThresholdBoundaryDiagnostic :=
+  h.pureNearThresholdBoundaryDiagnosticCert
+
+/-- Project the explicitly retained mixed-reservoir assumptions. -/
+theorem
+    FirstBitTerminalMixedTernaryReservoirFrontier.to_remainingMixedTernaryReservoirAssumptions
+    (h :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget
+        ternaryReservoir m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions) :
+    remainingMixedTernaryReservoirAssumptions :=
+  h.remainingMixedTernaryReservoirAssumptionsCert
+
+end FirstBitTerminalMixedTernaryReservoirFrontier
+
+/--
+Tiny-base closure frontier for the mixed terminal core.  The `m = 1` base is recorded as a
+pair-selector closure, and the `m = 2` base carries the four-colour triangle Ramsey bound
+`R_4(3) = 51` together with the resulting three-selector closure.
+-/
+structure FirstBitTerminalTinyBaseClosureFrontier
+    {Vertex : Type*} [DecidableEq Vertex]
+    (coreVertices pairSelector triangleSelector : Finset Vertex)
+    (m R4_3 : ℕ)
+    (nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+      pairSelectorClosure fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+      remainingTinyBaseAssumptions : Prop) : Prop where
+  nearThresholdMixedSelectorFrontierCert : nearThresholdMixedSelectorFrontier
+  twoResidueDeletionLabelFrontierCert : twoResidueDeletionLabelFrontier
+  pairSelector_subset_core : pairSelector ⊆ coreVertices
+  pairSelector_card_eq_two : pairSelector.card = 2
+  pairSelectorClosure_of_m_eq_one : m = 1 → pairSelectorClosure
+  triangleSelector_subset_core : triangleSelector ⊆ coreVertices
+  triangleSelector_card_eq_three : triangleSelector.card = 3
+  R4_3_eq_fiftyOne : R4_3 = 51
+  fourColorTriangleRamseyBound_of_m_eq_two : m = 2 → fourColorTriangleRamseyBound
+  threeSelectorClosure_of_m_eq_two : m = 2 → threeSelectorClosure
+  tinyBaseClosureCert : tinyBaseClosure
+  remainingTinyBaseAssumptionsCert : remainingTinyBaseAssumptions
+
+/-- Build the tiny-base closure frontier from explicit base-case assumptions. -/
+theorem firstBitTerminalTinyBaseClosureFrontier_of_assumptions
+    {Vertex : Type*} [DecidableEq Vertex]
+    {coreVertices pairSelector triangleSelector : Finset Vertex}
+    {m R4_3 : ℕ}
+    {nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+      pairSelectorClosure fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+      remainingTinyBaseAssumptions : Prop}
+    (hnear : nearThresholdMixedSelectorFrontier)
+    (htwo : twoResidueDeletionLabelFrontier)
+    (hpairSub : pairSelector ⊆ coreVertices)
+    (hpairCard : pairSelector.card = 2)
+    (hpair : m = 1 → pairSelectorClosure)
+    (htriangleSub : triangleSelector ⊆ coreVertices)
+    (htriangleCard : triangleSelector.card = 3)
+    (hR : R4_3 = 51)
+    (hRamsey : m = 2 → fourColorTriangleRamseyBound)
+    (hthree : m = 2 → threeSelectorClosure)
+    (htiny : tinyBaseClosure)
+    (hremaining : remainingTinyBaseAssumptions) :
+    FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+      nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+      fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+      remainingTinyBaseAssumptions where
+  nearThresholdMixedSelectorFrontierCert := hnear
+  twoResidueDeletionLabelFrontierCert := htwo
+  pairSelector_subset_core := hpairSub
+  pairSelector_card_eq_two := hpairCard
+  pairSelectorClosure_of_m_eq_one := hpair
+  triangleSelector_subset_core := htriangleSub
+  triangleSelector_card_eq_three := htriangleCard
+  R4_3_eq_fiftyOne := hR
+  fourColorTriangleRamseyBound_of_m_eq_two := hRamsey
+  threeSelectorClosure_of_m_eq_two := hthree
+  tinyBaseClosureCert := htiny
+  remainingTinyBaseAssumptionsCert := hremaining
+
+section FirstBitTerminalTinyBaseClosureFrontier
+
+variable {Vertex : Type*} [DecidableEq Vertex]
+variable {coreVertices pairSelector triangleSelector : Finset Vertex}
+variable {m R4_3 : ℕ}
+variable {nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+  pairSelectorClosure fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+  remainingTinyBaseAssumptions : Prop}
+
+/-- Project the near-threshold mixed-selector frontier visible in the tiny bases. -/
+theorem FirstBitTerminalTinyBaseClosureFrontier.to_nearThresholdMixedSelectorFrontier
+    (h :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions) :
+    nearThresholdMixedSelectorFrontier :=
+  h.nearThresholdMixedSelectorFrontierCert
+
+/-- Project the two-residue deletion-label frontier used by the tiny bases. -/
+theorem FirstBitTerminalTinyBaseClosureFrontier.to_twoResidueDeletionLabelFrontier
+    (h :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions) :
+    twoResidueDeletionLabelFrontier :=
+  h.twoResidueDeletionLabelFrontierCert
+
+/-- The `m = 1` base closes through the recorded pair selector. -/
+theorem FirstBitTerminalTinyBaseClosureFrontier.to_pairSelectorClosure
+    (h :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions)
+    (hm : m = 1) :
+    pairSelectorClosure :=
+  h.pairSelectorClosure_of_m_eq_one hm
+
+/-- The pair-selector witness is a two-element subset of the core. -/
+theorem FirstBitTerminalTinyBaseClosureFrontier.pairSelector_summary
+    (h :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions) :
+    pairSelector ⊆ coreVertices ∧ pairSelector.card = 2 :=
+  ⟨h.pairSelector_subset_core, h.pairSelector_card_eq_two⟩
+
+/-- The four-colour triangle Ramsey constant carried by the `m = 2` base is `51`. -/
+theorem FirstBitTerminalTinyBaseClosureFrontier.R4_3_eq_fiftyOne'
+    (h :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions) :
+    R4_3 = 51 :=
+  h.R4_3_eq_fiftyOne
+
+/-- The `m = 2` base exposes both the Ramsey bound and the three-selector closure. -/
+theorem FirstBitTerminalTinyBaseClosureFrontier.triangleClosure_of_m_eq_two
+    (h :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions)
+    (hm : m = 2) :
+    fourColorTriangleRamseyBound ∧ threeSelectorClosure :=
+  ⟨h.fourColorTriangleRamseyBound_of_m_eq_two hm,
+    h.threeSelectorClosure_of_m_eq_two hm⟩
+
+/-- The triangle-selector witness is a three-element subset of the core. -/
+theorem FirstBitTerminalTinyBaseClosureFrontier.triangleSelector_summary
+    (h :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions) :
+    triangleSelector ⊆ coreVertices ∧ triangleSelector.card = 3 :=
+  ⟨h.triangleSelector_subset_core, h.triangleSelector_card_eq_three⟩
+
+/-- Project the tiny-base closure marker. -/
+theorem FirstBitTerminalTinyBaseClosureFrontier.to_tinyBaseClosure
+    (h :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions) :
+    tinyBaseClosure :=
+  h.tinyBaseClosureCert
+
+/-- Project the explicitly retained tiny-base assumptions. -/
+theorem FirstBitTerminalTinyBaseClosureFrontier.to_remainingTinyBaseAssumptions
+    (h :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions) :
+    remainingTinyBaseAssumptions :=
+  h.remainingTinyBaseAssumptionsCert
+
+end FirstBitTerminalTinyBaseClosureFrontier
+
+/--
+Assumption-backed mixed ternary core closure frontier.  It combines the large-core ternary
+reservoir (`m ≥ 3`) with the two tiny bases (`m = 1` and `m = 2`).  The package does not assert a
+closed terminal theorem: all remaining reservoir, tiny-base, and core assumptions are still visible.
+-/
+structure FirstBitTerminalMixedTernaryCoreClosureFrontier
+    {Vertex : Type*} [DecidableEq Vertex]
+    (coreVertices mixedTarget ternaryReservoir pairSelector triangleSelector : Finset Vertex)
+    (m R4_3 : ℕ) (epsilon dichotomyLabel : Vertex → ℤ)
+    (nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+      ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+      pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+      threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+      remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+      remainingMixedTernaryCoreAssumptions : Prop) : Prop where
+  reservoirFrontier :
+    FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget ternaryReservoir
+      m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+      ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+      pureNearThresholdBoundaryDiagnostic remainingMixedTernaryReservoirAssumptions
+  tinyBaseFrontier :
+    FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+      nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+      fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+      remainingTinyBaseAssumptions
+  largeCoreClosure :
+    3 ≤ m →
+      ternaryPacketAvailability ∧
+        (ternaryTargetFrontier ∨ FirstBitPacketTerminalScalarFrontierSurfaces)
+  oneBaseClosure : m = 1 → pairSelectorClosure
+  twoBaseClosure : m = 2 → fourColorTriangleRamseyBound ∧ threeSelectorClosure
+  pureBoundaryDiagnosticCert : pureNearThresholdBoundaryDiagnostic
+  mixedTernaryCoreClosureCert : mixedTernaryCoreClosure
+  remainingMixedTernaryCoreAssumptionsCert : remainingMixedTernaryCoreAssumptions
+
+/-- Build the mixed ternary core closure frontier from its reservoir and tiny-base frontiers. -/
+theorem firstBitTerminalMixedTernaryCoreClosureFrontier_of_frontiers
+    {Vertex : Type*} [DecidableEq Vertex]
+    {coreVertices mixedTarget ternaryReservoir pairSelector triangleSelector : Finset Vertex}
+    {m R4_3 : ℕ} {epsilon dichotomyLabel : Vertex → ℤ}
+    {nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+      ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+      pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+      threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+      remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+      remainingMixedTernaryCoreAssumptions : Prop}
+    (hreservoir :
+      FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget ternaryReservoir
+        m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier
+        twoResidueDeletionLabelFrontier ternaryPacketRepairFrontier ternaryTargetFrontier
+        ternaryPacketAvailability pureNearThresholdBoundaryDiagnostic
+        remainingMixedTernaryReservoirAssumptions)
+    (htiny :
+      FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+        fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+        remainingTinyBaseAssumptions)
+    (hcore : mixedTernaryCoreClosure)
+    (hremaining : remainingMixedTernaryCoreAssumptions) :
+    FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+      ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+      nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+      ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+      pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+      threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+      remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+      remainingMixedTernaryCoreAssumptions where
+  reservoirFrontier := hreservoir
+  tinyBaseFrontier := htiny
+  largeCoreClosure := fun hm =>
+    ⟨hreservoir.ternaryPacketAvailable_of_three_le hm,
+      hreservoir.ternaryTargetScalarDichotomy⟩
+  oneBaseClosure := htiny.pairSelectorClosure_of_m_eq_one
+  twoBaseClosure := fun hm =>
+    ⟨htiny.fourColorTriangleRamseyBound_of_m_eq_two hm,
+      htiny.threeSelectorClosure_of_m_eq_two hm⟩
+  pureBoundaryDiagnosticCert := hreservoir.pureNearThresholdBoundaryDiagnosticCert
+  mixedTernaryCoreClosureCert := hcore
+  remainingMixedTernaryCoreAssumptionsCert := hremaining
+
+section FirstBitTerminalMixedTernaryCoreClosureFrontier
+
+variable {Vertex : Type*} [DecidableEq Vertex]
+variable {coreVertices mixedTarget ternaryReservoir pairSelector triangleSelector : Finset Vertex}
+variable {m R4_3 : ℕ} {epsilon dichotomyLabel : Vertex → ℤ}
+variable {nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+  ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+  pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+  threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+  remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+  remainingMixedTernaryCoreAssumptions : Prop}
+
+/-- Project the mixed ternary reservoir frontier from the core closure package. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.to_mixedTernaryReservoirFrontier
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions) :
+    FirstBitTerminalMixedTernaryReservoirFrontier coreVertices mixedTarget ternaryReservoir
+      m epsilon dichotomyLabel nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+      ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+      pureNearThresholdBoundaryDiagnostic remainingMixedTernaryReservoirAssumptions :=
+  h.reservoirFrontier
+
+/-- Project the tiny-base closure frontier from the core closure package. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.to_tinyBaseClosureFrontier
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions) :
+    FirstBitTerminalTinyBaseClosureFrontier coreVertices pairSelector triangleSelector m R4_3
+      nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier pairSelectorClosure
+      fourColorTriangleRamseyBound threeSelectorClosure tinyBaseClosure
+      remainingTinyBaseAssumptions :=
+  h.tinyBaseFrontier
+
+/-- Project the near-threshold mixed-selector frontier through the reservoir half. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.to_nearThresholdMixedSelectorFrontier
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions) :
+    nearThresholdMixedSelectorFrontier :=
+  h.reservoirFrontier.to_nearThresholdMixedSelectorFrontier
+
+/-- Project the two-residue deletion-label frontier carrying the two-level label. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.to_twoResidueDeletionLabelFrontier
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions) :
+    twoResidueDeletionLabelFrontier :=
+  h.reservoirFrontier.to_twoResidueDeletionLabelFrontier
+
+/-- The large mixed core (`m ≥ 3`) returns ternary availability and target/scalar dichotomy. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.largeCoreClosure_of_three_le
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions)
+    (hm : 3 ≤ m) :
+    ternaryPacketAvailability ∧
+      (ternaryTargetFrontier ∨ FirstBitPacketTerminalScalarFrontierSurfaces) :=
+  h.largeCoreClosure hm
+
+/-- The `m = 1` tiny base closes through the pair selector. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.pairSelectorClosure_of_m_eq_one
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions)
+    (hm : m = 1) :
+    pairSelectorClosure :=
+  h.oneBaseClosure hm
+
+/-- The `m = 2` tiny base closes through `R_4(3)=51` and a three-selector. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.triangleClosure_of_m_eq_two
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions)
+    (hm : m = 2) :
+    fourColorTriangleRamseyBound ∧ threeSelectorClosure :=
+  h.twoBaseClosure hm
+
+/-- Project the target/scalar dichotomy from the large-core reservoir. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.to_targetScalarDichotomy
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions) :
+    ternaryTargetFrontier ∨ FirstBitPacketTerminalScalarFrontierSurfaces :=
+  h.reservoirFrontier.to_targetScalarDichotomy
+
+/-- Pure near-threshold deletion templates remain boundary diagnostics in the combined core package. -/
+theorem
+    FirstBitTerminalMixedTernaryCoreClosureFrontier.to_pureNearThresholdBoundaryDiagnostic
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions) :
+    pureNearThresholdBoundaryDiagnostic :=
+  h.pureBoundaryDiagnosticCert
+
+/-- Project the mixed ternary core closure marker. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.to_mixedTernaryCoreClosure
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions) :
+    mixedTernaryCoreClosure :=
+  h.mixedTernaryCoreClosureCert
+
+/-- Project the explicitly retained core-closure assumptions. -/
+theorem FirstBitTerminalMixedTernaryCoreClosureFrontier.to_remainingMixedTernaryCoreAssumptions
+    (h :
+      FirstBitTerminalMixedTernaryCoreClosureFrontier coreVertices mixedTarget
+        ternaryReservoir pairSelector triangleSelector m R4_3 epsilon dichotomyLabel
+        nearThresholdMixedSelectorFrontier twoResidueDeletionLabelFrontier
+        ternaryPacketRepairFrontier ternaryTargetFrontier ternaryPacketAvailability
+        pureNearThresholdBoundaryDiagnostic pairSelectorClosure fourColorTriangleRamseyBound
+        threeSelectorClosure tinyBaseClosure mixedTernaryCoreClosure
+        remainingMixedTernaryReservoirAssumptions remainingTinyBaseAssumptions
+        remainingMixedTernaryCoreAssumptions) :
+    remainingMixedTernaryCoreAssumptions :=
+  h.remainingMixedTernaryCoreAssumptionsCert
+
+end FirstBitTerminalMixedTernaryCoreClosureFrontier
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
