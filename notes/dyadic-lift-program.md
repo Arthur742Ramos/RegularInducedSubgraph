@@ -917,6 +917,14 @@ The one-atom repair profile is also explicit: an outside atom `y` repairs `B` if
 corrections are `-R_i(B)` on all atoms of `B` and its outgoing row sum cancels `e_y`.
 For an outside atom packet `Y`, the repair equations are the incoming affine target to `B` plus the
 shifted self-layer equation on `Y`; terminality says every such atom packet fails one of these two lines.
+So the pure quotient branch splits into affine target avoidance in the incoming profile group and a
+smaller shifted principal-submatrix problem on target-hitting packets.
+The incoming profile group has Davenport constant `3|B|+1`, but this supplies zero-profile packets only;
+without a target-hitting seed it does not solve the affine target `-R(B)`.
+With a seed, zero-profile packets preserve the target and reduce to a seeded shifted self-layer problem;
+without a seed, the branch is exactly affine subset-sum avoidance of `-R(B)` in the profile sumset.
+Sequence Kneser gives the inverse form: for `H=Stab(Sigma_B(A))`, the target coset is missing and at most
+`|(Z/4)^B/H|-2` outside atom profiles lie outside `H`.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

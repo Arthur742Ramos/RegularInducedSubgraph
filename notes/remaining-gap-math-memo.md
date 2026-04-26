@@ -1816,7 +1816,7 @@ constant-trace `p` packet in chamber `t` is forbidden from having internal resid
 Each such packet satisfies `|X|t==mp mod 4`.
 Only packets passing `|X|(a+p-t)==0 mod 2` can be dangerous by handshaking.
 Using size mod `4` as an extra Davenport coordinate yields constant-trace packets with `|X|==0 mod 4`;
-for these the size handshaking condition is automatic, the edge parity target is `e(X)==0 mod 2`, and
+for these the size congruence is automatic, the edge parity target is `e(X)==0 mod 2`, and
 `mp==0 mod 4`.
 Hence odd `m` forces zero trace, `m==2 mod 4` forces even trace, and `m==0 mod 4` is the only unrestricted
 trace branch.
@@ -1849,6 +1849,15 @@ An outside atom repairs a blocked bundle exactly when its incoming corrections e
 row sum cancels its own defect; terminality forbids this affine profile.
 For outside atom packets, repair is the incoming affine target to the bundle plus a shifted self-layer
 equation on the packet itself.
+This splits into incoming profile target avoidance `P_B(Y)!=-R(B)` and shifted self-layer failure on
+target-hitting packets.
+Profile Davenport supplies zero-profile atom packets at threshold `3|B|+1`, not arbitrary target packets;
+the residual is affine target avoidance unless a target-hitting seed exists.
+With a seed, zero-profile packets preserve the target and become a seeded shifted self-layer problem;
+without a seed, `-R(B)` is absent from the profile subset-sum set.
+Inverse Kneser turns target avoidance into a period-subgroup certificate: for
+`H=Stab(Sigma_B(A))`, the target coset is missing and all but at most `|(Z/4)^B/H|-2` atom profiles lie
+inside `H`.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

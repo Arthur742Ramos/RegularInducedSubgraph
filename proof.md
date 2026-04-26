@@ -9960,7 +9960,8 @@ nonempty packet `X` with constant trace to `S` and
 |X| == 0        [MOD 4].
 ```
 
-For such a packet the handshaking condition is automatic.  The cross-count congruence reduces to
+For such a packet the size divisibility side of handshaking is automatic.  The cross-count congruence
+reduces to
 
 ```text
 m p == 0        [MOD 4],
@@ -10221,6 +10222,99 @@ The first line is linear in the old bundle `B`; the second line is the fresh sel
 old residuals can be repaired by an outside atom packet only if that packet both hits the affine
 incoming target and is internally regular after the shifted row labels.  Terminality says every outside
 atom packet fails one of these two lines.
+
+Separate these two failures.  For a fixed pure `Q` bundle `B`, define the incoming profile of an outside
+atom packet by
+
+```text
+P_B(Y)_i=sum_{y in Y}c_{iy}        [MOD 4]        (i in B).
+```
+
+Then every outside packet `Y` is blocked in exactly one of the following ways:
+
+```text
+incoming failure:      P_B(Y) != -R(B),
+self-layer failure:    P_B(Y)=-R(B), but the shifted atom degrees on Y are not all 0 mod 4.
+```
+
+Thus the pure quotient branch splits into affine target avoidance in the profile group `(Z/4Z)^B` and a
+smaller shifted principal-submatrix problem on packets that hit the target.  This is the exact
+atom-quotient analogue of the earlier deletion-layer split.
+
+There is a corresponding profile-Davenport branch, but it is only a zero-target tool and must not be
+mistaken for an arbitrary-target theorem.  If `B` contains `b` atoms, then the incoming profile group is
+`(Z/4Z)^b` and has Davenport constant `3b+1`.  Any collection of at least `3b+1` outside atoms contains a
+nonempty packet with zero incoming profile to `B`.  This preserves whatever incoming defect was already
+present; it does not by itself hit the affine target `-R(B)`.  Therefore the atom-quotient endpoint
+splits again:
+
+```text
+target-hit branch:      some outside packet has P_B(Y)=-R(B), leaving only the shifted self-layer;
+target-avoid branch:    outside profiles avoid -R(B), while zero-profile packets exist once the atom count is large.
+```
+
+In the target-avoid branch, any zero-profile packet that is shifted-self-regular can be merged with a
+target-hitting seed, if such a seed exists.  Without a seed, it only certifies another internally
+forbidden atom packet.  This is why the residual is affine target avoidance rather than ordinary
+Davenport balancing.
+
+Equivalently, write
+
+```text
+Sigma_B(A)={P_B(Y):Y subset A}
+```
+
+for the profile subset-sums of an outside atom pool `A`.  The target-hit branch is
+`-R(B) in Sigma_B(A)`.  Once a seed `Y_0` with `P_B(Y_0)=-R(B)` is fixed, every disjoint zero-profile
+packet `Z` in `A\Y_0` keeps the incoming target:
+
+```text
+P_B(Y_0 union Z)=-R(B).
+```
+
+Therefore terminality forces every such zero-profile `Z` to fail the shifted self-layer relative to the
+already shifted labels created by `Y_0`.  The target-hit branch thus becomes a seeded zero-profile
+self-layer problem.
+
+The target-avoid branch is the exact complement:
+
+```text
+-R(B) notin Sigma_B(A).
+```
+
+It is a pure affine subset-sum avoidance condition in `(Z/4Z)^B`; zero-profile Davenport packets exist in
+large pools, but they live in the stabilizer of the already-avoiding subset-sum set and cannot create the
+missing affine target without a seed.
+
+The target-avoid branch has a standard inverse form.  Let
+
+```text
+G_B=(Z/4Z)^B,        Sigma=Sigma_B(A),        H=Stab(Sigma).
+```
+
+Since `0 in Sigma`, the set `Sigma` is a union of `H`-cosets.  If `-R(B) notin Sigma`, its `H`-coset is
+missing, so
+
+```text
+|Sigma| <= |G_B|-|H|.
+```
+
+On the other hand, the sequence form of Kneser's theorem applied to
+`Sigma=sum_{y in A}{0,P_B(y)}` gives
+
+```text
+|Sigma| >= |H|(1+N_out),
+```
+
+where `N_out` is the number of outside atoms whose profile is not in `H`.  Hence
+
+```text
+N_out <= |G_B/H|-2.
+```
+
+Thus affine target avoidance is possible only with a proper period subgroup `H` such that all but at most
+`|G_B/H|-2` outside atom profiles lie in `H`, while the target coset `-R(B)+H` is absent from the profile
+sumset.  This is the inverse-Kneser normal form of the target-avoid branch.
 
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater

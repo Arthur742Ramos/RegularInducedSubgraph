@@ -1826,7 +1826,7 @@ What remains justified after audit is:
       threshold `3m-2`, exactly matching the merge equation, and packet parameters satisfy
       `|X|t==mp mod 4` plus the handshaking danger filter `|X|(a+p-t)==0 mod 2`;
       adding packet size as a `Z/4` coordinate gives size-`0 mod 4` constant-trace packets at threshold
-      `3m+1`, for which the size handshaking condition is automatic, the edge parity target is even, and
+      `3m+1`, for which the size congruence is automatic, the edge parity target is even, and
       the cross-count is `mp==0 mod 4`, splitting into
       odd/even/zero `m mod 4` trace branches; minimal packets are zero-sum atoms of size at most `3m+1`,
       greedy extraction covers more than `19m/4` vertices of the largest critical chamber by disjoint
@@ -1847,7 +1847,13 @@ What remains justified after audit is:
       unsolvability; in the pure quotient case, nonzero residual vectors for the two bundles must avoid
       affine cancellation by the cross-bundle correction sums, and every outside atom must avoid the
       corresponding one-atom affine repair profile; outside atom packets satisfy the same incoming-target
-      plus shifted self-layer equations at quotient scale;
+      plus shifted self-layer equations at quotient scale, splitting into profile-target avoidance and
+      shifted self-layer failure; profile Davenport yields only zero-profile packets unless a
+      target-hitting seed is present, so the residual is true affine target avoidance; with a seed,
+      zero-profile packets preserve the target and leave a seeded shifted self-layer problem, while
+      without one `-R(B)` is absent from the profile subset-sum set; inverse Kneser then supplies a
+      period subgroup whose target coset is missing and which contains all but boundedly many outside
+      atom profiles;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

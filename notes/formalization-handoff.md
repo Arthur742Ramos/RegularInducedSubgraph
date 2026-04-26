@@ -2213,7 +2213,7 @@ Recommended attack:
     possible only if `|X|r==0 mod 2`, and then `e(X)==|X|r/2 mod 2`.
     Add the size-refined Davenport endpoint: in
     `((Z/4)^S/<1>) x Z/4 ~= (Z/4)^m`, every `3m+1` vertices yield a nonempty constant-trace packet with
-    `|X|==0 mod 4`.  For these packets the size handshaking condition is automatic, the edge parity target
+    `|X|==0 mod 4`.  For these packets the size congruence is automatic, the edge parity target
     is `e(X)==0 mod 2`, and cross-count reduces to `mp==0 mod 4`.
     Add the case split for `mp==0 mod 4`: odd `m` forces `p=0`, `m==2 mod 4` forces `p in {0,2}`, and
     `m==0 mod 4` imposes no condition on `p`.
@@ -2263,6 +2263,17 @@ Recommended attack:
     `sum_{y in Y}c_iy=-R_i(B)` for all atoms `i in B`, and
     `e_y+sum_{i in B}c_yi+sum_{z in Y,z!=y}c_yz=0` for each `y in Y`.  This is the co-cut/self-layer
     obstruction reproduced at atom-quotient scale.
+    Add the incoming/self-layer split: define `P_B(Y)_i=sum_{y in Y}c_iy`.  Packets fail either because
+    `P_B(Y)!=-R(B)` or because they hit `-R(B)` but fail the shifted self-layer equation.
+    Add the profile-Davenport caveat: in `(Z/4)^{|B|}`, `3|B|+1` outside atoms yield zero-profile packets,
+    not arbitrary target packets.  Formalize the target-hit versus target-avoid split and avoid using
+    Davenport as an affine target theorem without a seed.
+    Add the seeded split: define `Sigma_B(A)={P_B(Y):Y subset A}`.  If `-R(B) in Sigma_B(A)`, fix a seed
+    `Y0`; then every disjoint zero-profile packet preserves the incoming target and must fail the shifted
+    self-layer.  If `-R(B)` is absent, the branch is pure affine subset-sum avoidance.
+    Add the inverse-Kneser form of target avoidance: with `H=Stab(Sigma_B(A))`, the missing target means
+    the coset `-R(B)+H` is absent; sequence Kneser gives
+    `|Sigma_B(A)|>=|H|(1+N_out)`, hence `N_out<=|(Z/4)^B/H|-2`.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

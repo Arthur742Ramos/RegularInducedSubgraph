@@ -5154,6 +5154,16 @@ For an outside atom packet `Y`, repair requires
 `sum_{y in Y}c_iy=-R_i(B)` on the bundle atoms and
 `e_y+sum_{i in B}c_yi+sum_{z in Y,z!=y}c_yz=0` on `Y`; this is the same co-cut/self-layer equation at
 atom-quotient scale.
+Equivalently, each packet is blocked either by incoming affine target failure
+`P_B(Y)!=-R(B)` in `(Z/4)^B`, or by shifted self-layer failure after the target is hit.
+Profile Davenport on `(Z/4)^B` gives only zero-profile outside packets at threshold `3|B|+1`; it does
+not hit the affine target without a seed, so the residual is target avoidance rather than plain
+balancing.
+If a seed `Y0` with `P_B(Y0)=-R(B)` exists, disjoint zero-profile packets preserve the target and must
+all fail the shifted self-layer.  If no seed exists, the residual is pure affine subset-sum avoidance:
+`-R(B)` is absent from the profile sumset `Sigma_B(A)`.
+By sequence Kneser, target avoidance has a period subgroup `H=Stab(Sigma_B(A))`; the target coset is
+missing and all but at most `|(Z/4)^B/H|-2` outside atom profiles lie in `H`.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and
