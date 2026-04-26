@@ -35881,6 +35881,1234 @@ end FinalConsumerNoLeftoverSmallCollisionSizeCutoffApi
 
 end FinalConsumerPartnerFreePartnerHitPairCollisionSplitApi
 
+/-!
+## Large-target capacity identity and endpoint-exhaustion final-consumer handoff
+
+This layer sits beyond the four-exception residual/binary handoff. It records the
+large-target capacity identities and endpoint-exhaustion ledgers as terminal packets, while
+reusing the existing typed `F`-graph, parity/Latin scalar, and four-exception handoff
+surfaces without duplicating them.
+-/
+
+/--
+Capacity identities for partner-free two-petal large split targets: the split target identity
+`d_i = h - t_i - k_i`, the total deficit/rebate one-slack accounting, the side-slack sum
+`e_1 + e_2 = h - 4`, and the tight `h = 4` table.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityIdentityCertificate
+    (terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable : Prop) :
+    Type where
+  twoPetalPartnerFreeSplitTargetCapacityIdentity :
+    terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+  totalDeficitRebateOneSlack : terminalLargeTargetTotalDeficitRebateOneSlack
+  sideSlackSumHMinusFour : terminalLargeTargetSideSlackSumHMinusFour
+  hFourTightTable : terminalLargeTargetHFourTightTable
+
+/--
+Routing packet for the `h > 4` capacity slack: additional split targets, partner-hit
+omissions, and the all-large strict-defect branch absorb the remaining slack.
+-/
+structure CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacitySlackRoutingCertificate
+    (terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack : Prop) :
+    Type where
+  hGreaterThanFourAdditionalSplitTargetSlack :
+    terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+  hGreaterThanFourPartnerHitOmissionSlack :
+    terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+  hGreaterThanFourAllLargeStrictDefectSlack :
+    terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+
+/-- Endpoint-exhaustion and near-threshold boundary diagnostics for large targets. -/
+structure CertifiedProofMdCurrentFrontierTerminalLargeTargetEndpointBoundaryCertificate
+    (terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop) :
+    Type where
+  allTernaryEndpointExhaustion : terminalAllTernaryEndpointExhaustion
+  nearThresholdBoundaryDiagnostics : terminalNearThresholdBoundaryDiagnostics
+
+/-- Terminal packet joining large-target capacity identities with endpoint exhaustion. -/
+structure CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+    (terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop) :
+    Type where
+  capacityIdentity :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityIdentityCertificate
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+  capacitySlackRouting :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacitySlackRoutingCertificate
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+  endpointBoundary :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetEndpointBoundaryCertificate
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+
+/-- Build the large-target capacity/endpoint packet from raw terminal facts. -/
+def certifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate_of_assumptions
+    {terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop}
+    (twoPetalPartnerFreeSplitTargetCapacityIdentity :
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity)
+    (totalDeficitRebateOneSlack : terminalLargeTargetTotalDeficitRebateOneSlack)
+    (sideSlackSumHMinusFour : terminalLargeTargetSideSlackSumHMinusFour)
+    (hFourTightTable : terminalLargeTargetHFourTightTable)
+    (hGreaterThanFourAdditionalSplitTargetSlack :
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack)
+    (hGreaterThanFourPartnerHitOmissionSlack :
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack)
+    (hGreaterThanFourAllLargeStrictDefectSlack :
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack)
+    (allTernaryEndpointExhaustion : terminalAllTernaryEndpointExhaustion)
+    (nearThresholdBoundaryDiagnostics : terminalNearThresholdBoundaryDiagnostics) :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics where
+  capacityIdentity :=
+    { twoPetalPartnerFreeSplitTargetCapacityIdentity :=
+        twoPetalPartnerFreeSplitTargetCapacityIdentity
+      totalDeficitRebateOneSlack := totalDeficitRebateOneSlack
+      sideSlackSumHMinusFour := sideSlackSumHMinusFour
+      hFourTightTable := hFourTightTable }
+  capacitySlackRouting :=
+    { hGreaterThanFourAdditionalSplitTargetSlack :=
+        hGreaterThanFourAdditionalSplitTargetSlack
+      hGreaterThanFourPartnerHitOmissionSlack :=
+        hGreaterThanFourPartnerHitOmissionSlack
+      hGreaterThanFourAllLargeStrictDefectSlack :=
+        hGreaterThanFourAllLargeStrictDefectSlack }
+  endpointBoundary :=
+    { allTernaryEndpointExhaustion := allTernaryEndpointExhaustion
+      nearThresholdBoundaryDiagnostics := nearThresholdBoundaryDiagnostics }
+
+/-- Facade alias for terminal large-target capacity/endpoint consumers. -/
+abbrev CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionFacade
+    (terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop) : Type :=
+  CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+    terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+    terminalLargeTargetTotalDeficitRebateOneSlack
+    terminalLargeTargetSideSlackSumHMinusFour
+    terminalLargeTargetHFourTightTable
+    terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+    terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+    terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+    terminalAllTernaryEndpointExhaustion
+    terminalNearThresholdBoundaryDiagnostics
+
+section LargeTargetCapacityEndpointExhaustionTerminalApi
+
+variable {terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+  terminalLargeTargetTotalDeficitRebateOneSlack
+  terminalLargeTargetSideSlackSumHMinusFour
+  terminalLargeTargetHFourTightTable
+  terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+  terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+  terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+  terminalAllTernaryEndpointExhaustion
+  terminalNearThresholdBoundaryDiagnostics : Prop}
+
+/-- Project the partner-free two-petal large split target capacity identity. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.toTwoPetalPartnerFreeSplitTargetCapacityIdentity
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity :=
+  h.capacityIdentity.twoPetalPartnerFreeSplitTargetCapacityIdentity
+
+/-- Project the total deficit/rebate one-slack ledger. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.toTotalDeficitRebateOneSlack
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetTotalDeficitRebateOneSlack :=
+  h.capacityIdentity.totalDeficitRebateOneSlack
+
+/-- Project the side slack identity `e_1 + e_2 = h - 4`. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.toSideSlackSumHMinusFour
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetSideSlackSumHMinusFour :=
+  h.capacityIdentity.sideSlackSumHMinusFour
+
+/-- Project the tight `h = 4` large-target table. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.toHFourTightTable
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetHFourTightTable :=
+  h.capacityIdentity.hFourTightTable
+
+/-- Project the `h > 4` additional-split-target slack route. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.toHGreaterThanFourAdditionalSplitTargetSlack
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack :=
+  h.capacitySlackRouting.hGreaterThanFourAdditionalSplitTargetSlack
+
+/-- Project the `h > 4` partner-hit omission slack route. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.toHGreaterThanFourPartnerHitOmissionSlack
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack :=
+  h.capacitySlackRouting.hGreaterThanFourPartnerHitOmissionSlack
+
+/-- Project the `h > 4` all-large strict-defect slack route. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.toHGreaterThanFourAllLargeStrictDefectSlack
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack :=
+  h.capacitySlackRouting.hGreaterThanFourAllLargeStrictDefectSlack
+
+/-- Project all-ternary endpoint exhaustion. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.toAllTernaryEndpointExhaustion
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalAllTernaryEndpointExhaustion :=
+  h.endpointBoundary.allTernaryEndpointExhaustion
+
+/-- Project near-threshold boundary diagnostics. -/
+def CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.toNearThresholdBoundaryDiagnostics
+    (h :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalNearThresholdBoundaryDiagnostics :=
+  h.endpointBoundary.nearThresholdBoundaryDiagnostics
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.of_assumptions_toTwoPetalPartnerFreeSplitTargetCapacityIdentity
+    (twoPetalPartnerFreeSplitTargetCapacityIdentity :
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity)
+    (totalDeficitRebateOneSlack : terminalLargeTargetTotalDeficitRebateOneSlack)
+    (sideSlackSumHMinusFour : terminalLargeTargetSideSlackSumHMinusFour)
+    (hFourTightTable : terminalLargeTargetHFourTightTable)
+    (hGreaterThanFourAdditionalSplitTargetSlack :
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack)
+    (hGreaterThanFourPartnerHitOmissionSlack :
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack)
+    (hGreaterThanFourAllLargeStrictDefectSlack :
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack)
+    (allTernaryEndpointExhaustion : terminalAllTernaryEndpointExhaustion)
+    (nearThresholdBoundaryDiagnostics : terminalNearThresholdBoundaryDiagnostics) :
+    (certifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate_of_assumptions
+      twoPetalPartnerFreeSplitTargetCapacityIdentity
+      totalDeficitRebateOneSlack
+      sideSlackSumHMinusFour
+      hFourTightTable
+      hGreaterThanFourAdditionalSplitTargetSlack
+      hGreaterThanFourPartnerHitOmissionSlack
+      hGreaterThanFourAllLargeStrictDefectSlack
+      allTernaryEndpointExhaustion
+      nearThresholdBoundaryDiagnostics).toTwoPetalPartnerFreeSplitTargetCapacityIdentity =
+      twoPetalPartnerFreeSplitTargetCapacityIdentity :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate.of_assumptions_toAllTernaryEndpointExhaustion
+    (twoPetalPartnerFreeSplitTargetCapacityIdentity :
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity)
+    (totalDeficitRebateOneSlack : terminalLargeTargetTotalDeficitRebateOneSlack)
+    (sideSlackSumHMinusFour : terminalLargeTargetSideSlackSumHMinusFour)
+    (hFourTightTable : terminalLargeTargetHFourTightTable)
+    (hGreaterThanFourAdditionalSplitTargetSlack :
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack)
+    (hGreaterThanFourPartnerHitOmissionSlack :
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack)
+    (hGreaterThanFourAllLargeStrictDefectSlack :
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack)
+    (allTernaryEndpointExhaustion : terminalAllTernaryEndpointExhaustion)
+    (nearThresholdBoundaryDiagnostics : terminalNearThresholdBoundaryDiagnostics) :
+    (certifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate_of_assumptions
+      twoPetalPartnerFreeSplitTargetCapacityIdentity
+      totalDeficitRebateOneSlack
+      sideSlackSumHMinusFour
+      hFourTightTable
+      hGreaterThanFourAdditionalSplitTargetSlack
+      hGreaterThanFourPartnerHitOmissionSlack
+      hGreaterThanFourAllLargeStrictDefectSlack
+      allTernaryEndpointExhaustion
+      nearThresholdBoundaryDiagnostics).toAllTernaryEndpointExhaustion =
+      allTernaryEndpointExhaustion :=
+  rfl
+
+end LargeTargetCapacityEndpointExhaustionTerminalApi
+
+/--
+Extension bundle adjoining the large-target capacity/endpoint terminal packet to an existing
+four-exception residual/binary extension bundle.
+-/
+structure CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+    (FourExceptionResidualBinaryNormalizationExtensionBundle : Type)
+    (terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop) :
+    Type where
+  fourExceptionResidualBinaryNormalizationExtensionBundle :
+    FourExceptionResidualBinaryNormalizationExtensionBundle
+  largeTargetCapacityEndpointExhaustion :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+
+/-- Build the large-target extension bundle from an existing four-exception bundle and terminal packet. -/
+def certifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle_of_packets
+    {FourExceptionResidualBinaryNormalizationExtensionBundle : Type}
+    {terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop}
+    (fourExceptionResidualBinaryNormalizationExtensionBundle :
+      FourExceptionResidualBinaryNormalizationExtensionBundle)
+    (largeTargetCapacityEndpointExhaustion :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+      FourExceptionResidualBinaryNormalizationExtensionBundle
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics where
+  fourExceptionResidualBinaryNormalizationExtensionBundle :=
+    fourExceptionResidualBinaryNormalizationExtensionBundle
+  largeTargetCapacityEndpointExhaustion := largeTargetCapacityEndpointExhaustion
+
+section LargeTargetCapacityEndpointExhaustionExtensionBundleApi
+
+variable {FourExceptionResidualBinaryNormalizationExtensionBundle : Type}
+variable {terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+  terminalLargeTargetTotalDeficitRebateOneSlack
+  terminalLargeTargetSideSlackSumHMinusFour
+  terminalLargeTargetHFourTightTable
+  terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+  terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+  terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+  terminalAllTernaryEndpointExhaustion
+  terminalNearThresholdBoundaryDiagnostics : Prop}
+
+/-- Project the underlying four-exception extension bundle. -/
+def CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle.toFourExceptionResidualBinaryNormalizationExtensionBundle
+    (h :
+      CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    FourExceptionResidualBinaryNormalizationExtensionBundle :=
+  h.fourExceptionResidualBinaryNormalizationExtensionBundle
+
+/-- Project the large-target capacity/endpoint terminal packet. -/
+def CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle.toLargeTargetCapacityEndpointExhaustion
+    (h :
+      CertifiedProofMdCurrentFrontierLargeTargetCapacityEndpointExhaustionExtensionBundle
+        FourExceptionResidualBinaryNormalizationExtensionBundle
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics :=
+  h.largeTargetCapacityEndpointExhaustion
+
+end LargeTargetCapacityEndpointExhaustionExtensionBundleApi
+
+/--
+Final-consumer handoff packaging the existing four-exception residual/binary handoff with the
+large-target capacity identity and endpoint-exhaustion terminal packet.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type)
+    (terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop) :
+    Type where
+  fourExceptionResidualBinaryNormalizationHandoff :
+    CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+  largeTargetCapacityEndpointExhaustion :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics
+
+/-- Build the large-target final-consumer handoff from the prior final handoff and terminal packet. -/
+def certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff_of_packets
+    {TypedFGraphBranchHandoff ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type}
+    {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop}
+    (fourExceptionResidualBinaryNormalizationHandoff :
+      CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch)
+    (largeTargetCapacityEndpointExhaustion :
+      CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics where
+  fourExceptionResidualBinaryNormalizationHandoff :=
+    fourExceptionResidualBinaryNormalizationHandoff
+  largeTargetCapacityEndpointExhaustion := largeTargetCapacityEndpointExhaustion
+
+/-- Build the large-target handoff directly from prior packets and raw large-target facts. -/
+def certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff_of_assumptions
+    {TypedFGraphBranchHandoff ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type}
+    {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop}
+    (typedFGraphBranchHandoff : TypedFGraphBranchHandoff)
+    (parityTetrahedronAllEdgeLatinScalarEndpointHandoff :
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff)
+    (fourExceptionResidualBinaryNormalization :
+      CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch)
+    (targetStatement : TargetStatement)
+    (twoPetalPartnerFreeSplitTargetCapacityIdentity :
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity)
+    (totalDeficitRebateOneSlack : terminalLargeTargetTotalDeficitRebateOneSlack)
+    (sideSlackSumHMinusFour : terminalLargeTargetSideSlackSumHMinusFour)
+    (hFourTightTable : terminalLargeTargetHFourTightTable)
+    (hGreaterThanFourAdditionalSplitTargetSlack :
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack)
+    (hGreaterThanFourPartnerHitOmissionSlack :
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack)
+    (hGreaterThanFourAllLargeStrictDefectSlack :
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack)
+    (allTernaryEndpointExhaustion : terminalAllTernaryEndpointExhaustion)
+    (nearThresholdBoundaryDiagnostics : terminalNearThresholdBoundaryDiagnostics) :
+    CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics :=
+  certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff_of_packets
+    (certifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff_of_packets
+      typedFGraphBranchHandoff
+      parityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      fourExceptionResidualBinaryNormalization
+      targetStatement)
+    (certifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate_of_assumptions
+      twoPetalPartnerFreeSplitTargetCapacityIdentity
+      totalDeficitRebateOneSlack
+      sideSlackSumHMinusFour
+      hFourTightTable
+      hGreaterThanFourAdditionalSplitTargetSlack
+      hGreaterThanFourPartnerHitOmissionSlack
+      hGreaterThanFourAllLargeStrictDefectSlack
+      allTernaryEndpointExhaustion
+      nearThresholdBoundaryDiagnostics)
+
+/-- Facade alias for the large-target final-consumer handoff. -/
+abbrev CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionFacade
+    (TypedFGraphBranchHandoff ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type)
+    (terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics : Prop) : Type :=
+  CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    TypedFGraphBranchHandoff
+    ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+    terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+    terminalFourExceptionRemainingTwoTwoSkeletons
+    terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+    terminalFourExceptionAffineTableRowColumnSwitchNormalization
+    terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+    terminalFourExceptionSignedDegreeQuotientClosureFoldback
+    terminalFourExceptionShortenedPairHitQTwoFoldback
+    terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+    terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+    terminalLargeTargetTotalDeficitRebateOneSlack
+    terminalLargeTargetSideSlackSumHMinusFour
+    terminalLargeTargetHFourTightTable
+    terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+    terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+    terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+    terminalAllTernaryEndpointExhaustion
+    terminalNearThresholdBoundaryDiagnostics
+
+section FinalConsumerLargeTargetCapacityEndpointExhaustionApi
+
+variable {TypedFGraphBranchHandoff ParityTetrahedronAllEdgeLatinScalarEndpointHandoff : Type}
+variable {terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+  terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+  terminalFourExceptionRemainingTwoTwoSkeletons
+  terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+  terminalFourExceptionAffineTableRowColumnSwitchNormalization
+  terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+  terminalFourExceptionSignedDegreeQuotientClosureFoldback
+  terminalFourExceptionShortenedPairHitQTwoFoldback
+  terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+  terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+  terminalLargeTargetTotalDeficitRebateOneSlack
+  terminalLargeTargetSideSlackSumHMinusFour
+  terminalLargeTargetHFourTightTable
+  terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+  terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+  terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+  terminalAllTernaryEndpointExhaustion
+  terminalNearThresholdBoundaryDiagnostics : Prop}
+
+/-- Project the existing four-exception residual/binary final handoff. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff.toFourExceptionResidualBinaryNormalizationHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    CertifiedProofMdCurrentFrontierFinalConsumerFourExceptionResidualBinaryNormalizationHandoff
+      TypedFGraphBranchHandoff
+      ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch :=
+  h.fourExceptionResidualBinaryNormalizationHandoff
+
+/-- Project the typed `F`-graph handoff through the large-target final layer. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff.toTypedFGraphBranchHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    TypedFGraphBranchHandoff :=
+  h.toFourExceptionResidualBinaryNormalizationHandoff.toTypedFGraphBranchHandoff
+
+/-- Project the parity/Latin scalar endpoint handoff through the large-target final layer. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff.toParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    ParityTetrahedronAllEdgeLatinScalarEndpointHandoff :=
+  h.toFourExceptionResidualBinaryNormalizationHandoff.toParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+
+/-- Project the four-exception terminal packet through the large-target final layer. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff.toFourExceptionResidualBinaryNormalization
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    CertifiedProofMdCurrentFrontierTerminalFourExceptionResidualBinaryNormalizationCertificate
+      terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+      terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+      terminalFourExceptionRemainingTwoTwoSkeletons
+      terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+      terminalFourExceptionAffineTableRowColumnSwitchNormalization
+      terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+      terminalFourExceptionSignedDegreeQuotientClosureFoldback
+      terminalFourExceptionShortenedPairHitQTwoFoldback
+      terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch :=
+  h.toFourExceptionResidualBinaryNormalizationHandoff.toFourExceptionResidualBinaryNormalization
+
+/-- Project the large-target capacity/endpoint terminal packet. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff.toLargeTargetCapacityEndpointExhaustion
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    CertifiedProofMdCurrentFrontierTerminalLargeTargetCapacityEndpointExhaustionCertificate
+      terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+      terminalLargeTargetTotalDeficitRebateOneSlack
+      terminalLargeTargetSideSlackSumHMinusFour
+      terminalLargeTargetHFourTightTable
+      terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+      terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+      terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+      terminalAllTernaryEndpointExhaustion
+      terminalNearThresholdBoundaryDiagnostics :=
+  h.largeTargetCapacityEndpointExhaustion
+
+/-- The large-target final-consumer handoff still exposes the certified target statement. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff.toTargetStatement
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    TargetStatement :=
+  h.toFourExceptionResidualBinaryNormalizationHandoff.toTargetStatement
+
+/-- Wrapper theorem exposing `TargetStatement` from the large-target final handoff. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    TargetStatement :=
+  h.toTargetStatement
+
+/-- Wrapper theorem exposing the two-petal partner-free large split target capacity identity. -/
+theorem twoPetalPartnerFreeSplitTargetCapacityIdentity_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity :=
+  h.toLargeTargetCapacityEndpointExhaustion.toTwoPetalPartnerFreeSplitTargetCapacityIdentity
+
+/-- Wrapper theorem exposing the one-slack deficit/rebate ledger. -/
+theorem totalDeficitRebateOneSlack_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetTotalDeficitRebateOneSlack :=
+  h.toLargeTargetCapacityEndpointExhaustion.toTotalDeficitRebateOneSlack
+
+/-- Wrapper theorem exposing the side slack identity. -/
+theorem sideSlackSumHMinusFour_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetSideSlackSumHMinusFour :=
+  h.toLargeTargetCapacityEndpointExhaustion.toSideSlackSumHMinusFour
+
+/-- Wrapper theorem exposing the tight `h = 4` table. -/
+theorem hFourTightTable_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetHFourTightTable :=
+  h.toLargeTargetCapacityEndpointExhaustion.toHFourTightTable
+
+/-- Wrapper theorem exposing the `h > 4` additional split-target slack route. -/
+theorem hGreaterThanFourAdditionalSplitTargetSlack_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack :=
+  h.toLargeTargetCapacityEndpointExhaustion.toHGreaterThanFourAdditionalSplitTargetSlack
+
+/-- Wrapper theorem exposing the `h > 4` partner-hit omission slack route. -/
+theorem hGreaterThanFourPartnerHitOmissionSlack_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack :=
+  h.toLargeTargetCapacityEndpointExhaustion.toHGreaterThanFourPartnerHitOmissionSlack
+
+/-- Wrapper theorem exposing the `h > 4` all-large strict-defect slack route. -/
+theorem hGreaterThanFourAllLargeStrictDefectSlack_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack :=
+  h.toLargeTargetCapacityEndpointExhaustion.toHGreaterThanFourAllLargeStrictDefectSlack
+
+/-- Wrapper theorem exposing all-ternary endpoint exhaustion. -/
+theorem allTernaryEndpointExhaustion_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalAllTernaryEndpointExhaustion :=
+  h.toLargeTargetCapacityEndpointExhaustion.toAllTernaryEndpointExhaustion
+
+/-- Wrapper theorem exposing near-threshold boundary diagnostics. -/
+theorem nearThresholdBoundaryDiagnostics_of_certifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+    (h :
+      CertifiedProofMdCurrentFrontierFinalConsumerLargeTargetCapacityEndpointExhaustionHandoff
+        TypedFGraphBranchHandoff
+        ParityTetrahedronAllEdgeLatinScalarEndpointHandoff
+        terminalFourExceptionLocalHostTwoExceptionPacketDischarge
+        terminalFourExceptionLocalHostThreeExceptionPacketDischarge
+        terminalFourExceptionRemainingTwoTwoSkeletons
+        terminalFourExceptionBooleanSecondDifferenceOneCornerSquare
+        terminalFourExceptionAffineTableRowColumnSwitchNormalization
+        terminalFourExceptionBalancedZeroOneZeroOneZeroZeroOneOneCompensator
+        terminalFourExceptionSignedDegreeQuotientClosureFoldback
+        terminalFourExceptionShortenedPairHitQTwoFoldback
+        terminalFourExceptionShortenedPairHitQThreeExtraRebateBranch
+        terminalLargeTargetTwoPetalPartnerFreeSplitTargetCapacityIdentity
+        terminalLargeTargetTotalDeficitRebateOneSlack
+        terminalLargeTargetSideSlackSumHMinusFour
+        terminalLargeTargetHFourTightTable
+        terminalLargeTargetHGreaterThanFourAdditionalSplitTargetSlack
+        terminalLargeTargetHGreaterThanFourPartnerHitOmissionSlack
+        terminalLargeTargetHGreaterThanFourAllLargeStrictDefectSlack
+        terminalAllTernaryEndpointExhaustion
+        terminalNearThresholdBoundaryDiagnostics) :
+    terminalNearThresholdBoundaryDiagnostics :=
+  h.toLargeTargetCapacityEndpointExhaustion.toNearThresholdBoundaryDiagnostics
+
+end FinalConsumerLargeTargetCapacityEndpointExhaustionApi
 end FinalObligationDashboard
 
 
