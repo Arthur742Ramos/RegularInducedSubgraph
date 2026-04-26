@@ -5327,6 +5327,14 @@ c_I=kappa,        |K|+c_K=kappa        [MOD 4],
 
 together with the edge-count compatibility `|I|c_I=|K|c_K [MOD 4]`.  The cross-empty/complete rule is
 the special case `c_I=epsilon|K|`, `c_K=epsilon|I|`.
+Equivalently, eliminating the cross residues leaves
+
+```text
+(|I|-|K|)kappa = -|K|^2        [MOD 4].
+```
+
+So if `|I|=|K| [MOD 4]`, the mixed packet is possible only when `|K|` is even; if the size difference is
+odd, the old increment `kappa` is uniquely forced.
 
 More generally, the two-packet chamber equation is scalar once the packets are internally regular and
 cross-uniform.  Let `B_a subset P_a` and `B_b subset P_b` have old increments `delta_a,delta_b`, internal
@@ -5374,6 +5382,17 @@ Then `B=union_j B_j` appends iff, for every active `j`,
 a_j+d_j+sum_{k != j} c_{jk}
   = r+sum_k delta_k                         [MOD 4].
 ```
+
+The old increments are themselves constrained.  Since `B_j subset P_{a_j}` and
+`deg_{B_j}(w)=delta_j` for every `w in W`, double-counting edges between `W` and `B_j` gives
+
+```text
+m delta_j = a_j |B_j|        [MOD 4],        m=|W|.
+```
+
+Thus `delta_j` is not a free scalar: if `m` is odd it is determined by `a_j|B_j|`; if `m=2 [MOD 4]`
+only its parity is determined; and if `m=0 [MOD 4]` the chamber-size product `a_j|B_j|` must vanish.
+This old-frame edge-count congruence is part of the exact packet quotient.
 
 The cross-uniform formula is the special case `c_{jk}=epsilon_{jk}|B_k|`.  Thus the honest finite
 residual is a cross-regular packet quotient with edge-count symmetry, and the cross-uniform packet

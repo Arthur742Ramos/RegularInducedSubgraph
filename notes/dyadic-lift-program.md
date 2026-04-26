@@ -360,6 +360,8 @@ Olson coordinate.
 In exact cross-regular form, if `c_I` is the degree from `I` into `K` and `c_K` from `K` into `I`, then
 the mixed packet appends iff `c_I=kappa` and `|K|+c_K=kappa [MOD 4]`, with
 `|I|c_I=|K|c_K`.
+Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`; equal size residues require `|K|` even, while odd size
+difference forces `kappa` uniquely.
 The general two-packet scalar equation is: for internally regular cross-uniform packets
 `B_a subset P_a`, `B_b subset P_b` with old increments `delta_a,delta_b`, internal residues `d_a,d_b`,
 and cross value `epsilon`, their union appends iff
@@ -371,6 +373,9 @@ This is the cross-uniform chamber packet-system normal form of the first-bit sel
 exact form only needs cross-regularity modulo `4`: if `c_{jk}` is the common degree from vertices of
 `B_j` into `B_k`, with edge-count symmetry `|B_j|c_{jk}=|B_k|c_{kj}`, then the equations are
 `a_j+d_j+sum_{k != j}c_{jk}=r+sum_k delta_k [MOD 4]`.
+The old increments also obey `m delta_j=a_j|B_j| [MOD 4]` by double-counting edges between `W` and
+`B_j`; hence they are determined when `m` is odd, parity-determined when `m=2 [MOD 4]`, and impose
+`a_j|B_j|=0` when `m=0 [MOD 4]`.
 Equivalently, with `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the system is the row-difference
 condition `R_j=R_l` for all active packets plus the single scalar target
 `R_j=r+sum_k delta_k`.  Terminality must therefore block either quotient self-layer compatibility or the

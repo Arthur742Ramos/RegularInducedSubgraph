@@ -1023,6 +1023,7 @@ Recommended attack:
    complete and `|I|=0`, modulo `4`.
    Exact cross-regular version: if `c_I=deg_K(i)` on `I` and `c_K=deg_I(k)` on `K`, then append iff
    `c_I=kappa`, `|K|+c_K=kappa [MOD 4]`, and `|I|c_I=|K|c_K`.
+   Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`.
    Generalize this as the two-packet scalar equation: internally regular cross-uniform packets
    `B_a subset P_a`, `B_b subset P_b` append iff
    `a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`.
@@ -1032,6 +1033,8 @@ Recommended attack:
    Generalize to the exact cross-regular quotient: if `c_{jk}` is the common degree from `B_j` to `B_k`
    modulo `4`, impose edge-count symmetry `|B_j|c_{jk}=|B_k|c_{kj}` and the equations
    `a_j+d_j+sum_{k != j}c_{jk}=r+sum_k delta_k [MOD 4]`.
+   Include the old-frame edge-count constraint `m delta_j=a_j|B_j| [MOD 4]` for each old-balanced packet
+   `B_j subset P_{a_j}`.
    Also formalize the row-difference split: with
    `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the first condition is `R_j=R_l` for all packets and the
    final condition is the scalar target `R_j=r+sum_k delta_k`.

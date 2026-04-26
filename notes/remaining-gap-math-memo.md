@@ -1545,6 +1545,7 @@ their cross graph is empty and the clique size is `0 [MOD 4]`, or if their cross
 the independent-packet size is `0 [MOD 4]`.
 In the exact cross-regular version, writing `c_I` and `c_K` for the two cross-degree residues, the
 conditions are `c_I=kappa`, `|K|+c_K=kappa`, and `|I|c_I=|K|c_K [MOD 4]`.
+Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`.
 
 The corresponding general scalar equation is exact: two internally regular cross-uniform packets
 `B_a subset P_a`, `B_b subset P_b`, with internal residues `d_a,d_b`, old increments
@@ -1556,6 +1557,8 @@ The exact quotient only needs cross-regular residues `c_{jk}` satisfying
 `|B_j|c_{jk}=|B_k|c_{kj}`; equivalently, the row values
 `R_j=a_j+d_j+sum_{k != j}c_{jk}` must be constant, and that common value must equal the single
 old-increment target `r+sum_k delta_k`.
+The old increments satisfy `m delta_j=a_j|B_j| [MOD 4]`, so they are also part of the packet quotient
+arithmetic rather than free labels.
 For two packets this is just `(s_a-s_b)c_{ab}=s_b((a+d_a)-(b+d_b))` together with the target
 `c_{ab}=r+delta_a+delta_b-a-d_a`.
 Equivalently, after target substitution:

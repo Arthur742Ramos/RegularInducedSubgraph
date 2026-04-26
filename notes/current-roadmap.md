@@ -4798,6 +4798,7 @@ independent packet in `{deg_W=r}` and a clique packet in `{deg_W=r+1}` with old 
 together when their cross graph is empty with `|K|=0`, or complete with `|I|=0`, modulo `4`.
 In cross-regular form this mixed rule is `c_I=kappa`, `|K|+c_K=kappa`, and
 `|I|c_I=|K|c_K [MOD 4]`.
+Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`.
 In general, two internally regular cross-uniform chamber packets append exactly when
 `a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`; this scalar equation is now the
 packet analogue of the bounded-word augmentation table.  For a finite packet system, the normal form is
@@ -4805,6 +4806,8 @@ packet analogue of the bounded-word augmentation table.  For a finite packet sys
 The exact quotient replaces the uniform term by cross-regular residues `c_{jk}`, with
 `|B_j|c_{jk}=|B_k|c_{kj}`; then `R_j=a_j+d_j+sum_{k != j}c_{jk}` must first be independent of `j`, and
 only then must hit the single scalar target `r+sum_k delta_k`.
+Each old increment also satisfies `m delta_j=a_j|B_j| [MOD 4]` by double-counting between `W` and the
+packet.
 For two packets this reduces to `(s_a-s_b)c_{ab}=s_b((a+d_a)-(b+d_b))` plus the target
 `c_{ab}=r+delta_a+delta_b-a-d_a`.
 After substitution this is the single congruence
