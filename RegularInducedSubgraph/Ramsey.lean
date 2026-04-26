@@ -8608,6 +8608,418 @@ theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_s
   omega
 
 /--
+Once a degree-`9` common-neighbor ledger forces `k` duplicated non-neighbor incidences,
+at most `32 - k` non-neighbors can remain singleton contributors.  This is the
+exact-`42` analogue of the singleton cap used in the exact `36` residual.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_eq_one_count_le_of_common_neighbor_card_ge_two_count
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    {k : ℕ}
+    (hhigh :
+      k ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          2 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 32 - k := by
+  classical
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  let high : Finset α := nonNbrsV.filter fun x => 2 ≤ commonCount x
+  let low : Finset α := nonNbrsV.filter fun x => ¬ 2 ≤ commonCount x
+  let ones : Finset α := nonNbrsV.filter fun x => commonCount x = 1
+  have hnonNbrsCard : nonNbrsV.card = 32 := by
+    simpa [nonNbrsV] using
+      ramseyThreeTenDegreeWindow_residual_degree_nine_nonNeighbor_card_eq_thirty_two
+        (G := G) (s := s) hcard (v := v) hdegv
+  have hhigh' : k ≤ high.card := by
+    simpa [nonNbrsV, commonCount, high] using hhigh
+  have hcardSplit : high.card + low.card = nonNbrsV.card := by
+    simpa [high, low] using
+      (Finset.card_filter_add_card_filter_not (s := nonNbrsV)
+        (p := fun x => 2 ≤ commonCount x))
+  have hlowLe : low.card ≤ 32 - k := by
+    omega
+  have honesSubLow : ones ⊆ low := by
+    intro x hx
+    rcases Finset.mem_filter.mp hx with ⟨hxNon, hxone⟩
+    exact Finset.mem_filter.mpr ⟨hxNon, by omega⟩
+  have honesLe : ones.card ≤ low.card := Finset.card_le_card honesSubLow
+  change ones.card ≤ 32 - k
+  exact le_trans honesLe hlowLe
+
+/-- In the first central exact-`42` band, at most thirty-one non-neighbors are singletons. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_thirty_three_forces_at_most_thirty_one_nonNeighbors_common_neighbor_card_eq_one
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hsumGe :
+      33 ≤
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 31 := by
+  have hhigh :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_thirty_three_forces_at_least_one_nonNeighbors_common_neighbor_card_ge_two
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_eq_one_count_le_of_common_neighbor_card_ge_two_count
+      (G := G) (s := s) hcard (v := v) hdegv (k := 1) hhigh
+  simpa using hcap
+
+/-- In the second central exact-`42` band, at most thirty non-neighbors are singletons. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_forty_one_forces_at_most_thirty_nonNeighbors_common_neighbor_card_eq_one
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hsumGe :
+      41 ≤
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 30 := by
+  have hhigh :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_forty_one_forces_at_least_two_nonNeighbors_common_neighbor_card_ge_two
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_eq_one_count_le_of_common_neighbor_card_ge_two_count
+      (G := G) (s := s) hcard (v := v) hdegv (k := 2) hhigh
+  simpa using hcap
+
+/-- In the third central exact-`42` band, at most twenty-nine non-neighbors are singletons. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_forty_nine_forces_at_most_twenty_nine_nonNeighbors_common_neighbor_card_eq_one
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hsumGe :
+      49 ≤
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 29 := by
+  have hhigh :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_forty_nine_forces_at_least_three_nonNeighbors_common_neighbor_card_ge_two
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_eq_one_count_le_of_common_neighbor_card_ge_two_count
+      (G := G) (s := s) hcard (v := v) hdegv (k := 3) hhigh
+  simpa using hcap
+
+/-- In the fourth central exact-`42` band, at most twenty-eight non-neighbors are singletons. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_fifty_seven_forces_at_most_twenty_eight_nonNeighbors_common_neighbor_card_eq_one
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hsumGe :
+      57 ≤
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 28 := by
+  have hhigh :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_fifty_seven_forces_at_least_four_nonNeighbors_common_neighbor_card_ge_two
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_eq_one_count_le_of_common_neighbor_card_ge_two_count
+      (G := G) (s := s) hcard (v := v) hdegv (k := 4) hhigh
+  simpa using hcap
+
+/-- In the top central exact-`42` band, at most twenty-seven non-neighbors are singletons. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_at_most_twenty_seven_nonNeighbors_common_neighbor_card_eq_one
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hsumGe :
+      65 ≤
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) :
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27 := by
+  have hhigh :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_at_least_five_nonNeighbors_common_neighbor_card_ge_two
+      (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  have hcap :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_eq_one_count_le_of_common_neighbor_card_ge_two_count
+      (G := G) (s := s) hcard (v := v) hdegv (k := 5) hhigh
+  simpa using hcap
+
+/--
+The top central threshold is qualitatively stronger than the earlier bands: a ledger
+of at least `65` cannot be realized with all thirty-two non-neighbors contributing
+only one or two common neighbors.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_exists_nonNeighbor_common_neighbor_card_ge_three
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hsumGe :
+      65 ≤
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) :
+    ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+      3 ≤ (((s.erase (v : α)).erase x).filter
+        (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card := by
+  classical
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  have hnonNbrsCard : nonNbrsV.card = 32 := by
+    simpa [nonNbrsV] using
+      ramseyThreeTenDegreeWindow_residual_degree_nine_nonNeighbor_card_eq_thirty_two
+        (G := G) (s := s) hcard (v := v) hdegv
+  have hsumGe' : 65 ≤ Finset.sum nonNbrsV commonCount := by
+    simpa [nonNbrsV, commonCount] using hsumGe
+  by_contra hnone
+  have hle : ∀ x ∈ nonNbrsV, commonCount x ≤ 2 := by
+    intro x hx
+    by_contra hnotLe
+    have hxge : 3 ≤ commonCount x := by omega
+    exact hnone ⟨x, hx, hxge⟩
+  have hsumLe : Finset.sum nonNbrsV commonCount ≤ 64 := by
+    calc
+      Finset.sum nonNbrsV commonCount ≤ Finset.sum nonNbrsV (fun _x => 2) := by
+        exact Finset.sum_le_sum hle
+      _ = 2 * nonNbrsV.card := by simp [Nat.mul_comm]
+      _ = 64 := by rw [hnonNbrsCard]; norm_num
+  omega
+
+/--
+At the exact upper boundary `72`, at least two non-neighbors have multiplicity at
+least three; a single high-multiplicity non-neighbor can contribute at most `9`, while
+the remaining thirty-one vertices would contribute at most two each.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_eq_seventy_two_forces_at_least_two_nonNeighbors_common_neighbor_card_ge_three
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hsumEq :
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 72) :
+    2 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        3 ≤ (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card := by
+  classical
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  let high : Finset α := nonNbrsV.filter fun x => 3 ≤ commonCount x
+  let low : Finset α := nonNbrsV.filter fun x => ¬ 3 ≤ commonCount x
+  have hnonNbrsCard : nonNbrsV.card = 32 := by
+    simpa [nonNbrsV] using
+      ramseyThreeTenDegreeWindow_residual_degree_nine_nonNeighbor_card_eq_thirty_two
+        (G := G) (s := s) hcard (v := v) hdegv
+  have hsumEq' : Finset.sum nonNbrsV commonCount = 72 := by
+    simpa [nonNbrsV, commonCount] using hsumEq
+  have hupper : ∀ x ∈ nonNbrsV, commonCount x ≤ 9 := by
+    intro x hx
+    rcases Finset.mem_filter.mp hx with ⟨hxErase, _hxv⟩
+    have hx_s : x ∈ s := (Finset.mem_erase.mp hxErase).2
+    exact ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_card_le_nine
+      (G := G) (s := s) hdegree (v := v) (x := x) hx_s
+  change 2 ≤ high.card
+  by_contra hnot
+  have hhighLe : high.card ≤ 1 := by
+    omega
+  have hcardSplit : high.card + low.card = nonNbrsV.card := by
+    simpa [high, low] using
+      (Finset.card_filter_add_card_filter_not (s := nonNbrsV)
+        (p := fun x => 3 ≤ commonCount x))
+  have hsumSplit : Finset.sum nonNbrsV commonCount =
+      Finset.sum high commonCount + Finset.sum low commonCount := by
+    simpa [high, low] using
+      (Finset.sum_filter_add_sum_filter_not (s := nonNbrsV)
+        (p := fun x => 3 ≤ commonCount x) (f := commonCount)).symm
+  have hsumHighLe : Finset.sum high commonCount ≤ 9 * high.card := by
+    calc
+      Finset.sum high commonCount ≤ Finset.sum high (fun _x => 9) := by
+        exact Finset.sum_le_sum (by
+          intro x hx
+          exact hupper x (Finset.mem_filter.mp hx).1)
+      _ = 9 * high.card := by simp [Nat.mul_comm]
+  have hsumLowLe : Finset.sum low commonCount ≤ 2 * low.card := by
+    calc
+      Finset.sum low commonCount ≤ Finset.sum low (fun _x => 2) := by
+        exact Finset.sum_le_sum (by
+          intro x hx
+          have hxnot : ¬ 3 ≤ commonCount x := (Finset.mem_filter.mp hx).2
+          have hxle : commonCount x ≤ 2 := by omega
+          exact hxle)
+      _ = 2 * low.card := by simp [Nat.mul_comm]
+  have hsumLe : Finset.sum nonNbrsV commonCount ≤ 71 := by
+    rw [hsumSplit]
+    calc
+      Finset.sum high commonCount + Finset.sum low commonCount ≤
+          9 * high.card + 2 * low.card := by
+        omega
+      _ ≤ 71 := by
+        omega
+  omega
+
+/--
+Top-band package for the exact `42` central interval: the last band has five duplicated
+non-neighbor incidences, at most twenty-seven singleton contributors, and a genuine
+triple-overlap witness.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_top_band_distribution_constraints
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hsumGe :
+      65 ≤
+        Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+          (fun x =>
+            (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) :
+    5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          2 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card ∧
+      (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27 ∧
+        ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+          3 ≤ (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card := by
+  constructor
+  · exact
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_at_least_five_nonNeighbors_common_neighbor_card_ge_two
+        (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  constructor
+  · exact
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_at_most_twenty_seven_nonNeighbors_common_neighbor_card_eq_one
+        (G := G) (s := s) hcard hdegree (v := v) hdegv hsumGe
+  · exact
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_exists_nonNeighbor_common_neighbor_card_ge_three
+        (G := G) (s := s) hcard (v := v) hdegv hsumGe
+
+/--
+Upper-bound package for the exact `42` degree-`9` residual: the `72` boundary combines
+neighbor tightness with the top-band singleton cap and two triple-overlap non-neighbors.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_eq_seventy_two_forces_upper_distribution_constraints
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9)
+    (hsumEq :
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 72) :
+    (∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+        (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x => G.Adj w x)).card = 8) ∧
+      (∀ {w : α}, (hw : w ∈ s) → G.Adj (v : α) w →
+        (G.induce (s : Set α)).degree ⟨w, hw⟩ = 9) ∧
+        5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x =>
+              2 ≤ (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card ∧
+          (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+            (fun x =>
+              (((s.erase (v : α)).erase x).filter
+                (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 27 ∧
+            2 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+              (fun x =>
+                3 ≤ (((s.erase (v : α)).erase x).filter
+                  (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card := by
+  constructor
+  · exact
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_eq_seventy_two_forces_neighbor_cross_card_eight
+        (G := G) (s := s) hdegree hnoK3 (v := v) hdegv hsumEq
+  constructor
+  · exact
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_eq_seventy_two_forces_neighbor_degree_nine
+        (G := G) (s := s) hdegree hnoK3 (v := v) hdegv hsumEq
+  constructor
+  · exact
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_at_least_five_nonNeighbors_common_neighbor_card_ge_two
+        (G := G) (s := s) hcard hdegree (v := v) hdegv (by omega)
+  constructor
+  · exact
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_ge_sixty_five_forces_at_most_twenty_seven_nonNeighbors_common_neighbor_card_eq_one
+        (G := G) (s := s) hcard hdegree (v := v) hdegv (by omega)
+  · exact
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_eq_seventy_two_forces_at_least_two_nonNeighbors_common_neighbor_card_ge_three
+        (G := G) (s := s) hcard hdegree (v := v) hdegv hsumEq
+
+/--
 The exact `42` central interval `[33,71]` splits into five eight-wide distribution bands.
 Crossing `40`, `48`, `56`, and `64` forces one more non-neighbor with duplicated
 common-neighbor multiplicity.
