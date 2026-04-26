@@ -32032,6 +32032,959 @@ theorem
 
 end FirstBitTerminalPostSquareBreakerNoLeftoverRankThreeRemainderFacade
 
+/-- Split-rebate lower bound for a partner-free hidden bipartition label. -/
+def firstBitPartnerFreeSplitRebateAtLeastThree {Atom : Type*} [DecidableEq Atom]
+    (splitAtoms : Finset Atom) (splitAtomRebate : Atom → ℕ) : Prop :=
+  3 ≤ ∑ atom in splitAtoms, splitAtomRebate atom
+
+/--
+Four-cell buffer rule for two partner-free endpoint labels `C|Cᶜ` and `D|Dᶜ` on the same
+opposite union `M`: every empty cell has an opposite diagonal cell of size at least two.
+-/
+def firstBitPartnerFreeFourCellBufferRule {Vertex : Type*} [DecidableEq Vertex]
+    (M C D : Finset Vertex) : Prop :=
+  ((C ∩ D).card = 0 → 2 ≤ ((M \ C) ∩ (M \ D)).card) ∧
+    ((C ∩ (M \ D)).card = 0 → 2 ≤ ((M \ C) ∩ D).card) ∧
+      (((M \ C) ∩ D).card = 0 → 2 ≤ (C ∩ (M \ D)).card) ∧
+        (((M \ C) ∩ (M \ D)).card = 0 → 2 ≤ (C ∩ D).card)
+
+/-- Minimal split patterns for a partner-free pair collision after the rebate lower bound. -/
+inductive FirstBitTerminalPartnerFreeMinimalSplitPattern : Type where
+  | oneAtomSizeAtLeastFour : FirstBitTerminalPartnerFreeMinimalSplitPattern
+  | sizeThreeAtomWithAdditionalSplitAtom : FirstBitTerminalPartnerFreeMinimalSplitPattern
+  | threePairAtoms : FirstBitTerminalPartnerFreeMinimalSplitPattern
+
+/-- High-cover partner-hit templates, indexed by forced-petal count, covered atoms, and omissions. -/
+inductive FirstBitTerminalPartnerHitHighCoverTemplate : ℕ → ℕ → ℕ → Prop where
+  | twoPetalThreeZero : FirstBitTerminalPartnerHitHighCoverTemplate 2 3 0
+  | twoPetalFourZero : FirstBitTerminalPartnerHitHighCoverTemplate 2 4 0
+  | twoPetalFourOne : FirstBitTerminalPartnerHitHighCoverTemplate 2 4 1
+  | threePetalFourZero : FirstBitTerminalPartnerHitHighCoverTemplate 3 4 0
+
+/-- The partner-hit template list is the same four-row table as the small-atom collision template. -/
+theorem FirstBitTerminalPartnerHitHighCoverTemplate.to_smallAtomCollisionTemplate
+    {s pi delta : ℕ} (h : FirstBitTerminalPartnerHitHighCoverTemplate s pi delta) :
+    FirstBitSmallAtomCollisionTemplate s pi delta := by
+  cases h with
+  | twoPetalThreeZero => exact FirstBitSmallAtomCollisionTemplate.twoPetalThreeZero
+  | twoPetalFourZero => exact FirstBitSmallAtomCollisionTemplate.twoPetalFourZero
+  | twoPetalFourOne => exact FirstBitSmallAtomCollisionTemplate.twoPetalFourOne
+  | threePetalFourZero => exact FirstBitSmallAtomCollisionTemplate.threePetalFourZero
+
+/-- Reinterpret the four-row small-atom collision template table as partner-hit high cover. -/
+theorem FirstBitTerminalPartnerHitHighCoverTemplate.of_smallAtomCollisionTemplate
+    {s pi delta : ℕ} (h : FirstBitSmallAtomCollisionTemplate s pi delta) :
+    FirstBitTerminalPartnerHitHighCoverTemplate s pi delta := by
+  cases h with
+  | twoPetalThreeZero => exact FirstBitTerminalPartnerHitHighCoverTemplate.twoPetalThreeZero
+  | twoPetalFourZero => exact FirstBitTerminalPartnerHitHighCoverTemplate.twoPetalFourZero
+  | twoPetalFourOne => exact FirstBitTerminalPartnerHitHighCoverTemplate.twoPetalFourOne
+  | threePetalFourZero => exact FirstBitTerminalPartnerHitHighCoverTemplate.threePetalFourZero
+
+/-- Strict deficit of the individual full-pair support in a partner-hit circuit. -/
+def firstBitPartnerHitFullPairSupportStrictDeficit
+    (oppositeHitCount fullPairOmissionCount : ℕ) : Prop :=
+  oppositeHitCount + 1 ≤ fullPairOmissionCount
+
+/--
+Partner-free hidden-bipartition facade.  It records the two full supports
+`{a} ∪ C` and `{a} ∪ (M \ C)`, distinct endpoint labels, the four-cell buffer rule,
+the split-rebate lower bound, the minimal split-pattern trichotomy, and the
+post-square-breaker consequence.
+-/
+structure FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade
+    {Core Pair Endpoint Vertex Atom Label Collision : Type*}
+    [DecidableEq Pair] [DecidableEq Endpoint] [DecidableEq Vertex] [DecidableEq Atom]
+    (pairAtoms : Core → Finset Pair)
+    (endpointsOf : Core → Pair → Finset Endpoint)
+    (endpointVertex : Core → Pair → Endpoint → Vertex)
+    (oppositeUnion : Core → Pair → Finset Vertex)
+    (bipartitionSide : Core → Pair → Endpoint → Finset Vertex)
+    (leftFullSupport rightFullSupport : Core → Pair → Endpoint → Finset Vertex)
+    (labelOf : Core → Pair → Endpoint → Label)
+    (splitAtoms : Core → Pair → Endpoint → Finset Atom)
+    (splitAtomRebate : Core → Pair → Endpoint → Atom → ℕ)
+    (atomSize : Core → Atom → ℕ)
+    (partnerFreeCollision : Core → Pair → Collision → Prop)
+    (collisionEndpoint : Core → Pair → Collision → Endpoint)
+    (partnerFreeMinimalSplitPatternRealized :
+      Core → Pair → Collision → FirstBitTerminalPartnerFreeMinimalSplitPattern → Prop)
+    (postSquareBreakerPartnerFreeLargeOrSizeThreeSplit : Core → Pair → Collision → Prop)
+    (partnerFreeHiddenBipartitionLabels endpointLabelsDistinct
+      noNearComplementFourCellBufferRule partnerFreeSplitRebateAtLeastThree
+      partnerFreeMinimalSplitPatterns partnerFreeSquareBreakerDischargeConsequence :
+      Prop) : Prop where
+  leftSupport_anchor_union_sideCert :
+    ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ endpoint : Endpoint,
+      endpoint ∈ endpointsOf core pair →
+        leftFullSupport core pair endpoint =
+          ({endpointVertex core pair endpoint} : Finset Vertex) ∪
+            bipartitionSide core pair endpoint
+  rightSupport_anchor_union_complementCert :
+    ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ endpoint : Endpoint,
+      endpoint ∈ endpointsOf core pair →
+        rightFullSupport core pair endpoint =
+          ({endpointVertex core pair endpoint} : Finset Vertex) ∪
+            (oppositeUnion core pair \ bipartitionSide core pair endpoint)
+  endpoint_labels_distinctCert :
+    ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ left right : Endpoint,
+      left ∈ endpointsOf core pair → right ∈ endpointsOf core pair → left ≠ right →
+        labelOf core pair left ≠ labelOf core pair right
+  fourCell_buffer_ruleCert :
+    ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ left right : Endpoint,
+      left ∈ endpointsOf core pair → right ∈ endpointsOf core pair → left ≠ right →
+        firstBitPartnerFreeFourCellBufferRule (oppositeUnion core pair)
+          (bipartitionSide core pair left) (bipartitionSide core pair right)
+  split_rebate_atLeastThreeCert :
+    ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ endpoint : Endpoint,
+      endpoint ∈ endpointsOf core pair →
+        firstBitPartnerFreeSplitRebateAtLeastThree (splitAtoms core pair endpoint)
+          (splitAtomRebate core pair endpoint)
+  minimalSplitPatternCert :
+    ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+      partnerFreeCollision core pair collision →
+        ∃ pattern : FirstBitTerminalPartnerFreeMinimalSplitPattern,
+          partnerFreeMinimalSplitPatternRealized core pair collision pattern
+  squareBreaker_discharge_consequenceCert :
+    ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+      partnerFreeCollision core pair collision →
+        postSquareBreakerPartnerFreeLargeOrSizeThreeSplit core pair collision
+  partnerFreeHiddenBipartitionLabelsCert : partnerFreeHiddenBipartitionLabels
+  endpointLabelsDistinctCert : endpointLabelsDistinct
+  noNearComplementFourCellBufferRuleCert : noNearComplementFourCellBufferRule
+  partnerFreeSplitRebateAtLeastThreeCert : partnerFreeSplitRebateAtLeastThree
+  partnerFreeMinimalSplitPatternsCert : partnerFreeMinimalSplitPatterns
+  partnerFreeSquareBreakerDischargeConsequenceCert :
+    partnerFreeSquareBreakerDischargeConsequence
+
+/-- Build the partner-free hidden-bipartition facade from its assumption-backed components. -/
+theorem firstBitTerminalPartnerFreeHiddenBipartitionLabelFacade_of_parts
+    {Core Pair Endpoint Vertex Atom Label Collision : Type*}
+    [DecidableEq Pair] [DecidableEq Endpoint] [DecidableEq Vertex] [DecidableEq Atom]
+    {pairAtoms : Core → Finset Pair}
+    {endpointsOf : Core → Pair → Finset Endpoint}
+    {endpointVertex : Core → Pair → Endpoint → Vertex}
+    {oppositeUnion : Core → Pair → Finset Vertex}
+    {bipartitionSide : Core → Pair → Endpoint → Finset Vertex}
+    {leftFullSupport rightFullSupport : Core → Pair → Endpoint → Finset Vertex}
+    {labelOf : Core → Pair → Endpoint → Label}
+    {splitAtoms : Core → Pair → Endpoint → Finset Atom}
+    {splitAtomRebate : Core → Pair → Endpoint → Atom → ℕ}
+    {atomSize : Core → Atom → ℕ}
+    {partnerFreeCollision : Core → Pair → Collision → Prop}
+    {collisionEndpoint : Core → Pair → Collision → Endpoint}
+    {partnerFreeMinimalSplitPatternRealized :
+      Core → Pair → Collision → FirstBitTerminalPartnerFreeMinimalSplitPattern → Prop}
+    {postSquareBreakerPartnerFreeLargeOrSizeThreeSplit : Core → Pair → Collision → Prop}
+    {partnerFreeHiddenBipartitionLabels endpointLabelsDistinct
+      noNearComplementFourCellBufferRule partnerFreeSplitRebateAtLeastThree
+      partnerFreeMinimalSplitPatterns partnerFreeSquareBreakerDischargeConsequence :
+      Prop}
+    (hleft :
+      ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ endpoint : Endpoint,
+        endpoint ∈ endpointsOf core pair →
+          leftFullSupport core pair endpoint =
+            ({endpointVertex core pair endpoint} : Finset Vertex) ∪
+              bipartitionSide core pair endpoint)
+    (hright :
+      ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ endpoint : Endpoint,
+        endpoint ∈ endpointsOf core pair →
+          rightFullSupport core pair endpoint =
+            ({endpointVertex core pair endpoint} : Finset Vertex) ∪
+              (oppositeUnion core pair \ bipartitionSide core pair endpoint))
+    (hlabels :
+      ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ left right : Endpoint,
+        left ∈ endpointsOf core pair → right ∈ endpointsOf core pair → left ≠ right →
+          labelOf core pair left ≠ labelOf core pair right)
+    (hbuffer :
+      ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ left right : Endpoint,
+        left ∈ endpointsOf core pair → right ∈ endpointsOf core pair → left ≠ right →
+          firstBitPartnerFreeFourCellBufferRule (oppositeUnion core pair)
+            (bipartitionSide core pair left) (bipartitionSide core pair right))
+    (hrebate :
+      ∀ core : Core, ∀ pair : Pair, pair ∈ pairAtoms core → ∀ endpoint : Endpoint,
+        endpoint ∈ endpointsOf core pair →
+          firstBitPartnerFreeSplitRebateAtLeastThree (splitAtoms core pair endpoint)
+            (splitAtomRebate core pair endpoint))
+    (hpatterns :
+      ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+        partnerFreeCollision core pair collision →
+          ∃ pattern : FirstBitTerminalPartnerFreeMinimalSplitPattern,
+            partnerFreeMinimalSplitPatternRealized core pair collision pattern)
+    (hdischarge :
+      ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+        partnerFreeCollision core pair collision →
+          postSquareBreakerPartnerFreeLargeOrSizeThreeSplit core pair collision)
+    (hbipartition : partnerFreeHiddenBipartitionLabels)
+    (hdistinct : endpointLabelsDistinct)
+    (hbufferMarker : noNearComplementFourCellBufferRule)
+    (hrebateMarker : partnerFreeSplitRebateAtLeastThree)
+    (hpatternsMarker : partnerFreeMinimalSplitPatterns)
+    (hdischargeMarker : partnerFreeSquareBreakerDischargeConsequence) :
+    FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade pairAtoms endpointsOf
+      endpointVertex oppositeUnion bipartitionSide leftFullSupport rightFullSupport labelOf
+      splitAtoms splitAtomRebate atomSize partnerFreeCollision collisionEndpoint
+      partnerFreeMinimalSplitPatternRealized postSquareBreakerPartnerFreeLargeOrSizeThreeSplit
+      partnerFreeHiddenBipartitionLabels endpointLabelsDistinct
+      noNearComplementFourCellBufferRule partnerFreeSplitRebateAtLeastThree
+      partnerFreeMinimalSplitPatterns partnerFreeSquareBreakerDischargeConsequence where
+  leftSupport_anchor_union_sideCert := hleft
+  rightSupport_anchor_union_complementCert := hright
+  endpoint_labels_distinctCert := hlabels
+  fourCell_buffer_ruleCert := hbuffer
+  split_rebate_atLeastThreeCert := hrebate
+  minimalSplitPatternCert := hpatterns
+  squareBreaker_discharge_consequenceCert := hdischarge
+  partnerFreeHiddenBipartitionLabelsCert := hbipartition
+  endpointLabelsDistinctCert := hdistinct
+  noNearComplementFourCellBufferRuleCert := hbufferMarker
+  partnerFreeSplitRebateAtLeastThreeCert := hrebateMarker
+  partnerFreeMinimalSplitPatternsCert := hpatternsMarker
+  partnerFreeSquareBreakerDischargeConsequenceCert := hdischargeMarker
+
+section FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade
+
+variable {Core Pair Endpoint Vertex Atom Label Collision : Type*}
+variable [DecidableEq Pair] [DecidableEq Endpoint] [DecidableEq Vertex] [DecidableEq Atom]
+variable {pairAtoms : Core → Finset Pair}
+variable {endpointsOf : Core → Pair → Finset Endpoint}
+variable {endpointVertex : Core → Pair → Endpoint → Vertex}
+variable {oppositeUnion : Core → Pair → Finset Vertex}
+variable {bipartitionSide : Core → Pair → Endpoint → Finset Vertex}
+variable {leftFullSupport rightFullSupport : Core → Pair → Endpoint → Finset Vertex}
+variable {labelOf : Core → Pair → Endpoint → Label}
+variable {splitAtoms : Core → Pair → Endpoint → Finset Atom}
+variable {splitAtomRebate : Core → Pair → Endpoint → Atom → ℕ}
+variable {atomSize : Core → Atom → ℕ}
+variable {partnerFreeCollision : Core → Pair → Collision → Prop}
+variable {collisionEndpoint : Core → Pair → Collision → Endpoint}
+variable {partnerFreeMinimalSplitPatternRealized :
+  Core → Pair → Collision → FirstBitTerminalPartnerFreeMinimalSplitPattern → Prop}
+variable {postSquareBreakerPartnerFreeLargeOrSizeThreeSplit : Core → Pair → Collision → Prop}
+variable {partnerFreeHiddenBipartitionLabels endpointLabelsDistinct
+  noNearComplementFourCellBufferRule partnerFreeSplitRebateAtLeastThree
+  partnerFreeMinimalSplitPatterns partnerFreeSquareBreakerDischargeConsequence : Prop}
+
+variable (h :
+  FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade pairAtoms endpointsOf
+    endpointVertex oppositeUnion bipartitionSide leftFullSupport rightFullSupport labelOf
+    splitAtoms splitAtomRebate atomSize partnerFreeCollision collisionEndpoint
+    partnerFreeMinimalSplitPatternRealized postSquareBreakerPartnerFreeLargeOrSizeThreeSplit
+    partnerFreeHiddenBipartitionLabels endpointLabelsDistinct
+    noNearComplementFourCellBufferRule partnerFreeSplitRebateAtLeastThree
+    partnerFreeMinimalSplitPatterns partnerFreeSquareBreakerDischargeConsequence)
+
+/-- The first full support is `{a} ∪ C`. -/
+theorem FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.leftSupport_anchor_union_side
+    {core : Core} {pair : Pair} (hpair : pair ∈ pairAtoms core)
+    {endpoint : Endpoint} (hendpoint : endpoint ∈ endpointsOf core pair) :
+    leftFullSupport core pair endpoint =
+      ({endpointVertex core pair endpoint} : Finset Vertex) ∪
+        bipartitionSide core pair endpoint :=
+  h.leftSupport_anchor_union_sideCert core pair hpair endpoint hendpoint
+
+/-- The second full support is `{a} ∪ (M \ C)`. -/
+theorem
+    FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.rightSupport_anchor_union_complement
+    {core : Core} {pair : Pair} (hpair : pair ∈ pairAtoms core)
+    {endpoint : Endpoint} (hendpoint : endpoint ∈ endpointsOf core pair) :
+    rightFullSupport core pair endpoint =
+      ({endpointVertex core pair endpoint} : Finset Vertex) ∪
+        (oppositeUnion core pair \ bipartitionSide core pair endpoint) :=
+  h.rightSupport_anchor_union_complementCert core pair hpair endpoint hendpoint
+
+/-- The two endpoints of a pair carry distinct hidden bipartition labels. -/
+theorem FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.endpoint_labels_distinct
+    {core : Core} {pair : Pair} (hpair : pair ∈ pairAtoms core)
+    {left right : Endpoint} (hleft : left ∈ endpointsOf core pair)
+    (hright : right ∈ endpointsOf core pair) (hne : left ≠ right) :
+    labelOf core pair left ≠ labelOf core pair right :=
+  h.endpoint_labels_distinctCert core pair hpair left right hleft hright hne
+
+/-- Cross-endpoint partner-free labels satisfy the no-near-complement four-cell buffer rule. -/
+theorem FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.fourCell_buffer_rule
+    {core : Core} {pair : Pair} (hpair : pair ∈ pairAtoms core)
+    {left right : Endpoint} (hleft : left ∈ endpointsOf core pair)
+    (hright : right ∈ endpointsOf core pair) (hne : left ≠ right) :
+    firstBitPartnerFreeFourCellBufferRule (oppositeUnion core pair)
+      (bipartitionSide core pair left) (bipartitionSide core pair right) :=
+  h.fourCell_buffer_ruleCert core pair hpair left right hleft hright hne
+
+/-- Every partner-free endpoint label has split rebate at least three. -/
+theorem FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.split_rebate_atLeastThree
+    {core : Core} {pair : Pair} (hpair : pair ∈ pairAtoms core)
+    {endpoint : Endpoint} (hendpoint : endpoint ∈ endpointsOf core pair) :
+    firstBitPartnerFreeSplitRebateAtLeastThree (splitAtoms core pair endpoint)
+      (splitAtomRebate core pair endpoint) :=
+  h.split_rebate_atLeastThreeCert core pair hpair endpoint hendpoint
+
+/-- A partner-free collision realizes one of the minimal split patterns. -/
+theorem FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.minimalSplitPattern
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : partnerFreeCollision core pair collision) :
+    ∃ pattern : FirstBitTerminalPartnerFreeMinimalSplitPattern,
+      partnerFreeMinimalSplitPatternRealized core pair collision pattern :=
+  h.minimalSplitPatternCert core pair collision hcollision
+
+/-- The post-square-breaker partner-free branch has the advertised split consequence. -/
+theorem
+    FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.squareBreaker_discharge_consequence
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : partnerFreeCollision core pair collision) :
+    postSquareBreakerPartnerFreeLargeOrSizeThreeSplit core pair collision :=
+  h.squareBreaker_discharge_consequenceCert core pair collision hcollision
+
+/-- Project the partner-free hidden-bipartition marker. -/
+theorem
+    FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.to_partnerFreeHiddenBipartitionLabels :
+    partnerFreeHiddenBipartitionLabels :=
+  h.partnerFreeHiddenBipartitionLabelsCert
+
+/-- Project the endpoint-label distinctness marker. -/
+theorem FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.to_endpointLabelsDistinct :
+    endpointLabelsDistinct :=
+  h.endpointLabelsDistinctCert
+
+/-- Project the no-near-complement four-cell buffer marker. -/
+theorem
+    FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.to_noNearComplementFourCellBufferRule :
+    noNearComplementFourCellBufferRule :=
+  h.noNearComplementFourCellBufferRuleCert
+
+/-- Project the split-rebate lower-bound marker. -/
+theorem
+    FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.to_partnerFreeSplitRebateAtLeastThree :
+    partnerFreeSplitRebateAtLeastThree :=
+  h.partnerFreeSplitRebateAtLeastThreeCert
+
+/-- Project the minimal split-pattern marker. -/
+theorem FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.to_partnerFreeMinimalSplitPatterns :
+    partnerFreeMinimalSplitPatterns :=
+  h.partnerFreeMinimalSplitPatternsCert
+
+/-- Project the partner-free square-breaker discharge consequence marker. -/
+theorem
+    FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade.to_partnerFreeSquareBreakerDischargeConsequence :
+    partnerFreeSquareBreakerDischargeConsequence :=
+  h.partnerFreeSquareBreakerDischargeConsequenceCert
+
+end FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade
+
+/--
+Partner-hit high-cover facade.  It packages the finite high-cover template list, the strict
+deficit of the individual full-pair support, compensating petals, the impossibility of an
+all-pair opposite atom configuration, and the size-at-least-three split-atom detector.
+-/
+structure FirstBitTerminalPartnerHitHighCoverFacade
+    {Core Pair Atom Petal Collision : Type*} [DecidableEq Atom] [DecidableEq Petal]
+    (atomPartition : Core → Finset Atom)
+    (atomSize : Core → Atom → ℕ)
+    (collisionPetals : Core → Pair → Collision → Finset Petal)
+    (fullPairPetal : Core → Pair → Collision → Petal)
+    (oppositeHitCount fullPairOmissionCount : Core → Pair → Collision → ℕ)
+    (partnerHitCollision : Core → Pair → Collision → Prop)
+    (petalCompensatesOmission : Core → Pair → Collision → Petal → Atom → Prop)
+    (splitAtomOfCollision : Core → Pair → Collision → Atom → Prop)
+    (allOppositeAtomsPairs : Core → Pair → Prop)
+    (partnerHitHighCoverTemplates individualFullPairSupportStrictDeficit
+      compensatingPetals impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom :
+      Prop) : Prop where
+  highCover_templateCert :
+    ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+      partnerHitCollision core pair collision →
+        ∃ s pi delta : ℕ,
+          FirstBitTerminalPartnerHitHighCoverTemplate s pi delta ∧
+            (collisionPetals core pair collision).card = s
+  individual_fullPairSupport_strictDeficitCert :
+    ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+      partnerHitCollision core pair collision →
+        firstBitPartnerHitFullPairSupportStrictDeficit
+          (oppositeHitCount core pair collision) (fullPairOmissionCount core pair collision)
+  compensatingPetalCert :
+    ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+      partnerHitCollision core pair collision →
+        ∃ atom : Atom, atom ∈ atomPartition core ∧ 3 ≤ atomSize core atom ∧
+          ∃ petal : Petal, petal ∈ collisionPetals core pair collision ∧
+            petal ≠ fullPairPetal core pair collision ∧
+              petalCompensatesOmission core pair collision petal atom
+  impossible_over_allPairOppositeAtomsCert :
+    ∀ core : Core, ∀ pair : Pair, allOppositeAtomsPairs core pair →
+      ¬ ∃ collision : Collision, partnerHitCollision core pair collision
+  partnerHit_detects_sizeAtLeastThree_splitAtomCert :
+    ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+      partnerHitCollision core pair collision →
+        ∃ atom : Atom, atom ∈ atomPartition core ∧
+          splitAtomOfCollision core pair collision atom ∧ 3 ≤ atomSize core atom
+  partnerHitHighCoverTemplatesCert : partnerHitHighCoverTemplates
+  individualFullPairSupportStrictDeficitCert : individualFullPairSupportStrictDeficit
+  compensatingPetalsCert : compensatingPetals
+  impossibleAllPairOppositeAtomsCert : impossibleAllPairOppositeAtoms
+  partnerHitDetectsLargeSplitAtomCert : partnerHitDetectsLargeSplitAtom
+
+/-- Build the partner-hit high-cover facade from its assumption-backed components. -/
+theorem firstBitTerminalPartnerHitHighCoverFacade_of_parts
+    {Core Pair Atom Petal Collision : Type*} [DecidableEq Atom] [DecidableEq Petal]
+    {atomPartition : Core → Finset Atom}
+    {atomSize : Core → Atom → ℕ}
+    {collisionPetals : Core → Pair → Collision → Finset Petal}
+    {fullPairPetal : Core → Pair → Collision → Petal}
+    {oppositeHitCount fullPairOmissionCount : Core → Pair → Collision → ℕ}
+    {partnerHitCollision : Core → Pair → Collision → Prop}
+    {petalCompensatesOmission : Core → Pair → Collision → Petal → Atom → Prop}
+    {splitAtomOfCollision : Core → Pair → Collision → Atom → Prop}
+    {allOppositeAtomsPairs : Core → Pair → Prop}
+    {partnerHitHighCoverTemplates individualFullPairSupportStrictDeficit
+      compensatingPetals impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom :
+      Prop}
+    (htemplates :
+      ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+        partnerHitCollision core pair collision →
+          ∃ s pi delta : ℕ,
+            FirstBitTerminalPartnerHitHighCoverTemplate s pi delta ∧
+              (collisionPetals core pair collision).card = s)
+    (hdeficit :
+      ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+        partnerHitCollision core pair collision →
+          firstBitPartnerHitFullPairSupportStrictDeficit
+            (oppositeHitCount core pair collision) (fullPairOmissionCount core pair collision))
+    (hcompensating :
+      ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+        partnerHitCollision core pair collision →
+          ∃ atom : Atom, atom ∈ atomPartition core ∧ 3 ≤ atomSize core atom ∧
+            ∃ petal : Petal, petal ∈ collisionPetals core pair collision ∧
+              petal ≠ fullPairPetal core pair collision ∧
+                petalCompensatesOmission core pair collision petal atom)
+    (himpossible :
+      ∀ core : Core, ∀ pair : Pair, allOppositeAtomsPairs core pair →
+        ¬ ∃ collision : Collision, partnerHitCollision core pair collision)
+    (hdetects :
+      ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+        partnerHitCollision core pair collision →
+          ∃ atom : Atom, atom ∈ atomPartition core ∧
+            splitAtomOfCollision core pair collision atom ∧ 3 ≤ atomSize core atom)
+    (htemplatesMarker : partnerHitHighCoverTemplates)
+    (hdeficitMarker : individualFullPairSupportStrictDeficit)
+    (hcompensatingMarker : compensatingPetals)
+    (himpossibleMarker : impossibleAllPairOppositeAtoms)
+    (hdetectsMarker : partnerHitDetectsLargeSplitAtom) :
+    FirstBitTerminalPartnerHitHighCoverFacade atomPartition atomSize collisionPetals
+      fullPairPetal oppositeHitCount fullPairOmissionCount partnerHitCollision
+      petalCompensatesOmission splitAtomOfCollision allOppositeAtomsPairs
+      partnerHitHighCoverTemplates individualFullPairSupportStrictDeficit
+      compensatingPetals impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom where
+  highCover_templateCert := htemplates
+  individual_fullPairSupport_strictDeficitCert := hdeficit
+  compensatingPetalCert := hcompensating
+  impossible_over_allPairOppositeAtomsCert := himpossible
+  partnerHit_detects_sizeAtLeastThree_splitAtomCert := hdetects
+  partnerHitHighCoverTemplatesCert := htemplatesMarker
+  individualFullPairSupportStrictDeficitCert := hdeficitMarker
+  compensatingPetalsCert := hcompensatingMarker
+  impossibleAllPairOppositeAtomsCert := himpossibleMarker
+  partnerHitDetectsLargeSplitAtomCert := hdetectsMarker
+
+section FirstBitTerminalPartnerHitHighCoverFacade
+
+variable {Core Pair Atom Petal Collision : Type*}
+variable [DecidableEq Atom] [DecidableEq Petal]
+variable {atomPartition : Core → Finset Atom}
+variable {atomSize : Core → Atom → ℕ}
+variable {collisionPetals : Core → Pair → Collision → Finset Petal}
+variable {fullPairPetal : Core → Pair → Collision → Petal}
+variable {oppositeHitCount fullPairOmissionCount : Core → Pair → Collision → ℕ}
+variable {partnerHitCollision : Core → Pair → Collision → Prop}
+variable {petalCompensatesOmission : Core → Pair → Collision → Petal → Atom → Prop}
+variable {splitAtomOfCollision : Core → Pair → Collision → Atom → Prop}
+variable {allOppositeAtomsPairs : Core → Pair → Prop}
+variable {partnerHitHighCoverTemplates individualFullPairSupportStrictDeficit
+  compensatingPetals impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom : Prop}
+
+variable (h :
+  FirstBitTerminalPartnerHitHighCoverFacade atomPartition atomSize collisionPetals
+    fullPairPetal oppositeHitCount fullPairOmissionCount partnerHitCollision
+    petalCompensatesOmission splitAtomOfCollision allOppositeAtomsPairs
+    partnerHitHighCoverTemplates individualFullPairSupportStrictDeficit
+    compensatingPetals impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom)
+
+/-- Partner-hit collisions use one of the four high-cover templates. -/
+theorem FirstBitTerminalPartnerHitHighCoverFacade.highCover_template
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : partnerHitCollision core pair collision) :
+    ∃ s pi delta : ℕ, FirstBitTerminalPartnerHitHighCoverTemplate s pi delta ∧
+      (collisionPetals core pair collision).card = s :=
+  h.highCover_templateCert core pair collision hcollision
+
+/-- The individual full-pair support has strict deficit. -/
+theorem FirstBitTerminalPartnerHitHighCoverFacade.individual_fullPairSupport_strictDeficit
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : partnerHitCollision core pair collision) :
+    firstBitPartnerHitFullPairSupportStrictDeficit
+      (oppositeHitCount core pair collision) (fullPairOmissionCount core pair collision) :=
+  h.individual_fullPairSupport_strictDeficitCert core pair collision hcollision
+
+/-- The partner-hit deficit is compensated by another petal on a size-at-least-three atom. -/
+theorem FirstBitTerminalPartnerHitHighCoverFacade.compensatingPetal
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : partnerHitCollision core pair collision) :
+    ∃ atom : Atom, atom ∈ atomPartition core ∧ 3 ≤ atomSize core atom ∧
+      ∃ petal : Petal, petal ∈ collisionPetals core pair collision ∧
+        petal ≠ fullPairPetal core pair collision ∧
+          petalCompensatesOmission core pair collision petal atom :=
+  h.compensatingPetalCert core pair collision hcollision
+
+/-- Partner-hit collisions are impossible when all opposite atoms are pairs. -/
+theorem FirstBitTerminalPartnerHitHighCoverFacade.impossible_over_allPairOppositeAtoms
+    {core : Core} {pair : Pair} (hallPairs : allOppositeAtomsPairs core pair) :
+    ¬ ∃ collision : Collision, partnerHitCollision core pair collision :=
+  h.impossible_over_allPairOppositeAtomsCert core pair hallPairs
+
+/-- Every partner-hit collision detects a split atom of size at least three. -/
+theorem FirstBitTerminalPartnerHitHighCoverFacade.partnerHit_detects_sizeAtLeastThree_splitAtom
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : partnerHitCollision core pair collision) :
+    ∃ atom : Atom, atom ∈ atomPartition core ∧
+      splitAtomOfCollision core pair collision atom ∧ 3 ≤ atomSize core atom :=
+  h.partnerHit_detects_sizeAtLeastThree_splitAtomCert core pair collision hcollision
+
+/-- Project the partner-hit template marker. -/
+theorem FirstBitTerminalPartnerHitHighCoverFacade.to_partnerHitHighCoverTemplates :
+    partnerHitHighCoverTemplates :=
+  h.partnerHitHighCoverTemplatesCert
+
+/-- Project the individual full-pair strict-deficit marker. -/
+theorem
+    FirstBitTerminalPartnerHitHighCoverFacade.to_individualFullPairSupportStrictDeficit :
+    individualFullPairSupportStrictDeficit :=
+  h.individualFullPairSupportStrictDeficitCert
+
+/-- Project the compensating-petal marker. -/
+theorem FirstBitTerminalPartnerHitHighCoverFacade.to_compensatingPetals :
+    compensatingPetals :=
+  h.compensatingPetalsCert
+
+/-- Project the all-pair impossibility marker. -/
+theorem FirstBitTerminalPartnerHitHighCoverFacade.to_impossibleAllPairOppositeAtoms :
+    impossibleAllPairOppositeAtoms :=
+  h.impossibleAllPairOppositeAtomsCert
+
+/-- Project the partner-hit split-atom detector marker. -/
+theorem FirstBitTerminalPartnerHitHighCoverFacade.to_partnerHitDetectsLargeSplitAtom :
+    partnerHitDetectsLargeSplitAtom :=
+  h.partnerHitDetectsLargeSplitAtomCert
+
+end FirstBitTerminalPartnerHitHighCoverFacade
+
+/--
+Public API for the partner-free/partner-hit pair-collision split endpoint after the four-pair
+square-breaker discharge.  It bundles the integrated four-pair square-breaker API with the two
+collision branches and exposes the final split-atom detector.
+-/
+structure FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI
+    {Core Pair Atom Transversal Center Face Square HostBreaker Endpoint Vertex Label Collision Petal :
+      Type*}
+    [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+    [DecidableEq Endpoint] [DecidableEq Vertex] [DecidableEq Petal]
+    (pairAtoms : Core → Finset Pair)
+    (atomPartition : Core → Finset Atom)
+    (atomSize : Core → Atom → ℕ)
+    (selectedTransversals absentTransversals : Core → Finset Transversal)
+    (transversalAntipode : Core → Transversal → Transversal)
+    (hiddenCenter : Core → Center)
+    (centerTwoFaces : Core → Finset Face)
+    (oneCornerSquareOfFace : Core → Face → Square)
+    (hostSquareBreakerOfSquare : Core → Square → HostBreaker)
+    (fourPairNoLeftoverCore : Core → Prop)
+    (onePlusThreeStarColoring : Core → Center → Prop)
+    (actualTransversalSupport : Core → Transversal → Prop)
+    (oneCornerSquareBreaker : Core → Square → Prop)
+    (supportLocalSquareBreakerDischarged : Core → Prop)
+    (hostSquareBreakerDischarged : Core → HostBreaker → Prop)
+    (fourPairCoreDischarged : Core → Prop)
+    (endpointsOf : Core → Pair → Finset Endpoint)
+    (endpointVertex : Core → Pair → Endpoint → Vertex)
+    (oppositeUnion : Core → Pair → Finset Vertex)
+    (bipartitionSide : Core → Pair → Endpoint → Finset Vertex)
+    (leftFullSupport rightFullSupport : Core → Pair → Endpoint → Finset Vertex)
+    (labelOf : Core → Pair → Endpoint → Label)
+    (splitAtoms : Core → Pair → Endpoint → Finset Atom)
+    (splitAtomRebate : Core → Pair → Endpoint → Atom → ℕ)
+    (partnerFreeCollision : Core → Pair → Collision → Prop)
+    (collisionEndpoint : Core → Pair → Collision → Endpoint)
+    (partnerFreeMinimalSplitPatternRealized :
+      Core → Pair → Collision → FirstBitTerminalPartnerFreeMinimalSplitPattern → Prop)
+    (postSquareBreakerPartnerFreeLargeOrSizeThreeSplit : Core → Pair → Collision → Prop)
+    (collisionPetals : Core → Pair → Collision → Finset Petal)
+    (fullPairPetal : Core → Pair → Collision → Petal)
+    (oppositeHitCount fullPairOmissionCount : Core → Pair → Collision → ℕ)
+    (partnerHitCollision : Core → Pair → Collision → Prop)
+    (petalCompensatesOmission : Core → Pair → Collision → Petal → Atom → Prop)
+    (pairCollisionSplitAtom : Core → Pair → Collision → Atom → Prop)
+    (allOppositeAtomsPairs : Core → Pair → Prop)
+    (pairAtomCollision : Core → Pair → Collision → Prop)
+    (rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge partnerFreeHiddenBipartitionLabels
+      endpointLabelsDistinct noNearComplementFourCellBufferRule
+      partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+      partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+      individualFullPairSupportStrictDeficit compensatingPetals
+      impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom
+      pairCollisionPartnerSplitEndpoint : Prop) : Prop where
+  squareBreakerDischargeAPI :
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge
+  partnerFreeFacade :
+    FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade pairAtoms endpointsOf
+      endpointVertex oppositeUnion bipartitionSide leftFullSupport rightFullSupport labelOf
+      splitAtoms splitAtomRebate atomSize partnerFreeCollision collisionEndpoint
+      partnerFreeMinimalSplitPatternRealized postSquareBreakerPartnerFreeLargeOrSizeThreeSplit
+      partnerFreeHiddenBipartitionLabels endpointLabelsDistinct
+      noNearComplementFourCellBufferRule partnerFreeSplitRebateAtLeastThree
+      partnerFreeMinimalSplitPatterns partnerFreeSquareBreakerDischargeConsequence
+  partnerHitFacade :
+    FirstBitTerminalPartnerHitHighCoverFacade atomPartition atomSize collisionPetals
+      fullPairPetal oppositeHitCount fullPairOmissionCount partnerHitCollision
+      petalCompensatesOmission pairCollisionSplitAtom allOppositeAtomsPairs
+      partnerHitHighCoverTemplates individualFullPairSupportStrictDeficit compensatingPetals
+      impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom
+  partnerFree_or_partnerHitCert :
+    ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+      pairAtomCollision core pair collision →
+        partnerFreeCollision core pair collision ∨ partnerHitCollision core pair collision
+  pairCollision_splitAtom_after_squareBreakerCert :
+    ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+      pairAtomCollision core pair collision → fourPairCoreDischarged core →
+        ∃ atom : Atom, atom ∈ atomPartition core ∧
+          pairCollisionSplitAtom core pair collision atom ∧ 3 ≤ atomSize core atom
+  pairCollisionPartnerSplitEndpointCert : pairCollisionPartnerSplitEndpoint
+
+/-- Build the public partner split endpoint from the square-breaker API and the two branch facades. -/
+theorem firstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI_of_parts
+    {Core Pair Atom Transversal Center Face Square HostBreaker Endpoint Vertex Label Collision Petal :
+      Type*}
+    [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+    [DecidableEq Endpoint] [DecidableEq Vertex] [DecidableEq Petal]
+    {pairAtoms : Core → Finset Pair}
+    {atomPartition : Core → Finset Atom}
+    {atomSize : Core → Atom → ℕ}
+    {selectedTransversals absentTransversals : Core → Finset Transversal}
+    {transversalAntipode : Core → Transversal → Transversal}
+    {hiddenCenter : Core → Center}
+    {centerTwoFaces : Core → Finset Face}
+    {oneCornerSquareOfFace : Core → Face → Square}
+    {hostSquareBreakerOfSquare : Core → Square → HostBreaker}
+    {fourPairNoLeftoverCore : Core → Prop}
+    {onePlusThreeStarColoring : Core → Center → Prop}
+    {actualTransversalSupport : Core → Transversal → Prop}
+    {oneCornerSquareBreaker : Core → Square → Prop}
+    {supportLocalSquareBreakerDischarged : Core → Prop}
+    {hostSquareBreakerDischarged : Core → HostBreaker → Prop}
+    {fourPairCoreDischarged : Core → Prop}
+    {endpointsOf : Core → Pair → Finset Endpoint}
+    {endpointVertex : Core → Pair → Endpoint → Vertex}
+    {oppositeUnion : Core → Pair → Finset Vertex}
+    {bipartitionSide : Core → Pair → Endpoint → Finset Vertex}
+    {leftFullSupport rightFullSupport : Core → Pair → Endpoint → Finset Vertex}
+    {labelOf : Core → Pair → Endpoint → Label}
+    {splitAtoms : Core → Pair → Endpoint → Finset Atom}
+    {splitAtomRebate : Core → Pair → Endpoint → Atom → ℕ}
+    {partnerFreeCollision : Core → Pair → Collision → Prop}
+    {collisionEndpoint : Core → Pair → Collision → Endpoint}
+    {partnerFreeMinimalSplitPatternRealized :
+      Core → Pair → Collision → FirstBitTerminalPartnerFreeMinimalSplitPattern → Prop}
+    {postSquareBreakerPartnerFreeLargeOrSizeThreeSplit : Core → Pair → Collision → Prop}
+    {collisionPetals : Core → Pair → Collision → Finset Petal}
+    {fullPairPetal : Core → Pair → Collision → Petal}
+    {oppositeHitCount fullPairOmissionCount : Core → Pair → Collision → ℕ}
+    {partnerHitCollision : Core → Pair → Collision → Prop}
+    {petalCompensatesOmission : Core → Pair → Collision → Petal → Atom → Prop}
+    {pairCollisionSplitAtom : Core → Pair → Collision → Atom → Prop}
+    {allOppositeAtomsPairs : Core → Pair → Prop}
+    {pairAtomCollision : Core → Pair → Collision → Prop}
+    {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge partnerFreeHiddenBipartitionLabels
+      endpointLabelsDistinct noNearComplementFourCellBufferRule
+      partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+      partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+      individualFullPairSupportStrictDeficit compensatingPetals
+      impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom
+      pairCollisionPartnerSplitEndpoint : Prop}
+    (hsquare :
+      FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI pairAtoms atomPartition
+        atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+        centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+        onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+        supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+        rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+        twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+        collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+        booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+        booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+        selectedTransversalsAreActualSupports selectedAntipodesAbsent
+        centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+        supportLocalSquareBreakerDischarge)
+    (hfree :
+      FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade pairAtoms endpointsOf
+        endpointVertex oppositeUnion bipartitionSide leftFullSupport rightFullSupport labelOf
+        splitAtoms splitAtomRebate atomSize partnerFreeCollision collisionEndpoint
+        partnerFreeMinimalSplitPatternRealized postSquareBreakerPartnerFreeLargeOrSizeThreeSplit
+        partnerFreeHiddenBipartitionLabels endpointLabelsDistinct
+        noNearComplementFourCellBufferRule partnerFreeSplitRebateAtLeastThree
+        partnerFreeMinimalSplitPatterns partnerFreeSquareBreakerDischargeConsequence)
+    (hhit :
+      FirstBitTerminalPartnerHitHighCoverFacade atomPartition atomSize collisionPetals
+        fullPairPetal oppositeHitCount fullPairOmissionCount partnerHitCollision
+        petalCompensatesOmission pairCollisionSplitAtom allOppositeAtomsPairs
+        partnerHitHighCoverTemplates individualFullPairSupportStrictDeficit compensatingPetals
+        impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom)
+    (hsplit :
+      ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+        pairAtomCollision core pair collision →
+          partnerFreeCollision core pair collision ∨ partnerHitCollision core pair collision)
+    (hdetect :
+      ∀ core : Core, ∀ pair : Pair, ∀ collision : Collision,
+        pairAtomCollision core pair collision → fourPairCoreDischarged core →
+          ∃ atom : Atom, atom ∈ atomPartition core ∧
+            pairCollisionSplitAtom core pair collision atom ∧ 3 ≤ atomSize core atom)
+    (hendpoint : pairCollisionPartnerSplitEndpoint) :
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      endpointsOf endpointVertex oppositeUnion bipartitionSide leftFullSupport rightFullSupport
+      labelOf splitAtoms splitAtomRebate partnerFreeCollision collisionEndpoint
+      partnerFreeMinimalSplitPatternRealized postSquareBreakerPartnerFreeLargeOrSizeThreeSplit
+      collisionPetals fullPairPetal oppositeHitCount fullPairOmissionCount partnerHitCollision
+      petalCompensatesOmission pairCollisionSplitAtom allOppositeAtomsPairs pairAtomCollision
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+      fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+      partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+      partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+      partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+      individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+      partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint where
+  squareBreakerDischargeAPI := hsquare
+  partnerFreeFacade := hfree
+  partnerHitFacade := hhit
+  partnerFree_or_partnerHitCert := hsplit
+  pairCollision_splitAtom_after_squareBreakerCert := hdetect
+  pairCollisionPartnerSplitEndpointCert := hendpoint
+
+section FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI
+
+variable {Core Pair Atom Transversal Center Face Square HostBreaker Endpoint Vertex Label Collision Petal :
+  Type*}
+variable [DecidableEq Pair] [DecidableEq Atom] [DecidableEq Transversal] [DecidableEq Face]
+variable [DecidableEq Endpoint] [DecidableEq Vertex] [DecidableEq Petal]
+variable {pairAtoms : Core → Finset Pair}
+variable {atomPartition : Core → Finset Atom}
+variable {atomSize : Core → Atom → ℕ}
+variable {selectedTransversals absentTransversals : Core → Finset Transversal}
+variable {transversalAntipode : Core → Transversal → Transversal}
+variable {hiddenCenter : Core → Center}
+variable {centerTwoFaces : Core → Finset Face}
+variable {oneCornerSquareOfFace : Core → Face → Square}
+variable {hostSquareBreakerOfSquare : Core → Square → HostBreaker}
+variable {fourPairNoLeftoverCore : Core → Prop}
+variable {onePlusThreeStarColoring : Core → Center → Prop}
+variable {actualTransversalSupport : Core → Transversal → Prop}
+variable {oneCornerSquareBreaker : Core → Square → Prop}
+variable {supportLocalSquareBreakerDischarged : Core → Prop}
+variable {hostSquareBreakerDischarged : Core → HostBreaker → Prop}
+variable {fourPairCoreDischarged : Core → Prop}
+variable {endpointsOf : Core → Pair → Finset Endpoint}
+variable {endpointVertex : Core → Pair → Endpoint → Vertex}
+variable {oppositeUnion : Core → Pair → Finset Vertex}
+variable {bipartitionSide : Core → Pair → Endpoint → Finset Vertex}
+variable {leftFullSupport rightFullSupport : Core → Pair → Endpoint → Finset Vertex}
+variable {labelOf : Core → Pair → Endpoint → Label}
+variable {splitAtoms : Core → Pair → Endpoint → Finset Atom}
+variable {splitAtomRebate : Core → Pair → Endpoint → Atom → ℕ}
+variable {partnerFreeCollision : Core → Pair → Collision → Prop}
+variable {collisionEndpoint : Core → Pair → Collision → Endpoint}
+variable {partnerFreeMinimalSplitPatternRealized :
+  Core → Pair → Collision → FirstBitTerminalPartnerFreeMinimalSplitPattern → Prop}
+variable {postSquareBreakerPartnerFreeLargeOrSizeThreeSplit : Core → Pair → Collision → Prop}
+variable {collisionPetals : Core → Pair → Collision → Finset Petal}
+variable {fullPairPetal : Core → Pair → Collision → Petal}
+variable {oppositeHitCount fullPairOmissionCount : Core → Pair → Collision → ℕ}
+variable {partnerHitCollision : Core → Pair → Collision → Prop}
+variable {petalCompensatesOmission : Core → Pair → Collision → Petal → Atom → Prop}
+variable {pairCollisionSplitAtom : Core → Pair → Collision → Atom → Prop}
+variable {allOppositeAtomsPairs : Core → Pair → Prop}
+variable {pairAtomCollision : Core → Pair → Collision → Prop}
+variable {rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+  twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+  collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+  booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+  booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+  selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+  fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+  partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+  partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+  partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+  individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+  partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI pairAtoms atomPartition
+    atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+    centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+    onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+    supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+    endpointsOf endpointVertex oppositeUnion bipartitionSide leftFullSupport rightFullSupport
+    labelOf splitAtoms splitAtomRebate partnerFreeCollision collisionEndpoint
+    partnerFreeMinimalSplitPatternRealized postSquareBreakerPartnerFreeLargeOrSizeThreeSplit
+    collisionPetals fullPairPetal oppositeHitCount fullPairOmissionCount partnerHitCollision
+    petalCompensatesOmission pairCollisionSplitAtom allOppositeAtomsPairs pairAtomCollision
+    rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+    twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+    collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+    booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+    booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+    selectedTransversalsAreActualSupports selectedAntipodesAbsent centerTwoFaceOneCornerSquares
+    fourPairCoreRoutesToHostSquareBreaker supportLocalSquareBreakerDischarge
+    partnerFreeHiddenBipartitionLabels endpointLabelsDistinct noNearComplementFourCellBufferRule
+    partnerFreeSplitRebateAtLeastThree partnerFreeMinimalSplitPatterns
+    partnerFreeSquareBreakerDischargeConsequence partnerHitHighCoverTemplates
+    individualFullPairSupportStrictDeficit compensatingPetals impossibleAllPairOppositeAtoms
+    partnerHitDetectsLargeSplitAtom pairCollisionPartnerSplitEndpoint)
+
+/-- Project the reused four-pair star/square-breaker discharge API. -/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.to_squareBreakerDischargePublicAPI :
+    FirstBitTerminalFourPairStarSquareBreakerDischargePublicAPI pairAtoms atomPartition
+      atomSize selectedTransversals absentTransversals transversalAntipode hiddenCenter
+      centerTwoFaces oneCornerSquareOfFace hostSquareBreakerOfSquare fourPairNoLeftoverCore
+      onePlusThreeStarColoring actualTransversalSupport oneCornerSquareBreaker
+      supportLocalSquareBreakerDischarged hostSquareBreakerDischarged fourPairCoreDischarged
+      rankThreePairCollisionRebateCircuitFrontier pairForcedPetalStrictDeficit
+      twoPetalRebateAtLeastThree sizeThreeNoLeftoverCollisionOnlyTemplates
+      collisionFreeCutoffAtFourFour fourPairComplementaryTransversalLabels
+      booleanAntipodalQuotientOrientationFacade remainingSmallAtomCollisionCoreAssumptions
+      booleanQuotientForcedOnePlusThreeStar uniqueHiddenCenter
+      selectedTransversalsAreActualSupports selectedAntipodesAbsent
+      centerTwoFaceOneCornerSquares fourPairCoreRoutesToHostSquareBreaker
+      supportLocalSquareBreakerDischarge :=
+  h.squareBreakerDischargeAPI
+
+/-- Project the partner-free hidden-bipartition facade. -/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.to_partnerFreeHiddenBipartitionLabelFacade :
+    FirstBitTerminalPartnerFreeHiddenBipartitionLabelFacade pairAtoms endpointsOf
+      endpointVertex oppositeUnion bipartitionSide leftFullSupport rightFullSupport labelOf
+      splitAtoms splitAtomRebate atomSize partnerFreeCollision collisionEndpoint
+      partnerFreeMinimalSplitPatternRealized postSquareBreakerPartnerFreeLargeOrSizeThreeSplit
+      partnerFreeHiddenBipartitionLabels endpointLabelsDistinct
+      noNearComplementFourCellBufferRule partnerFreeSplitRebateAtLeastThree
+      partnerFreeMinimalSplitPatterns partnerFreeSquareBreakerDischargeConsequence :=
+  h.partnerFreeFacade
+
+/-- Project the partner-hit high-cover facade. -/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.to_partnerHitHighCoverFacade :
+    FirstBitTerminalPartnerHitHighCoverFacade atomPartition atomSize collisionPetals
+      fullPairPetal oppositeHitCount fullPairOmissionCount partnerHitCollision
+      petalCompensatesOmission pairCollisionSplitAtom allOppositeAtomsPairs
+      partnerHitHighCoverTemplates individualFullPairSupportStrictDeficit compensatingPetals
+      impossibleAllPairOppositeAtoms partnerHitDetectsLargeSplitAtom :=
+  h.partnerHitFacade
+
+/-- Project the pair-collision split endpoint marker. -/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.to_pairCollisionPartnerSplitEndpoint :
+    pairCollisionPartnerSplitEndpoint :=
+  h.pairCollisionPartnerSplitEndpointCert
+
+/-- Every pair-atom collision is classified as partner-free or partner-hit. -/
+theorem FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.partnerFree_or_partnerHit
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : pairAtomCollision core pair collision) :
+    partnerFreeCollision core pair collision ∨ partnerHitCollision core pair collision :=
+  h.partnerFree_or_partnerHitCert core pair collision hcollision
+
+/-- After the four-pair square-breaker discharge, every pair-atom collision detects a large split atom. -/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.splitAtom_after_fourPairSquareBreaker
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : pairAtomCollision core pair collision) (hdischarged : fourPairCoreDischarged core) :
+    ∃ atom : Atom, atom ∈ atomPartition core ∧
+      pairCollisionSplitAtom core pair collision atom ∧ 3 ≤ atomSize core atom :=
+  h.pairCollision_splitAtom_after_squareBreakerCert core pair collision hcollision hdischarged
+
+/--
+Support-local square-breaker discharge supplies the four-pair discharge through the integrated API,
+so the public partner split endpoint detects a size-at-least-three split atom.
+-/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.splitAtom_after_supportLocalSquareBreaker
+    {core : Core} (hcore : fourPairNoLeftoverCore core)
+    {pair : Pair} {collision : Collision} (hcollision : pairAtomCollision core pair collision)
+    (hlocal : supportLocalSquareBreakerDischarged core) :
+    ∃ atom : Atom, atom ∈ atomPartition core ∧
+      pairCollisionSplitAtom core pair collision atom ∧ 3 ≤ atomSize core atom :=
+  h.splitAtom_after_fourPairSquareBreaker hcollision
+    (h.squareBreakerDischargeAPI.discharge_of_supportLocalSquareBreaker hcore hlocal)
+
+/-- Reuse the square-breaker routing marker through the integrated discharge API. -/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.to_fourPairCoreRoutesToHostSquareBreaker :
+    fourPairCoreRoutesToHostSquareBreaker :=
+  h.squareBreakerDischargeAPI.to_fourPairCoreRoutesToHostSquareBreaker
+
+/-- Reuse the support-local square-breaker discharge marker through the integrated discharge API. -/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.to_supportLocalSquareBreakerDischarge :
+    supportLocalSquareBreakerDischarge :=
+  h.squareBreakerDischargeAPI.to_supportLocalSquareBreakerDischarge
+
+/-- Partner-free collisions keep their post-square-breaker split consequence in the public API. -/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.partnerFree_squareBreaker_consequence
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : partnerFreeCollision core pair collision) :
+    postSquareBreakerPartnerFreeLargeOrSizeThreeSplit core pair collision :=
+  h.partnerFreeFacade.squareBreaker_discharge_consequence hcollision
+
+/-- Partner-hit collisions detect a size-at-least-three split atom in the public API. -/
+theorem
+    FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI.partnerHit_detects_sizeAtLeastThree_splitAtom
+    {core : Core} {pair : Pair} {collision : Collision}
+    (hcollision : partnerHitCollision core pair collision) :
+    ∃ atom : Atom, atom ∈ atomPartition core ∧
+      pairCollisionSplitAtom core pair collision atom ∧ 3 ≤ atomSize core atom :=
+  h.partnerHitFacade.partnerHit_detects_sizeAtLeastThree_splitAtom hcollision
+
+end FirstBitTerminalPairCollisionPartnerSplitEndpointPublicAPI
+
 /--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
