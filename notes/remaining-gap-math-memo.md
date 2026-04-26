@@ -2115,6 +2115,13 @@ splits both other three-atoms or one three-atom plus the pair.
 If a size-three deletion avoids the shortened pair, it gives a complementary bipartition label of the other
 three atoms; the three vertices of the source atom must have distinct labels.
 The three labels have no rainbow partition of the opposite atoms; otherwise the three lifted supports close.
+Equivalently, in the `{0,1}^3` code of the three source cuts, no sign vector is at Hamming distance `2` from
+all opposite-vertex labels.
+This means the code is parity-mixed or contains all four words of one parity class.
+With distinct source labels, parity-mixed codes contain a Hamming edge; otherwise only the parity-tetrahedron
+case remains.
+The Hamming edge is the local one-corner square-breaker; after its discharge, source codes are parity
+tetrahedra.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has
 strict defect `delta_other>=r` or `r+1`; other petals compensate the omissions.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,

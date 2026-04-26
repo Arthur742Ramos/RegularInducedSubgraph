@@ -1192,6 +1192,13 @@ Shortened-pair-free deletions from a size-three source give complementary bipart
 three atoms, and the three source vertices must use distinct labels.
 No source atom admits a rainbow partition by these three labels: one side from each label cannot disjointly
 cover the opposite atoms.
+In code form, opposite vertices have labels in `{0,1}^3`, and no sign vector is at Hamming distance `2` from
+all labels.
+Equivalently the code is parity-mixed, or contains all four words of one parity class.
+Distinct source labels sharpen this to: parity-mixed gives a Hamming edge, while the one-parity case is a
+full parity tetrahedron.
+The Hamming-edge atom is the one-corner square-breaker, so after square discharge only parity-tetrahedron
+source codes remain in the shortened-pair-free ternary-cycle branch.
 Shortened-pair-hit petals obey strict cross-defect: if the lift uses `q=2,3` source vertices and hits `r`
 other atoms, then `delta_other>=r` or `r+1`, respectively.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:

@@ -5546,6 +5546,15 @@ the other three atoms; the three vertex deletions must have distinct labels, or 
 source vertex as singleton close.
 The three labels also have no rainbow partition: choosing one side from each label cannot disjointly cover
 the opposite atoms, or the three lifted supports partition all of `A`.
+Equivalently, opposite vertices get words in `{0,1}^3`; a rainbow choice is a sign vector at Hamming distance
+`2` from every word, so no-rainbow is a finite code condition.
+This code condition is parity: the source code is no-rainbow iff it has both parities, or else contains all
+four words of one parity class.
+With distinct source labels, the parity-mixed case contains a Hamming edge; otherwise the code would be one
+antipodal pair and all three labels would coincide.  So the code atoms are unit-edge or parity-tetrahedron.
+The unit-edge atom is the local one-corner square-breaker: two opposite vertices agree in two source labels
+and differ in the third.  After square-breaker discharge, shortened-pair-free ternary sources are parity
+tetrahedra.
 If a forced petal hits the shortened pair and lifts with `q=2` or `3` source vertices while hitting `r` other
 atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+1` for `q=3`; the remaining
 petals must compensate those omissions.

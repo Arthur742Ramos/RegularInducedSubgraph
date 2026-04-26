@@ -2598,6 +2598,16 @@ Recommended attack:
     bipartition of the other three atoms, and the three source vertices must have distinct labels.
     Add the no-rainbow source constraint: one side from each of the three source labels cannot disjointly
     partition the opposite atoms, or the three lifted supports close.
+    Repackage no-rainbow as a finite code condition: opposite vertices receive `{0,1}^3` words from the three
+    cuts, and no sign vector is at Hamming distance `2` from every word.
+    Prove the parity form of no-rainbow: such a code is either parity-mixed or contains all four words of one
+    parity class.
+    Add the distinct-label sharpening: parity-mixed source codes contain a Hamming edge; otherwise the code
+    would be one antipodal pair and all three complementary labels would coincide.  The remaining code atoms
+    are unit-edge and parity-tetrahedron.
+    Identify the unit-edge atom with the one-corner square-breaker: two opposite vertices agree in two source
+    labels and differ in the third.  After square discharge, shortened-pair-free source codes are parity
+    tetrahedra.
     Add shortened-pair-hit strict defect: a forced petal using `q=2,3` source vertices and hitting `r` other
     atoms has `delta_other>=r` or `r+1`, respectively; remaining petals compensate those omissions.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair

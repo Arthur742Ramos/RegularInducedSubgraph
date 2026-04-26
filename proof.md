@@ -12666,6 +12666,48 @@ then the three supports `{a} union E_a`, `{b} union E_b`, `{c} union E_c` are di
 `A`, closing the target.  Thus a ternary-cycle source atom carries three distinct high-rebate bipartitions
 with no rainbow partition of the opposite atoms.
 
+Equivalently, encode every vertex `u in M` by the word
+
+```text
+lambda(u)=(1_{u in C_a},1_{u in C_b},1_{u in C_c}) in {0,1}^3.
+```
+
+Choosing one side from each source label is a sign vector `sigma in {0,1}^3`; the chosen sides partition
+`M` exactly when every `u` matches `sigma` in exactly one coordinate, i.e. when
+
+```text
+d_H(lambda(u),sigma)=2        for every u in M.
+```
+
+Thus no-rainbow is the finite code condition that every `sigma` is avoided by at least one opposite vertex
+whose label has Hamming distance different from `2`.  The split-rebate constraints say, in this code, that
+each target three-atom is nonconstant in enough of the three coordinates to supply the required rebate.
+
+This code condition has an elementary parity form.  In `{0,1}^3`, the set of words at distance exactly `2`
+from `sigma` is the parity class of `sigma` with `sigma` itself removed.  Hence a source code is no-rainbow
+iff either it contains words of both parities, or, if it is contained in one parity class, it contains all
+four words of that parity.  Thus every shortened-pair-free ternary source is either parity-mixed, or it is a
+complete even/odd tetrahedron in the source-code cube.
+
+Using distinctness of the three source labels, the parity-mixed alternative sharpens further.  If a
+parity-mixed source code has no Hamming-distance-one pair, then every word of one parity can be paired only
+with its antipode in the other parity; hence the whole code uses a single antipodal pair.  But then the three
+coordinate cuts are all equal up to complement, so the three source vertices have the same complementary
+bipartition label, contrary to source-side separation.  Therefore every parity-mixed source code contains a
+Hamming edge.  The shortened-pair-free ternary-cycle branch is reduced to two finite code atoms:
+
+```text
+unit-edge atom:        two opposite vertices differ in exactly one source label;
+parity-tetrahedron:    all four words of one parity occur.
+```
+
+The unit-edge atom is the code-level one-corner square.  If `lambda(u)` and `lambda(v)` differ only in the
+coordinate corresponding to deletion of `a`, then the two vertices `u,v` have identical status in the two
+other source labels and opposite status in the `a`-label.  Holding the other two source coordinates fixed,
+the `a`-coordinate flip is precisely a support-local one-corner `0001/0111` pattern.  Consequently, after
+the one-corner square-breaker is discharged, every shortened-pair-free ternary-cycle source code is a parity
+tetrahedron.
+
 If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
 cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
 source atom `G` (`q=2` or `3`) and hitting `r` other packed atoms.  Since this full lift crosses atoms,

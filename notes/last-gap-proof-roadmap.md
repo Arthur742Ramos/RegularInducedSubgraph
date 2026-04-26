@@ -2078,6 +2078,11 @@ What remains justified after audit is:
       shortened-pair-free deletions from a size-three source give complementary bipartition labels, distinct
       for the three source vertices;
       the three source labels have no rainbow partition of the opposite atoms;
+      equivalently their `{0,1}^3` vertex-code has no sign vector at Hamming distance `2` from every label;
+      this code is therefore parity-mixed or contains a full parity tetrahedron;
+      distinct source labels sharpen this to unit-edge or parity-tetrahedron code atoms;
+      the unit-edge atom is the one-corner square-breaker, so after square discharge only parity tetrahedra
+      remain in shortened-pair-free ternary-cycle sources;
       shortened-pair-hit petals satisfy strict cross-defect `delta_other>=r` or `r+1` according as they use
       two or three source vertices;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
