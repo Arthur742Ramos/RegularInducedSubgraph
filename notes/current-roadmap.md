@@ -5277,6 +5277,16 @@ fails a shifted scalar equation.  If no retained `(m+1)`-set has three outside v
 The target-failure side has a coordinate-minimal certificate: a minimal set `P` of old vertices on which no
 outside triple realizes the prescribed 0/1/2/3 counts, with every coordinate of `P` essential.  If target
 triples exist, the obstruction is exactly that all such triples are killed by shifted self-layer equations.
+For `|P|=1,2,3`, these are respectively row extremity, four-chamber pair transportation failure, and the
+first eight-corner ternary cube obstruction.
+The saturated local closures eliminate these size-`<=3` target certificates, so an irreducible
+large-outside target failure starts at `|P|>=4` unless the target triples exist and are all scalar-killed.
+The scalar-killed side is a three-vertex graphicality test: each incoming vertex requests internal degree
+`0`, `1`, or `2` in the triple; residue `3` kills the endpoint, and the only graphical degree patterns are
+`000`, `110`, `211`, and `222`.
+The target-avoidance side is a capacitated 3-sum cube: outside trace columns in `{0,1}^P` fail to sum to
+`h|_P` using three distinct vertices, while every coordinate projection is feasible.  Hence each coordinate
+has a single-defect realizing triple, and the irreducible dimension is at least `4`.
 Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
 Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
 `R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.

@@ -1002,6 +1002,15 @@ if there are never three outside vertices, the `0/2` Gallai residue classes are 
 distance of `m`.
 Ternary target failure can be made coordinate-minimal: each coordinate in the minimal old-vertex certificate
 is essential, while the nonempty target-realization case is exactly scalar-good hypergraph emptiness.
+Minimal certificates of sizes `1`, `2`, and `3` are row extremity, pair-chamber transportation failure, and
+eight-corner ternary cube failure.
+Those are exactly the saturated local alternatives already closed, so the irreducible target-avoidance
+certificate has size at least `4`.
+On the scalar side, every target-realizing incoming triple must realize one of the internal degree patterns
+`000`, `110`, `211`, or `222`; residue `3` at an endpoint is immediately impossible.
+On the target side, the remaining obstruction is a critical capacitated 3-sum cube: `h` is not a sum of
+three outside trace columns, but every coordinate deletion is; after local closures its dimension is at
+least `4`.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

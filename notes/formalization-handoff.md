@@ -2377,6 +2377,16 @@ Recommended attack:
     Add ternary obstruction certificates: target failure has a coordinate-minimal old-vertex set `P` with
     every coordinate essential; otherwise the target-realization 3-graph is nonempty but its scalar-good
     subgraph is empty.
+    For `|P|=1,2,3`, record the explicit finite forms: row extremity, four-chamber pair transportation
+    failure, and eight-corner ternary cube failure.
+    Record that the saturated local closure excludes these size-`<=3` target certificates in an
+    irreducible target-avoidance branch.
+    Add the scalar graphicality split: after old-target realization, each incoming vertex prescribes its
+    internal degree in the incoming triple; residue `3` is impossible and the only graphical degree patterns
+    are `000`, `110`, `211`, and `222`.
+    Add the target-avoidance 3-sum normal form: for a coordinate-minimal certificate `P`, outside trace
+    columns in `{0,1}^P` do not capacity-respecting sum to `h|_P` in triples, but every coordinate projection
+    does; after local closures, `|P|>=4`.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

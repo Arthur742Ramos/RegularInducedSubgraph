@@ -1930,6 +1930,14 @@ ternary self-layer failure; otherwise the Gallai residue split is near-threshold
 `m-2<=|C|<=|R|<=m+3`.
 Target failure has a coordinate-minimal essential set; if target triples exist, every one is killed by a
 shifted scalar equation.
+Minimal certificates of sizes `1`, `2`, and `3` are row extremity, pair-chamber transportation failure, and
+eight-corner ternary cube failure.
+The saturated local closures remove those size-`<=3` certificates, so an irreducible target-avoidance
+branch has certificate size at least `4`.
+The scalar-killed branch is finite too: incoming endpoints request internal degrees, residue `3` is
+impossible, and the graphical three-vertex patterns are `000`, `110`, `211`, and `222`.
+The target-avoidance branch is a critical capacitated 3-sum cube: no three outside trace columns sum to
+`h`, but every coordinate deletion is feasible; irreducible dimension is at least `4`.
 If `|R|=m+s`, `s<=3`, terminality inside `R` is the finite list that `b-deg_D` is nonconstant on `R\D`
 for every `|D|<=s-1`.
 The full two-residue core is equivalently `epsilon(v)-deg_D(v)=const` on `J\D`, with `epsilon=0` on `R`

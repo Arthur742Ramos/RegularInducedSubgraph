@@ -1915,6 +1915,13 @@ What remains justified after audit is:
       `m-2<=|C|<=|R|<=m+3`;
       ternary target failure has a coordinate-minimal essential certificate, while nonempty target
       realization is obstructed exactly by scalar-good hypergraph emptiness;
+      certificate sizes `1`, `2`, and `3` are row extremity, pair-chamber transportation failure, and
+      eight-corner ternary cube failure;
+      saturated local closure eliminates those size-`<=3` target certificates in an irreducible branch;
+      scalar-killed target triples reduce to internal degree graphicality on three vertices, allowing only
+      `000`, `110`, `211`, and `222` and forbidding endpoint residue `3`;
+      target-avoidance is a critical capacitated 3-sum cube of trace columns, infeasible only in full
+      dimension and feasible after every coordinate deletion, with irreducible dimension at least `4`;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on

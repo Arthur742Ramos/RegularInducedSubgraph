@@ -11144,6 +11144,60 @@ covered by at least one of the three failed shifted self-layer equations.  Thus 
 to either an essential-coordinate 3-trace avoidance certificate or a scalar-killed target-realization
 hypergraph.
 
+For small minimal `P` this certificate is completely explicit.  If `|P|=1`, target failure says that the
+outside neighborhood or outside non-neighborhood of that single old vertex is too small to supply the
+requested count `0`, `1`, `2`, or `3`.  If `|P|=2`, it is a four-chamber transportation failure: the
+outside vertices are split by their two-bit traces, and no choice of three vertices has the prescribed two
+coordinate margins.  If `|P|=3`, it is the first genuine cube obstruction: the eight trace corners admit no
+three-point multiset with the prescribed ternary margins.  Thus the old host-frontier names reappear here
+as the size `1`, `2`, and `3` minimal target certificates: row extremity, pair-chamber separation, and
+one-corner ternary lift.
+
+In the saturated graph proof these three local certificates are the already-closed row-promotion,
+opposite-pair/no-split, and silent-edge/one-corner alternatives.  Therefore an irreducible large-outside
+target-avoidance obstruction cannot stop at `|P|<=3`: after importing the saturated local closures, it must
+either have an essential coordinate certificate of size at least `4`, or have nonempty target realization
+with the scalar-good 3-graph empty.
+
+The scalar-good condition is itself a three-vertex graphicality test.  For an outside vertex `y`, after the
+old target is fixed its shifted scalar equation is equivalent to prescribing
+
+```text
+deg_Y(y)=kappa-b(y)+deg_{R\T}(y)+deg_X(y)        [MOD 4].
+```
+
+Since `deg_Y(y)` is the internal degree of `y` inside the incoming triple, it must have a representative in
+`{0,1,2}`; residue `3` kills every target-realizing triple containing `y`.  When the three incoming vertices
+all have representatives in `{0,1,2}`, the requested internal degree sequence must be one of the four
+graphical patterns on three vertices:
+
+```text
+000,        110,        211,        222.
+```
+
+These correspond to the empty graph, one edge, a two-edge path, and a triangle.  Thus scalar-good
+hypergraph emptiness splits into a residue-`3` endpoint obstruction or a missing internal graph-pattern
+obstruction over the target-realizing triples.
+
+The target-avoidance half can be written as a capacitated 3-sum cube.  For a coordinate-minimal
+certificate `P`, let `M_P` be the multiset of outside trace columns
+
+```text
+a(y)=(1_{vy})_{v in P} in {0,1}^P        (y in O).
+```
+
+The target is the vector `h|_P in {0,1,2,3}^P`.  An outside triple realizes the old target on `P` exactly
+when `h|_P` is a capacity-respecting sum of three distinct columns of `M_P`.  Thus target failure is
+
+```text
+h|_P notin M_P + M_P + M_P        (with vertex capacities),
+```
+
+while coordinate minimality says that every coordinate projection of `h|_P` is such a capacitated
+3-sum.  Equivalently, for each `p in P` there is a single-defect outside triple realizing all coordinates
+of `P\{p}` and missing only the `p`-coordinate.  After the saturated size-`<=3` closures, the irreducible
+large-outside target branch is precisely a critical capacitated 3-sum cube of dimension at least `4`.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff
