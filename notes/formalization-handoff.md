@@ -2448,8 +2448,11 @@ Recommended attack:
     Formalize four-residue target coherence for fixed `T,X`: `h_k=k+deg_X-psi_T`, active set
     `{h_k in {1,2}}`, zero set `{h_k in {0,3}}`, and `k` versus `k+2` swaps active/zero while complementing
     outside traces.
-    Formalize the antipodal trace core forced when both opposite residues are high-active target endpoints:
-    repeated centers `sigma`, `1-sigma`, and singleton flips around the two centers.
+    Formalize the antipodal trace core forced when both opposite residues are high-active target endpoints
+    on a shared certificate: repeated centers `sigma`, `1-sigma`, and singleton flips around the two centers;
+    for different certificates, record complementary restrictions on intersections.
+    Formalize the small-core cutoff: if all four residues are target-avoidance then
+    `|N_i|+|N_{i+1}|>=4` for the four `q=deg_X-psi_T` classes, so `m>=10`.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

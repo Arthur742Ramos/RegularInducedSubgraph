@@ -1990,9 +1990,11 @@ from every one-/two-vertex partial swap by omitted-trace inequality or retained-
 For fixed `T,X`, target avoidance across the four residues is coherent: `h_k=k+deg_X-psi_T`, opposite
 `kappa` values swap active/filter coordinates and complement traces.  Thus high-active filtered covers are
 not independent across residues.
-If both opposite residues are high-active target endpoints, the outside trace multiset contains the
-antipodal core: repeated complementary centers and all singleton flips around the appropriate active side
-of each center.
+If both opposite residues are high-active target endpoints on a shared certificate, the outside trace
+multiset contains the antipodal core: repeated complementary centers and all singleton flips around the
+appropriate active side of each center.  Different certificates restrict complementarily on intersections.
+If all four residues are target-avoidance, adjacent-pair lower bounds on the four `q=deg_X-psi_T` classes
+force `m>=10`; for `m<=9` at least one residue is scalar-killed.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.

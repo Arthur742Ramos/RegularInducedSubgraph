@@ -1964,8 +1964,11 @@ What remains justified after audit is:
       partial swaps by omitted-trace or retained-scalar failure;
       for fixed `T,X`, the four `kappa` target covers are coherent under the rotation
       `h_k=k+deg_X-psi_T`, with opposite residues swapping active/filter roles and complementing traces;
-      opposite high-active target endpoints force an antipodal trace core of repeated complementary centers
-      plus singleton flips around both centers, or else one opposite residue is scalar-killed;
+      opposite high-active target endpoints on a shared certificate force an antipodal trace core of
+      repeated complementary centers plus singleton flips around both centers, with complementary
+      restrictions on intersections of different certificates;
+      pure target-avoidance for all four residues requires adjacent-pair lower bounds on the four
+      `q=deg_X-psi_T` classes and hence `m>=10`; for `m<=9` some residue is scalar-killed;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       every zero-relaxed cover must use at least one such private column;

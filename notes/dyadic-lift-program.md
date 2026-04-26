@@ -1061,8 +1061,11 @@ failure.
 For fixed `T,X`, the four `kappa` target-cover problems are coherently related by
 `h_k=k+deg_X-psi_T`: opposite residues swap active and zero coordinates and complement traces, so the
 high-active filtered covers cannot be chosen independently.
-Two opposite high-active target endpoints force an antipodal trace core: repeated complementary centers
-and singleton flips around both centers; without this core, one of the opposite residues is scalar-killed.
+Two opposite high-active target endpoints on a shared certificate force an antipodal trace core: repeated
+complementary centers and singleton flips around both centers; different minimal certificates carry the
+same complementary restriction on their intersections.
+Pure target-avoidance for all four residues forces adjacent-pair lower bounds on the four
+`q=deg_X-psi_T` color classes, so it can occur only when `m>=10`; for `m<=9` some residue is scalar-killed.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.
