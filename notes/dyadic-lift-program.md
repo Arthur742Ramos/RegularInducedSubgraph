@@ -963,6 +963,8 @@ So the remaining path-only theorem is memory-free prefix fullness for same-carri
 that axiom, Proposition 9.2 closes the endpoint.
 Any graph-visible difference between transported copies yields a same-trace/twin local exit or smaller
 provenance failure, so a minimal survivor is only hidden historical memory.
+Quotienting by graph-intrinsic equality is conservative for the degree equations; the remaining issue is
+only whether the historical path category already implements this quotient.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.

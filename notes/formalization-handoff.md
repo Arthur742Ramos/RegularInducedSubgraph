@@ -2324,6 +2324,9 @@ Recommended attack:
     Add the visible/invisible split: if transported copies differ on any graph-visible row outside the
     carrier, the first distinguisher gives a same-trace/twin local exit or a smaller provenance failure.
     Therefore a minimal survivor is graph-invisible historical memory.
+    Add the conservative quotient lemma: identifying graph-intrinsically equal boundary rows preserves all
+    deletion and shifted self-layer equations.  The saturated graph proof closes after this quotient; the
+    only remaining comparison is whether the historical path-only category realizes the quotient.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

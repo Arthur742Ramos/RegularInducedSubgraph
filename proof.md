@@ -10664,6 +10664,15 @@ path label after all graph-visible traces and residues have become equal.  Quoti
 category by this graph-intrinsic equality is exactly the memory-free prefix fullness axiom above; in that
 quotient the final two-state transposition is killed by Proposition 9.2.
 
+The quotient is conservative for the degree problem.  Every terminal equation used by the selector proof
+depends only on the lower profiles, terminal residues, and row-actions on the active carrier.  Identifying
+two boundary rows with the same data changes neither the deletion equation nor any shifted self-layer
+equation; it merely chooses a different representative of the same graph-intrinsic move.  Thus the
+graph-intrinsic saturated proof has no remaining two-state sheet obstruction.  What remains, if one insists
+on the historical path-only boundary category rather than the graph-intrinsic quotient, is the bookkeeping
+comparison theorem that the historical category already performs this quotient unless a local
+missing-corner square appears.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

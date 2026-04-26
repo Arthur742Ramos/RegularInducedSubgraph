@@ -1893,6 +1893,8 @@ Equivalently, the last path-only theorem is memory-free prefix fullness for same
 with it, the saturated Proposition 9.2 kills the endpoint.
 Graph-visible differences between transported copies reduce to same-trace/twin local exits or smaller
 provenance failures, so the residual memory is purely historical.
+The graph-intrinsic quotient by identical lower profiles, terminal residues, and carrier row-actions is
+degree-conservative; only historical path bookkeeping remains outside the saturated proof.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

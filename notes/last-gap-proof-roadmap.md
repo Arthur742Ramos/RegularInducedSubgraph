@@ -1881,7 +1881,9 @@ What remains justified after audit is:
       path memory unless a local missing-corner square appears; equivalently the last path-only theorem is
       memory-free prefix fullness for same-carrier fully-skew rows, which collapses the ladder to
       Proposition `9.2`; any graph-visible difference between transported copies gives a same-trace/twin
-      local exit or smaller provenance failure, so a minimal survivor is pure historical memory;
+      local exit or smaller provenance failure, so a minimal survivor is pure historical memory; quotienting
+      graph-intrinsically equal rows is conservative for all selector equations, leaving only historical
+      path bookkeeping outside the saturated proof;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;
