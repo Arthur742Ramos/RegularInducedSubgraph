@@ -4046,6 +4046,49 @@ def NoRamseyFourFiveRefinedCounterexampleOnTwentySeven : Prop :=
           (inducedOn G (G.neighborFinset v)).IsRegularOfDegree 4) →
         (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
 
+/--
+Degree-`9` endpoint residual for the `R(4,5) <= 27` frontier.  It keeps the refined
+surface and exposes the exact degree-`9` non-neighborhood ledger together with the forced
+degree-`13`/degree-`9` non-edge split.
+-/
+def NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven : Prop :=
+  ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj],
+    Fintype.card α = 27 →
+      (∀ v : α, 9 ≤ G.degree v ∧ G.degree v ≤ 13) →
+      (∀ v : α,
+        (¬ ∃ t : Finset α, t ⊆ G.neighborFinset v ∧ G.IsNClique 3 t) ∧
+          (¬ ∃ t : Finset α, t ⊆ G.neighborFinset v ∧ G.IsNIndepSet 5 t)) →
+      (∀ v : α,
+        (¬ ∃ t : Finset α,
+          t ⊆ (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w) ∧ G.IsNClique 4 t) ∧
+          (¬ ∃ t : Finset α,
+            t ⊆ (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w) ∧
+              G.IsNIndepSet 4 t)) →
+      (∀ {u v : α}, G.Adj u v →
+        (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 4) →
+      (∀ {u v : α}, u ≠ v → ¬ G.Adj u v →
+        (((Finset.univ.erase u).erase v).filter
+          (fun w => ¬ G.Adj u w ∧ ¬ G.Adj v w)).card ≤ 8) →
+      (∀ v : α, G.degree v = 9 →
+        ((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).card = 17 ∧
+          (inducedOn G
+            ((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w))).IsRegularOfDegree 8) →
+      (∀ v : α, G.degree v = 13 →
+        ((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).card = 13 ∧
+          (inducedOn G (G.neighborFinset v)).IsRegularOfDegree 4) →
+      (∀ {u v : α}, u ≠ v → ¬ G.Adj u v → G.degree v = 9 →
+        (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (G.Adj u)).card = 8 ∧
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (fun w => ¬ G.Adj u w)).card = 8 ∧
+          G.degree u = (G.neighborFinset u ∩ G.neighborFinset v).card + 8 ∧
+          (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 5) →
+      (∀ {u v : α}, u ≠ v → ¬ G.Adj u v → G.degree u = 13 → G.degree v = 9 →
+        (G.neighborFinset u ∩ G.neighborFinset v).card = 5 ∧
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (G.Adj u)).card = 8) →
+        (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
+
 
 /--
 Degree-`13` endpoint residual for the `R(4,5) <= 27` frontier.  It keeps the refined
@@ -4211,6 +4254,102 @@ theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_refined
   hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeWindow
     (noRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven_of_refined hrefined)
 
+/-- The degree-`9` endpoint residual implies the refined residual. -/
+theorem noRamseyFourFiveRefinedCounterexampleOnTwentySeven_of_degreeNineEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven) :
+    NoRamseyFourFiveRefinedCounterexampleOnTwentySeven := by
+  intro α _ _ G _ hcard hdegree hneighborSurface hnonNeighborSurface hcommonAdj hcommonNon
+    hdegreeNine hdegreeThirteen
+  classical
+  by_cases hdone :
+      (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
+  · exact hdone
+  have hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t := by
+    intro hK4
+    exact hdone (Or.inl hK4)
+  have hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t := by
+    intro hI5
+    exact hdone (Or.inr hI5)
+  exact hendpoint G hcard hdegree hneighborSurface hnonNeighborSurface hcommonAdj hcommonNon
+    hdegreeNine hdegreeThirteen
+    (by
+      intro u v huv_ne huv hdegv
+      exact ⟨neighbor_in_nonNeighborFinset_card_eq_eight_of_nonadjacent_card_twenty_seven_degree_nine
+          G hcard hnoK4 hnoI5 huv_ne huv hdegv,
+        common_non_neighbor_in_nonNeighborhood_card_eq_eight_of_card_twenty_seven_degree_nine
+          G hcard hnoK4 hnoI5 huv_ne huv hdegv,
+        degree_eq_eight_add_common_neighbor_card_of_nonadjacent_card_twenty_seven_degree_nine
+          G hcard hnoK4 hnoI5 huv_ne huv hdegv,
+        common_neighbor_card_le_five_of_nonadjacent_card_twenty_seven_degree_nine
+          G hcard hnoK4 hnoI5 huv_ne huv hdegv⟩)
+    (by
+      intro u v huv_ne huv hdegu hdegv
+      exact neighbor_counts_eq_of_degree_thirteen_nonadjacent_card_twenty_seven_degree_nine
+        G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv)
+
+/-- The degree-`9` endpoint residual implies the degree-window residual. -/
+theorem noRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven_of_degreeNineEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven) :
+    NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven :=
+  noRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven_of_refined
+    (noRamseyFourFiveRefinedCounterexampleOnTwentySeven_of_degreeNineEndpoint hendpoint)
+
+/-- The degree-`9` endpoint residual is enough for the exact 27-vertex endpoint. -/
+theorem noRamseyFourFiveCounterexampleOnTwentySeven_of_degreeNineEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven) :
+    NoRamseyFourFiveCounterexampleOnTwentySeven :=
+  noRamseyFourFiveCounterexampleOnTwentySeven_of_degreeWindow
+    (noRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven_of_degreeNineEndpoint hendpoint)
+
+/-- The degree-`9` endpoint residual is enough for the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeNineEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeWindow
+    (noRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven_of_degreeNineEndpoint hendpoint)
+
+/-- The degree-`13` endpoint residual implies the refined residual. -/
+theorem noRamseyFourFiveRefinedCounterexampleOnTwentySeven_of_degreeThirteenEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    NoRamseyFourFiveRefinedCounterexampleOnTwentySeven := by
+  intro α _ _ G _ hcard hdegree hneighborSurface hnonNeighborSurface hcommonAdj hcommonNon
+    hdegreeNine hdegreeThirteen
+  classical
+  by_cases hdone :
+      (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
+  · exact hdone
+  have hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t := by
+    intro hK4
+    exact hdone (Or.inl hK4)
+  have hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t := by
+    intro hI5
+    exact hdone (Or.inr hI5)
+  exact hendpoint G hcard hdegree hneighborSurface hnonNeighborSurface hcommonAdj hcommonNon
+    hdegreeNine hdegreeThirteen
+    (by
+      intro u v huv hdegv
+      exact neighbor_count_bounds_of_adjacent_card_twenty_seven_degree_thirteen
+        G hcard hnoK4 hnoI5 huv hdegv)
+    (by
+      intro u v huv_ne huv hdegv
+      exact neighbor_count_bounds_of_nonadjacent_card_twenty_seven_degree_thirteen
+        G hcard hnoK4 hnoI5 huv_ne huv hdegv)
+    (by
+      intro u v huv hdegu hdegv
+      exact neighbor_in_nonNeighborFinset_card_eq_four_of_degree_nine_adjacent_card_twenty_seven_degree_thirteen
+        G hnoK4 hnoI5 huv hdegu hdegv)
+    (by
+      intro u v huv_ne huv hdegu hdegv
+      exact neighbor_counts_eq_of_degree_nine_nonadjacent_card_twenty_seven_degree_thirteen
+        G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv)
+    (by
+      intro u v huv_ne huv hdegu hdegv
+      exact neighbor_counts_eq_of_degree_thirteen_nonadjacent_card_twenty_seven_degree_nine
+        G hcard hnoK4 hnoI5 huv_ne huv hdegu hdegv)
+    (by
+      intro u v huv hdegu hdegv
+      exact common_non_neighbor_card_eq_five_of_adjacent_card_twenty_seven_degree_thirteen_degree_thirteen
+        G hcard hnoK4 hnoI5 huv hdegu hdegv)
 
 /-- The degree-`13` endpoint residual implies the degree-window residual. -/
 theorem noRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven_of_degreeThirteenEndpoint
@@ -4318,6 +4457,11 @@ theorem ramseyTenR45TwentySevenTable_of_refined
     RamseyTenR45TwentySevenTable :=
   ⟨hasCliqueOrIndepSetBound_four_five_twenty_seven_of_refined hrefined⟩
 
+/-- Package the degree-`9` endpoint residual as the relaxed Ramsey-10 table. -/
+theorem ramseyTenR45TwentySevenTable_of_degreeNineEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45TwentySevenTable :=
+  ⟨hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeNineEndpoint hendpoint⟩
 
 /-- Package the degree-`13` endpoint residual as the relaxed Ramsey-10 table. -/
 theorem ramseyTenR45TwentySevenTable_of_degreeThirteenEndpoint
@@ -4336,6 +4480,30 @@ theorem ramseyTenR45TwentySevenTable_of_degreeEightEndpoint
     RamseyTenR45TwentySevenTable :=
   RamseyTenSmallTable.toR45TwentySevenTable
     (ramseyTenSmallTable_of_degreeEightEndpoint hendpoint)
+
+/--
+Named bridge collecting the current endpoint residual obligations at degrees `8`, `9`, and `13`.
+The degree-`8` field is the sharp 26-vertex endpoint; the other fields are the 27-vertex frontier.
+-/
+structure RamseyTenR45EndpointResiduals : Prop where
+  degreeEight : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix
+  degreeNine : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven
+  degreeThirteen : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven
+
+/-- The combined endpoint-residual bridge supplies the sharp small Ramsey-10 table. -/
+theorem RamseyTenR45EndpointResiduals.toSmallTable
+    (h : RamseyTenR45EndpointResiduals) : RamseyTenSmallTable :=
+  ramseyTenSmallTable_of_degreeEightEndpoint h.degreeEight
+
+/-- The combined endpoint-residual bridge supplies the relaxed Ramsey-10 table via degree `9`. -/
+theorem RamseyTenR45EndpointResiduals.toR45TwentySevenTable
+    (h : RamseyTenR45EndpointResiduals) : RamseyTenR45TwentySevenTable :=
+  ramseyTenR45TwentySevenTable_of_degreeNineEndpoint h.degreeNine
+
+/-- The degree-`13` field gives a second route from the combined bridge to the relaxed table. -/
+theorem RamseyTenR45EndpointResiduals.toR45TwentySevenTable_of_degreeThirteen
+    (h : RamseyTenR45EndpointResiduals) : RamseyTenR45TwentySevenTable :=
+  ramseyTenR45TwentySevenTable_of_degreeThirteenEndpoint h.degreeThirteen
 
 theorem hasCliqueOrIndepSetBound_10_10_of_ramseyTenSmallTable
     (h : RamseyTenSmallTable) : HasCliqueOrIndepSetBound 10 10 38543 := by
