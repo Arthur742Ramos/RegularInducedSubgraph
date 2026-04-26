@@ -12606,6 +12606,1034 @@ theorem
           Usable degreeIntoAnchor ρ appendResidue :=
   h.repairSpectrum.exists_missingExtreme_antiHorn_of_not_contains_extremes hnot
 
+/--
+All-pairs averaged pair-exchange inequality on the positive-atom `T₂` side: the total exchange
+damage over ordered pairs is controlled by a per-pair budget.
+-/
+def FirstBitTerminalCoCutAllPairsAveragedPairExchangeInequality
+    {Shadow : Type*} (T2 : Finset Shadow)
+    (pairExchangeDamage : Shadow → Shadow → ℕ) (pairExchangeBudget : ℕ) : Prop :=
+  (∑ x in T2, ∑ y in T2, pairExchangeDamage x y) ≤
+    pairExchangeBudget * T2.card * T2.card
+
+/--
+Co-cut/self-layer biquadratic domination: the total co-cut charge is bounded by a constant times
+the fourth power of the `T₂` population.
+-/
+def FirstBitTerminalCoCutBiquadraticDomination
+    {Shadow : Type*} (T2 : Finset Shadow)
+    (coCutCharge : Shadow → Shadow → ℕ) (biquadraticScale : ℕ) : Prop :=
+  (∑ x in T2, ∑ y in T2, coCutCharge x y) ≤
+    biquadraticScale * T2.card * T2.card * T2.card * T2.card
+
+/-- Target-damage budget paid by the old-side vertices that feed the terminal co-cut branch. -/
+def FirstBitTerminalCoCutTargetDamageBudget
+    {Old : Type*} (A : Finset Old) (targetDamage : Old → ℕ)
+    (targetDamageBudget : ℕ) : Prop :=
+  (∑ a in A, targetDamage a) ≤ targetDamageBudget
+
+/--
+Globally almost-constant pure `T₂` vertices: the pure sublayer is retained inside `T₂`, and any
+two pure vertices have profile values within the imported slack in both directions.
+-/
+def FirstBitTerminalGlobalAlmostConstantPureT2Vertices
+    {Shadow : Type*} (T2 PureT2 : Finset Shadow) (pureProfile : Shadow → ℕ)
+    (almostConstantSlack : ℕ) : Prop :=
+  PureT2 ⊆ T2 ∧
+    ∀ x : Shadow, x ∈ PureT2 → ∀ y : Shadow, y ∈ PureT2 →
+      pureProfile x ≤ pureProfile y + almostConstantSlack ∧
+        pureProfile y ≤ pureProfile x + almostConstantSlack
+
+/-- Selector names for the co-cut/self-layer terminal imports. -/
+inductive FirstBitTerminalCoCutSelfLayerSelector : Type
+  | allPairsAveragedPairExchange
+  | biquadraticDomination
+  | globalAlmostConstantPureT2
+  | targetDamageBudget
+  deriving DecidableEq, Repr
+
+namespace FirstBitTerminalCoCutSelfLayerSelector
+
+/-- The proof obligation attached to each co-cut/self-layer selector. -/
+def obligation
+    {Old Shadow : Type*} (A : Finset Old) (T2 PureT2 : Finset Shadow)
+    (pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ)
+    (targetDamage : Old → ℕ) (pureProfile : Shadow → ℕ)
+    (pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ) :
+    FirstBitTerminalCoCutSelfLayerSelector → Prop
+  | allPairsAveragedPairExchange =>
+      FirstBitTerminalCoCutAllPairsAveragedPairExchangeInequality
+        T2 pairExchangeDamage pairExchangeBudget
+  | biquadraticDomination =>
+      FirstBitTerminalCoCutBiquadraticDomination T2 coCutCharge biquadraticScale
+  | globalAlmostConstantPureT2 =>
+      FirstBitTerminalGlobalAlmostConstantPureT2Vertices
+        T2 PureT2 pureProfile almostConstantSlack
+  | targetDamageBudget =>
+      FirstBitTerminalCoCutTargetDamageBudget A targetDamage targetDamageBudget
+
+end FirstBitTerminalCoCutSelfLayerSelector
+
+/--
+Assumption-explicit certificate for the terminal positive-atom co-cut/self-layer branch.  It names
+the averaged pair-exchange inequality, the biquadratic co-cut domination, the global pure-`T₂`
+almost-constancy statement, and the target-damage budget without asserting any of them
+unconditionally.
+-/
+structure FirstBitTerminalCoCutSelfLayerCertificate
+    {Old Shadow : Type*} (A : Finset Old) (T2 PureT2 : Finset Shadow)
+    (pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ)
+    (targetDamage : Old → ℕ) (pureProfile : Shadow → ℕ)
+    (pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ) :
+    Prop where
+  allPairsAveragedPairExchange :
+    FirstBitTerminalCoCutAllPairsAveragedPairExchangeInequality
+      T2 pairExchangeDamage pairExchangeBudget
+  biquadraticDomination :
+    FirstBitTerminalCoCutBiquadraticDomination T2 coCutCharge biquadraticScale
+  globalAlmostConstantPureT2 :
+    FirstBitTerminalGlobalAlmostConstantPureT2Vertices
+      T2 PureT2 pureProfile almostConstantSlack
+  targetDamageBudget :
+    FirstBitTerminalCoCutTargetDamageBudget A targetDamage targetDamageBudget
+
+/-- Construct the co-cut/self-layer certificate from its four explicit assumptions. -/
+theorem firstBitTerminalCoCutSelfLayerCertificate_of_assumptions
+    {Old Shadow : Type*} {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    (hpair :
+      FirstBitTerminalCoCutAllPairsAveragedPairExchangeInequality
+        T2 pairExchangeDamage pairExchangeBudget)
+    (hbiquadratic :
+      FirstBitTerminalCoCutBiquadraticDomination T2 coCutCharge biquadraticScale)
+    (halmost :
+      FirstBitTerminalGlobalAlmostConstantPureT2Vertices
+        T2 PureT2 pureProfile almostConstantSlack)
+    (hdamage :
+      FirstBitTerminalCoCutTargetDamageBudget A targetDamage targetDamageBudget) :
+    FirstBitTerminalCoCutSelfLayerCertificate
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack where
+  allPairsAveragedPairExchange := hpair
+  biquadraticDomination := hbiquadratic
+  globalAlmostConstantPureT2 := halmost
+  targetDamageBudget := hdamage
+
+/-- Project the averaged all-pairs pair-exchange inequality from a co-cut/self-layer certificate. -/
+theorem FirstBitTerminalCoCutSelfLayerCertificate.to_allPairsAveragedPairExchange
+    {Old Shadow : Type*} {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack) :
+    FirstBitTerminalCoCutAllPairsAveragedPairExchangeInequality
+      T2 pairExchangeDamage pairExchangeBudget :=
+  h.allPairsAveragedPairExchange
+
+/-- Project biquadratic co-cut domination from a co-cut/self-layer certificate. -/
+theorem FirstBitTerminalCoCutSelfLayerCertificate.to_biquadraticDomination
+    {Old Shadow : Type*} {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack) :
+    FirstBitTerminalCoCutBiquadraticDomination T2 coCutCharge biquadraticScale :=
+  h.biquadraticDomination
+
+/-- Project global almost-constancy of the pure `T₂` vertices from a co-cut/self-layer certificate. -/
+theorem FirstBitTerminalCoCutSelfLayerCertificate.to_globalAlmostConstantPureT2
+    {Old Shadow : Type*} {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack) :
+    FirstBitTerminalGlobalAlmostConstantPureT2Vertices
+      T2 PureT2 pureProfile almostConstantSlack :=
+  h.globalAlmostConstantPureT2
+
+/-- Project the target-damage budget from a co-cut/self-layer certificate. -/
+theorem FirstBitTerminalCoCutSelfLayerCertificate.to_targetDamageBudget
+    {Old Shadow : Type*} {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack) :
+    FirstBitTerminalCoCutTargetDamageBudget A targetDamage targetDamageBudget :=
+  h.targetDamageBudget
+
+/-- The pure `T₂` sublayer retained by a co-cut/self-layer certificate is contained in `T₂`. -/
+theorem FirstBitTerminalCoCutSelfLayerCertificate.pureT2_subset
+    {Old Shadow : Type*} {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack) :
+    PureT2 ⊆ T2 :=
+  h.globalAlmostConstantPureT2.1
+
+/-- Apply the pure-`T₂` almost-constancy bound to two selected pure vertices. -/
+theorem FirstBitTerminalCoCutSelfLayerCertificate.pureT2_almostConstant_of_mem
+    {Old Shadow : Type*} {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack)
+    {x y : Shadow} (hx : x ∈ PureT2) (hy : y ∈ PureT2) :
+    pureProfile x ≤ pureProfile y + almostConstantSlack ∧
+      pureProfile y ≤ pureProfile x + almostConstantSlack :=
+  h.globalAlmostConstantPureT2.2 x hx y hy
+
+/-- Apply the total target-damage budget from a co-cut/self-layer certificate. -/
+theorem FirstBitTerminalCoCutSelfLayerCertificate.targetDamage_card_le
+    {Old Shadow : Type*} {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack) :
+    (∑ a in A, targetDamage a) ≤ targetDamageBudget :=
+  h.targetDamageBudget
+
+/-- Project the obligation named by a co-cut/self-layer selector. -/
+theorem FirstBitTerminalCoCutSelfLayerCertificate.obligation
+    {Old Shadow : Type*} {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    (h :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack)
+    (selector : FirstBitTerminalCoCutSelfLayerSelector) :
+    FirstBitTerminalCoCutSelfLayerSelector.obligation
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack selector := by
+  cases selector
+  · exact h.allPairsAveragedPairExchange
+  · exact h.biquadraticDomination
+  · exact h.globalAlmostConstantPureT2
+  · exact h.targetDamageBudget
+
+/-- Co-cut/self-layer certificate bundled beside finite exact-basis repair-spectrum imports. -/
+structure FirstBitTerminalCoCutSelfLayerAndRepairSpectrumImports
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 PureT2 : Finset Shadow)
+    (pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ)
+    (targetDamage : Old → ℕ) (pureProfile : Shadow → ℕ)
+    (pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ)
+    (Q : Old → Finset Shadow)
+    (RepairSpectrum : Finset (Fin 4)) (R44 : ℕ)
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (appendResidue : Fin 4) : Prop where
+  coCutSelfLayer :
+    FirstBitTerminalCoCutSelfLayerCertificate
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+  repairSpectrum :
+    FirstBitExactBasisFiniteRepairSpectrumImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+
+/-- Build the co-cut/self-layer plus repair-spectrum package from its independent parts. -/
+theorem firstBitTerminalCoCutSelfLayerAndRepairSpectrumImports_of_parts
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (hcocut :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack)
+    (hrepair :
+      FirstBitExactBasisFiniteRepairSpectrumImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue) :
+    FirstBitTerminalCoCutSelfLayerAndRepairSpectrumImports
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue where
+  coCutSelfLayer := hcocut
+  repairSpectrum := hrepair
+
+/-- Construct co-cut/self-layer plus repair-spectrum imports from explicit assumptions. -/
+theorem firstBitTerminalCoCutSelfLayerAndRepairSpectrumImports_of_assumptions
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (hpair :
+      FirstBitTerminalCoCutAllPairsAveragedPairExchangeInequality
+        T2 pairExchangeDamage pairExchangeBudget)
+    (hbiquadratic :
+      FirstBitTerminalCoCutBiquadraticDomination T2 coCutCharge biquadraticScale)
+    (halmost :
+      FirstBitTerminalGlobalAlmostConstantPureT2Vertices
+        T2 PureT2 pureProfile almostConstantSlack)
+    (hdamage :
+      FirstBitTerminalCoCutTargetDamageBudget A targetDamage targetDamageBudget)
+    (hshadows : FirstBitMajorityExceptionShadowCertificate A T2 Q)
+    (hshadowBudget : A.card ≤ T2.card + (FirstBitMajoritySilentCore A Q).card)
+    (hsilent :
+      FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum →
+        (FirstBitMajoritySilentCore A Q).card ≤ R44 - 1)
+    (hanti :
+      ∀ ρ : Fin 4,
+        FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ →
+          FirstBitRepairMissingExtremeAntiHornExclusion
+            Usable degreeIntoAnchor ρ appendResidue) :
+    FirstBitTerminalCoCutSelfLayerAndRepairSpectrumImports
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue :=
+  firstBitTerminalCoCutSelfLayerAndRepairSpectrumImports_of_parts
+    (firstBitTerminalCoCutSelfLayerCertificate_of_assumptions
+      hpair hbiquadratic halmost hdamage)
+    (firstBitExactBasisFiniteRepairSpectrumImports_of_assumptions
+      hshadows hshadowBudget hsilent hanti)
+
+/-- Project the co-cut/self-layer certificate from the combined repair-spectrum package. -/
+theorem FirstBitTerminalCoCutSelfLayerAndRepairSpectrumImports.to_coCutSelfLayer
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (h :
+      FirstBitTerminalCoCutSelfLayerAndRepairSpectrumImports
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue) :
+    FirstBitTerminalCoCutSelfLayerCertificate
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack :=
+  h.coCutSelfLayer
+
+/-- Project finite exact-basis repair-spectrum imports from the combined co-cut/self-layer package. -/
+theorem FirstBitTerminalCoCutSelfLayerAndRepairSpectrumImports.to_repairSpectrum
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (h :
+      FirstBitTerminalCoCutSelfLayerAndRepairSpectrumImports
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue) :
+    FirstBitExactBasisFiniteRepairSpectrumImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue :=
+  h.repairSpectrum
+
+/-- Apply the `{0,3}` repair-spectrum cap from the co-cut/self-layer repair bundle. -/
+theorem FirstBitTerminalCoCutSelfLayerAndRepairSpectrumImports.card_le_shadow_add_ramseyMinusOne
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    (h :
+      FirstBitTerminalCoCutSelfLayerAndRepairSpectrumImports
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue)
+    (hextreme : FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    A.card ≤ T2.card + (R44 - 1) :=
+  h.repairSpectrum.card_le_shadow_add_ramseyMinusOne hextreme
+
+/--
+Co-cut/self-layer imports bundled with the existing repair-spectrum/post-quotient finite-core package.
+-/
+structure FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 PureT2 : Finset Shadow)
+    (pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ)
+    (targetDamage : Old → ℕ) (pureProfile : Shadow → ℕ)
+    (pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ)
+    (Q : Old → Finset Shadow)
+    (RepairSpectrum : Finset (Fin 4)) (R44 : ℕ)
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (appendResidue : Fin 4)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop) : Prop where
+  coCutSelfLayer :
+    FirstBitTerminalCoCutSelfLayerCertificate
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+  repairAndFiniteCore :
+    FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint
+
+/-- Build the co-cut/self-layer plus repair/finite-core package from independent parts. -/
+theorem firstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports_of_parts
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hcocut :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack)
+    (hrepairCore :
+      FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  coCutSelfLayer := hcocut
+  repairAndFiniteCore := hrepairCore
+
+/-- Project co-cut/self-layer imports from the repair/finite-core bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports.to_coCutSelfLayer
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalCoCutSelfLayerCertificate
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack :=
+  h.coCutSelfLayer
+
+/-- Project the existing repair-spectrum/post-quotient finite-core imports. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports.to_repairSpectrumAndPostQuotientFiniteCore
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitRepairSpectrumAndPostQuotientFiniteCoreImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.repairAndFiniteCore
+
+/-- Project finite repair-spectrum imports from the co-cut/finite-core bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports.to_repairSpectrum
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitExactBasisFiniteRepairSpectrumImports
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue :=
+  h.repairAndFiniteCore.to_repairSpectrum
+
+/-- Project post-quotient finite-core imports from the co-cut/finite-core bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports.to_postQuotientFiniteCore
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    PositiveAtomPostQuotientFiniteCoreImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.repairAndFiniteCore.to_postQuotientFiniteCore
+
+/-- Apply a selected co-cut/self-layer obligation from the co-cut/finite-core bundle. -/
+theorem
+    FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports.coCut_obligation
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (selector : FirstBitTerminalCoCutSelfLayerSelector) :
+    FirstBitTerminalCoCutSelfLayerSelector.obligation
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack selector :=
+  h.coCutSelfLayer.obligation selector
+
+/--
+Final-facing wrapper that adds the co-cut/self-layer certificate to the repair-spectrum enriched
+available-cut/post-quotient finite-core terminal wrapper.
+-/
+structure
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    (A : Finset Old) (T2 PureT2 : Finset Shadow)
+    (pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ)
+    (targetDamage : Old → ℕ) (pureProfile : Shadow → ℕ)
+    (pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ)
+    (Q : Old → Finset Shadow)
+    (RepairSpectrum : Finset (Fin 4)) (R44 : ℕ)
+    (Usable : Finset Old → ℕ → Fin 4 → Prop)
+    (degreeIntoAnchor : Finset Old → Fin 4)
+    (appendResidue : Fin 4)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    (SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop) : Prop where
+  finalRepairSpectrum :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+      Basis WithHoles PositiveAtom
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint
+  coCutSelfLayer :
+    FirstBitTerminalCoCutSelfLayerCertificate
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+
+/-- Construct the final co-cut/self-layer wrapper from the repair-spectrum final wrapper and certificate. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer_of_parts
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+        Basis WithHoles PositiveAtom
+        A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hcocut :
+      FirstBitTerminalCoCutSelfLayerCertificate
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+      Basis WithHoles PositiveAtom
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  finalRepairSpectrum := hfinal
+  coCutSelfLayer := hcocut
+
+/-- Construct the final co-cut/self-layer wrapper from explicit terminal assumptions. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer_of_assumptions
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+        Basis WithHoles PositiveAtom)
+    (hsize : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P ≤ 4)
+    (hsizeFive : WitnessCountAtLeast 5 3)
+    (hfiniteCounts : PositiveAtomPostQuotientFiniteCoreWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (hroutes : PositiveAtomPostQuotientFiniteCoreRouteSelectors
+      AnchoredPacking TraceTwinFree packingSize
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint)
+    (hshadows : FirstBitMajorityExceptionShadowCertificate A T2 Q)
+    (hshadowBudget : A.card ≤ T2.card + (FirstBitMajoritySilentCore A Q).card)
+    (hsilent :
+      FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum →
+        (FirstBitMajoritySilentCore A Q).card ≤ R44 - 1)
+    (hanti :
+      ∀ ρ : Fin 4,
+        FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ →
+          FirstBitRepairMissingExtremeAntiHornExclusion
+            Usable degreeIntoAnchor ρ appendResidue)
+    (hpair :
+      FirstBitTerminalCoCutAllPairsAveragedPairExchangeInequality
+        T2 pairExchangeDamage pairExchangeBudget)
+    (hbiquadratic :
+      FirstBitTerminalCoCutBiquadraticDomination T2 coCutCharge biquadraticScale)
+    (halmost :
+      FirstBitTerminalGlobalAlmostConstantPureT2Vertices
+        T2 PureT2 pureProfile almostConstantSlack)
+    (hdamage :
+      FirstBitTerminalCoCutTargetDamageBudget A targetDamage targetDamageBudget) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+      Basis WithHoles PositiveAtom
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer_of_parts
+    (firstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum_of_assumptions
+      hfinal hsize hsizeFive hfiniteCounts hroutes
+      hshadows hshadowBudget hsilent hanti)
+    (firstBitTerminalCoCutSelfLayerCertificate_of_assumptions
+      hpair hbiquadratic halmost hdamage)
+
+/-- Forget the co-cut/self-layer fields and recover the repair-spectrum enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer.to_finalRepairSpectrum
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreAndRepairSpectrum
+      Basis WithHoles PositiveAtom
+      A T2 Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint :=
+  h.finalRepairSpectrum
+
+/-- Project the co-cut/self-layer certificate from the final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer.to_coCutSelfLayer
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalCoCutSelfLayerCertificate
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack :=
+  h.coCutSelfLayer
+
+/-- Export co-cut/self-layer imports together with repair-spectrum/post-quotient finite-core imports. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer.to_coCutSelfLayerRepairSpectrumAndPostQuotientFiniteCore
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint) :
+    FirstBitTerminalCoCutSelfLayerRepairSpectrumAndPostQuotientFiniteCoreImports
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+      Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint where
+  coCutSelfLayer := h.coCutSelfLayer
+  repairAndFiniteCore := h.finalRepairSpectrum.to_repairSpectrumAndPostQuotientFiniteCore
+
+/-- Apply a selected co-cut/self-layer obligation from the final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer.coCut_obligation
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (selector : FirstBitTerminalCoCutSelfLayerSelector) :
+    FirstBitTerminalCoCutSelfLayerSelector.obligation
+      A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+      pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack selector :=
+  h.coCutSelfLayer.obligation selector
+
+/-- Apply the `{0,3}` repair-spectrum cap from the final co-cut/self-layer wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer.card_le_shadow_add_ramseyMinusOne
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hextreme : FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    A.card ≤ T2.card + (R44 - 1) :=
+  h.finalRepairSpectrum.card_le_shadow_add_ramseyMinusOne hextreme
+
+/-- Apply a missing-extreme anti-Horn exclusion from the final co-cut/self-layer wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer.antiHorn_of_missingExtreme
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue ρ : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hmissing : FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ) :
+    FirstBitRepairMissingExtremeAntiHornExclusion
+      Usable degreeIntoAnchor ρ appendResidue :=
+  h.finalRepairSpectrum.antiHorn_of_missingExtreme hmissing
+
+/-- If the final co-cut/self-layer wrapper is not on the `{0,3}` cap side, expose an anti-Horn branch. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer.exists_missingExtreme_antiHorn_of_not_contains_extremes
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {Old Shadow : Type*} [DecidableEq Shadow]
+    {A : Finset Old} {T2 PureT2 : Finset Shadow}
+    {pairExchangeDamage coCutCharge : Shadow → Shadow → ℕ}
+    {targetDamage : Old → ℕ} {pureProfile : Shadow → ℕ}
+    {pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack : ℕ}
+    {Q : Old → Finset Shadow}
+    {RepairSpectrum : Finset (Fin 4)} {R44 : ℕ}
+    {Usable : Finset Old → ℕ → Fin 4 → Prop}
+    {degreeIntoAnchor : Finset Old → Fin 4}
+    {appendResidue : Fin 4}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    {SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+      SizeTwoAdjacent SizeTwoDisjoint : AnchoredPacking → Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPostQuotientFiniteCoreRepairSpectrumAndCoCutSelfLayer
+        Basis WithHoles PositiveAtom
+        A T2 PureT2 pairExchangeDamage coCutCharge targetDamage pureProfile
+        pairExchangeBudget biquadraticScale targetDamageBudget almostConstantSlack
+        Q RepairSpectrum R44 Usable degreeIntoAnchor appendResidue
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+        SizeFourBaseTriple SizeFourStar SizeThreePath SizeThreeK3
+        SizeTwoAdjacent SizeTwoDisjoint)
+    (hnot : ¬ FirstBitRepairSpectrumContainsRamseyExtremes RepairSpectrum) :
+    ∃ ρ : Fin 4,
+      FirstBitRepairSpectrumMissingRamseyExtreme RepairSpectrum ρ ∧
+        FirstBitRepairMissingExtremeAntiHornExclusion
+          Usable degreeIntoAnchor ρ appendResidue :=
+  h.finalRepairSpectrum.exists_missingExtreme_antiHorn_of_not_contains_extremes hnot
+
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
   ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
