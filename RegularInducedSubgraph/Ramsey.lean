@@ -2945,6 +2945,94 @@ theorem neighbor_counts_eq_of_degree_twelve_nonadjacent_card_twenty_seven_degree
   · omega
   · exact hside
 
+/--
+Full ledger for any non-neighbor of a degree-`9` endpoint in the `27`-vertex residual: the
+endpoint non-neighborhood splits into eight neighbors and eight non-neighbors of `u`, while the
+external degree of `u` is the common-neighbor count plus the neighbor-side octet.
+-/
+theorem nonadjacent_degree_nine_endpoint_full_split_ledgers
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 ∧
+      G.degree u =
+        (G.neighborFinset u ∩ G.neighborFinset v).card +
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (G.Adj u)).card := by
+  have hcommon :=
+    common_neighbor_card_eq_degree_sub_eight_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hside :=
+    neighbor_in_nonNeighborFinset_card_eq_eight_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hnon :=
+    common_non_neighbor_in_nonNeighborhood_card_eq_eight_of_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hdeg :=
+    degree_eq_eight_add_common_neighbor_card_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  exact ⟨hcommon, hside, hnon, by omega⟩
+
+/-- A degree-`10` non-neighbor of a degree-`9` endpoint has the full `2 + 8 + 8` split. -/
+theorem full_neighbor_counts_eq_of_degree_ten_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 10) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 2 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 := by
+  have hledger :=
+    nonadjacent_degree_nine_endpoint_full_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  exact ⟨by omega, hledger.2.1, hledger.2.2.1⟩
+
+/-- A degree-`11` non-neighbor of a degree-`9` endpoint has the full `3 + 8 + 8` split. -/
+theorem full_neighbor_counts_eq_of_degree_eleven_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 11) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 3 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 := by
+  have hledger :=
+    nonadjacent_degree_nine_endpoint_full_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  exact ⟨by omega, hledger.2.1, hledger.2.2.1⟩
+
+/-- A degree-`12` non-neighbor of a degree-`9` endpoint has the full `4 + 8 + 8` split. -/
+theorem full_neighbor_counts_eq_of_degree_twelve_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegu : G.degree u = 12) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = 4 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 := by
+  have hledger :=
+    nonadjacent_degree_nine_endpoint_full_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  exact ⟨by omega, hledger.2.1, hledger.2.2.1⟩
+
 
 /--
 In the `27`-vertex residual, a neighbor of a degree-`13` endpoint has exactly four common
@@ -4842,6 +4930,54 @@ theorem RamseyTenR45EndpointResiduals.toHasCliqueOrIndepSetBound_10_10_39246
     (h : RamseyTenR45EndpointResiduals) : HasCliqueOrIndepSetBound 10 10 39246 :=
   hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable
     (ramseyTenR45TwentySevenTable_of_endpointResiduals h)
+
+/-- The degree-window residual alone propagates to the current `R(10,10)` frontier. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_degreeWindow
+    (hwindow : NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_degreeWindow hwindow)
+
+/-- The refined `27`-vertex residual alone propagates to the current `R(10,10)` frontier. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_refined
+    (hrefined : NoRamseyFourFiveRefinedCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_refined hrefined)
+
+/-- The degree-`9` endpoint residual alone propagates to the current `R(10,10)` frontier. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_degreeNineEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_degreeNineEndpoint hendpoint)
+
+/-- The degree-`13` endpoint residual alone propagates to the current `R(10,10)` frontier. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_degreeThirteenEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_degreeThirteenEndpoint hendpoint)
+
+/-- The sharp degree-`8` endpoint also reaches the relaxed `R(10,10)` frontier by monotonicity. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_degreeEightEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  HasCliqueOrIndepSetBound.mono
+    (hasCliqueOrIndepSetBound_10_10_of_ramseyTenSmallTable
+      (ramseyTenSmallTable_of_degreeEightEndpoint hendpoint))
+    (by norm_num : 38543 ≤ 39246)
+
+/-- Endpoint residuals reach the relaxed `R(10,10)` frontier using the degree-`13` route. -/
+theorem RamseyTenR45EndpointResiduals.toHasCliqueOrIndepSetBound_10_10_39246_of_degreeThirteen
+    (h : RamseyTenR45EndpointResiduals) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  hasCliqueOrIndepSetBound_10_10_of_ramseyTenR45TwentySevenTable
+    (RamseyTenR45EndpointResiduals.toR45TwentySevenTable_of_degreeThirteen h)
+
+/-- Endpoint residuals reach the relaxed `R(10,10)` frontier using the sharp degree-`8` route. -/
+theorem RamseyTenR45EndpointResiduals.toHasCliqueOrIndepSetBound_10_10_39246_of_degreeEight
+    (h : RamseyTenR45EndpointResiduals) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  hasCliqueOrIndepSetBound_10_10_39246_of_degreeEightEndpoint h.degreeEight
 
 /-- Arithmetic slack between the sharp small-table route, the relaxed endpoint route, and `40960`. -/
 theorem ramseyTenR45EndpointResiduals_arithmetic_gap :
@@ -12962,6 +13098,58 @@ theorem ten_mem_admissibleBounds_40960_of_ramseyTenR45EndpointResiduals
 theorem ten_le_F_40960_of_ramseyTenR45EndpointResiduals
     (h : RamseyTenR45EndpointResiduals) : 10 ≤ F 40960 :=
   le_F_iff.2 (ten_mem_admissibleBounds_40960_of_ramseyTenR45EndpointResiduals h)
+
+/-- A relaxed `R(4,5) <= 27` table gives `10` as an admissible bound at `40960`. -/
+theorem ten_mem_admissibleBounds_40960_of_ramseyTenR45TwentySevenTable
+    (h : RamseyTenR45TwentySevenTable) : 10 ∈ admissibleBounds 40960 := by
+  intro G
+  exact hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45TwentySevenTable h G (by simp)
+
+/-- A relaxed `R(4,5) <= 27` table pushes the extremal function to at least `10` at `40960`. -/
+theorem ten_le_F_40960_of_ramseyTenR45TwentySevenTable
+    (h : RamseyTenR45TwentySevenTable) : 10 ≤ F 40960 :=
+  le_F_iff.2 (ten_mem_admissibleBounds_40960_of_ramseyTenR45TwentySevenTable h)
+
+/-- The exact `27`-vertex `R(4,5)` endpoint implies `F 40960 >= 10`. -/
+theorem ten_le_F_40960_of_noRamseyFourFiveCounterexampleOnTwentySeven
+    (h : NoRamseyFourFiveCounterexampleOnTwentySeven) : 10 ≤ F 40960 :=
+  ten_le_F_40960_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_noRamseyFourFiveCounterexampleOnTwentySeven h)
+
+/-- The degree-window residual implies `F 40960 >= 10`. -/
+theorem ten_le_F_40960_of_degreeWindow
+    (hwindow : NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven) :
+    10 ≤ F 40960 :=
+  ten_le_F_40960_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_degreeWindow hwindow)
+
+/-- The refined `27`-vertex residual implies `F 40960 >= 10`. -/
+theorem ten_le_F_40960_of_refined
+    (hrefined : NoRamseyFourFiveRefinedCounterexampleOnTwentySeven) :
+    10 ≤ F 40960 :=
+  ten_le_F_40960_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_refined hrefined)
+
+/-- The degree-`9` endpoint residual implies `F 40960 >= 10`. -/
+theorem ten_le_F_40960_of_degreeNineEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven) :
+    10 ≤ F 40960 :=
+  ten_le_F_40960_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_degreeNineEndpoint hendpoint)
+
+/-- The degree-`13` endpoint residual implies `F 40960 >= 10`. -/
+theorem ten_le_F_40960_of_degreeThirteenEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    10 ≤ F 40960 :=
+  ten_le_F_40960_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_degreeThirteenEndpoint hendpoint)
+
+/-- The sharp degree-`8` endpoint residual implies `F 40960 >= 10` through the relaxed route. -/
+theorem ten_le_F_40960_of_degreeEightEndpoint
+    (hendpoint : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix) :
+    10 ≤ F 40960 :=
+  ten_le_F_40960_of_ramseyTenR45TwentySevenTable
+    (ramseyTenR45TwentySevenTable_of_degreeEightEndpoint hendpoint)
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
