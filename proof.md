@@ -8457,6 +8457,20 @@ size less than four is impossible, and a two-sided-compatible cut in a four-bloc
 single boundary coordinate.  This turns the old `3+1`/`2+2` append tables into a support-restricted
 coordinate test rather than an unrestricted finite search.
 
+In particular, a deficit-zero minimal four-block whose singleton and pair cuts are all two-sided
+compatible is forced into one boundary coordinate.  Singleton cuts give `supp(sigma(y))=1` for every
+vertex of the block; pair cuts then forbid two vertices from using different coordinates, since their
+pair value would have support two.  Minimality rules out a proper zero-sum pair, so the one-coordinate
+block is one of the cyclic atoms
+
+```text
+e_i,e_i,e_i,e_i        or        -e_i,-e_i,-e_i,-e_i.
+```
+
+Thus the exact-top four-block residual is either label-incompatible on some cut, or it is a one-coordinate
+cyclic atom with no hidden multi-coordinate import.  The latter has zero height gain on every cut, so it
+can obstruct enlargement only by self-layer residue, not by boundary-coordinate arithmetic.
+
 Thus a plausible final route is now precise: prove a stability/inverse-Davenport boundary theorem
 adapted to the value-coupled exchange.  The required input is not another zero-sum existence theorem;
 existence is already exhausted.  It is an inverse theorem for zero-sum-free boundaries together with

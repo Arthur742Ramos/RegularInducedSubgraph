@@ -4909,6 +4909,9 @@ compatible carry-free pair.
 For an old-balanced retained block `S`, a proper cut `Y` with both sides graph-compatible must also obey
 `4 supp(sigma(Y))<=|S|+2d`, since `h_X(g)+h_X(-g)=4 supp(g)`.  Thus deficit-zero compatible cuts below
 size four disappear, and four-block cuts are one-coordinate.
+If all singleton and pair cuts of a deficit-zero minimal four-block are two-sided-compatible, the block is
+forced to be a one-coordinate cyclic atom `e_i^4` or `(-e_i)^4`; remaining obstruction there is
+self-layer residue only.
 
 ## Supporting work that is useful but not on the critical path
 

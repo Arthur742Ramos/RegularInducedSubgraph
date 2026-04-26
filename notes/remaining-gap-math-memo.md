@@ -1661,6 +1661,8 @@ positive-surplus vertices to create a coordinate carry or fail the graph-label t
 If `S` is old-balanced and a cut `Y` plus its complement are both graph-compatible exports, then
 `4 supp(sigma(Y))<=|S|+2d`.  Hence deficit-zero two-sided-compatible cuts in blocks of size less than
 four are impossible, and four-block cuts live on a single coordinate.
+A deficit-zero minimal four-block with all singleton and pair cuts two-sided-compatible is therefore only
+`e_i^4` or `(-e_i)^4`; it has no boundary-height gain and leaves only self-layer residue.
 
 ## 14. Pair-chamber orientation normal form
 

@@ -1498,6 +1498,10 @@ Complementary cuts inside old-balanced retained blocks add another restriction. 
 identity `h_X(g)+h_X(-g)=4 supp(g)` and the two terminal inequalities give
 `4 supp(g)<=|S|+2d`.  Hence deficit-zero two-sided-compatible cuts in blocks of size below four are
 impossible, and four-block cuts must be supported on one boundary coordinate.
+If a deficit-zero minimal four-block has all singleton and pair cuts two-sided-compatible, it is forced
+into one coordinate: singleton cuts have support one, pair cuts forbid two different coordinates, and
+minimality leaves only the cyclic atoms `e_i^4` or `(-e_i)^4`.  Such atoms have zero boundary-height gain
+on every cut; any obstruction they leave is self-layer residue, not coordinate arithmetic.
 
 So the remaining input is an inverse/stability theorem for value-coupled zero-sum-free boundaries,
 not another ordinary zero-sum extraction.
