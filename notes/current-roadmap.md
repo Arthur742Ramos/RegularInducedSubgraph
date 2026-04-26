@@ -4809,6 +4809,8 @@ For two packets this reduces to `(s_a-s_b)c_{ab}=s_b((a+d_a)-(b+d_b))` plus the 
 `c_{ab}=r+delta_a+delta_b-a-d_a`.
 After substitution this is the single congruence
 `(s_a-s_b)(r+delta_a+delta_b-a-d_a)=s_b((a+d_a)-(b+d_b)) [MOD 4]`.
+On odd-size packet subsystems, cross parities are symmetric and the first-bit condition is the labelled
+quotient equation `a_j+d_j+deg_Q(j)=constant [MOD 2]`; the full `c_{jk}` residues are the carry.
 Same-chamber same-external-profile packets coalesce in this normal form whenever their two cross-degree
 residues agree; row compatibility forces that equality in any appendable system, so an appendable
 primitive packet system uses at most one packet from each such profile.
