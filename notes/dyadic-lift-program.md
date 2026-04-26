@@ -926,13 +926,15 @@ the earlier false singleton-rigidity claim.
 The four two-residue cases are respectively: `alpha<=3` plus `2K_2`-free; `alpha<=3` plus induced
 `C_4`-free; `omega<=3` plus `2K_2`-free; and `omega<=3` plus induced-`C_4`-free.  Up to complement,
 only the first two sparse hereditary branches remain, plus the augmented boundary-type constraints.
-The `2K_2` branch would be linearly capped by the standard structural estimate
-`chi(G)<=omega(G)+1` for `2K_2`-free graphs with `alpha<=3`, giving `|C_i|<=3(m+1)`; verify this before
-formal import.  The isolated graph-theory obligation is the `2K_2` sparse-colouring lemma; a plausible
-route is the standard dominating-clique/dominating-`P_3` theorem for connected `2K_2`-free graphs, plus
-`alpha<=3` to keep the private classes from needing more than one extra colour.  Treat this branch as
-conditional until that lemma is proved or cited.  For the C4 branch, the augmented boundary rules give a
-direct shape cap: if
+The tempting `2K_2` chromatic shortcut is false: the join of two `C_5`'s is `2K_2`-free with
+`alpha=2`, `omega=4`, and `chi=6`; the join of `k` copies has `omega=2k` and `chi=3k`.  Thus the
+`{0,1}` and `{3,2}` branches cannot be capped by an additive `chi<=omega+O(1)` theorem.  After
+complementing, the real residual is a mod-`4` selector for induced-`C_4`-free graphs with clique number
+at most `3` and independence number at most `m`, so any closure must use congruent-degree structure
+rather than colouring alone.  In a terminal complement `H` of this branch, the same path/cycle selector
+used below forbids every induced `Delta<=2` subgraph larger than `11m/5`: independent sets, induced
+matchings, and cycle-component unions in `H` complement back to outside-only congruent sets.  For the C4
+branch, the augmented boundary rules give a direct shape cap: if
 `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and all other seven
 boundary types are cliques, so `|C_i|<=7m`.  Complementarily, `{3,1}` with a triangle boundary also gives
 `|C_i|<=7m`.
@@ -975,6 +977,28 @@ In that girth-five complement `H`, terminality also forces
 degrees `1` and an induced cycle gives all degrees `2` on the selected vertices.  The sparse remnant is
 therefore: triangle-free, C4-free, `alpha<=m`, no induced matching larger than `m/2`, and no induced
 cycle longer than `m`.
+This can be strengthened to a degree-two cap: every induced subgraph `F` of `H` with
+`Delta(F)<=2` has `|F|<=11m/5`.  Indeed, if `t` vertices of `F` lie on cycle components, then `t<=m`
+or the cycle components themselves give a degree-`2` congruent set.  The path components contribute
+`independence + induced-matching-covered vertices >= p`, and each cycle of length `r` contributes at
+least `4r/5` with equality only at `C_5`; since both the independent set and the induced-matching
+endpoints are capped by `m`, `|F|-t/5<=2m`, whence `|F|<=11m/5`.  Thus a large terminal girth-five
+remnant must be robustly induced-degree-three.
+Taking `F` maximum by cardinality gives the next incidence residual.  Every outside vertex either hits
+a degree-`2` vertex of `F`, or has at least three neighbours on `F`; otherwise it could be added while
+preserving `Delta<=2`.  In the second case those neighbours are pairwise at distance at least three on
+the spine, since distance one gives a triangle and distance two gives a `C_4`.  In the first case, no two
+outside vertices can have the same sole spine-neighbour `u in D_2(F)`, because replacing `u` by those two
+independent leaves enlarges the spine.  The remaining one-type girth-five target is therefore a sparse
+incidence problem over a spine of size at most `11m/5`.
+The support-at-most-four cube forest also compresses: at most one type of each parity can be nonlinear,
+because same-parity types are anti-complete and two independent pairs would give an independent four-set.
+If the two possible nonlinear types have opposite parity and Hamming distance three, the same argument
+applies.  Hence any two nonlinear types must be adjacent in the cube; all other supported types are
+cliques of size at most `m`.  The adjacent edge either shares a zero coordinate, giving a two-type
+shared-miss residual with union independence at most two, or is the top edge `111`--`110` up to symmetry,
+where every lower-type vertex has clique neighbourhood in the all-hit type.  Thus the small-support
+branch has only one-type or adjacent-edge incidence residuals, plus clique-bounded spill.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it

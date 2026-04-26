@@ -1501,19 +1501,13 @@ Recommended attack:
    Complementation swaps the first/last and middle two cases, so only two sparse branches remain up to
    complement before the augmented boundary-type constraints are added.
 
-   Two branch reductions are available.  For the `2K_2` branch, a standard structural theorem would give
-   `chi(G)<=omega(G)+1` whenever `G` is `2K_2`-free and `alpha(G)<=3`; if imported, this caps
-   `{0,1}` directions by `3(m+1)` and, by complement, caps `{3,2}` directions.  Verify this theorem before
-   formal use.  The exact lemma to formalize or cite is:
-
-   ```text
-   2K2 sparse-colouring lemma:
-   2K_2-free and alpha<=3  =>  chi<=omega+1.
-   ```
-
-   A standard route is the dominating-clique/dominating-`P_3` theorem for connected `2K_2`-free graphs;
-   the `alpha<=3` condition should bound the private classes around the dominating core.  Until this is
-   proved, the `{0,1}` and `{3,2}` branches are conditional.
+   Warning: do not formalize the earlier `2K_2` sparse-colouring shortcut.  The statement
+   `2K_2`-free and `alpha<=3 => chi<=omega+1` is false: the join of two `C_5`'s is `2K_2`-free with
+   `alpha=2`, `omega=4`, and `chi=6`, and joins of `k` copies have `omega=2k`, `chi=3k`.  Thus the
+   `{0,1}` and `{3,2}` branches require a congruent-degree selector argument after complementing to
+   induced-`C_4`-free graphs with clique number at most `3`; colouring alone is not enough.  The safe
+   replacement invariant is: in any terminal complement of this branch, every induced `Delta<=2`
+   subgraph has size at most `11m/5`, by the same path/cycle argument used for the girth-five remnant.
 
    For the C4 branch, the augmented boundary rules give an internal cap: if
    `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and the other seven
@@ -1569,8 +1563,23 @@ Recommended attack:
    constant shift.  Thus the one-type remnant is the mod-4 selector restricted to girth-at-least-five
    graphs.  Terminality further implies `induced_matching(H)<=m/2` and induced circumference at most
    `m`: an induced matching has all selected degrees `1`, and an induced cycle has all selected degrees
-   `2`.  For support at most four, either a full square face triggers the face-C4 condition, or the
-   support is a cube forest of at most four type classes.
+   `2`.  Strengthen this to the following formal target: every induced subgraph `F` of `H` with
+   `Delta(F)<=2` has `|F|<=11m/5`.  If `t` vertices of `F` lie on cycle components, then `t<=m`; the
+   path components have `independence + induced-matching-covered vertices >= p`, while each cycle of
+   length `r` contributes at least `4r/5` with equality only at `C_5`.  Since terminality caps both the
+   independent set and induced-matching endpoints by `m`, `|F|-t/5<=2m`, hence `|F|<=11m/5`.
+   If `F` is chosen maximum by cardinality, every outside vertex either hits a degree-`2` vertex of `F`,
+   or has at least three neighbours on `F`; otherwise it can be added while preserving `Delta<=2`.  In
+   the latter case those neighbours are pairwise at distance at least three along `F`.  Also formalize
+   the local exchange that two outside vertices cannot have the same sole spine-neighbour
+   `u in D_2(F)`, since replacing `u` by both leaves enlarges `F`.
+   For support at most four, either a full square face triggers the face-C4 condition, or the support is
+   a cube forest of at most four type classes.  In the cube-forest case, formalize the parity compression:
+   at most one type of each parity is nonlinear, and if two nonlinear opposite-parity types survive they
+   must be adjacent in the cube.  Therefore the small-support residual is either one nonlinear type, a
+   shared-miss adjacent edge whose union has independence at most two, or the top edge `111`--`110` up to
+   symmetry where each lower-type vertex has clique neighbourhood in the all-hit type; all other classes
+   are clique-bounded.
 
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified

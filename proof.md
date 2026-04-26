@@ -6309,32 +6309,28 @@ large exact-basis endpoint has been reduced to two sparse hereditary branches up
 boundary-type constraints.  Any final closure of the exact-basis branch can target these two classes
 rather than an arbitrary direction graph.
 
-Two further reductions separate these branches.  First, a standard structural route for `2K_2`-free
-graphs would close the `{0,1}` branch linearly: if one imports or proves the sharp chromatic estimate
+Two further reductions separate these branches.  First, the tempting chromatic shortcut for the
+`2K_2` branch is false and must not be imported.  The proposed estimate
 
 ```text
-chi(G) <= omega(G)+1        for 2K_2-free graphs with alpha(G)<=3,
+chi(G) <= omega(G)+1        for 2K_2-free graphs with alpha(G)<=3
 ```
 
-then `|C_i| <= alpha(C_i) chi(C_i) <= 3(m+1)`.  By complement this also caps the `{3,2}` branch.  This
-is a genuine graph-structure lemma, not a consequence of Ramsey; it should be verified before being used
-as a formal import.
+fails already for the join of two `C_5`'s: it is `2K_2`-free because its complement is the disjoint union
+of two `C_5`'s and hence is induced-`C_4`-free; it has `alpha=2`, `omega=4`, and `chi=6`.  More generally,
+the join of `k` copies of `C_5` has `alpha=2`, `omega=2k`, and `chi=3k`, so even an additive
+`omega+O(1)` bound is impossible.  Thus the `{0,1}` and `{3,2}` branches cannot be closed by colouring
+alone.  After complementing, the correct residual is a mod-`4` selector problem for induced-`C_4`-free
+graphs with clique number at most `3` and independence number at most `m`; any successful closure must
+use congruent-degree structure, not just chromatic structure.
 
-The exact import needed for this route is small enough to isolate:
-
-```text
-2K2 sparse-colouring lemma.
-If G is 2K_2-free and alpha(G)<=3, then chi(G)<=omega(G)+1.
-```
-
-A standard proof route is the dominating-core theorem for connected `2K_2`-free graphs: every connected
-`2K_2`-free graph has a dominating clique or a dominating induced `P_3`.  In the dominating-clique case,
-one tries to colour from a maximum clique and use the `2K_2` condition to show the vertices missing each
-clique colour have nested conflicts, costing at most one extra colour.  In the dominating-`P_3` case,
-the `alpha<=3` hypothesis prevents three mutually nonadjacent private classes around the path, again
-forcing an `omega+1` colouring.  This lemma is now a separate finite graph-theory obligation; until it is
-proved or reliably cited, the `{0,1}` and `{3,2}` branches should be marked as conditionally capped, not
-closed.
+One piece of congruent-degree structure survives in this corrected `2K_2` branch.  Let `H` be the
+complement of a terminal `{0,1}` direction.  Then `H` is induced-`C_4`-free, has clique number at most
+`3`, has `alpha(H)<=m`, and cannot contain an induced subgraph `F` with `Delta(F)<=2` and
+`|F|>11m/5`.  The proof is the same path/cycle count used below: independent sets in `H`, induced
+matchings in `H`, and unions of cycle components of `H` complement back to outside-only sets whose
+degrees are constant modulo `4`.  Thus the failed colouring route is replaced by a terminal
+induced-degree-two exclusion in an induced-`C_4`-free, `K_4`-free graph.
 
 Second, the augmented boundary rules already give a `7m` cap for one C4-branch boundary shape.  If
 `Rep(g_i)` contains `{0,2}` and the boundary triple `X_i` is independent, then type `000` is forbidden by
@@ -6475,11 +6471,72 @@ girth-at-least-five graph on sufficiently more than `m` vertices with `alpha<=m`
 induced matching or a large induced cycle, or else extract a mod-`4` congruent induced subgraph by a
 different sparse-graph argument.
 
+The matching/cycle obstruction can be packaged more strongly as a bounded-degree-two selector.  Let
+`F` be any induced subgraph of this terminal `H` with maximum degree at most `2`.  Write `t` for the
+number of vertices lying on cycle components of `F`, and `p=|F|-t` for the number of vertices in path
+or isolated components.  If `t>m`, the union of the cycle components is an induced `2`-regular subgraph
+on more than `m` vertices, impossible.  On the path-and-isolated part, the maximum independent set
+size plus the number of vertices covered by a maximum induced matching is at least `p`: this is checked
+componentwise on paths by the greedy tiling into isolated selected vertices and length-one selected
+edges.  On a cycle of length `r`, the analogous sum is at least `4r/5`, with the only tight obstruction
+being `C_5`.  Therefore, for the whole `F`, there is an induced regular subgraph of degree `0` or `1`
+or an induced union of cycle components of degree `2` on more than `m` vertices unless
+
+```text
+|F|-t/5 <= 2m        and        t<=m.
+```
+
+Consequently every induced `Delta<=2` subgraph of a terminal one-type girth-five residual satisfies
+
+```text
+|F| <= 11m/5.
+```
+
+This replaces the two separate obstructions by a single sharper one: a large terminal `H` must be
+induced-degree-three in a robust sense, since any induced low-degree spine larger than `11m/5` already
+contains the forbidden congruent outside-only set.
+
+Choose such an induced `Delta<=2` spine `F` with maximum possible cardinality.  Then `|F|<=11m/5`, and
+every vertex outside `F` obeys a rigid exchange condition.  Let `D_2(F)` be the set of degree-`2`
+vertices of `F`.  If an outside vertex `v` avoids `D_2(F)` and has at most two neighbours in `F`, then
+`F+v` still has maximum degree at most `2`: the new vertex has degree at most two into `F`, and every
+old neighbour of `v` had `F`-degree at most one.  This contradicts the choice of `F`.  Therefore every
+outside vertex either hits `D_2(F)` or has at least three neighbours on the spine.
+
+The girth-five condition makes the latter alternative sparse on the spine.  The vertices of
+`N_F(v)` are pairwise at distance at least three inside `F`: distance one would make a triangle with
+`v`, and distance two would make a `C_4`.  Thus every non-saturated outside vertex chooses a three-point
+packing on the path/cycle spine.  In the saturated alternative, maximum cardinality also forbids two
+outside vertices whose only spine neighbour is the same `u in D_2(F)`: replacing `u` by those two
+independent leaves would create a larger induced `Delta<=2` spine.  Hence the remaining large-remnant
+surface is an incidence problem over a spine of size at most `11m/5`, where outside vertices either
+attach to degree-`2` spine vertices with no two identical private attachments, or attach to a
+distance-three packing of at least three spine vertices.  This is the next target for converting
+robust degree-three into either an independent set larger than `m` or another congruent induced
+subgraph.
+
 For support at most four, either the support contains a square face, in which case the face `C_4`
 condition applies, or it is a forest subgraph of the cube.  The forest-support case is again a bounded
 tree of type classes with anti-complete nonedges; any parity side of size three is clique-bounded by the
 previous paragraph.  Hence the only genuinely nonlinear residue of the triangle-boundary `{0,2}` branch
 is a single C4-free, `alpha<=2` type class or a small cube-forest of at most four such classes.
+
+The cube-forest alternative is not four-dimensional.  Distinct same-parity classes are anti-complete, so
+two non-clique classes of the same parity would supply two independent pairs and hence an independent
+four-set.  Thus at most one same-parity class on each side can be nonlinear.  If the two surviving
+nonlinear classes have opposite parity but Hamming distance three, they are also anti-complete and the
+same independent-pair argument applies.  Therefore a forest support has at most two nonlinear type
+classes, and if there are two then they are adjacent in the cube; all other supported types are cliques
+of size at most `m`.
+
+This leaves only two adjacent-type residuals.  If the adjacent types share a zero coordinate, their
+union lies in a single miss class `M_x`, so its independence number is at most two; any large same-type
+piece falls under the one-type girth-five complement argument, while the balanced two-type union remains
+a smaller shared-miss edge problem.  If they share no zero coordinate, then up to symmetry the pair is
+`111`--`110`: the lower type lies in one miss class, and every vertex of that lower type has a clique
+neighbourhood in the all-hit type by the one-corner rule.  Thus the support-at-most-four branch reduces
+to the one-type girth-five selector or to one of these two adjacent-edge incidence problems, plus at most
+`2m` clique-bounded spill.
 
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with
