@@ -1008,6 +1008,11 @@ between `i` and `j` is exactly `3`; otherwise the edge and the two cycle arcs cr
 or a forbidden triangle/`C_4`.  The pendant quotient therefore has maximum degree two and fractional
 chromatic number at most `3`, so the first-core pendant fibres in one singleton layer have total size at
 most `3 alpha(layer)`, and across the three singleton layers at most `3m`.
+The zero-trace recursion has a bounded skeleton: choose successive edge, triangle, or shortest-odd-cycle
+anchors only inside the current zero layer.  Later anchors are anti-complete to earlier anchors, so their
+union is an induced graph of maximum degree at most two; terminality gives total anchor size at most
+`11m/5`.  The last missing estimate is to charge all pendant/trace layers to the global independence
+budget across this bounded anchor skeleton.
 For the C4 branch, the augmented boundary rules give a direct shape cap: if
 `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and all other seven
 boundary types are cliques, so `|C_i|<=7m`.  Complementarily, `{3,1}` with a triangle boundary also gives

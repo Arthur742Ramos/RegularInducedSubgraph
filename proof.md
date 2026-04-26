@@ -6608,6 +6608,21 @@ three pairwise anti-complete singleton layers of the triangle-anchor decompositi
 pendant fibres contribute at most `3m`.  The residual after removing them is again the iterated
 zero-trace triangle-free, induced-`C_4`-free problem.
 
+The iteration has a bounded skeleton.  Run the zero-trace peeling greedily, each time choosing inside the
+current zero layer either an edge anchor, a triangle anchor, or a shortest odd cycle according to the
+first non-bipartite/non-clique obstruction present, and then passing to the vertices with zero trace to
+that anchor.  By construction every later anchor is anti-complete in `H` to every earlier anchor.  Hence
+the union of all chosen anchors is an induced graph of maximum degree at most two.  The terminal
+degree-two exclusion therefore gives
+
+```text
+sum |anchor_i| <= 11m/5.
+```
+
+Thus the zero-trace recursion cannot hide an unbounded number of independent cores.  The only remaining
+estimate needed to close the labelled `{0,1}`/`{3,2}` branch is a charging of the pendant/trace layers to
+the global independence budget across this bounded anchor skeleton.
+
 Second, the augmented boundary rules already give a `7m` cap for one C4-branch boundary shape.  If
 `Rep(g_i)` contains `{0,2}` and the boundary triple `X_i` is independent, then type `000` is forbidden by
 the repaired residue `0` `3+1` atom.  For every other boundary type, either some boundary pair has type

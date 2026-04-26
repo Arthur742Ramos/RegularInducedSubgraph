@@ -1632,6 +1632,9 @@ Recommended attack:
    the distance-three quotient lemma: pendant fibres can be adjacent only when their core vertices are at
    cyclic distance `3`; the quotient has fractional chromatic number at most `3`, giving first-core
    pendant-fibre mass at most `3 alpha(layer)`.
+   For the iterated zero-trace process, formalize the bounded-skeleton lemma: successive edge, triangle,
+   or shortest-odd-cycle anchors chosen inside zero layers are pairwise anti-complete, so their union is an
+   induced graph of maximum degree at most two and has total size at most `11m/5`.
 
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified
