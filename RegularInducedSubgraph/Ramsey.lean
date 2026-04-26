@@ -4242,6 +4242,106 @@ theorem degree_eight_neighborFinset_card_eq_two_of_degree_eight_vertices_card_eq
           hax⟩
   simpa [hAeq] using hAcard
 
+/--
+If the degree-`8` class saturates the six-vertex cap, the subgraph it induces is
+`2`-regular.
+-/
+theorem degree_eight_vertices_card_eq_six_induced_regular_of_degree_two
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 26)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    (hD8card : ((Finset.univ : Finset α).filter (fun v => G.degree v = 8)).card = 6) :
+    (inducedOn G ((Finset.univ : Finset α).filter (fun v => G.degree v = 8))).IsRegularOfDegree 2 := by
+  classical
+  let D8 : Finset α := (Finset.univ : Finset α).filter (fun v => G.degree v = 8)
+  intro v
+  have hvD8 : (v : α) ∈ D8 := v.2
+  have hdegv : G.degree (v : α) = 8 := (Finset.mem_filter.mp hvD8).2
+  rw [inducedOn_degree_eq_card_neighborFinset_inter]
+  change (G.neighborFinset (v : α) ∩ D8).card = 2
+  have hInter :
+      G.neighborFinset (v : α) ∩ D8 =
+        (G.neighborFinset (v : α)).filter (fun u => G.degree u = 8) := by
+    ext u
+    simp [D8]
+  rw [hInter]
+  exact degree_eight_neighborFinset_card_eq_two_of_degree_eight_vertices_card_eq_six
+    G hcard hnoK4 hnoI5 hD8card hdegv
+
+/--
+At the saturated degree-`8` cap, the two degree-`8` neighbors of any degree-`8` vertex form
+a `2`-clique.
+-/
+theorem degree_eight_vertices_card_eq_six_neighborFinset_isNClique_two
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 26)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    (hD8card : ((Finset.univ : Finset α).filter (fun v => G.degree v = 8)).card = 6)
+    {a : α} (hdega : G.degree a = 8) :
+    G.IsNClique 2 ((G.neighborFinset a).filter (fun v => G.degree v = 8)) := by
+  rw [SimpleGraph.isNClique_iff]
+  exact ⟨degree_eight_neighbors_isClique G hcard hnoK4 hnoI5 a,
+    degree_eight_neighborFinset_card_eq_two_of_degree_eight_vertices_card_eq_six
+      G hcard hnoK4 hnoI5 hD8card hdega⟩
+
+/--
+At the saturated degree-`8` cap, every degree-`8` vertex lies in a triangle whose three
+vertices all have degree `8`.
+-/
+theorem degree_eight_vertices_card_eq_six_exists_degree_eight_neighbor_triangle
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 26)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    (hD8card : ((Finset.univ : Finset α).filter (fun v => G.degree v = 8)).card = 6)
+    {a : α} (hdega : G.degree a = 8) :
+    ∃ b c : α, b ≠ c ∧ G.degree b = 8 ∧ G.degree c = 8 ∧
+      G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
+  classical
+  let N8 : Finset α := (G.neighborFinset a).filter (fun v => G.degree v = 8)
+  have hN8card : N8.card = 2 := by
+    simpa [N8] using
+      degree_eight_neighborFinset_card_eq_two_of_degree_eight_vertices_card_eq_six
+        G hcard hnoK4 hnoI5 hD8card hdega
+  rcases Finset.card_eq_two.mp hN8card with ⟨b, c, hbc_ne, hN8eq⟩
+  have hbN8 : b ∈ N8 := by
+    rw [hN8eq]
+    simp
+  have hcN8 : c ∈ N8 := by
+    rw [hN8eq]
+    simp [hbc_ne.symm]
+  rcases Finset.mem_filter.mp hbN8 with ⟨hab_mem, hdegb⟩
+  rcases Finset.mem_filter.mp hcN8 with ⟨hac_mem, hdegc⟩
+  have hab : G.Adj a b := (G.mem_neighborFinset a b).mp hab_mem
+  have hac : G.Adj a c := (G.mem_neighborFinset a c).mp hac_mem
+  have hbc : G.Adj b c :=
+    adj_of_common_neighbor_degree_eight_degree_eight
+      G hcard hnoK4 hnoI5 hbc_ne hdegb hdegc hab.symm hac.symm
+  exact ⟨b, c, hbc_ne, hdegb, hdegc, hab, hac, hbc⟩
+
+/-- Saturating the degree-`8` cap forces an actual triangle all of whose vertices have degree `8`. -/
+theorem degree_eight_vertices_card_eq_six_exists_degree_eight_triangle
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 26)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    (hD8card : ((Finset.univ : Finset α).filter (fun v => G.degree v = 8)).card = 6) :
+    ∃ a b c : α, a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
+      G.degree a = 8 ∧ G.degree b = 8 ∧ G.degree c = 8 ∧
+        G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
+  classical
+  let D8 : Finset α := (Finset.univ : Finset α).filter (fun v => G.degree v = 8)
+  have hD8card' : D8.card = 6 := by simpa [D8] using hD8card
+  have hpos : 0 < D8.card := by omega
+  rcases Finset.card_pos.mp hpos with ⟨a, haD8⟩
+  have hdega : G.degree a = 8 := (Finset.mem_filter.mp haD8).2
+  rcases degree_eight_vertices_card_eq_six_exists_degree_eight_neighbor_triangle
+      G hcard hnoK4 hnoI5 hD8card hdega with
+    ⟨b, c, hbc_ne, hdegb, hdegc, hab, hac, hbc⟩
+  exact ⟨a, b, c, hab.ne, hac.ne, hbc_ne, hdega, hdegb, hdegc, hab, hac, hbc⟩
+
 /-- The generic binomial theorem gives the textbook bound `R(3,4) <= 10`. -/
 theorem hasCliqueOrIndepSetBound_three_four_ten :
     HasCliqueOrIndepSetBound 3 4 10 := by
