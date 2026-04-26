@@ -1559,6 +1559,8 @@ The exact quotient only needs cross-regular residues `c_{jk}` satisfying
 old-increment target `r+sum_k delta_k`.
 The old increments satisfy `m delta_j=a_j|B_j| [MOD 4]`, so they are also part of the packet quotient
 arithmetic rather than free labels.
+For odd `m` the target becomes `r+m^{-1}sum_j a_j|B_j|`; for `m=0 [MOD 4]`, odd-size packets must be in
+chamber `0`; and for `m=2 [MOD 4]`, `a_j|B_j|` must be even and fixes `delta_j` modulo `2`.
 For two packets this is just `(s_a-s_b)c_{ab}=s_b((a+d_a)-(b+d_b))` together with the target
 `c_{ab}=r+delta_a+delta_b-a-d_a`.
 Equivalently, after target substitution:

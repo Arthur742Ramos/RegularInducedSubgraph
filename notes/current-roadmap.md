@@ -4808,6 +4808,8 @@ The exact quotient replaces the uniform term by cross-regular residues `c_{jk}`,
 only then must hit the single scalar target `r+sum_k delta_k`.
 Each old increment also satisfies `m delta_j=a_j|B_j| [MOD 4]` by double-counting between `W` and the
 packet.
+Thus for odd `m` the target is `r+m^{-1}sum_j a_j|B_j|`; for `m=0 [MOD 4]`, odd-size packets must lie
+in chamber `0`; for `m=2 [MOD 4]`, chamber/size products must be even and determine `delta_j` modulo `2`.
 For two packets this reduces to `(s_a-s_b)c_{ab}=s_b((a+d_a)-(b+d_b))` plus the target
 `c_{ab}=r+delta_a+delta_b-a-d_a`.
 After substitution this is the single congruence

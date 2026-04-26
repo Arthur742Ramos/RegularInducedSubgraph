@@ -1035,6 +1035,9 @@ Recommended attack:
    `a_j+d_j+sum_{k != j}c_{jk}=r+sum_k delta_k [MOD 4]`.
    Include the old-frame edge-count constraint `m delta_j=a_j|B_j| [MOD 4]` for each old-balanced packet
    `B_j subset P_{a_j}`.
+   Record its consequences: if `m` is odd, replace `sum delta_j` by `m^{-1}sum a_j|B_j|`; if
+   `m=0 [MOD 4]`, require `a_j|B_j|=0`; if `m=2 [MOD 4]`, require `a_j|B_j|` even and fix
+   `delta_j` modulo `2`.
    Also formalize the row-difference split: with
    `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the first condition is `R_j=R_l` for all packets and the
    final condition is the scalar target `R_j=r+sum_k delta_k`.

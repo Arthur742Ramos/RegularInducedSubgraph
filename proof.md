@@ -5394,6 +5394,23 @@ Thus `delta_j` is not a free scalar: if `m` is odd it is determined by `a_j|B_j|
 only its parity is determined; and if `m=0 [MOD 4]` the chamber-size product `a_j|B_j|` must vanish.
 This old-frame edge-count congruence is part of the exact packet quotient.
 
+Consequently the final target can often be eliminated.  If `m` is odd, then
+
+```text
+sum_j delta_j = m^{-1} sum_j a_j|B_j|        [MOD 4],
+```
+
+so the packet target is the fully intrinsic scalar
+
+```text
+r+m^{-1} sum_j a_j|B_j|        [MOD 4].
+```
+
+If `m=0 [MOD 4]`, every old-balanced packet must satisfy `a_j|B_j|=0`; in particular odd-size packets
+can occur only in the zero chamber.  If `m=2 [MOD 4]`, every packet with `a_j|B_j|` odd is impossible,
+and otherwise the parity of `delta_j` is fixed.  Thus the parity of the old witness size already removes
+many chamber/size combinations before the self-layer quotient is considered.
+
 The cross-uniform formula is the special case `c_{jk}=epsilon_{jk}|B_k|`.  Thus the honest finite
 residual is a cross-regular packet quotient with edge-count symmetry, and the cross-uniform packet
 system is the most rigid visible subcase.

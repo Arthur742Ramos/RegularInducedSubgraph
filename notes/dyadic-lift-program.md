@@ -376,6 +376,9 @@ exact form only needs cross-regularity modulo `4`: if `c_{jk}` is the common deg
 The old increments also obey `m delta_j=a_j|B_j| [MOD 4]` by double-counting edges between `W` and
 `B_j`; hence they are determined when `m` is odd, parity-determined when `m=2 [MOD 4]`, and impose
 `a_j|B_j|=0` when `m=0 [MOD 4]`.
+So for odd `m` the final target is intrinsic:
+`r+m^{-1}sum_j a_j|B_j| [MOD 4]`.  For `m=0 [MOD 4]`, odd-size packets can occur only in chamber `0`;
+for `m=2 [MOD 4]`, packets with `a_j|B_j|` odd are excluded.
 Equivalently, with `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the system is the row-difference
 condition `R_j=R_l` for all active packets plus the single scalar target
 `R_j=r+sum_k delta_k`.  Terminality must therefore block either quotient self-layer compatibility or the
