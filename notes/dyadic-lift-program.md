@@ -1225,6 +1225,11 @@ internal residue `q_pair` gives final residue `q_pair+2 deg_Q(i) [MOD 4]`; odd q
 shifts the common residue by `2`.  Thus non-triangle triples use nonedge pairs with `q_pair=0`, triangle
 triples use edge pairs with `q_pair=1`, and a mixed homogeneous quotient can survive only by balancing
 these two pair-residue classes so that neither has a near-half constant-parity selector.
+Gallai gives such a selector of size at least `2 ceil(n/2)` from a same-residue homogeneous class of
+`n` triples.  Since exact Davenport has at most `m-1` directions, the only near-boundary deficits are
+`m even, n=m-1` (selector size `m`) and `m odd, n=m-1` (selector size `m-1`).  The remaining
+same-residue homogeneous obstruction is therefore a one- or two-word augmentation failure, not a large
+pair-selector failure.
 Pair-only selectors cannot mix these classes: size-two words contribute only even cross-degrees, so the
 parity of the final residue is the parity of the internal pair residue.  Any genuine mixed-class
 selector must therefore use singleton or whole-triple words, the odd-size words that can change

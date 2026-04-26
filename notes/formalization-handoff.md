@@ -1748,6 +1748,10 @@ Recommended attack:
    A two-vertex regular word of internal residue `q_pair` gives final residue
    `q_pair+2 deg_Q(i) [MOD 4]`; use `q_pair=0` for non-triangle nonedge pairs and `q_pair=1` for
    triangle edge pairs.
+   Gallai's even/even partition gives a pair-word selector of size at least `2 ceil(n/2)` in a
+   same-residue homogeneous class of `n` triples.  Near the exact basis boundary, the only deficits are
+   size `m` when `m` is even and size `m-1` when `m` is odd (with `n=m-1`); residual work is an
+   augmentation obstruction.
    Record the parity split: pair-only selectors cannot mix non-triangle and triangle pair classes,
    because size-two words contribute only even cross-degrees.  Mixed-class selectors must use odd-size
    singleton or whole-triple words.

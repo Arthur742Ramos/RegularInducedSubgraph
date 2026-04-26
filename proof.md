@@ -7269,6 +7269,21 @@ A mixed homogeneous quotient can survive only by balancing these two pair-residu
 neither class contains a near-half constant-parity quotient selector with an augmenting same-class
 outside triple.  The earlier even-quotient statements are the residue-preserving subcase; odd quotient
 degree simply shifts the common residue by `2`.
+
+Gallai now leaves only a narrow size deficit.  In a same pair-residue class of `n` homogeneous triples,
+Gallai's even/even partition supplies a constant-parity quotient set of size at least `ceil(n/2)`, hence
+a pair-word selector of size at least `2 ceil(n/2)`.  Therefore the class closes immediately if
+`2 ceil(n/2)>m`.  At the exact Davenport boundary `n<=m-1`, the only possible failures have deficit at
+most two:
+
+```text
+m even, n=m-1:  pair selector size at least m;
+m odd,  n=m-1:  pair selector size at least m-1.
+```
+
+Thus a terminal same-residue homogeneous class occupying almost all coordinates must prevent every
+one-word or two-word augmentation of this Gallai half.  The residual obstruction is not a large pair
+selector; it is a one- or two-vertex augmentation failure at the boundary of the zero-sum-free basis.
 Moreover, this split is forced by parity: if all selected words have size two, every cross-word
 contribution is even (`0` or `2` modulo `4` in the homogeneous quotient), so the parity of the final
 degree residue is the parity of the internal pair residue.  Pair-only selectors therefore cannot mix
