@@ -4878,6 +4878,14 @@ Up to complement, the two exact-basis hereditary endpoints are `alpha<=3` plus `
 `sigma`, and `alpha<=3` plus `C_4`-free for `sigma=2`.
 A `C_5` clique-blow-up piece larger than `11m/5` already closes: equal bag selection is regular, and if
 some bag has size at most `m/5`, adjacent clique caps force total size at most `11m/5`.
+In the self-complementary independent-bag orientation, the three-consecutive selector is stronger:
+terminal cyclic components have every three consecutive bags of total at most `m+3`, hence total size at
+most `(5m+15)/3`.
+Endpoint anchor reductions: in the `2K_2`-free/`alpha<=3` branch every edge dominates all but three
+vertices; in the `C_4`-free/`alpha<=3` branch every nonedge leaves clique common-neighborhood and
+common-nonneighborhood parts, each of size at most `m`.
+For an anchor pair `p,q` with `epsilon=1_{pq}`, equal exclusive wings of size `h` close exactly when the
+wing union is `(h+epsilon-1)`-regular modulo `4`.
 The `25m/8` class margin also gives, for `m>24`, an augmented atom with `|S|=delta_S=0`, so
 `sum_S phi_S=-2e(S)`.
 

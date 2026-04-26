@@ -1010,6 +1010,17 @@ The standard `C_5` blow-up obstruction is capped: in a clique blow-up with bags 
 selection is regular, so if all bags have size `>m/5` it gives an atom larger than `W`; otherwise one
 bag has size at most `m/5`, and the adjacent clique caps `|A_i|+|A_{i+1}|<=m` force
 `sum_i |A_i|<=11m/5`.
+In the self-complementary independent-bag orientation, the stronger three-consecutive selector applies:
+for capacities `A,B,C`, choose `x,z` with `x+z=A+C` and `y=x+z [MOD 4]`, `y>=B-3`.  This gives a
+congruent atom of size at least `A+B+C-3`, so terminality forces every three consecutive bags to have
+size at most `m+3`, and the whole cyclic component has size at most `(5m+15)/3`.
+The two hereditary endpoints have anchor decompositions.  In the `2K_2`-free branch with `alpha<=3`,
+every edge dominates all but at most three vertices.  In the `C_4`-free branch with `alpha<=3`, every
+nonedge has clique common-neighborhood and clique common-nonneighborhood, each of size at most `m`; the
+large residual is therefore in the two exclusive neighborhoods.
+For either anchor pair `p,q`, with `epsilon=1_{pq}`, equal exclusive wings `X,Y` of size `h` give a
+congruent packet exactly when `deg_{X union Y}(z)=h+epsilon-1` on every wing vertex.  Thus edge anchors
+ask for `h`-regular equal-wing packets, and nonedge anchors ask for `(h-1)`-regular equal-wing packets.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has

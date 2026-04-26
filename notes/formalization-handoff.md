@@ -1530,6 +1530,14 @@ Recommended attack:
    Add the `C_5` blow-up cap: equal selection from all five clique bags is regular; if one bag has size
    at most `m/5`, adjacent clique caps imply total size at most `11m/5`.  Hence any `C_5` blow-up piece
    larger than `11m/5` already closes.
+   Also formalize the stronger self-complementary three-consecutive selector: in the independent-bag
+   orientation, any three consecutive bags with total more than `m+3` contain a congruent atom, so a
+   terminal cyclic component has total size at most `(5m+15)/3`.
+   Add endpoint anchor decompositions: in the `2K_2`-free/`alpha<=3` branch every edge dominates all but
+   at most three vertices; in the `C_4`-free/`alpha<=3` branch every nonedge has common-neighborhood and
+   common-nonneighborhood cliques, each bounded by `m`.
+   Add the equal-wing anchor equation: for anchor pair `p,q`, `epsilon=1_{pq}`, exclusive wings
+   `|X|=|Y|=h` close iff every wing vertex has degree `h+epsilon-1` inside `X union Y`.
 
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is

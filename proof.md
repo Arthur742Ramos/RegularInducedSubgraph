@@ -6760,6 +6760,56 @@ hereditary endpoints above therefore cannot be finished by exhibiting only the u
 examples; a terminal very-large direction must use additional non-cyclic structure or boundary-type
 constraints.
 
+There is a stronger cap in the self-complementary orientation of the same blow-up.  View the five bags
+as independent sets with complete joins between consecutive bags.  For three consecutive bags with
+capacities `A,B,C`, choose
+
+```text
+x<=A,        y<=B,        z<=C,        y=x+z        [MOD 4],
+```
+
+with `x+z=A+C` and `y>=B-3`.  The selected endpoints have degree `y` and the selected middle vertices
+have degree `x+z`, so the induced subgraph is congruent modulo `4` and has size at least `A+B+C-3`.
+Terminality therefore forces every three consecutive bags to have total at most `m+3`, and summing the
+five triple inequalities gives
+
+```text
+sum_i |A_i| <= (5m+15)/3.
+```
+
+Thus any cyclic blow-up component above `(5m+15)/3` is already closed by the three-class selector.  The
+remaining hereditary endpoints are not the standard C5 blow-up pieces; they must avoid this
+three-consecutive selector as well as the small-deletion spectrum constraints.
+
+The two residual hereditary endpoints also have useful anchor decompositions.  In the unit branch,
+where `C_g` is induced-`2K_2`-free with `alpha(C_g)<=3`, every edge `uv` is dominating up to three
+vertices: the set anticomplete to `{u,v}` is independent, since an edge inside it together with `uv`
+would be an induced `2K_2`.  Hence it has size at most `3`.  Thus a large unit-branch fiber is covered,
+up to three vertices, by the two neighborhoods of any chosen edge.
+
+In the `sigma_g=2` branch, where `C_g` is induced-`C_4`-free with `alpha(C_g)<=3` and clique number at
+most `m`, every nonedge `uv` has both common parts controlled.  The common neighborhood
+`N(u) cap N(v)` is a clique, otherwise two nonadjacent common neighbors form an induced `C_4` with
+`u,v`; the common non-neighborhood is also a clique, otherwise it contains two vertices which together
+with `u,v` form an independent four-set.  Therefore both have size at most `m`, and all remaining mass
+lies in the two exclusive neighborhoods.  This converts the `sigma_g=2` endpoint into a two-sided
+exclusive-neighborhood synchronization problem after discarding at most `2m` anchored common vertices.
+
+The two anchor reductions have the same exact packet equation.  Let `p,q` be an anchor pair with
+`epsilon=1_{pq}`, let `X` be selected vertices adjacent to `p` and not `q`, and let `Y` be selected
+vertices adjacent to `q` and not `p`; ignore common-neighborhood vertices.  Then
+`{p,q} union X union Y` is congruent modulo `4` exactly when
+
+```text
+|X|=|Y|=h,
+deg_{X union Y}(z)=h+epsilon-1        for every z in X union Y.      [MOD 4]
+```
+
+The anchor vertices then have degree `epsilon+h`, and each wing vertex has degree
+`1+deg_{X union Y}(z)`.  Thus an edge anchor in the `2K_2`-free branch asks for an `h`-regular
+equal-wing packet on `2h` vertices, while a nonedge anchor in the `C_4`-free branch asks for an
+`(h-1)`-regular equal-wing packet.  Any such packet with `2+2h>m` contradicts maximality of `W`.
+
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
 `deg_D(b)` constant on the four vertices.  The signed condition
