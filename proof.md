@@ -7357,6 +7357,23 @@ Since `b in {0,1}`, the first two lines are often empty by residue alone.  The o
 two-retained augmentation is the complementary-column line, and even that requires `|U|` even and fixes
 the parity of `alpha`.  This converts the retained equality residual into a finite trace-avoidance table.
 
+Equivalently, partition the retained singletons by their pair-uniform column
+`c:U->{0,1}`.  Terminality imposes the following hereditary constraints on these trace classes:
+
+```text
+c=0:        if R=0 the class is empty; if R=1 it is independent;
+            residues R=2,3 impose no two-vertex condition;
+c=1:        the singleton line forbids the class when R=2|U|-1;
+            the pair line uses the residue R+2-2|U| in place of R;
+c and 1-c:  when |U| is even, edges between the two classes of a column c with
+            alpha=|c^{-1}(1)| must avoid b=R+1-2alpha whenever this residue is 0 or 1.
+```
+
+Thus the equality residual has exactly the same shape as the earlier four-block repair spectrum: large
+retained trace classes are possible only in the residue holes of this table, and complementary trace
+classes must have a forced edge status unless the required status is outside `{0,1}`.  Any final closure
+can now target these finitely many column-hole cases.
+
 Moreover, this split is forced by parity: if all selected words have size two, every cross-word
 contribution is even (`0` or `2` modulo `4` in the homogeneous quotient), so the parity of the final
 degree residue is the parity of the internal pair residue.  Pair-only selectors therefore cannot mix
