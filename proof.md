@@ -7045,14 +7045,15 @@ The four two-residue spectra have a concrete hereditary meaning:
 {3,2}:  omega(C_i)<=3 and C_i is induced-C_4-free.
 ```
 
-The complement operation swaps the first and last cases, and swaps the two middle cases.  Therefore the
-large exact-basis endpoint has been reduced to two sparse hereditary branches up to complement:
-`alpha<=3` plus `2K_2`-free, and `alpha<=3` plus induced-`C_4`-free, together with the augmented
-boundary-type constraints.  Any final closure of the exact-basis branch can target these two classes
-rather than an arbitrary direction graph.
+The complement operation swaps the first and last cases, and swaps the two middle cases.  Before the
+equal-wing anchor atom is used, this reduces the large exact-basis endpoint to two sparse hereditary
+branches up to complement: `alpha<=3` plus `2K_2`-free, and `alpha<=3` plus induced-`C_4`-free.  The
+`h=1` anchor atom above then makes each branch also avoid the complementary four-vertex pattern, so the
+exact-basis direction is pseudo-split and has size at most `m+8`.  Thus the following chromatic caution is
+only a warning against an obsolete route, not a remaining exact-basis obstruction.
 
-Two further reductions separate these branches.  First, the tempting chromatic shortcut for the
-`2K_2` branch is false and must not be imported.  The proposed estimate
+The tempting chromatic shortcut for the `2K_2` branch is false and must not be imported.  The proposed
+estimate
 
 ```text
 chi(G) <= omega(G)+1        for 2K_2-free graphs with alpha(G)<=3
@@ -7061,10 +7062,8 @@ chi(G) <= omega(G)+1        for 2K_2-free graphs with alpha(G)<=3
 fails already for the join of two `C_5`'s: it is `2K_2`-free because its complement is the disjoint union
 of two `C_5`'s and hence is induced-`C_4`-free; it has `alpha=2`, `omega=4`, and `chi=6`.  More generally,
 the join of `k` copies of `C_5` has `alpha=2`, `omega=2k`, and `chi=3k`, so even an additive
-`omega+O(1)` bound is impossible.  Thus the `{0,1}` and `{3,2}` branches cannot be closed by colouring
-alone.  After complementing, the correct residual is a mod-`4` selector problem for induced-`C_4`-free
-graphs with clique number at most `3` and independence number at most `m`; any successful closure must
-use congruent-degree structure, not just chromatic structure.
+`omega+O(1)` bound is impossible.  The exact-basis proof avoids this by using the `h=1` anchor atom
+rather than colouring.
 
 One piece of congruent-degree structure survives in this corrected `2K_2` branch.  Let `H` be the
 complement of a terminal `{0,1}` direction.  Then `H` is induced-`C_4`-free, has clique number at most

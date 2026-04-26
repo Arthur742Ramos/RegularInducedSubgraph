@@ -1086,20 +1086,12 @@ the earlier false singleton-rigidity claim.
 The four two-residue cases are respectively: `alpha<=3` plus `2K_2`-free; `alpha<=3` plus induced
 `C_4`-free; `omega<=3` plus `2K_2`-free; and `omega<=3` plus induced-`C_4`-free.  Up to complement,
 only the first two sparse hereditary branches remain, plus the augmented boundary-type constraints.
-The tempting `2K_2` chromatic shortcut is false: the join of two `C_5`'s is `2K_2`-free with
-`alpha=2`, `omega=4`, and `chi=6`; the join of `k` copies has `omega=2k` and `chi=3k`.  Thus the
-`{0,1}` and `{3,2}` branches cannot be capped by an additive `chi<=omega+O(1)` theorem.  After
-complementing, the real residual is a mod-`4` selector for induced-`C_4`-free graphs with clique number
-at most `3` and independence number at most `m`, so any closure must use congruent-degree structure
-rather than colouring alone.  In a terminal complement `H` of this branch, the same degree-two
-path/cycle selector forbids every induced `Delta<=2` subgraph larger than `11m/5`: independent sets, induced
-matchings, and cycle-component unions in `H` complement back to outside-only congruent sets.
-This is a genuine residual, not a missing finite boundary case.  With a triangle boundary and all retained
-vertices in the single type `110`, the signed mixed tables for `Rep={0,1}` add no same-type restrictions
-beyond the retained-only conditions.  Thus an arbitrary induced-`C_4`-free, `K_4`-free complement with
-`alpha<=m` and the degree-two terminal exclusion can occupy one boundary type.  The final step must prove
-a mod-`4` selector for this hereditary class or use global target-stability/maximal-witness data beyond the
-local augmented-fiber tables.
+The tempting `2K_2` chromatic shortcut remains false: the join of two `C_5`'s is `2K_2`-free with
+`alpha=2`, `omega=4`, and `chi=6`; the join of `k` copies has `omega=2k` and `chi=3k`.  This is now only
+a caution against the obsolete route.  The exact-basis branch is capped instead by the `h=1` anchor atom,
+which turns the sparse hereditary endpoints into `(2K_2,C_4)`-free pseudo-split fibers of size at most
+`m+8`.  The labelled target-stability inequalities below remain useful only for near-basis or mixed-type
+boundary imports where the exact-basis `h=1` atom is not directly available.
 In the one-boundary-type case, target-stability becomes explicit.  Partition the retained fiber by
 `A_j={theta=L+j}`.  For a same-old-vector boundary copy `z` whose adjacency to the retained type is the
 constant `epsilon`, every singleton exchange importing `z` and exporting `y` gives
