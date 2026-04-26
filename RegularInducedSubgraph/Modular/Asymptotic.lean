@@ -5202,6 +5202,59 @@ theorem boundaryTripleType_missing_each_parity_fromSeven_droppedTail_closed_or_l
     · exact Or.inr ⟨t, ht, hlarge, hcomplete, hindependent⟩
 
 /--
+Residual selector left by the parity-compression branch: a large realized boundary-type fiber which is
+neither complete nor independent must still produce a dropped-tail subbucket inside that fiber.
+-/
+def HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven : Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 7 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+      (τ : Fin n → Fin 8) {t : Fin 8},
+      ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+        InducesModEqDegree G S (2 ^ j) →
+          t ∈ S.image τ →
+            2 ^ j < (S.filter fun x => τ x = t).card →
+              ¬ BoundaryTypeFiberComplete G S τ t →
+                ¬ BoundaryTypeFiberIndependent G S τ t →
+                  ∃ u : Finset (Fin n), u ⊆ (S.filter fun x => τ x = t) ∧
+                    u.card = 2 ^ j ∧
+                    ∀ v w : ↑(u : Set (Fin n)),
+                      (G.neighborFinset v ∩ (S \ u)).card ≡
+                        (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j]
+
+/--
+Parity-compression branch wired into the selector surface: once the large nonhomogeneous-fiber
+residual is available, missing one even and one odd boundary type closes the dropped tail.
+-/
+theorem
+    boundaryTripleType_missing_each_parity_fromSeven_droppedTail_closed_of_large_nonhomogeneous_fiber_selection
+    (hnonhom : HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven)
+    {n j : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)} (τ : Fin n → Fin 8)
+    (hj : 7 ≤ j) (hS : (2 ^ j) ^ 5 * 2 ^ j ≤ S.card)
+    (hmod : InducesModEqDegree G S (2 ^ j))
+    (heven : ∃ e : Fin 8, e ∉ S.image τ ∧ boundaryTripleParity e = 0)
+    (hodd : ∃ o : Fin 8, o ∉ S.image τ ∧ boundaryTripleParity o = 1) :
+    ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] := by
+  classical
+  rcases
+    boundaryTripleType_missing_each_parity_fromSeven_droppedTail_closed_or_large_nonhomogeneous_fiber
+      (G := G) (j := j) (S := S) τ hj hS hmod heven hodd with
+    hclosed | hresidual
+  · exact hclosed
+  · rcases hresidual with ⟨t, ht, hlarge, hnotComplete, hnotIndependent⟩
+    rcases
+      hnonhom (n := n) (j := j) hj G (S := S) τ (t := t)
+        hS hmod ht hlarge hnotComplete hnotIndependent with
+      ⟨u, huFiber, hcard, hdrop⟩
+    have huS : u ⊆ S := by
+      intro x hx
+      exact (Finset.mem_filter.mp (huFiber hx)).1
+    exact ⟨u, huS, hcard, hdrop⟩
+
+/--
 Independent-boundary `{0,2}` branch closure at the `j ≥ 7` modular-selector scale: if the
 all-miss type is absent and every nonzero type fiber is complete, then the large fixed witness
 already contains a modular exact subbucket.
@@ -5503,6 +5556,25 @@ theorem topEdge_allHit_card_le_six_mul_of_wagon_twoKTwoFree_chromatic_bound
     (finset_card_le_fintype_card_mul_of_fiber_bound B color hsmall)
 
 /--
+At the `j ≥ 7` selector scale, Wagon's `2K₂`-free chromatic bound rules out a large all-hit
+top-edge packet when clique number is at most three and each independent set has size at most `2^j`.
+-/
+theorem topEdge_allHit_fromSeven_impossible_of_wagon_twoKTwoFree_chromatic_bound
+    (hWagon : HasWagonTwoKTwoFreeChromaticBound)
+    {n j : ℕ} (H : SimpleGraph (Fin n)) {B : Finset (Fin n)}
+    (hj : 7 ≤ j) (hlarge : (2 ^ j) ^ 5 * 2 ^ j ≤ B.card)
+    (h2K2 : IsTwoKTwoFreeOn H B)
+    (homega : HasCliqueBoundOn H B 3)
+    (halpha : HasIndependenceBoundOn H B (2 ^ j)) :
+    False := by
+  have hcap : B.card ≤ 6 * 2 ^ j :=
+    topEdge_allHit_card_le_six_mul_of_wagon_twoKTwoFree_chromatic_bound
+      hWagon H h2K2 homega halpha
+  have htooLarge : 6 * 2 ^ j < B.card :=
+    lt_of_lt_of_le (six_mul_two_pow_lt_selector_size_fromSeven hj) hlarge
+  omega
+
+/--
 Top-edge incidence cap when the lower type supplies an independent pair.  If the two neighbourhoods
 in the all-hit side and their common non-neighbour remainder are each `m`-bounded, then the all-hit
 side is `3m`-bounded.
@@ -5732,6 +5804,40 @@ def HasPolynomialCostFixedWitnessTerminalBoundaryAtomDecompositionSelectionFiveF
                           (if G.Adj x y then 1 else 0) t t i k)))
 
 /--
+Terminal-boundary selector with the support-size-six parity-compression exit exposed.  The first two
+cases are the already closed atom branches; the third isolates the missing-even/missing-odd branch and
+delegates only its large nonhomogeneous-fiber residual.
+-/
+def HasPolynomialCostFixedWitnessTerminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven :
+    Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 7 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+      ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+        InducesModEqDegree G S (2 ^ j) →
+          ∃ τ : (Fin n → Fin 8), ∃ spectrum : Finset ℕ,
+            ((0 ∈ spectrum ∧ 2 ∈ spectrum ∧
+                (∀ x ∈ S, ∀ d ∈ spectrum,
+                  ¬ AugmentedThreeOneAtomRegular d 0 0 0 (τ x)) ∧
+                (∀ t : Fin 8, t ≠ (0 : Fin 8) →
+                  ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y →
+                    ∀ i k : Fin 3, i ≠ k →
+                      ∀ d ∈ spectrum,
+                        ¬ AugmentedTwoTwoAtomRegular d 0
+                          (if G.Adj x y then 1 else 0) t t i k)) ∨
+              (1 ∈ spectrum ∧ 3 ∈ spectrum ∧
+                (∀ x ∈ S, ∀ d ∈ spectrum,
+                  ¬ AugmentedThreeOneAtomRegular d 1 1 1 (τ x)) ∧
+                (∀ t : Fin 8, t ≠ (7 : Fin 8) →
+                  ∀ x ∈ S, τ x = t → ∀ y ∈ S, τ y = t → x ≠ y →
+                    ∀ i k : Fin 3, i ≠ k →
+                      ∀ d ∈ spectrum,
+                        ¬ AugmentedTwoTwoAtomRegular d 1
+                          (if G.Adj x y then 1 else 0) t t i k)) ∨
+                ((∃ e : Fin 8, e ∉ S.image τ ∧ boundaryTripleParity e = 0) ∧
+                  (∃ o : Fin 8, o ∉ S.image τ ∧ boundaryTripleParity o = 1)))
+
+/--
 The terminal-boundary atom decomposition closes the genuine `j ≥ 7` dropped-tail selector tail: its
 two branches are exactly the independent-boundary `{0,2}` and triangle-boundary `{3,1}` branch
 closures.
@@ -5752,6 +5858,35 @@ theorem
     exact
       sparseOneThreeTriangleBoundary_fromSeven_droppedTail_closed_of_forbidden_atoms
         G τ hj hS hmod hone hthree hforbidThreeOne hforbidTwoTwo
+
+/--
+The parity-compression selector form closes modulo the named large-nonhomogeneous-fiber residual.
+This is the reduction target for the remaining support-size-six terminal case.
+-/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_terminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven
+    (hselect :
+      HasPolynomialCostFixedWitnessTerminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven)
+    (hnonhom : HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven := by
+  classical
+  intro n j hj G S hS hmod
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases hselect hj G hS hmod with ⟨τ, spectrum, hcases⟩
+  rcases hcases with hzeroTwo | htail
+  · rcases hzeroTwo with ⟨hzero, htwo, hforbidThreeOne, hforbidTwoTwo⟩
+    exact
+      sparseZeroTwoIndependentBoundary_fromSeven_droppedTail_closed_of_forbidden_atoms
+        G τ hj hS hmod hzero htwo hforbidThreeOne hforbidTwoTwo
+  · rcases htail with honeThree | hparity
+    · rcases honeThree with ⟨hone, hthree, hforbidThreeOne, hforbidTwoTwo⟩
+      exact
+        sparseOneThreeTriangleBoundary_fromSeven_droppedTail_closed_of_forbidden_atoms
+          G τ hj hS hmod hone hthree hforbidThreeOne hforbidTwoTwo
+    · rcases hparity with ⟨heven, hodd⟩
+      exact
+        boundaryTripleType_missing_each_parity_fromSeven_droppedTail_closed_of_large_nonhomogeneous_fiber_selection
+          hnonhom G τ hj hS hmod heven hodd
 
 /-- A modular `q = 32` selector gives a regular `q = 32` selector. -/
 theorem
