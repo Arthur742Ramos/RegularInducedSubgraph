@@ -5612,6 +5612,8 @@ With `r_G=2t_G`, this closure condition is the exact degree-sequence equation
 `d_G==2t_G-lambda mod 4` for the sign graph.  Thus the closing sign graphs are explicitly:
 for `k=0,4` triangular atoms, empty/C4/matching/K4; for `k=1,3`, the K3 on the majority type or the star
 centered at the minority type; for `k=2`, none.
+Equivalently, the pure all-edge scalar residual is just: nonregular sign graph in uniform type, neither
+closing graph in `1/3` type, and arbitrary sign graph in `2/2` type.
 If a forced petal hits the shortened pair and lifts with `q=2` or `3` source vertices while hitting `r` other
 atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+1` for `q=3`; the remaining
 petals must compensate those omissions.

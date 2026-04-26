@@ -13033,6 +13033,16 @@ k=4:  empty graph, 2-regular graph, perfect matching, or K4.
 ```
 
 All other signed quotients are exactly the nonconstant `r_G-S_G` scalar obstruction.
+In other words, the pure all-edge residual has the following compact quotient form:
+
+```text
+uniform type (k=0 or 4):  the sign graph is not regular;
+1/3 type split:           the sign graph is neither the majority-type K3 nor the minority-centered star;
+2/2 type split:           every sign graph is a scalar obstruction for the full twelve-vertex carrier.
+```
+
+This separates the all-edge scalar obstruction from the target-code work: it is a finite signed-quotient
+problem on four atom residues.
 
 If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
 cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
@@ -13311,7 +13321,8 @@ large-outside ternary target avoidance:
   half-edge Latin K_{2,2} design, cross-residue-flat inside each atom, leaving only the signed-K_4 scalar
   equation r_G-S_G; fully split all-ternary pairs are mutual permutation/complement traces, monochrome pairs
   are excluded, and the remaining F-containing branch is a typed bipartite F-graph with one exceptional
-  row at each atom of F-degree 1 or 2;
+  row at each atom of F-degree 1 or 2; two- and three-exception packets route to local host closures, leaving
+  only the four-exception 2/2 type-square skeletons;
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches, with every
   discrepant edge/nonedge shielded from lower partial swaps by omitted-trace or retained-scalar failure;

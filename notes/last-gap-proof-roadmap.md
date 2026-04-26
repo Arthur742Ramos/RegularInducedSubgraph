@@ -2103,7 +2103,7 @@ What remains justified after audit is:
       cross-degrees are constant modulo `4` inside each atom; the full carrier closes exactly when
       `r_G-S_G` is constant, otherwise leaving only a finite signed-`K_4` scalar obstruction; its closing
       sign graphs are empty/C4/matching/K4 in uniform type, majority K3 or minority star in `1/3` type, and
-      none in `2/2` type;
+      none in `2/2` type, so nonclosure is a finite signed-quotient obstruction;
       shortened-pair-hit petals have a finite omission table: `q=2` is one-omission-per-hit tight, while
       `q=3` forces a singleton hit in a size-three/larger target;
       shortened-pair-hit petals satisfy strict cross-defect `delta_other>=r` or `r+1` according as they use

@@ -2658,6 +2658,8 @@ Recommended attack:
     Formalize the signed-`K_4` closure classification: writing `r_G=2t_G`, closure with residue `lambda`
     is exactly `d_G==2t_G-lambda mod 4`; this yields empty/C4/matching/K4 for `k=0,4`, majority K3 or
     minority-centered star for `k=1,3`, and no full-carrier closure for `k=2`.
+    Repackage nonclosure as: nonregular sign graph for uniform type, neither closing graph for `1/3`, and all
+    sign graphs for `2/2`.
     Add shortened-pair-hit strict defect: a forced petal using `q=2,3` source vertices and hitting `r` other
     atoms has `delta_other>=r` or `r+1`, respectively; remaining petals compensate those omissions.
     Record the small-profile hit table: `q=2` tight means exactly one omission in every hit atom; `q=3`
