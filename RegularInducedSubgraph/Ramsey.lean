@@ -16349,6 +16349,424 @@ theorem RamseyTenR45FinalCertificateBundle.toTenLeF_40960
     (h : RamseyTenR45FinalCertificateBundle) : 10 ≤ F 40960 :=
   h.globalConsequences.toTenLeF_40960
 
+
+/--
+Regular-induced, admissible-bound, and extremal-function consequences selected as one reusable
+surface from any final Ramsey-10 status handoff.
+-/
+structure RamseyTenR45FinalConsequenceSurface : Prop where
+  finalStatus : RamseyTenR45FinalStatus
+  globalConsequences : RamseyTenR45GlobalConsequenceBundle
+  regularTenAt40960 :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard G 10
+  admissibleTenAt40960 : 10 ∈ admissibleBounds 40960
+  f40960 : 10 ≤ F 40960
+
+/-- Package final status as the reusable final-consequence surface. -/
+theorem RamseyTenR45FinalStatus.toFinalConsequenceSurface
+    (h : RamseyTenR45FinalStatus) : RamseyTenR45FinalConsequenceSurface where
+  finalStatus := h
+  globalConsequences := h.toGlobalConsequenceBundle
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.admissibleTenAt40960
+  f40960 := h.f40960
+
+/-- Package a global consequence bundle as the reusable final-consequence surface. -/
+theorem RamseyTenR45GlobalConsequenceBundle.toFinalConsequenceSurface
+    (h : RamseyTenR45GlobalConsequenceBundle) : RamseyTenR45FinalConsequenceSurface where
+  finalStatus := h.toFinalStatus
+  globalConsequences := h
+  regularTenAt40960 := h.regularTenAt40960
+  admissibleTenAt40960 := h.admissibleTenAt40960
+  f40960 := h.f40960
+
+/-- Select final status from a final-consequence surface. -/
+theorem RamseyTenR45FinalConsequenceSurface.toFinalStatus
+    (h : RamseyTenR45FinalConsequenceSurface) : RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select global consequences from a final-consequence surface. -/
+theorem RamseyTenR45FinalConsequenceSurface.toGlobalConsequenceBundle
+    (h : RamseyTenR45FinalConsequenceSurface) : RamseyTenR45GlobalConsequenceBundle :=
+  h.globalConsequences
+
+/-- Select the localized `R(4,5) <= 27` input from a final-consequence surface. -/
+theorem RamseyTenR45FinalConsequenceSurface.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45FinalConsequenceSurface) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.globalConsequences.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Select the propagated `R(10,10) <= 39246` bound from a final-consequence surface. -/
+theorem RamseyTenR45FinalConsequenceSurface.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45FinalConsequenceSurface) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.globalConsequences.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Select the dyadic regular-induced-subgraph consequence from a final-consequence surface. -/
+theorem RamseyTenR45FinalConsequenceSurface.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45FinalConsequenceSurface)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.regularTenAt40960 G hcard
+
+/-- Select the admissible-bound consequence from a final-consequence surface. -/
+theorem RamseyTenR45FinalConsequenceSurface.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45FinalConsequenceSurface) : 10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Select the extremal-function consequence from a final-consequence surface. -/
+theorem RamseyTenR45FinalConsequenceSurface.toTenLeF_40960
+    (h : RamseyTenR45FinalConsequenceSurface) : 10 ≤ F 40960 :=
+  h.f40960
+
+/-- Local ledger handoffs expose their final consequences without destructuring the handoff. -/
+theorem RamseyTenR45LocalLedgerHandoff.toFinalConsequenceSurface {P : Prop}
+    (h : RamseyTenR45LocalLedgerHandoff P) : RamseyTenR45FinalConsequenceSurface where
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+  regularTenAt40960 := h.globalConsequences.regularTenAt40960
+  admissibleTenAt40960 := h.globalConsequences.admissibleTenAt40960
+  f40960 := h.globalConsequences.f40960
+
+/-- Profiled middle-degree handoffs expose their final consequences without destructuring. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toFinalConsequenceSurface
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff) : RamseyTenR45FinalConsequenceSurface where
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+  regularTenAt40960 := h.globalConsequences.regularTenAt40960
+  admissibleTenAt40960 := h.globalConsequences.admissibleTenAt40960
+  f40960 := h.globalConsequences.f40960
+
+/-- Final certificate bundles expose their final consequences without destructuring. -/
+theorem RamseyTenR45FinalCertificateBundle.toFinalConsequenceSurface
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45FinalConsequenceSurface where
+  finalStatus := h.finalStatus
+  globalConsequences := h.globalConsequences
+  regularTenAt40960 := h.globalConsequences.regularTenAt40960
+  admissibleTenAt40960 := h.globalConsequences.admissibleTenAt40960
+  f40960 := h.globalConsequences.f40960
+
+/-- Select the degree-`8` endpoint assumption from a final certificate bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toDegreeEightEndpointAssumption
+    (h : RamseyTenR45FinalCertificateBundle) :
+    NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix :=
+  h.endpointResiduals.degreeEight
+
+/-- Select the degree-`9` endpoint assumption from a final certificate bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toDegreeNineEndpointAssumption
+    (h : RamseyTenR45FinalCertificateBundle) :
+    NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven :=
+  h.endpointResiduals.degreeNine
+
+/-- Select the degree-`13` endpoint assumption from a final certificate bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toDegreeThirteenEndpointAssumption
+    (h : RamseyTenR45FinalCertificateBundle) :
+    NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven :=
+  h.endpointResiduals.degreeThirteen
+
+/--
+One-stop selector surface for final bundles: endpoint assumptions, exact-`42` profile data, local
+split ledgers, and final consequences are all projected from the same certificate.
+-/
+structure RamseyTenR45FinalBundleSelectorSurface : Prop where
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  endpointCertificate : RamseyTenR45EndpointResidualCertificate
+  degreeEightEndpoint : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix
+  degreeNineEndpoint : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven
+  degreeThirteenEndpoint : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven
+  exact42Profile : RamseyThreeTenExact42ThreeRowProfileSurface
+  exact42WithMiddleSplits : RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits
+  localLedgers : RamseyTenR45MiddleDegreeLocalLedgerBundle
+  degreeTenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven
+  degreeElevenSplits : NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven
+  degreeTwelveSplits : NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven
+  middleDegreeSplits : NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven
+  threeTenFortyTwo : HasCliqueOrIndepSetBound 3 10 42
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  finalStatus : RamseyTenR45FinalStatus
+  finalConsequences : RamseyTenR45FinalConsequenceSurface
+
+/-- Build the one-stop selector surface from a final certificate bundle. -/
+theorem RamseyTenR45FinalCertificateBundle.toFinalBundleSelectorSurface
+    (h : RamseyTenR45FinalCertificateBundle) : RamseyTenR45FinalBundleSelectorSurface where
+  endpointResiduals := h.endpointResiduals
+  endpointCertificate := h.endpointCertificate
+  degreeEightEndpoint := h.endpointResiduals.degreeEight
+  degreeNineEndpoint := h.endpointResiduals.degreeNine
+  degreeThirteenEndpoint := h.endpointResiduals.degreeThirteen
+  exact42Profile := h.exact42Profile
+  exact42WithMiddleSplits := h.exact42WithMiddleSplits
+  localLedgers := h.localLedgers
+  degreeTenSplits := h.localLedgers.degreeTenSplits
+  degreeElevenSplits := h.localLedgers.degreeElevenSplits
+  degreeTwelveSplits := h.localLedgers.degreeTwelveSplits
+  middleDegreeSplits := h.localLedgers.middleDegreeSplits
+  threeTenFortyTwo := h.threeTenFortyTwo
+  r45TwentySevenTable := h.r45TwentySevenTable
+  finalStatus := h.finalStatus
+  finalConsequences := h.toFinalConsequenceSurface
+
+/-- Profiled middle-degree handoffs can be consumed through the one-stop selector surface. -/
+theorem RamseyTenR45ProfiledMiddleDegreeHandoff.toFinalBundleSelectorSurface
+    (h : RamseyTenR45ProfiledMiddleDegreeHandoff) : RamseyTenR45FinalBundleSelectorSurface :=
+  h.toFinalCertificateBundle.toFinalBundleSelectorSurface
+
+/-- Select endpoint residuals from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toEndpointResiduals
+    (h : RamseyTenR45FinalBundleSelectorSurface) : RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the expanded endpoint certificate from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toEndpointResidualCertificate
+    (h : RamseyTenR45FinalBundleSelectorSurface) : RamseyTenR45EndpointResidualCertificate :=
+  h.endpointCertificate
+
+/-- Select the degree-`8` endpoint assumption from the one-stop selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toDegreeEightEndpointAssumption
+    (h : RamseyTenR45FinalBundleSelectorSurface) :
+    NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix :=
+  h.degreeEightEndpoint
+
+/-- Select the degree-`9` endpoint assumption from the one-stop selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toDegreeNineEndpointAssumption
+    (h : RamseyTenR45FinalBundleSelectorSurface) :
+    NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven :=
+  h.degreeNineEndpoint
+
+/-- Select the degree-`13` endpoint assumption from the one-stop selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toDegreeThirteenEndpointAssumption
+    (h : RamseyTenR45FinalBundleSelectorSurface) :
+    NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven :=
+  h.degreeThirteenEndpoint
+
+/-- Select the exact-`42` profile from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toExact42ProfileSurface
+    (h : RamseyTenR45FinalBundleSelectorSurface) : RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Profile
+
+/-- Select the exact-`42` profile paired with middle-degree ledgers from the selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toExact42WithMiddleSplits
+    (h : RamseyTenR45FinalBundleSelectorSurface) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42WithMiddleSplits
+
+/-- Select the local ledger bundle from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toLocalLedgerBundle
+    (h : RamseyTenR45FinalBundleSelectorSurface) : RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.localLedgers
+
+/-- Select the degree-`10` split ledger from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toDegreeTenSplitCertificate
+    (h : RamseyTenR45FinalBundleSelectorSurface) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven :=
+  h.degreeTenSplits
+
+/-- Select the degree-`11` split ledger from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toDegreeElevenSplitCertificate
+    (h : RamseyTenR45FinalBundleSelectorSurface) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven :=
+  h.degreeElevenSplits
+
+/-- Select the degree-`12` split ledger from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toDegreeTwelveSplitCertificate
+    (h : RamseyTenR45FinalBundleSelectorSurface) :
+    NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven :=
+  h.degreeTwelveSplits
+
+/-- Select the uniform middle-degree split ledger from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toMiddleDegreeSplitCertificate
+    (h : RamseyTenR45FinalBundleSelectorSurface) :
+    NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven :=
+  h.middleDegreeSplits
+
+/-- Select the low-row `R(3,10) <= 42` consequence from the selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toThreeTenFortyTwo
+    (h : RamseyTenR45FinalBundleSelectorSurface) : HasCliqueOrIndepSetBound 3 10 42 :=
+  h.threeTenFortyTwo
+
+/-- Select the relaxed `R(4,5) <= 27` table from the selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toR45TwentySevenTable
+    (h : RamseyTenR45FinalBundleSelectorSurface) : RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select final status from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toFinalStatus
+    (h : RamseyTenR45FinalBundleSelectorSurface) : RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Select final consequences from the one-stop final-bundle selector surface. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toFinalConsequenceSurface
+    (h : RamseyTenR45FinalBundleSelectorSurface) : RamseyTenR45FinalConsequenceSurface :=
+  h.finalConsequences
+
+/-- Consume the one-stop selector surface as the localized `R(4,5) <= 27` input. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45FinalBundleSelectorSurface) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.finalConsequences.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Consume the one-stop selector surface as the current `R(10,10)` frontier. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45FinalBundleSelectorSurface) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.finalConsequences.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Consume the one-stop selector surface as the regular induced `10`-subgraph statement. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45FinalBundleSelectorSurface)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.finalConsequences.toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Consume the one-stop selector surface as the admissible-bound conclusion. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45FinalBundleSelectorSurface) : 10 ∈ admissibleBounds 40960 :=
+  h.finalConsequences.toTenMemAdmissibleBounds_40960
+
+/-- Consume the one-stop selector surface as the extremal-function conclusion. -/
+theorem RamseyTenR45FinalBundleSelectorSurface.toTenLeF_40960
+    (h : RamseyTenR45FinalBundleSelectorSurface) : 10 ≤ F 40960 :=
+  h.finalConsequences.toTenLeF_40960
+
+/-- Assumption-explicit regular-induced bridge from the degree-`10` local split handoff. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_degreeEight_degreeNine_degreeThirteen_degreeTenSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeTen :
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  (ramseyTenR45DegreeTenSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hdegreeTen).toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Assumption-explicit admissible-bound bridge from the degree-`10` local split handoff. -/
+theorem ten_mem_admissibleBounds_40960_of_degreeEight_degreeNine_degreeThirteen_degreeTenSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeTen :
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven) :
+    10 ∈ admissibleBounds 40960 :=
+  (ramseyTenR45DegreeTenSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hdegreeTen).toTenMemAdmissibleBounds_40960
+
+/-- Assumption-explicit extremal-function bridge from the degree-`10` local split handoff. -/
+theorem ten_le_F_40960_of_degreeEight_degreeNine_degreeThirteen_degreeTenSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeTen :
+      NoRamseyFourFiveDegreeNineEndpointDegreeTenSplitCertificateOnTwentySeven) :
+    10 ≤ F 40960 :=
+  (ramseyTenR45DegreeTenSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hdegreeTen).toTenLeF_40960
+
+/-- Assumption-explicit regular-induced bridge from the degree-`11` local split handoff. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_degreeEight_degreeNine_degreeThirteen_degreeElevenSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeEleven :
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  (ramseyTenR45DegreeElevenSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hdegreeEleven).toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Assumption-explicit admissible-bound bridge from the degree-`11` local split handoff. -/
+theorem ten_mem_admissibleBounds_40960_of_degreeEight_degreeNine_degreeThirteen_degreeElevenSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeEleven :
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven) :
+    10 ∈ admissibleBounds 40960 :=
+  (ramseyTenR45DegreeElevenSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hdegreeEleven).toTenMemAdmissibleBounds_40960
+
+/-- Assumption-explicit extremal-function bridge from the degree-`11` local split handoff. -/
+theorem ten_le_F_40960_of_degreeEight_degreeNine_degreeThirteen_degreeElevenSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeEleven :
+      NoRamseyFourFiveDegreeNineEndpointDegreeElevenSplitCertificateOnTwentySeven) :
+    10 ≤ F 40960 :=
+  (ramseyTenR45DegreeElevenSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hdegreeEleven).toTenLeF_40960
+
+/-- Assumption-explicit regular-induced bridge from the degree-`12` local split handoff. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_degreeEight_degreeNine_degreeThirteen_degreeTwelveSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeTwelve :
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  (ramseyTenR45DegreeTwelveSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hdegreeTwelve).toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Assumption-explicit admissible-bound bridge from the degree-`12` local split handoff. -/
+theorem ten_mem_admissibleBounds_40960_of_degreeEight_degreeNine_degreeThirteen_degreeTwelveSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeTwelve :
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven) :
+    10 ∈ admissibleBounds 40960 :=
+  (ramseyTenR45DegreeTwelveSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hdegreeTwelve).toTenMemAdmissibleBounds_40960
+
+/-- Assumption-explicit extremal-function bridge from the degree-`12` local split handoff. -/
+theorem ten_le_F_40960_of_degreeEight_degreeNine_degreeThirteen_degreeTwelveSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hdegreeTwelve :
+      NoRamseyFourFiveDegreeNineEndpointDegreeTwelveSplitCertificateOnTwentySeven) :
+    10 ≤ F 40960 :=
+  (ramseyTenR45DegreeTwelveSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hdegreeTwelve).toTenLeF_40960
+
+/-- Assumption-explicit regular-induced bridge from the uniform middle-degree local split handoff. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_degreeEight_degreeNine_degreeThirteen_localMiddleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hmiddle :
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  (ramseyTenR45MiddleDegreeSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hmiddle).toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Assumption-explicit admissible-bound bridge from the uniform middle-degree local split handoff. -/
+theorem ten_mem_admissibleBounds_40960_of_degreeEight_degreeNine_degreeThirteen_localMiddleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hmiddle :
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven) :
+    10 ∈ admissibleBounds 40960 :=
+  (ramseyTenR45MiddleDegreeSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hmiddle).toTenMemAdmissibleBounds_40960
+
+/-- Assumption-explicit extremal-function bridge from the uniform middle-degree local split handoff. -/
+theorem ten_le_F_40960_of_degreeEight_degreeNine_degreeThirteen_localMiddleDegreeSplits
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    (hmiddle :
+      NoRamseyFourFiveDegreeNineEndpointMiddleDegreeSplitCertificateOnTwentySeven) :
+    10 ≤ F 40960 :=
+  (ramseyTenR45MiddleDegreeSplitHandoff_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13 hmiddle).toTenLeF_40960
+
 /-- Final status wrapper from explicit endpoints plus the profiled exact-`42` surface. -/
 theorem ramseyTenR45FinalStatus_of_degreeEight_degreeNine_degreeThirteen_exact42Profile
     (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
