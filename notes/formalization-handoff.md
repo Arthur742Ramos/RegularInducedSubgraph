@@ -1024,6 +1024,9 @@ Recommended attack:
    Generalize this as the two-packet scalar equation: internally regular cross-uniform packets
    `B_a subset P_a`, `B_b subset P_b` append iff
    `a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`.
+   The finite packet-system form is
+   `a_j+d_j+sum_{k != j}epsilon_{jk}|B_k|=r+sum_k delta_k [MOD 4]` for every internally regular packet
+   `B_j` when all cross graphs between packets are uniform.
    Choose `w_0 in W`, work in `(Z/4Z)^(W\{w_0})`, and insert positive vectors
    `p_b(w)=1_{bw}-1_{bw_0}` for `b in P_t` together with negative vectors
    `-p_d(w)=-(1_{dw}-1_{dw_0})` for `d in W`.  Greedy Olson on the combined sequence leaves at most

@@ -1548,6 +1548,8 @@ The corresponding general scalar equation is exact: two internally regular cross
 `B_a subset P_a`, `B_b subset P_b`, with internal residues `d_a,d_b`, old increments
 `delta_a,delta_b`, and cross value `epsilon`, append iff
 `a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`.
+For a finite cross-uniform packet family this becomes
+`a_j+d_j+sum_{k != j}epsilon_{jk}|B_k|=r+sum_k delta_k [MOD 4]` on every packet.
 
 ## 14. Pair-chamber orientation normal form
 

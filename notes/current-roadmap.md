@@ -4798,7 +4798,8 @@ independent packet in `{deg_W=r}` and a clique packet in `{deg_W=r+1}` with old 
 together when their cross graph is empty with `|K|=0`, or complete with `|I|=0`, modulo `4`.
 In general, two internally regular cross-uniform chamber packets append exactly when
 `a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`; this scalar equation is now the
-packet analogue of the bounded-word augmentation table.
+packet analogue of the bounded-word augmentation table.  For a finite packet system, the normal form is
+`a_j+d_j+sum_{k != j}epsilon_{jk}|B_k|=r+sum_k delta_k [MOD 4]` for every active packet.
 
 ## Supporting work that is useful but not on the critical path
 

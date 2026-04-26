@@ -361,6 +361,10 @@ The general two-packet scalar equation is: for internally regular cross-uniform 
 `B_a subset P_a`, `B_b subset P_b` with old increments `delta_a,delta_b`, internal residues `d_a,d_b`,
 and cross value `epsilon`, their union appends iff
 `a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`.
+For finitely many internally regular packets with pairwise uniform cross values `epsilon_{jk}`, this
+becomes
+`a_j+d_j+sum_{k != j}epsilon_{jk}|B_k|=r+sum_k delta_k [MOD 4]` for every active packet `j`.
+This is the exact chamber packet-system normal form of the first-bit self-layer residual.
 The other sparse chambers and the remaining dense targets are affine target-subsum
 problems: an independent subset `B subset P_t` extends once
 `sum_B(1_{bw})=t-r` for every old `w`, while a clique subset `B subset P_t` extends once

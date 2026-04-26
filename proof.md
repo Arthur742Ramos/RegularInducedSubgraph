@@ -5326,6 +5326,24 @@ The zero-target independent/clique rule is the case
 Thus every remaining chamber-packet obstruction can be phrased as failure to realize one of these
 two scalar equations after the old-frame Olson balancing has been performed.
 
+For a finite packet family the same equation is:
+
+```text
+B_j subset P_{a_j},       internal residue d_j,       old increment delta_j,
+cross(B_j,B_k)=epsilon_{jk} in {0,1}.
+```
+
+If all cross graphs are uniform, then `B=union_j B_j` appends iff, for every active `j`,
+
+```text
+a_j+d_j+sum_{k != j} epsilon_{jk}|B_k|
+  = r+sum_k delta_k                         [MOD 4].
+```
+
+Thus the maximal-witness first-bit residual has an exact finite packet-system form: old-coordinate
+balancing is linear, and the only nonlinear part is the self-layer system of internal residues and
+uniform cross packet sizes.
+
 For the other degree-to-`W` chambers the missing datum is exactly one affine target coordinate, not the
 old difference balancing.  If `P_t={b: deg_W(b)=t}` and `I subset P_t` is independent, then an
 independent packet `B subset I` extends `W` precisely when
