@@ -1102,6 +1102,7 @@ Lexicographic saturation localizes zero-gain supports: they meet at most one pac
 same-size exchange with leftover vertices.
 Thus cross-atom supports have strict atom defect `delta>=pi`; in the first no-leftover four-four-atom core,
 supports crossing two, three, or four atoms have size at most `6`, `9`, or `12`.
+Deletion in this first no-leftover core is exactly unit strict absorption or lift-collision.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
 In the one-support case the exact lift accounting has two types: hitting the shortened block makes the

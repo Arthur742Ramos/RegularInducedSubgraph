@@ -2027,6 +2027,7 @@ In a lexicographically saturated packing, zero-gain supports are local: they mee
 and then only as a same-size exchange with leftover vertices.
 So cross-atom supports have strict atom defect `delta>=pi`; in the first no-leftover four-four-atom core,
 their sizes across two/three/four atoms are at most `6/9/12`.
+Deletion in this first no-leftover core is exactly unit strict absorption or lift-collision.
 Deleting a packed-block vertex creates a one-short projected packing, so criticality forces a minimal
 deletion-only positive-gain repair family whose full lifts are blocked by nonpositive total gain.
 For a one-support repair, exact lift accounting splits into shortened-block repair (thickened lift keeps the

@@ -11998,6 +11998,20 @@ has size at most six, crossing three atoms has size at most nine, and crossing a
 most twelve.  The no-leftover core is therefore a strict cross-defect four-block system, not merely a
 nonpositive-gain system.
 
+The deletion endpoint in this first no-leftover core is also rigid.  Let every atom have size four and
+`L=0`.  For a deletion from an atom `B_j`, the four-case lift table leaves only one possible nonpositive
+disjoint full lift.  The shortened-block unlift with `g^-=1` would be zero-gain and hence local, impossible
+without leftover vertices; equality pure absorption with `g^-=2` would likewise be zero-gain and would need
+three leftover vertices.  Therefore any disjoint full lift that does not close must be the strict pure
+absorption case
+
+```text
+h=0,        t=1,        g^-=1,        full gain = -1.
+```
+
+If no such lift exists, the only remaining obstruction is deleted-vertex collision.  Thus the first
+no-leftover core has an exact deletion dichotomy: **unit strict absorption** or **lift-collision**.
+
 Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
 `P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
 `B_j\{a}` lowers the saving by exactly one, so the projected packing in `A\{a}` has saving `|A|-5`, one
