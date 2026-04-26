@@ -5434,6 +5434,8 @@ Therefore cross-atom supports have strict atom defect: if a support meets `r>=2`
 supports have sizes at most `6/9/12`.
 In that first no-leftover core, deletion repair has only two terminal forms: unit strict absorption
 (`h=0,t=1,g^-=1`, full gain `-1`) or deleted-vertex lift-collision.
+Unit strict absorption has exactly three atom templates on the other three four-atoms: one support covers
+two whole atoms; one support covers all but one vertex of three atoms; or two supports cover all three atoms.
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
 vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
 positive-gain repair family whose every full lift has nonpositive total gain.

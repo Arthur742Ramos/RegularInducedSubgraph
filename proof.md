@@ -12012,6 +12012,27 @@ h=0,        t=1,        g^-=1,        full gain = -1.
 If no such lift exists, the only remaining obstruction is deleted-vertex collision.  Thus the first
 no-leftover core has an exact deletion dichotomy: **unit strict absorption** or **lift-collision**.
 
+The unit strict absorption side has a finite atom-level taxonomy.  In the first no-leftover core, delete
+`a in B_0` and let `R^-` be a projected repair family of `s` disjoint supports avoiding `B_0\{a}` with
+projected gain `g^-=1`.  Let `pi` be the number of the other three four-atoms hit by the family, and let
+`delta` be the number of omitted vertices from those hit atoms.  Then
+
+```text
+g^- = pi - s - delta = 1.
+```
+
+Since `pi<=3`, the only possibilities are
+
+```text
+s=1, pi=2, delta=0:  one support covers two whole other atoms;
+s=1, pi=3, delta=1:  one support covers all but one vertex of the other three atoms;
+s=2, pi=3, delta=0:  two supports disjointly cover the other three atoms.
+```
+
+Thus unit strict absorption is not a diffuse repair: it is a three-template, large-cover event on the three
+atoms opposite the deleted vertex.  The full lift adds `a` to one member of this projected family and turns
+the projected gain `1` into full gain `-1`.
+
 Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
 `P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
 `B_j\{a}` lowers the saving by exactly one, so the projected packing in `A\{a}` has saving `|A|-5`, one

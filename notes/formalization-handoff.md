@@ -2493,6 +2493,8 @@ Recommended attack:
     no-leftover four-four-atom core, cross-support sizes are bounded by `6/9/12`.
     Add the first no-leftover deletion dichotomy: in the four-four-atom core, every deletion repair is either
     unit strict absorption (`h=0,t=1,g^-=1`) or lift-collision.
+    Formalize the unit strict absorption taxonomy from `g^-=pi-s-delta=1`: the only templates are
+    `(s,pi,delta)=(1,2,0),(1,3,1),(2,3,0)` on the three atoms opposite the deleted vertex.
     Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
     short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
     total gain.

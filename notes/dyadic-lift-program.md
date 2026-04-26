@@ -1103,6 +1103,8 @@ same-size exchange with leftover vertices.
 Thus cross-atom supports have strict atom defect `delta>=pi`; in the first no-leftover four-four-atom core,
 supports crossing two, three, or four atoms have size at most `6`, `9`, or `12`.
 Deletion in this first no-leftover core is exactly unit strict absorption or lift-collision.
+The unit strict absorption side has three atom templates: `s=1,pi=2,delta=0`; `s=1,pi=3,delta=1`; or
+`s=2,pi=3,delta=0` on the three atoms opposite the deleted vertex.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
 In the one-support case the exact lift accounting has two types: hitting the shortened block makes the
