@@ -2708,6 +2708,172 @@ theorem hasCliqueOrIndepSetBound_10_10_of_ramseyTenSmallTable
       (N₁ := 19272) (N₂ := 19272) (N := 38543)
       (by decide) (by decide) (by norm_num) (by norm_num) h9_10 h10_9 (by norm_num) G s hs
 
+
+/--
+Sharper external finite Ramsey data that materially lowers the high-row recurrence frontier.  The
+fields are intentionally still small-row/off-diagonal facts; the theorem below propagates them to
+the `R(10,10)`, `R(10,11)`, and `R(11,11)` frontier via the existing recurrence machinery.
+-/
+structure RamseyElevenSmallTable : Prop where
+  r39 : HasCliqueOrIndepSetBound 3 9 36
+  r3_10 : HasCliqueOrIndepSetBound 3 10 42
+  r3_11 : HasCliqueOrIndepSetBound 3 11 50
+  r47 : HasCliqueOrIndepSetBound 4 7 61
+  r48 : HasCliqueOrIndepSetBound 4 8 84
+  r56 : HasCliqueOrIndepSetBound 5 6 87
+  r66 : HasCliqueOrIndepSetBound 6 6 165
+
+/--
+Propagate a sharper small Ramsey table to the current higher-bit obstruction row.  This lowers the
+recurrence-only bounds from `R(10,10) <= 38543` and `R(10,11) <= 73504` to `33322` and `63435`.
+-/
+theorem ramseyElevenSmallTable_high_row_bounds (h : RamseyElevenSmallTable) :
+    HasCliqueOrIndepSetBound 10 10 33322 ∧
+      HasCliqueOrIndepSetBound 10 11 63435 ∧
+        HasCliqueOrIndepSetBound 11 11 126870 := by
+  have h49 : HasCliqueOrIndepSetBound 4 9 119 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 3) (b := 8)
+      (N₁ := 36) (N₂ := 84) (N := 119)
+      (by decide) (by decide) (by norm_num) (by norm_num) h.r39 h.r48 (by norm_num)
+  have h4_10 : HasCliqueOrIndepSetBound 4 10 161 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 9)
+      (N₁ := 42) (N₂ := 119) (N := 161)
+      (by decide) (by decide) h.r3_10 h49 (by norm_num)
+  have h4_11 : HasCliqueOrIndepSetBound 4 11 211 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 3) (b := 10)
+      (N₁ := 50) (N₂ := 161) (N := 211)
+      (by decide) (by decide) h.r3_11 h4_10 (by norm_num)
+  have h57 : HasCliqueOrIndepSetBound 5 7 148 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 6)
+      (N₁ := 61) (N₂ := 87) (N := 148)
+      (by decide) (by decide) h.r47 h.r56 (by norm_num)
+  have h58 : HasCliqueOrIndepSetBound 5 8 231 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 4) (b := 7)
+      (N₁ := 84) (N₂ := 148) (N := 231)
+      (by decide) (by decide) (by norm_num) (by norm_num) h.r48 h57 (by norm_num)
+  have h59 : HasCliqueOrIndepSetBound 5 9 350 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 8)
+      (N₁ := 119) (N₂ := 231) (N := 350)
+      (by decide) (by decide) h49 h58 (by norm_num)
+  have h5_10 : HasCliqueOrIndepSetBound 5 10 511 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 9)
+      (N₁ := 161) (N₂ := 350) (N := 511)
+      (by decide) (by decide) h4_10 h59 (by norm_num)
+  have h5_11 : HasCliqueOrIndepSetBound 5 11 722 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 4) (b := 10)
+      (N₁ := 211) (N₂ := 511) (N := 722)
+      (by decide) (by decide) h4_11 h5_10 (by norm_num)
+  have h67 : HasCliqueOrIndepSetBound 6 7 313 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 6)
+      (N₁ := 148) (N₂ := 165) (N := 313)
+      (by decide) (by decide) h57 h.r66 (by norm_num)
+  have h68 : HasCliqueOrIndepSetBound 6 8 544 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 7)
+      (N₁ := 231) (N₂ := 313) (N := 544)
+      (by decide) (by decide) h58 h67 (by norm_num)
+  have h69 : HasCliqueOrIndepSetBound 6 9 893 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 5) (b := 8)
+      (N₁ := 350) (N₂ := 544) (N := 893)
+      (by decide) (by decide) (by norm_num) (by norm_num) h59 h68 (by norm_num)
+  have h6_10 : HasCliqueOrIndepSetBound 6 10 1404 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 5) (b := 9)
+      (N₁ := 511) (N₂ := 893) (N := 1404)
+      (by decide) (by decide) h5_10 h69 (by norm_num)
+  have h6_11 : HasCliqueOrIndepSetBound 6 11 2125 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 5) (b := 10)
+      (N₁ := 722) (N₂ := 1404) (N := 2125)
+      (by decide) (by decide) (by norm_num) (by norm_num) h5_11 h6_10 (by norm_num)
+  have h77 : HasCliqueOrIndepSetBound 7 7 626 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 6)
+      (N₁ := 313) (N₂ := 313) (N := 626)
+      (by decide) (by decide) h67 h67.symm (by norm_num)
+  have h78 : HasCliqueOrIndepSetBound 7 8 1169 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 6) (b := 7)
+      (N₁ := 544) (N₂ := 626) (N := 1169)
+      (by decide) (by decide) (by norm_num) (by norm_num) h68 h77 (by norm_num)
+  have h79 : HasCliqueOrIndepSetBound 7 9 2062 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 8)
+      (N₁ := 893) (N₂ := 1169) (N := 2062)
+      (by decide) (by decide) h69 h78 (by norm_num)
+  have h7_10 : HasCliqueOrIndepSetBound 7 10 3465 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 6) (b := 9)
+      (N₁ := 1404) (N₂ := 2062) (N := 3465)
+      (by decide) (by decide) (by norm_num) (by norm_num) h6_10 h79 (by norm_num)
+  have h7_11 : HasCliqueOrIndepSetBound 7 11 5590 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 10)
+      (N₁ := 2125) (N₂ := 3465) (N := 5590)
+      (by decide) (by decide) h6_11 h7_10 (by norm_num)
+  have h88 : HasCliqueOrIndepSetBound 8 8 2338 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 7)
+      (N₁ := 1169) (N₂ := 1169) (N := 2338)
+      (by decide) (by decide) h78 h78.symm (by norm_num)
+  have h89 : HasCliqueOrIndepSetBound 8 9 4399 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 7) (b := 8)
+      (N₁ := 2062) (N₂ := 2338) (N := 4399)
+      (by decide) (by decide) (by norm_num) (by norm_num) h79 h88 (by norm_num)
+  have h8_10 : HasCliqueOrIndepSetBound 8 10 7864 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 9)
+      (N₁ := 3465) (N₂ := 4399) (N := 7864)
+      (by decide) (by decide) h7_10 h89 (by norm_num)
+  have h8_11 : HasCliqueOrIndepSetBound 8 11 13453 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 7) (b := 10)
+      (N₁ := 5590) (N₂ := 7864) (N := 13453)
+      (by decide) (by decide) (by norm_num) (by norm_num) h7_11 h8_10 (by norm_num)
+  have h99 : HasCliqueOrIndepSetBound 9 9 8798 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 8) (b := 8)
+      (N₁ := 4399) (N₂ := 4399) (N := 8798)
+      (by decide) (by decide) h89 h89.symm (by norm_num)
+  have h9_10 : HasCliqueOrIndepSetBound 9 10 16661 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 8) (b := 9)
+      (N₁ := 7864) (N₂ := 8798) (N := 16661)
+      (by decide) (by decide) (by norm_num) (by norm_num) h8_10 h99 (by norm_num)
+  have h9_11 : HasCliqueOrIndepSetBound 9 11 30114 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 8) (b := 10)
+      (N₁ := 13453) (N₂ := 16661) (N := 30114)
+      (by decide) (by decide) h8_11 h9_10 (by norm_num)
+  have h10_10 : HasCliqueOrIndepSetBound 10 10 33322 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 9) (b := 9)
+      (N₁ := 16661) (N₂ := 16661) (N := 33322)
+      (by decide) (by decide) h9_10 h9_10.symm (by norm_num)
+  have h10_11 : HasCliqueOrIndepSetBound 10 11 63435 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 9) (b := 10)
+      (N₁ := 30114) (N₂ := 33322) (N := 63435)
+      (by decide) (by decide) (by norm_num) (by norm_num) h9_11 h10_10 (by norm_num)
+  have h11_11 : HasCliqueOrIndepSetBound 11 11 126870 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 10) (b := 10)
+      (N₁ := 63435) (N₂ := 63435) (N := 126870)
+      (by decide) (by decide) h10_11 h10_11.symm (by norm_num)
+  exact ⟨h10_10, h10_11, h11_11⟩
+
+theorem hasCliqueOrIndepSetBound_10_10_of_ramseyElevenSmallTable
+    (h : RamseyElevenSmallTable) : HasCliqueOrIndepSetBound 10 10 33322 :=
+  (ramseyElevenSmallTable_high_row_bounds h).1
+
+theorem hasCliqueOrIndepSetBound_10_11_of_ramseyElevenSmallTable
+    (h : RamseyElevenSmallTable) : HasCliqueOrIndepSetBound 10 11 63435 :=
+  (ramseyElevenSmallTable_high_row_bounds h).2.1
+
+theorem hasCliqueOrIndepSetBound_11_11_of_ramseyElevenSmallTable
+    (h : RamseyElevenSmallTable) : HasCliqueOrIndepSetBound 11 11 126870 :=
+  (ramseyElevenSmallTable_high_row_bounds h).2.2
+
+/--
+The finite-field `m = 11` selector would follow from the exact off-diagonal threshold needed by
+the symmetric Ramsey step.
+-/
+theorem hasCliqueOrIndepSetBound_11_11_of_10_11_22528
+    (h : HasCliqueOrIndepSetBound 10 11 22528) :
+    HasCliqueOrIndepSetBound 11 11 45056 := by
+  exact HasCliqueOrIndepSetBound.step_even_mono (a := 10) (b := 10)
+    (N₁ := 22528) (N₂ := 22528) (N := 45056)
+    (by decide) (by decide) (by norm_num) (by norm_num)
+    h (HasCliqueOrIndepSetBound.symm h) (by norm_num)
+
+/-- Arithmetic form of the symmetric-step obstruction for the `R(11,11) <= 45056` target. -/
+theorem two_mul_sub_one_le_45056_iff_le_22528 (N : ℕ) :
+    2 * N - 1 ≤ 45056 ↔ N ≤ 22528 := by
+  constructor <;> intro h <;> omega
+
 /-- The small Ramsey table is enough for the 40960-vertex regular induced 10-set target. -/
 theorem hasRegularInducedSubgraphOfCard_ten_of_ramseyTenSmallTable
     (h : RamseyTenSmallTable) {V : Type} [Fintype V] [DecidableEq V]

@@ -2657,6 +2657,16 @@ theorem hasFourToEightTargetElevenFixedWitnessLift_of_cliqueOrIndepSetBound
       (j := 2) (m := 11) (N := 45056) hbound (by decide)) hambient G hinput
 
 /--
+The same `m = 11`, `4 -> 8` fixed-witness field reduced to the off-diagonal Ramsey
+threshold that the symmetric step needs: `R(10,11) <= 22528`.
+-/
+theorem hasFourToEightTargetElevenFixedWitnessLift_of_cliqueOrIndepSetBound_ten_eleven
+    (hbound : HasCliqueOrIndepSetBound 10 11 22528) :
+    HasFourToEightTargetElevenFixedWitnessLift :=
+  hasFourToEightTargetElevenFixedWitnessLift_of_cliqueOrIndepSetBound
+    (hasCliqueOrIndepSetBound_11_11_of_10_11_22528 hbound)
+
+/--
 The `m = 12`, `4 -> 8` fixed-witness field is reduced to the exact Ramsey
 threshold `R(12,12) <= 49152`.
 -/
