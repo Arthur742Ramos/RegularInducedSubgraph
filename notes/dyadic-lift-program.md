@@ -1211,6 +1211,8 @@ With pair targets, the finite minima are analogous: `3,3,3,2` has `FFP_x`, `F E_
 with all omissions distinct.
 The pure all-edge minimum has only star phase (three edge supports share a parity word) or triangle phase
 (three edge supports avoid one parity word), plus the `2+1` multiplicities on the size-three edge targets.
+For a symmetric all-ternary cycle, transposing the two-atom trace matrix forces every mutual edge target to
+contain an all-constant column, so triangle phase is impossible; the genuine all-edge endpoint is star phase.
 Shortened-pair-hit petals obey strict cross-defect: if the lift uses `q=2,3` source vertices and hits `r`
 other atoms, then `delta_other>=r` or `r+1`, respectively.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:

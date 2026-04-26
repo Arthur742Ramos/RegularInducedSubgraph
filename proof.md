@@ -12799,6 +12799,16 @@ multiplicity pattern `2+1` on its two labels, so after square-breaker discharge 
 finite phase/multiplicity template: star or triangle phase, together with the three choices of minority label
 inside the three edge targets.  No higher-dimensional ternary code remains hidden in this branch.
 
+In the symmetric all-ternary cycle the triangle phase is actually impossible.  Look at the bipartite trace
+matrix between two size-three atoms `G` and `H`, with rows indexed by `G` and columns by `H`.  Saying that
+`H` is an edge target for the source `G` says that the set of column labels is a two-word parity edge.  Saying
+that `G` is also an edge target for the source `H` says, after transposing the same matrix, that some column
+of the original matrix is constant.  A two-word parity edge has a constant column exactly when it contains
+the all-constant word of its parity class (`000` in the even normalization, or `111` in the odd one).  Hence
+every mutual edge target must contain the same all-constant word.  Therefore the all-edge
+`3,3,3,3` endpoint is forced into star phase; the triangle phase cannot occur in a genuine symmetric
+ternary-cycle endpoint.
+
 If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
 cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
 source atom `G` (`q=2` or `3`) and hitting `r` other packed atoms.  Since this full lift crosses atoms,

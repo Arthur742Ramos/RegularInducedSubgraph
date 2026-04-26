@@ -5570,6 +5570,9 @@ with `i!=j` or `E_iP_jP_k` with all omissions distinct.
 The pure all-edge minimum further splits into only two phase types inside the parity tetrahedron: the three
 edge supports either share one parity word (star phase) or form the triangle avoiding one parity word
 (triangle phase), with only the `2+1` multiplicity choice left on each size-three edge target.
+In the symmetric all-ternary cycle, the transpose test kills triangle phase: a mutual edge target must contain
+an all-constant column, hence all three edge supports pass through the same parity word.  Thus the genuine
+all-edge `3,3,3,3` endpoint is star phase only.
 If a forced petal hits the shortened pair and lifts with `q=2` or `3` source vertices while hitting `r` other
 atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+1` for `q=3`; the remaining
 petals must compensate those omissions.

@@ -2088,7 +2088,8 @@ What remains justified after audit is:
       exactly `2`, or all `3` source cuts; in `3,3,3,3` this leaves only `FFF`, `FFX`, `F E_i E_j`
       (`i!=j`), or the pure edge-triangle `E_1E_2E_3`; the pair profiles similarly reduce to `FFP_x`,
       `F E_iP_j`, `E_iE_jP_k`, `F P_iP_j`, or `E_iP_jP_k` with the indicated omissions distinct; the pure
-      all-edge minimum has only star or triangle phase plus `2+1` target multiplicities;
+      all-edge minimum has only star or triangle phase plus `2+1` target multiplicities, and the symmetric
+      transpose test excludes triangle phase in a genuine all-ternary cycle;
       shortened-pair-hit petals satisfy strict cross-defect `delta_other>=r` or `r+1` according as they use
       two or three source vertices;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
