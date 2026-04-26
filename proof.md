@@ -12582,6 +12582,56 @@ one side, the rebate is exactly `3`, so both side deficits are `1`.  The side ca
 contains exactly one vertex of `G`, and the other side contains the other two vertices of `G`; each side
 contains one vertex of the split pair `P`.  Thus the second first-profile table is also finite and balanced.
 
+This is the general small-collision dependency form.  After the square-breaker core is discharged, every
+deletion collision at a pair atom points to a split atom of size at least three.  Every deletion collision at
+a size-three atom either projects to the discharged four-pair core or points to another split atom of size at
+least three.  Therefore the no-leftover small-atom branch carries a directed dependency graph whose sources
+are small atoms and whose targets are split atoms of size at least three.  The first profiles illustrate the
+only minimal possibilities:
+
+```text
+4,2,2,2:  all three pair atoms point to the unique four-atom;
+3,3,2,2:  pair atoms point to a three-atom, and three-atom deletions couple the two three-atoms.
+```
+
+Thus, below the all-atoms-size-at-least-four branch, the remaining rank-three obstruction is not an arbitrary
+packing clutter but a finite weighted split-dependency system on the atom-size profile.
+
+The dependency graph is size-monotone.  Arrows from pair atoms strictly increase atom size, and arrows from
+three-atoms never decrease it.  Hence every directed path either reaches a split atom of size at least four,
+or eventually enters a directed cycle consisting entirely of size-three atoms.  Therefore, after the
+four-pair square core is discharged, the no-leftover small-atom branch splits into exactly two meta-cases:
+
+```text
+large-target case:    some small deletion detects a split atom of size at least four;
+ternary-cycle case:   the dependency closes inside the size-three atoms.
+```
+
+In particular, any profile with only one size-three atom and all other small atoms pairs has already been
+discharged; any survivor with no size-at-least-four atom must contain at least two size-three atoms coupled
+by these balanced split labels.
+
+Since there are only four atoms, the ternary-cycle meta-case has only the sorted profiles
+
+```text
+3,3,2,2;        3,3,3,2;        3,3,3,3.
+```
+
+The first profile is the coupled two-three-atom split system described above.  The latter two are finite
+all-ternary split systems: every size-three deletion must point to another size-three atom, and every
+projected repair is one of the balanced `4/3` or forced `1/2` split tables on the other atoms.
+
+In these ternary-cycle profiles the rebate threshold gives an outdegree constraint.  A split three-atom
+contributes rebate `2`, while a split pair contributes rebate `1`; every non-square-routed deletion needs
+total split rebate at least `3`.  Therefore:
+
+```text
+3,3,3,3:  deleting any atom splits at least two of the other three atoms;
+3,3,3,2:  deleting a three-atom splits either both other three-atoms, or one other three-atom and the pair.
+```
+
+Thus the all-ternary branch is a finite high-outdegree split system, not a sparse dependency graph.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

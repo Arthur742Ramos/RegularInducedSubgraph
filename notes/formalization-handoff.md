@@ -2586,6 +2586,14 @@ Recommended attack:
     exactly `3-k` vertices of the four-atom.
     Add the partner-free `3,3,2,2` balance table: split both three-atoms gives weighted side sizes `4` and
     `3`; split one three-atom plus the pair gives a forced `1/2` split around the unsplit three-atom.
+    Package the general small-collision endpoint as a weighted split-dependency graph: after square-core
+    discharge, pair atoms and non-square-routed three-atoms point to split atoms of size at least three.
+    Prove the size-monotone branch split for that graph: every path reaches a split atom of size at least
+    four or cycles entirely among size-three atoms.
+    Enumerate the ternary-cycle profiles: `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`; reuse the coupled
+    two-three-atom table for the first.
+    Add the ternary-cycle outdegree lemma: `3,3,3,3` deletions split at least two other three-atoms, and
+    `3,3,3,2` deletions split both other three-atoms or one three-atom plus the pair.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

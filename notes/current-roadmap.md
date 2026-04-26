@@ -5532,6 +5532,15 @@ contains exactly `3-k` vertices of the four-atom.
 Partner-free `3,3,2,2` has two balance tables: if both three-atoms split, weighted side sizes are `4` and
 `3`; if one three-atom and the pair split, the side carrying the unsplit three-atom contains one vertex of
 the split three-atom, while the other side contains two.
+In general, after square-breaker discharge, small collisions form a weighted split-dependency graph: pair
+deletions point to split atoms of size at least three, and size-three deletions either square-route or point
+to another split atom of size at least three.
+This graph is size-monotone: paths either reach a split atom of size at least four, or cycle entirely among
+size-three atoms.  Thus the remaining small branch is large-target or ternary-cycle.
+With four atoms, the ternary-cycle profiles are only `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`; the first is
+already the coupled two-three-atom table.
+The all-ternary profiles have high outdegree: in `3,3,3,3`, deleting any atom splits at least two other
+three-atoms; in `3,3,3,2`, deleting a three-atom splits both other three-atoms or one three-atom plus the pair.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

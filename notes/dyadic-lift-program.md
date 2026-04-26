@@ -1181,6 +1181,13 @@ For partner-free `4,2,2,2` cuts, a side carrying `k` auxiliary pair atoms contai
 four-atom.
 For partner-free `3,3,2,2`, either both three-atoms split with weighted side sizes `4` and `3`, or one
 three-atom and the pair split with a forced `1/2` split around the unsplit three-atom.
+The unified small-collision endpoint is a weighted split-dependency graph: small atoms point to size-at-least
+three split atoms, except for discharged square-core projections.
+The graph is size-monotone, so every survivor is either a large-target case (reaches size at least four) or a
+ternary-cycle case inside size-three atoms.
+The only ternary-cycle profiles are `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`.
+Rebate forces high outdegree: `3,3,3,3` deletions split at least two other three-atoms, while `3,3,3,2`
+deletions split both other three-atoms or one three-atom plus the pair.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

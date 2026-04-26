@@ -2105,6 +2105,13 @@ In the partner-free `4,2,2,2` cut table, a side with `k` auxiliary pair atoms ha
 four-atom.
 In partner-free `3,3,2,2`, both three-atoms split with weighted side sizes `4` and `3`, or one three-atom
 and the pair split with the unsplit three-atom side carrying one vertex of the split three-atom.
+Thus surviving no-leftover small collisions form a weighted split-dependency graph: pair atoms and
+non-square-routed three-atoms point to split atoms of size at least three.
+Size monotonicity splits the branch into large-target cases reaching an atom of size at least four, or
+ternary cycles entirely among size-three atoms.
+The ternary-cycle profiles are exactly `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`.
+In `3,3,3,3`, every deletion splits at least two other three-atoms; in `3,3,3,2`, a three-atom deletion
+splits both other three-atoms or one three-atom plus the pair.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

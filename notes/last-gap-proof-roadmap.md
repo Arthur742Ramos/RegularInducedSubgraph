@@ -2069,6 +2069,12 @@ What remains justified after audit is:
       of the four-atom;
       partner-free `3,3,2,2` cuts are balanced: either both three-atoms split with side weights `4/3`, or one
       three-atom and the pair split with a forced `1/2` split around the unsplit three-atom;
+      globally, surviving no-leftover small collisions form a weighted split-dependency graph from small
+      atoms to split atoms of size at least three;
+      size monotonicity splits this into large-target cases reaching size at least four and ternary cycles
+      among size-three atoms;
+      the ternary-cycle profiles are only `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`;
+      rebate makes these high-outdegree systems: all-ternary deletions split at least two other three-atoms;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
