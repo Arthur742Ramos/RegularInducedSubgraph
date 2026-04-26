@@ -1626,6 +1626,9 @@ Recommended attack:
    colour `1`.  Then target-stability is vacuous and the only visible local condition is the
    induced-`2K_2` exclusion, equivalently an induced-`C_4`-free, `K_4`-free complement with
    `alpha<=m` and no induced `Delta<=2` selector larger than `11m/5`.
+   Add the edge-robust sharpening: every complement edge `ab` has common neighbourhood of size at most
+   two and decomposes the graph into controlled exclusive layers plus `Z_ab`; any superlinear core must
+   have large `Z_ab` for every edge.
    Within that complement class, formalize the triangle-anchor trace lemma: for a triangle `abc`, no
    outside vertex is adjacent to all three anchors; vertices with incomparable nonempty traces into
    `{a,b,c}` are anti-complete; the two-neighbour trace classes are independent; singleton trace classes

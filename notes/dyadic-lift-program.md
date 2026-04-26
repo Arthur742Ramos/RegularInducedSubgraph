@@ -997,6 +997,11 @@ inequalities are vacuous and the pure-discard rule is just the retained-only `2K
 complement language, the remaining theorem must address induced-`C_4`-free, `K_4`-free graphs with
 `alpha<=m` and no induced `Delta<=2` selector larger than `11m/5`; no further finite boundary-table
 case split can close this core.
+Even in this core, every complement edge `ab` gives the same edge-anchor decomposition: common
+neighbourhood size at most two, exclusive neighbourhoods anti-complete/triangle-free/induced-`C_4`-free,
+and zero-neighbour layer `Z_ab`.  If some `Z_ab` is small, the core is linearly bounded by the controlled
+exclusive-layer and pendant-fibre estimates.  Thus a superlinear core must be edge-robust: `Z_ab` is
+large for every edge `ab`.
 Useful structure remains inside that class.  If `abc` is a triangle in the complement `H`, trace every
 outside vertex by `N_H(v) cap {a,b,c}`.  No trace has size three; incomparable nonempty traces are
 anti-complete, since an edge between them and an anchor edge induce a `C_4`.  Thus two-neighbour trace

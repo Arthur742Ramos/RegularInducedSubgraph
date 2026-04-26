@@ -6550,6 +6550,28 @@ must supply a genuine selector theorem for this complement class, or use a globa
 the single-fiber local model.  The previous reductions are complete up to this all-target colour-`1`
 core; they cannot honestly be pushed to a contradiction by more finite mixed-table case analysis alone.
 
+One last structural consequence survives even in this core.  For any edge `ab` of the complement `H`,
+the common neighbourhood `N_H(a) cap N_H(b)` has size at most two, since `H` is `K_4`-free.  The exclusive
+layers `N_H(a)\N_H(b)` and `N_H(b)\N_H(a)` are anti-complete to each other, triangle-free, and
+induced-`C_4`-free exactly as above.  Therefore every edge anchor decomposes `H` into controlled
+exclusive layers plus the zero-neighbour layer
+
+```text
+Z_{ab}=V(H)\(N_H(a) union N_H(b) union {a,b}).
+```
+
+If `Z_{ab}` is small for some edge, the whole core is linearly bounded by the exclusive-layer and
+pendant-fibre estimates.  Hence any superlinear counterexample inside the irreducible core must be
+edge-robust:
+
+```text
+|Z_{ab}| is large for every edge ab of H.
+```
+
+Equivalently, no edge anchor captures a positive fraction of the graph by its two one-sided
+neighbourhoods.  This is a much narrower form of the final selector problem: an induced-`C_4`-free,
+`K_4`-free, edge-robust graph with bounded independence and no large induced degree-two subgraph.
+
 Inside that remaining complement class there is still a useful triangle-anchor decomposition.  Let
 `abc` be a triangle in `H`, and for every outside vertex `v` put
 
