@@ -4934,6 +4934,8 @@ Anchored ambiguity is exactly failure of the occupied traces to separate triples
 if they separate all triples, then `|C_ext|<=1`.
 Adjacent surviving templates force a trace-twin pair; without trace twins, anchored `C_ext` is independent
 in `J(7,3)`.
+Thus after quotienting trace twins, anchored `C_ext` is a triple packing of size at most seven, with
+equality only in the Fano system.
 Pairwise, two trace classes require the signed omitted-triple equation
 `|p cap O|-|q cap O|=mu-nu [MOD 4]`; terminality in the positive atom is a finite anti-Horn family of
 these constraints with no common one of the `35` triples.
@@ -4950,6 +4952,13 @@ Internal pair blockers form a graph `J_int`; any valid omitted triple must be a 
 `J_int`, so vertex-cover number at most three is necessary for a positive-atom reroot.
 Equivalently, the kept side must be an independent four-set of `J_int`; the remaining checks are the
 signed `E_3` equations on its six pairs and the external `D_3` equations on the omitted triple.
+Thus `C_int` lies inside the 3-cover family of `J_int`; empty or singleton cover families kill or decode
+the internal side immediately.
+So a terminal positive atom is certified by external emptiness, internal emptiness, decoded singleton
+mismatch, or a genuine ambiguous core with both candidate sets of size at least two.
+After trace-twin quotient and removing decoded cases, the ambiguous core is a triple packing `P` disjoint
+from `C_int subset K_3(J_int)`; in the Fano case every line must be killed by an internal blocker or
+signed `E_3` failure.
 For non-exact boundaries, use the maximum import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`; terminal exports satisfy
 `H_X(sigma(Y))-|Y|<=m-|B|`.  Exact top is the explicit box-height case.

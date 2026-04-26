@@ -8627,6 +8627,18 @@ Thus `x` and `y` are trace twins relative to the occupied trace family.  Hence a
 candidate set containing adjacent triples produces a twin pair in the seven-point reservoir; conversely,
 without trace-twin points, an anchored `C_ext` is an independent set in the Johnson graph `J(7,3)`.
 
+Consequently, after quotienting trace twins, anchored external ambiguity is a packing of triples.  If
+there are no trace twins, any two triples in `C_ext` meet in at most one point; hence their three
+two-subsets are disjoint.  Therefore
+
+```text
+|C_ext| <= binom(7,2)/binom(3,2)=7.
+```
+
+Equality forces the seven triples to form the Fano `2-(7,3,1)` system.  Thus a large ambiguous external
+candidate set has a rigid Steiner shape; otherwise it has at most six templates before the internal
+cover-family intersection is imposed.
+
 For two occupied trace classes `(p,mu)` and `(q,nu)`, the remainder line can equalize them by an omitted
 triple only if
 
@@ -8754,6 +8766,51 @@ then imposes the exact signed `E_3` equations on the six pairs of `T` and the ex
 on the omitted triple `O=R_i\T`.  A terminal positive atom is therefore certified by one of two finite
 failures: either `alpha(J_int)<=3`, or every independent four-set of `J_int` is killed by an internal
 signed equation or by an external trace-pair equation.
+
+Equivalently, the internal candidate set is contained in the cover family
+
+```text
+K_3(J_int)={O subset R_i: |O|=3 and O is a vertex cover of J_int}.
+```
+
+The signed `E_3` equations only shrink this cover family.  Hence if `K_3(J_int)` is empty, the positive
+atom is internally dead; if `K_3(J_int)` is a singleton `{O_0}`, then the whole reroot question is the
+single external template check `O_0 in C_ext` plus the six internal equalities on `R_i\O_0`.  If every
+3-cover contains a common core `K`, then all internal candidates omit that core, and the external trace
+template is tested only on triples containing `K`.  This is the internal analogue of the singleton-trace
+decoder: large blocker structure decodes the omitted triple from the inside.
+
+Combining the two sides, a terminal positive atom has a reduced certificate of one of the following
+types.
+
+```text
+External empty:   C_ext=empty
+                  (duplicate trace labels, failed singleton/full decoder, or a D_3 pair blocker);
+Internal empty:   C_int=empty
+                  (alpha(J_int)<=3, empty K_3(J_int), or an E_3 signed blocker);
+Decoded mismatch: one side decodes a unique omitted triple O_0 and the other side excludes O_0;
+Ambiguous core:   C_ext and C_int both have size at least two.
+```
+
+The ambiguous core is now very narrow: externally it requires a nontrivial trace-equivalence class of
+triples, hence poor separation or trace twins; internally it requires at least two 3-covers of `J_int`
+surviving all signed `E_3` equations.  Thus the exact-top positive atom has no remaining arithmetic
+freedom.  Its terminality is witnessed by explicit finite obstruction data on the seven-point reservoir.
+
+After quotienting trace twins and discarding decoded cases, the ambiguous core has the canonical form
+
+```text
+C_ext = a triple packing P on R_i,
+C_int subset K_3(J_int) with |C_int|>=2,
+P cap C_int = empty.
+```
+
+Equivalently, every external packing triple fails internally and every internal 3-cover is excluded by
+the external trace templates.  In the Fano-extremal case `P=F`, terminality is the statement that no
+Fano line is an internally valid 3-cover.  Since every pair of points lies on one Fano line, this forces
+the internal blocker graph or the signed `E_3` equations to hit every line of the Fano plane.  Thus the
+last ambiguous positive-atom core is a finite line-hitting problem: an internal obstruction transversal
+against a packing (or Fano) of externally indistinguishable omitted triples.
 
 The same height language also covers the non-exact boundary.  For an arbitrary zero-sum-free boundary
 `X`, define the available import height

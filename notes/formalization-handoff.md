@@ -1998,6 +1998,8 @@ Recommended attack:
    Also formalize the adjacent-template corollary: if two surviving triples differ by swapping `x` and
    `y`, then every occupied trace has equal incidence on `x` and `y`; hence `x,y` are trace twins, and
    without trace twins anchored `C_ext` is independent in `J(7,3)`.
+   Add the packing bound: without trace twins, anchored `C_ext` is a 3-uniform packing on seven points,
+   so `|C_ext|<=7`; equality is the Fano `2-(7,3,1)` system.
    Formalize the pairwise equalization criterion: for occupied trace classes `(p,mu),(q,nu)`, an omitted
    triple can equalize them only if `|p cap O|-|q cap O|=mu-nu [MOD 4]`.  With
    `A=p\q`, `B=q\p`, and `C=R_i\(A union B)`, this is equivalent to integers
@@ -2024,6 +2026,16 @@ Recommended attack:
    Equivalently, formalize the complement form: the kept four-set `T=R_i\O` must be an independent
    four-set of `J_int`; each candidate `T` then has six internal signed `E_3` checks plus the external
    trace checks on `O`.
+   Record the cover-family normal form: `C_int` is contained in
+   `K_3(J_int)={O: |O|=3 and O is a vertex cover of J_int}`.  If `K_3` is empty, no internal reroot
+   exists; if `K_3={O_0}`, only that omitted triple needs the external template and six internal equality
+   checks.  A common core in all 3-covers partially decodes `O`.
+   Record the final certificate split for the positive atom: terminality is `C_ext cap C_int=empty`,
+   witnessed by external emptiness, internal emptiness, a decoded singleton mismatch, or a genuine
+   ambiguous core where `|C_ext|,|C_int|>=2`.
+   In the ambiguous core after quotienting trace twins, record the finite form
+   `C_ext=P` a triple packing and `C_int subset K_3(J_int)` with `P cap C_int=empty`.  In the Fano case,
+   each Fano line must be killed internally by the blocker graph or a signed `E_3` equality failure.
    Generalize the height inequality to non-exact boundaries with
    `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}` (or unavailable).  For every graph-compatible export `Y`,
    terminality gives `H_X(sigma(Y))-|Y|<=m-|B|`; exact Davenport top is the special case `H_X=h_X`.

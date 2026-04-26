@@ -1682,6 +1682,7 @@ With such an anchor, ambiguity is precisely non-separation of triples by occupie
 counts.
 Adjacent surviving templates force a trace-twin pair; without trace twins, anchored candidates are
 Johnson-independent.
+Then `C_ext` is a triple packing, so it has size at most seven, with equality only Fano.
 For two classes this is the signed equation `|p cap O|-|q cap O|=mu-nu [MOD 4]`; the positive-atom
 terminal case is a finite anti-Horn obstruction over the `35` omitted triples.
 The pairwise blocker set is `mu-nu notin D_3(|p\q|,|q\p|)`, where
@@ -1695,6 +1696,12 @@ The internally impossible kept pairs form a graph that the omitted triple must v
 above three kills the positive-atom reroot.
 Equivalently, candidate reroots are independent four-sets of this blocker graph, followed by the signed
 `E_3` and external `D_3` checks.
+Equivalently `C_int` is contained in the 3-cover family of the blocker graph; empty or singleton cover
+families kill or decode the internal side.
+Terminality of the positive atom is now one of four finite certificates: external empty, internal empty,
+decoded mismatch, or genuine ambiguous core.
+In the ambiguous core, after trace-twin quotienting, `C_ext` is a triple packing disjoint from
+`C_int subset K_3(J_int)`; Fano ambiguity means every Fano line is internally killed.
 Away from the exact boundary top, the same inequality uses
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`: terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every compatible export.

@@ -1538,6 +1538,8 @@ triples under the map `O -> (|p cap O|)_p`.  If occupied traces separate all tri
 Adjacent surviving triples force a trace-twin pair: if the triples differ by swapping `x` and `y`, then
 every occupied trace contains either both or neither of `x,y`.  Thus with no trace-twin points, anchored
 `C_ext` is independent in the Johnson graph `J(7,3)`.
+Hence, after quotienting trace twins, anchored external ambiguity is a triple packing: no two surviving
+triples share a pair, so `|C_ext|<=7`, with equality only in the Fano `2-(7,3,1)` system.
 For two trace classes `(p,mu),(q,nu)`, equalization is the signed three-subset equation
 `|p cap O|-|q cap O|=mu-nu [MOD 4]`.  With `A=p\q`, `B=q\p`, this means choosing
 `x` omitted points from `A` and `y` from `B`, with a total omitted size three, so that
@@ -1566,6 +1568,16 @@ positive atom has no self-layer reroot before external traces are considered.
 Equivalently, the kept four-set `T=R_i\O` must be an independent four-set of `J_int`; after choosing such
 a `T`, the remaining signed `E_3` equations are checked on the six pairs of `T` and the external `D_3`
 constraints on `O`.
+So `C_int` is contained in the 3-vertex-cover family `K_3(J_int)`.  If this family is empty the atom is
+internally dead; if it is a singleton, the whole reroot question reduces to one external template and the
+six internal equalities.  A common core in all 3-covers similarly partially decodes the omitted triple.
+Thus terminal positive atoms have four finite certificate types: `C_ext=empty`, `C_int=empty`, decoded
+singleton mismatch, or a genuine ambiguous core where external traces fail to separate triples and
+internal 3-covers are non-unique after all signed checks.
+After quotienting trace twins and excluding decoded cases, the ambiguous core is simply
+`C_ext=P`, a triple packing, and `C_int subset K_3(J_int)`, with `P cap C_int=empty`.  In the extremal
+case `P` is Fano, so terminality says every Fano line is killed internally by the blocker graph or a
+signed `E_3` equation.
 For a non-exact boundary, replace `h_X` by the maximum available import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`.  Terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every graph-compatible export.  The exact top is just the case
