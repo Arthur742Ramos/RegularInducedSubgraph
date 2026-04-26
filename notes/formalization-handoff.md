@@ -2608,6 +2608,16 @@ Recommended attack:
     Identify the unit-edge atom with the one-corner square-breaker: two opposite vertices agree in two source
     labels and differ in the third.  After square discharge, shortened-pair-free source codes are parity
     tetrahedra.
+    Record parity-tetrahedron rigidity: projection to any two source coordinates is a complete balanced
+    `2x2` square, the `0101/0011` compensator side of `0001+0111=0101+0011`.
+    Add the target-type table inside a parity tetrahedron: support size `1` is split by no source cuts, support
+    size `2` is a parity edge split by exactly two source cuts, and support size at least `3` is split by all
+    three source cuts.  Rephrase ternary high-outdegree as incidence constraints on these target types.
+    For `3,3,3,3`, formalize the incidence enumeration: `FFF`, `FFX`, `F E_i E_j` with `i!=j`, or the
+    all-edge permutation triangle `E_1E_2E_3`.
+    Extend the same enumeration to pair profiles: `3,3,3,2` gives `FFP_x`, `F E_iP_j` with `i!=j`, or
+    `E_iE_jP_k` with all omissions distinct; `3,3,2,2` gives `F P_iP_j` with `i!=j` or `E_iP_jP_k`
+    with all omissions distinct.
     Add shortened-pair-hit strict defect: a forced petal using `q=2,3` source vertices and hitting `r` other
     atoms has `delta_other>=r` or `r+1`, respectively; remaining petals compensate those omissions.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair

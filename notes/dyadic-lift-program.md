@@ -1199,6 +1199,16 @@ Distinct source labels sharpen this to: parity-mixed gives a Hamming edge, while
 full parity tetrahedron.
 The Hamming-edge atom is the one-corner square-breaker, so after square discharge only parity-tetrahedron
 source codes remain in the shortened-pair-free ternary-cycle branch.
+Each parity tetrahedron projects to a complete balanced `2x2` square in any two source coordinates, the
+`0101/0011` compensator side of the one-corner identity.
+On each opposite target atom, the parity labels are now finite: monochrome targets split no source cut,
+two-label parity edges split exactly two source cuts, and targets supporting at least three parity words split
+all three.  The residual high-outdegree constraints are therefore target-type incidence constraints.
+In the all-ternary profile, these incidence constraints reduce to `FFF`, `FFX`, `F E_i E_j` with distinct
+edge omissions, or the pure edge-triangle `E_1E_2E_3`.
+With pair targets, the finite minima are analogous: `3,3,3,2` has `FFP_x`, `F E_i P_j` (`i!=j`), or
+`E_iE_jP_k` with all omissions distinct, while `3,3,2,2` has `F P_i P_j` (`i!=j`) or `E_iP_jP_k`
+with all omissions distinct.
 Shortened-pair-hit petals obey strict cross-defect: if the lift uses `q=2,3` source vertices and hits `r`
 other atoms, then `delta_other>=r` or `r+1`, respectively.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:

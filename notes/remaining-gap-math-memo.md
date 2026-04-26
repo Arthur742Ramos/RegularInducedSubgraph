@@ -2122,6 +2122,13 @@ With distinct source labels, parity-mixed codes contain a Hamming edge; otherwis
 case remains.
 The Hamming edge is the local one-corner square-breaker; after its discharge, source codes are parity
 tetrahedra.
+Parity tetrahedra project to balanced `2x2` squares in every two source coordinates, i.e. the
+`0101/0011` compensator side.  On each opposite atom, the target support is monochrome, a two-label parity
+edge, or a support of at least three parity words; these are split by `0`, exactly `2`, or all `3` source cuts,
+respectively.  In `3,3,3,3`, the high-outdegree incidences are only `FFF`, `FFX`, `F E_i E_j` with
+`i!=j`, or the pure edge-triangle `E_1E_2E_3`.
+With pair targets, `3,3,3,2` has only `FFP_x`, `F E_iP_j` (`i!=j`), or `E_iE_jP_k` with distinct
+omissions, and `3,3,2,2` has only `F P_iP_j` (`i!=j`) or `E_iP_jP_k` with distinct omissions.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has
 strict defect `delta_other>=r` or `r+1`; other petals compensate the omissions.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,

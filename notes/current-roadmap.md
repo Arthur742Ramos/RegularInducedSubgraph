@@ -5555,6 +5555,18 @@ antipodal pair and all three labels would coincide.  So the code atoms are unit-
 The unit-edge atom is the local one-corner square-breaker: two opposite vertices agree in two source labels
 and differ in the third.  After square-breaker discharge, shortened-pair-free ternary sources are parity
 tetrahedra.
+A parity tetrahedron projects bijectively to every two source coordinates, giving the balanced
+`0101/0011` compensator side of `0001+0111=0101+0011`.
+Target atoms in this branch have a finite type table: a monochrome opposite atom is split by no source cut,
+a two-label parity edge is split by exactly the two coordinates in which the labels differ, and any support
+with at least three parity words is split by all three source cuts.  Hence high outdegree is now an incidence
+condition on these target types.
+For `3,3,3,3`, writing fully split targets as `F`, parity-edge targets constant in coordinate `i` as `E_i`,
+and monochrome targets as `M`, the only high-outdegree patterns are `FFF`, `FFX`, `F E_i E_j` with
+`i!=j`, and the all-edge permutation triangle `E_1E_2E_3`.
+The pair profiles have the same finite table: in `3,3,3,2` the patterns are `FFP_x`, `F E_i P_j`
+with `i!=j`, or `E_iE_jP_k` with all omissions distinct; in `3,3,2,2` they are `F P_i P_j`
+with `i!=j` or `E_iP_jP_k` with all omissions distinct.
 If a forced petal hits the shortened pair and lifts with `q=2` or `3` source vertices while hitting `r` other
 atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+1` for `q=3`; the remaining
 petals must compensate those omissions.

@@ -12708,6 +12708,82 @@ the `a`-coordinate flip is precisely a support-local one-corner `0001/0111` patt
 the one-corner square-breaker is discharged, every shortened-pair-free ternary-cycle source code is a parity
 tetrahedron.
 
+A parity tetrahedron is rigid in the complementary direction.  In one parity class of `{0,1}^3`, projection
+to any two coordinates is bijective onto `{0,1}^2`.  Hence every pair of source deletions sees a complete
+balanced square on four opposite vertices, with the third source label equal to the parity sum of the first
+two.  This is the `0101/0011` compensator side of the identity
+
+```text
+0001 + 0111 = 0101 + 0011,
+```
+
+where the unit-edge atom is the missing one-corner side.  Thus the parity-tetrahedron branch is a finite
+balanced-compensator code, not a general ternary clutter.
+
+On each opposite three-atom, a parity tetrahedron has a small type table.  Since all labels lie in one parity
+class, the distinct labels appearing on a target atom `H` can have support size `1`, `2`, `3`, or `4` in the
+parity tetrahedron.  The number of source cuts that split `H` is:
+
+```text
+support size 1:  H is monochrome, split by 0 source cuts;
+support size 2:  the two parity words differ in two coordinates, so H is split by exactly 2 source cuts;
+support size >=3: H is split by all 3 source cuts.
+```
+
+Thus the high-outdegree condition becomes a finite incidence condition: in `3,3,3,3`, for every source
+coordinate, at least two of the three opposite target atoms must be of a type split by that coordinate; in
+`3,3,3,2`, the same holds after counting the pair atom as a one-coordinate split when its two vertices have
+different labels in that coordinate.  This target-type table is the finite form of the parity-tetrahedron
+branch.
+
+For the all-ternary `3,3,3,3` profile this incidence condition has only four shapes.  Call a target atom `F`
+if it is split by all three source cuts, call it `E_i` if it is a two-label parity edge that is constant only
+in source coordinate `i`, and call it `M` if it is monochrome.  With three opposite target atoms, the
+condition
+
+```text
+# targets split by coordinate i >= 2       for i=1,2,3
+```
+
+is equivalent to one of
+
+```text
+F,F,F;
+F,F,X        with X in {F,M,E_1,E_2,E_3};
+F,E_i,E_j    with i != j;
+E_1,E_2,E_3  up to permutation.
+```
+
+Indeed, if there is no `F`, every target must be an edge and the three omitted coordinates must be distinct.
+If there is exactly one `F`, the two remaining targets must be edges omitting two distinct coordinates.  With
+two `F` atoms the last target is arbitrary, and three `F` atoms are automatic.  Therefore the only
+all-edge parity-tetrahedron endpoint is the permutation edge-triangle `E_1,E_2,E_3`; every other endpoint
+contains a fully split target atom.
+
+The pair-containing ternary-cycle profiles are the same incidence calculation with the pair target allowed
+only to be monochrome or a parity edge.  In `3,3,3,2`, relative to a size-three source there are two ternary
+targets and one pair target `P`.  The high-outdegree patterns are exactly
+
+```text
+F,F,P_x       with P_x in {M,E_1,E_2,E_3};
+F,E_i,P_j     with i != j;
+E_i,E_j,P_k   with {i,j,k}={1,2,3}.
+```
+
+Here `P_j` denotes a nonmonochrome pair whose two labels differ in the two coordinates other than `j`.
+In `3,3,2,2`, relative to a size-three source there is one ternary target and two pair targets.  The patterns
+are exactly
+
+```text
+F,P_i,P_j       with i != j;
+E_i,P_j,P_k     with {i,j,k}={1,2,3}.
+```
+
+A monochrome ternary target cannot occur in `3,3,2,2`, and a monochrome pair can occur only in the
+`3,3,3,2` pattern with two fully split ternary targets.  Thus every pair-containing parity-tetrahedron
+endpoint is also finite, with the only all-edge minima again given by a permutation of the three omitted
+coordinates.
+
 If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
 cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
 source atom `G` (`q=2` or `3`) and hitting `r` other packed atoms.  Since this full lift crosses atoms,
