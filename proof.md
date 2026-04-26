@@ -12430,11 +12430,71 @@ coincide, then `{a} union C` and `{b} union (M\C)` are disjoint supports whose t
 atoms, closing the target.  Hence the `b`-free pair-collision branch is a hidden bipartition coloring of the
 three opposite atoms, with distinct colors on the two endpoints of each pair atom.
 
+There is a sharper cross-endpoint constraint.  Let the two endpoint labels be `C|C^c` for `a` and `D|D^c`
+for `b`, both on the same opposite union `M`.  If one selected side from the first label is disjoint from one
+selected side from the second and their union misses at most one vertex of `M`, then the corresponding two
+supports, one containing `a` and one containing `b`, are disjoint and have total saving at least `|M|-1`;
+the omitted vertices can remain singletons, so the target closes.  Hence every disjoint cross-choice must
+miss at least two vertices of `M`.  In the four-cell decomposition
+
+```text
+C cap D,        C cap D^c,        C^c cap D,        C^c cap D^c,
+```
+
+this says: if any cell is empty, the opposite diagonal cell has size at least two.  Equal labels are the
+extreme forbidden case where an empty cell has opposite cell all of `M`.  Thus partner-free pair collisions
+are either genuinely crossing four-cell colorings, or nested colorings with a two-vertex buffer in the
+opposite cell; there is no near-complement endpoint.
+
+The split set of a partner-free label is also bounded from below.  Let
+
+```text
+Split(C)= {opposite packed atoms H : C cap H and C^c cap H are both nonempty}.
+```
+
+For the two forced petals `C` and `C^c`, the shared packed-atom rebate is
+
+```text
+sum_{H in Split(C)} (|H|-1).
+```
+
+The strict-deficit strengthening gives this sum at least three.  Thus the minimal partner-free split
+patterns are exactly:
+
+```text
+one atom of size at least four;
+one size-three atom together with another split atom;
+three pair atoms.
+```
+
+The last pattern is precisely the four-pair transversal core already routed to the one-corner square-breaker.
+After that discharge, a partner-free pair collision must split either an atom of size at least four, or a
+size-three atom together with at least one additional atom.
+
 If a collision petal contains `b`, the template list is finite but high-cover: with two petals it is one of
 `(pi,delta)=(3,0),(4,0),(4,1)` and with three petals it is `(4,0)`, where the hit atoms include the singleton
 `b`.  Equivalently, the support containing `a` and `b` also covers all, or all but one, of two or three
-opposite packed atoms.  These are the only pair-collision circuits not represented by the partner-free
-hidden-bipartition coloring.
+opposite packed atoms.  More explicitly the four partner-hit templates are:
+
+```text
+s=2, pi=3, delta=0:  b plus two opposite atoms are fully covered;
+s=2, pi=4, delta=0:  b plus all three opposite atoms are fully covered;
+s=2, pi=4, delta=1:  b plus all three opposite atoms are covered with one omission;
+s=3, pi=4, delta=0:  b plus all three opposite atoms are fully covered by three petals.
+```
+
+These are the only pair-collision circuits not represented by the partner-free hidden-bipartition coloring.
+Here the **family union**, not the individual `b`-petal, is the near-complete cover.  The individual full
+support through the whole original pair `B={a,b}` is itself cross-atom, so saturation forces it to be
+strictly deficient: if it hits `r` opposite packed atoms and omits `delta` vertices from them, then
+
+```text
+delta >= r+1.
+```
+
+Otherwise that single support would have nonnegative full gain, and zero gain is impossible for a cross-atom
+support in a saturated packing.  Thus every partner-hit high-cover circuit is a compensation pattern: the
+other petals must cover the omissions forced on the `b`-petal.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

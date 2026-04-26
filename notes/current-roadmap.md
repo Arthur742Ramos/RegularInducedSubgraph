@@ -5505,6 +5505,17 @@ Partner-free pair collisions are exactly hidden bipartition colorings: deleting 
 `{a} union C` and `{a} union (M\C)` for a complementary bipartition of the other three atoms, with endpoint
 labels distinct or else two supports partition all four atoms.  The only non-bipartition pair-collision
 templates are the finite partner-hit high-cover cases.
+For two endpoint labels `C|C^c` and `D|D^c`, any disjoint cross-choice must miss at least two vertices of
+`M`; equivalently an empty four-cell has opposite diagonal cell of size at least two.  So partner-free
+colorings are crossing or have a two-vertex nested buffer, never near-complementary.
+The partner-hit templates are exactly: two petals covering `b` plus two opposite atoms; two petals covering
+`b` plus all three opposite atoms; two petals covering those with one omission; or three petals covering
+`b` plus all three opposite atoms.
+This is a family-union cover: the individual support through the full pair `B` must be strictly deficient,
+omitting at least `r+1` vertices if it hits `r` opposite atoms; the other petals compensate those omissions.
+For a partner-free label, the split atoms have total rebate at least three.  Minimal patterns are one
+size-at-least-four atom, one size-three atom plus another split atom, or three pair atoms; the last is the
+four-pair square-breaker core.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

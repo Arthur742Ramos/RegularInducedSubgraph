@@ -2561,6 +2561,16 @@ Recommended attack:
     Split pair collisions into partner-free and partner-hit cases.  In the partner-free branch prove
     `s=2,pi=3,delta=0`, yielding complementary bipartition labels `C|M\C` on the opposite three atoms;
     equal labels on the two endpoints close.  Record partner-hit as the finite high-cover template list.
+    Add the no-near-complement rule for two endpoint bipartitions: if a cross-choice is disjoint and misses
+    at most one vertex, two supports close; equivalently every empty four-cell has opposite diagonal cell
+    size at least two.
+    Expand the partner-hit list into its four high-cover templates: two-petal `b` plus two opposite atoms,
+    two-petal `b` plus all three, two-petal one-omission, and three-petal `b` plus all three.
+    Add the partner-hit individual-deficit rule: the high-cover is by the family union, while the full-pair
+    petal itself must satisfy `delta>=r+1` if it hits `r` opposite atoms.
+    Add the split-rebate lower bound for partner-free labels: the split atoms have
+    `sum(|H|-1)>=3`, so the minimal patterns are one size-at-least-four atom, one size-three atom plus
+    another split atom, or three pair atoms.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

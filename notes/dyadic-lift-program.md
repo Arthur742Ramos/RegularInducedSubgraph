@@ -1160,6 +1160,14 @@ or the all-atoms-size-at-least-four no-leftover branch remain.
 Partner-free pair collisions are hidden bipartition colorings of the three opposite atoms:
 `{a} union C` and `{a} union (M\C)`, with distinct endpoint labels; partner-hit collisions are the remaining
 finite high-cover templates.
+Disjoint cross-choices between the two endpoint labels must miss at least two vertices; in the four-cell
+decomposition, an empty cell forces the opposite diagonal cell to have size at least two.
+Partner-hit pair collisions are four high-cover templates: `b` plus two opposite atoms, `b` plus all three,
+the same with one omission, or a three-petal cover of `b` plus all three.
+The high-cover statement is for the family union; the individual support through the full pair is strictly
+deficient, with `delta>=r+1` if it hits `r` opposite atoms.
+Partner-free labels have split-atom rebate at least three: minimally one size-at-least-four atom, one
+size-three plus another split atom, or three pair atoms (the square-breaker core).
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

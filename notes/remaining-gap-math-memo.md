@@ -2084,6 +2084,14 @@ splitting an atom of size at least three, or with all atoms size at least four.
 Partner-free pair collisions are hidden bipartition colorings of the three opposite atoms; equal labels on
 the two endpoints close by two disjoint supports.  Partner-hit pair collisions are the finite high-cover
 templates.
+For endpoint labels `C|C^c` and `D|D^c`, any empty four-cell forces the opposite diagonal cell to have size
+at least two; otherwise a disjoint cross-choice covers all but at most one vertex and closes.
+Partner-hit pair collisions are exactly the four high-cover templates: `b` plus two opposite atoms, `b` plus
+all three, the same with one omission, or a three-petal cover of `b` plus all three.
+The high-cover is by the family union; the individual full-pair support is strictly deficient
+(`delta>=r+1` when it hits `r` opposite atoms), and the other petals compensate.
+Partner-free labels have split-atom rebate at least three; the minimal patterns are one size-at-least-four
+atom, one size-three atom plus another split atom, or three pair atoms.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

@@ -2050,6 +2050,14 @@ What remains justified after audit is:
       splitting an atom of size at least three, or all atoms have size at least four;
       partner-free pair collisions are hidden bipartition colorings of the three opposite atoms with distinct
       endpoint labels; partner-hit collisions are the finite high-cover templates;
+      partner-free labels also satisfy the no-near-complement rule: every empty four-cell has opposite
+      diagonal cell of size at least two;
+      partner-hit templates are exactly the four covers: `b` plus two opposite atoms, `b` plus all three,
+      the same with one omission, or a three-petal cover of `b` plus all three;
+      those are family-union covers; the individual full-pair support has strict deficit
+      `delta>=r+1` on `r` hit opposite atoms, compensated by the other petals;
+      partner-free split atoms have total rebate at least three, with minimal patterns: one size-at-least-four
+      atom, one size-three plus another split atom, or three pair atoms;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
