@@ -5190,6 +5190,212 @@ def firstBitSignedGlobalResidualTable
         (firstBitTwiceResidueTable ⟨eD.val % 2, Nat.mod_lt _ (by decide : 0 < 2)⟩))
       (firstBitTwiceResidueTable ⟨eB.val % 2, Nat.mod_lt _ (by decide : 0 < 2)⟩))
 
+/-- Signed atom deletion scalar `c * (m - d) = d * r - 2e(D) [MOD 4]`. -/
+def FirstBitSignedAtomDeletionScalar (m d c r eD : ℕ) : Prop :=
+  firstBitIntModFourEq
+    ((c : ℤ) * ((m : ℤ) - (d : ℤ)))
+    ((d : ℤ) * (r : ℤ) - 2 * (eD : ℤ))
+
+/-- Signed atom append scalar `s * c = d * delta_S + sum_S phi_S [MOD 4]`. -/
+def FirstBitSignedAtomAppendScalar
+    (s d c delta phiSum : ℕ) : Prop :=
+  firstBitIntModFourEq
+    ((s : ℤ) * (c : ℤ))
+    ((d : ℤ) * (delta : ℤ) + (phiSum : ℤ))
+
+/--
+Expanded signed atom append scalar after substituting
+`sum_S phi_S = s*r + (s-m)*delta_S - 2e(S)`.
+-/
+def FirstBitSignedAtomAppendScalarExpanded
+    (s m d c r delta eS : ℕ) : Prop :=
+  firstBitIntModFourEq
+    ((s : ℤ) * (c : ℤ))
+    ((s : ℤ) * (r : ℤ) + (((s : ℤ) - (m : ℤ) + (d : ℤ)) * (delta : ℤ)) -
+      2 * (eS : ℤ))
+
+/--
+Substituting the scalar formula for `sum_S phi_S` converts the raw append scalar into the
+expanded signed-atom scalar.
+-/
+theorem firstBitSignedAtomAppendScalarExpanded_of_phiSum_eq
+    {s m d c r delta eS phiSum : ℕ}
+    (happend : FirstBitSignedAtomAppendScalar s d c delta phiSum)
+    (hphi :
+      (phiSum : ℤ) =
+        (s : ℤ) * (r : ℤ) + ((s : ℤ) - (m : ℤ)) * (delta : ℤ) -
+          2 * (eS : ℤ)) :
+    FirstBitSignedAtomAppendScalarExpanded s m d c r delta eS := by
+  unfold FirstBitSignedAtomAppendScalar FirstBitSignedAtomAppendScalarExpanded
+    firstBitIntModFourEq at happend ⊢
+  rw [hphi] at happend
+  have hrhs :
+      (d : ℤ) * (delta : ℤ) +
+          ((s : ℤ) * (r : ℤ) + ((s : ℤ) - (m : ℤ)) * (delta : ℤ) -
+            2 * (eS : ℤ)) =
+        (s : ℤ) * (r : ℤ) +
+            (((s : ℤ) - (m : ℤ) + (d : ℤ)) * (delta : ℤ)) -
+          2 * (eS : ℤ) := by
+    ring
+  simpa [hrhs] using happend
+
+/-- Certificate bundling the two signed atom scalar tests and the expanded append form. -/
+structure FirstBitSignedAtomScalarCertificate
+    (m d s c r eD delta phiSum eS : ℕ) : Prop where
+  deletionScalar : FirstBitSignedAtomDeletionScalar m d c r eD
+  appendScalar : FirstBitSignedAtomAppendScalar s d c delta phiSum
+  expandedAppend : FirstBitSignedAtomAppendScalarExpanded s m d c r delta eS
+
+/-- Extract the signed atom scalar tests from a certificate. -/
+theorem FirstBitSignedAtomScalarCertificate.scalars
+    {m d s c r eD delta phiSum eS : ℕ}
+    (h : FirstBitSignedAtomScalarCertificate m d s c r eD delta phiSum eS) :
+    FirstBitSignedAtomDeletionScalar m d c r eD ∧
+      FirstBitSignedAtomAppendScalar s d c delta phiSum ∧
+        FirstBitSignedAtomAppendScalarExpanded s m d c r delta eS :=
+  ⟨h.deletionScalar, h.appendScalar, h.expandedAppend⟩
+
+/-- Abstract surface saying signed atom scalar certificates can be unpacked. -/
+def HasFirstBitSignedAtomScalarCertificateExtraction : Prop :=
+  ∀ (m d s c r eD delta phiSum eS : ℕ),
+    FirstBitSignedAtomScalarCertificate m d s c r eD delta phiSum eS →
+      FirstBitSignedAtomDeletionScalar m d c r eD ∧
+        FirstBitSignedAtomAppendScalar s d c delta phiSum ∧
+          FirstBitSignedAtomAppendScalarExpanded s m d c r delta eS
+
+/-- The signed atom scalar certificate extraction is definitional. -/
+theorem hasFirstBitSignedAtomScalarCertificateExtraction :
+    HasFirstBitSignedAtomScalarCertificateExtraction := by
+  intro m d s c r eD delta phiSum eS hcert
+  exact hcert.scalars
+
+/-- Small-deletion spectrum: deletion size below four and scalar `c` bounded by it. -/
+def FirstBitSignedAtomSmallDeletionSpectrum (d c : ℕ) : Prop :=
+  d < 4 ∧ c ≤ d
+
+/-- Defect residues allowed by a deletion of size `d`: `phi+k=c` for some `0≤k≤d`, modulo four. -/
+def firstBitSignedAtomDeletionSupportResidue
+    (d : ℕ) (c phi : Fin 4) : Prop :=
+  ∃ k : Fin (d + 1),
+    firstBitModFourAddTable phi ⟨k.val % 4, Nat.mod_lt _ (by decide : 0 < 4)⟩ = c
+
+/-- In the one-deletion spectrum, the scalar `c` is a bit. -/
+theorem firstBitSignedAtomSmallDeletionSpectrum_one_values
+    {c : ℕ} (h : FirstBitSignedAtomSmallDeletionSpectrum 1 c) :
+    c = 0 ∨ c = 1 := by
+  unfold FirstBitSignedAtomSmallDeletionSpectrum at h
+  omega
+
+/-- Exact one-deletion scalar used by the pointwise `|D|=1` specialization. -/
+def FirstBitSignedAtomOneDeletionExactScalar (m c r : ℕ) : Prop :=
+  c * (m - 1) = r
+
+/-- The exact one-deletion scalar has the two expected rows: `c=0,r=0` or `c=1,r=m-1`. -/
+theorem firstBitSignedAtomOneDeletionExactScalar_cases
+    {m c r : ℕ} (hc : c ≤ 1)
+    (h : FirstBitSignedAtomOneDeletionExactScalar m c r) :
+    (c = 0 ∧ r = 0) ∨ (c = 1 ∧ r = m - 1) := by
+  have hc01 : c = 0 ∨ c = 1 := by omega
+  unfold FirstBitSignedAtomOneDeletionExactScalar at h
+  rcases hc01 with rfl | rfl
+  · left
+    simp at h
+    constructor
+    · rfl
+    · omega
+  · right
+    simp at h
+    constructor
+    · rfl
+    · omega
+
+/-- One-deletion support table: only `c` and `c-1` can occur modulo four. -/
+theorem firstBitSignedAtomDeletionSupportResidue_one_iff (c phi : Fin 4) :
+    firstBitSignedAtomDeletionSupportResidue 1 c phi ↔
+      phi = c ∨ firstBitModFourAddTable phi (1 : Fin 4) = c := by
+  fin_cases c <;> fin_cases phi <;> decide
+
+/-- Two-deletion support table: only three consecutive residues can occur modulo four. -/
+theorem firstBitSignedAtomDeletionSupportResidue_two_iff (c phi : Fin 4) :
+    firstBitSignedAtomDeletionSupportResidue 2 c phi ↔
+      phi = c ∨ firstBitModFourAddTable phi (1 : Fin 4) = c ∨
+        firstBitModFourAddTable phi (2 : Fin 4) = c := by
+  fin_cases c <;> fin_cases phi <;> decide
+
+/-- Three deletions cover all four defect residues modulo four. -/
+theorem firstBitSignedAtomDeletionSupportResidue_three (c phi : Fin 4) :
+    firstBitSignedAtomDeletionSupportResidue 3 c phi := by
+  fin_cases c <;> fin_cases phi <;> decide
+
+/-- Abstract surface collecting the `|D|=1,2,3` small-deletion residue tables. -/
+def HasFirstBitSignedAtomSmallDeletionSpectrumTables : Prop :=
+  (∀ c : ℕ, FirstBitSignedAtomSmallDeletionSpectrum 1 c → c = 0 ∨ c = 1) ∧
+    (∀ m c r : ℕ, c ≤ 1 → FirstBitSignedAtomOneDeletionExactScalar m c r →
+      (c = 0 ∧ r = 0) ∨ (c = 1 ∧ r = m - 1)) ∧
+      (∀ c phi : Fin 4, firstBitSignedAtomDeletionSupportResidue 1 c phi ↔
+        phi = c ∨ firstBitModFourAddTable phi (1 : Fin 4) = c) ∧
+        (∀ c phi : Fin 4, firstBitSignedAtomDeletionSupportResidue 2 c phi ↔
+          phi = c ∨ firstBitModFourAddTable phi (1 : Fin 4) = c ∨
+            firstBitModFourAddTable phi (2 : Fin 4) = c) ∧
+          (∀ c phi : Fin 4, firstBitSignedAtomDeletionSupportResidue 3 c phi)
+
+/-- The finite small-deletion residue tables are all decided by enumeration. -/
+theorem hasFirstBitSignedAtomSmallDeletionSpectrumTables :
+    HasFirstBitSignedAtomSmallDeletionSpectrumTables := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · intro c h
+    exact firstBitSignedAtomSmallDeletionSpectrum_one_values h
+  · intro m c r hc h
+    exact firstBitSignedAtomOneDeletionExactScalar_cases hc h
+  · intro c phi
+    exact firstBitSignedAtomDeletionSupportResidue_one_iff c phi
+  · intro c phi
+    exact firstBitSignedAtomDeletionSupportResidue_two_iff c phi
+  · intro c phi
+    exact firstBitSignedAtomDeletionSupportResidue_three c phi
+
+/--
+Two-coordinate augmented atom normalization surface: the atom size and old increment vanish modulo
+four, and the aggregate defect sum is `-2e(S)` modulo four.  This records only scalar control and
+does not assert pointwise defect cancellation.
+-/
+structure FirstBitAugmentedAtomScalarNormalization
+    (s delta phiSum eS : ℕ) : Prop where
+  sizeZero : s ≡ 0 [MOD 4]
+  oldIncrementZero : delta ≡ 0 [MOD 4]
+  phiSumScalar : firstBitIntModFourEq (phiSum : ℤ) (-(2 * (eS : ℤ)))
+
+/-- Extract the scalar rows from an augmented atom normalization certificate. -/
+theorem FirstBitAugmentedAtomScalarNormalization.scalars
+    {s delta phiSum eS : ℕ}
+    (h : FirstBitAugmentedAtomScalarNormalization s delta phiSum eS) :
+    s ≡ 0 [MOD 4] ∧ delta ≡ 0 [MOD 4] ∧
+      firstBitIntModFourEq (phiSum : ℤ) (-(2 * (eS : ℤ))) :=
+  ⟨h.sizeZero, h.oldIncrementZero, h.phiSumScalar⟩
+
+/-- Exact zero coordinates give the augmented atom scalar normalization surface. -/
+theorem firstBitAugmentedAtomScalarNormalization_of_exact
+    {s delta phiSum eS : ℕ}
+    (hs : s = 0) (hdelta : delta = 0)
+    (hphi : (phiSum : ℤ) = -(2 * (eS : ℤ))) :
+    FirstBitAugmentedAtomScalarNormalization s delta phiSum eS := by
+  subst s
+  subst delta
+  exact ⟨Nat.ModEq.refl 0, Nat.ModEq.refl 0, firstBitIntModFourEq_of_eq hphi⟩
+
+/-- Abstract surface exposing augmented atom scalar normalization without pointwise cancellation. -/
+def HasFirstBitAugmentedAtomScalarNormalizationSurface : Prop :=
+  ∀ (s delta phiSum eS : ℕ),
+    FirstBitAugmentedAtomScalarNormalization s delta phiSum eS →
+      s ≡ 0 [MOD 4] ∧ delta ≡ 0 [MOD 4] ∧
+        firstBitIntModFourEq (phiSum : ℤ) (-(2 * (eS : ℤ)))
+
+/-- The augmented atom scalar normalization surface is just certificate projection. -/
+theorem hasFirstBitAugmentedAtomScalarNormalizationSurface :
+    HasFirstBitAugmentedAtomScalarNormalizationSurface := by
+  intro s delta phiSum eS hnorm
+  exact hnorm.scalars
+
 /-- Abstract surface saying terminal scalar certificates can be unpacked at the quotient frontier. -/
 def HasFirstBitPacketTerminalScalarCertificateExtraction : Prop :=
   ∀ {ι : Type*} [DecidableEq ι] (active : Finset ι) (eta : ι → ℕ)
@@ -5222,12 +5428,18 @@ theorem hasFirstBitPacketGlobalRowScalarEdgeParityTable :
 structure FirstBitPacketTerminalScalarFrontierSurfaces : Prop where
   certificateExtraction : HasFirstBitPacketTerminalScalarCertificateExtraction
   edgeParityTable : HasFirstBitPacketGlobalRowScalarEdgeParityTable
+  signedAtomScalars : HasFirstBitSignedAtomScalarCertificateExtraction
+  smallDeletionSpectra : HasFirstBitSignedAtomSmallDeletionSpectrumTables
+  augmentedAtomNormalization : HasFirstBitAugmentedAtomScalarNormalizationSurface
 
 /-- The terminal scalar frontier package is purely arithmetic. -/
 theorem firstBitPacketTerminalScalarFrontierSurfaces :
     FirstBitPacketTerminalScalarFrontierSurfaces where
   certificateExtraction := hasFirstBitPacketTerminalScalarCertificateExtraction
   edgeParityTable := hasFirstBitPacketGlobalRowScalarEdgeParityTable
+  signedAtomScalars := hasFirstBitSignedAtomScalarCertificateExtraction
+  smallDeletionSpectra := hasFirstBitSignedAtomSmallDeletionSpectrumTables
+  augmentedAtomNormalization := hasFirstBitAugmentedAtomScalarNormalizationSurface
 
 /-- Surface asserting that old-increment certificates can be converted to target elimination. -/
 def HasFirstBitPacketTargetEliminationReduction : Prop :=
