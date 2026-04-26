@@ -1365,6 +1365,60 @@ theorem nonNeighborFinset_card_eq_seventeen_of_card_twenty_six_degree_eight
     simpa [SimpleGraph.card_neighborFinset_eq_degree] using hdegv
   simpa [nonNbrsV] using (by omega : nonNbrsV.card = 17)
 
+/-- The non-neighborhood of a degree-`9` vertex in a `27`-vertex graph has size `17`. -/
+theorem nonNeighborFinset_card_eq_seventeen_of_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27) {v : α} (hdegv : G.degree v = 9) :
+    ((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).card = 17 := by
+  classical
+  let nonNbrsV : Finset α := (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)
+  have hpart :
+      (G.neighborFinset v).card + nonNbrsV.card = (Finset.univ.erase v).card := by
+    have hneighbor :
+        G.neighborFinset v = (Finset.univ.erase v).filter (G.Adj v) := by
+      ext w
+      by_cases hwv : w = v
+      · subst w
+        simp
+      · simp [hwv]
+    rw [hneighbor]
+    simpa [nonNbrsV] using
+      (Finset.card_filter_add_card_filter_not (s := Finset.univ.erase v) (p := G.Adj v))
+  have htotal : (Finset.univ.erase v).card = 26 := by
+    have h := Finset.card_erase_of_mem (s := (Finset.univ : Finset α)) (a := v) (by simp)
+    rw [Finset.card_univ, hcard] at h
+    simpa using h
+  have hneighborCard : (G.neighborFinset v).card = 9 := by
+    simpa [SimpleGraph.card_neighborFinset_eq_degree] using hdegv
+  simpa [nonNbrsV] using (by omega : nonNbrsV.card = 17)
+
+/-- The non-neighborhood of a degree-`13` vertex in a `27`-vertex graph has size `13`. -/
+theorem nonNeighborFinset_card_eq_thirteen_of_card_twenty_seven_degree_thirteen
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27) {v : α} (hdegv : G.degree v = 13) :
+    ((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).card = 13 := by
+  classical
+  let nonNbrsV : Finset α := (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)
+  have hpart :
+      (G.neighborFinset v).card + nonNbrsV.card = (Finset.univ.erase v).card := by
+    have hneighbor :
+        G.neighborFinset v = (Finset.univ.erase v).filter (G.Adj v) := by
+      ext w
+      by_cases hwv : w = v
+      · subst w
+        simp
+      · simp [hwv]
+    rw [hneighbor]
+    simpa [nonNbrsV] using
+      (Finset.card_filter_add_card_filter_not (s := Finset.univ.erase v) (p := G.Adj v))
+  have htotal : (Finset.univ.erase v).card = 26 := by
+    have h := Finset.card_erase_of_mem (s := (Finset.univ : Finset α)) (a := v) (by simp)
+    rw [Finset.card_univ, hcard] at h
+    simpa using h
+  have hneighborCard : (G.neighborFinset v).card = 13 := by
+    simpa [SimpleGraph.card_neighborFinset_eq_degree] using hdegv
+  simpa [nonNbrsV] using (by omega : nonNbrsV.card = 13)
+
 /-- The trivial off-diagonal bound `R(2,5) <= 5`. -/
 theorem hasCliqueOrIndepSetBound_two_five_five :
     HasCliqueOrIndepSetBound 2 5 5 := by
@@ -2567,6 +2621,226 @@ theorem neighbor_in_nonNeighborFinset_card_eq_eight_of_nonadjacent_degree_eight
   simpa [nonNbrsV, hNbrs] using hInternal
 
 /--
+If a vertex has degree `9` in a `27`-vertex no-`K₄`/no-independent-`5` graph, then each
+non-neighbor has exactly eight common non-neighbors with it inside that non-neighborhood.
+-/
+theorem common_non_neighbor_in_nonNeighborhood_card_eq_eight_of_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v) (hdegv : G.degree v = 9) :
+    (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+      (fun w => ¬ G.Adj u w)).card = 8 := by
+  classical
+  let nonNbrsV : Finset α := (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)
+  let nbrsOfUInNonNbrsV : Finset α := (nonNbrsV.erase u).filter (G.Adj u)
+  let nonNbrsOfUInNonNbrsV : Finset α := (nonNbrsV.erase u).filter (fun w => ¬ G.Adj u w)
+  have hvu : ¬ G.Adj v u := fun h => huv h.symm
+  have huNonNbrsV : u ∈ nonNbrsV := by
+    exact Finset.mem_filter.mpr
+      ⟨Finset.mem_erase.mpr ⟨huv_ne, by simp⟩, hvu⟩
+  have hpart :
+      nbrsOfUInNonNbrsV.card + nonNbrsOfUInNonNbrsV.card =
+        (nonNbrsV.erase u).card := by
+    simpa [nbrsOfUInNonNbrsV, nonNbrsOfUInNonNbrsV] using
+      (Finset.card_filter_add_card_filter_not (s := nonNbrsV.erase u) (p := G.Adj u))
+  have hNonNbrsVCard : nonNbrsV.card = 17 := by
+    simpa [nonNbrsV] using
+      nonNeighborFinset_card_eq_seventeen_of_card_twenty_seven_degree_nine
+        G hcard hdegv
+  have htotal : (nonNbrsV.erase u).card = 16 := by
+    rw [Finset.card_erase_of_mem huNonNbrsV, hNonNbrsVCard]
+  have hNbrsLt : nbrsOfUInNonNbrsV.card < 9 := by
+    refine card_lt_of_no_clique_or_indep hasCliqueOrIndepSetBound_three_four_nine G
+      nbrsOfUInNonNbrsV ?_ ?_
+    · rintro ⟨t, htNbrs, htClique⟩
+      exact hnoK4 ⟨insert u t, htClique.insert (by
+        intro w hw
+        have hwNbrs := htNbrs hw
+        simp only [nbrsOfUInNonNbrsV, Finset.mem_filter] at hwNbrs
+        exact hwNbrs.2)⟩
+    · rintro ⟨t, htNbrs, htIndep⟩
+      exact hnoI5 ⟨insert v t, by
+        rw [← SimpleGraph.isNClique_compl] at htIndep ⊢
+        refine htIndep.insert ?_
+        intro w hw
+        have hwNbrs := htNbrs hw
+        simp only [nbrsOfUInNonNbrsV, Finset.mem_filter] at hwNbrs
+        have hwNonNbrsV : w ∈ nonNbrsV := (Finset.mem_erase.mp hwNbrs.1).2
+        simp only [nonNbrsV, Finset.mem_filter] at hwNonNbrsV
+        rcases hwNonNbrsV with ⟨hwErase, hvw⟩
+        have hvw_ne : v ≠ w := (Finset.mem_erase.mp hwErase).1.symm
+        exact (SimpleGraph.compl_adj _ _ _).2 ⟨hvw_ne, hvw⟩⟩
+  have hNonNbrsLe : nonNbrsOfUInNonNbrsV.card ≤ 8 := by
+    have hlt :
+        nonNbrsOfUInNonNbrsV.card < 9 := by
+      refine card_lt_of_no_clique_or_indep
+        (HasCliqueOrIndepSetBound.symm hasCliqueOrIndepSetBound_three_four_nine) G
+        nonNbrsOfUInNonNbrsV ?_ ?_
+      · rintro ⟨t, _htNon, htClique⟩
+        exact hnoK4 ⟨t, htClique⟩
+      · rintro ⟨t, htNon, htIndep⟩
+        exact hnoI5 ⟨insert u (insert v t), by
+          rw [← SimpleGraph.isNClique_compl] at htIndep ⊢
+          have hCliqueWithV : Gᶜ.IsNClique 4 (insert v t) := by
+            refine htIndep.insert ?_
+            intro w hw
+            have hwNon := htNon hw
+            simp only [nonNbrsOfUInNonNbrsV, Finset.mem_filter] at hwNon
+            have hwNonNbrsV : w ∈ nonNbrsV := (Finset.mem_erase.mp hwNon.1).2
+            simp only [nonNbrsV, Finset.mem_filter] at hwNonNbrsV
+            rcases hwNonNbrsV with ⟨hwErase, hvw⟩
+            have hvw_ne : v ≠ w := (Finset.mem_erase.mp hwErase).1.symm
+            exact (SimpleGraph.compl_adj _ _ _).2 ⟨hvw_ne, hvw⟩
+          refine hCliqueWithV.insert ?_
+          intro w hw
+          rcases Finset.mem_insert.mp hw with rfl | hwt
+          · exact (SimpleGraph.compl_adj _ _ _).2 ⟨huv_ne, huv⟩
+          · have hwNon := htNon hwt
+            simp only [nonNbrsOfUInNonNbrsV, Finset.mem_filter] at hwNon
+            rcases hwNon with ⟨hwErase, huw⟩
+            have huw_ne : u ≠ w := (Finset.mem_erase.mp hwErase).1.symm
+            exact (SimpleGraph.compl_adj _ _ _).2 ⟨huw_ne, huw⟩⟩
+    exact Nat.le_of_lt_succ hlt
+  have hNonNbrsGe : 8 ≤ nonNbrsOfUInNonNbrsV.card := by omega
+  have hEq : nonNbrsOfUInNonNbrsV.card = 8 := le_antisymm hNonNbrsLe hNonNbrsGe
+  simpa [nonNbrsV, nonNbrsOfUInNonNbrsV] using hEq
+
+/--
+The non-neighborhood of a degree-`9` vertex in a `27`-vertex no-`K₄`/no-independent-`5`
+graph is an induced `8`-regular graph.
+-/
+theorem nonNeighborFinset_isRegularOfDegree_eight_of_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {v : α} (hdegv : G.degree v = 9) :
+    (inducedOn G ((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w))).IsRegularOfDegree 8 := by
+  classical
+  let nonNbrsV : Finset α := (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)
+  intro u
+  let nbrsOfUInNonNbrsV : Finset α := (nonNbrsV.erase u).filter (G.Adj u)
+  let nonNbrsOfUInNonNbrsV : Finset α := (nonNbrsV.erase u).filter (fun w => ¬ G.Adj u w)
+  have huNonNbrsV : (u : α) ∈ nonNbrsV := u.2
+  have huv_ne : (u : α) ≠ v := by
+    exact (Finset.mem_erase.mp (Finset.mem_filter.mp huNonNbrsV).1).1
+  have huv : ¬ G.Adj (u : α) v := by
+    intro huv
+    exact (Finset.mem_filter.mp huNonNbrsV).2 huv.symm
+  have hNbrs :
+      G.neighborFinset (u : α) ∩ nonNbrsV = nbrsOfUInNonNbrsV := by
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_inter.mp hw with ⟨hwu, hwNonNbrsV⟩
+      have huw : G.Adj (u : α) w := (G.mem_neighborFinset (u : α) w).mp hwu
+      exact Finset.mem_filter.mpr
+        ⟨Finset.mem_erase.mpr ⟨huw.ne.symm, hwNonNbrsV⟩, huw⟩
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwErase, huw⟩
+      exact Finset.mem_inter.mpr
+        ⟨(G.mem_neighborFinset (u : α) w).mpr huw, (Finset.mem_erase.mp hwErase).2⟩
+  have hpart :
+      nbrsOfUInNonNbrsV.card + nonNbrsOfUInNonNbrsV.card =
+        (nonNbrsV.erase u).card := by
+    simpa [nbrsOfUInNonNbrsV, nonNbrsOfUInNonNbrsV] using
+      (Finset.card_filter_add_card_filter_not (s := nonNbrsV.erase u) (p := G.Adj (u : α)))
+  have hNonNbrsVCard : nonNbrsV.card = 17 := by
+    simpa [nonNbrsV] using
+      nonNeighborFinset_card_eq_seventeen_of_card_twenty_seven_degree_nine
+        G hcard hdegv
+  have htotal : (nonNbrsV.erase u).card = 16 := by
+    rw [Finset.card_erase_of_mem huNonNbrsV, hNonNbrsVCard]
+  have hNonNbrsEq : nonNbrsOfUInNonNbrsV.card = 8 := by
+    simpa [nonNbrsV, nonNbrsOfUInNonNbrsV] using
+      common_non_neighbor_in_nonNeighborhood_card_eq_eight_of_card_twenty_seven_degree_nine
+        G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hNbrsCard : nbrsOfUInNonNbrsV.card = 8 := by omega
+  rw [inducedOn_degree_eq_card_neighborFinset_inter, hNbrs]
+  exact hNbrsCard
+
+/--
+Every non-neighbor of a degree-`9` vertex in a `27`-vertex residual has exactly eight
+neighbors inside that vertex's non-neighborhood.
+-/
+theorem neighbor_in_nonNeighborFinset_card_eq_eight_of_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v) (hdegv : G.degree v = 9) :
+    (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+      (G.Adj u)).card = 8 := by
+  classical
+  let nonNbrsV : Finset α := (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)
+  have hvu : ¬ G.Adj v u := fun h => huv h.symm
+  have huNonNbrsV : u ∈ nonNbrsV := by
+    exact Finset.mem_filter.mpr
+      ⟨Finset.mem_erase.mpr ⟨huv_ne, by simp⟩, hvu⟩
+  have hNbrs :
+      G.neighborFinset u ∩ nonNbrsV = (nonNbrsV.erase u).filter (G.Adj u) := by
+    ext w
+    constructor
+    · intro hw
+      rcases Finset.mem_inter.mp hw with ⟨hwu, hwNonNbrsV⟩
+      have huw : G.Adj u w := (G.mem_neighborFinset u w).mp hwu
+      exact Finset.mem_filter.mpr
+        ⟨Finset.mem_erase.mpr ⟨huw.ne.symm, hwNonNbrsV⟩, huw⟩
+    · intro hw
+      rcases Finset.mem_filter.mp hw with ⟨hwErase, huw⟩
+      exact Finset.mem_inter.mpr
+        ⟨(G.mem_neighborFinset u w).mpr huw, (Finset.mem_erase.mp hwErase).2⟩
+  have hreg :=
+    nonNeighborFinset_isRegularOfDegree_eight_of_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 hdegv
+  have hInternal :
+      (G.neighborFinset u ∩ nonNbrsV).card = 8 := by
+    have hdeg := hreg ⟨u, huNonNbrsV⟩
+    rw [inducedOn_degree_eq_card_neighborFinset_inter] at hdeg
+    simpa [nonNbrsV] using hdeg
+  simpa [nonNbrsV, hNbrs] using hInternal
+
+/--
+A non-neighbor of a degree-`9` vertex in a `27`-vertex residual has degree equal to eight
+plus its common-neighbor count with that vertex.
+-/
+theorem degree_eq_eight_add_common_neighbor_card_of_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v) (hdegv : G.degree v = 9) :
+    G.degree u = (G.neighborFinset u ∩ G.neighborFinset v).card + 8 := by
+  have hside :
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 :=
+    neighbor_in_nonNeighborFinset_card_eq_eight_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  have hsplit :=
+    degree_eq_neighbor_inter_neighborFinset_add_neighbor_in_nonNeighborFinset_of_nonadjacent
+      G huv
+  omega
+
+/-- A non-neighbor of a degree-`9` vertex in the `27`-vertex residual has at most five common neighbors. -/
+theorem common_neighbor_card_le_five_of_nonadjacent_card_twenty_seven_degree_nine
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v) (hdegv : G.degree v = 9) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 5 := by
+  have hdegUpper :
+      G.degree u ≤ 13 :=
+    (degree_mem_Icc_of_card_twenty_seven_no_clique_four_no_indep_five_unconditional
+      G hcard hnoK4 hnoI5 u).2
+  have hdeg :=
+    degree_eq_eight_add_common_neighbor_card_of_nonadjacent_card_twenty_seven_degree_nine
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  omega
+
+/--
 If a degree-`13` vertex is nonadjacent to a degree-`8` vertex, then its degree splits as exactly
 `5 + 8` across the degree-`8` vertex's neighborhood and non-neighborhood sides.
 -/
@@ -3174,6 +3448,38 @@ def NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven : Prop :=
       (∀ v : α, 9 ≤ G.degree v ∧ G.degree v ≤ 13) →
         (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
 
+/--
+Refined residual form for the `R(4,5) <= 27` endpoint.  Besides the degree window, it exposes
+the forced local surfaces: neighborhood and non-neighborhood Ramsey subresiduals, pairwise common
+neighbor/non-neighbor caps, and the exact regular side-structures at degrees `9` and `13`.
+-/
+def NoRamseyFourFiveRefinedCounterexampleOnTwentySeven : Prop :=
+  ∀ {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj],
+    Fintype.card α = 27 →
+      (∀ v : α, 9 ≤ G.degree v ∧ G.degree v ≤ 13) →
+      (∀ v : α,
+        (¬ ∃ t : Finset α, t ⊆ G.neighborFinset v ∧ G.IsNClique 3 t) ∧
+          (¬ ∃ t : Finset α, t ⊆ G.neighborFinset v ∧ G.IsNIndepSet 5 t)) →
+      (∀ v : α,
+        (¬ ∃ t : Finset α,
+          t ⊆ (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w) ∧ G.IsNClique 4 t) ∧
+          (¬ ∃ t : Finset α,
+            t ⊆ (Finset.univ.erase v).filter (fun w => ¬ G.Adj v w) ∧
+              G.IsNIndepSet 4 t)) →
+      (∀ {u v : α}, G.Adj u v →
+        (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 4) →
+      (∀ {u v : α}, u ≠ v → ¬ G.Adj u v →
+        (((Finset.univ.erase u).erase v).filter
+          (fun w => ¬ G.Adj u w ∧ ¬ G.Adj v w)).card ≤ 8) →
+      (∀ v : α, G.degree v = 9 →
+        ((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).card = 17 ∧
+          (inducedOn G
+            ((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w))).IsRegularOfDegree 8) →
+      (∀ v : α, G.degree v = 13 →
+        ((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).card = 13 ∧
+          (inducedOn G (G.neighborFinset v)).IsRegularOfDegree 4) →
+        (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
+
 /-- The exact-card endpoint form discharges the localized `R(4,5) <= 27` input. -/
 theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_noCounterexample
     (h : NoRamseyFourFiveCounterexampleOnTwentySeven) :
@@ -3221,6 +3527,64 @@ theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeWindow
   hasCliqueOrIndepSetBound_four_five_twenty_seven_of_noCounterexample
     (noRamseyFourFiveCounterexampleOnTwentySeven_of_degreeWindow hwindow)
 
+/-- The refined residual surface implies the degree-window residual. -/
+theorem noRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven_of_refined
+    (hrefined : NoRamseyFourFiveRefinedCounterexampleOnTwentySeven) :
+    NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven := by
+  intro α _ _ G _ hcard hdegree
+  classical
+  by_cases hdone :
+      (∃ t : Finset α, G.IsNClique 4 t) ∨ ∃ t : Finset α, G.IsNIndepSet 5 t
+  · exact hdone
+  have hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t := by
+    intro hK4
+    exact hdone (Or.inl hK4)
+  have hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t := by
+    intro hI5
+    exact hdone (Or.inr hI5)
+  exact hrefined G hcard hdegree
+    (by
+      intro v
+      exact ⟨no_clique_three_in_neighborFinset_of_no_clique_four G hnoK4 v,
+        no_indep_five_in_neighborFinset_of_no_indep_five G hnoI5 v⟩)
+    (by
+      intro v
+      exact ⟨no_clique_four_in_nonNeighborFinset_of_no_clique_four G hnoK4 v,
+        no_indep_four_in_nonNeighborFinset_of_no_indep_five G hnoI5 v⟩)
+    (by
+      intro u v huv
+      exact common_neighbor_card_le_four_of_no_clique_four_no_indep_five G hnoK4 hnoI5 huv)
+    (by
+      intro u v huv_ne huv
+      exact common_non_neighbor_card_le_eight_of_no_clique_four_no_indep_five
+        G hnoK4 hnoI5 huv_ne huv)
+    (by
+      intro v hdegv
+      exact ⟨nonNeighborFinset_card_eq_seventeen_of_card_twenty_seven_degree_nine
+          G hcard hdegv,
+        nonNeighborFinset_isRegularOfDegree_eight_of_card_twenty_seven_degree_nine
+          G hcard hnoK4 hnoI5 hdegv⟩)
+    (by
+      intro v hdegv
+      exact ⟨nonNeighborFinset_card_eq_thirteen_of_card_twenty_seven_degree_thirteen
+          G hcard hdegv,
+        neighborFinset_isRegularOfDegree_four_of_degree_thirteen_no_clique_four_no_indep_five
+          G hnoK4 hnoI5 hdegv⟩)
+
+/-- The refined residual is enough for the exact 27-vertex endpoint. -/
+theorem noRamseyFourFiveCounterexampleOnTwentySeven_of_refined
+    (hrefined : NoRamseyFourFiveRefinedCounterexampleOnTwentySeven) :
+    NoRamseyFourFiveCounterexampleOnTwentySeven :=
+  noRamseyFourFiveCounterexampleOnTwentySeven_of_degreeWindow
+    (noRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven_of_refined hrefined)
+
+/-- The refined residual is enough for the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_refined
+    (hrefined : NoRamseyFourFiveRefinedCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeWindow
+    (noRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven_of_refined hrefined)
+
 /--
 Relaxed Ramsey-10 table using the sharpened `R(3,k)` row and parity recurrence.  It is enough for
 the dyadic regular-10 target to know the slightly weaker off-diagonal endpoint `R(4,5) <= 27`.
@@ -3238,6 +3602,12 @@ theorem ramseyTenR45TwentySevenTable_of_degreeWindow
     (hwindow : NoRamseyFourFiveDegreeWindowCounterexampleOnTwentySeven) :
     RamseyTenR45TwentySevenTable :=
   ⟨hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeWindow hwindow⟩
+
+/-- Package the refined 27-vertex residual as the relaxed Ramsey-10 table. -/
+theorem ramseyTenR45TwentySevenTable_of_refined
+    (hrefined : NoRamseyFourFiveRefinedCounterexampleOnTwentySeven) :
+    RamseyTenR45TwentySevenTable :=
+  ⟨hasCliqueOrIndepSetBound_four_five_twenty_seven_of_refined hrefined⟩
 
 /-- The original small table implies the relaxed `R(4,5) <= 27` table. -/
 theorem RamseyTenSmallTable.toR45TwentySevenTable
