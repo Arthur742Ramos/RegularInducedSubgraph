@@ -1686,6 +1686,145 @@ def CertifiedProofMdFinalObligationDashboard.toFirstBitCoCut
       WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
   h.firstBitCoCut
 
+/-- Project the exact-`42` profile with middle-degree ledgers from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toExact42WithMiddleSplits
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.exact42Ramsey.toExact42WithMiddleSplits
+
+/-- Project the exact-`42` three-row profile surface from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toExact42ProfileSurface
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.exact42Ramsey.toExact42ProfileSurface
+
+/-- Project the local Ramsey endpoint ledger bundle from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toLocalLedgerBundle
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.exact42Ramsey.toLocalLedgerBundle
+
+/-- Project the `R(3,10) <= 42` row from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toThreeTenFortyTwo
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Ramsey.toThreeTenFortyTwo
+
+/-- Project the relaxed `R(4,5) <= 27` row from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toR45TwentySeven
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.exact42Ramsey.toR45TwentySeven
+
+/-- Project the propagated `R(10,10) <= 39246` row from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toR10Ten39246
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.exact42Ramsey.toR10Ten39246
+
+/-- Project the admissible-bound consequence at `40960` from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toTenMemAdmissibleBounds_40960
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    10 ∈ admissibleBounds 40960 :=
+  h.exact42Ramsey.toTenMemAdmissibleBounds_40960
+
+/-- Project the extremal-function lower bound at `40960` from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toTenLeF_40960
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    10 ≤ F 40960 :=
+  h.exact42Ramsey.toTenLeF_40960
+
+/-- Project the terminal homogeneous-carry import bundle from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toHomogeneousCarryImports
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  h.terminalMixedCore.toHomogeneousCarryImports
+
+/-- Project the available-cut final first-bit wrapper from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toFirstBitAvailableCutFinalWrapper
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom :=
+  h.firstBitCoCut.toAvailableCutFinalWrapper
+
+/-- Project the ordinary first-bit final branch wrappers from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toFirstBitFinalBranchWrappers
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappers :=
+  h.firstBitCoCut.toFinalBranchWrappers
+
+/-- Project the available-cut positive-atom imports from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toFirstBitAvailableCutPositiveAtom
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom :=
+  h.firstBitCoCut.toAvailableCutPositiveAtom
+
+/-- Project the available-cut collapse import from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toFirstBitAvailableCutCollapse
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom :=
+  h.firstBitCoCut.toAvailableCutCollapse
+
+/-- Project the full-coordinate available-cut collapse import from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toFirstBitFullCoordinateCollapse
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse
+      WithHoles PositiveAtom :=
+  h.firstBitCoCut.toFullCoordinateCollapse
+
+/-- Project the post-quotient anchored-packing imports from the dashboard. -/
+def CertifiedProofMdFinalObligationDashboard.toFirstBitPostQuotientAnchoredPacking
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut.toPostQuotientAnchoredPacking
+
 /-- The final dashboard closes `TargetStatement` through its small target consumer. -/
 theorem targetStatement_of_certifiedProofMdFinalObligationDashboard
     (h : CertifiedProofMdFinalObligationDashboard
@@ -1695,6 +1834,17 @@ theorem targetStatement_of_certifiedProofMdFinalObligationDashboard
     TargetStatement :=
   targetStatement_of_certifiedProofMdFinalTargetConsumerCertificate
     h.toFinalTargetConsumerCertificate
+
+/-- The final dashboard also closes `TargetStatement` through its exact-`42` Ramsey surface. -/
+theorem targetStatement_of_certifiedProofMdFinalObligationDashboard_via_exact42Consumer
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  targetStatement_of_proofMdFinalHandoff_of_evenDegreeModFourLoss32_and_exact42ConsumerNormalizedRamsey_and_fixedWitnessExternalBlockSelfBridgeFive_and_higherBitFixedWitnessTargetsFromEleven_certifiedSeven
+    h.toEvenDegreeModFourLoss32 h.toExact42ConsumerNormalizedRamsey
+    h.toExternalBlockSelfBridgeFive h.higherBitTargets
 
 /-- The integrated handoff also closes `TargetStatement` through the dashboard route. -/
 theorem targetStatement_of_certifiedProofMdIntegratedFrontierHandoffCertificate_via_dashboard
@@ -1789,6 +1939,380 @@ theorem certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff_fi
       WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
     (certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff h).firstBitCoCut =
       h.toFirstBitCoCut :=
+  rfl
+
+/-- Compact audit certificate for the current proof-md frontier dashboard. -/
+structure CertifiedProofMdCurrentFrontierAuditCertificate
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Type where
+  finalDashboard :
+    CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+
+/-- Alias name for consumers that prefer dashboard terminology over audit terminology. -/
+abbrev CertifiedProofMdCurrentFrontierDashboard
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Type :=
+  CertifiedProofMdCurrentFrontierAuditCertificate
+    Basis WithHoles PositiveAtom
+    AnchoredPacking TraceTwinFree packingSize
+    WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+
+/-- Promote the final obligation dashboard to the compact current-frontier audit surface. -/
+def CertifiedProofMdFinalObligationDashboard.toCurrentFrontierAuditCertificate
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  finalDashboard := h
+
+/-- Non-dot constructor alias from the final obligation dashboard. -/
+def certifiedProofMdCurrentFrontierAuditCertificate_of_finalObligationDashboard
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toCurrentFrontierAuditCertificate
+
+/-- Constructor from the integrated final-frontier handoff certificate. -/
+def certifiedProofMdCurrentFrontierAuditCertificate_of_integratedFrontierHandoff
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  (certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff h).toCurrentFrontierAuditCertificate
+
+/-- Recover the final obligation dashboard from the current-frontier audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toFinalObligationDashboard
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.finalDashboard
+
+/-- Project the small target consumer from the current-frontier audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toFinalTargetConsumerCertificate
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.toFinalObligationDashboard.toFinalTargetConsumerCertificate
+
+/-- Project the normalized exact-`42` Ramsey surface from the current-frontier audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toExact42ConsumerNormalizedRamsey
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdExact42ConsumerNormalizedRamseyCertificate :=
+  h.toFinalObligationDashboard.toExact42ConsumerNormalizedRamsey
+
+/-- Project unified Ramsey consequences from the current-frontier audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toGlobalConsequenceBundle
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45GlobalConsequenceBundle :=
+  h.toFinalObligationDashboard.toGlobalConsequenceBundle
+
+/-- Project the Ramsey regular-10 target from the current-frontier audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toRamseyTenRegular
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasRamseyTenRegularAtDyadicTarget :=
+  h.toFinalObligationDashboard.toRamseyTenRegular
+
+/-- Project the exact-`42` profile with middle-degree ledgers from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toExact42WithMiddleSplits
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyThreeTenExact42ProfileWithDegreeNineEndpointMiddleSplits :=
+  h.toFinalObligationDashboard.toExact42WithMiddleSplits
+
+/-- Project the exact-`42` three-row profile surface from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toExact42ProfileSurface
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyThreeTenExact42ThreeRowProfileSurface :=
+  h.toFinalObligationDashboard.toExact42ProfileSurface
+
+/-- Project the local Ramsey endpoint ledger bundle from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toLocalLedgerBundle
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.toFinalObligationDashboard.toLocalLedgerBundle
+
+/-- Project the `R(3,10) <= 42` row from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toThreeTenFortyTwo
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toFinalObligationDashboard.toThreeTenFortyTwo
+
+/-- Project the relaxed `R(4,5) <= 27` row from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toR45TwentySeven
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toFinalObligationDashboard.toR45TwentySeven
+
+/-- Project the propagated `R(10,10) <= 39246` row from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toR10Ten39246
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toFinalObligationDashboard.toR10Ten39246
+
+/-- Project the admissible-bound consequence at `40960` from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toTenMemAdmissibleBounds_40960
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    10 ∈ admissibleBounds 40960 :=
+  h.toFinalObligationDashboard.toTenMemAdmissibleBounds_40960
+
+/-- Project the extremal-function lower bound at `40960` from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toTenLeF_40960
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    10 ≤ F 40960 :=
+  h.toFinalObligationDashboard.toTenLeF_40960
+
+/-- Project the normalized loss-32 first-bit selector from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toEvenDegreeModFourLoss32
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasEvenDegreeModFourLoss32InducedSubgraph :=
+  h.toFinalObligationDashboard.toEvenDegreeModFourLoss32
+
+/-- Project the D=5 external-block bridge from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toExternalBlockSelfBridgeFive
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  h.toFinalObligationDashboard.toExternalBlockSelfBridgeFive
+
+/-- Project terminal mixed-target imports from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toTerminalMixedCore
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.toFinalObligationDashboard.toTerminalMixedCore
+
+/-- Project the terminal homogeneous-carry imports from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toHomogeneousCarryImports
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  h.toFinalObligationDashboard.toHomogeneousCarryImports
+
+/-- Project first-bit/co-cut obligations from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toFirstBitCoCut
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toFinalObligationDashboard.toFirstBitCoCut
+
+/-- Project the available-cut final first-bit wrapper from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toFirstBitAvailableCutFinalWrapper
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom :=
+  h.toFinalObligationDashboard.toFirstBitAvailableCutFinalWrapper
+
+/-- Project the ordinary first-bit final branch wrappers from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toFirstBitFinalBranchWrappers
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappers :=
+  h.toFinalObligationDashboard.toFirstBitFinalBranchWrappers
+
+/-- Project available-cut positive-atom imports from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toFirstBitAvailableCutPositiveAtom
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom :=
+  h.toFinalObligationDashboard.toFirstBitAvailableCutPositiveAtom
+
+/-- Project the available-cut collapse import from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toFirstBitAvailableCutCollapse
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom :=
+  h.toFinalObligationDashboard.toFirstBitAvailableCutCollapse
+
+/-- Project the full-coordinate available-cut collapse import from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toFirstBitFullCoordinateCollapse
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse
+      WithHoles PositiveAtom :=
+  h.toFinalObligationDashboard.toFirstBitFullCoordinateCollapse
+
+/-- Project post-quotient anchored-packing imports from the audit certificate. -/
+def CertifiedProofMdCurrentFrontierAuditCertificate.toFirstBitPostQuotientAnchoredPacking
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.toFinalObligationDashboard.toFirstBitPostQuotientAnchoredPacking
+
+/-- The current-frontier audit certificate closes `TargetStatement`. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierAuditCertificate
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  targetStatement_of_certifiedProofMdFinalObligationDashboard
+    h.toFinalObligationDashboard
+
+/-- The current-frontier dashboard alias also closes `TargetStatement`. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierDashboard
+    (h : CertifiedProofMdCurrentFrontierDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  targetStatement_of_certifiedProofMdCurrentFrontierAuditCertificate h
+
+/-- The integrated handoff closes `TargetStatement` through the audit route. -/
+theorem targetStatement_of_certifiedProofMdIntegratedFrontierHandoffCertificate_via_currentFrontierAudit
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TargetStatement :=
+  targetStatement_of_certifiedProofMdCurrentFrontierAuditCertificate
+    (certifiedProofMdCurrentFrontierAuditCertificate_of_integratedFrontierHandoff h)
+
+@[simp]
+theorem CertifiedProofMdFinalObligationDashboard.toCurrentFrontierAuditCertificate_finalDashboard
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toCurrentFrontierAuditCertificate.finalDashboard = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierAuditCertificate.toFinalObligationDashboard_finalDashboard
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toFinalObligationDashboard = h.finalDashboard :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierAuditCertificate.toFinalTargetConsumerCertificate_finalDashboard
+    (h : CertifiedProofMdCurrentFrontierAuditCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    h.toFinalTargetConsumerCertificate =
+      h.finalDashboard.toFinalTargetConsumerCertificate :=
+  rfl
+
+@[simp]
+theorem certifiedProofMdCurrentFrontierAuditCertificate_of_finalObligationDashboard_finalDashboard
+    (h : CertifiedProofMdFinalObligationDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdCurrentFrontierAuditCertificate_of_finalObligationDashboard h).finalDashboard =
+      h :=
+  rfl
+
+@[simp]
+theorem certifiedProofMdCurrentFrontierAuditCertificate_of_integratedFrontierHandoff_finalDashboard
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdCurrentFrontierAuditCertificate_of_integratedFrontierHandoff h).toFinalObligationDashboard =
+      certifiedProofMdFinalObligationDashboard_of_integratedFrontierHandoff h :=
+  rfl
+
+@[simp]
+theorem certifiedProofMdCurrentFrontierAuditCertificate_of_integratedFrontierHandoff_targetConsumer
+    (h : CertifiedProofMdIntegratedFrontierHandoffCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    (certifiedProofMdCurrentFrontierAuditCertificate_of_integratedFrontierHandoff h).toFinalTargetConsumerCertificate =
+      h.toFinalTargetConsumerCertificate :=
   rfl
 
 end FinalObligationDashboard
