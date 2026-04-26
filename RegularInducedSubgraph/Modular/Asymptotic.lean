@@ -3353,6 +3353,63 @@ theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_droppedTailCons
     simpa [e] using hdrop v ⟨v0, hv0⟩
 
 /--
+Exact constant dropped-tail degree is a concrete terminal branch: the exact subbucket is the
+terminal cascade bucket and the dropped tail is the separated control block.
+-/
+theorem positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_constantDroppedTailDegree
+    (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] {j : ℕ} {S u : Finset (Fin n)}
+    (hcard : u.card = 2 ^ j) (huS : u ⊆ S) (hproper : u.card < S.card)
+    (hhost : InducesModEqDegree G S (2 ^ j))
+    (hconst :
+      ∃ e : ℕ, ∀ v : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card = e) :
+    ∃ s : Finset (Fin n), ∃ chain : List (Finset (Fin n)),
+      ∃ blocks : List (Finset (Fin n) × ℕ),
+        2 ^ j ≤ (cascadeTerminal s chain).card ∧
+        (cascadeTerminal s chain).card ≤ 2 ^ j ∧
+        NonemptyControlBlockUnion blocks ∧
+        ControlBlocksSeparated s blocks ∧
+        HasFixedModulusCascadeFrom G (2 ^ j) s chain ∧
+        HasConstantModExternalBlockDegrees G s (2 ^ j) blocks := by
+  classical
+  cases
+    Subsingleton.elim (‹DecidableRel G.Adj›)
+      (fun a b => Classical.propDecidable (G.Adj a b))
+  rcases hconst with ⟨e, hconst⟩
+  have hdrop :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (G.neighborFinset v ∩ (S \ u)).card ≡
+          (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j] := by
+    intro v w
+    simpa [hconst v, hconst w] using (Nat.ModEq.refl e : e ≡ e [MOD 2 ^ j])
+  have hhostU :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hhost ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  have hmodU : InducesModEqDegree G u (2 ^ j) :=
+    inducesModEqDegree_of_modEq_hostDegree_and_dropDegree (G := G) huS hhostU hdrop
+  have hdiffNonempty : 0 < (S \ u).card := by
+    rw [Finset.card_sdiff, Finset.inter_eq_left.mpr huS]
+    omega
+  refine ⟨u, [], [((S \ u), e)], ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simpa [cascadeTerminal, hcard]
+  · simpa [cascadeTerminal, hcard]
+  · simpa [NonemptyControlBlockUnion, controlBlockUnion] using hdiffNonempty
+  · dsimp [ControlBlocksSeparated]
+    refine ⟨?_, by simp [controlBlockUnion], trivial⟩
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxDrop
+    exact (Finset.mem_sdiff.mp hxDrop).2 hxU
+  · change InducesModEqDegree G u (2 ^ j)
+    exact hmodU
+  · dsimp [HasConstantModExternalBlockDegrees]
+    refine ⟨?_, trivial⟩
+    intro v
+    simpa [hconst v] using (Nat.ModEq.refl e : e ≡ e [MOD 2 ^ j])
+
+/--
 A regular exact subbucket supplies the dropped-tail constancy required by the direct terminal
 external-block construction.
 -/
@@ -4415,6 +4472,33 @@ theorem
   exact
     positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_droppedTailConstancy
       (G := G) (j := j) (S := S) (u := u) hcard huS hproper hmod hdrop
+
+/--
+Exact constant dropped-tail degree on the selected subbucket closes the `j ≥ 5` terminal
+external-block tail directly.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive_of_constantDroppedTailDegreeSelectionFiveFromFive
+    (hselect :
+      ∀ {n j : ℕ} (hj : 5 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+        ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+          InducesModEqDegree G S (2 ^ j) →
+            ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+              ∃ e : ℕ, ∀ v : ↑(u : Set (Fin n)),
+                (G.neighborFinset v ∩ (S \ u)).card = e) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive := by
+  classical
+  intro n j hj G hfixed
+  letI : DecidableRel G.Adj := Classical.decRel G.Adj
+  rcases hfixed with ⟨S, hS, hmod⟩
+  rcases hselect hj G hS hmod with ⟨u, huS, hcard, hconst⟩
+  have hjpos : 0 < j := by omega
+  have hproper : u.card < S.card :=
+    fixedWitnessSubbucket_card_lt_host_card_of_pos_exponent
+      (D := 5) (j := j) (S := S) (u := u) (by decide : 0 < 5) hjpos hS hcard
+  exact
+    positiveDyadicFixedWitnessExternalBlockSelfBridgeData_of_constantDroppedTailDegree
+      (G := G) (j := j) (S := S) (u := u) hcard huS hproper hmod hconst
 
 /--
 On the `j ≥ 5` tail, a regular exact subbucket is equivalent to the dropped-tail condition once the
