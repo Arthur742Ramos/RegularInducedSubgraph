@@ -12033,6 +12033,12 @@ Thus unit strict absorption is not a diffuse repair: it is a three-template, lar
 atoms opposite the deleted vertex.  The full lift adds `a` to one member of this projected family and turns
 the projected gain `1` into full gain `-1`.
 
+Equivalently, unit strict absorption is cap-tight.  The first template lifts to a support of size `9`
+crossing three atoms, exactly the `6/9/12` cap for three-atom crossings after including `a`; the second
+lifts to a support of size `12` crossing all four atoms, exactly the four-atom cap; and the third is a
+two-support cover of the three opposite atoms with one support thickened by `a`.  Hence every nonclosing
+absorption in the first no-leftover core is a maximum-size strict cross-defect event.
+
 Active deletion gives the companion obstruction.  If `a` is a leftover singleton of a deficit-one packing
 `P`, then the same packing already closes the shadow `A\{a}`.  If instead `a in B_j`, projecting `B_j` to
 `B_j\{a}` lowers the saving by exactly one, so the projected packing in `A\{a}` has saving `|A|-5`, one
@@ -12179,6 +12185,11 @@ would need two leftover singletons.  Therefore all four atoms have size at least
 Equivalently, in every saturated rank-three endpoint with `|A|<=15`, each deficit-one packing has at least
 one leftover singleton.  The first no-leftover saturated bridge core can occur only at `|A|=16`, and then it
 is forced to be four atoms of size exactly four; all smaller active dimensions are leftover-budgeted.
+
+When `L=0`, zero-gain locality becomes rigidity.  A zero-gain support can meet at most one packed atom and
+must have the same size as that atom; with no leftover vertices available, it is exactly that packed atom.
+Thus the zero-gain replacement orbit is trivial in every no-leftover saturated packing.  In particular, the
+first no-leftover `|A|=16` core has four fixed four-atoms and no nontrivial zero-gain moves.
 
 More generally the leftover count is a budget.  Let `L` be the number of leftover singleton atoms of the
 four-atom packing.  A zero-gain shortened-block lift at an atom `B_j` is a same-size exchange and therefore
