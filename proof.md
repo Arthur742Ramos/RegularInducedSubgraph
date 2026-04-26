@@ -7262,6 +7262,12 @@ triangle triples:     pair residue 1.
 
 A mixed homogeneous quotient can survive only by balancing these two pair-residue classes so that
 neither class contains a near-half even quotient selector with an augmenting same-class outside triple.
+Moreover, this split is forced by parity: if all selected words have size two, every cross-word
+contribution is even (`0` or `2` modulo `4` in the homogeneous quotient), so the parity of the final
+degree residue is the parity of the internal pair residue.  Pair-only selectors therefore cannot mix
+non-triangle pairs with triangle pairs.  Any terminal mixed-class construction must use singleton or
+whole-triple words somewhere; those are exactly the words whose sizes are odd and can change the parity
+of cross-contributions.
 
 The boundary side has one more structural feature: `X` is zero-sum-free in
 `C_4^(m-1)` and has length at most the exact Davenport extremal value `3(m-1)`.  Hence the terminal

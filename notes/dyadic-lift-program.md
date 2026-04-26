@@ -1225,6 +1225,10 @@ triples have internal residue `1`, so an even quotient subset gives a residue-`1
 `2|U|`, with the same cross-empty and odd cross-complete augmentations inside the triangle class.
 Thus a mixed homogeneous quotient can survive only by balancing the non-triangle pair-residue `0` class
 against the triangle pair-residue `1` class.
+Pair-only selectors cannot mix these classes: size-two words contribute only even cross-degrees, so the
+parity of the final residue is the parity of the internal pair residue.  Any genuine mixed-class
+selector must therefore use singleton or whole-triple words, the odd-size words that can change
+cross-contribution parity.
 
 The zero-sum-free boundary `X` has length at most the Davenport extremal value `3(m-1)` in
 `C_4^(m-1)`.  This suggests the next split:

@@ -1747,6 +1747,9 @@ Recommended attack:
    Add the triangle analogue: edge pairs in triangle triples have internal residue `1`, so even quotient
    subsets give residue-`1` selectors of size `2|U|`, with the same same-class augmentations (residue
    `1` for cross-empty, residue `3` for odd cross-complete).
+   Record the parity split: pair-only selectors cannot mix non-triangle and triangle pair classes,
+   because size-two words contribute only even cross-degrees.  Mixed-class selectors must use odd-size
+   singleton or whole-triple words.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event
