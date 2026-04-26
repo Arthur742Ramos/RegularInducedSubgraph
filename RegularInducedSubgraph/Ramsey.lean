@@ -3114,6 +3114,81 @@ theorem degree_twelve_nonadjacent_degree_nine_endpoint_split_ledgers
       G hcard hnoK4 hnoI5 huv_ne huv hdegv
   exact ⟨by omega, hledger.2.1, hledger.2.2.1, hledger.2.2.2, hledger.1, hcap⟩
 
+/--
+Uniform middle-degree split ledger for a non-neighbor of a degree-`9` endpoint in the
+`27`-vertex residual.  This packages the degree `10/11/12` cases as one reusable obligation:
+the endpoint non-neighborhood contributes the fixed `8 + 8` split, while the common-neighbor
+count lies in the tight window `[2,4]`.
+-/
+theorem nonadjacent_degree_nine_endpoint_middle_degree_split_ledgers
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegv : G.degree v = 9) (hdeguLower : 10 ≤ G.degree u)
+    (hdeguUpper : G.degree u ≤ 12) :
+    (G.neighborFinset u ∩ G.neighborFinset v).card = G.degree u - 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 ∧
+      G.degree u =
+        (G.neighborFinset u ∩ G.neighborFinset v).card +
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (G.Adj u)).card ∧
+      2 ≤ (G.neighborFinset u ∩ G.neighborFinset v).card ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 4 := by
+  have hledger :=
+    nonadjacent_degree_nine_endpoint_full_split_ledgers
+      G hcard hnoK4 hnoI5 huv_ne huv hdegv
+  exact ⟨hledger.1, hledger.2.1, hledger.2.2.1, hledger.2.2.2,
+    by omega, by omega⟩
+
+/--
+Case-split wrapper for degree `10`, `11`, or `12` non-neighbors of a degree-`9` endpoint.
+It exposes the exact common-neighbor alternatives while keeping the shared `8 + 8` endpoint
+non-neighborhood split available without reopening the three separate lemmas.
+-/
+theorem nonadjacent_degree_nine_endpoint_degree_ten_eleven_twelve_split_ledgers
+    {α : Type} [Fintype α] [DecidableEq α] (G : SimpleGraph α) [DecidableRel G.Adj]
+    (hcard : Fintype.card α = 27)
+    (hnoK4 : ¬ ∃ t : Finset α, G.IsNClique 4 t)
+    (hnoI5 : ¬ ∃ t : Finset α, G.IsNIndepSet 5 t)
+    {u v : α} (huv_ne : u ≠ v) (huv : ¬ G.Adj u v)
+    (hdegv : G.degree v = 9)
+    (hdegu : G.degree u = 10 ∨ G.degree u = 11 ∨ G.degree u = 12) :
+    ((G.neighborFinset u ∩ G.neighborFinset v).card = 2 ∨
+        (G.neighborFinset u ∩ G.neighborFinset v).card = 3 ∨
+          (G.neighborFinset u ∩ G.neighborFinset v).card = 4) ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (G.Adj u)).card = 8 ∧
+      (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+        (fun w => ¬ G.Adj u w)).card = 8 ∧
+      G.degree u =
+        (G.neighborFinset u ∩ G.neighborFinset v).card +
+          (((Finset.univ.erase v).filter (fun w => ¬ G.Adj v w)).erase u |>.filter
+            (G.Adj u)).card ∧
+      2 ≤ (G.neighborFinset u ∩ G.neighborFinset v).card ∧
+      (G.neighborFinset u ∩ G.neighborFinset v).card ≤ 4 := by
+  rcases hdegu with hdeg10 | hdegRest
+  · have hledger :=
+      degree_ten_nonadjacent_degree_nine_endpoint_split_ledgers
+        G hcard hnoK4 hnoI5 huv_ne huv hdeg10 hdegv
+    exact ⟨Or.inl hledger.1, hledger.2.1, hledger.2.2.1, hledger.2.2.2.1,
+      by omega, by omega⟩
+  rcases hdegRest with hdeg11 | hdeg12
+  · have hledger :=
+      degree_eleven_nonadjacent_degree_nine_endpoint_split_ledgers
+        G hcard hnoK4 hnoI5 huv_ne huv hdeg11 hdegv
+    exact ⟨Or.inr (Or.inl hledger.1), hledger.2.1, hledger.2.2.1,
+      hledger.2.2.2.1, by omega, by omega⟩
+  · have hledger :=
+      degree_twelve_nonadjacent_degree_nine_endpoint_split_ledgers
+        G hcard hnoK4 hnoI5 huv_ne huv hdeg12 hdegv
+    exact ⟨Or.inr (Or.inr hledger.1), hledger.2.1, hledger.2.2.1,
+      hledger.2.2.2.1, by omega, by omega⟩
+
 
 /--
 In the `27`-vertex residual, a neighbor of a degree-`13` endpoint has exactly four common
@@ -13901,6 +13976,33 @@ theorem ramseyTenR45FinalStatus_of_degreeEightEndpoint
   RamseyTenR45TwentySevenTable.toFinalStatus
     (ramseyTenR45TwentySevenTable_of_degreeEightEndpoint hendpoint)
 
+/-- Extract the explicit `R(4,5) <= 27` input from the final status handoff. -/
+theorem RamseyTenR45FinalStatus.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45FinalStatus) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Extract the propagated `R(10,10) <= 39246` bound from the final status handoff. -/
+theorem RamseyTenR45FinalStatus.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45FinalStatus) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Consume the final status handoff as the regular induced `10`-subgraph statement at `40960`. -/
+theorem RamseyTenR45FinalStatus.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45FinalStatus) {V : Type} [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.regularTenAt40960 G hcard
+
+/-- Extract the admissible-bound formulation from the final status handoff. -/
+theorem RamseyTenR45FinalStatus.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45FinalStatus) : 10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960
+
+/-- Extract the extremal-function formulation from the final status handoff. -/
+theorem RamseyTenR45FinalStatus.toTenLeF_40960
+    (h : RamseyTenR45FinalStatus) : 10 ≤ F 40960 :=
+  h.f40960
+
 /--
 Endpoint-residual certificate retaining the three remaining finite assumptions while also exporting
 the small/relaxed Ramsey tables and final dyadic consequence package.
@@ -13937,10 +14039,125 @@ theorem RamseyTenR45EndpointResidualCertificate.toEndpointResiduals
     (h : RamseyTenR45EndpointResidualCertificate) : RamseyTenR45EndpointResiduals :=
   ⟨h.degreeEight, h.degreeNine, h.degreeThirteen⟩
 
+/-- Extract the sharp small Ramsey-10 table from the expanded endpoint certificate. -/
+theorem RamseyTenR45EndpointResidualCertificate.toSmallTable
+    (h : RamseyTenR45EndpointResidualCertificate) : RamseyTenSmallTable :=
+  h.smallTable
+
+/-- Extract the relaxed `R(4,5) <= 27` Ramsey-10 table from the expanded endpoint certificate. -/
+theorem RamseyTenR45EndpointResidualCertificate.toR45TwentySevenTable
+    (h : RamseyTenR45EndpointResidualCertificate) : RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Extract the exact `27`-vertex endpoint from the expanded endpoint certificate. -/
+theorem RamseyTenR45EndpointResidualCertificate.toNoRamseyFourFiveCounterexampleOnTwentySeven
+    (h : RamseyTenR45EndpointResidualCertificate) :
+    NoRamseyFourFiveCounterexampleOnTwentySeven :=
+  h.noRamseyFourFiveCounterexampleOnTwentySeven
+
+/-- Extract the localized `R(4,5) <= 27` input from the expanded endpoint certificate. -/
+theorem RamseyTenR45EndpointResidualCertificate.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    (h : RamseyTenR45EndpointResidualCertificate) : HasCliqueOrIndepSetBound 4 5 27 :=
+  h.r45TwentySeven
+
+/-- Extract the propagated `R(10,10) <= 39246` bound from the expanded endpoint certificate. -/
+theorem RamseyTenR45EndpointResidualCertificate.toHasCliqueOrIndepSetBound_10_10_39246
+    (h : RamseyTenR45EndpointResidualCertificate) : HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.r10Ten39246
+
+/-- Extract the final status package from the expanded endpoint certificate. -/
+theorem RamseyTenR45EndpointResidualCertificate.toFinalStatus
+    (h : RamseyTenR45EndpointResidualCertificate) : RamseyTenR45FinalStatus :=
+  h.finalStatus
+
+/-- Consume the expanded endpoint certificate as the regular induced `10`-subgraph statement. -/
+theorem RamseyTenR45EndpointResidualCertificate.toHasRegularInducedSubgraphOfCard_ten_40960
+    (h : RamseyTenR45EndpointResidualCertificate) {V : Type} [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  h.finalStatus.toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- Consume the expanded endpoint certificate as the admissible-bound statement. -/
+theorem RamseyTenR45EndpointResidualCertificate.toTenMemAdmissibleBounds_40960
+    (h : RamseyTenR45EndpointResidualCertificate) : 10 ∈ admissibleBounds 40960 :=
+  h.finalStatus.toTenMemAdmissibleBounds_40960
+
+/-- Consume the expanded endpoint certificate as the extremal-function lower bound. -/
+theorem RamseyTenR45EndpointResidualCertificate.toTenLeF_40960
+    (h : RamseyTenR45EndpointResidualCertificate) : 10 ≤ F 40960 :=
+  h.finalStatus.toTenLeF_40960
+
 /-- Endpoint residuals packaged as the final Ramsey-10 status certificate. -/
 theorem RamseyTenR45EndpointResiduals.toFinalStatus
     (h : RamseyTenR45EndpointResiduals) : RamseyTenR45FinalStatus :=
   (RamseyTenR45EndpointResiduals.toCertificate h).finalStatus
+
+/--
+Explicit assumption handoff: the three remaining endpoint residuals produce the expanded Ramsey-10
+certificate without requiring downstream users to construct `RamseyTenR45EndpointResiduals` manually.
+-/
+theorem ramseyTenR45EndpointResidualCertificate_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45EndpointResidualCertificate :=
+  RamseyTenR45EndpointResiduals.toCertificate ⟨h8, h9, h13⟩
+
+/-- The explicit endpoint-residual assumptions packaged as the final Ramsey-10 status. -/
+theorem ramseyTenR45FinalStatus_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    RamseyTenR45FinalStatus :=
+  (ramseyTenR45EndpointResidualCertificate_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13).toFinalStatus
+
+/-- The explicit endpoint-residual assumptions imply the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  (ramseyTenR45EndpointResidualCertificate_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13).toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- The explicit endpoint-residual assumptions imply the current `R(10,10)` frontier. -/
+theorem hasCliqueOrIndepSetBound_10_10_39246_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  (ramseyTenR45EndpointResidualCertificate_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13).toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- The explicit endpoint-residual assumptions imply a regular induced `10`-subgraph at `40960`. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven)
+    {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  (ramseyTenR45EndpointResidualCertificate_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13).toHasRegularInducedSubgraphOfCard_ten_40960 G hcard
+
+/-- The explicit endpoint-residual assumptions imply `10 ∈ admissibleBounds 40960`. -/
+theorem ten_mem_admissibleBounds_40960_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    10 ∈ admissibleBounds 40960 :=
+  (ramseyTenR45EndpointResidualCertificate_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13).toTenMemAdmissibleBounds_40960
+
+/-- The explicit endpoint-residual assumptions imply `F 40960 >= 10`. -/
+theorem ten_le_F_40960_of_degreeEight_degreeNine_degreeThirteen
+    (h8 : NoRamseyFourFiveDegreeEightEndpointCounterexampleOnTwentySix)
+    (h9 : NoRamseyFourFiveDegreeNineEndpointCounterexampleOnTwentySeven)
+    (h13 : NoRamseyFourFiveDegreeThirteenEndpointCounterexampleOnTwentySeven) :
+    10 ≤ F 40960 :=
+  (ramseyTenR45EndpointResidualCertificate_of_degreeEight_degreeNine_degreeThirteen
+    h8 h9 h13).toTenLeF_40960
 
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
