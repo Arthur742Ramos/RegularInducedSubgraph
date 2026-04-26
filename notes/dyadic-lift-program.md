@@ -980,6 +980,8 @@ core `J` of size `>2m`; the larger `0/2 mod 4` degree class inside `J` is blocke
 co-cut degree into the opposite class.
 With label `b=deg_C mod 4` on that large class `R`, the selector equation for `T=R\D` is
 `deg_D(v)=b(v)-lambda`; the residual is a labeled deletion-core obstruction.
+This has a hereditary bad-vertex elimination form for each `lambda`, and label-refined twin/module exits:
+large constant-label row or complement-row classes close, and modules lift after a residue shift.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

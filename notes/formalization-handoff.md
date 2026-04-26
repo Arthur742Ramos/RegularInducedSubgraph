@@ -2346,6 +2346,9 @@ Recommended attack:
     Add the labeled deletion-core equivalence: with `b(v)=deg_C(v) mod 4`, a subset `T=R\D` is a selector
     iff `deg_D(v)=b(v)-lambda mod 4` for all `v in T`.  The residual has all four labeled cores of size
     at most `m`.
+    Add the hereditary elimination equivalent: for each `lambda`, every `U` of size `>m` has a bad vertex
+    with `deg_{R\U}(v)!=b(v)-lambda`, yielding an elimination order down to `m`.  Add label-refined
+    twin/module exits and the rank bound `4*2^r>|R|/m` for graph and complement row ranks.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

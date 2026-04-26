@@ -5245,6 +5245,11 @@ residual first-bit obstruction is this large two-residue co-cut defect.
 Writing `b(v)=deg_C(v) mod 4` on the large class `R`, a subset `T=R\D` is a selector iff
 `deg_D(v)=b(v)-lambda mod 4` on `T`; thus the residual is a labeled deletion-core problem whose four cores
 all have size at most `m`.
+Equivalently, for each `lambda`, every `U` with `|U|>m` contains a currently bad vertex
+`deg_{R\U}(v)!=b(v)-lambda`, so there is a bad-vertex elimination down to `m`.  Modules lift after shifting
+`lambda` by their outside contribution; constant-label false/true twin classes larger than `m` close as
+independent/clique labeled selectors, giving the label-refined rank bound `4*2^r>|R|/m` in graph and
+complement.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

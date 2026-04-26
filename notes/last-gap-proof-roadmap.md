@@ -1894,6 +1894,8 @@ What remains justified after audit is:
       nonconstant co-cut degree into the opposite class;
       labeling that class by co-cut degree `b`, any selector `T=R\D` is exactly a labeled deletion core
       satisfying `deg_D(v)=b(v)-lambda`, so the residual is a labeled principal-bucket pruning problem;
+      this has a bad-vertex elimination form for each `lambda`, and label-refined twin/module exits force
+      `4*2^r>|R|/m` in graph and complement;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

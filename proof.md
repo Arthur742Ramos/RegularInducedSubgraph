@@ -10918,6 +10918,33 @@ inside `R`.  Therefore the first-bit residual can be stated without the opposite
 fixed label `b`: a large labeled graph `(R,b)` whose four labeled deletion-cores all have size at most
 `m`.  This is the labeled version of the principal bucket pruning process.
 
+Equivalently, `(R,b)` has a hereditary labeled elimination order.  For each `lambda in Z/4Z` and every
+`U subset R` with `|U|>m`, not all vertices of `U` can satisfy
+
+```text
+deg_{R\U}(v) == b(v)-lambda        [MOD 4].
+```
+
+Hence some `v in U` fails this congruence.  Deleting such a failing vertex and repeating gives, for every
+`lambda`, an order deleting all but at most `m` vertices in which each deleted vertex was currently bad for
+the same labeled deletion equation.  Conversely, such an order precludes a `lambda`-core larger than `m`.
+Thus the first-bit residual is equivalently a labeled graph in which every residue admits a complete
+bad-vertex elimination down to the threshold.
+
+The same row/module exits survive after labels are included.  If a set `M subset R` is a module, then every
+vertex of `M` has a constant outside contribution `delta_M=deg_{R\M}(v)`.  Any labeled selector inside
+`(M,b|_M)` lifts to `(R,b)` after shifting `lambda` by `delta_M`; therefore a terminal labeled residual is
+label-selector-prime.  In particular, a false-twin row class with constant label and size greater than `m`
+is an independent labeled selector, and a true-twin row class with constant label and size greater than
+`m` is a clique labeled selector.  Thus the row-rank bounds strengthen to label-refined form:
+
+```text
+4*2^r > |R|/m
+```
+
+for the `F_2` row-rank `r` of the graph, and likewise for the complement.  The label `b` cannot hide in a
+large low-rank row class.
+
 The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
 theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with
 `vx` and `vy` edges of the original graph; then the degree of `v` in `K[W]` is exactly the carry
