@@ -6755,8 +6755,20 @@ selector.
 The formal conditional surface is now named
 `HasCorrectedZeroOneThreeTwoComplementDegreeTwoSelector`; under that explicit degree-two selector,
 `correctedZeroOneThreeTwoComplement_card_le_of_degreeTwo_selector` gives the linear cap.  The separate
-chain/C5 arithmetic cap for a three-consecutive-class selector is isolated as
-`threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion`.
+chain/C5 arithmetic cap no longer needs an assumption: `hasThreeConsecutiveClassModFourSelector`
+proves the three-class selector, and
+`threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion_unconditional` applies it.
+
+The support-six parity-compression residual has also been reduced one layer.  The original
+`HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven` now follows from
+the internal fiber selector
+`HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberModEqSelectionFiveFromSeven`, and a
+regular induced `2^j`-bucket inside the same fiber is enough via
+`HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberRegularSelectionFiveFromSeven`.  These
+bridges connect directly to
+`HasPolynomialCostFixedWitnessTerminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven`, so the
+only graph-theoretic content left in that branch is the internal modular/regular subbucket in a large
+nonhomogeneous boundary fiber.
 
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with

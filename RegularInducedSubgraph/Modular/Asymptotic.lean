@@ -5223,6 +5223,93 @@ def HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFr
                         (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j]
 
 /--
+Internal modular-subbucket form of the large nonhomogeneous boundary-fiber residual.  It removes
+the ambient dropped-tail bookkeeping from the remaining graph-theoretic task: find the exact
+`2^j`-bucket inside the nonhomogeneous fiber with equal internal degrees modulo `2^j`.
+-/
+def HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberModEqSelectionFiveFromSeven :
+    Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 7 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+      (τ : Fin n → Fin 8) {t : Fin 8},
+      t ∈ S.image τ →
+        2 ^ j < (S.filter fun x => τ x = t).card →
+          ¬ BoundaryTypeFiberComplete G S τ t →
+            ¬ BoundaryTypeFiberIndependent G S τ t →
+              ∃ u : Finset (Fin n), u ⊆ (S.filter fun x => τ x = t) ∧
+                u.card = 2 ^ j ∧ InducesModEqDegree G u (2 ^ j)
+
+/--
+Regular-subbucket form of the same residual.  This is often the most natural finite target: a
+regular `2^j` induced subgraph inside the large nonhomogeneous fiber automatically gives the
+modular fiber selector.
+-/
+def HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberRegularSelectionFiveFromSeven :
+    Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 7 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)}
+      (τ : Fin n → Fin 8) {t : Fin 8},
+      t ∈ S.image τ →
+        2 ^ j < (S.filter fun x => τ x = t).card →
+          ¬ BoundaryTypeFiberComplete G S τ t →
+            ¬ BoundaryTypeFiberIndependent G S τ t →
+              ∃ u : Finset (Fin n), u ⊆ (S.filter fun x => τ x = t) ∧
+                u.card = 2 ^ j ∧ ∃ d : ℕ, InducesRegularOfDegree G u d
+
+/-- A regular subbucket inside the nonhomogeneous fiber supplies the modular fiber selector. -/
+theorem
+    hasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberModEqSelectionFiveFromSeven_of_regularSelection
+    (hregular :
+      HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberRegularSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberModEqSelectionFiveFromSeven := by
+  intro n j hj G S τ t ht hlarge hnotComplete hnotIndependent
+  rcases hregular hj G (S := S) τ (t := t) ht hlarge hnotComplete hnotIndependent with
+    ⟨u, huFiber, hcard, _d, hreg⟩
+  exact
+    ⟨u, huFiber, hcard,
+      inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G hreg⟩
+
+/--
+The internal modular fiber selector closes the original dropped-tail nonhomogeneous-fiber residual:
+ambient host-degree congruence on `S` subtracts the internal modular contribution on `u`.
+-/
+theorem
+    hasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven_of_modEqSelection
+    (hfiber :
+      HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberModEqSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven := by
+  classical
+  intro n j hj G S τ t _hS hmod ht hlarge hnotComplete hnotIndependent
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases hfiber hj G (S := S) τ (t := t) ht hlarge hnotComplete hnotIndependent with
+    ⟨u, huFiber, hcard, huMod⟩
+  have huS : u ⊆ S := by
+    intro x hx
+    exact (Finset.mem_filter.mp (huFiber hx)).1
+  have hhost :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hmod ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  exact
+    ⟨u, huFiber, hcard,
+      modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+        (G := G) huS hhost huMod⟩
+
+/-- A regular fiber selector closes the original large nonhomogeneous-fiber residual. -/
+theorem
+    hasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven_of_regularSelection
+    (hregular :
+      HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberRegularSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven :=
+  hasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven_of_modEqSelection
+    (hasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberModEqSelectionFiveFromSeven_of_regularSelection
+      hregular)
+
+/--
 Parity-compression branch wired into the selector surface: once the large nonhomogeneous-fiber
 residual is available, missing one even and one odd boundary type closes the dropped tail.
 -/
@@ -5536,6 +5623,14 @@ def HasThreeConsecutiveClassModFourSelector : Prop :=
     x ≤ A ∧ y ≤ B ∧ z ≤ C ∧ A + B + C ≤ x + y + z + 3 ∧
       (x + z) ≡ y [MOD 4]
 
+/-- The three-consecutive-class mod-four selector is purely arithmetic: deleting at most three
+vertices from the three capacities can always align the two end classes with the middle class
+modulo `4`. -/
+theorem hasThreeConsecutiveClassModFourSelector :
+    HasThreeConsecutiveClassModFourSelector := by
+  intro A B C
+  omega
+
 /--
 Selector-facing three-class cap: if every mod-`4` aligned selection from capacities `A,B,C` is
 terminally forbidden above size `m`, then the whole consecutive triple has size at most `m + 3`.
@@ -5549,6 +5644,19 @@ theorem threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion
   rcases hselector A B C with ⟨x, y, z, hx, hy, hz, htotal, hmod⟩
   have hsel : x + y + z ≤ m := hterminal x y z hx hy hz hmod
   omega
+
+/--
+Unconditional chain/C5 cap: the arithmetic selector above is built in, so it is enough to forbid
+every mod-`4` aligned terminal selection.
+-/
+theorem threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion_unconditional
+    {A B C m : ℕ}
+    (hterminal :
+      ∀ x y z : ℕ, x ≤ A → y ≤ B → z ≤ C → (x + z) ≡ y [MOD 4] →
+        x + y + z ≤ m) :
+    A + B + C ≤ m + 3 :=
+  threeConsecutiveClass_card_le_add_three_of_modFour_terminal_exclusion
+    hasThreeConsecutiveClassModFourSelector hterminal
 
 /--
 Conditional selector for the corrected `{0,1}`/`{3,2}` complement surface.  A linearly large
@@ -5950,6 +6058,36 @@ theorem
       exact
         boundaryTripleType_missing_each_parity_fromSeven_droppedTail_closed_of_large_nonhomogeneous_fiber_selection
           hnonhom G τ hj hS hmod heven hodd
+
+/--
+Parity-compression bridge with the reduced internal modular fiber selector: this is the same
+support-size-six terminal case, with only the exact subbucket inside the nonhomogeneous fiber left
+as an assumption.
+-/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_terminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven_of_largeNonhomogeneousBoundaryFiberModEqSelection
+    (hselect :
+      HasPolynomialCostFixedWitnessTerminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven)
+    (hfiber :
+      HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberModEqSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven :=
+  hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_terminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven
+    hselect
+    (hasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberSelectionFiveFromSeven_of_modEqSelection
+      hfiber)
+
+/-- The same parity-compression bridge from the regular fiber-selector form. -/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_terminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven_of_largeNonhomogeneousBoundaryFiberRegularSelection
+    (hselect :
+      HasPolynomialCostFixedWitnessTerminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven)
+    (hregular :
+      HasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberRegularSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven :=
+  hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_terminalBoundaryAtomOrParityCompressionSelectionFiveFromSeven_of_largeNonhomogeneousBoundaryFiberModEqSelection
+    hselect
+    (hasPolynomialCostFixedWitnessLargeNonhomogeneousBoundaryFiberModEqSelectionFiveFromSeven_of_regularSelection
+      hregular)
 
 /-- A modular `q = 32` selector gives a regular `q = 32` selector. -/
 theorem
