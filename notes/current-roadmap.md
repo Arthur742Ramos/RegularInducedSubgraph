@@ -5317,6 +5317,10 @@ The gap cases are `e_Z>=2` with empty spectrum, `e_Z=1` with spectrum contained 
 spectrum contained in `{1,2}`.
 Equivalently: with at least two empty columns, full support/bipartition/tripartition are all absent; with
 one empty column, bipartitions and tripartitions are absent; with none, tripartitions are absent.
+In blocker form, the missing supports `M_Z={B:B notin F_Z}` hit every allowed partition of `A`, while every
+active deletion and zero-filter relaxation has an allowed partition avoiding its blocker.
+An inclusion-minimal blocker `M_Z^*` has every missing block essential: each `B in M_Z^*` is the unique
+blocked part in some allowed partition witness.
 Criticality is exactly that every `A\{a}` meets the same allowed spectrum interval, while every
 zero-relaxation uses `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)` and the enlarged support family to meet its
 allowed interval.
@@ -5340,6 +5344,8 @@ bipartition/tripartition) or a multi-block witness with all one-coordinate thick
 In the first high-active dimension `|A|=4`: the pure co-singleton core has all triples present, no full
 support, no singletons, and no complementary pair-pair; the `e_Z=0` gap has all singletons present and no
 pairs.
+For `|A|=4`, `e_Z=1`, there are no complementary singleton/triple, pair/pair, or pair+two-singleton
+partitions, while every three-point active deletion has a pair+singleton or three-singleton witness.
 The `|A|=4` co-singleton pair layer is an intersecting family in `K_4`, hence contained in a star or
 triangle and has size at most three.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,

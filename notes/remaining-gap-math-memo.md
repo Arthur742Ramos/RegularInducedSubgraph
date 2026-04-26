@@ -1962,6 +1962,10 @@ The gap cases are empty spectrum for `e_Z>=2`, spectrum inside `{1}` for `e_Z=1`
 `{1,2}` for `e_Z=0`.
 Equivalently, the absent alternatives are full support/bipartitions/tripartitions, then
 bipartitions/tripartitions, then tripartitions only.
+Missing supports form a minor-critical blocker for all allowed partitions; every active deletion or
+zero-relaxation unblocks.
+In a minimal blocker certificate, every missing support is essential and has a unique-blocked-part partition
+witness.
 Criticality says every active deletion and every zero-relaxation has spectrum meeting its allowed interval.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
@@ -1977,6 +1981,8 @@ For `e_Z>=2`, either there is a pure co-singleton core or a multi-block witness 
 thickenings absent.
 For `|A|=4`, this gives concrete layers: co-singleton core is all triples/no full/no singletons/no
 complementary pair-pair, while `e_Z=0` is all singletons/no pairs.
+The `e_Z=1` four-point layer forbids singleton/triple, pair/pair, and pair+two-singleton partitions but has
+pair+singleton or three-singleton witnesses on every three-point deletion.
 The co-singleton pair layer is an intersecting family on `K_4`, hence star/triangle and size at most three.
 If `|R|=m+s`, `s<=3`, terminality inside `R` is the finite list that `b-deg_D` is nonconstant on `R\D`
 for every `|D|<=s-1`.

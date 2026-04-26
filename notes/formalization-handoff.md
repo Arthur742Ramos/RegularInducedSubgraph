@@ -2416,6 +2416,11 @@ Recommended attack:
     one-block partitions, and `e_Z=0` permits only useless one-/two-block partitions.
     Record the equivalent forbidden block alternatives: absence of full support/bipartitions/tripartitions
     according to the empty-capacity case.
+    Add blocker duality: `M_Z={B nonempty subset A:B notin F_Z}` hits every allowed partition of `A`, but
+    every active deletion or zero-filter relaxation has an allowed partition avoiding the corresponding
+    blocker.
+    Add minimal blocker certificates: an inclusion-minimal hitting subfamily `M_Z^*` has, for each
+    `B in M_Z^*`, an allowed partition in which `B` is the unique blocked part.
     Record the criticality equations for `Spec_Z(A\{a})` and `Spec_{Z\{z}}(A)`, with
     `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)`.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
@@ -2438,6 +2443,8 @@ Recommended attack:
     multi-block witness whose one-coordinate thickenings are absent.
     Add the first high-active `|A|=4` table: co-singleton core has all triples present, full/singletons
     absent, and no complementary pair-pair; `e_Z=0` has all singletons present and all pairs absent.
+    Add the `|A|=4`, `e_Z=1` layer: no singleton/triple, pair/pair, or pair+two-singleton partition of
+    `A`, but every three-point active deletion has a pair+singleton or three-singleton witness.
     Record that the `|A|=4` co-singleton pair layer is intersecting in `K_4`, hence contained in a star or
     triangle and has size at most three.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are

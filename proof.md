@@ -11361,6 +11361,24 @@ Here "admissible" means that every displayed block belongs to `F_Z`.  This is of
 recognize which part of the obstruction is genuine and which part is caused only by too little
 empty-support capacity.
 
+Dualizing, let
+
+```text
+M_Z={B nonempty subset A : B notin F_Z}
+```
+
+be the missing-support blocker.  The target obstruction says that `M_Z` hits every partition of `A` whose
+number of nonempty blocks is allowed by the empty-support capacity.  Criticality says that, after deleting
+any active coordinate or relaxing any zero coordinate, there is an allowed partition that avoids the
+corresponding blocker.  Thus the high-active endpoint can be stated as a minor-critical partition blocker:
+all allowed partitions are blocked, but every one-coordinate minor is unblocked.
+
+Choose an inclusion-minimal subfamily `M_Z^* subset M_Z` that still hits all allowed partitions.  Then every
+`B in M_Z^*` is essential: there is an allowed partition of `A` in which `B` is the unique member of
+`M_Z^*`.  Equivalently, if the missing support `B` were supplied by one outside column, that witness
+partition would become a valid target-realizing triple.  This gives a finite blocker certificate for the
+target branch: a set of essential missing supports, each paired with a partition witness.
+
 The criticality conditions are therefore:
 
 ```text
@@ -11490,6 +11508,18 @@ For `e_Z=1`, every active deletion of a three-set must have a singleton+pair or 
 while the four-set itself has no bipartition and no tripartition.  Thus every first-dimensional
 high-active obstruction is visible on the singleton/pair/triple layers of a four-point support family.
 Larger `A` can be studied by four-coordinate shadows of this table.
+
+The `|A|=4`, `e_Z=1` layer can be read explicitly as follows.  There is no complementary singleton/triple
+pair, no complementary pair-pair, and no pair together with its two complementary singletons.  For each
+`a in A`, the three-set `A\{a}` nevertheless contains either
+
+```text
+a pair plus its complementary singleton inside A\{a},        or
+all three singletons of A\{a}.
+```
+
+Every such deletion witness has all one-coordinate thickenings by `a` forbidden by the preceding
+thickening exclusion.
 
 In the `|A|=4` co-singleton core, the pair layer is therefore an intersecting family of edges of `K_4`.
 Consequently it is contained in either a three-edge star or a triangle, and in particular has size at most

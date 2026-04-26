@@ -1941,6 +1941,8 @@ What remains justified after audit is:
       partition, according as empty capacity is at least two, one, or zero;
       equivalently, full-support/bipartition/tripartition alternatives are absent according to that
       capacity;
+      missing supports form a minor-critical blocker for the allowed partitions;
+      a minimal blocker certificate makes every retained missing support essential;
       active deletions and zero-filter relaxations must fill the corresponding spectrum interval;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
@@ -1953,6 +1955,7 @@ What remains justified after audit is:
       the high-empty-capacity case splits into pure co-singleton core or multi-block forbidden-boundary
       witness;
       the first high-active dimension `|A|=4` has explicit singleton/pair/triple layer restrictions;
+      its one-empty-column layer forbids singleton/triple, pair/pair, and pair+two-singleton partitions;
       in the co-singleton `|A|=4` core the pair layer is an intersecting `K_4` edge family;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;

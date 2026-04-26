@@ -1035,6 +1035,9 @@ The three gaps are: no partition when `e_Z>=2`, only one-block partitions when `
 partition when `e_Z=0`.
 In block terms this forbids respectively full-support/bipartition/tripartition, bipartition/tripartition,
 or tripartition alternatives in `F_Z`.
+Equivalently, missing supports form a minor-critical blocker hitting every allowed partition but no
+one-coordinate minor.
+A minimal blocker certificate has an essential partition witness for each missing support it retains.
 Active criticality projects to `A\{a}` with the same empty capacity; zero criticality enlarges capacities by
 private columns `p_z` and must meet the new allowed interval.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
@@ -1052,6 +1055,8 @@ For `e_Z>=2`, either all active coordinates give the co-singleton core, or some 
 absent one-coordinate thickenings.
 For `|A|=4`, the co-singleton core is all triples present with no full support, no singletons, and no
 complementary pair-pair; the `e_Z=0` case is all singletons present and all pairs absent.
+The `e_Z=1` case forbids singleton/triple, pair/pair, and pair+two-singleton partitions, but every
+three-point active deletion has a pair+singleton or three-singleton partition.
 The co-singleton core's pair layer is an intersecting edge family on `K_4`, hence a star/triangle subfamily.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
