@@ -784,6 +784,12 @@ one that sees the import pair misses at most one export vertex.
 For an exact basis direction with three boundary copies, applying this to the three import pairs gives a
 majority synchronization rule: each unpaid `T_2` vertex is almost constant on the matching old fiber, with
 the constant equal to the majority of its adjacency to the boundary triple.
+Writing `M_g(u)=1_{deg_{Z_g}(u)>=2}`, the exceptional sets
+`Q_g(a)={u in T_2:1_{ua}!=M_g(u)}` are disjoint across `a in A_g`.
+Thus deleting at most one old-fiber vertex per unpaid `T_2` vertex leaves a core that is silent on the
+pure `2`-error layer.
+On each of the eight boundary-pattern cells, a matching majority pair from the boundary triple makes every
+nonexceptional old pair silent on that cell; this is the ternary one-corner lift.
 
 Do not replace the exchange lemma by a zero-sum-free statement for the `eta_X`-fibers.  If
 `S subset B` is old-balanced and `eta_X` is constant on `S`, appending `S` still changes the discard

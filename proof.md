@@ -6337,6 +6337,42 @@ it sees at least two boundary copies, then it misses at most one vertex of `A_g`
 pure-`T_2` residual can only survive by making the old fiber copy the boundary triple's majority pattern
 on every unpaid `2`-error vertex, up to one exceptional export vertex per fiber.
 
+Equivalently, for each direction `g` define the boundary majority
+
+```text
+M_g(u)=1_{deg_{Z_g}(u)>=2}        for u in T_2.
+```
+
+The unpaid majority rule says
+
+```text
+|{a in A_g : 1_{ua} != M_g(u)}| <= 1.
+```
+
+Hence the exceptional shadows
+
+```text
+Q_g(a)={u in T_2 : a is the unique vertex of A_g with 1_{ua} != M_g(u)}
+```
+
+are pairwise disjoint.  After deleting one marked old vertex for each unpaid `T_2` vertex, the remaining
+core of `A_g` is completely silent on the pure `2`-error layer: every vertex in the core has the same
+adjacency to every unpaid `u`, namely the boundary majority `M_g(u)`.
+
+This is the exact ternary one-corner lift.  Partition `T_2` by the eight adjacency patterns to the boundary
+triple `Z_g`.  On a fixed pattern cell `U_lambda`, choose a boundary pair `P_lambda subset Z_g` with
+`deg_{P_lambda}(u)=2M_g(u)` for all `u in U_lambda` (two zeros if `|lambda|<=1`, two ones if
+`|lambda|>=2`).  Then any old pair `{a,b} subset A_g` whose two vertices are not exceptional for
+`U_lambda` satisfies
+
+```text
+deg_{\{a,b\}}(u)=deg_{P_lambda}(u)        for every u in U_lambda.
+```
+
+So the pair exchange against `P_lambda` is silent on that entire `T_2` pattern cell.  The residual pure
+`T_2` obstruction is therefore no longer arbitrary: it is encoded by a disjoint family of one-corner
+exception shadows `Q_g(a)` over the exact-basis directions.
+
 One must not overstate the fiber obstruction.  If `S subset B` is old-balanced and `eta_X` is
 constant on `S`, this does not by itself append `S` to `W`: the vertices in `B\S` have moved to the
 discard side and contribute the additional term `deg_{B\S}(s)` on `S`, and the old increment changes

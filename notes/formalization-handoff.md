@@ -2104,6 +2104,11 @@ Recommended attack:
     unpaid pure-`T_2` vertex is almost constant on a large matching old fiber `A_g`; adjacency to at most
     one boundary copy forces `deg_{A_g}(u)<=1`, while adjacency to at least two boundary copies forces
     `deg_{A_g}(u)>=|A_g|-1`.
+    Formalize the exception-shadow version.  With `M_g(u)=1_{deg_{Z_g}(u)>=2}`, the sets
+    `Q_g(a)={u in T_2: a is the unique vertex of A_g with 1_{ua}!=M_g(u)}` are pairwise disjoint.
+    For each boundary pattern cell `U_lambda`, choose two zero boundary corners if `|lambda|<=1` and two
+    one boundary corners if `|lambda|>=2`; every old pair avoiding the corresponding exception shadows has
+    the same degree as that boundary pair on all of `U_lambda`.
     In the Fano case, formalize the equivalent witness-graph condition: pair witnesses kill all Fano lines
     iff no Fano line vertex-covers the witness graph; every three-edge witness graph is line-covered.
    Also formalize the dual edge-cover version: the vertices are the seven Fano lines, each pair witness

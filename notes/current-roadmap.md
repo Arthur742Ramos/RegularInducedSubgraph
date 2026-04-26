@@ -5010,6 +5010,9 @@ an import pair have export codegree at most one.
 In an exact basis direction with three boundary copies this becomes a majority synchronization rule:
 every unpaid `T_2` vertex is almost constant on the matching old fiber according to the majority of its
 adjacency to the three boundary copies.
+Equivalently, with `M_g(u)=1_{deg_{Z_g}(u)>=2}`, each `u` marks at most one exceptional old-fiber vertex;
+the shadows `Q_g(a)` are disjoint, and on each of the eight boundary-pattern cells a majority boundary
+pair is matched by every nonexceptional old pair.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is
