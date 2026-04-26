@@ -11312,6 +11312,403 @@ theorem hasCliqueOrIndepSetBound_3_10_42_of_3_9_36_degree_window_with_degree_nin
         (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv
   exact hwindow G s hcard hdegree hbranches
 
+/--
+Exact-distribution/singleton-cap residual obligation for the `8`-regular
+`R(3,9) <= 36` frontier.  This names the residual interface used by the
+low-row `R(3,10) <= 42` wrappers below.
+-/
+def RamseyThreeNineRegular8ExactDistributionSingletonCapObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α) : Prop :=
+  (∀ v : ↑(s : Set α),
+    27 ≤
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)) →
+  (∀ v : ↑(s : Set α),
+    Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 27 →
+      ∀ {x : α}, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) →
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1) →
+  (∀ v : ↑(s : Set α), ∀ {x : α}, x ∈ s → ¬ G.Adj (v : α) x →
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card ≤ 8) →
+  (∀ v : ↑(s : Set α),
+    Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 56) →
+  (∀ v : ↑(s : Set α),
+    Finset.sum (s.filter fun w => G.Adj (v : α) w)
+      (fun w =>
+        (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x => G.Adj w x)).card) = 56) →
+  (∀ v : ↑(s : Set α), ∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x => G.Adj w x)).card = 7) →
+  (∀ v : ↑(s : Set α),
+    ∃ x : α, x ∈ ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)) ∧
+      3 ≤ (((s.erase (v : α)).erase x).filter
+        (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) →
+  (∀ v : ↑(s : Set α),
+    5 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        2 ≤ (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card) →
+  (∀ v : ↑(s : Set α),
+    (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card = 1)).card ≤ 22) →
+  (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 9 t
+
+/-- Lower exact-`42` degree-`9` boundary: all thirty-two non-neighbor ledgers are singletons. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineLowerBoundaryObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  let commonSum : ℕ := Finset.sum nonNbrsV commonCount
+  commonSum = 32 ∧
+    ∀ {x : α}, x ∈ nonNbrsV → commonCount x = 1
+
+/--
+Central exact-`42` degree-`9` ledger bands below the top interval.  Each band keeps
+both the forced duplicated count and the corresponding singleton cap.
+-/
+def RamseyThreeTenDegreeWindowExact42DegreeNineCentralLedgerObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  let commonSum : ℕ := Finset.sum nonNbrsV commonCount
+  let duplicatedCount : ℕ := (nonNbrsV.filter fun x => 2 ≤ commonCount x).card
+  let singletonCount : ℕ := (nonNbrsV.filter fun x => commonCount x = 1).card
+  (33 ≤ commonSum ∧ commonSum ≤ 40 ∧ 1 ≤ duplicatedCount ∧ singletonCount ≤ 31) ∨
+    (41 ≤ commonSum ∧ commonSum ≤ 48 ∧ 2 ≤ duplicatedCount ∧ singletonCount ≤ 30) ∨
+      (49 ≤ commonSum ∧ commonSum ≤ 56 ∧ 3 ≤ duplicatedCount ∧ singletonCount ≤ 29) ∨
+        (57 ≤ commonSum ∧ commonSum ≤ 64 ∧ 4 ≤ duplicatedCount ∧ singletonCount ≤ 28)
+
+/--
+Top central exact-`42` degree-`9` ledger band.  In addition to the singleton cap it
+exposes the five duplicated non-neighbors and a concrete triple-overlap witness.
+-/
+def RamseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  let commonSum : ℕ := Finset.sum nonNbrsV commonCount
+  let duplicatedCount : ℕ := (nonNbrsV.filter fun x => 2 ≤ commonCount x).card
+  let singletonCount : ℕ := (nonNbrsV.filter fun x => commonCount x = 1).card
+  65 ≤ commonSum ∧ commonSum ≤ 71 ∧
+    5 ≤ duplicatedCount ∧ singletonCount ≤ 27 ∧
+      ∃ x : α, x ∈ nonNbrsV ∧ 3 ≤ commonCount x
+
+/--
+Upper exact-`42` degree-`9` boundary.  This keeps the cross-degree equalities and the
+stronger top ledger, including two triple-overlap non-neighbors.
+-/
+def RamseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  let commonSum : ℕ := Finset.sum nonNbrsV commonCount
+  let duplicatedCount : ℕ := (nonNbrsV.filter fun x => 2 ≤ commonCount x).card
+  let singletonCount : ℕ := (nonNbrsV.filter fun x => commonCount x = 1).card
+  let tripleCount : ℕ := (nonNbrsV.filter fun x => 3 ≤ commonCount x).card
+  commonSum = 72 ∧
+    (∀ {w : α}, w ∈ s → G.Adj (v : α) w →
+      (nonNbrsV.filter fun x => G.Adj w x).card = 8) ∧
+    (∀ {w : α}, (hw : w ∈ s) → G.Adj (v : α) w →
+      (G.induce (s : Set α)).degree ⟨w, hw⟩ = 9) ∧
+    5 ≤ duplicatedCount ∧ singletonCount ≤ 27 ∧ 2 ≤ tripleCount
+
+/-- Named exact-`42` branch split for a single degree-`9` residual vertex. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineNamedBranchObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  RamseyThreeTenDegreeWindowExact42DegreeNineLowerBoundaryObligation G s v ∨
+    RamseyThreeTenDegreeWindowExact42DegreeNineCentralLedgerObligation G s v ∨
+      RamseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation G s v ∨
+        RamseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation G s v
+
+/-- Named exact-`42` branch obligations for every degree-`9` vertex in a residual. -/
+def RamseyThreeTenDegreeWindowExact42NamedBranches
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α) : Prop :=
+  ∀ v : ↑(s : Set α),
+    (G.induce (s : Set α)).degree v = 9 →
+      RamseyThreeTenDegreeWindowExact42DegreeNineNamedBranchObligation G s v
+
+/-- The named exact-`42` branch split refines the earlier packed branch obligation. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineBranchObligation_of_namedBranch
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineNamedBranchObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineBranchObligation G s v := by
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineNamedBranchObligation at h
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineBranchObligation
+  rcases h with hlow | hcentral | htop | hupper
+  · left
+    simpa [RamseyThreeTenDegreeWindowExact42DegreeNineLowerBoundaryObligation] using hlow
+  · unfold RamseyThreeTenDegreeWindowExact42DegreeNineCentralLedgerObligation at hcentral
+    rcases hcentral with hb1 | hb2 | hb3 | hb4
+    · right
+      left
+      rcases hb1 with ⟨hlo, hhi, _hdup, hones⟩
+      exact ⟨hlo, hhi, hones⟩
+    · right
+      right
+      left
+      rcases hb2 with ⟨hlo, hhi, _hdup, hones⟩
+      exact ⟨hlo, hhi, hones⟩
+    · right
+      right
+      right
+      left
+      rcases hb3 with ⟨hlo, hhi, _hdup, hones⟩
+      exact ⟨hlo, hhi, hones⟩
+    · right
+      right
+      right
+      right
+      left
+      rcases hb4 with ⟨hlo, hhi, _hdup, hones⟩
+      exact ⟨hlo, hhi, hones⟩
+  · unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation at htop
+    right
+    right
+    right
+    right
+    right
+    left
+    rcases htop with ⟨hlo, hhi, _hdup, hones, htriple⟩
+    exact ⟨hlo, hhi, hones, htriple⟩
+  · right
+    right
+    right
+    right
+    right
+    right
+    simpa [RamseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation] using hupper
+
+/--
+Named exact-`42` residual branch packager: every degree-`9` vertex is placed in
+the lower singleton boundary, one of the four central ledger bands, the top central
+ledger band, or the upper boundary ledger.
+-/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_named_branch_obligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineNamedBranchObligation G s v := by
+  classical
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineNamedBranchObligation
+  have hcases :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_boundary_or_central
+      (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv
+  rcases hcases with hlow | hrest
+  · left
+    unfold RamseyThreeTenDegreeWindowExact42DegreeNineLowerBoundaryObligation
+    exact hlow
+  rcases hrest with hcentral | hupper
+  · have hbands :=
+      ramseyThreeTenDegreeWindow_residual_degree_nine_central_interval_distribution_bands_with_singleton_caps
+        (G := G) (s := s) hcard hdegree (v := v) hdegv hcentral
+    rcases hbands with hb1 | hb2 | hb3 | hb4 | hb5
+    · right
+      left
+      unfold RamseyThreeTenDegreeWindowExact42DegreeNineCentralLedgerObligation
+      exact Or.inl hb1
+    · right
+      left
+      unfold RamseyThreeTenDegreeWindowExact42DegreeNineCentralLedgerObligation
+      exact Or.inr (Or.inl hb2)
+    · right
+      left
+      unfold RamseyThreeTenDegreeWindowExact42DegreeNineCentralLedgerObligation
+      exact Or.inr (Or.inr (Or.inl hb3))
+    · right
+      left
+      unfold RamseyThreeTenDegreeWindowExact42DegreeNineCentralLedgerObligation
+      exact Or.inr (Or.inr (Or.inr hb4))
+    · right
+      right
+      left
+      unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation
+      exact hb5
+  · rcases hupper with ⟨hsumEq, _hcross, _hdeg⟩
+    have hupperPackage :=
+      ramseyThreeTenDegreeWindow_residual_degree_nine_common_neighbor_sum_eq_seventy_two_forces_upper_distribution_constraints
+        (G := G) (s := s) hcard hdegree hnoK3 (v := v) hdegv hsumEq
+    right
+    right
+    right
+    unfold RamseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation
+    exact ⟨hsumEq, hupperPackage.1, hupperPackage.2.1, hupperPackage.2.2.1,
+      hupperPackage.2.2.2.1, hupperPackage.2.2.2.2⟩
+
+/-- Named exact-`42` residual branch obligations for all degree-`9` vertices. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_named_branches
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    RamseyThreeTenDegreeWindowExact42NamedBranches G s := by
+  intro v hdegv
+  exact
+    ramseyThreeTenDegreeWindow_residual_degree_nine_named_branch_obligation
+      (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv
+
+/-- The top named ledger gives a positive triple-overlap count. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation_triple_count_pos
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation G s v) :
+    1 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        3 ≤ (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card := by
+  classical
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation at h
+  rcases h with ⟨_hlo, _hhi, _hdup, _hones, x, hx, htriple⟩
+  have hpos :
+      0 <
+        (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+          (fun x =>
+            3 ≤ (((s.erase (v : α)).erase x).filter
+              (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card := by
+    exact Finset.card_pos.mpr ⟨x, Finset.mem_filter.mpr ⟨hx, htriple⟩⟩
+  omega
+
+/-- The upper named ledger retains the two-triple-overlap lower bound. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation_triple_count
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation G s v) :
+    2 ≤ (((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x)).filter
+      (fun x =>
+        3 ≤ (((s.erase (v : α)).erase x).filter
+          (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card)).card := by
+  simpa [RamseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation] using
+    h.2.2.2.2.2
+
+/--
+`R(3,10) <= 42` degree-window reduction with the stronger named exact-`42`
+degree-`9` branch interface.
+-/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_3_9_36_degree_window_with_named_degree_nine_branches
+    (h3_9 : HasCliqueOrIndepSetBound 3 9 36)
+    (hwindow :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 42 →
+        (∀ v : ↑(s : Set α),
+          6 ≤ (G.induce (s : Set α)).degree v ∧
+            (G.induce (s : Set α)).degree v < 10) →
+        RamseyThreeTenDegreeWindowExact42NamedBranches G s →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    HasCliqueOrIndepSetBound 3 10 42 := by
+  refine hasCliqueOrIndepSetBound_3_10_42_of_3_9_36_degree_window h3_9 ?_
+  intro α _ G s hcard hdegree
+  classical
+  by_cases hdone :
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t
+  · exact hdone
+  have hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t := by
+    intro hK3
+    exact hdone (Or.inl hK3)
+  have hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t := by
+    intro hI10
+    exact hdone (Or.inr hI10)
+  have hbranches :
+      RamseyThreeTenDegreeWindowExact42NamedBranches G s :=
+    ramseyThreeTenDegreeWindow_residual_degree_nine_named_branches
+      (G := G) (s := s) hcard hdegree hnoK3 hnoI10
+  exact hwindow G s hcard hdegree hbranches
+
+/--
+Low-row exact-`42` wiring: source the `R(3,9) <= 36` predecessor from the named
+exact-distribution/singleton-cap `8`-regular obligation, then expose the named
+degree-`9` exact-`42` branches to the final residual.
+-/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_3_8_28_regular8_exact_distribution_singleton_cap_and_exact42_named_degree_nine_branches
+    (h3_8 : HasCliqueOrIndepSetBound 3 8 28)
+    (hregular :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 36 →
+        (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8) →
+        RamseyThreeNineRegular8ExactDistributionSingletonCapObligation G s)
+    (hwindow :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 42 →
+        (∀ v : ↑(s : Set α),
+          6 ≤ (G.induce (s : Set α)).degree v ∧
+            (G.induce (s : Set α)).degree v < 10) →
+        RamseyThreeTenDegreeWindowExact42NamedBranches G s →
+        (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    HasCliqueOrIndepSetBound 3 10 42 := by
+  have h3_9 : HasCliqueOrIndepSetBound 3 9 36 := by
+    refine hasCliqueOrIndepSetBound_3_9_36_of_3_8_28_regular8_with_exact_distribution_and_singleton_cap
+      h3_8 ?_
+    intro α _ G s hcard hdegree hsumCommon htight hcommonLe hcommonExact
+      hneighborCrossSum hneighborCrossCard haverage hdistribution hsingletonCap
+    exact hregular G s hcard hdegree hsumCommon htight hcommonLe hcommonExact
+      hneighborCrossSum hneighborCrossCard haverage hdistribution hsingletonCap
+  exact
+    hasCliqueOrIndepSetBound_3_10_42_of_3_9_36_degree_window_with_named_degree_nine_branches
+      h3_9 hwindow
+
+/--
+Final-facing exact low-row surface for `R(3,10) <= 42`: an `R(3,8) <= 28`
+source, the exact-distribution/singleton-cap regular-`8` residual, and the named
+exact-`42` degree-`9` residual.
+-/
+structure RamseyThreeTenExact42NamedBranchSurface : Prop where
+  r3_8 : HasCliqueOrIndepSetBound 3 8 28
+  regular8 :
+    ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+      s.card = 36 →
+      (∀ v : ↑(s : Set α), (G.induce (s : Set α)).degree v = 8) →
+      RamseyThreeNineRegular8ExactDistributionSingletonCapObligation G s
+  degreeWindow42 :
+    ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+      s.card = 42 →
+      (∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10) →
+      RamseyThreeTenDegreeWindowExact42NamedBranches G s →
+      (∃ t ⊆ s, G.IsNClique 3 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t
+
+/-- The named low-row exact-`42` surface proves `R(3,10) <= 42`. -/
+theorem hasCliqueOrIndepSetBound_3_10_42_of_exact42_named_branch_surface
+    (h : RamseyThreeTenExact42NamedBranchSurface) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  hasCliqueOrIndepSetBound_3_10_42_of_3_8_28_regular8_exact_distribution_singleton_cap_and_exact42_named_degree_nine_branches
+    h.r3_8 h.regular8 h.degreeWindow42
+
 /-- Arithmetic ledger for the `R(3,10) <= 42` degree-window reduction. -/
 theorem ramseyThreeTenDegreeWindow_reduction_gap :
     51 - 42 = 9 ∧
