@@ -10030,6 +10030,1236 @@ theorem CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport.targetStatemen
         h.toPublicHandoffSummary :=
   h.targetStatement_eq_summary
 
+/-!
+## Final consumer dashboard and handoff manifest
+
+The final consumer handoff export above is intentionally compact.  The dashboard and manifest below
+repackage it into reader-facing audit objects: they keep the export as the source of truth while
+also spelling out the public summary, audit ledger, downstream manifest/matrix, Ramsey route,
+terminal route, target bundle, and remaining assumption-backed surfaces that proof-md consumers
+still audit explicitly.
+-/
+
+/--
+Concise inventory of the remaining assumption-backed surfaces in the current proof-md handoff.
+This structure does not close any frontier row; it keeps the Ramsey, terminal, packet-atom, and
+target-certificate inputs visible as the surfaces downstream readers still audit.
+-/
+structure CertifiedProofMdCurrentFrontierFinalRemainingAssumptionSurfaces
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop) :
+    Type where
+  ramseyConsumerSurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  ramseyProofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  terminalPacketAtomPublicExport :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomPublicExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  terminalMixedCore : CertifiedProofMdTerminalMixedTargetCoreImports
+  firstBitCoCut :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  packetAtomFrontier :
+    FirstBitTerminalPacketAtomFrontierImports
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+  packetAtomShadow :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+      (FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+      principalBucketShadowFrontier
+  q16TerminalBound : HasCliqueOrIndepSetBound 16 16 8388607
+  terminalTailFromFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive
+  higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven
+  targetStatementBundle :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate
+  targetStatement : TargetStatement
+
+/-- Extract the remaining assumption-backed surface manifest from the final consumer handoff export. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport.toFinalRemainingAssumptionSurfaces
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalRemainingAssumptionSurfaces
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier where
+  ramseyConsumerSurface := h.toRamseyCurrentFrontierConsumerSurface
+  ramseyProofMdImport := h.toRamseyCurrentFrontierProofMdImport
+  terminalPacketAtomPublicExport := h.toTerminalPacketAtomPublicExport
+  terminalMixedCore := h.toTerminalMixedCore
+  firstBitCoCut := h.toFirstBitCoCut
+  packetAtomFrontier := h.toPacketAtomFrontierImports
+  packetAtomShadow := h.toPacketAtomShadowImports
+  q16TerminalBound := h.toCliqueOrIndepSetBound16
+  terminalTailFromFive := h.toTerminalTailFromFive
+  higherBitTargets := h.toHigherBitFixedWitnessTargetsFromEleven
+  targetStatementBundle := h.toTargetStatementBundle
+  finalTargetConsumerCertificate := h.toFinalTargetConsumerCertificate
+  targetStatement := targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerHandoffExport h
+
+/--
+Final public dashboard for proof-md consumers.  It packages the final consumer handoff export into a
+stable audit object with explicit projections for every public summary, audit, downstream, Ramsey,
+terminal, and target route used by downstream proof scripts.
+-/
+structure CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop) :
+    Type where
+  handoffExport :
+    CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  publicHandoffSummary :
+    CertifiedProofMdCurrentFrontierPublicHandoffSummary
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  coverageCertificate :
+    CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  publicAuditChecklist :
+    CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  downstreamAuditLedger :
+    CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  downstreamManifest :
+    CertifiedProofMdCurrentFrontierDownstreamManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  downstreamObligationMatrix :
+    CertifiedProofMdCurrentFrontierDownstreamObligationMatrix
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  consumerObligationExport :
+    CertifiedProofMdCurrentFrontierConsumerObligationExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  finalPublicChecklist :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  ramseyConsumerSurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  ramseyProofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  terminalPacketAtomPublicExport :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomPublicExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  terminalMixedCore : CertifiedProofMdTerminalMixedTargetCoreImports
+  firstBitCoCut :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  packetAtomFrontier :
+    FirstBitTerminalPacketAtomFrontierImports
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+  packetAtomShadow :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+      (FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+      principalBucketShadowFrontier
+  q16TerminalBound : HasCliqueOrIndepSetBound 16 16 8388607
+  terminalTailFromFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive
+  higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven
+  targetStatementBundle :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate
+  targetStatement : TargetStatement
+  publicHandoffSummary_eq_export : publicHandoffSummary = handoffExport.toPublicHandoffSummary
+  coverageCertificate_eq_export : coverageCertificate = handoffExport.toHandoffCoverageCertificate
+  publicAuditChecklist_eq_export : publicAuditChecklist = handoffExport.toPublicAuditChecklist
+  downstreamAuditLedger_eq_export : downstreamAuditLedger = handoffExport.toDownstreamAuditLedger
+  downstreamManifest_eq_export : downstreamManifest = handoffExport.toDownstreamManifest
+  downstreamObligationMatrix_eq_export :
+    downstreamObligationMatrix = handoffExport.toProofObligationMatrix
+  consumerObligationExport_eq_export :
+    consumerObligationExport = handoffExport.toConsumerObligationExport
+  finalPublicChecklist_eq_export : finalPublicChecklist = handoffExport.toFinalPublicChecklist
+  ramseyConsumerSurface_eq_export :
+    ramseyConsumerSurface = handoffExport.toRamseyCurrentFrontierConsumerSurface
+  ramseyProofMdImport_eq_export :
+    ramseyProofMdImport = handoffExport.toRamseyCurrentFrontierProofMdImport
+  terminalPacketAtomPublicExport_eq_export :
+    terminalPacketAtomPublicExport = handoffExport.toTerminalPacketAtomPublicExport
+  terminalMixedCore_eq_export : terminalMixedCore = handoffExport.toTerminalMixedCore
+  firstBitCoCut_eq_export : firstBitCoCut = handoffExport.toFirstBitCoCut
+  packetAtomFrontier_eq_export :
+    packetAtomFrontier = handoffExport.toPacketAtomFrontierImports
+  packetAtomShadow_eq_export : packetAtomShadow = handoffExport.toPacketAtomShadowImports
+  q16TerminalBound_eq_export : q16TerminalBound = handoffExport.toCliqueOrIndepSetBound16
+  terminalTailFromFive_eq_export : terminalTailFromFive = handoffExport.toTerminalTailFromFive
+  higherBitTargets_eq_export :
+    higherBitTargets = handoffExport.toHigherBitFixedWitnessTargetsFromEleven
+  targetStatementBundle_eq_export : targetStatementBundle = handoffExport.toTargetStatementBundle
+  finalTargetConsumerCertificate_eq_export :
+    finalTargetConsumerCertificate = handoffExport.toFinalTargetConsumerCertificate
+  targetStatement_eq_export : targetStatement = handoffExport.toTargetStatement
+  finalTargetConsumerCertificate_eq_finalPublicChecklist :
+    finalTargetConsumerCertificate = finalPublicChecklist.toFinalTargetConsumerCertificate
+  targetStatement_eq_finalPublicChecklist :
+    targetStatement =
+      targetStatement_of_certifiedProofMdCurrentFrontierFinalPublicChecklist finalPublicChecklist
+
+/-- Promote the final consumer handoff export to the stable final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport.toFinalConsumerDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier where
+  handoffExport := h
+  publicHandoffSummary := h.toPublicHandoffSummary
+  coverageCertificate := h.toHandoffCoverageCertificate
+  publicAuditChecklist := h.toPublicAuditChecklist
+  downstreamAuditLedger := h.toDownstreamAuditLedger
+  downstreamManifest := h.toDownstreamManifest
+  downstreamObligationMatrix := h.toProofObligationMatrix
+  consumerObligationExport := h.toConsumerObligationExport
+  finalPublicChecklist := h.toFinalPublicChecklist
+  ramseyConsumerSurface := h.toRamseyCurrentFrontierConsumerSurface
+  ramseyProofMdImport := h.toRamseyCurrentFrontierProofMdImport
+  terminalPacketAtomPublicExport := h.toTerminalPacketAtomPublicExport
+  terminalMixedCore := h.toTerminalMixedCore
+  firstBitCoCut := h.toFirstBitCoCut
+  packetAtomFrontier := h.toPacketAtomFrontierImports
+  packetAtomShadow := h.toPacketAtomShadowImports
+  q16TerminalBound := h.toCliqueOrIndepSetBound16
+  terminalTailFromFive := h.toTerminalTailFromFive
+  higherBitTargets := h.toHigherBitFixedWitnessTargetsFromEleven
+  targetStatementBundle := h.toTargetStatementBundle
+  finalTargetConsumerCertificate := h.toFinalTargetConsumerCertificate
+  targetStatement := targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerHandoffExport h
+  publicHandoffSummary_eq_export := rfl
+  coverageCertificate_eq_export := rfl
+  publicAuditChecklist_eq_export := rfl
+  downstreamAuditLedger_eq_export := rfl
+  downstreamManifest_eq_export := rfl
+  downstreamObligationMatrix_eq_export := rfl
+  consumerObligationExport_eq_export := rfl
+  finalPublicChecklist_eq_export := rfl
+  ramseyConsumerSurface_eq_export := rfl
+  ramseyProofMdImport_eq_export := rfl
+  terminalPacketAtomPublicExport_eq_export := rfl
+  terminalMixedCore_eq_export := rfl
+  firstBitCoCut_eq_export := rfl
+  packetAtomFrontier_eq_export := rfl
+  packetAtomShadow_eq_export := rfl
+  q16TerminalBound_eq_export := rfl
+  terminalTailFromFive_eq_export := rfl
+  higherBitTargets_eq_export := rfl
+  targetStatementBundle_eq_export := rfl
+  finalTargetConsumerCertificate_eq_export := rfl
+  targetStatement_eq_export := rfl
+  finalTargetConsumerCertificate_eq_finalPublicChecklist :=
+    h.toFinalTargetConsumerCertificate_eq_finalChecklist
+  targetStatement_eq_finalPublicChecklist := by
+    exact Subsingleton.elim _ _
+
+/-- Non-dot constructor for the final consumer dashboard from the final consumer handoff export. -/
+def certifiedProofMdCurrentFrontierFinalConsumerDashboard_of_finalConsumerHandoffExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerDashboard
+
+/-- Project the source final consumer handoff export from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalConsumerHandoffExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.handoffExport
+
+/-- Project the public handoff summary from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toPublicHandoffSummary
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierPublicHandoffSummary
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.publicHandoffSummary
+
+/-- Project the coverage certificate from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toHandoffCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.coverageCertificate
+
+/-- Project the public audit checklist from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toPublicAuditChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.publicAuditChecklist
+
+/-- Project the downstream audit ledger from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toDownstreamAuditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.downstreamAuditLedger
+
+/-- Project the downstream manifest from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toDownstreamManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierDownstreamManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.downstreamManifest
+
+/-- Project the downstream obligation matrix from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toDownstreamObligationMatrix
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierDownstreamObligationMatrix
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.downstreamObligationMatrix
+
+/-- Project the consumer obligation export from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toConsumerObligationExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierConsumerObligationExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.consumerObligationExport
+
+/-- Project the final public checklist from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalPublicChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.finalPublicChecklist
+
+/-- Project the Ramsey consumer surface from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toRamseyCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.ramseyConsumerSurface
+
+/-- Project the Ramsey proof-md import from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toRamseyCurrentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.ramseyProofMdImport
+
+/-- Project the terminal packet-atom export from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toTerminalPacketAtomPublicExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomPublicExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.terminalPacketAtomPublicExport
+
+/-- Project terminal mixed-core imports from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toTerminalMixedCore
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.terminalMixedCore
+
+/-- Project first-bit/co-cut obligations from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFirstBitCoCut
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut
+
+/-- Project packet-atom frontier imports from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toPacketAtomFrontierImports
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    FirstBitTerminalPacketAtomFrontierImports
+      sizeRefinedAtoms defectCorrection unionAntiCancellation :=
+  h.packetAtomFrontier
+
+/-- Project packet-atom shadow imports from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toPacketAtomShadowImports
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+      (FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+      principalBucketShadowFrontier :=
+  h.packetAtomShadow
+
+/-- Project the q16 terminal Ramsey bound from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toCliqueOrIndepSetBound16
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    HasCliqueOrIndepSetBound 16 16 8388607 :=
+  h.q16TerminalBound
+
+/-- Project the terminal dyadic tail route from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toTerminalTailFromFive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive :=
+  h.terminalTailFromFive
+
+/-- Project higher-bit fixed-witness targets from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toHigherBitFixedWitnessTargetsFromEleven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven :=
+  h.higherBitTargets
+
+/-- Project the target-statement bundle from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toTargetStatementBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.targetStatementBundle
+
+/-- Project the final target consumer certificate from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalTargetConsumerCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.finalTargetConsumerCertificate
+
+/-- Project the target statement from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toTargetStatement
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- Project the concise remaining assumption-backed surface list from the final consumer dashboard. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalRemainingAssumptionSurfaces
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalRemainingAssumptionSurfaces
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier where
+  ramseyConsumerSurface := h.toRamseyCurrentFrontierConsumerSurface
+  ramseyProofMdImport := h.toRamseyCurrentFrontierProofMdImport
+  terminalPacketAtomPublicExport := h.toTerminalPacketAtomPublicExport
+  terminalMixedCore := h.toTerminalMixedCore
+  firstBitCoCut := h.toFirstBitCoCut
+  packetAtomFrontier := h.toPacketAtomFrontierImports
+  packetAtomShadow := h.toPacketAtomShadowImports
+  q16TerminalBound := h.toCliqueOrIndepSetBound16
+  terminalTailFromFive := h.toTerminalTailFromFive
+  higherBitTargets := h.toHigherBitFixedWitnessTargetsFromEleven
+  targetStatementBundle := h.toTargetStatementBundle
+  finalTargetConsumerCertificate := h.toFinalTargetConsumerCertificate
+  targetStatement := h.toTargetStatement
+
+/-- A named handoff manifest view of the final consumer dashboard. -/
+structure CertifiedProofMdCurrentFrontierFinalHandoffManifest
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop) :
+    Type where
+  dashboard :
+    CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  handoffExport :
+    CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  finalPublicChecklist :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  remainingAssumptionSurfaces :
+    CertifiedProofMdCurrentFrontierFinalRemainingAssumptionSurfaces
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate
+  targetStatement : TargetStatement
+  handoffExport_eq_dashboard : handoffExport = dashboard.toFinalConsumerHandoffExport
+  finalPublicChecklist_eq_dashboard : finalPublicChecklist = dashboard.toFinalPublicChecklist
+  remainingAssumptionSurfaces_eq_dashboard :
+    remainingAssumptionSurfaces = dashboard.toFinalRemainingAssumptionSurfaces
+  finalTargetConsumerCertificate_eq_dashboard :
+    finalTargetConsumerCertificate = dashboard.toFinalTargetConsumerCertificate
+  targetStatement_eq_dashboard : targetStatement = dashboard.toTargetStatement
+
+/-- Promote the final consumer dashboard to its named handoff manifest view. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier where
+  dashboard := h
+  handoffExport := h.toFinalConsumerHandoffExport
+  finalPublicChecklist := h.toFinalPublicChecklist
+  remainingAssumptionSurfaces := h.toFinalRemainingAssumptionSurfaces
+  finalTargetConsumerCertificate := h.toFinalTargetConsumerCertificate
+  targetStatement := h.toTargetStatement
+  handoffExport_eq_dashboard := rfl
+  finalPublicChecklist_eq_dashboard := rfl
+  remainingAssumptionSurfaces_eq_dashboard := rfl
+  finalTargetConsumerCertificate_eq_dashboard := rfl
+  targetStatement_eq_dashboard := rfl
+
+/-- Promote the final consumer handoff export directly to the named final handoff manifest. -/
+def CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport.toFinalHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toFinalConsumerDashboard.toFinalHandoffManifest
+
+/-- Project the dashboard from the named final handoff manifest. -/
+def CertifiedProofMdCurrentFrontierFinalHandoffManifest.toFinalConsumerDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.dashboard
+
+/-- Project the source handoff export from the named final handoff manifest. -/
+def CertifiedProofMdCurrentFrontierFinalHandoffManifest.toFinalConsumerHandoffExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.handoffExport
+
+/-- Project the final public checklist from the named final handoff manifest. -/
+def CertifiedProofMdCurrentFrontierFinalHandoffManifest.toFinalPublicChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.finalPublicChecklist
+
+/-- Project the remaining assumption-backed surface list from the named final handoff manifest. -/
+def CertifiedProofMdCurrentFrontierFinalHandoffManifest.toFinalRemainingAssumptionSurfaces
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalRemainingAssumptionSurfaces
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.remainingAssumptionSurfaces
+
+/-- The dashboard exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalConsumerDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    TargetStatement :=
+  h.toTargetStatement
+
+/-- The named final handoff manifest exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierFinalHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    TargetStatement :=
+  h.targetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport.toFinalConsumerDashboard_handoffExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalConsumerDashboard.toFinalConsumerHandoffExport = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport.toFinalConsumerDashboard_remainingAssumptionSurfaces
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalConsumerDashboard.toFinalRemainingAssumptionSurfaces =
+      h.toFinalRemainingAssumptionSurfaces :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport.toFinalHandoffManifest_handoffExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerHandoffExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalHandoffManifest.toFinalConsumerHandoffExport = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toPublicHandoffSummary_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toPublicHandoffSummary = h.toFinalConsumerHandoffExport.toPublicHandoffSummary :=
+  h.publicHandoffSummary_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toHandoffCoverageCertificate_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toHandoffCoverageCertificate =
+      h.toFinalConsumerHandoffExport.toHandoffCoverageCertificate :=
+  h.coverageCertificate_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toPublicAuditChecklist_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toPublicAuditChecklist = h.toFinalConsumerHandoffExport.toPublicAuditChecklist :=
+  h.publicAuditChecklist_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toDownstreamAuditLedger_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toDownstreamAuditLedger = h.toFinalConsumerHandoffExport.toDownstreamAuditLedger :=
+  h.downstreamAuditLedger_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toDownstreamManifest_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toDownstreamManifest = h.toFinalConsumerHandoffExport.toDownstreamManifest :=
+  h.downstreamManifest_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toDownstreamObligationMatrix_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toDownstreamObligationMatrix = h.toFinalConsumerHandoffExport.toProofObligationMatrix :=
+  h.downstreamObligationMatrix_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toConsumerObligationExport_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toConsumerObligationExport = h.toFinalConsumerHandoffExport.toConsumerObligationExport :=
+  h.consumerObligationExport_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalPublicChecklist_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalPublicChecklist = h.toFinalConsumerHandoffExport.toFinalPublicChecklist :=
+  h.finalPublicChecklist_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toTargetStatementBundle_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toTargetStatementBundle = h.toFinalConsumerHandoffExport.toTargetStatementBundle :=
+  h.targetStatementBundle_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalTargetConsumerCertificate_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalTargetConsumerCertificate =
+      h.toFinalConsumerHandoffExport.toFinalTargetConsumerCertificate :=
+  h.finalTargetConsumerCertificate_eq_export
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toTargetStatement_eq_export
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toTargetStatement = h.toFinalConsumerHandoffExport.toTargetStatement :=
+  h.targetStatement_eq_export
+
+/-- The dashboard final consumer normalizes with its final public checklist projection. -/
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toFinalTargetConsumerCertificate_eq_finalPublicChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalTargetConsumerCertificate =
+      h.toFinalPublicChecklist.toFinalTargetConsumerCertificate :=
+  h.finalTargetConsumerCertificate_eq_finalPublicChecklist
+
+/-- The dashboard target statement normalizes with its final public checklist target route. -/
+theorem CertifiedProofMdCurrentFrontierFinalConsumerDashboard.toTargetStatement_eq_finalPublicChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalConsumerDashboard
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toTargetStatement =
+      targetStatement_of_certifiedProofMdCurrentFrontierFinalPublicChecklist
+        h.toFinalPublicChecklist :=
+  h.targetStatement_eq_finalPublicChecklist
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalHandoffManifest.toFinalConsumerDashboard_handoffExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalConsumerHandoffExport =
+      h.toFinalConsumerDashboard.toFinalConsumerHandoffExport :=
+  h.handoffExport_eq_dashboard
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalHandoffManifest.toFinalPublicChecklist_eq_dashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalPublicChecklist = h.toFinalConsumerDashboard.toFinalPublicChecklist :=
+  h.finalPublicChecklist_eq_dashboard
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierFinalHandoffManifest.toFinalRemainingAssumptionSurfaces_eq_dashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierFinalHandoffManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalRemainingAssumptionSurfaces =
+      h.toFinalConsumerDashboard.toFinalRemainingAssumptionSurfaces :=
+  h.remainingAssumptionSurfaces_eq_dashboard
 end FinalObligationDashboard
 
 end RegularInducedSubgraph
