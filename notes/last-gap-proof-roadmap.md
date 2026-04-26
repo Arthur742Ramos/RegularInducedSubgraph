@@ -1952,6 +1952,8 @@ What remains justified after audit is:
       empty-support capacity;
       the high-empty-capacity case splits into pure co-singleton core or multi-block forbidden-boundary
       witness;
+      the first high-active dimension `|A|=4` has explicit singleton/pair/triple layer restrictions;
+      in the co-singleton `|A|=4` core the pair layer is an intersecting `K_4` edge family;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on

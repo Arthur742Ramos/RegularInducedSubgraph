@@ -11472,6 +11472,30 @@ witness, and then all one-coordinate thickenings of that multi-block partition a
 is a pure high-dimensional support obstruction, while the second already exposes a forbidden boundary of
 lower-dimensional support blocks.
 
+The first genuinely high-active dimension is `|A|=4`, and here the partition-spectrum gap is already
+concrete.  Write `A={1,2,3,4}`.
+
+```text
+e_Z>=2, pure co-singleton core:
+    all four triples A\{i} lie in F_Z;
+    A and all singletons are absent from F_Z;
+    the pair layer contains no complementary pair pair {ij,kl}.
+
+e_Z=0:
+    active deletion forces all four singletons to lie in F_Z;
+    absence of tripartitions forces every pair to be absent from F_Z.
+```
+
+For `e_Z=1`, every active deletion of a three-set must have a singleton+pair or three-singleton partition,
+while the four-set itself has no bipartition and no tripartition.  Thus every first-dimensional
+high-active obstruction is visible on the singleton/pair/triple layers of a four-point support family.
+Larger `A` can be studied by four-coordinate shadows of this table.
+
+In the `|A|=4` co-singleton core, the pair layer is therefore an intersecting family of edges of `K_4`.
+Consequently it is contained in either a three-edge star or a triangle, and in particular has size at most
+three.  Thus this first high-active core has at most the four mandatory co-singleton triples plus three
+pair supports; full support and singleton supports are absent.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

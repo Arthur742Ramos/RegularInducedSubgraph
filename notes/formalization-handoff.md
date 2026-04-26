@@ -2436,6 +2436,10 @@ Recommended attack:
     for `e_Z=1`, and exact three-block for `e_Z=0`.
     Add the `e_Z>=2` split: pure co-singleton core (`A\{a}` present for all `a`, `A` absent) versus a
     multi-block witness whose one-coordinate thickenings are absent.
+    Add the first high-active `|A|=4` table: co-singleton core has all triples present, full/singletons
+    absent, and no complementary pair-pair; `e_Z=0` has all singletons present and all pairs absent.
+    Record that the `|A|=4` co-singleton pair layer is intersecting in `K_4`, hence contained in a star or
+    triangle and has size at most three.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

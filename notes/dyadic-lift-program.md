@@ -1050,6 +1050,9 @@ The active witness taxonomy is one/two/three-block for `e_Z>=2`, two/three-block
 three-block for `e_Z=0`.
 For `e_Z>=2`, either all active coordinates give the co-singleton core, or some multi-block witness exposes
 absent one-coordinate thickenings.
+For `|A|=4`, the co-singleton core is all triples present with no full support, no singletons, and no
+complementary pair-pair; the `e_Z=0` case is all singletons present and all pairs absent.
+The co-singleton core's pair layer is an intersecting edge family on `K_4`, hence a star/triangle subfamily.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

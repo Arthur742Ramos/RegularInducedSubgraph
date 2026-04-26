@@ -1975,6 +1975,9 @@ Active witnesses are one/two/three-block for `e_Z>=2`, two/three-block for `e_Z=
 for `e_Z=0`.
 For `e_Z>=2`, either there is a pure co-singleton core or a multi-block witness with all one-coordinate
 thickenings absent.
+For `|A|=4`, this gives concrete layers: co-singleton core is all triples/no full/no singletons/no
+complementary pair-pair, while `e_Z=0` is all singletons/no pairs.
+The co-singleton pair layer is an intersecting family on `K_4`, hence star/triangle and size at most three.
 If `|R|=m+s`, `s<=3`, terminality inside `R` is the finite list that `b-deg_D` is nonconstant on `R\D`
 for every `|D|<=s-1`.
 The full two-residue core is equivalently `epsilon(v)-deg_D(v)=const` on `J\D`, with `epsilon=0` on `R`

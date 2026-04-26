@@ -5337,6 +5337,11 @@ By empty capacity, active witnesses are: one/two/three-block when `e_Z>=2`, two/
 and exact three-block when `e_Z=0`; the one-block case is the co-singleton pattern.
 So the `e_Z>=2` branch splits into a pure co-singleton core (`A\{a}` present for all `a`, `A` absent, no
 bipartition/tripartition) or a multi-block witness with all one-coordinate thickenings absent.
+In the first high-active dimension `|A|=4`: the pure co-singleton core has all triples present, no full
+support, no singletons, and no complementary pair-pair; the `e_Z=0` gap has all singletons present and no
+pairs.
+The `|A|=4` co-singleton pair layer is an intersecting family in `K_4`, hence contained in a star or
+triangle and has size at most three.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.
