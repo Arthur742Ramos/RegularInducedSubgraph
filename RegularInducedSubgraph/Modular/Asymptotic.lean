@@ -10489,6 +10489,594 @@ theorem
     PositiveAtom d rho :=
   h.availableCutPositiveAtom.positiveAtom_of_fullCoordinateCut hcut hbasis
 
+/-- Project the raw available-cut collapse surface from the holed-boundary wrapper. -/
+theorem FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers.to_availableCutCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom) :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom :=
+  h.availableCutCollapse
+
+/-- Project the basis-with-holes transfer from the holed-boundary wrapper. -/
+theorem FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers.to_basisWithHolesTransfer
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitHoledBoundaryAvailableCutPositiveAtomWrappers Basis WithHoles PositiveAtom) :
+    FirstBitNearTopBasisWithHolesTransfer Basis WithHoles :=
+  h.basisWithHoles
+
+/-- Project the raw available-cut collapse surface through final-facing boundary imports. -/
+theorem FirstBitTerminalAvailableCutPositiveAtomBoundaryImports.to_availableCutCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom) :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom :=
+  h.availableCut.to_availableCutCollapse
+
+/-- Project the basis-with-holes transfer through final-facing boundary imports. -/
+theorem FirstBitTerminalAvailableCutPositiveAtomBoundaryImports.to_basisWithHolesTransfer
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalAvailableCutPositiveAtomBoundaryImports Basis WithHoles PositiveAtom) :
+    FirstBitNearTopBasisWithHolesTransfer Basis WithHoles :=
+  h.availableCut.to_basisWithHolesTransfer
+
+/-- Project the raw available-cut collapse surface from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.to_availableCutCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom) :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom :=
+  h.availableCutPositiveAtom.to_availableCutCollapse
+
+/-- Project the basis-with-holes transfer from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.to_basisWithHolesTransfer
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom) :
+    FirstBitNearTopBasisWithHolesTransfer Basis WithHoles :=
+  h.availableCutPositiveAtom.to_basisWithHolesTransfer
+
+/-- Apply an available two-sided coordinate cut from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.positiveAtom_of_available
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom)
+    {capacity d rho : ℕ} {coeff : Fin 4}
+    (havailable : FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff)
+    (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.positiveAtom_of_available_basis
+    (firstBitCoordinateSubboxAvailableCutCertificate_of_available
+      (d := d) havailable)
+    hbasis
+
+/-- Apply a full-coordinate nonzero cut from the enriched final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom.positiveAtom_of_fullCoordinateNonzero
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    (h : FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom)
+    {d rho : ℕ} {coeff : Fin 4} (hcoeff : coeff ≠ (0 : Fin 4))
+    (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.positiveAtom_of_capacity_three hcoeff hbasis
+
+/--
+Trace-twin-free anchored external packings are capped at four templates after the quotient.
+The cap is an explicit import: no unconditional packing theorem is asserted here.
+-/
+structure PositiveAtomPostQuotientAnchoredPackingSizeAtMostFourImport
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ) : Prop where
+  sizeAtMostFour :
+    ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P ≤ 4
+
+/-- Apply the imported size-at-most-four post-quotient anchored-packing cap. -/
+theorem PositiveAtomPostQuotientAnchoredPackingSizeAtMostFourImport.card_le_four
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    (h :
+      PositiveAtomPostQuotientAnchoredPackingSizeAtMostFourImport
+        AnchoredPacking TraceTwinFree packingSize)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) :
+    packingSize P ≤ 4 :=
+  h.sizeAtMostFour P hfree
+
+/-- Selector names for the post-quotient anchored-packing witness-count rows. -/
+inductive PositiveAtomPostQuotientWitnessCountSelector : Type
+  | sizeFive
+  | sizeFour
+  | sizeThree
+  | twoDisjointTemplates
+  deriving DecidableEq, Repr
+
+namespace PositiveAtomPostQuotientWitnessCountSelector
+
+/-- The number of witnesses required by each named post-quotient row. -/
+def requiredWitnesses : PositiveAtomPostQuotientWitnessCountSelector → ℕ
+  | sizeFive => 3
+  | sizeFour => 2
+  | sizeThree => 2
+  | twoDisjointTemplates => 2
+
+/-- The proof obligation attached to a named post-quotient witness-count selector. -/
+def obligation
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) :
+    PositiveAtomPostQuotientWitnessCountSelector → Prop
+  | sizeFive => WitnessCountAtLeast 5 3
+  | sizeFour => WitnessCountAtLeast 4 2
+  | sizeThree => WitnessCountAtLeast 3 2
+  | twoDisjointTemplates => TwoDisjointTemplatesNeedTwo
+
+@[simp] theorem requiredWitnesses_sizeFour :
+    requiredWitnesses sizeFour = 2 := rfl
+
+@[simp] theorem requiredWitnesses_sizeThree :
+    requiredWitnesses sizeThree = 2 := rfl
+
+@[simp] theorem requiredWitnesses_twoDisjointTemplates :
+    requiredWitnesses twoDisjointTemplates = 2 := rfl
+
+end PositiveAtomPostQuotientWitnessCountSelector
+
+/--
+Explicit witness-count imports for the post-quotient anchored-packing rows.  The size-five row is
+recorded for the pre-cap table, while downstream capped routes usually project the size-four,
+size-three, and two-disjoint-template rows.
+-/
+structure PositiveAtomPostQuotientWitnessCountImports
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Prop where
+  sizeFive : WitnessCountAtLeast 5 3
+  sizeFour : WitnessCountAtLeast 4 2
+  sizeThree : WitnessCountAtLeast 3 2
+  twoDisjointTemplates : TwoDisjointTemplatesNeedTwo
+
+/-- Project a selected post-quotient witness-count obligation. -/
+theorem PositiveAtomPostQuotientWitnessCountImports.obligation
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h : PositiveAtomPostQuotientWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (selector : PositiveAtomPostQuotientWitnessCountSelector) :
+    PositiveAtomPostQuotientWitnessCountSelector.obligation
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo selector := by
+  cases selector
+  · exact h.sizeFive
+  · exact h.sizeFour
+  · exact h.sizeThree
+  · exact h.twoDisjointTemplates
+
+/--
+Post-quotient anchored-packing import bundle: the trace-twin-free size cap remains explicit, and the
+finite witness-count rows are exposed as separate projections.
+-/
+structure PositiveAtomPostQuotientAnchoredPackingImports
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Prop where
+  sizeAtMostFour :
+    PositiveAtomPostQuotientAnchoredPackingSizeAtMostFourImport
+      AnchoredPacking TraceTwinFree packingSize
+  witnessCounts :
+    PositiveAtomPostQuotientWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+
+/-- Build the post-quotient anchored-packing import bundle from its explicit assumptions. -/
+theorem positiveAtomPostQuotientAnchoredPackingImports_of_assumptions
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (hsize : ∀ P : AnchoredPacking, TraceTwinFree P → packingSize P ≤ 4)
+    (hfive : WitnessCountAtLeast 5 3)
+    (hfour : WitnessCountAtLeast 4 2)
+    (hthree : WitnessCountAtLeast 3 2)
+    (htwoDisjoint : TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  sizeAtMostFour := ⟨hsize⟩
+  witnessCounts :=
+    { sizeFive := hfive
+      sizeFour := hfour
+      sizeThree := hthree
+      twoDisjointTemplates := htwoDisjoint }
+
+/-- Project the size-at-most-four cap from the anchored-packing import bundle. -/
+theorem PositiveAtomPostQuotientAnchoredPackingImports.to_sizeAtMostFour
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      PositiveAtomPostQuotientAnchoredPackingImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientAnchoredPackingSizeAtMostFourImport
+      AnchoredPacking TraceTwinFree packingSize :=
+  h.sizeAtMostFour
+
+/-- Apply the post-quotient trace-twin-free anchored-packing cap. -/
+theorem PositiveAtomPostQuotientAnchoredPackingImports.card_le_four
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      PositiveAtomPostQuotientAnchoredPackingImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) :
+    packingSize P ≤ 4 :=
+  h.sizeAtMostFour.card_le_four P hfree
+
+/-- Project the witness-count import table from the anchored-packing bundle. -/
+theorem PositiveAtomPostQuotientAnchoredPackingImports.to_witnessCounts
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      PositiveAtomPostQuotientAnchoredPackingImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientWitnessCountImports
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.witnessCounts
+
+/-- Project the size-four post-quotient witness-count row. -/
+theorem PositiveAtomPostQuotientAnchoredPackingImports.witnessCount_sizeFour
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      PositiveAtomPostQuotientAnchoredPackingImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    WitnessCountAtLeast 4 2 :=
+  h.witnessCounts.sizeFour
+
+/-- Project the size-three post-quotient witness-count row. -/
+theorem PositiveAtomPostQuotientAnchoredPackingImports.witnessCount_sizeThree
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      PositiveAtomPostQuotientAnchoredPackingImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    WitnessCountAtLeast 3 2 :=
+  h.witnessCounts.sizeThree
+
+/-- Project the two-disjoint-template post-quotient witness-count row. -/
+theorem PositiveAtomPostQuotientAnchoredPackingImports.witnessCount_twoDisjointTemplates
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      PositiveAtomPostQuotientAnchoredPackingImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TwoDisjointTemplatesNeedTwo :=
+  h.witnessCounts.twoDisjointTemplates
+
+/-- Project a selected witness-count row from the anchored-packing import bundle. -/
+theorem PositiveAtomPostQuotientAnchoredPackingImports.witnessCount_obligation
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      PositiveAtomPostQuotientAnchoredPackingImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (selector : PositiveAtomPostQuotientWitnessCountSelector) :
+    PositiveAtomPostQuotientWitnessCountSelector.obligation
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo selector :=
+  h.witnessCounts.obligation selector
+
+/--
+Final wrapper that carries both the available-cut positive-atom route and the explicit
+post-quotient anchored-packing imports.
+-/
+structure FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop) : Prop where
+  finalAvailableCut :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom
+  postQuotientAnchoredPacking :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+
+/-- Build the combined available-cut/post-quotient anchored-packing final wrapper from parts. -/
+theorem
+    firstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking_of_parts
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (hfinal :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+        Basis WithHoles PositiveAtom)
+    (hpacking :
+      PositiveAtomPostQuotientAnchoredPackingImports
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo where
+  finalAvailableCut := hfinal
+  postQuotientAnchoredPacking := hpacking
+
+/-- Forget the post-quotient packing enrichment and recover the available-cut final wrapper. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.to_availableCutFinalWrapper
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutPositiveAtom
+      Basis WithHoles PositiveAtom :=
+  h.finalAvailableCut
+
+/-- Project the available-cut boundary imports directly from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.to_availableCutPositiveAtom
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalAvailableCutPositiveAtomBoundaryImports
+      Basis WithHoles PositiveAtom :=
+  h.finalAvailableCut.to_availableCutPositiveAtom
+
+/-- Project the raw available-cut collapse surface directly from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.to_availableCutCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxAvailableCutPositiveAtomCollapse WithHoles PositiveAtom :=
+  h.finalAvailableCut.to_availableCutCollapse
+
+/-- Project the full-coordinate collapse surface directly from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.to_fullCoordinateCollapse
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitCoordinateSubboxFullCoordinateAvailableCutPositiveAtomCollapse
+      WithHoles PositiveAtom :=
+  h.finalAvailableCut.to_fullCoordinateCollapse
+
+/-- Project the basis-with-holes transfer directly from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.to_basisWithHolesTransfer
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitNearTopBasisWithHolesTransfer Basis WithHoles :=
+  h.finalAvailableCut.to_basisWithHolesTransfer
+
+/-- Recover the ordinary four-way final branch wrapper from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.to_finalBranches
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    FirstBitTerminalPacketFinalBranchWrappers :=
+  h.finalAvailableCut.to_finalBranches
+
+/-- Project the post-quotient anchored-packing imports from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.to_postQuotientAnchoredPacking
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    PositiveAtomPostQuotientAnchoredPackingImports
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.postQuotientAnchoredPacking
+
+/-- Apply the trace-twin-free post-quotient anchored-packing cap from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.anchoredPacking_card_le_four
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (P : AnchoredPacking) (hfree : TraceTwinFree P) :
+    packingSize P ≤ 4 :=
+  h.postQuotientAnchoredPacking.card_le_four P hfree
+
+/-- Project the size-four witness-count row from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.witnessCount_sizeFour
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    WitnessCountAtLeast 4 2 :=
+  h.postQuotientAnchoredPacking.witnessCount_sizeFour
+
+/-- Project the size-three witness-count row from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.witnessCount_sizeThree
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    WitnessCountAtLeast 3 2 :=
+  h.postQuotientAnchoredPacking.witnessCount_sizeThree
+
+/-- Project the two-disjoint-template witness-count row from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.witnessCount_twoDisjointTemplates
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo) :
+    TwoDisjointTemplatesNeedTwo :=
+  h.postQuotientAnchoredPacking.witnessCount_twoDisjointTemplates
+
+/-- Project any selected witness-count row from the combined package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.witnessCount_obligation
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    (selector : PositiveAtomPostQuotientWitnessCountSelector) :
+    PositiveAtomPostQuotientWitnessCountSelector.obligation
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo selector :=
+  h.postQuotientAnchoredPacking.witnessCount_obligation selector
+
+/-- Apply an available-cut positive-atom certificate from the combined final package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.positiveAtom_of_available_basis
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    {capacity d effectiveDeficit rho : ℕ} {coeff : Fin 4}
+    (hcut : FirstBitCoordinateSubboxAvailableCutCertificate capacity coeff d effectiveDeficit)
+    (hbasis : Basis effectiveDeficit rho) :
+    PositiveAtom d rho :=
+  h.finalAvailableCut.positiveAtom_of_available_basis hcut hbasis
+
+/-- Apply a two-sided available coordinate cut from the combined final package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.positiveAtom_of_available
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    {capacity d rho : ℕ} {coeff : Fin 4}
+    (havailable : FirstBitCoordinateSubboxTwoSidedAvailable capacity coeff)
+    (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.finalAvailableCut.positiveAtom_of_available havailable hbasis
+
+/-- Apply a full-coordinate nonzero available cut from the combined final package. -/
+theorem
+    FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking.positiveAtom_of_fullCoordinateNonzero
+    {Basis WithHoles PositiveAtom : ℕ → ℕ → Prop}
+    {AnchoredPacking : Type*} {TraceTwinFree : AnchoredPacking → Prop}
+    {packingSize : AnchoredPacking → ℕ}
+    {WitnessCountAtLeast : ℕ → ℕ → Prop}
+    {TwoDisjointTemplatesNeedTwo : Prop}
+    (h :
+      FirstBitTerminalPacketFinalBranchWrappersWithAvailableCutAndPostQuotientAnchoredPacking
+        Basis WithHoles PositiveAtom
+        AnchoredPacking TraceTwinFree packingSize
+        WitnessCountAtLeast TwoDisjointTemplatesNeedTwo)
+    {d rho : ℕ} {coeff : Fin 4} (hcoeff : coeff ≠ (0 : Fin 4))
+    (hbasis : Basis d rho) :
+    PositiveAtom d rho :=
+  h.finalAvailableCut.positiveAtom_of_fullCoordinateNonzero hcoeff hbasis
+
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
   ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
