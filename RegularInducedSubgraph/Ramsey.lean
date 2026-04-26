@@ -41544,6 +41544,501 @@ theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toRemaining
       h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
   exact Subsingleton.elim _ _
 
+/--
+Final-release consumer obligation surface for the current proof-md frontier.  It repackages the
+downstream target checkpoint as the reusable proof-obligation handle expected by final consumers:
+all R45-facing rows are still carried through the explicit remaining-obligation and target-row
+views, so this surface does not assert an unconditional `R(4,5) <= 27` theorem.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  downstreamTargetCheckpoint :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v
+  finalPublicCitationCheckpoint :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v
+  publicReleaseCitation : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v
+  explicitR45ObligationRows :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v
+  remainingObligations : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  topRowProfile : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+  topRowCommonSum : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v
+  topRowCountProfile :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+  exact42Obligation : HasCliqueOrIndepSetBound 3 10 42
+  publicR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  checklistR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  targetRowR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  remainingAssumptionR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Obligation : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Obligation : 10 ∈ admissibleBounds 40960
+  extremalF40960Obligation : 10 ≤ F 40960
+  regularTenAt40960Obligation :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Downstream target checkpoints materialize the final-release consumer obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toProofMdFinalReleaseConsumerObligationSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v where
+  downstreamTargetCheckpoint := h
+  finalPublicCitationCheckpoint := h.toProofMdFinalPublicCitationCheckpoint
+  publicReleaseCitation := h.toProofMdPublicReleaseCitation
+  explicitR45ObligationRows := h.toProofMdExplicitR45ObligationRows
+  remainingObligations := h.toProofMdR45RemainingObligationChecklist
+  targetRows := h.toCurrentFrontierTargetRows
+  remainingAssumptionRows := h.toRemainingAssumptionRows
+  endpointResiduals := h.toEndpointResiduals
+  r45TwentySevenTable := h.toR45TwentySevenTable
+  topRowProfile := h.toTopRowProfile
+  topRowCommonSum := h.toCommonSum
+  topRowCountProfile := h.toCountProfile
+  exact42Obligation := h.toThreeTenFortyTwo
+  publicR45Obligation := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  checklistR45Obligation := h.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven
+  targetRowR45Obligation := h.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+  remainingAssumptionR45Obligation :=
+    h.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Obligation := h.toHasCliqueOrIndepSetBound_10_10_39246
+  admissibleTenAt40960Obligation := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Obligation := h.toTenLeF_40960
+  regularTenAt40960Obligation := fun H hcard =>
+    h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Final public citation checkpoints materialize the final-release consumer obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint.toProofMdFinalReleaseConsumerObligationSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v :=
+  h.toProofMdDownstreamTargetCheckpoint.toProofMdFinalReleaseConsumerObligationSurface
+
+/-- Public-release citations materialize the final-release consumer obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalReleaseConsumerObligationSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v :=
+  h.toProofMdDownstreamTargetCheckpoint.toProofMdFinalReleaseConsumerObligationSurface
+
+/-- Select the downstream target checkpoint from the final-release consumer obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toProofMdDownstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v :=
+  h.downstreamTargetCheckpoint
+
+/-- Select the final public citation checkpoint from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toProofMdFinalPublicCitationCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v :=
+  h.finalPublicCitationCheckpoint
+
+/-- Select the public-release citation from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.publicReleaseCitation
+
+/-- Select the explicit R45 obligation rows from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toProofMdExplicitR45ObligationRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v :=
+  h.explicitR45ObligationRows
+
+/-- Select the remaining-obligation checklist from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.remainingObligations
+
+/-- Select target rows from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select remaining-assumption rows from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Select endpoint residuals from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the relaxed `27`-vertex table from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Select the top-row profile obligation from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toTopRowProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v :=
+  h.topRowProfile
+
+/-- Select the top-row common-sum obligation from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toCommonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.topRowCommonSum
+
+/-- Select the top-row count-profile obligation from the final-release obligation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toCountProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.topRowCountProfile
+
+/-- Final-release obligation route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Obligation
+
+/-- Final-release obligation route to the public localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.publicR45Obligation
+
+/-- Final-release obligation route to the checklist-localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.checklistR45Obligation
+
+/-- Final-release obligation route to the target-row localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toTargetRowsHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.targetRowR45Obligation
+
+/-- Final-release obligation route to the remaining-assumption localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toRemainingAssumptionHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.remainingAssumptionR45Obligation
+
+/-- Final-release obligation route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Obligation
+
+/-- Final-release obligation route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Obligation
+
+/-- Final-release obligation route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Obligation
+
+/-- Final-release obligation route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Obligation H hcard
+
+/-- Flat constructor exposing final-release obligation surfaces from downstream target checkpoints. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface_of_downstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v :=
+  h.toProofMdFinalReleaseConsumerObligationSurface
+
+/-- Final-release obligation surfaces round-trip through downstream target checkpoints. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toProofMdDownstreamTargetCheckpoint_toProofMdFinalReleaseConsumerObligationSurface_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    h.toProofMdDownstreamTargetCheckpoint.toProofMdFinalReleaseConsumerObligationSurface = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final-release obligation surfaces normalize target rows with remaining assumptions. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toCurrentFrontierTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    h.toCurrentFrontierTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final-release obligation surfaces normalize checklist R45 with the public carried R45 row. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    h.toObligationHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
+/--
+Final-release consumer bundle for the current proof-md frontier.  This is the stable consumer-facing
+package over the downstream checkpoint and final-release obligation surface; it keeps both the
+surface handle and the explicit current-frontier rows available for downstream files without
+strengthening the assumption-backed localized R45 row.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  obligationSurface :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v
+  downstreamTargetCheckpoint :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v
+  finalPublicCitationCheckpoint :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicCitationCheckpoint G s v
+  publicReleaseCitation : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v
+  explicitR45ObligationRows :
+    RamseyTenR45CurrentFrontierProofMdExplicitR45ObligationRows G s v
+  remainingObligations : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  r45TwentySevenTable : RamseyTenR45TwentySevenTable
+  exact42Obligation : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Obligation : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Obligation : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Obligation : 10 ∈ admissibleBounds 40960
+  extremalF40960Obligation : 10 ≤ F 40960
+  regularTenAt40960Obligation :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final-release obligation surfaces materialize the final-release consumer bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface.toProofMdFinalReleaseConsumerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v where
+  obligationSurface := h
+  downstreamTargetCheckpoint := h.toProofMdDownstreamTargetCheckpoint
+  finalPublicCitationCheckpoint := h.toProofMdFinalPublicCitationCheckpoint
+  publicReleaseCitation := h.toProofMdPublicReleaseCitation
+  explicitR45ObligationRows := h.toProofMdExplicitR45ObligationRows
+  remainingObligations := h.toProofMdR45RemainingObligationChecklist
+  targetRows := h.toCurrentFrontierTargetRows
+  remainingAssumptionRows := h.toRemainingAssumptionRows
+  endpointResiduals := h.toEndpointResiduals
+  r45TwentySevenTable := h.toR45TwentySevenTable
+  exact42Obligation := h.toThreeTenFortyTwo
+  localizedR45Obligation := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Obligation := h.toHasCliqueOrIndepSetBound_10_10_39246
+  admissibleTenAt40960Obligation := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Obligation := h.toTenLeF_40960
+  regularTenAt40960Obligation := fun H hcard =>
+    h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Downstream target checkpoints materialize the final-release consumer bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint.toProofMdFinalReleaseConsumerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v :=
+  h.toProofMdFinalReleaseConsumerObligationSurface.toProofMdFinalReleaseConsumerBundle
+
+/-- Select the final-release obligation surface from the final-release consumer bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toProofMdFinalReleaseConsumerObligationSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerObligationSurface G s v :=
+  h.obligationSurface
+
+/-- Select the downstream target checkpoint from the final-release consumer bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toProofMdDownstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v :=
+  h.downstreamTargetCheckpoint
+
+/-- Select the public-release citation from the final-release consumer bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.publicReleaseCitation
+
+/-- Select target rows from the final-release consumer bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select remaining-assumption rows from the final-release consumer bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Select endpoint residuals from the final-release consumer bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Select the relaxed `27`-vertex table from the final-release consumer bundle. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toR45TwentySevenTable
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    RamseyTenR45TwentySevenTable :=
+  h.r45TwentySevenTable
+
+/-- Final-release consumer bundle route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Obligation
+
+/-- Final-release consumer bundle route to the localized R45 carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Obligation
+
+/-- Final-release consumer bundle route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Obligation
+
+/-- Final-release consumer bundle route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Obligation
+
+/-- Final-release consumer bundle route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Obligation
+
+/-- Final-release consumer bundle route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Obligation H hcard
+
+/-- Flat constructor exposing final-release consumer bundles from downstream target checkpoints. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle_of_downstreamTargetCheckpoint
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdDownstreamTargetCheckpoint G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v :=
+  h.toProofMdFinalReleaseConsumerBundle
+
+/-- Final-release consumer bundles round-trip through their obligation surface. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toProofMdFinalReleaseConsumerObligationSurface_toProofMdFinalReleaseConsumerBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    h.toProofMdFinalReleaseConsumerObligationSurface.toProofMdFinalReleaseConsumerBundle = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final-release consumer bundles normalize target rows with remaining assumptions. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toCurrentFrontierTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    h.toCurrentFrontierTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final-release consumer bundles normalize their carried R45 row with the obligation surface. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle.toProofMdFinalReleaseConsumerObligationSurface_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseConsumerBundle G s v) :
+    h.toProofMdFinalReleaseConsumerObligationSurface.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
