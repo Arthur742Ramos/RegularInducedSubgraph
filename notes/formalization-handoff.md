@@ -2634,6 +2634,9 @@ Recommended attack:
     minority atom in `1/3` type, and a subgraph of `K_{2,2}` in `2/2` type.
     Add the scalar profile of typed `F` graphs: `F`-degree `0` or `3` atoms are cross-flat; `F`-degree `1` or
     `2` atoms have one exceptional row whose cross-degree differs by `2 mod 4` from the other two.
+    Add the finite nonflat profile table: `1/3` substars of size `1,2,3` give `2,3,3` nonflat atoms; in
+    `2/2` type, one edge gives `2`, adjacent two-edge paths give `3`, and matchings or denser subgraphs give
+    `4`.
     For the all-edge permutation minimum, formalize the phase split: the three parity edges form either a
     star through one parity word or the triangle avoiding one parity word, and each size-three edge target
     has only a `2+1` label multiplicity choice.

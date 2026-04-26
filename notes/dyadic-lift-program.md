@@ -1223,6 +1223,9 @@ The possible `F` graphs are correspondingly empty in uniform type, a minority-ce
 or a subgraph of `K_{2,2}` in `2/2` type.
 For such a graph, atoms of `F`-degree `0` or `3` are cross-flat, and atoms of `F`-degree `1` or `2` have a
 single exceptional row differing by `2 mod 4` from the other two rows.
+The exceptional-row packet has size only `2`, `3`, or `4`: substar sizes `1,2,3` in `1/3` type give
+`2,3,3`, while in `2/2` type one edge gives `2`, adjacent two-edge paths give `3`, and matchings or denser
+subgraphs give `4`.
 The pure all-edge minimum has only star phase (three edge supports share a parity word) or triangle phase
 (three edge supports avoid one parity word), plus the `2+1` multiplicities on the size-three edge targets.
 For a symmetric all-ternary cycle, transposing the two-atom trace matrix forces every mutual edge target to

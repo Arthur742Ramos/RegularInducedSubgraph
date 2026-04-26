@@ -2142,6 +2142,8 @@ Its type-count shapes are empty, minority-centered substar, or `K_{2,2}` subgrap
 empty/triangle split is `0/4`, `1/3`, or `2/2`.
 Atoms of `F`-degree `0` or `3` are cross-flat; atoms of `F`-degree `1` or `2` have a unique exceptional row
 with cross-degree shifted by `2 mod 4`.
+The exceptional-row packet is finite: its nonflat atom count is `2`, `3`, or `4` according to the substar or
+`K_{2,2}` subgraph shape.
 The pure all-edge minimum has only star or triangle phase in the four-word parity tetrahedron, plus `2+1`
 multiplicity on each size-three edge target.
 In a symmetric all-ternary cycle, mutual edge targets pass the transpose test only when the edge contains an

@@ -12872,6 +12872,23 @@ deg_F(G)=0:  three corner edges with all omissions; G is cross-flat, as in the L
 In the two middle cases the exceptional row differs from the other two rows by exactly `2` modulo `4`.
 Thus every `F`-containing all-ternary endpoint has a one-exception-per-nonflat-atom scalar profile.
 
+By the shape of the bipartite `F` graph, the possible nonflat profiles are finite:
+
+```text
+1/3 type split, F-substar of size 1:  the two endpoints of the F edge are nonflat;
+1/3 type split, F-substar of size 2:  the center, the two F leaves are nonflat, the remaining leaf is flat;
+1/3 type split, F-substar of size 3:  the three leaves are nonflat, the center is flat;
+
+2/2 type split, one F edge:           exactly its two endpoints are nonflat;
+2/2 type split, two adjacent F edges: the degree-2 center and two leaves are nonflat;
+2/2 type split, two disjoint F edges: all four atoms are nonflat;
+2/2 type split, three or four F edges: all four atoms are nonflat.
+```
+
+Thus every `F`-containing endpoint is a bounded one-exception scalar packet over either two, three, or four
+atoms.  It is no longer a ternary target-code problem: the target code is fixed, and only the exceptional-row
+scalar packet remains.
+
 It remains useful to split the pure all-edge minimum by phase.  Fix one parity tetrahedron, say the even
 words.  An edge target `E_i` is specified by the constant value of coordinate `i`; its two labels are the two
 even words with that coordinate value.  For the permutation edge-triangle `E_1,E_2,E_3`, the three label
