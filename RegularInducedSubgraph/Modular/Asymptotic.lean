@@ -40768,6 +40768,581 @@ theorem FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle.mark
 end FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle
 
 /--
+Protected-core/all-large foldback bundle.  It replaces the raw all-atoms-large
+strict-defect branch in the large-target protected-core reduction by the certified
+all-large absorption/collision endpoint, while keeping the one-large finite-core
+branch explicit.
+-/
+structure FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle
+    (largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+      allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      protectedCoreAllLargeFoldbackEndpoint : Prop) : Prop where
+  largeTargetReduction :
+    FirstBitTerminalLargeTargetStrictDefectReductionBundle largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint
+  allLargeStrictDefect :
+    FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+      allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+      anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore allLargeStrictDefectEndpoint
+  protectedCoreAllLargeFoldbackEndpointCert :
+    largeTargetProtectedCoreEndpoint → largeTargetReductionEndpoint →
+      (oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allLargeStrictDefectEndpoint) →
+        protectedCoreAllLargeFoldbackEndpoint
+
+/-- Build the protected-core/all-large strict-defect foldback bundle from its branch packages. -/
+theorem firstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle_of_parts
+    {largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+      allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      protectedCoreAllLargeFoldbackEndpoint : Prop}
+    (hreduction :
+      FirstBitTerminalLargeTargetStrictDefectReductionBundle largeTargetProtectedCoreEndpoint
+        oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+        largeTargetReductionEndpoint)
+    (hallLarge :
+      FirstBitTerminalAllLargeStrictDefectAbsorptionCollisionEndpointBundle
+        allAtomsSizeAtLeastFourStrictDefectBranch allLargeUnitAbsorptionOverlapCongestion
+        anchoredNoSplitLiftCollisionPairs liftCollisionFiniteCore allLargeStrictDefectEndpoint)
+    (hendpoint :
+      largeTargetProtectedCoreEndpoint → largeTargetReductionEndpoint →
+        (oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allLargeStrictDefectEndpoint) →
+          protectedCoreAllLargeFoldbackEndpoint) :
+    FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle
+      largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+      allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      protectedCoreAllLargeFoldbackEndpoint where
+  largeTargetReduction := hreduction
+  allLargeStrictDefect := hallLarge
+  protectedCoreAllLargeFoldbackEndpointCert := hendpoint
+
+section FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle
+
+variable {largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+  allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint
+  allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+  liftCollisionFiniteCore allLargeStrictDefectEndpoint
+  protectedCoreAllLargeFoldbackEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle
+    largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+    allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint
+    allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+    liftCollisionFiniteCore allLargeStrictDefectEndpoint
+    protectedCoreAllLargeFoldbackEndpoint)
+
+/-- Project the imported large-target protected-core endpoint marker. -/
+theorem
+    FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.to_largeTargetProtectedCoreEndpoint :
+    largeTargetProtectedCoreEndpoint :=
+  h.largeTargetReduction.largeTargetProtectedCoreEndpointCert
+
+/-- Project the protected-core reduction endpoint before the all-large foldback is applied. -/
+theorem
+    FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.to_largeTargetReductionEndpoint :
+    largeTargetReductionEndpoint :=
+  h.largeTargetReduction.to_largeTargetReductionEndpoint
+
+/-- Project the original one-large/strict-defect branch from the protected-core reduction. -/
+theorem FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.to_rawBranch :
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allAtomsSizeAtLeastFourStrictDefectBranch :=
+  h.largeTargetReduction.to_branch
+
+/-- Project the certified all-large strict-defect endpoint. -/
+theorem
+    FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.to_allLargeStrictDefectEndpoint :
+    allLargeStrictDefectEndpoint :=
+  h.allLargeStrictDefect.to_allLargeStrictDefectEndpoint
+
+/--
+Replace the raw strict-defect branch by the certified all-large endpoint, leaving
+the one-large finite-core branch unchanged.
+-/
+theorem
+    FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.to_oneLarge_or_allLargeStrictDefectEndpoint :
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allLargeStrictDefectEndpoint := by
+  cases h.largeTargetReduction.to_branch with
+  | inl hone => exact Or.inl hone
+  | inr _ => exact Or.inr h.allLargeStrictDefect.to_allLargeStrictDefectEndpoint
+
+/-- Project the protected-core/all-large foldback endpoint. -/
+theorem
+    FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.to_protectedCoreAllLargeFoldbackEndpoint :
+    protectedCoreAllLargeFoldbackEndpoint :=
+  h.protectedCoreAllLargeFoldbackEndpointCert
+    h.largeTargetReduction.largeTargetProtectedCoreEndpointCert
+    h.largeTargetReduction.to_largeTargetReductionEndpoint
+    (FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.to_oneLarge_or_allLargeStrictDefectEndpoint h)
+
+/-- Compact marker bundle exported by the protected-core/all-large foldback. -/
+theorem FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.markerBundle :
+    largeTargetProtectedCoreEndpoint ∧ largeTargetReductionEndpoint ∧
+      (oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allAtomsSizeAtLeastFourStrictDefectBranch) ∧
+        (oneLargeHTwoTwoTwoFiniteCoreEndpoint ∨ allLargeStrictDefectEndpoint) ∧
+          allLargeUnitAbsorptionOverlapCongestion ∧ anchoredNoSplitLiftCollisionPairs ∧
+            liftCollisionFiniteCore ∧ allLargeStrictDefectEndpoint ∧
+              protectedCoreAllLargeFoldbackEndpoint :=
+  ⟨h.largeTargetReduction.largeTargetProtectedCoreEndpointCert,
+    h.largeTargetReduction.to_largeTargetReductionEndpoint,
+    h.largeTargetReduction.to_branch,
+    FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.to_oneLarge_or_allLargeStrictDefectEndpoint h,
+    h.allLargeStrictDefect.allLargeUnitAbsorptionOverlapCongestionCert,
+    h.allLargeStrictDefect.anchoredNoSplitLiftCollisionPairsCert,
+    h.allLargeStrictDefect.liftCollisionFiniteCoreCert,
+    h.allLargeStrictDefect.to_allLargeStrictDefectEndpoint,
+    h.protectedCoreAllLargeFoldbackEndpointCert
+      h.largeTargetReduction.largeTargetProtectedCoreEndpointCert
+      h.largeTargetReduction.to_largeTargetReductionEndpoint
+      (FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle.to_oneLarge_or_allLargeStrictDefectEndpoint h)⟩
+
+end FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle
+
+/--
+Current no-leftover/all-large frontier certificate.  It keeps the existing
+four-exception residual binary normalization, signed-quotient and shortened-pair
+foldbacks, protected-core large-target reduction, and all-large absorption/collision
+foldback in one final-facing endpoint package.
+-/
+structure FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate
+    (twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint : Prop) : Prop where
+  absorptionCollisionFoldback :
+    FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint
+  protectedCoreAllLargeFoldback :
+    FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle
+      largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+      allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      protectedCoreAllLargeFoldbackEndpoint
+  noLeftoverAllLargeCurrentFrontierEndpointCert :
+    fourExceptionResidualBinaryNormalizationEndpoint → signedDegreeQuotientFoldback →
+      shortenedPairHitQ2Foldback → shortenedPairHitQ3ExtraRebate →
+        signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+          currentNoLeftoverFrontierEndpoint →
+            allLargeAbsorptionCollisionFoldbackEndpoint →
+              protectedCoreAllLargeFoldbackEndpoint →
+                noLeftoverAllLargeCurrentFrontierEndpoint
+
+/-- Build the current no-leftover/all-large frontier certificate from its two foldbacks. -/
+theorem firstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate_of_parts
+    {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint : Prop}
+    (hcollision :
+      FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle
+        twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+        fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+        rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+        signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+        signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+        fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+        oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+        largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+        symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+        allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+        liftCollisionFiniteCore allLargeStrictDefectEndpoint
+        allLargeAbsorptionCollisionFoldbackEndpoint)
+    (hprotected :
+      FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle
+        largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+        allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint
+        allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+        liftCollisionFiniteCore allLargeStrictDefectEndpoint
+        protectedCoreAllLargeFoldbackEndpoint)
+    (hendpoint :
+      fourExceptionResidualBinaryNormalizationEndpoint → signedDegreeQuotientFoldback →
+        shortenedPairHitQ2Foldback → shortenedPairHitQ3ExtraRebate →
+          signedQuotientScalarClosureEndpoint → typedFGraphBranchEndpoint →
+            currentNoLeftoverFrontierEndpoint →
+              allLargeAbsorptionCollisionFoldbackEndpoint →
+                protectedCoreAllLargeFoldbackEndpoint →
+                  noLeftoverAllLargeCurrentFrontierEndpoint) :
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint where
+  absorptionCollisionFoldback := hcollision
+  protectedCoreAllLargeFoldback := hprotected
+  noLeftoverAllLargeCurrentFrontierEndpointCert := hendpoint
+
+section FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate
+
+variable {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+  fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+  rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+  signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+  signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+  fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+  oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+  largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+  symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+  allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+  liftCollisionFiniteCore allLargeStrictDefectEndpoint
+  allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+  noLeftoverAllLargeCurrentFrontierEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate
+    twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+    fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+    rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+    signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+    signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+    fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+    largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+    symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+    allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+    liftCollisionFiniteCore allLargeStrictDefectEndpoint
+    allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+    noLeftoverAllLargeCurrentFrontierEndpoint)
+
+/-- Recover the all-large absorption/collision foldback bundle. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_absorptionCollisionFoldback :
+    FirstBitTerminalNoLeftoverAllLargeAbsorptionCollisionFoldbackBundle
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint :=
+  h.absorptionCollisionFoldback
+
+/-- Recover the protected-core/all-large branch foldback bundle. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_protectedCoreAllLargeFoldback :
+    FirstBitTerminalProtectedCoreAllLargeStrictDefectFoldbackBundle
+      largeTargetProtectedCoreEndpoint oneLargeHTwoTwoTwoFiniteCoreEndpoint
+      allAtomsSizeAtLeastFourStrictDefectBranch largeTargetReductionEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint protectedCoreAllLargeFoldbackEndpoint :=
+  h.protectedCoreAllLargeFoldback
+
+/-- Project the residual/binary normalization endpoint carried by the current certificate. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_fourExceptionResidualBinaryNormalizationEndpoint :
+    fourExceptionResidualBinaryNormalizationEndpoint :=
+  h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.fourExceptionResidualBinaryNormalizationEndpointCert
+
+/-- Project the signed-degree quotient foldback marker. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_signedDegreeQuotientFoldback :
+    signedDegreeQuotientFoldback :=
+  h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.signedDegreeQuotientFoldbackCert
+
+/-- Project the q=2 shortened-pair foldback marker. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_shortenedPairHitQ2Foldback :
+    shortenedPairHitQ2Foldback :=
+  h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.shortenedPairHitQ2FoldbackCert
+
+/-- Project the q=3 shortened-pair extra-rebate marker. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_shortenedPairHitQ3ExtraRebate :
+    shortenedPairHitQ3ExtraRebate :=
+  h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.shortenedPairHitQ3ExtraRebateCert
+
+/-- Project the signed-quotient scalar closure endpoint. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_signedQuotientScalarClosureEndpoint :
+    signedQuotientScalarClosureEndpoint :=
+  h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.signedQuotientScalarClosureEndpointCert
+
+/-- Project the typed `F`-graph branch endpoint. -/
+theorem FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_typedFGraphBranchEndpoint :
+    typedFGraphBranchEndpoint :=
+  h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.typedFGraphBranchEndpointCert
+
+/-- Project the current no-leftover frontier endpoint. -/
+theorem FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_currentNoLeftoverFrontierEndpoint :
+    currentNoLeftoverFrontierEndpoint :=
+  h.absorptionCollisionFoldback.to_currentNoLeftoverFrontierEndpoint
+
+/-- Project the all-large absorption/collision foldback endpoint. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_allLargeAbsorptionCollisionFoldbackEndpoint :
+    allLargeAbsorptionCollisionFoldbackEndpoint :=
+  h.absorptionCollisionFoldback.to_allLargeAbsorptionCollisionFoldbackEndpoint
+
+/-- Project the protected-core/all-large foldback endpoint. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_protectedCoreAllLargeFoldbackEndpoint :
+    protectedCoreAllLargeFoldbackEndpoint :=
+  h.protectedCoreAllLargeFoldback.to_protectedCoreAllLargeFoldbackEndpoint
+
+/-- Project the final current no-leftover/all-large frontier endpoint. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.to_noLeftoverAllLargeCurrentFrontierEndpoint :
+    noLeftoverAllLargeCurrentFrontierEndpoint :=
+  h.noLeftoverAllLargeCurrentFrontierEndpointCert
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.fourExceptionResidualBinaryNormalizationEndpointCert
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.signedDegreeQuotientFoldbackCert
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.shortenedPairHitQ2FoldbackCert
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.shortenedPairHitQ3ExtraRebateCert
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.signedQuotientScalarClosureEndpointCert
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.typedFGraphBranchEndpointCert
+    h.absorptionCollisionFoldback.to_currentNoLeftoverFrontierEndpoint
+    h.absorptionCollisionFoldback.to_allLargeAbsorptionCollisionFoldbackEndpoint
+    h.protectedCoreAllLargeFoldback.to_protectedCoreAllLargeFoldbackEndpoint
+
+/-- Compact endpoint bundle for the current no-leftover/all-large frontier. -/
+theorem FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate.markerBundle :
+    fourExceptionResidualBinaryNormalizationEndpoint ∧ signedDegreeQuotientFoldback ∧
+      shortenedPairHitQ2Foldback ∧ shortenedPairHitQ3ExtraRebate ∧
+        signedQuotientScalarClosureEndpoint ∧ typedFGraphBranchEndpoint ∧
+          currentNoLeftoverFrontierEndpoint ∧ allLargeAbsorptionCollisionFoldbackEndpoint ∧
+            protectedCoreAllLargeFoldbackEndpoint ∧
+              noLeftoverAllLargeCurrentFrontierEndpoint :=
+  ⟨h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.fourExceptionResidualBinaryNormalizationEndpointCert,
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.signedDegreeQuotientFoldbackCert,
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.shortenedPairHitQ2FoldbackCert,
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.shortenedPairHitQ3ExtraRebateCert,
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.signedQuotientScalarClosureEndpointCert,
+    h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.typedFGraphBranchEndpointCert,
+    h.absorptionCollisionFoldback.to_currentNoLeftoverFrontierEndpoint,
+    h.absorptionCollisionFoldback.to_allLargeAbsorptionCollisionFoldbackEndpoint,
+    h.protectedCoreAllLargeFoldback.to_protectedCoreAllLargeFoldbackEndpoint,
+    h.noLeftoverAllLargeCurrentFrontierEndpointCert
+      h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.fourExceptionResidualBinaryNormalizationEndpointCert
+      h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.signedDegreeQuotientFoldbackCert
+      h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.shortenedPairHitQ2FoldbackCert
+      h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.shortenedPairHitQ3ExtraRebateCert
+      h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.signedQuotientScalarClosureEndpointCert
+      h.absorptionCollisionFoldback.protectedCoreFoldback.residualBinaryNormalization.typedFGraphBranchEndpointCert
+      h.absorptionCollisionFoldback.to_currentNoLeftoverFrontierEndpoint
+      h.absorptionCollisionFoldback.to_allLargeAbsorptionCollisionFoldbackEndpoint
+      h.protectedCoreAllLargeFoldback.to_protectedCoreAllLargeFoldbackEndpoint⟩
+
+end FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate
+
+/--
+Final-facing terminal no-leftover closure facade.  The only new input is the
+closure rule from the certified current frontier and the two all-large foldback
+endpoints to the requested terminal endpoint.
+-/
+structure FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade
+    (twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint terminalNoLeftoverClosureEndpoint : Prop) :
+    Prop where
+  currentFrontier :
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint
+  terminalNoLeftoverClosureEndpointCert :
+    noLeftoverAllLargeCurrentFrontierEndpoint →
+      allLargeAbsorptionCollisionFoldbackEndpoint →
+        protectedCoreAllLargeFoldbackEndpoint → terminalNoLeftoverClosureEndpoint
+
+/-- Build the final-facing terminal no-leftover closure facade from the current frontier certificate. -/
+theorem firstBitTerminalNoLeftoverAllLargeFinalClosureFacade_of_parts
+    {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint terminalNoLeftoverClosureEndpoint : Prop}
+    (hcurrent :
+      FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate
+        twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+        fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+        rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+        signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+        signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+        fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+        oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+        largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+        symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+        allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+        liftCollisionFiniteCore allLargeStrictDefectEndpoint
+        allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+        noLeftoverAllLargeCurrentFrontierEndpoint)
+    (hterminal :
+      noLeftoverAllLargeCurrentFrontierEndpoint →
+        allLargeAbsorptionCollisionFoldbackEndpoint →
+          protectedCoreAllLargeFoldbackEndpoint → terminalNoLeftoverClosureEndpoint) :
+    FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint terminalNoLeftoverClosureEndpoint where
+  currentFrontier := hcurrent
+  terminalNoLeftoverClosureEndpointCert := hterminal
+
+section FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade
+
+variable {twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+  fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+  rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+  signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+  signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+  fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+  oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+  largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+  symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+  allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+  liftCollisionFiniteCore allLargeStrictDefectEndpoint
+  allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+  noLeftoverAllLargeCurrentFrontierEndpoint terminalNoLeftoverClosureEndpoint : Prop}
+
+variable (h :
+  FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade
+    twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+    fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+    rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+    signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+    signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+    fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+    oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+    largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+    symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+    allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+    liftCollisionFiniteCore allLargeStrictDefectEndpoint
+    allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+    noLeftoverAllLargeCurrentFrontierEndpoint terminalNoLeftoverClosureEndpoint)
+
+/-- Project the current no-leftover/all-large frontier certificate. -/
+theorem FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade.to_currentFrontier :
+    FirstBitTerminalNoLeftoverAllLargeCurrentFrontierCertificate
+      twoExceptionLocalHostDischarge threeExceptionLocalHostDischarge
+      fourExceptionTwoTwoSkeletons booleanSecondDifferenceOneCornerSquares affineCrossTables
+      rowColumnSwitchNormalizationFrontier balancedDyadicCompensators
+      signedDegreeQuotientFoldback shortenedPairHitQ2Foldback shortenedPairHitQ3ExtraRebate
+      signedQuotientScalarClosureEndpoint typedFGraphBranchEndpoint
+      fourExceptionResidualBinaryNormalizationEndpoint largeTargetProtectedCoreEndpoint
+      oneLargeHTwoTwoTwoFiniteCoreEndpoint allAtomsSizeAtLeastFourStrictDefectBranch
+      largeTargetReductionEndpoint allTernary3333IncidenceProfiles
+      symmetricAllTernaryStarPhaseEndpoint currentNoLeftoverFrontierEndpoint
+      allLargeUnitAbsorptionOverlapCongestion anchoredNoSplitLiftCollisionPairs
+      liftCollisionFiniteCore allLargeStrictDefectEndpoint
+      allLargeAbsorptionCollisionFoldbackEndpoint protectedCoreAllLargeFoldbackEndpoint
+      noLeftoverAllLargeCurrentFrontierEndpoint :=
+  h.currentFrontier
+
+/-- Project the current no-leftover/all-large endpoint. -/
+theorem
+    FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade.to_noLeftoverAllLargeCurrentFrontierEndpoint :
+    noLeftoverAllLargeCurrentFrontierEndpoint :=
+  h.currentFrontier.to_noLeftoverAllLargeCurrentFrontierEndpoint
+
+/-- Project the terminal no-leftover closure endpoint. -/
+theorem FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade.to_terminalNoLeftoverClosureEndpoint :
+    terminalNoLeftoverClosureEndpoint :=
+  h.terminalNoLeftoverClosureEndpointCert
+    h.currentFrontier.to_noLeftoverAllLargeCurrentFrontierEndpoint
+    h.currentFrontier.to_allLargeAbsorptionCollisionFoldbackEndpoint
+    h.currentFrontier.to_protectedCoreAllLargeFoldbackEndpoint
+
+/-- Compact marker bundle for the final-facing terminal no-leftover closure facade. -/
+theorem FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade.markerBundle :
+    noLeftoverAllLargeCurrentFrontierEndpoint ∧
+      allLargeAbsorptionCollisionFoldbackEndpoint ∧ protectedCoreAllLargeFoldbackEndpoint ∧
+        terminalNoLeftoverClosureEndpoint :=
+  ⟨h.currentFrontier.to_noLeftoverAllLargeCurrentFrontierEndpoint,
+    h.currentFrontier.to_allLargeAbsorptionCollisionFoldbackEndpoint,
+    h.currentFrontier.to_protectedCoreAllLargeFoldbackEndpoint,
+    h.terminalNoLeftoverClosureEndpointCert
+      h.currentFrontier.to_noLeftoverAllLargeCurrentFrontierEndpoint
+      h.currentFrontier.to_allLargeAbsorptionCollisionFoldbackEndpoint
+      h.currentFrontier.to_protectedCoreAllLargeFoldbackEndpoint⟩
+
+end FirstBitTerminalNoLeftoverAllLargeFinalClosureFacade
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
