@@ -1711,9 +1711,11 @@ graphs are line-covered.
 Away from the exact boundary top, the same inequality uses
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`: terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every compatible export.
-In a basis box with `rho` holes, `H_X>=h_box-rho`; hence the exact-top carry and cut bounds persist with
-deficit `d+rho`.
-If `d+rho<=1`, a fully compatible minimal four-block is still forced to be the positive atom `e_i^4`.
+In a coordinate subbox, holes delete residue availability rather than giving a uniform `h_box-rho` lower
+bound.  On available cuts the exact-top carry and cut bounds persist with the original deficit `d`;
+unavailable cuts are label-incompatible.
+If `d<=1`, a minimal four-block whose singleton and pair cuts are two-sided available is still forced to
+be the positive atom `e_i^4`.
 
 ## 14. Pair-chamber orientation normal form
 

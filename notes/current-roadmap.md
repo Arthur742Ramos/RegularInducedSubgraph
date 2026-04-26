@@ -4968,10 +4968,11 @@ three-edge witness graph is line-covered.
 For non-exact boundaries, use the maximum import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`; terminal exports satisfy
 `H_X(sigma(Y))-|Y|<=m-|B|`.  Exact top is the explicit box-height case.
-If a near-top boundary embeds in a basis box with `rho` holes, then
-`H_X>=h_box-rho`, so the same carry and cut inequalities hold with effective deficit `d+rho`.
-For `d+rho<=1`, the four-block collapse still gives only the positive atom `e_i^4`; no new near-top
-coordinate atom appears.
+If a near-top boundary is a coordinate subbox, holes delete residue availability rather than giving a
+uniform `h_box-rho` lower bound.  On available cuts the exact-top carry and cut inequalities hold with
+the original deficit `d`; unavailable cuts are already label-incompatible.
+For `d<=1`, any minimal four-block whose singleton and pair cuts are two-sided available still collapses
+to the positive atom `e_i^4`; holes create incompatibilities, not new near-top atoms.
 
 ## Supporting work that is useful but not on the critical path
 
