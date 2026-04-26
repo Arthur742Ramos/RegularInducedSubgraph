@@ -8937,6 +8937,27 @@ For an anchored occupied trace with common intersection `t`, the three `infty`-l
 full.  Hence a trace-twin-free anchored five-packing cannot have six-cycle leave; its leave must be the
 two-triangle Eulerian type.
 
+The two-triangle type also forces twins.  Disjoint leave triangles are impossible: every block would need
+the isolated seventh point, but that point has packing degree three, not five.  Hence the two leave
+triangles share one point.  Label the leave triangles `012` and `034`, with isolated points `5,6`.
+The block through `0` is forced to be `056`; the other four blocks are obtained by assigning the four
+edges of the cycle `13,14,24,23` to `5` and `6`, two edges each.  Up to symmetry the assignment is either
+adjacent or opposite.  In the adjacent case, say
+
+```text
+513, 514, 623, 624,
+```
+
+the equal-intersection equations force `x_3=x_4`.  In the opposite case, say
+
+```text
+513, 524, 614, 623,
+```
+
+they force `x_1=x_2`, `x_3=x_4`, and `x_5=x_6`.  Thus every anchored five-packing has trace twins.
+Consequently, after trace-twin quotienting, an irreducible anchored positive-atom external packing has
+size at most four.
+
 For `P=F` this lower bound has an exact Fano-plane form.  A kept-pair witness `e` kills precisely the
 Fano lines disjoint from `e`; therefore a witness graph `H` kills all Fano omitted triples iff no Fano
 line meets every edge of `H`.  Equivalently, `H` is not vertex-covered by any Fano line.  Every graph

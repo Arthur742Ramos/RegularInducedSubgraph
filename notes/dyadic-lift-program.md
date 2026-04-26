@@ -1602,6 +1602,9 @@ In that post-quotient anchored range the witness lower bounds are explicit:
 two.
 The six-cycle leave five-packing has only empty/full anchored balanced traces, so it also forces trace
 twins.  Thus the irreducible anchored five-template case has the two-triangle leave type.
+The two-triangle leave also forces twins: disjoint triangles cannot occur, and the shared-point block
+systems have adjacent/opposite assignments whose balanced trace equations force equal coordinates.
+Therefore the trace-twin-free anchored external packing has size at most four.
 For `P` Fano, the exact graph shadow is that the internal witness graph is not covered by any Fano line;
 all three-edge witness graphs are line-covered.
 Equivalently, dualize to the seven Fano lines: each kept-pair witness joins the two lines disjoint from

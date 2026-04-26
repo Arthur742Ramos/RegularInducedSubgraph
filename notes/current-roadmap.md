@@ -4979,6 +4979,8 @@ For the post-quotient anchored core, `|P|=5,4,3` require at least `3,2,2` intern
 and two disjoint templates require two.
 The six-cycle leave five-packing has only empty/full anchored balanced traces, so it forces trace twins;
 irreducible anchored five-packings must have two-triangle leave.
+The two-triangle leave also forces trace twins by the shared-point adjacent/opposite block equations.
+Thus the trace-twin-free anchored external packing has size at most four.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is
