@@ -277,6 +277,15 @@ the currently checked Scott/Hunter/Ferber--Krivelevich tools: Scott--Hunter give
 mod-`k` linear bound with all degrees `1 mod k`, while Ferber--Krivelevich proves the arbitrary-graph
 `k=2` odd-degree conjecture with constant `1/10000`.  The former is bipartite-only and the latter
 freezes only the parity bit, so neither supplies the loss-`64` arbitrary even-graph mod-`4` selector.
+The newer prescribed-parity extension of Ferber--Krivelevich is still an `F_2` theorem: it prescribes
+degree parity vertex-by-vertex with a small linear constant, but it does not control the carry
+`binom(deg,2) [MOD 2]`.  Its directed partition characterization also confirms that fixed Eulerian
+orientations do not give a free out-parity partition; a directed triangle is already an Eulerian
+obstruction to even/even out-degree partition.
+Iterating Gallai even/even partitions is also insufficient.  It gives nested even induced leaves of
+size `n/32` after five halvings, and degrees to each discarded sibling layer are even, but the
+half-degree parities of those sibling contributions are not synchronized.  The final leaf can still mix
+degrees `0` and `2 mod 4`.
 Prescribed-parity variants remain linear `F_2` inputs: they can choose the first bit of the retained
 degrees, but the next bit is the carry `binom(deg,2) [MOD 2]`, equivalently the synchronized in/out
 parity condition only after the selected even graph is oriented on its own.  That carry is exactly what
@@ -315,6 +324,10 @@ strong.  It would require a partition into classes whose induced degree residues
 has a finite Poisson limit for exactly this `q=4` one-class-per-residue count, hence such full
 partitions do not exist deterministically.  The viable formulation is a partial anti-degree coloring
 covering at least one quarter of the graph, or directly the single class of size `|H|/16`.
+A bounded deterministic modular partition into self-regular classes would be a sufficient shortcut but
+is stronger than the one-class selector: the Caro--Krasikov--Roditty bounded-partition problem is open
+for fixed `q>2`, and the random-graph `q`/`q+1` partition theorems do not provide arbitrary-graph
+principal submatrices.  Do not treat bounded modular color refinement as an available theorem.
 The packet version of the same obstruction is now clean.  If `W` is a maximal mod-`4`-congruent
 retained set of residue `r`, any outside packet `B` with `deg_B(w)` constant (`delta`) on old vertices
 `w in W` and with `deg_W(b)+deg_B(b)=r+delta` for all `b in B` would enlarge `W`.  The old-vertex
@@ -823,6 +836,9 @@ The middle residues have concrete first obstructions: required residue `1` means
 induced-`2K_2`-free, while required residue `2` means it is induced-`C_4`-free, unless a small old
 deletion shifts an independent set or clique into the repair spectrum.  Larger same-direction regular
 blocks give stronger exclusions, but these two hereditary classes are the visible terminal branch.
+Since `2K_2` and `C_4` are complements, any direction whose repair spectrum contains both middle
+residues is forced into the much narrower class avoiding both patterns; remaining large examples must
+be controlled by the outside-only maximum constraint on repeated cyclic/split-like blocks.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has
@@ -869,6 +885,13 @@ can have congruent induced degrees modulo `4` on more than `m` vertices.  For re
 many no-cross clique directions: four vertices from each of more than `m/4` clique directions would
 already form an outside-only residue-`3` witness.  Terminal exact-basis configurations must block both
 appendable repairs and outside-only block selections.
+
+The boundary `X` alone carries the same constraint at the critical density: since `|X|<=3(m-1)`, a
+terminal `X` has no mod-`4` congruent induced subset of size `>m`.  In the exact basis model this forbids
+any selection of subpatterns `P_i subset X_i` from the boundary triples with
+`q_i(v)+sum_{j != i}deg_{P_j}(v)=Q` on all selected vertices and total size `>m`.  Thus large
+cross-isolated collections of independent triples or triangle triples are impossible, because the whole
+triples would already give an outside-only congruent witness.
 
 The zero-sum-free boundary `X` has length at most the Davenport extremal value `3(m-1)` in
 `C_4^(m-1)`.  This suggests the next split:

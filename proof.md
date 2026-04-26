@@ -6065,6 +6065,14 @@ and similarly for `d=2` with `2 mod 4` regular blocks.  But the first visible he
 precisely `2K_2`-free or induced-`C_4`-free, plus the absence of small old-deletion shifts to residues
 `0` and `3`.
 
+The two middle obstructions are complements on four vertices: the complement of `2K_2` is `C_4`.
+Thus if a direction's deletion spectrum ever contains both middle residues `1` and `2`, a terminal
+large fiber must avoid both induced `2K_2` and induced `C_4`.  Any remaining large obstruction then
+has to live in the narrow split/cycle boundary of the hereditary theory, and outside-only maximality
+also forbids collecting many congruent cyclic blocks from such fibers.  This does not close the branch,
+but it reduces the large-fiber exact-basis endpoint to hereditary middle-residue structure plus the
+old-deletion shift catalogue.
+
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
 `deg_D(b)` constant on the four vertices.  The signed condition
@@ -6177,6 +6185,24 @@ more than `m/4` clique directions already give an outside-only congruent witness
 any exact-basis counterexample must simultaneously block appendable defect repair and all large
 outside-only block selections.  The latter is the missing global information in atom-only local
 countermodels.
+
+The same outside-only constraint applies already to the maximal boundary `X`.  Since
+`|X|` can be as large as `3(m-1)`, a terminal boundary is a `1/3`-critical obstruction for the
+ordinary mod-`4` congruent-degree selector: no `Y subset X` with `|Y|>m` may have all degrees in
+`G[Y]` congruent modulo `4`.  In the exact Davenport model this says that the family of boundary
+triples `X_i={x_{i,1},x_{i,2},x_{i,3}}` admits no selection of subpatterns whose total size exceeds
+`m` and whose internal-plus-cross degrees are constant.  For a subpattern `P_i subset X_i`, write
+`q_i(v)=deg_{P_i}(v)` inside the triple.  A boundary-only forbidden selection is precisely
+
+```text
+q_i(v)+sum_{j != i} deg_{P_j}(v)=Q        for every selected v in P_i,
+sum_i |P_i|>m.
+```
+
+This is weaker than the append atom equations but uses the full `3m` reservoir.  In particular, a
+terminal exact-basis boundary cannot contain a large collection of cross-isolated independent triples
+or cross-isolated triangle triples of one type: selecting those whole triples would give an outside-only
+residue-`0` or residue-`2` witness of size greater than `m`.
 
 The boundary side has one more structural feature: `X` is zero-sum-free in
 `C_4^(m-1)` and has length at most the exact Davenport extremal value `3(m-1)`.  Hence the terminal
@@ -6321,6 +6347,31 @@ adjacency, and those internal edges are exactly what changes the row sums after 
 is selected.  So the current terminal gap is not a hidden application of the bipartite `1 mod k`
 theorem; it is the co-cut synchronization problem for the self-layer plus its newly discarded
 complement.
+
+The recent prescribed-parity extension of Ferber--Krivelevich has the same limitation.  It gives a
+linear induced subgraph with vertex-wise prescribed parity, and Gallai gives even/even or even/odd
+two-partitions, but both statements live only over `F_2`.  They can force the first bit of the selected
+degrees, not the carry bit `binom(deg,2) [MOD 2]`.  Its directed partition characterization also shows
+why the Eulerian-orientation route cannot be reduced to ordinary out-parity: even an Eulerian directed
+triangle has no even/even out-degree partition.  Thus the missing input remains genuinely diagonal and
+modulo `4`.
+
+Nor does iterating Gallai's even/even partition close the loss.  Starting from an even graph and always
+keeping the larger even child gives a nested even induced graph of size at least `n/32` after five
+steps.  However the leaf is only even; its degrees can still split between `0` and `2 mod 4`.  The
+successive sibling layers have even degree into the current leaf, but their half-degree parities are not
+synchronized, so the carry coordinate `binom(deg,2) [MOD 2]` remains free.  Thus recursive Gallai
+partitioning proves only first-bit parity regularity at the required scale, not the mod-`4` congruence.
+
+A bounded modular partition would be a sufficient but currently unavailable shortcut.  If every graph
+could be partitioned into at most `K` vertex classes whose induced degrees are constant modulo `4` in
+each class, then the largest class would give an arbitrary-graph `1/K` selector, and with `K<=16` would
+close the even loss-`32` route after the total-degree-class reduction.  But this is stronger than the
+present one-large-class target: even the deterministic Caro--Krasikov--Roditty problem asking for a
+bounded number of parts with all induced degrees divisible by a fixed `q` is open, while the
+Balister--Powierski--Scott--Tan random-graph count only describes random partitions and shows that
+some fixed `q`-part residue patterns fail with positive limiting probability.  Hence a bounded
+partition theorem should not be imported as if proved; the target must remain a partial selector.
 
 Combining Lemmas 10.4b and 10.4e--10.4j reduces the large-gap positive fixed-witness dyadic lift in the
 saturated proof pipeline to this first-bit modulus-four target:

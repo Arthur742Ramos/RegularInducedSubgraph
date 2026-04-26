@@ -791,6 +791,16 @@ Recommended attack:
    do not determine the second bit of `deg_{E[W]}(v)` on the candidate support.  The full selector is
    broader anyway, because it may also return all degrees `1` or `3 mod 4`.
 
+   The prescribed-parity extension of Ferber--Krivelevich should be recorded only as an `F_2` tool.  It
+   gives a small linear induced subgraph with `deg_H(v)=f(v) [MOD 2]`, but does not control the carry
+   `binom(deg,2) [MOD 2]`.  Its directed Gallai-type characterization also warns against an
+   orientation shortcut: a directed triangle is Eulerian but has no even/even out-degree partition.
+
+   Iterated Gallai even/even partitioning is another false closure: after five halvings one has an even
+   induced leaf of size `n/32`, but not a mod-`4` congruent leaf.  The discarded sibling layers have even
+   degree into the leaf, yet their half-degree parities can vary by vertex, leaving the carry coordinate
+   uncontrolled.
+
    Avoid two false imports here.  The Caro--Krasikov--Roditty zero-sum partition theorem is about the
    number of edges in each induced part modulo `q`, not all vertex degrees modulo `q`; random-graph
    modulo-`q` partition theorems are also irrelevant to arbitrary fixed witnesses.  The exact deterministic
@@ -1348,6 +1358,11 @@ Recommended attack:
    has already moved residue `0` or `3` into `Rep(g)`.  Larger same-direction regular blocks provide
    additional exclusions but are not yet a closure.
 
+   Note the complement symmetry: `2K_2` and `C_4` are complementary four-vertex regular graphs.  If
+   both middle residues lie in `Rep(g)`, a terminal large fiber must avoid both patterns; any remaining
+   hereditary case should be combined with the outside-only maximum constraint, especially for repeated
+   cyclic blocks.
+
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is
    regular of degree `r-omega(g_i)`.  The allowed adjacency pattern from `b` to the fixed triple is
@@ -1395,6 +1410,18 @@ Recommended attack:
    This rules out local no-cross clique countermodels with many directions, because four vertices from
    each of more than `m/4` clique directions already form an outside-only residue-`3` witness.  Formal
    closure may use this outside-only constraint in addition to appendable old-balanced atoms.
+
+   The boundary alone gives a sharper critical version: no `Y subset X` with `|Y|>m` can have all
+   induced degrees congruent modulo `4`.  In the exact basis model, for subpatterns
+   `P_i subset X_i` of the boundary triples, formalize the forbidden boundary-only selection as
+
+   ```text
+   q_i(v)+sum_{j != i} deg_{P_j}(v)=Q        for every selected v in P_i,
+   sum_i |P_i|>m.
+   ```
+
+   Hence terminal exact-basis boundaries cannot have large cross-isolated collections of independent
+   triples or triangle triples, since selecting those whole triples would already beat `W`.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event
@@ -1446,6 +1473,12 @@ A second equivalent attack surface is a one-large-class preselector.  For a labe
    such full partitions fail with positive limiting probability in `G(n,1/2)`.  A valid endpoint may
    instead be phrased as a partial anti-degree coloring covering at least a quarter of the vertices; the
    largest of its four classes would give the required `1/16` selector.
+
+   A bounded deterministic partition into self-regular modulo-`4` induced classes would also suffice,
+   but do not formalize it as known.  It is stronger than the one-large-class selector and contains the
+   open Caro--Krasikov--Roditty bounded-partition problem for fixed `q>2` as a special divisibility
+   case.  The Balister--Powierski--Scott--Tan results are random-graph counts, not arbitrary-graph
+   partition theorems.
 
    ```text
    every symmetric zero-diagonal integer matrix with even row sums has a principal submatrix
