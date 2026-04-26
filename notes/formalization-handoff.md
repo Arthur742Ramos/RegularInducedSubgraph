@@ -1695,6 +1695,13 @@ Recommended attack:
    homogeneous reservoir toy models; the sparse-import regime remains and must use boundary triples
    `X_i` via outside-only maximality or explicit coordinate exchange.
 
+   The sparse endpoint should be recorded as a finite-alphabet selector.  For every direction
+   `A_i=X_i union C_i`; a word is `P_i subset A_i`.  Outside-only terminality forbids word families with
+   `q_i(P_i,v)+sum_{j != i}deg_{P_j}(v)=Q` on every selected `v` and total size `>m`.  Append/import
+   terminality is the same row-sum equation together with the old-coordinate condition
+   `|P_i|=0 [MOD 4]` in every basis direction and the append residue relative to `W`.  This is the
+   formal sparse-import target after the amplified heavy-reservoir branch is removed.
+
    Compressing four-blocks gives a bounded-block version of the original row-sum selector: each block
    has a four-coordinate defect vector, and each block pair has a `4 by 4` cross-adjacency matrix.  A
    selected block family must make selected cross-matrix row sums equal the defect vectors.  Thus this
@@ -1725,6 +1732,13 @@ Recommended attack:
 
    Hence terminal exact-basis boundaries cannot have large cross-isolated collections of independent
    triples or triangle triples, since selecting those whole triples would already beat `W`.
+   Strengthen this to all triple types: a cross-isolated family of `t>2m/3` boundary triples is
+   impossible.  If `a` of them are triangles and `3a>m`, take those whole triangles for residue `2`;
+   otherwise take a nonedge pair from every non-triangle triple and one vertex from every triangle,
+   giving a residue-`0` outside-only set of size `2(t-a)+a>m`.
+   The same cap holds for cross-complete families by complementing the induced graph on the family:
+   congruent degrees in the complement translate to congruent degrees in `G` via
+   `deg_G[S](v)=|S|-1-deg_{\bar G[S]}(v)`.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

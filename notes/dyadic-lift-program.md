@@ -1191,12 +1191,28 @@ be distributed as one or a few imports in many directions, where the only old-ba
 it must use the boundary triples themselves through outside-only maximality or through explicit
 coordinate exchanges.
 
+Equivalently, the sparse endpoint is a finite-alphabet row-sum problem.  For each direction set
+`A_i=X_i union C_i` and allow a word `P_i subset A_i`.  The outside-only exit is exactly a word family
+with `q_i(P_i,v)+sum_{j != i}deg_{P_j}(v)=Q` for every selected `v in P_i` and total size `>m`; the
+append/import exit adds the old-coordinate condition `|P_i|=0 [MOD 4]` directionwise and asks for the
+append residue relative to `W`.  Thus after the heavy retained reservoirs are amplified away, the
+remaining theorem is a high-density decorated-boundary selector, not another local four-block catalogue.
+
 The boundary `X` alone carries the same constraint at the critical density: since `|X|<=3(m-1)`, a
 terminal `X` has no mod-`4` congruent induced subset of size `>m`.  In the exact basis model this forbids
 any selection of subpatterns `P_i subset X_i` from the boundary triples with
 `q_i(v)+sum_{j != i}deg_{P_j}(v)=Q` on all selected vertices and total size `>m`.  Thus large
 cross-isolated collections of independent triples or triangle triples are impossible, because the whole
 triples would already give an outside-only congruent witness.
+In fact any cross-isolated family of more than `2m/3` boundary triples is impossible.  If `a` of its
+`t` triples are triangles and `3a>m`, take all triangle triples for residue `2`; otherwise choose a
+nonedge pair from every non-triangle triple and one vertex from every triangle triple.  This gives
+residue `0` and size `2(t-a)+a >= 2t-m/3>m`.  Thus one-edge and path triples are also harmless in the
+cross-isolated toy model; they contribute nonedge pairs.
+By complementing the induced graph on such a family, the same `2m/3` cap excludes cross-complete
+families: congruent degrees in the complement translate back by
+`deg_G[S](v)=|S|-1-deg_{\bar G[S]}(v)`.  Therefore any surviving sparse boundary obstruction must have
+mixed cross-interactions on every supercritical subfamily of coordinate triples.
 
 The zero-sum-free boundary `X` has length at most the Davenport extremal value `3(m-1)` in
 `C_4^(m-1)`.  This suggests the next split:

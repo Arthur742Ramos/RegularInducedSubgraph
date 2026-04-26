@@ -7162,6 +7162,23 @@ boundary-decorated one-large-class selector: the boundary triples provide almost
 but are zero-sum-free, so they can only help through outside-only maximality or through explicit
 coordinate exchanges with the sparse retained imports.
 
+This selector can be stated exactly as a finite-alphabet problem.  For each basis direction put
+`A_i=X_i union C_i` and let a **word** be a subset `P_i subset A_i`; for `v in P_i` write
+`q_i(P_i,v)=deg_{P_i}(v)`.  A family of words `(P_i)` gives an outside-only exit precisely when
+
+```text
+q_i(P_i,v)+sum_{j != i} deg_{P_j}(v)=Q       for every v in P_i,
+sum_i |P_i|>m.
+```
+
+It gives an append/import exit when, in addition, the old coordinate count in every direction is
+`0 [MOD 4]` and the displayed common residue is the direction's append residue relative to `W` after
+the chosen old-side correction.  Thus the sparse exact-basis obstruction is now a finite-alphabet
+row-sum theorem on decorated boundary triples.  The alphabet is small in the diffuse-retained regime,
+but the required density is high: whole boundary triples have size three, so an outside-only proof must
+select more than one third of the available directions on average.  This is the precise form of the
+boundary-decorated one-large-class target left after the amplified retained reservoirs are removed.
+
 The same outside-only constraint applies already to the maximal boundary `X`.  Since
 `|X|` can be as large as `3(m-1)`, a terminal boundary is a `1/3`-critical obstruction for the
 ordinary mod-`4` congruent-degree selector: no `Y subset X` with `|Y|>m` may have all degrees in
@@ -7179,6 +7196,37 @@ This is weaker than the append atom equations but uses the full `3m` reservoir. 
 terminal exact-basis boundary cannot contain a large collection of cross-isolated independent triples
 or cross-isolated triangle triples of one type: selecting those whole triples would give an outside-only
 residue-`0` or residue-`2` witness of size greater than `m`.
+
+The cross-isolated statement is actually stronger and does not depend on the internal triple type.
+Let `I` be a set of boundary directions such that there are no edges between distinct triples
+`X_i, X_j` for `i,j in I`.  If `t=|I|` and `a` of these triples are triangles, then either
+`3a>m`, in which case the union of the triangle triples is an outside-only residue-`2` witness, or
+`a<=m/3`.  In the second case choose, from every non-triangle triple, a nonedge pair, and from every
+triangle triple, one vertex.  All chosen vertices then have internal degree `0` and no cross-degree, and
+the selected size is
+
+```text
+2(t-a)+a = 2t-a >= 2t-m/3.
+```
+
+Thus any cross-isolated family with `t>2m/3` gives an outside-only residue-`0` witness of size
+greater than `m`.  A terminal exact-basis boundary therefore has no cross-isolated subfamily of more
+than `2m/3` coordinate triples.  This is the first finite-alphabet closure beyond the homogeneous
+independent/triangle toy cases: even one-edge and path triples supply residue-`0` nonedge pairs.
+
+By complementing the boundary graph on the chosen triples, the same bound excludes cross-complete
+families.  If all edges between distinct triples in `I` are present, then in the complement those triples
+are cross-isolated.  The selector above gives a set `S` with all degrees congruent in the complemented
+induced graph.  Since
+
+```text
+deg_G[S](v)=|S|-1-deg_{\bar G[S]}(v),
+```
+
+the original degrees are congruent as well.  Hence a terminal boundary has neither a cross-empty nor a
+cross-complete subfamily of more than `2m/3` coordinate triples.  Any surviving sparse boundary
+obstruction must therefore contain a genuinely mixed cross-interaction graph on every supercritical
+subfamily of triples.
 
 The boundary side has one more structural feature: `X` is zero-sum-free in
 `C_4^(m-1)` and has length at most the exact Davenport extremal value `3(m-1)`.  Hence the terminal
