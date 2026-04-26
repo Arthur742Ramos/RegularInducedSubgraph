@@ -1267,6 +1267,8 @@ The side slacks `e_i=h-1-(t_i+k_i)` sum to `h-4`, so every `h>4` target carries 
 must be paid elsewhere or routed to the all-large strict-defect branch.
 Equivalently every partner-free large target contains a four-vertex `4,2,2,2` balanced core; the other
 `h-4` vertices are exactly the recorded slack distribution.
+Deleting a slack vertex preserves the same atom-defect circuit with `h` lowered by one, so `h>4` survivors
+need an additional protection mechanism beyond the split-cut equations.
 Partner-hit large-target petals obey the stricter side bound `t+k<=h-2`, contributing one extra slack unit
 beyond the partner-free capacity inequality.
 Consequently the all-ternary no-leftover target-code branch is exhausted after square discharge: surviving

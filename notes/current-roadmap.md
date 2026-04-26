@@ -5546,6 +5546,9 @@ capacity slack that must be paid by additional split targets, partner-hit omissi
 strict-defect branch.
 Every partner-free large target contains a canonical four-vertex core: choose `H_0` with
 `|H_0 cap C_i|=3-k_i`; the remaining `h-4` vertices are slack, with side-`i` slack count `e_{3-i}`.
+Slack deletion is hereditary in the atom-defect equations: deleting a slack vertex sends
+`h->h-1`, `t_i->t_i-1`, and reduces the opposite slack by one, preserving the same two-petal circuit until
+the four-vertex core.
 In the partner-hit large-target side, the full-pair petal satisfies the stricter inequality `t+k<=h-2`;
 for `h=4` it omits at least two vertices of the four-atom, and for `h>4` it adds another visible slack unit.
 With four atoms, the ternary-cycle profiles are only `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`; the first is

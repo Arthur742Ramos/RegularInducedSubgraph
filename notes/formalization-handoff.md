@@ -2680,6 +2680,8 @@ Recommended attack:
     large-target profile.
     Formalize four-core extraction: `t_i-(3-k_i)=e_{3-i}` permits a subset `H_0` of size four with
     `|H_0 cap C_i|=3-k_i`; vertices outside `H_0` are exactly slack.
+    Add slack-deletion heredity: deleting a slack vertex changes `h->h-1`, `t_i->t_i-1`, and reduces the
+    opposite slack by one while preserving the two-petal atom-defect equations.
     Add the partner-hit large-target side bound: a full-pair petal hitting `t` vertices of a size-`h` atom and
     carrying `k` whole opposite atoms satisfies `t+k<=h-2`.
     Record the all-ternary closure summary: after square discharge, the no-leftover all-ternary target-code

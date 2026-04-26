@@ -2181,6 +2181,8 @@ The side slacks `e_i=h-1-(t_i+k_i)` satisfy `e_1+e_2=h-4`; only `h=4` is tight, 
 elsewhere or enter the all-large strict-defect branch.
 Partner-free large targets contain a four-vertex balanced core `|H_0 cap C_i|=3-k_i`; all other vertices are
 slack, distributed by the opposite side slacks.
+At the atom-defect level, slack deletion is hereditary and lowers `h` by one while preserving the two-petal
+circuit, so `h>4` requires extra protection beyond the cut geometry.
 Partner-hit large-target petals are stricter: a full-pair petal with `t` vertices of the size-`h` atom and
 `k` whole opposite atoms must satisfy `t+k<=h-2`.
 After square discharge, the all-ternary no-leftover target-code branch is exhausted: it becomes signed-quotient
