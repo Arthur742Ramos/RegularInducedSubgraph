@@ -40129,6 +40129,310 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toProofMdF
       h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
   exact Subsingleton.elim _ _
 
+/--
+Public-release citation surface for proof-md current-frontier consumers.  This layer sits after the
+minimal final-consumer citation bundle and pins it to the public distribution bundle, final audit
+package, remaining-obligation checklist, release artifacts, endpoint residuals, and theorem rows that
+external release notes should cite.  It is only a packaging layer: the localized `R(4,5) <= 27` row
+remains the carried current-frontier assumption rather than a new unconditional endpoint theorem.
+-/
+structure RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  citationBundle : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v
+  auditPackage : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v
+  checkpointReleaseBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v
+  publicDistributionBundle :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v
+  remainingObligations : RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v
+  finalManifest : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v
+  finalLedger : RamseyTenR45CurrentFrontierProofMdFinalLedger G s v
+  publicAuditSummary : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v
+  coverageCertificate : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  remainingAssumptionRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  endpointResiduals : RamseyTenR45EndpointResiduals
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+
+/-- Final-consumer citation bundles materialize the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v := by
+  let ha := h.toProofMdFinalConsumerAuditPackage
+  exact
+    { citationBundle := h
+      auditPackage := ha
+      checkpointReleaseBundle := h.checkpointReleaseBundle
+      publicDistributionBundle := h.publicDistributionBundle
+      remainingObligations := h.remainingObligations
+      finalManifest := ha.finalManifest
+      finalLedger := ha.finalLedger
+      publicAuditSummary := ha.publicAuditSummary
+      coverageCertificate := ha.coverageCertificate
+      proofMdImport := ha.proofMdImport
+      proofMdNormalizationChecklist := ha.proofMdNormalizationChecklist
+      targetRows := ha.targetRows
+      remainingAssumptionRows := h.remainingObligations.toRemainingAssumptionRows
+      numericalConsequences := ha.numericalConsequences
+      endpointResiduals := h.endpointResiduals
+      exact42Row := h.exact42Row
+      localizedR45Row := h.localizedR45Row
+      propagatedR1010Row := h.propagatedR1010Row
+      admissibleTenAt40960Row := h.admissibleTenAt40960Row
+      extremalF40960Row := h.extremalF40960Row
+      regularTenAt40960Row := h.regularTenAt40960Row }
+
+/-- Final consumer audit packages materialize the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.toProofMdFinalConsumerCitationBundle.toProofMdPublicReleaseCitation
+
+/-- Checkpoint/release bundles materialize the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle.toProofMdPublicReleaseCitation
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.toProofMdFinalConsumerCitationBundle.toProofMdPublicReleaseCitation
+
+/-- Select the minimal final-consumer citation bundle from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalConsumerCitationBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v :=
+  h.citationBundle
+
+/-- Select the final consumer audit package from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalConsumerAuditPackage
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v :=
+  h.auditPackage
+
+/-- Select the checkpoint/release bundle from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalCheckpointReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalCheckpointReleaseBundle G s v :=
+  h.checkpointReleaseBundle
+
+/-- Select the final public distribution bundle from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalPublicDistributionBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicDistributionBundle G s v :=
+  h.publicDistributionBundle
+
+/-- Select the remaining-obligation checklist from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdR45RemainingObligationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdR45RemainingObligationChecklist G s v :=
+  h.remainingObligations
+
+/-- Select the final manifest from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.finalManifest
+
+/-- Select the final ledger from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdFinalLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalLedger G s v :=
+  h.finalLedger
+
+/-- Select the public audit summary from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdPublicAuditSummary
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v :=
+  h.publicAuditSummary
+
+/-- Select the coverage certificate from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v :=
+  h.coverageCertificate
+
+/-- Select the proof-md import route from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.proofMdImport
+
+/-- Select the proof-md normalization checklist from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.proofMdNormalizationChecklist
+
+/-- Select the current-frontier target rows from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select the carried remaining-assumption rows from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toRemainingAssumptionRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.remainingAssumptionRows
+
+/-- Select the final numerical consequences from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select endpoint residuals from the public-release citation surface. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toEndpointResiduals
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpointResiduals
+
+/-- Public-release citation route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Public-release citation route to the localized current-frontier `R(4,5) <= 27` carried row. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Public-release citation route to the propagated `R(10,10) <= 39246` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Public-release citation route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Public-release citation route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Public-release citation route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Flat constructor exposing public-release citations from final-consumer citation bundles. -/
+theorem ramseyTenR45CurrentFrontierProofMdPublicReleaseCitation_of_finalConsumerCitationBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.toProofMdPublicReleaseCitation
+
+/-- Flat constructor exposing public-release citations from final consumer audit packages. -/
+theorem ramseyTenR45CurrentFrontierProofMdPublicReleaseCitation_of_finalConsumerAuditPackage
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v :=
+  h.toProofMdPublicReleaseCitation
+
+/-- Final-consumer citation bundles round-trip through public-release citations. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle.toProofMdPublicReleaseCitation_toProofMdFinalConsumerCitationBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerCitationBundle G s v) :
+    h.toProofMdPublicReleaseCitation.toProofMdFinalConsumerCitationBundle = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final consumer audit packages round-trip through public-release citations. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage.toProofMdPublicReleaseCitation_toProofMdFinalConsumerAuditPackage_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerAuditPackage G s v) :
+    h.toProofMdPublicReleaseCitation.toProofMdFinalConsumerAuditPackage = h := by
+  exact Subsingleton.elim _ _
+
+/-- Public-release citations normalize their target rows with remaining carried assumptions. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toCurrentFrontierTargetRows_toRemainingAssumptionRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    h.toCurrentFrontierTargetRows = h.toRemainingAssumptionRows := by
+  exact Subsingleton.elim _ _
+
+/-- Public-release citations normalize their localized R45 row with the remaining-obligation checklist. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation.toProofMdR45RemainingObligationChecklist_toHasCliqueOrIndepSetBound_four_five_twenty_seven_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdPublicReleaseCitation G s v) :
+    h.toProofMdR45RemainingObligationChecklist.toHasCliqueOrIndepSetBound_four_five_twenty_seven =
+      h.toHasCliqueOrIndepSetBound_four_five_twenty_seven := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
