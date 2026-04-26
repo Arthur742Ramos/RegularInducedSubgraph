@@ -5112,6 +5112,8 @@ They are dangerous only when the matching residue `r=a+p-t` also satisfies the h
 Adding packet size as a `Z/4` coordinate gives a cleaner Davenport endpoint: every `3m+1` vertices in a
 degree chamber contain a constant-trace packet with `|X|==0 mod 4`; then handshaking is automatic and the
 cross-count reduces to `mp==0 mod 4`.
+So the packet endpoint splits by `m mod 4`: odd `m` forces `p=0`, `m==2 mod 4` allows only `p=0,2`, and
+`m==0 mod 4` allows all traces.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

@@ -2214,6 +2214,8 @@ Recommended attack:
     Add the size-refined Davenport endpoint: in
     `((Z/4)^S/<1>) x Z/4 ~= (Z/4)^m`, every `3m+1` vertices yield a nonempty constant-trace packet with
     `|X|==0 mod 4`.  For these packets handshaking is automatic and cross-count reduces to `mp==0 mod 4`.
+    Add the case split for `mp==0 mod 4`: odd `m` forces `p=0`, `m==2 mod 4` forces `p in {0,2}`, and
+    `m==0 mod 4` imposes no condition on `p`.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

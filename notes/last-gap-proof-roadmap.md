@@ -1826,7 +1826,8 @@ What remains justified after audit is:
       threshold `3m-2`, exactly matching the merge equation, and packet parameters satisfy
       `|X|t==mp mod 4` plus the handshaking danger filter `|X|(a+p-t)==0 mod 2`;
       adding packet size as a `Z/4` coordinate gives size-`0 mod 4` constant-trace packets at threshold
-      `3m+1`, for which handshaking is automatic and the cross-count is `mp==0 mod 4`;
+      `3m+1`, for which handshaking is automatic and the cross-count is `mp==0 mod 4`, splitting into
+      odd/even/zero `m mod 4` trace branches;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

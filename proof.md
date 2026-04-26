@@ -9972,6 +9972,18 @@ nonempty union of a disjoint family of them has the same automatic handshaking p
 cleanest packet endpoint: the only remaining obstruction is internal residue synchronization inside
 arithmetically admissible constant-trace packets.
 
+The cross-count `mp==0 [MOD 4]` splits the endpoint into three arithmetic branches:
+
+```text
+m odd:        p==0,
+m==2 mod 4:  p in {0,2},
+m==0 mod 4:  p arbitrary.
+```
+
+Thus in the odd critical case every size-`0 mod 4` packet is actually zero-trace to the maximum core,
+while in the `2 mod 4` case only the parity of the constant trace can vary.  The `m==0 mod 4` branch is
+the only one in which all four constant traces survive.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over

@@ -1817,6 +1817,8 @@ Each such packet satisfies `|X|t==mp mod 4`.
 Only packets passing `|X|(a+p-t)==0 mod 2` can be dangerous by handshaking.
 Using size mod `4` as an extra Davenport coordinate yields constant-trace packets with `|X|==0 mod 4`;
 for these the handshaking filter is automatic and `mp==0 mod 4`.
+Hence odd `m` forces zero trace, `m==2 mod 4` forces even trace, and `m==0 mod 4` is the only unrestricted
+trace branch.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

@@ -880,6 +880,8 @@ the parity of `e(X)` then fixed.
 Refining the Davenport group by a size mod-`4` coordinate gives constant-trace packets with
 `|X|==0 mod 4` from any `3m+1` vertices in one outside degree chamber; these automatically pass
 handshaking, and their cross-count condition is just `mp==0 mod 4`.
+Consequently the trace branch is controlled by `m mod 4`: `p=0` for odd `m`, `p` even for
+`m==2 mod 4`, and no trace restriction for `m==0 mod 4`.
 Large row-twin classes, complement-row classes, and modules close immediately: false twins give
 independent selectors, true twins give clique selectors, and modules have constant outside contribution.
 Thus a terminal principal bucket is selector-prime and high-rank over `F_2` in both graph and complement.
