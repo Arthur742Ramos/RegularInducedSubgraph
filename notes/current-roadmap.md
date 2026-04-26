@@ -5544,6 +5544,11 @@ three-atoms; in `3,3,3,2`, deleting a three-atom splits both other three-atoms o
 For a size-three source atom, any collision avoiding the shortened pair is a complementary bipartition of
 the other three atoms; the three vertex deletions must have distinct labels, or two supports plus the third
 source vertex as singleton close.
+The three labels also have no rainbow partition: choosing one side from each label cannot disjointly cover
+the opposite atoms, or the three lifted supports partition all of `A`.
+If a forced petal hits the shortened pair and lifts with `q=2` or `3` source vertices while hitting `r` other
+atoms, strict cross-defect gives `delta_other>=r` for `q=2` and `delta_other>=r+1` for `q=3`; the remaining
+petals must compensate those omissions.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

@@ -2077,6 +2077,9 @@ What remains justified after audit is:
       rebate makes these high-outdegree systems: all-ternary deletions split at least two other three-atoms;
       shortened-pair-free deletions from a size-three source give complementary bipartition labels, distinct
       for the three source vertices;
+      the three source labels have no rainbow partition of the opposite atoms;
+      shortened-pair-hit petals satisfy strict cross-defect `delta_other>=r` or `r+1` according as they use
+      two or three source vertices;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

@@ -2596,6 +2596,10 @@ Recommended attack:
     `3,3,3,2` deletions split both other three-atoms or one three-atom plus the pair.
     Add source-side separation: a shortened-pair-free deletion from a size-three atom gives a complementary
     bipartition of the other three atoms, and the three source vertices must have distinct labels.
+    Add the no-rainbow source constraint: one side from each of the three source labels cannot disjointly
+    partition the opposite atoms, or the three lifted supports close.
+    Add shortened-pair-hit strict defect: a forced petal using `q=2,3` source vertices and hitting `r` other
+    atoms has `delta_other>=r` or `r+1`, respectively; remaining petals compensate those omissions.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

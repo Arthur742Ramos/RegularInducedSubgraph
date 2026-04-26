@@ -1190,6 +1190,10 @@ Rebate forces high outdegree: `3,3,3,3` deletions split at least two other three
 deletions split both other three-atoms or one three-atom plus the pair.
 Shortened-pair-free deletions from a size-three source give complementary bipartition labels on the other
 three atoms, and the three source vertices must use distinct labels.
+No source atom admits a rainbow partition by these three labels: one side from each label cannot disjointly
+cover the opposite atoms.
+Shortened-pair-hit petals obey strict cross-defect: if the lift uses `q=2,3` source vertices and hits `r`
+other atoms, then `delta_other>=r` or `r+1`, respectively.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

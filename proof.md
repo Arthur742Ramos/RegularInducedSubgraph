@@ -12654,6 +12654,18 @@ shortened-pair-free labels, each satisfying the split-rebate threshold above.  I
 splits at least two of the other three-atoms; in `3,3,3,2` it splits both other three-atoms or one
 three-atom together with the pair.
 
+The three labels at one source atom also have a joint blocker condition.  Let the labels for deletions of
+`a,b,c in G` be `C_a|C_a^c`, `C_b|C_b^c`, and `C_c|C_c^c` on `M=A\G`.  There is no choice of one side from
+each label that gives a disjoint partition of `M`: if
+
+```text
+E_a disjoint_union E_b disjoint_union E_c = M,        E_x in {C_x,C_x^c},
+```
+
+then the three supports `{a} union E_a`, `{b} union E_b`, `{c} union E_c` are disjoint and partition all of
+`A`, closing the target.  Thus a ternary-cycle source atom carries three distinct high-rebate bipartitions
+with no rainbow partition of the opposite atoms.
+
 If the projected collision does hit the shortened pair, the individual forced petals satisfy a strict
 cross-defect rule in the original packing.  Let a forced petal lift to a support using `q` vertices of the
 source atom `G` (`q=2` or `3`) and hitting `r` other packed atoms.  Since this full lift crosses atoms,
