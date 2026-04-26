@@ -8276,6 +8276,38 @@ parity-closed subquotient `H`; if `H=U`, then the whole class is parity-matched 
 global Arf bit remains.  This is the odd-word analogue of the retained trace-hole reduction: terminal
 failure is forced onto a proper closed support or a one-bit whole-class obstruction.
 
+The whole-class case has a small-kernel normal form.  Choose an affine-inconsistent
+class `U` minimal under passing to a bad closed support.  Then every bad even
+kernel vector is `1_U` itself.  Indeed, if `K in ker M_U` is even and
+`sum_{i in K} r_i=0`, then `U Delta K` is a proper bad even kernel vector unless
+`K` is empty; while if `sum_{i in K} r_i=1`, then `K` is already a proper bad
+support unless `K=U`.  Hence the even part of the kernel is exactly
+
+```text
+ker(M_U) cap {even vectors} = {0,1_U}.
+```
+
+Consequently a minimal Arf obstruction has `|U|` even, `1_U in ker M_U`,
+`sum_U r_i=1`, and `dim ker M_U<=2`: if two distinct odd kernel vectors exist,
+their sum is a nonzero even kernel vector and therefore equals `1_U`.  Unpacking
+`1_U in ker M_U`, every vertex of `U` has
+
+```text
+deg_U(i)=tau_i        [MOD 2],
+```
+
+and the bad Arf bit is equivalently
+
+```text
+e(Q[U]) - (1/2)|{i in U: tau_i=1}| = 1        [MOD 2].
+```
+
+Thus the insoluble odd-word branch is no longer an arbitrary quotient-matrix
+failure: after localization it has rank at most two, whole-class parity matching,
+and a single quadratic half-edge bit.  Any terminal quotient with a larger kernel,
+or with an even kernel vector different from `0,1_U`, descends to a proper closed
+support and is not irreducible.
+
 One important special case is already explicit.  Suppose `tau` is constant on `U` and
 `deg_{Q[U]}(i)=tau [MOD 2]` for every `i in U`.  Then `1_U in ker M_U`.  If `|U|>m/2` and the carry
 equation is soluble for some `c`, the two complementary solutions `T` and `U\T` have weights summing
