@@ -32559,6 +32559,605 @@ theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle.toProofMdFinalPubli
     h.toProofMdFinalPublicArchive.toTopRowFinalImport = h.toTopRowFinalImport := by
   exact Subsingleton.elim _ _
 
+/--
+Terminal archive for the proof-md final-release current-frontier surface.  This layer keeps the
+assumption-backed `R(4,5)` row explicit while giving consumers a single archive object whose
+projections cover the final release bundle, public archive/export stack, manifests, ledgers, audit
+and coverage certificates, import routes, normalization and theorem checklists, public facade,
+downstream consumer imports, numerical consequences, and target rows.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  releaseBundle : RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v
+  publicArchive : RamseyTenR45CurrentFrontierProofMdFinalPublicArchive G s v
+  publicExport : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v
+  dashboard : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v
+  handoffManifest : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v
+  finalConsumerHandoff : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v
+  finalManifest : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v
+  finalLedger : RamseyTenR45CurrentFrontierProofMdFinalLedger G s v
+  publicAuditSummary : RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v
+  coverageCertificate : RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v
+  auditChecklist : RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v
+  consumerExport : RamseyTenR45CurrentFrontierProofMdConsumerExport G s v
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  normalizationRoute : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  publicFacade : RamseyTenR45CurrentFrontierPublicFacade G s v
+  consumerSurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  unifiedFinalConsumerImport : RamseyTenR45UnifiedFinalConsumerImport G s v
+  finalDownstreamImport : RamseyTenR45Exact42TopRowFinalDownstreamImport G s v
+  consumerNormalization : RamseyTenR45Exact42ConsumerNormalization G s v
+  topRowFinalImport : RamseyThreeTenExact42TopRowFinalImport G s v
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+  exact42Row : HasCliqueOrIndepSetBound 3 10 42
+  localizedR45Row : HasCliqueOrIndepSetBound 4 5 27
+  propagatedR1010Row : HasCliqueOrIndepSetBound 10 10 39246
+  regularTenAt40960Row : ∀ {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V),
+      40960 ≤ Fintype.card V → HasRegularInducedSubgraphOfCard H 10
+  admissibleTenAt40960Row : 10 ∈ admissibleBounds 40960
+  extremalF40960Row : 10 ≤ F 40960
+
+/-- Final release bundles materialize the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle.toProofMdFinalReleaseArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v where
+  releaseBundle := h
+  publicArchive := h.toProofMdFinalPublicArchive
+  publicExport := h.toProofMdFinalPublicExport
+  dashboard := h.toProofMdFinalDashboard
+  handoffManifest := h.toProofMdHandoffManifest
+  finalConsumerHandoff := h.toProofMdFinalConsumerHandoff
+  finalManifest := h.toProofMdFinalManifest
+  finalLedger := h.toProofMdFinalLedger
+  publicAuditSummary := h.toProofMdPublicAuditSummary
+  coverageCertificate := h.toProofMdCoverageCertificate
+  auditChecklist := h.toProofMdAuditChecklist
+  consumerExport := h.toProofMdConsumerExport
+  proofMdImport := h.toProofMdImport
+  proofMdNormalizationChecklist := h.toProofMdNormalizationChecklist
+  normalizationRoute := h.toCurrentFrontierNormalizationRoute
+  theoremChecklist := h.toCurrentFrontierTheoremChecklist
+  publicFacade := h.toCurrentFrontierPublicFacade
+  consumerSurface := h.toUnifiedFinalConsumerImport.toCurrentFrontierConsumerSurface
+  unifiedFinalConsumerImport := h.toUnifiedFinalConsumerImport
+  finalDownstreamImport := h.toFinalDownstreamImport
+  consumerNormalization := h.toConsumerNormalization
+  topRowFinalImport := h.toTopRowFinalImport
+  targetRows := h.toCurrentFrontierTargetRows
+  numericalConsequences := h.toFinalNumericalConsequences
+  exact42Row := h.toThreeTenFortyTwo
+  localizedR45Row := h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+  propagatedR1010Row := h.toHasCliqueOrIndepSetBound_10_10_39246
+  regularTenAt40960Row := fun H hcard =>
+    h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+  admissibleTenAt40960Row := h.toTenMemAdmissibleBounds_40960
+  extremalF40960Row := h.toTenLeF_40960
+
+/-- Final public archives materialize the terminal release archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicArchive.toProofMdFinalReleaseArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseBundle.toProofMdFinalReleaseArchive
+
+/-- Final public exports materialize the terminal release archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalReleaseArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseBundle.toProofMdFinalReleaseArchive
+
+/-- Final dashboards materialize the terminal release archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdFinalReleaseArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseBundle.toProofMdFinalReleaseArchive
+
+/-- Handoff manifests materialize the terminal release archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalReleaseArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseBundle.toProofMdFinalReleaseArchive
+
+/-- Final consumer handoffs materialize the terminal release archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalReleaseArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseBundle.toProofMdFinalReleaseArchive
+
+/-- Select the final release bundle from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v :=
+  h.releaseBundle
+
+/-- Select the final public archive from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalPublicArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicArchive G s v :=
+  h.publicArchive
+
+/-- Select the final public export from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalPublicExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v :=
+  h.publicExport
+
+/-- Select the final dashboard from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v :=
+  h.dashboard
+
+/-- Select the handoff manifest from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v :=
+  h.handoffManifest
+
+/-- Select the final consumer handoff from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalConsumerHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v :=
+  h.finalConsumerHandoff
+
+/-- Select the final manifest from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.finalManifest
+
+/-- Select the final ledger from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalLedger G s v :=
+  h.finalLedger
+
+/-- Select the public audit summary from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdPublicAuditSummary
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdPublicAuditSummary G s v :=
+  h.publicAuditSummary
+
+/-- Select the coverage certificate from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdCoverageCertificate G s v :=
+  h.coverageCertificate
+
+/-- Select the audit checklist from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdAuditChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdAuditChecklist G s v :=
+  h.auditChecklist
+
+/-- Select the consumer export from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdConsumerExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdConsumerExport G s v :=
+  h.consumerExport
+
+/-- Select the proof-md import route from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.proofMdImport
+
+/-- Select the proof-md normalization checklist from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.proofMdNormalizationChecklist
+
+/-- Select the current-frontier normalization route from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.normalizationRoute
+
+/-- Select the theorem checklist from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.theoremChecklist
+
+/-- Select the public facade from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toCurrentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierPublicFacade G s v :=
+  h.publicFacade
+
+/-- Select the consumer surface from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.consumerSurface
+
+/-- Select the unified final-consumer import from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toUnifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.unifiedFinalConsumerImport
+
+/-- Select the final downstream import from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.finalDownstreamImport
+
+/-- Select the consumer-normalization import from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.consumerNormalization
+
+/-- Select the exact-`42` top-row final import from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.topRowFinalImport
+
+/-- Select the current-frontier target rows from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select the numerical consequences from the terminal archive. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Terminal archive route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.exact42Row
+
+/-- Terminal archive route to the localized current-frontier `R(4,5) <= 27` row. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.localizedR45Row
+
+/-- Terminal archive route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.propagatedR1010Row
+
+/-- Terminal archive route to the regular induced `10`-subgraph theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.regularTenAt40960Row H hcard
+
+/-- Terminal archive route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.admissibleTenAt40960Row
+
+/-- Terminal archive route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    10 ≤ F 40960 :=
+  h.extremalF40960Row
+
+/-- Flat constructor exposing terminal archives from final release bundles. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalReleaseArchive_of_proofMdFinalReleaseBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseArchive
+
+/-- Flat constructor exposing terminal archives from final public archives. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalReleaseArchive_of_proofMdFinalPublicArchive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicArchive G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseArchive
+
+/-- Flat constructor exposing terminal archives from final public exports. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalReleaseArchive_of_proofMdFinalPublicExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseArchive
+
+/-- Flat constructor exposing terminal archives from final dashboards. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalReleaseArchive_of_proofMdFinalDashboard
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseArchive
+
+/-- Flat constructor exposing terminal archives from handoff manifests. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalReleaseArchive_of_proofMdHandoffManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseArchive
+
+/-- Flat constructor exposing terminal archives from final consumer handoffs. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalReleaseArchive_of_proofMdFinalConsumerHandoff
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v :=
+  h.toProofMdFinalReleaseArchive
+
+/-- Final release bundles round-trip through the terminal archive. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle.toProofMdFinalReleaseArchive_toProofMdFinalReleaseBundle_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseBundle G s v) :
+    h.toProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final public archives round-trip through the terminal archive. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicArchive.toProofMdFinalReleaseArchive_toProofMdFinalPublicArchive_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicArchive G s v) :
+    h.toProofMdFinalReleaseArchive.toProofMdFinalPublicArchive = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final public exports round-trip through the terminal archive. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalPublicExport.toProofMdFinalReleaseArchive_toProofMdFinalPublicExport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalPublicExport G s v) :
+    h.toProofMdFinalReleaseArchive.toProofMdFinalPublicExport = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final dashboards round-trip through the terminal archive. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalDashboard.toProofMdFinalReleaseArchive_toProofMdFinalDashboard_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalDashboard G s v) :
+    h.toProofMdFinalReleaseArchive.toProofMdFinalDashboard = h := by
+  exact Subsingleton.elim _ _
+
+/-- Handoff manifests round-trip through the terminal archive. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdHandoffManifest.toProofMdFinalReleaseArchive_toProofMdHandoffManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdHandoffManifest G s v) :
+    h.toProofMdFinalReleaseArchive.toProofMdHandoffManifest = h := by
+  exact Subsingleton.elim _ _
+
+/-- Final consumer handoffs round-trip through the terminal archive. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff.toProofMdFinalReleaseArchive_toProofMdFinalConsumerHandoff_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalConsumerHandoff G s v) :
+    h.toProofMdFinalReleaseArchive.toProofMdFinalConsumerHandoff = h := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on final public archives. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toProofMdFinalPublicArchive_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toProofMdFinalPublicArchive =
+      h.toProofMdFinalPublicArchive := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on final manifests. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toProofMdFinalManifest_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toProofMdFinalManifest = h.toProofMdFinalManifest := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on final ledgers. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toProofMdFinalLedger_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toProofMdFinalLedger = h.toProofMdFinalLedger := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on public audit summaries. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toProofMdPublicAuditSummary_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toProofMdPublicAuditSummary =
+      h.toProofMdPublicAuditSummary := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on coverage certificates. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toProofMdCoverageCertificate_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toProofMdCoverageCertificate =
+      h.toProofMdCoverageCertificate := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on proof-md imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toProofMdImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toProofMdImport = h.toProofMdImport := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on proof-md normalization checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toProofMdNormalizationChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toProofMdNormalizationChecklist =
+      h.toProofMdNormalizationChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on theorem checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toCurrentFrontierTheoremChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toCurrentFrontierTheoremChecklist =
+      h.toCurrentFrontierTheoremChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on public facades. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toCurrentFrontierPublicFacade_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toCurrentFrontierPublicFacade =
+      h.toCurrentFrontierPublicFacade := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on unified consumer imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toUnifiedFinalConsumerImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toUnifiedFinalConsumerImport =
+      h.toUnifiedFinalConsumerImport := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on final downstream imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toFinalDownstreamImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toFinalDownstreamImport = h.toFinalDownstreamImport := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on consumer-normalization imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toConsumerNormalization_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toConsumerNormalization = h.toConsumerNormalization := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Terminal archives normalize through final release bundles on numerical consequences. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive.toProofMdFinalReleaseBundle_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalReleaseArchive G s v) :
+    h.toProofMdFinalReleaseBundle.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
