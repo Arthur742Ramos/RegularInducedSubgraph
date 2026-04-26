@@ -1327,6 +1327,27 @@ Recommended attack:
    `W`.  Constant-defect repair is therefore a splice of the outside regular block onto such an `E`,
    with `|S|>|W\E|` and the scalar direction-intersection condition.
 
+   The repair spectrum can be stated by a single formula.  If `d=r-omega(g)` and `deg_D(w)=c` on
+   `E=W\D`, then a regular same-direction block of residue
+
+   ```text
+   d' = d + deg_D(b_g)-c
+   ```
+
+   is repaired, where `b_g` is any vertex with direction type `g`.  For `|D|<4`, formalize the usable
+   deletions as singleton/pair/triple subsets whose degree into every kept old vertex is constant; the
+   shift is `|N_W(b_g) cap D|-c [MOD 4]`.
+
+   Define `Delta_<(4)(g)` to be the set of these shifts.  A Ramsey-large terminal direction fiber must
+   satisfy `(d+Delta_<(4)(g)) cap {0,3}=empty`; otherwise an independent four-set or clique four-set in
+   the fiber is repaired.  Since `0 in Delta_<(4)(g)` via `D=empty`, any Ramsey-large terminal active
+   direction has required residue `1` or `2`.
+
+   In that middle-residue branch, formalize the first hereditary obstruction as follows: if `d=1`, the
+   direction fiber has no induced `2K_2`; if `d=2`, it has no induced `C_4`, unless an old-deletion shift
+   has already moved residue `0` or `3` into `Rep(g)`.  Larger same-direction regular blocks provide
+   additional exclusions but are not yet a closure.
+
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is
    regular of degree `r-omega(g_i)`.  The allowed adjacency pattern from `b` to the fixed triple is
@@ -1361,6 +1382,19 @@ Recommended attack:
    selected block family must make selected cross-matrix row sums equal the defect vectors.  Thus this
    reduction is useful only together with boundary-triple provenance or maximum-witness constraints; as
    an abstract formal target it is circular.
+
+   Add the outside-only maximum constraint as a separate formal obstruction.  Since `W` is
+   cardinal-maximum, no subset of `C` alone can induce congruent degrees modulo `4` on more than `m`
+   vertices.  For regular direction blocks `P_i` with internal residues `q_i`, this forbids any selected
+   block family of total size `>m` satisfying
+
+   ```text
+   q_i + sum_{j != i} deg_{P_j}(v)=Q        for every v in P_i.
+   ```
+
+   This rules out local no-cross clique countermodels with many directions, because four vertices from
+   each of more than `m/4` clique directions already form an outside-only residue-`3` witness.  Formal
+   closure may use this outside-only constraint in addition to appendable old-balanced atoms.
 
 A second equivalent attack surface is a one-large-class preselector.  For a labelled graph
 `(H,alpha)` and a random `Z/4Z` coloring `gamma`, the event

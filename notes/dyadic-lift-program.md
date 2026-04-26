@@ -802,6 +802,28 @@ itself a congruent induced witness inside the old maximum witness `W`.  Constant
 therefore splices a same-direction regular block onto a smaller old witness, subject to the scalar
 intersection condition with that direction and the surplus inequality `|S|>|D|`.
 
+In this language the repair spectrum is explicit: if `d=r-omega(g)` is the append-only required residue
+and `deg_D(w)=c` on `E=W\D`, then a regular block of residue
+
+```text
+d' = d + deg_D(b_g)-c
+```
+
+is repaired, where `b_g` is any vertex of the direction type.  For `|D|<4`, this is just the catalogue
+of singleton, pair, or triple deletions whose external degree into the kept old witness is constant;
+the residue shift is `|N_W(b_g) cap D|-c`.
+
+Thus, with `Delta_<(4)(g)` the set of these small shifts, a Ramsey-large terminal direction fiber must
+satisfy `(d+Delta_<(4)(g)) cap {0,3}=empty`; otherwise an independent four-set or clique four-set in
+the fiber is repaired.  Since `0` is always a shift from `D=empty`, every Ramsey-large active terminal
+direction has required residue in `{1,2}` and has no small old deletion shifting it to an extremal
+residue.
+
+The middle residues have concrete first obstructions: required residue `1` means the direction fiber is
+induced-`2K_2`-free, while required residue `2` means it is induced-`C_4`-free, unless a small old
+deletion shifts an independent set or clique into the repair spectrum.  Larger same-direction regular
+blocks give stronger exclusions, but these two hereditary classes are the visible terminal branch.
+
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has
 old-vector `g_i`, then `X_i union {b}` is old-balanced.  It closes if it induces the required regular
@@ -839,6 +861,14 @@ a four-coordinate defect vector, and each pair of blocks contributes a `4 by 4` 
 Selecting blocks asks for selected cross-matrix row sums to equal the defect vectors.  So the exact
 basis reduction only helps if the boundary-triple origin or the maximum-witness hypothesis is used; as
 an abstract bounded-block problem it merely repackages the self-layer obstruction.
+
+Use also the outside-only maximum constraint: because `W` is cardinal-maximum, no subset of `C` alone
+can have congruent induced degrees modulo `4` on more than `m` vertices.  For regular direction blocks
+`P_i` with internal residues `q_i`, this forbids any block family of total size `>m` satisfying
+`q_i+sum_{j != i}deg_{P_j}(v)=Q` on every selected block.  This rules out local atom-only models such as
+many no-cross clique directions: four vertices from each of more than `m/4` clique directions would
+already form an outside-only residue-`3` witness.  Terminal exact-basis configurations must block both
+appendable repairs and outside-only block selections.
 
 The zero-sum-free boundary `X` has length at most the Davenport extremal value `3(m-1)` in
 `C_4^(m-1)`.  This suggests the next split:

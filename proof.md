@@ -6014,6 +6014,57 @@ exactly by splicing it onto a smaller old witness `E`, with the additional scala
 `|S|>|W\E|`.  This reformulation may be stronger than viewing `D` as an arbitrary co-regular set,
 because it ties every signed repair to the internal witness structure of the maximal set `W`.
 
+In this kept-old notation the repair spectrum has the simple formula
+
+```text
+d' is repaired by D  <=>  d' = d + deg_D(b_g) - c,
+```
+
+where `d=r-omega(g)`, `b_g` is any vertex of the direction type, and
+`deg_D(w)=c` for all `w in E=W\D`.  Thus the spectrum is determined by all proper old subwitnesses
+`E` of `W` through the shift
+
+```text
+shift_D(g)=deg_D(b_g)-deg_D(E)        [MOD 4],
+```
+
+where `deg_D(E)` denotes the common value of `deg_D` on `E`.  For `|D|<4` this is a finite catalogue:
+a singleton deletion is usable only when the deleted vertex is isolated from, or complete to, the kept
+old set; a pair deletion is usable only when every kept old vertex sees `0`, `1`, or `2` of the pair;
+and a triple deletion is usable only when every kept old vertex sees a fixed number of the triple.  In
+each case the direction residue shifts by `|N_W(b_g) cap D|-c`.  Therefore a terminal exact-basis
+direction is one whose old-neighbourhood type avoids all extremal shifts supplied by these small
+internal subwitnesses of `W`.
+
+Consequently, for a direction type `g` define
+
+```text
+Delta_<(4)(g)={deg_D(b_g)-c :
+               |D|<4 and deg_D(w)=c for every w in W\D}.
+```
+
+Then the four-block repair spectrum is `d+Delta_<(4)(g)`.  If the direction fiber has at least
+`R(4,4)` vertices, terminality forces
+
+```text
+(d+Delta_<(4)(g)) cap {0,3}=empty.
+```
+
+Indeed a Ramsey-large fiber contains either an independent four-set or a clique four-set, and these are
+regular residues `0` and `3`.  Thus the exact-basis obstruction has a strict dichotomy: either every
+active direction fiber is Ramsey-small, or every Ramsey-large active direction has a middle-only repair
+spectrum.  Since `0 in Delta_<(4)(g)` from `D=empty`, a Ramsey-large active direction in a terminal
+configuration must in particular have required residue `d in {1,2}`.
+
+In the remaining middle-only case the forbidden four-block has a standard graph name.  If `d=1`, a
+closing four-block is an induced matching `2K_2`; hence a terminal direction with no repairable
+extremal shift must be `2K_2`-free.  If `d=2`, a closing four-block is an induced `C_4`; hence the
+terminal direction is induced-`C_4`-free.  Larger constant-defect repairs say more: in the `d=1` case
+there is no induced `1 mod 4` regular block of size `0 mod 4` whose residue lies in the shifted spectrum,
+and similarly for `d=2` with `2 mod 4` regular blocks.  But the first visible hereditary obstruction is
+precisely `2K_2`-free or induced-`C_4`-free, plus the absence of small old-deletion shifts to residues
+`0` and `3`.
+
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
 `deg_D(b)` constant on the four vertices.  The signed condition
@@ -6108,6 +6159,24 @@ for every chosen block.  This is again a fixed-modulus induced row-sum selector,
 vector labels rather than scalar vertex labels.  Thus the exact-basis reduction is useful only if one
 also uses the special origin of the matrices from boundary triples or the maximum-witness constraint;
 as an abstract block problem it simply repackages the original self-layer obstruction.
+
+There is, however, a second maximum-witness constraint that is independent of old-balance.  Since `W`
+was chosen with maximum cardinality, no subset of the outside class `C` itself may induce congruent
+degrees modulo `4` on more than `m` vertices.  In exact-basis language, if one chooses regular
+same-direction blocks `P_i subset C_i` with internal residue `q_i`, then an outside-only contradiction
+is obtained whenever a family of such blocks satisfies
+
+```text
+q_i + sum_{j != i} deg_{P_j}(v) = Q        for every v in P_i
+```
+
+for one common residue `Q`, and has total size greater than `m`.  This is weaker than appendability
+because it ignores old coordinates entirely, but it is a genuine extra obstruction.  For example, the
+local no-cross model with many clique direction blocks cannot be terminal: four vertices from each of
+more than `m/4` clique directions already give an outside-only congruent witness of residue `3`.  Thus
+any exact-basis counterexample must simultaneously block appendable defect repair and all large
+outside-only block selections.  The latter is the missing global information in atom-only local
+countermodels.
 
 The boundary side has one more structural feature: `X` is zero-sum-free in
 `C_4^(m-1)` and has length at most the exact Davenport extremal value `3(m-1)`.  Hence the terminal
