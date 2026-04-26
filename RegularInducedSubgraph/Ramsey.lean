@@ -483,6 +483,112 @@ theorem HasCliqueOrIndepSetBound.step_of_extremal_regular_mono
   HasCliqueOrIndepSetBound.mono
     (HasCliqueOrIndepSetBound.step_of_extremal_regular hN₁ hN₂ hleft hright hregular) hN
 
+/--
+Degree-window refinement of the one-step Ramsey recurrence.  The predecessor bounds force every
+vertex in an exact `N`-vertex counterexample to have degree in the interval
+`[N - N₂, N₁)`.  It therefore suffices to rule out that residual window on exact `N`-sets.
+-/
+theorem HasCliqueOrIndepSetBound.step_of_degree_window
+    {a b N N₁ N₂ : ℕ} (hN₂ : 0 < N₂)
+    (hleft : HasCliqueOrIndepSetBound a (b + 1) N₁)
+    (hright : HasCliqueOrIndepSetBound (a + 1) b N₂)
+    (hwindow :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = N →
+        (∀ v : ↑(s : Set α),
+          N - N₂ ≤ (G.induce (s : Set α)).degree v ∧
+            (G.induce (s : Set α)).degree v < N₁) →
+        (∃ t ⊆ s, G.IsNClique (a + 1) t) ∨
+          ∃ t ⊆ s, G.IsNIndepSet (b + 1) t) :
+    HasCliqueOrIndepSetBound (a + 1) (b + 1) N := by
+  intro α _ G s hs
+  classical
+  rcases Finset.exists_subset_card_eq (s := s) (n := N) hs with ⟨u, hus, hucard⟩
+  let residual :
+      Prop :=
+    (∃ t ⊆ u, G.IsNClique (a + 1) t) ∨
+      ∃ t ⊆ u, G.IsNIndepSet (b + 1) t
+  have hlift : residual →
+      (∃ t ⊆ s, G.IsNClique (a + 1) t) ∨
+        ∃ t ⊆ s, G.IsNIndepSet (b + 1) t := by
+    intro hres
+    rcases hres with hclique | hindep
+    · left
+      rcases hclique with ⟨t, htu, ht⟩
+      exact ⟨t, subset_trans htu hus, ht⟩
+    · right
+      rcases hindep with ⟨t, htu, ht⟩
+      exact ⟨t, subset_trans htu hus, ht⟩
+  by_cases hdone : residual
+  · exact hlift hdone
+  have hdegree :
+      ∀ v : ↑(u : Set α),
+        N - N₂ ≤ (G.induce (u : Set α)).degree v ∧
+          (G.induce (u : Set α)).degree v < N₁ := by
+    intro v
+    let A : Finset α := (u.erase (v : α)).filter (G.Adj (v : α))
+    let B : Finset α := (u.erase (v : α)).filter fun w => ¬ G.Adj (v : α) w
+    have hA_sub_u : A ⊆ u := by
+      intro x hx
+      exact (Finset.mem_erase.mp (Finset.mem_filter.mp hx).1).2
+    have hB_sub_u : B ⊆ u := by
+      intro x hx
+      exact (Finset.mem_erase.mp (Finset.mem_filter.mp hx).1).2
+    have hpart : A.card + B.card = (u.erase (v : α)).card := by
+      dsimp [A, B]
+      simpa using
+        (Finset.card_filter_add_card_filter_not (s := u.erase (v : α))
+          (p := G.Adj (v : α)))
+    have hA_lt : A.card < N₁ := by
+      by_contra hnot
+      have hAlarge : N₁ ≤ A.card := le_of_not_gt hnot
+      rcases hleft G A hAlarge with hclique | hindep
+      · rcases hclique with ⟨t, htA, hct⟩
+        exact hdone (Or.inl ⟨insert (v : α) t, ?_, ?_⟩)
+        · intro x hx
+          rcases Finset.mem_insert.mp hx with rfl | hx
+          · exact v.2
+          · exact hA_sub_u (htA hx)
+        · exact hct.insert (fun w hw => (Finset.mem_filter.mp (htA hw)).2)
+      · rcases hindep with ⟨t, htA, hit⟩
+        exact hdone (Or.inr ⟨t, subset_trans htA hA_sub_u, hit⟩)
+    have hB_lt : B.card < N₂ := by
+      by_contra hnot
+      have hBlarge : N₂ ≤ B.card := le_of_not_gt hnot
+      rcases hright G B hBlarge with hclique | hindep
+      · rcases hclique with ⟨t, htB, hct⟩
+        exact hdone (Or.inl ⟨t, subset_trans htB hB_sub_u, hct⟩)
+      · rcases hindep with ⟨t, htB, hit⟩
+        exact hdone (Or.inr ⟨insert (v : α) t, ?_,
+          indepInsertOfSubsetFilter_succ (G := G) (a := (v : α)) (s := u) htB hit⟩)
+        intro x hx
+        rcases Finset.mem_insert.mp hx with rfl | hx
+        · exact v.2
+        · exact hB_sub_u (htB hx)
+    have hErase : (u.erase (v : α)).card = u.card - 1 :=
+      Finset.card_erase_of_mem v.2
+    have hpartN : A.card + B.card = N - 1 := by
+      rw [hpart, hErase, hucard]
+    have hA_ge : N - N₂ ≤ A.card := by omega
+    have hA_filter : u.filter (fun w => G.Adj (v : α) w) = A := by
+      ext x
+      by_cases hxv : x = (v : α)
+      · subst x
+        simp [A]
+      · simp [A, hxv]
+    have hdeg_eq : (G.induce (u : Set α)).degree v = A.card := by
+      calc
+        (G.induce (u : Set α)).degree v =
+            (u.filter fun w => G.Adj (v : α) w).card :=
+          degree_induce_finset_eq_card_filter_adj G u v
+        _ = A.card := by rw [hA_filter]
+    constructor
+    · rw [hdeg_eq]
+      exact hA_ge
+    · rw [hdeg_eq]
+      exact hA_lt
+  exact hlift (hwindow G u hucard hdegree)
+
 /-- If a set has neither side of a Ramsey alternative, its cardinality is below the bound. -/
 theorem card_lt_of_no_clique_or_indep
     {a b N : ℕ} (h : HasCliqueOrIndepSetBound a b N)
@@ -3444,7 +3550,42 @@ theorem ramseyElevenThreeStepNarrowTable_arithmetic_gap :
               3248 - 822 = 2426 ∧
                 4224 - 822 = 3402 ∧
                   3288 - 3286 = 2 ∧
-                    22528 - 22514 = 14 := by
+                      22528 - 22514 = 14 := by
+  decide
+
+/--
+Concrete degree-window reduction for the first lower-row target.  Instead of asking directly for
+`R(5,10) <= 206`, it is enough to prove the materially smaller predecessor bounds
+`R(4,10) <= 104` and `R(5,9) <= 104`, then rule out the exact residual case in which every vertex
+of a `206`-set has induced degree `102` or `103`.
+-/
+theorem hasCliqueOrIndepSetBound_5_10_206_of_degree_window
+    (h4_10 : HasCliqueOrIndepSetBound 4 10 104)
+    (h5_9 : HasCliqueOrIndepSetBound 5 9 104)
+    (hwindow :
+      ∀ {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α),
+        s.card = 206 →
+        (∀ v : ↑(s : Set α),
+          102 ≤ (G.induce (s : Set α)).degree v ∧
+            (G.induce (s : Set α)).degree v < 104) →
+        (∃ t ⊆ s, G.IsNClique 5 t) ∨ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    HasCliqueOrIndepSetBound 5 10 206 := by
+  refine HasCliqueOrIndepSetBound.step_of_degree_window
+    (a := 4) (b := 9) (N := 206) (N₁ := 104) (N₂ := 104)
+    (by decide : 0 < 104) h4_10 h5_9 ?_
+  intro α _ G s hcard hdegree
+  exact hwindow G s hcard (by
+    intro v
+    simpa using hdegree v)
+
+/-- Arithmetic ledger for the `R(5,10) <= 206` degree-window reduction. -/
+theorem ramseyFiveTenDegreeWindow_reduction_gap :
+    458 - 206 = 252 ∧
+      145 - 104 = 41 ∧
+        313 - 104 = 209 ∧
+          104 + 104 - 206 = 2 ∧
+            206 - 104 = 102 ∧
+              104 - 102 = 2 := by
   decide
 
 /--
