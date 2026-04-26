@@ -11760,6 +11760,27 @@ Thus every mixed repair again splits into an old-vertex incoming target and a sh
 incoming packet, but now the fixed label is the two-level Gallai label `epsilon`.  The pure `R` swap
 calculus is the special case `T subset R` after absorbing `C` into the signed label.
 
+This shows that the near-threshold pure-`R` branch is not a separate escape in the full two-level core.  Let
+`T subset J` have size `m+1`.  Since `|J|>2m`, the outside reservoir has size
+
+```text
+|J\T|=|J|-m-1 >= m,
+```
+
+so for `m>=3` there are always three incoming vertices available somewhere in `J\T`, even when
+`R\T` has size at most two.  Applying the preceding formula with `|X|=|Y|=3` gives the same ternary
+target/self-layer dichotomy as in the pure large-outside branch, with `epsilon` replacing the signed
+one-class label.  Thus the bounded near-threshold deletion templates are boundary diagnostics for the
+pure classes; the genuine mixed terminal obstruction is again a ternary packet obstruction on the
+two-level core.
+
+The tiny bases do not create another case.  If the maximum selector size were `m=1`, any two vertices would
+already be a selector.  If `m=2`, the counterexample inequality gives `n>=65`; coloring each edge by its
+matrix entry modulo `4`, the Ramsey value `R_4(3)=51` gives a triangle whose three edge labels are equal.
+On that triangle all three induced row sums are twice the common edge label, hence congruent modulo `4`,
+contradicting `m=2`.  Thus every genuine critical counterexample has `m>=3`, and the mixed ternary packet
+obstruction always has a three-vertex outside reservoir.
+
 The centered-pair hypergraph formulation also explains why a one-coordinate hypergraph odd-degree
 theorem is not enough.  Form the 3-uniform hypergraph `K` whose edges are triples `{v,x,y}` with
 `vx` and `vy` edges of the original graph; then the degree of `v` in `K[W]` is exactly the carry
@@ -11873,8 +11894,10 @@ large-outside ternary target avoidance:
 large-outside ternary scalar failure:
   endpoint residue 3, or one of the explicit 000/110/211/222 internal-edge mismatches;
 near-threshold two-residue deletion:
-  bounded deletion templates on R and, when above threshold, on C, plus the hereditary mixed two-level
-  deletion-core with module exits and balanced-swap target/self-layer equations.
+  pure-residue bounded deletion templates are boundary diagnostics only; in the hereditary mixed two-level
+  core every (m+1)-set has a large outside reservoir, so for m>=3 the remaining obstruction is again the
+  ternary target/scalar packet dichotomy with label epsilon; m<=2 is closed by the pair selector and
+  R_4(3)=51.
 ```
 
 What is not used:

@@ -5392,6 +5392,11 @@ Constant-label modules in this two-level label lift selectors, so terminal mixed
 selector-prime and obey the same label-refined row-rank exit.
 For retained mixed `T`, `omega_T=epsilon-deg_{J\T}` is constant exactly on selectors; balanced swaps obey
 the same `+deg_Y-deg_X` old-vertex formula and shifted incoming self-layer with label `epsilon`.
+Because `|J|>2m`, every mixed `(m+1)`-set has `|J\T|>=m`; for `m>=3`, a ternary incoming packet exists
+somewhere in the two-level outside reservoir.  Thus pure near-threshold templates are only boundary
+diagnostics: the genuine mixed terminal obstruction is again the ternary target/scalar packet problem
+The `m<=2` bases are excluded by the two-vertex selector and the four-color triangle Ramsey bound
+`R_4(3)=51`, so no separate small-base exception remains.
 Equivalently in the Fano case, the witness graph must not be vertex-covered by any Fano line; every
 three-edge witness graph is line-covered.
 In dual form, each kept-pair witness joins the two Fano lines disjoint from it; Fano terminality is

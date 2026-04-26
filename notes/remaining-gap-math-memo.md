@@ -1979,6 +1979,11 @@ The support graph has independence number at most three.  Pair-only endpoints ar
 for `|A|>=8` some projected support of size at least three is forced.
 Writing `mu_Z` for maximum full-family excess, every zero relaxation supplies private support saving that
 bridges the defect `|A|-3-mu_Z`.
+The full two-level near-threshold core has no pure outside-size escape: every mixed `(m+1)`-set has at
+least `m` outside vertices in `J\T`, so for `m>=3` the same ternary target/scalar packet obstruction applies
+with label `epsilon`.
+The remaining `m<=2` bases are closed by the trivial pair selector and `R_4(3)=51`, which yields a
+monochromatic residue triangle and therefore a 3-selector.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.

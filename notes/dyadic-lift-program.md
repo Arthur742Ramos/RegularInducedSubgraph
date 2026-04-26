@@ -1053,6 +1053,11 @@ The pair-support shadow graph has independence number at most three, so pair-onl
 `|A|=7`; from `|A|>=8` some rank-three projected support is forced.
 Zero-filter criticality is quantified by the full-family excess defect `Delta=|A|-3-mu_Z`: each zero
 relaxation must add private support saving that bridges this defect.
+On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
+every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
+target/scalar packet obstruction applies with the two-level label `epsilon`.
+The cases `m<=2` are finite-Ramsey closed: any pair is a selector for `m=1`, and `R_4(3)=51<65` gives a
+monochromatic residue triangle when `m=2` under the counterexample inequality.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.

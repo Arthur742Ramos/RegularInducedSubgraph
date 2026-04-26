@@ -2437,6 +2437,10 @@ Recommended attack:
     independence number at most three; pair-only endpoints occur only for `|A|<=7`.
     Define `mu_Z` as maximum disjoint-support excess and `Delta=|A|-3-mu_Z`; formalize zero relaxation as a
     private excess bridge of size at least `Delta`.
+    For the mixed two-level core, formalize that every `(m+1)`-set `T` has `|J\T|>=m`, hence for `m>=3` the
+    ternary packet target/scalar dichotomy applies even when the pure `R` outside has size at most two.
+    Add the tiny-base closure: pairs handle `m=1`; `R_4(3)=51` gives a monochromatic edge-residue triangle
+    and hence a 3-selector for the `m=2` counterexample range.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

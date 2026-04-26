@@ -1955,6 +1955,10 @@ What remains justified after audit is:
       the support graph has independence number at most three, so pair-only endpoints stop at `|A|=7` and
       rank-three projected supports are forced from `|A|>=8`;
       zero-filter criticality is a private excess bridge across `Delta=|A|-3-mu_Z`;
+      in the mixed two-level core, every `(m+1)`-set has a large outside reservoir in `J\T`, so the ternary
+      target/scalar packet obstruction applies for `m>=3` even when a pure residue class is near-threshold;
+      the `m<=2` bases are closed by the trivial pair selector and the four-color triangle Ramsey bound
+      `R_4(3)=51`;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       every zero-relaxed cover must use at least one such private column;
