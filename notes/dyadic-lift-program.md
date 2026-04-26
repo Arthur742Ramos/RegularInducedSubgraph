@@ -858,6 +858,8 @@ A minimum loss-`32` counterexample is critical: with maximum selector size `m`, 
 every vertex deletion contains a selector, equivalently a stable residue-core, of size exactly `m`.
 Any two maximum cores then form an equal-petal exchange: on the overlap the two petals have fixed
 degree-difference residue, and on each petal the internal degree plus overlap degree is fixed.
+For a one-vertex exchange, only identical-trace or complete/anticomplete trace patterns are possible;
+the matching-edge subcases that create `m+1` selectors are excluded by terminality.
 Selector blocks merge by the quotient rule `a_i+sum_j p_{ij}x_j=constant mod 4`; terminal buckets forbid
 every cross-regular quotient solution whose lifted size exceeds `m`.
 The one-vertex merge shadow forces maximum residue-`0` selectors to dominate and, when `|S|==a+1 mod 4`,

@@ -5085,6 +5085,10 @@ is `m`, then `|H|=32m+1`, and every vertex deletion `H-z` contains a maximum sel
 Equivalently, every deleted vertex is omitted by some stable residue-core of size exactly `m`.
 Pairs of maximum cores `S,T` with overlap `P` and petals `A,B` satisfy the exchange equations
 `deg_A(v)-deg_B(v)=a-b mod 4` on `P`, while `deg_P+deg_A=a` on `A` and `deg_P+deg_B=b` on `B`.
+In a one-exchange, residue difference `2` is impossible; residue difference `0` gives identical traces on
+the overlap, and residue difference `±1` gives complete/anticomplete extreme traces.  Constant identical
+traces with matching edge bit, or extreme traces with `|P|==0 mod 4` and no edge, would create an
+`m+1` selector and are forbidden.
 Two disjoint selector blocks `A,B` with internal residues `a,b` and constant cross-degree residues
 `p,q` merge exactly when `a+p==b+q mod 4`; terminal buckets are anti-merge for every cross-regular
 quotient solution of total lifted size greater than `m`.

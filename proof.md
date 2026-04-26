@@ -9810,6 +9810,18 @@ internally synchronized after adding its degree to the overlap.  In the critical
 family `{S_z}` supplied by vertex deletions must satisfy this exchange system for every pair of omitted
 vertices.
 
+In the one-exchange case `S=P union {x}` and `T=P union {y}` the exchange system is completely rigid.
+Since each vertex of `P` sees the difference of the two new traces in `{-1,0,1}`, the residue difference
+`a-b` cannot be `2`.  If `a=b`, then `x` and `y` have identical trace on `P` and
+`deg_P(x)==deg_P(y)==a`.  If `a-b==1`, then `x` is complete to `P`, `y` is anticomplete to `P`,
+`a==|P|`, and `b==0`.  The case `a-b==-1` is the reverse.
+
+Consequently terminality forbids the immediate one-exchange extensions: in the identical-trace case, if
+the common trace is constant `tau` on `P` and `xy` has edge bit `tau`, then `P union {x,y}` is an
+`m+1` selector; in the extreme complete/anticomplete cases, if `|P|==0 [MOD 4]` and `xy` is absent, then
+`P union {x,y}` is a residue-`0` selector.  These exclusions are the smallest concrete constraints on
+the critical family of maximum cores.
+
 A second exact reformulation is by merging smaller selectors.  Let `A` and `B` be disjoint induced
 selectors with internal residues `a` and `b`.  Suppose the cross-degrees are constant modulo `4` on both
 sides:

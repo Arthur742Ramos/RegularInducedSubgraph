@@ -1800,6 +1800,8 @@ At the loss-`32` endpoint, a minimum counterexample is critical: `|H|=32m+1`, wh
 selector size, and every vertex deletion contains a stable residue-core of size exactly `m`.
 Pairs of maximum cores obey an equal-petal exchange system: the overlap sees the two petals with fixed
 residue difference, and each petal has fixed overlap-plus-internal degree.
+One-exchanges allow only identical-trace or complete/anticomplete patterns; terminality forbids the
+matching-edge subcases that would make the union an `m+1` selector.
 Selector blocks merge when their internal residues and cross-degree residues satisfy
 `a+p==b+q mod 4`; terminal buckets forbid every cross-regular quotient merge above scale `m`.
 A maximum residue-`0` selector is dominating, and a residue-`a` selector with `|S|==a+1 mod 4` has no

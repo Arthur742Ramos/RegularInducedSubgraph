@@ -2183,6 +2183,9 @@ Recommended attack:
     Formalize maximum-core exchange: for two maximum selectors `S,T` with residues `a,b`, overlap `P`,
     and petals `A=S\T`, `B=T\S`, prove `deg_A(v)-deg_B(v)==a-b mod 4` on `P`,
     `deg_P(x)+deg_A(x)==a mod 4` on `A`, and `deg_P(y)+deg_B(y)==b mod 4` on `B`.
+    Add the one-exchange classification: if `S=P union {x}` and `T=P union {y}`, then `a-b!=2`;
+    `a=b` gives identical traces to `P`, while `a-b=±1` gives complete/anticomplete traces.  Formalize
+    the forbidden extension subcases producing `P union {x,y}` as an `m+1` selector.
     Formalize selector merging: disjoint selector blocks with residues `a,b` and constant cross-degree
     residues `p,q` merge iff `a+p==b+q mod 4`.  For a cross-regular family, the quotient condition is
     `r_i+sum_j p_{ij}x_j` independent of `i` modulo `4`; terminality forbids any quotient solution whose
