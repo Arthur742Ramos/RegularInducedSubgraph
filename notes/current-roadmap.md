@@ -4860,6 +4860,10 @@ Since the empty deletion gives shift `0`, any terminal direction with
 `|C_g|>=R(4,4)` and `|C_g|>2m+5` has at most one nonzero small-deletion shift; otherwise the repaired
 spectrum contains three residues and hence either both Ramsey extremes or both middle pseudo-split
 residues.
+Disjoint usable deletions add shifts while total size is below four, so two disjoint unit-shift old
+repairs are impossible in this very-large-fiber branch.
+Hence unit-shift branches force an intersecting family of nonzero singleton/pair repairs, while
+`sigma=2` is the only branch where disjoint nonzero repairs can survive by summing to zero.
 The `25m/8` class margin also gives, for `m>24`, an augmented atom with `|S|=delta_S=0`, so
 `sum_S phi_S=-2e(S)`.
 

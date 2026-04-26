@@ -1509,6 +1509,10 @@ Recommended attack:
    But since shift `0` is always present, two distinct nonzero shifts force three repaired residues and
    hence either the Ramsey-extreme pair or the middle pseudo-split pair.  Therefore a terminal direction
    with `|C_g|>=R(4,4)` and `|C_g|>2m+5` has `Delta_<(4)(g) subset {0,sigma_g}`.
+   Add the shift-addition lemma: disjoint usable deletions of total size `<4` add their constants and
+   their shifts.  Hence in the large-fiber branch two disjoint unit-shift deletions are impossible.
+   Record the branch split: unit `sigma_g` makes nonzero singleton/pair repairs intersect; `sigma_g=2`
+   is the only case where disjoint nonzero repairs can add to zero.
 
    In the exact extremal model, each basis direction has three boundary copies `X_i`.  For any retained
    `b` with the same old-vector, `X_i union {b}` is an old-balanced atom.  It closes if the four-set is

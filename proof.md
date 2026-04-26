@@ -6654,6 +6654,27 @@ singleton/pair table above becomes a rigid old-witness constraint: all usable is
 anticomplete, split, and complete old pairs must give the same shift against that direction, or else the
 fiber falls into the Ramsey or pseudo-split bounded branch.
 
+The shifts also have an addition law.  If `D_1,D_2` are disjoint usable old deletions with constants
+`c_1,c_2`, and `|D_1|+|D_2|<4`, then `D_1 union D_2` is usable with constant `c_1+c_2` on the common
+kept old set, and
+
+```text
+shift_{D_1 union D_2}(g)=shift_{D_1}(g)+shift_{D_2}(g)        [MOD 4].
+```
+
+Consequently, in a very large terminal direction with
+`Delta_<(4)(g) subset {0,sigma_g}`, two disjoint usable deletions of unit shift `sigma_g in {1,3}`
+are impossible, because their union has shift `2`.  More generally, all disjoint sums of singleton/pair
+repairs of total size below four must remain in `{0,sigma_g}`.  This converts the spectral hole into a
+concrete packing obstruction inside the old witness.
+
+Thus the very-large direction branch splits.  If `sigma_g` is a unit, then all nonzero-shift usable
+deletions of total size at most two form an intersecting family whenever their union has size below
+four; in particular there is at most one nonzero-shift singleton, and any nonzero-shift pair must contain
+that singleton if it exists.  If `sigma_g=2`, unit-shift repairs are absent, while two disjoint
+opposite-shift repairs may add back to zero.  The `sigma_g=2` branch is therefore the only large-fiber
+case in which disjoint small repairs can survive the addition law.
+
 In fact signed repair does not change the pointwise obstruction inside a single nonzero basis fiber.
 Since all four vertices with `p_b=g` have the same old neighbourhood in `W`, every `D subset W` has
 `deg_D(b)` constant on the four vertices.  The signed condition

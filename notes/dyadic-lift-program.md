@@ -984,6 +984,13 @@ Since the empty deletion always contributes shift `0`, two distinct nonzero shif
 extremes `{0,3}` or both middle residues `{1,2}`.  Hence any terminal exact-basis direction with
 `|C_g|>=R(4,4)` and `|C_g|>2m+5` has `Delta_<(4)(g) subset {0,sigma_g}` for one nonzero shift at most;
 all usable singleton and pair deletion shifts against such a direction must coincide.
+Disjoint usable deletions add shifts: if `D_1,D_2` have constants `c_1,c_2` and total size below four,
+then `D_1 union D_2` has constant `c_1+c_2` and shift `shift(D_1)+shift(D_2)`.  Thus a very large
+terminal direction cannot contain two disjoint usable deletions of unit shift `1` or `3`; their union
+would create the new shift `2`.
+So the large branch splits: unit `sigma_g` forces the nonzero-shift singleton/pair repairs into an
+intersecting family, while `sigma_g=2` is the only branch where disjoint nonzero repairs can add back to
+zero.
 
 The three boundary copies in a basis direction give an immediate `3+1` test.  If
 `X_i={x_{i,1},x_{i,2},x_{i,3}}` are the boundary copies of direction `g_i` and `b in B` also has
