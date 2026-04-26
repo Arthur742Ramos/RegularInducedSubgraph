@@ -4484,6 +4484,199 @@ theorem exactTwoWordAugmentationEquation_of_combinedBase
   omega
 
 /--
+Abstract data for a finite first-bit packet system.  The active indices name the packets `B_j`;
+`chamber j` is the old degree-to-witness chamber `a_j`, `internalResidue j` is the packet-internal
+residue `d_j`, `oldIncrement j` is the old-frame increment `δ_j`, and `crossResidue j k` is the
+uniform cross value `ε_{jk}`.
+-/
+structure FirstBitPacketSystemData (ι : Type*) [DecidableEq ι] where
+  active : Finset ι
+  packetSize : ι → ℕ
+  chamber : ι → ℕ
+  internalResidue : ι → ℕ
+  oldIncrement : ι → ℕ
+  crossResidue : ι → ι → ℕ
+
+/-- The cross contribution `sum_{k != j} ε_{jk} |B_k|` from the finite packet system. -/
+def firstBitPacketCrossSum {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (ε : ι → ι → ℕ) (packetSize : ι → ℕ) (j : ι) : ℕ :=
+  ∑ k in active.erase j, ε j k * packetSize k
+
+/-- The target residue `r + sum_k δ_k` in the finite first-bit packet normal form. -/
+def firstBitPacketTargetResidue {ι : Type*}
+    (active : Finset ι) (δ : ι → ℕ) (r : ℕ) : ℕ :=
+  r + ∑ k in active, δ k
+
+/-- The left-hand side attached to one packet row of the finite first-bit normal form. -/
+def firstBitPacketRowResidue {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (a d : ι → ℕ) (ε : ι → ι → ℕ)
+    (packetSize : ι → ℕ) (j : ι) : ℕ :=
+  a j + d j + firstBitPacketCrossSum active ε packetSize j
+
+/--
+One scalar row of the finite first-bit packet-system normal form:
+`a_j + d_j + sum_{k != j} ε_{jk}|B_k| = r + sum_k δ_k [MOD 4]`.
+-/
+def FirstBitPacketScalarRow {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (a d δ : ι → ℕ) (ε : ι → ι → ℕ)
+    (r : ℕ) (packetSize : ι → ℕ) (j : ι) : Prop :=
+  firstBitPacketRowResidue active a d ε packetSize j ≡
+    firstBitPacketTargetResidue active δ r [MOD 4]
+
+/-- The finite first-bit packet-system normal form: every active packet satisfies its scalar row. -/
+def FirstBitPacketScalarCongruenceSystem {ι : Type*} [DecidableEq ι]
+    (active : Finset ι) (a d δ : ι → ℕ) (ε : ι → ι → ℕ)
+    (r : ℕ) (packetSize : ι → ℕ) : Prop :=
+  ∀ j ∈ active, FirstBitPacketScalarRow active a d δ ε r packetSize j
+
+namespace FirstBitPacketSystemData
+
+/-- The target residue attached to an abstract packet-system datum. -/
+def targetResidue {ι : Type*} [DecidableEq ι]
+    (P : FirstBitPacketSystemData ι) (r : ℕ) : ℕ :=
+  firstBitPacketTargetResidue P.active P.oldIncrement r
+
+/-- The row residue attached to an abstract packet-system datum. -/
+def rowResidue {ι : Type*} [DecidableEq ι]
+    (P : FirstBitPacketSystemData ι) (j : ι) : ℕ :=
+  firstBitPacketRowResidue P.active P.chamber P.internalResidue P.crossResidue P.packetSize j
+
+/-- Scalar congruence system expressed through the fields of an abstract packet-system datum. -/
+def ScalarCongruenceSystem {ι : Type*} [DecidableEq ι]
+    (P : FirstBitPacketSystemData ι) (r : ℕ) : Prop :=
+  ∀ j ∈ P.active, P.rowResidue j ≡ P.targetResidue r [MOD 4]
+
+theorem scalarCongruenceSystem_iff {ι : Type*} [DecidableEq ι]
+    (P : FirstBitPacketSystemData ι) (r : ℕ) :
+    P.ScalarCongruenceSystem r ↔
+      FirstBitPacketScalarCongruenceSystem P.active P.chamber P.internalResidue
+        P.oldIncrement P.crossResidue r P.packetSize := by
+  rfl
+
+end FirstBitPacketSystemData
+
+/-- A packet is internally regular modulo `q` with residue `d`. -/
+def FirstBitPacketInternallyRegular
+    {V : Type*} [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) [DecidableRel G.Adj] (B : Finset V) (d q : ℕ) : Prop :=
+  ∀ v : ↑(B : Set V), (inducedOn G B).degree v ≡ d [MOD q]
+
+/-- Every active packet has its prescribed internal residue. -/
+def FirstBitPacketsInternallyRegular
+    {ι V : Type*} [DecidableEq ι] [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) [DecidableRel G.Adj]
+    (active : Finset ι) (B : ι → Finset V) (d : ι → ℕ) (q : ℕ) : Prop :=
+  ∀ j ∈ active, FirstBitPacketInternallyRegular G (B j) (d j) q
+
+/-- Two packets have a uniform cross graph with value `ε ∈ {0,1}`. -/
+def FirstBitPacketUniformCross
+    {V : Type*} [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+    (B C : Finset V) (ε : ℕ) : Prop :=
+  ε ≤ 1 ∧ ∀ v ∈ B, ∀ w ∈ C, (if G.Adj v w then 1 else 0) = ε
+
+/-- The packet family has a uniform cross matrix `ε_{jk}` on all distinct active packet pairs. -/
+def FirstBitPacketUniformCrossMatrix
+    {ι V : Type*} [DecidableEq ι] [DecidableEq V]
+    (G : SimpleGraph V) [DecidableRel G.Adj]
+    (active : Finset ι) (B : ι → Finset V) (ε : ι → ι → ℕ) : Prop :=
+  ∀ ⦃j : ι⦄, j ∈ active → ∀ ⦃k : ι⦄, k ∈ active → j ≠ k →
+    FirstBitPacketUniformCross G (B j) (B k) (ε j k)
+
+/-- Active packets are pairwise disjoint. -/
+def FirstBitPacketsPairwiseDisjoint
+    {ι V : Type*} [DecidableEq ι] (active : Finset ι) (B : ι → Finset V) : Prop :=
+  ∀ ⦃j : ι⦄, j ∈ active → ∀ ⦃k : ι⦄, k ∈ active → j ≠ k →
+    Disjoint (B j) (B k)
+
+/--
+Graph-facing first-bit packet-system normal form.  It records the graph data that justifies the
+abstract scalar equations: disjoint packets, internal residues, a uniform cross matrix, and the finite
+mod-`4` scalar congruence system.
+-/
+structure FirstBitPacketGraphNormalForm
+    {ι V : Type*} [DecidableEq ι] [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) [DecidableRel G.Adj]
+    (active : Finset ι) (B : ι → Finset V)
+    (a d δ : ι → ℕ) (ε : ι → ι → ℕ) (r : ℕ) : Prop where
+  pairwiseDisjoint : FirstBitPacketsPairwiseDisjoint active B
+  internallyRegular : FirstBitPacketsInternallyRegular G active B d 4
+  uniformCross : FirstBitPacketUniformCrossMatrix G active B ε
+  scalarSystem :
+    FirstBitPacketScalarCongruenceSystem active a d δ ε r (fun j => (B j).card)
+
+/-- A uniform cross packet contributes exactly `ε * |C|` neighbours into the other packet. -/
+theorem firstBitPacketUniformCross_crossDegree_eq
+    {V : Type*} [Fintype V] [DecidableEq V]
+    {G : SimpleGraph V} [DecidableRel G.Adj] {B C : Finset V} {ε : ℕ}
+    (hcross : FirstBitPacketUniformCross G B C ε) {v : V} (hv : v ∈ B) :
+    (G.neighborFinset v ∩ C).card = ε * C.card := by
+  rcases hcross with ⟨hεle, hrows⟩
+  have hε : ε = 0 ∨ ε = 1 := by omega
+  rcases hε with rfl | rfl
+  · have hempty : G.neighborFinset v ∩ C = ∅ := by
+      ext w
+      constructor
+      · intro hw
+        rcases Finset.mem_inter.mp hw with ⟨hwN, hwC⟩
+        have hbit : (if G.Adj v w then 1 else 0) = 0 := hrows v hv w hwC
+        have hadj : G.Adj v w := (SimpleGraph.mem_neighborFinset G v w).mp hwN
+        simp [hadj] at hbit
+      · intro hw
+        exact False.elim (by simpa using hw)
+    simp [hempty]
+  · have hC : G.neighborFinset v ∩ C = C := by
+      ext w
+      constructor
+      · intro hw
+        exact (Finset.mem_inter.mp hw).2
+      · intro hwC
+        have hbit : (if G.Adj v w then 1 else 0) = 1 := hrows v hv w hwC
+        have hadj : G.Adj v w := by
+          by_contra hnot
+          simp [hnot] at hbit
+        exact Finset.mem_inter.mpr ⟨(SimpleGraph.mem_neighborFinset G v w).mpr hadj, hwC⟩
+    simp [hC]
+
+/-- Extract a scalar congruence row from the graph-facing normal form. -/
+theorem FirstBitPacketGraphNormalForm.scalarRow
+    {ι V : Type*} [DecidableEq ι] [Fintype V] [DecidableEq V]
+    {G : SimpleGraph V} [DecidableRel G.Adj]
+    {active : Finset ι} {B : ι → Finset V}
+    {a d δ : ι → ℕ} {ε : ι → ι → ℕ} {r : ℕ}
+    (h : FirstBitPacketGraphNormalForm G active B a d δ ε r)
+    {j : ι} (hj : j ∈ active) :
+    FirstBitPacketScalarRow active a d δ ε r (fun k => (B k).card) j :=
+  h.scalarSystem j hj
+
+/-- Two-packet specialization of the finite first-bit scalar equations. -/
+def FirstBitTwoPacketScalarCongruence
+    (a d δ : Fin 2 → ℕ) (ε r : ℕ) (packetSize : Fin 2 → ℕ) : Prop :=
+  a 0 + d 0 + ε * packetSize 1 ≡ r + δ 0 + δ 1 [MOD 4] ∧
+    a 1 + d 1 + ε * packetSize 0 ≡ r + δ 0 + δ 1 [MOD 4]
+
+/--
+For two packets, the finite packet-system normal form is exactly the two scalar equations from the
+frontier notes.
+-/
+theorem firstBitPacketScalarCongruenceSystem_fin_two_iff
+    (a d δ : Fin 2 → ℕ) (ε r : ℕ) (packetSize : Fin 2 → ℕ) :
+    FirstBitPacketScalarCongruenceSystem (Finset.univ : Finset (Fin 2)) a d δ
+        (fun j k => if j = k then 0 else ε) r packetSize ↔
+      FirstBitTwoPacketScalarCongruence a d δ ε r packetSize := by
+  unfold FirstBitPacketScalarCongruenceSystem FirstBitPacketScalarRow
+    firstBitPacketRowResidue firstBitPacketCrossSum firstBitPacketTargetResidue
+    FirstBitTwoPacketScalarCongruence
+  constructor
+  · intro h
+    constructor
+    · simpa using h 0 (by simp)
+    · simpa using h 1 (by simp)
+  · intro h j _hj
+    fin_cases j
+    · simpa using h.1
+    · simpa using h.2
+
+/--
 Equation form of a mixed `2+2` augmented-fiber atom: two boundary vertices with edge-status `e`
 and two retained vertices of types `τ, σ` with retained edge-status `ε` form a `d`-regular
 four-set exactly when these four degree equations hold.
@@ -4665,6 +4858,35 @@ theorem retainedTraceComplementTotalDegreeCongruence_of_bitColumnComplement
       hcomp i
   simpa [hrow] using
     (Nat.ModEq.refl (e + e' + K) : (e + e' + K) ≡ e + e' + K [MOD q])
+
+/--
+Row-constant version of the retained-trace complement table: the total degree contributed by two
+compensating retained columns is independent of the boundary row modulo `q`.
+-/
+def RetainedTraceComplementRowConstantCongruence
+    (e e' q : ℕ) (τ σ τ' σ' : Fin 8) : Prop :=
+  ∀ i j : Fin 3,
+    retainedTracePairResidue e τ σ i + retainedTracePairResidue e' τ' σ' i ≡
+      retainedTracePairResidue e τ σ j + retainedTracePairResidue e' τ' σ' j [MOD q]
+
+/-- A total-degree congruence table gives the row-constant retained-trace complement form. -/
+theorem retainedTraceComplementRowConstantCongruence_of_totalDegreeCongruence
+    {K e e' q : ℕ} {τ σ τ' σ' : Fin 8}
+    (h : RetainedTraceComplementTotalDegreeCongruence K e e' q τ σ τ' σ') :
+    RetainedTraceComplementRowConstantCongruence e e' q τ σ τ' σ' := by
+  intro i j
+  exact (h i).trans (h j).symm
+
+/-- The bit-column complement equation gives the row-constant total-degree table directly. -/
+theorem retainedTraceComplementRowConstantCongruence_of_bitColumnComplement
+    {K e e' q : ℕ} {τ σ τ' σ' : Fin 8}
+    (hcomp : RetainedTraceBitColumnComplementEquation K τ σ τ' σ') :
+    RetainedTraceComplementRowConstantCongruence e e' q τ σ τ' σ' := by
+  have htotal :
+      RetainedTraceComplementTotalDegreeCongruence K e e' q τ σ τ' σ' :=
+    retainedTraceComplementTotalDegreeCongruence_of_bitColumnComplement
+      (K := K) (e := e) (e' := e') (q := q) hcomp
+  exact retainedTraceComplementRowConstantCongruence_of_totalDegreeCongruence htotal
 
 /-- Pair-uniform retained trace columns have the same two retained bits in every boundary row. -/
 def PairUniformRetainedTraceClass (τ σ : Fin 8) : Prop :=
@@ -5927,6 +6149,92 @@ theorem homogeneousMixedCarryTerminalTrichotomyReduction :
     HasHomogeneousMixedCarryTerminalTrichotomyReduction := by
   intro ι _ _ Q U tau m
   exact homogeneousMixedCarryTerminalTrichotomy_of_classical Q U tau m
+
+/-- Proper-subquotient side of the support-compressed small-core residual. -/
+def HomogeneousMixedCarryProperSubquotientSmallCoreResidual
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ)
+    (J T : Finset ι) (c : ℕ) : Prop :=
+  HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c ∧ J.card < U.card
+
+/-- Whole-class side of the support-compressed small-core residual. -/
+def HomogeneousMixedCarryWholeClassSmallCoreResidual
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ)
+    (J T : Finset ι) (c : ℕ) : Prop :=
+  HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c ∧ U.card ≤ J.card
+
+/-- Extract the moving-kernel support core from a support-compressed residual. -/
+theorem HomogeneousMixedCarrySmallCoreResidual.kernelSupportCore
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J T : Finset ι} {tau : ι → ℕ} {m c : ℕ}
+    (h : HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c) :
+    HomogeneousMixedCarryKernelSupportCore Q U tau J :=
+  h.supportCompressedCore.1
+
+/-- The moving-kernel support core is contained in the quotient class. -/
+theorem HomogeneousMixedCarrySmallCoreResidual.core_subset
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J T : Finset ι} {tau : ι → ℕ} {m c : ℕ}
+    (h : HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c) :
+    J ⊆ U :=
+  h.kernelSupportCore.1
+
+/-- A whole-class small-core residual has support core of the same cardinality as the class. -/
+theorem HomogeneousMixedCarryWholeClassSmallCoreResidual.card_eq
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J T : Finset ι} {tau : ι → ℕ} {m c : ℕ}
+    (h : HomogeneousMixedCarryWholeClassSmallCoreResidual Q U tau m J T c) :
+    J.card = U.card :=
+  le_antisymm
+    (Finset.card_le_card (HomogeneousMixedCarrySmallCoreResidual.core_subset h.1)) h.2
+
+/-- Every small-core residual is either a proper-subquotient residual or a whole-class residual. -/
+theorem HomogeneousMixedCarrySmallCoreResidual.properSubquotient_or_wholeClass
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U J T : Finset ι} {tau : ι → ℕ} {m c : ℕ}
+    (h : HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c) :
+    HomogeneousMixedCarryProperSubquotientSmallCoreResidual Q U tau m J T c ∨
+      HomogeneousMixedCarryWholeClassSmallCoreResidual Q U tau m J T c := by
+  by_cases hproper : J.card < U.card
+  · exact Or.inl ⟨h, hproper⟩
+  · exact Or.inr ⟨h, Nat.le_of_not_gt hproper⟩
+
+/-- Proper-subquotient side of the even-kernel Arf certificate residual. -/
+def HomogeneousMixedCarryProperSubquotientArfCertificateResidual
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) : Prop :=
+  ∃ H : Finset ι,
+    HomogeneousMixedEvenTwistedKernelArfCertificate Q U tau H ∧ H.card < U.card
+
+/-- Whole-class side of the even-kernel Arf certificate residual. -/
+def HomogeneousMixedCarryWholeClassArfCertificateResidual
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) : Prop :=
+  ∃ H : Finset ι,
+    HomogeneousMixedEvenTwistedKernelArfCertificate Q U tau H ∧ U.card ≤ H.card
+
+/-- A whole-class Arf certificate has support of the same cardinality as the quotient class. -/
+theorem HomogeneousMixedCarryWholeClassArfCertificateResidual.card_eq
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ}
+    (h : HomogeneousMixedCarryWholeClassArfCertificateResidual Q U tau) :
+    ∃ H : Finset ι,
+      HomogeneousMixedEvenTwistedKernelArfCertificate Q U tau H ∧ H.card = U.card := by
+  rcases h with ⟨H, hcert, hwhole⟩
+  exact ⟨H, hcert, le_antisymm (Finset.card_le_card hcert.1.1) hwhole⟩
+
+/-- Every Arf certificate residual is either proper-subquotient or whole-class. -/
+theorem HomogeneousMixedCarryArfCertificateResidual.properSubquotient_or_wholeClass
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ}
+    (h : HomogeneousMixedCarryArfCertificateResidual Q U tau) :
+    HomogeneousMixedCarryProperSubquotientArfCertificateResidual Q U tau ∨
+      HomogeneousMixedCarryWholeClassArfCertificateResidual Q U tau := by
+  rcases h with ⟨H, hcert⟩
+  by_cases hproper : H.card < U.card
+  · exact Or.inl ⟨H, hcert, hproper⟩
+  · exact Or.inr ⟨H, hcert, Nat.le_of_not_gt hproper⟩
 
 /--
 Selector-facing support-size-six parity-compression branch: if one even and one odd boundary type are
@@ -7910,6 +8218,67 @@ theorem correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_aggre
     S.card ≤ 14 * m :=
   correctedZeroOneThreeTwoComplement_card_le_fourteen_mul_of_modFour_aggregateFrontierSurfaces
     h.trace h.coreLength h.pendant h.zeroTrace G htriangle hC4 halpha hnoLayer
+
+/-- Apply the compressed aggregate package and immediately split the small-core residual. -/
+theorem ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry.smallCoreResidualSplit
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ} {m : ℕ}
+    (hres : HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m) :
+    ∃ J T : Finset ι, ∃ c : ℕ,
+      HomogeneousMixedCarryProperSubquotientSmallCoreResidual Q U tau m J T c ∨
+        HomogeneousMixedCarryWholeClassSmallCoreResidual Q U tau m J T c := by
+  rcases h.smallCoreResidual hres with ⟨J, T, c, hcore⟩
+  exact
+    ⟨J, T, c,
+      HomogeneousMixedCarrySmallCoreResidual.properSubquotient_or_wholeClass hcore⟩
+
+/-- Apply the compressed aggregate package and immediately split an affine Arf certificate. -/
+theorem ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry.arfCertificateSplit
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ}
+    (hinc : HomogeneousMixedCarryAffineInconsistency Q U tau) :
+    HomogeneousMixedCarryProperSubquotientArfCertificateResidual Q U tau ∨
+      HomogeneousMixedCarryWholeClassArfCertificateResidual Q U tau :=
+  HomogeneousMixedCarryArfCertificateResidual.properSubquotient_or_wholeClass
+    (h.arfCertificate hinc)
+
+/--
+Compressed aggregate package with the retained-trace bit-column complement table wired in as a
+row-constant total-degree congruence.
+-/
+structure ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace :
+    Prop where
+  compressed : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry
+  retainedTraceComplementRows :
+    ∀ {K e e' q : ℕ} {τ σ τ' σ' : Fin 8},
+      RetainedTraceBitColumnComplementEquation K τ σ τ' σ' →
+        RetainedTraceComplementRowConstantCongruence e e' q τ σ τ' σ'
+
+/-- Add the retained-trace complement table to any compressed aggregate package. -/
+theorem modFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace_of_compressed
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry) :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace where
+  compressed := h
+  retainedTraceComplementRows := by
+    intro K e e' q τ σ τ' σ' hcomp
+    exact
+      retainedTraceComplementRowConstantCongruence_of_bitColumnComplement
+        (K := K) (e := e) (e' := e') (q := q) hcomp
+
+/-- Forget the retained-trace table and recover the compressed aggregate package. -/
+theorem ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace.to_compressed
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace) :
+    ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarry :=
+  h.compressed
+
+/-- The retained-trace enriched compressed package still gives the rounded aggregate layer cap. -/
+theorem triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace
+    (h : ModFourAggregateFrontierSurfacesWithCompressedHomogeneousCarryAndRetainedTrace) :
+    TriangleFreeInducedC4FreeModFourLayerCap 14 :=
+  triangleFreeInducedC4FreeModFourLayerCap_fourteen_of_aggregateFrontierSurfacesWithCompressedHomogeneousCarry
+    h.compressed
 
 /--
 Conditional selector for the corrected `{0,1}`/`{3,2}` complement surface.  A linearly large
