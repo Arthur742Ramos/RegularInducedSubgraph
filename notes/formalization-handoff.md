@@ -1543,6 +1543,35 @@ Recommended attack:
    independent four-set, a terminal direction must omit at least one even type and at least one odd type;
    the residual cube has support on at most six types.
 
+   Also formalize the cube-face C4 condition.  In every square face
+   `tau, tau+e_a, tau+e_b, tau+e_a+e_b`, the diagonals are anti-complete, so any alternating four-edge
+   cycle around the face is automatically an induced `C_4`.  Therefore the four side bipartite graphs of
+   each nonempty face must contain no compatible alternating cycle; if three side pairs are complete and
+   all corner types are nonempty, the fourth side pair is empty.
+
+   The finite support dichotomy: with six nonempty types, the omitted even and odd types are either
+   adjacent or antipodal.  Adjacent omissions leave full square faces and trigger the face condition.
+   Antipodal omissions leave the induced six-cycle of the cube and no full square face.  Otherwise the
+   support has size at most five.
+
+   Also formalize parity-count compression: distinct same-parity types are pairwise anti-complete.  If
+   three types of one parity are nonempty, each such type class is a clique; otherwise an independent pair
+   in one type plus one vertex from each of the other two gives an independent four-set.  Therefore
+   support size six gives `|C_i|<=6m`, support size five leaves only two exceptional classes after a
+   `3m` clique-bounded part, and support size at most four is the final small-support case.
+
+   In support size five, the two exceptional classes have the same parity and are anti-complete.  They
+   cannot both contain independent pairs, so one is also clique-bounded; support five reduces to a `4m`
+   clique-bounded part plus one possible nonlinear type class with `alpha<=2`, induced-`C_4`-free, clique
+   number at most `m`, and no outside-only congruent induced subgraph larger than `m`.  Complementing
+   that type class gives a triangle-free, C4-free graph `H` with `alpha(H)<=m`; since
+   `deg_G[S](v)=|S|-1-deg_H[S](v)`, mod-4 congruent induced sets are preserved by complement up to a
+   constant shift.  Thus the one-type remnant is the mod-4 selector restricted to girth-at-least-five
+   graphs.  Terminality further implies `induced_matching(H)<=m/2` and induced circumference at most
+   `m`: an induced matching has all selected degrees `1`, and an induced cycle has all selected degrees
+   `2`.  For support at most four, either a full square face triggers the face-C4 condition, or the
+   support is a cube forest of at most four type classes.
+
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified
    `d_i`-regular four-vertex graph with

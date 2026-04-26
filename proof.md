@@ -6384,6 +6384,103 @@ least one even-parity type and at least one odd-parity type.  Hence at most six 
 nonempty in this residual cube problem.  The remaining obstacle is not support size, but bounding the
 individual C4-free type classes that survive these anti-join and one-corner constraints.
 
+The induced-`C_4` condition itself becomes a face condition on this cube support.  In any square face
+
+```text
+tau, tau+e_a, tau+e_b, tau+e_a+e_b
+```
+
+the two diagonal type pairs have Hamming distance two and are anti-complete.  Therefore any alternating
+cycle using one vertex from each corner and edges along the four sides is automatically an induced
+`C_4`.  Terminality forbids such a cycle in every cube face.  Equivalently, the four bipartite graphs
+on the side pairs of every nonempty face form a `C_4`-free cyclic blow-up.  In particular, if three side
+pairs of a face are complete and all four corner types are nonempty, the fourth side pair must be empty;
+more generally, every face must miss the compatibility needed to close an alternating four-cycle.  This
+face constraint is the next finite target after the support bound.
+
+The support bound has a simple cube dichotomy.  Since the residual support omits one even and one odd
+type, if six types remain then the two omitted types are either adjacent or antipodal.  If they are
+adjacent, two square faces avoid both omissions and are full; the face constraint above applies.  If they
+are antipodal, no square face is full and the six remaining types form the induced `6`-cycle in the
+cube.  Thus the triangle-boundary `{0,2}` residual splits into:
+
+```text
+support size <=5;
+support size =6 with adjacent omissions, hence at least one full constrained face;
+support size =6 with antipodal omissions, a cyclic six-type blow-up.
+```
+
+The last case is the only cube-support shape not immediately exposing a full square-face `C_4` test.
+
+There is an even simpler parity-count compression.  Distinct types of the same parity are pairwise
+anti-complete.  Hence, if three types of one parity are nonempty, each of those three type classes must
+be a clique: an independent pair inside one class together with one vertex from each of the other two
+same-parity classes would be an independent four-set, contradicting repaired residue `0`.  Since no
+clique in the outside chamber can exceed `m`, any parity side with at least three nonempty types
+contributes at most `3m`.
+
+Consequences:
+
+```text
+support size 6  =>  |C_i|<=6m;
+support size 5  =>  three same-parity classes are cliques, leaving two opposite-parity exceptional classes;
+support size <=4 =>  at most four type classes remain, with no three-type parity compression forced.
+```
+
+Thus the triangle-boundary `{0,2}` residual has been reduced from eight arbitrary type classes to either
+a linear `6m` cap or at most two exceptional same/opposite-parity type classes beyond a clique-bounded
+part.
+
+In the support-five case the two exceptional classes have the same parity and are therefore anti-complete
+to each other.  If both contained independent pairs, those two pairs would form an independent four-set.
+Hence at least one exceptional class is itself a clique and contributes at most `m`.  Consequently
+support five is reduced to a `4m` clique-bounded part plus a **single** possible non-clique type class.
+Every such non-clique type class lies in some boundary miss class, so it has independence number at most
+two and is induced-`C_4`-free.  Thus a support-five counterexample larger than `4m` would already contain
+a single large type class with
+
+```text
+alpha<=2,        induced-C_4-free,        no clique larger than m,
+```
+
+and with no mod-`4` congruent induced subgraph larger than `m` by outside-only maximality.  This is a
+strict one-type residual, smaller than the original eight-type cube.
+
+Equivalently, complementing this one-type graph gives a graph `H` with no triangles and no `C_4`
+(because `C_4` is self-complementary) and with independence number at most `m`.  For any selected set
+`S`,
+
+```text
+deg_G[S](v)=|S|-1-deg_H[S](v).
+```
+
+Thus `G[S]` has degrees congruent modulo `4` iff `H[S]` has degrees congruent modulo `4`.  The one-type
+residual is therefore exactly the loss-constant mod-`4` selector restricted to girth-at-least-five
+graphs, with the extra assumption that `alpha(H)<=m`.  This is a strictly smaller target than the
+original arbitrary-graph theorem; closing it with a constant better than the remaining support loss would
+finish the support-five triangle-boundary branch.
+
+The terminal form of this girth-five target has two immediate graph-theoretic obstructions.  If `H`
+contains an induced matching of size greater than `m/2`, the endpoints induce a graph of degree `1` on
+more than `m` vertices, and complementing back gives a forbidden outside-only congruent set.  If `H`
+contains an induced cycle of length greater than `m`, that cycle has degree `2` at every selected vertex
+and again closes.  Hence a one-type terminal residual must satisfy
+
+```text
+alpha(H)<=m,        induced_matching(H)<=m/2,        induced_circumference(H)<=m,
+```
+
+with `H` triangle-free and `C_4`-free.  This is a much sharper sparse-graph target: prove that every
+girth-at-least-five graph on sufficiently more than `m` vertices with `alpha<=m` has either a large
+induced matching or a large induced cycle, or else extract a mod-`4` congruent induced subgraph by a
+different sparse-graph argument.
+
+For support at most four, either the support contains a square face, in which case the face `C_4`
+condition applies, or it is a forest subgraph of the cube.  The forest-support case is again a bounded
+tree of type classes with anti-complete nonedges; any parity side of size three is clique-bounded by the
+previous paragraph.  Hence the only genuinely nonlinear residue of the triangle-boundary `{0,2}` branch
+is a single C4-free, `alpha<=2` type class or a small cube-forest of at most four such classes.
+
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with
 the same old-neighbourhood residue `omega(g_i)`.

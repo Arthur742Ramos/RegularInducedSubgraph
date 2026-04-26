@@ -949,6 +949,32 @@ The anti-join graph is the distance-at-least-two graph on the 3-cube; its parity
 Since four pairwise anti-joined nonempty types would give an independent four-set, at least one even and
 one odd type must be empty.  Thus the residual cube has support on at most six types; the remaining issue
 is bounding the surviving C4-free type classes.
+Moreover, every square face of the cube has anti-complete diagonals, so any alternating cycle around the
+face is automatically an induced `C_4`.  Hence each nonempty face is a `C_4`-free cyclic blow-up: the four
+side bipartite graphs must avoid a compatible four-edge cycle.  For example, if three side pairs of a face
+are complete and all four corner types are nonempty, the fourth side pair must be empty.
+The support shapes are finite: support size at most five; or support size six with adjacent omitted
+even/odd types, which leaves full square faces; or support size six with antipodal omissions, in which
+case the surviving type graph is the induced six-cycle of the cube.  The antipodal-omission six-cycle is
+the only support shape with no full face.
+Parity-count compression is stronger for size six: distinct same-parity types are pairwise anti-complete,
+so if three types of one parity are nonempty then each is a clique, otherwise an independent pair in one
+plus one vertex from the other two gives an independent four-set.  Hence support size six gives
+`|C_i|<=6m`; support size five leaves three clique-bounded same-parity classes and only two exceptional
+classes; support size at most four is the remaining small-support case.
+In support size five, the two exceptional same-parity classes are anti-complete; they cannot both contain
+independent pairs.  Thus one is clique-bounded, and the only possible nonlinear remnant is a single type
+class with `alpha<=2`, induced-`C_4`-free, clique number at most `m`, and no outside-only congruent
+subgraph larger than `m`.  Complementing this one-type graph gives a triangle-free, C4-free graph
+`H` with `alpha(H)<=m`, and congruent degrees modulo `4` are preserved up to the shift `|S|-1`; hence
+this remnant is the mod-4 selector restricted to girth-at-least-five graphs.  For support at most four,
+either a full square face triggers the face-C4 condition or the support is a cube forest of at most four
+such type classes.
+In that girth-five complement `H`, terminality also forces
+`induced_matching(H)<=m/2` and induced circumference at most `m`, since an induced matching gives all
+degrees `1` and an induced cycle gives all degrees `2` on the selected vertices.  The sparse remnant is
+therefore: triangle-free, C4-free, `alpha<=m`, no induced matching larger than `m/2`, and no induced
+cycle longer than `m`.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it
