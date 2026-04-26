@@ -6332,6 +6332,15 @@ matchings in `H`, and unions of cycle components of `H` complement back to outsi
 degrees are constant modulo `4`.  Thus the failed colouring route is replaced by a terminal
 induced-degree-two exclusion in an induced-`C_4`-free, `K_4`-free graph.
 
+This residual is genuine: the augmented boundary tables do not by themselves remove it.  If the boundary
+triple is a triangle and all retained vertices have the same boundary type `110`, then the signed mixed
+rules for `Rep={0,1}` impose no extra same-type condition beyond the retained-only requirements
+`alpha<=3` and `2K_2`-free.  In complement language, an arbitrary induced-`C_4`-free, `K_4`-free graph
+with `alpha<=m` and the degree-two terminal exclusion can live in that single type.  Therefore the last
+closure cannot be another finite boundary-type compression of the existing tables; it must either prove
+a mod-`4` congruent-degree selector for this induced-`C_4`-free, `K_4`-free class, or import genuinely
+global target-stability/maximal-witness information from the exact-basis construction.
+
 Second, the augmented boundary rules already give a `7m` cap for one C4-branch boundary shape.  If
 `Rep(g_i)` contains `{0,2}` and the boundary triple `X_i` is independent, then type `000` is forbidden by
 the repaired residue `0` `3+1` atom.  For every other boundary type, either some boundary pair has type
@@ -6544,9 +6553,18 @@ L_j = N_{L_j}(a) union N_{L_j}(b),
 
 and each of the two neighbourhoods is a clique by the one-corner rule whenever the centre is a miss for
 the corresponding coordinate.  Thus the last possible `3m` spill is not arbitrary: every independent
-pair in the nonlinear centre two-covers at least two leaves by clique neighbourhoods.  The remaining
-closure problem is to convert this pair-covering constraint, together with the chain/C5 selector bound
-on `T`, into a strict improvement over the crude `3m+5m/2` estimate.
+pair in the nonlinear centre two-covers at least two leaves by clique neighbourhoods.  This constraint
+is extra slack on top of the crude `3m+5m/2` estimate below, not a new obstruction.
+
+Quantitatively, the corrected one-type bound is already enough to cap the whole triangle-boundary
+`{0,2}` cube branch linearly below `7m`.  Support six contributes at most `6m`; support five contributes
+at most `4m+(5/2)m=13m/2`; and support at most four contributes at most `3m+(5/2)m=11m/2`, with the
+top-edge subcase capped by `6m` as above.  Together with the independent/one-edge/path boundary caps,
+every `{0,2}` direction, and by complement every `{3,1}` direction, has size at most `7m+O(1)` in the
+augmented exact-basis branch.  The finite cube residual is therefore closed; the only large-fiber
+hereditary surface still not linearly closed is the corrected `{0,1}`/`{3,2}` complement selector:
+induced-`C_4`-free, `K_4`-free, independence at most `m`, and no large induced degree-two regular
+selector.
 
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with

@@ -933,8 +933,14 @@ complementing, the real residual is a mod-`4` selector for induced-`C_4`-free gr
 at most `3` and independence number at most `m`, so any closure must use congruent-degree structure
 rather than colouring alone.  In a terminal complement `H` of this branch, the same degree-two
 path/cycle selector forbids every induced `Delta<=2` subgraph larger than `11m/5`: independent sets, induced
-matchings, and cycle-component unions in `H` complement back to outside-only congruent sets.  For the C4
-branch, the augmented boundary rules give a direct shape cap: if
+matchings, and cycle-component unions in `H` complement back to outside-only congruent sets.
+This is a genuine residual, not a missing finite boundary case.  With a triangle boundary and all retained
+vertices in the single type `110`, the signed mixed tables for `Rep={0,1}` add no same-type restrictions
+beyond the retained-only conditions.  Thus an arbitrary induced-`C_4`-free, `K_4`-free complement with
+`alpha<=m` and the degree-two terminal exclusion can occupy one boundary type.  The final step must prove
+a mod-`4` selector for this hereditary class or use global target-stability/maximal-witness data beyond the
+local augmented-fiber tables.
+For the C4 branch, the augmented boundary rules give a direct shape cap: if
 `{0,2} subset Rep(g_i)` and `X_i` is independent, then type `000` is forbidden and all other seven
 boundary types are cliques, so `|C_i|<=7m`.  Complementarily, `{3,1}` with a triangle boundary also gives
 `|C_i|<=7m`.
@@ -1002,7 +1008,12 @@ The only support shape with three clique spill classes is a cube star with the n
 and three same-parity clique leaves.  For every independent pair in the centre, common non-neighbours can
 occur in at most one leaf; two leaves with common non-neighbours would give an independent four-set.
 Thus every independent centre-pair two-covers at least two leaves by clique neighbourhoods.  This
-pair-covering constraint is the remaining handle needed to improve the crude `3m+5m/2` star bound.
+pair-covering constraint is extra slack, and the crude star bound is already enough for the finite cube
+cap.  Support six is at most `6m`; support five is at most `4m+(5/2)m=13m/2`; support at most four is at
+most `3m+(5/2)m=11m/2`, with the top-edge subcase capped by `6m`.  Hence every triangle-boundary
+`{0,2}` direction, and by complement every `{3,1}` direction, is bounded by `7m+O(1)`.  The remaining
+large hereditary surface is the corrected `{0,1}`/`{3,2}` complement selector: induced-`C_4`-free,
+`K_4`-free, independence at most `m`, and no induced degree-two regular selector larger than `m`.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it

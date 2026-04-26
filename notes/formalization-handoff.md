@@ -1583,7 +1583,18 @@ Recommended attack:
    For the remaining cube-star spill shape, formalize the pair-covering constraint: if `T` is the
    nonlinear centre and `L_1,L_2,L_3` are the same-parity clique leaves, then every independent pair in
    `T` has common non-neighbours in at most one leaf.  Hence at least two leaves are covered by the two
-   clique neighbourhoods of that pair.
+   clique neighbourhoods of that pair.  The crude resulting constants already close the finite cube
+   residual: support six is at most `6m`, support five is at most `13m/2`, support at most four is at
+   most `11m/2`, and the top-edge subcase is at most `6m`.  Thus the triangle-boundary `{0,2}` and
+   complementary `{3,1}` directions are bounded by `7m+O(1)`.  The remaining large hereditary surface is
+   the corrected `{0,1}`/`{3,2}` complement selector: induced-`C_4`-free, `K_4`-free, independence at
+   most `m`, and no induced degree-two regular selector larger than `m`.
+
+   Do not try to close the `{0,1}`/`{3,2}` residual by adding more local mixed-table cases alone.  There is
+   a one-type local model: with triangle boundary and all retained vertices of type `110`, the signed
+   `Rep={0,1}` mixed rules impose no extra same-type restriction beyond the retained-only
+   `alpha<=3`, `2K_2`-free branch.  The remaining formal target is therefore a genuine mod-`4` selector
+   for the induced-`C_4`-free, `K_4`-free complement class, or a separate global target-stability lemma.
 
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified
