@@ -1021,12 +1021,32 @@ Recommended attack:
    Also formalize the mixed zero-target rule: an old-zero independent packet in `P_0` and a clique packet
    in `P_+` with old degree `kappa=|K|` append together if their cross graph is empty and `|K|=0`, or
    complete and `|I|=0`, modulo `4`.
+   Exact cross-regular version: if `c_I=deg_K(i)` on `I` and `c_K=deg_I(k)` on `K`, then append iff
+   `c_I=kappa`, `|K|+c_K=kappa [MOD 4]`, and `|I|c_I=|K|c_K`.
    Generalize this as the two-packet scalar equation: internally regular cross-uniform packets
    `B_a subset P_a`, `B_b subset P_b` append iff
    `a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`.
    The finite packet-system form is
    `a_j+d_j+sum_{k != j}epsilon_{jk}|B_k|=r+sum_k delta_k [MOD 4]` for every internally regular packet
    `B_j` when all cross graphs between packets are uniform.
+   Generalize to the exact cross-regular quotient: if `c_{jk}` is the common degree from `B_j` to `B_k`
+   modulo `4`, impose edge-count symmetry `|B_j|c_{jk}=|B_k|c_{kj}` and the equations
+   `a_j+d_j+sum_{k != j}c_{jk}=r+sum_k delta_k [MOD 4]`.
+   Also formalize the row-difference split: with
+   `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the first condition is `R_j=R_l` for all packets and the
+   final condition is the scalar target `R_j=r+sum_k delta_k`.
+   For two packets, record the eliminated form: with `A=(a+d_a)-(b+d_b)`, row equality gives
+   `c_{ba}=c_{ab}+A`, edge-count symmetry gives `(s_a-s_b)c_{ab}=s_b A [MOD 4]`, and the target is
+   `c_{ab}=r+delta_a+delta_b-a-d_a`.
+   Equivalently, after substitution:
+   `(s_a-s_b)(r+delta_a+delta_b-a-d_a)=s_b((a+d_a)-(b+d_b)) [MOD 4]`, with the usual gcd cases for
+   solving a linear congruence modulo `4`.
+   Add the odd-size parity shadow: on odd-size packets, `c_{jk}=c_{kj} [MOD 2]`, so the first-bit row
+   condition is `a_j+d_j+deg_Q(j)=constant [MOD 2]` for the quotient graph of odd cross parities.
+   Formalize exact packet coalescence: same-chamber same-external-profile packets with cross residues
+   `c_{12},c_{21}` merge if `c_{12}=c_{21}`; the merged internal residue is `d+c_{12}` and the old
+   increment is the sum.  Conversely their row difference is `c_{12}-c_{21}`, so any appendable
+   primitive packet system uses at most one packet from each same-profile class.
    Choose `w_0 in W`, work in `(Z/4Z)^(W\{w_0})`, and insert positive vectors
    `p_b(w)=1_{bw}-1_{bw_0}` for `b in P_t` together with negative vectors
    `-p_d(w)=-(1_{dw}-1_{dw_0})` for `d in W`.  Greedy Olson on the combined sequence leaves at most

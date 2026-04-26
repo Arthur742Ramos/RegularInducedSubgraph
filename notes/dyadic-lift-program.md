@@ -357,6 +357,9 @@ The two zero-target chambers have an exact mixed rule: if `I subset P_r` is inde
 between `I` and `K` is uniform `epsilon`, then `I union K` appends whenever `epsilon=0` forces
 `|K|=0 [MOD 4]` or `epsilon=1` forces `|I|=0 [MOD 4]`.  The needed size congruence is just one extra
 Olson coordinate.
+In exact cross-regular form, if `c_I` is the degree from `I` into `K` and `c_K` from `K` into `I`, then
+the mixed packet appends iff `c_I=kappa` and `|K|+c_K=kappa [MOD 4]`, with
+`|I|c_I=|K|c_K`.
 The general two-packet scalar equation is: for internally regular cross-uniform packets
 `B_a subset P_a`, `B_b subset P_b` with old increments `delta_a,delta_b`, internal residues `d_a,d_b`,
 and cross value `epsilon`, their union appends iff
@@ -364,7 +367,30 @@ and cross value `epsilon`, their union appends iff
 For finitely many internally regular packets with pairwise uniform cross values `epsilon_{jk}`, this
 becomes
 `a_j+d_j+sum_{k != j}epsilon_{jk}|B_k|=r+sum_k delta_k [MOD 4]` for every active packet `j`.
-This is the exact chamber packet-system normal form of the first-bit self-layer residual.
+This is the cross-uniform chamber packet-system normal form of the first-bit self-layer residual.  The
+exact form only needs cross-regularity modulo `4`: if `c_{jk}` is the common degree from vertices of
+`B_j` into `B_k`, with edge-count symmetry `|B_j|c_{jk}=|B_k|c_{kj}`, then the equations are
+`a_j+d_j+sum_{k != j}c_{jk}=r+sum_k delta_k [MOD 4]`.
+Equivalently, with `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the system is the row-difference
+condition `R_j=R_l` for all active packets plus the single scalar target
+`R_j=r+sum_k delta_k`.  Terminality must therefore block either quotient self-layer compatibility or the
+last old-increment target.
+For two packets this eliminates to scalar congruences.  With sizes `s_a,s_b` and
+`A=(a+d_a)-(b+d_b)`, row equality gives `c_{ba}=c_{ab}+A`; edge-count symmetry becomes
+`(s_a-s_b)c_{ab}=s_b A [MOD 4]`, and the final target is
+`c_{ab}=r+delta_a+delta_b-a-d_a`.
+After substituting the target, the single quotient congruence is
+`(s_a-s_b)(r+delta_a+delta_b-a-d_a)=s_b((a+d_a)-(b+d_b)) [MOD 4]`.  If `s_a-s_b` is odd the cross
+residue is unique; if it is `2`, existence requires an even right side and fixes the residue modulo `2`;
+if it is `0`, the right side must vanish.
+Modulo `2`, every odd-size packet subsystem has symmetric cross parities, so it is an undirected
+quotient graph `Q` with labelled row condition `a_j+d_j+deg_Q(j)=constant [MOD 2]`.  The full
+mod-`4` residues are the carry beyond this parity shadow.
+There is an exact coalescence rule: same-chamber same-external-profile packets with cross residues
+`c_{12},c_{21}` merge whenever `c_{12}=c_{21}`; the merged packet has old increment sum and internal
+residue `d+c_{12}`.  Conversely, in an appendable packet system the two row values differ by
+`c_{12}-c_{21}`, so row compatibility forces this equality.  Hence an appendable primitive packet system
+uses at most one packet from each same-chamber external profile.
 The other sparse chambers and the remaining dense targets are affine target-subsum
 problems: an independent subset `B subset P_t` extends once
 `sum_B(1_{bw})=t-r` for every old `w`, while a clique subset `B subset P_t` extends once

@@ -1543,6 +1543,8 @@ The two zero-target chambers also have a mixed extension rule: an old-zero indep
 `{deg_W=r}` and a clique packet in `{deg_W=r+1}` with old degree equal to its size append together if
 their cross graph is empty and the clique size is `0 [MOD 4]`, or if their cross graph is complete and
 the independent-packet size is `0 [MOD 4]`.
+In the exact cross-regular version, writing `c_I` and `c_K` for the two cross-degree residues, the
+conditions are `c_I=kappa`, `|K|+c_K=kappa`, and `|I|c_I=|K|c_K [MOD 4]`.
 
 The corresponding general scalar equation is exact: two internally regular cross-uniform packets
 `B_a subset P_a`, `B_b subset P_b`, with internal residues `d_a,d_b`, old increments
@@ -1550,6 +1552,18 @@ The corresponding general scalar equation is exact: two internally regular cross
 `a+d_a+epsilon|B_b|=b+d_b+epsilon|B_a|=r+delta_a+delta_b [MOD 4]`.
 For a finite cross-uniform packet family this becomes
 `a_j+d_j+sum_{k != j}epsilon_{jk}|B_k|=r+sum_k delta_k [MOD 4]` on every packet.
+The exact quotient only needs cross-regular residues `c_{jk}` satisfying
+`|B_j|c_{jk}=|B_k|c_{kj}`; equivalently, the row values
+`R_j=a_j+d_j+sum_{k != j}c_{jk}` must be constant, and that common value must equal the single
+old-increment target `r+sum_k delta_k`.
+For two packets this is just `(s_a-s_b)c_{ab}=s_b((a+d_a)-(b+d_b))` together with the target
+`c_{ab}=r+delta_a+delta_b-a-d_a`.
+Equivalently, after target substitution:
+`(s_a-s_b)(r+delta_a+delta_b-a-d_a)=s_b((a+d_a)-(b+d_b)) [MOD 4]`.
+Same-chamber same-external-profile packets may be merged whenever their two cross-degree residues agree.
+If they appear in an appendable packet system, their row difference is exactly the difference of those
+two residues, so row compatibility forces coalescence.  Thus an appendable primitive packet system uses
+at most one packet from each such profile.
 
 ## 14. Pair-chamber orientation normal form
 

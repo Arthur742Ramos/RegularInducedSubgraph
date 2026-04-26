@@ -5311,6 +5311,23 @@ separately, but also any cross-empty or cross-complete pair of such old-balanced
 corresponding size congruence.  The extra size congruence can be forced by Olson at the cost of one
 additional `Z/4Z` coordinate when the relevant packet reservoir is larger than `3(m+1)`.
 
+The exact mixed rule only requires the cross graph to be biregular modulo `4`.  Keep `I subset P_0`
+independent and `K subset P_+` a clique, with `deg_I(W)=0`, `deg_K(W)=kappa`, and let
+
+```text
+c_I=deg_K(i)        for i in I,
+c_K=deg_I(k)        for k in K.
+```
+
+Then `I union K` appends exactly when
+
+```text
+c_I=kappa,        |K|+c_K=kappa        [MOD 4],
+```
+
+together with the edge-count compatibility `|I|c_I=|K|c_K [MOD 4]`.  The cross-empty/complete rule is
+the special case `c_I=epsilon|K|`, `c_K=epsilon|I|`.
+
 More generally, the two-packet chamber equation is scalar once the packets are internally regular and
 cross-uniform.  Let `B_a subset P_a` and `B_b subset P_b` have old increments `delta_a,delta_b`, internal
 degree residues `d_a,d_b`, and cross value `epsilon in {0,1}`.  Then
@@ -5340,9 +5357,139 @@ a_j+d_j+sum_{k != j} epsilon_{jk}|B_k|
   = r+sum_k delta_k                         [MOD 4].
 ```
 
-Thus the maximal-witness first-bit residual has an exact finite packet-system form: old-coordinate
-balancing is linear, and the only nonlinear part is the self-layer system of internal residues and
-uniform cross packet sizes.
+This gives a finite packet-system form for the cross-uniform subcase: old-coordinate balancing is
+linear, and the remaining self-layer data are internal residues and uniform cross packet sizes.
+
+The exact packet quotient only needs cross-regularity modulo `4`, not cross-uniformity.  For packets
+`B_j`, write `c_{jk}` for the common value of `deg_{B_k}(v)` on vertices `v in B_j`, whenever this value
+is constant modulo `4`.  Edge-count symmetry imposes
+
+```text
+|B_j| c_{jk}=|B_k| c_{kj}        [MOD 4].
+```
+
+Then `B=union_j B_j` appends iff, for every active `j`,
+
+```text
+a_j+d_j+sum_{k != j} c_{jk}
+  = r+sum_k delta_k                         [MOD 4].
+```
+
+The cross-uniform formula is the special case `c_{jk}=epsilon_{jk}|B_k|`.  Thus the honest finite
+residual is a cross-regular packet quotient with edge-count symmetry, and the cross-uniform packet
+system is the most rigid visible subcase.
+
+Equivalently, the packet system splits into a row-difference condition and one scalar target.  Put
+
+```text
+R_j=a_j+d_j+sum_{k != j} c_{jk}.
+```
+
+Then the union appends iff
+
+```text
+R_j=R_l                         for all active j,l,
+R_j=r+sum_k delta_k             for one (hence every) active j.       [MOD 4]
+```
+
+The first line is pure self-layer compatibility and does not mention the old witness residue `r`; the
+second line is the single old-increment target.  Thus a terminal cross-regular packet family must fail
+either the row-difference equations
+
+```text
+(a_j+d_j)-(a_l+d_l)
+  +sum_k (c_{jk}-c_{lk})=0        [MOD 4]
+```
+
+or the final scalar old-increment equation.  This is the packet analogue of separating quotient-degree
+parity from the last Arf/carry bit in the odd-word branch.
+
+For two packets this can be eliminated completely.  Let `B_a subset P_a` and `B_b subset P_b` have sizes
+`s_a,s_b`, internal residues `d_a,d_b`, old increments `delta_a,delta_b`, and cross residues
+`c_{ab},c_{ba}`.  Put
+
+```text
+A=(a+d_a)-(b+d_b).
+```
+
+The row-difference equation gives `c_{ba}=c_{ab}+A`.  The only remaining cross-regularity condition is
+
+```text
+(s_a-s_b)c_{ab}=s_b A        [MOD 4],
+```
+
+and the target equation is
+
+```text
+c_{ab}=r+delta_a+delta_b-a-d_a        [MOD 4].
+```
+
+Thus a two-packet extension is decided by two scalar congruences after old-frame balancing: one
+edge-count congruence and one old-increment target.  The mixed `P_0/P_+` rule above is the special case
+`A=-|B_b|`.
+
+Substituting the target value leaves a single quotient congruence:
+
+```text
+(s_a-s_b)(r+delta_a+delta_b-a-d_a)
+  = s_b((a+d_a)-(b+d_b))        [MOD 4].
+```
+
+Equivalently, for a prescribed target cross residue `T=r+delta_a+delta_b-a-d_a`, the edge-count equation
+`(s_a-s_b)c_{ab}=s_b A` is soluble exactly as follows:
+
+```text
+s_a-s_b odd:     c_{ab} is uniquely forced;
+s_a-s_b == 2:    s_b A must be even, and c_{ab} is forced modulo 2;
+s_a-s_b == 0:    s_b A must vanish, and c_{ab} is free before the target equation.
+```
+
+Thus two-packet terminality is already a tiny residue obstruction unless the actual graph fails to
+supply the required cross-regular pair with that residue.
+
+The finite quotient also has a clean parity shadow.  Reduce the exact packet equations modulo `2`.
+For odd-size packets, edge-count symmetry gives
+
+```text
+c_{jk}=c_{kj}        [MOD 2].
+```
+
+Hence on any subsystem of odd-size packets the parities of `c_{jk}` form an undirected quotient graph
+`Q`, and the row-difference condition modulo `2` is
+
+```text
+a_j+d_j+deg_Q(j)=constant        [MOD 2].
+```
+
+Thus the first bit of a packet-system witness is again an ordinary parity-degree condition on a quotient
+graph, with vertex labels `a_j+d_j`.  The remaining obstruction after this parity shadow is precisely
+the mod-`4` carry encoded by the full residues `c_{jk}` and the final old-increment target.
+
+The row-difference form also gives an exact packet coalescence rule.  Suppose two active packets
+`B_1,B_2` have the same chamber value `a`, the same internal residue `d`, and the same external
+cross-profile: for every other packet `B_k`, both `c_{1k}=c_{2k}` and `c_{k1}=c_{k2}`.  Let
+`c_{12},c_{21}` be the two cross-degree residues between them.  If `c_{12}=c_{21}`, then
+`B_1 union B_2` is internally regular with residue
+
+```text
+d+c_{12}        [MOD 4],
+```
+
+has old increment `delta_1+delta_2`, and has the same external cross profile after replacing
+`c_{k1},c_{k2}` by `c_{k1}+c_{k2}` for the degree from `B_k` into the merged packet.  Edge-count
+symmetry is preserved by summing the two old symmetry identities.  Replacing `B_1,B_2` by this union
+preserves the packet-system equations.
+
+Conversely, if the two packets appear in an appendable packet system, their row values differ by
+
+```text
+R_1-R_2=c_{12}-c_{21}        [MOD 4],
+```
+
+because all other terms cancel.  Hence row compatibility forces `c_{12}=c_{21}`, and then the packets
+coalesce.  Therefore any appendable primitive packet system is profile-simple: it selects at most one
+packet from each same-chamber external profile.  Duplicate profiles are terminal clutter, not part of a
+possible extension.
 
 For the other degree-to-`W` chambers the missing datum is exactly one affine target coordinate, not the
 old difference balancing.  If `P_t={b: deg_W(b)=t}` and `I subset P_t` is independent, then an
