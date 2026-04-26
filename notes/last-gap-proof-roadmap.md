@@ -2116,6 +2116,9 @@ What remains justified after audit is:
       slack deletion preserves the same two-petal atom-defect equations until the four-vertex core;
       partner-hit large-target petals satisfy the stronger side bound `t+k<=h-2` and are extra-deficit
       petals with slack `e^hit=h-2-(t+k)`;
+      large-target slack now has a protected-core reduction: below all-large, partner-free labels protect at
+      most three large-atom vertices and partner-hit labels at most four tight omissions, so unprotected slack
+      deletes and the first `h,2,2,2` one-large profile has minimal survivors only for `h<=24`;
       after square discharge, the no-leftover all-ternary target-code branch has only signed-quotient scalar
       mismatch or extra-rebate/large-target exits;
       near-threshold pure deletion templates are boundary diagnostics only; mixed near-threshold obstructions

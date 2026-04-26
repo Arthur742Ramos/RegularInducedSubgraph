@@ -12708,6 +12708,41 @@ unit-deficit sides of the partner-free core.  It is automatically an extra-defic
 inclusion-minimal positive circuit containing it must obtain an additional rebate source beyond the single
 tight four-vertex core.
 
+This gives a finite-core reduction for large targets below the all-large branch.  Fix a large split atom `H`
+and look only at active collision labels whose source atom is outside `H`.  For a partner-free label, a vertex
+`z in H` is essential only if it lies on side `i` with opposite slack `e_{3-i}=0`; otherwise deleting `z`
+preserves the same atom-defect equations for that label.  But when `e_{3-i}=0`, the side containing `z` has
+
+```text
+t_i=3-k_i <= 3.
+```
+
+Thus a partner-free label protects at most three vertices of `H`.  For a partner-hit label, vertices used by
+the full-pair petal are never essential for the capacity inequality, since deleting one sends
+`h->h-1` and `t->t-1` while leaving `e^{hit}` unchanged.  An omitted vertex is essential only in the tight
+case `e^{hit}=0`, where
+
+```text
+h-t=k+2,
+```
+
+so, below the all-large branch, a partner-hit label protects at most four vertices of `H`.
+
+Consequently an inclusion-minimal large-target survivor has no free slack vertex: every vertex of `H` outside
+the chosen four-core must be protected by one of these bounded essential sets.  If a vertex of `H` is outside
+all protected sets, slack deletion removes it and preserves all currently active large-target inequalities,
+contradicting minimality of the survivor.  Hence arbitrary large split atoms have been replaced by finite
+protected cores.  In the first one-large profile `h,2,2,2`, there are at most six endpoint labels outside `H`,
+so a minimal survivor has
+
+```text
+h <= 6*4 = 24,
+```
+
+with the sharper `3p+4q` bound if `p` of the labels are partner-free and `q` are partner-hit.  If this finite
+protected-core reduction fails because the protecting labels themselves require large source atoms, the
+configuration has entered the all-atoms-size-at-least-four strict-defect branch.
+
 Since there are only four atoms, the ternary-cycle meta-case has only the sorted profiles
 
 ```text

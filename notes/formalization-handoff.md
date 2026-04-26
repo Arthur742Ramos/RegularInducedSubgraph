@@ -2686,6 +2686,10 @@ Recommended attack:
     carrying `k` whole opposite atoms satisfies `t+k<=h-2`.
     Record `e^hit=h-2-(t+k)`: partner-hit sides are extra-deficit and require rebate beyond the tight
     four-vertex core.
+    Formalize the protected-core reduction: partner-free labels protect only zero-slack sides (`<=3` vertices),
+    partner-hit labels protect only tight omitted vertices (`<=4` below all-large), and any large-atom vertex
+    outside all protected sets is deletion-hereditary.  The first one-large profile `h,2,2,2` is therefore
+    finite with `h<=24` in minimal survivors.
     Record the all-ternary closure summary: after square discharge, the no-leftover all-ternary target-code
     branch has only signed-quotient scalar mismatch or extra-rebate/large-target exits.
     Record near-threshold uniformity: pure deletion templates are boundary diagnostics; every mixed

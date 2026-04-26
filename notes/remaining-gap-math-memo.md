@@ -2187,6 +2187,9 @@ Partner-hit large-target petals are stricter: a full-pair petal with `t` vertice
 `k` whole opposite atoms must satisfy `t+k<=h-2`.
 The slack `e^hit=h-2-(t+k)` marks partner-hit petals as extra-deficit, requiring another rebate source beyond
 the tight core.
+Large targets below all-large are finite protected cores: partner-free labels protect at most three large-atom
+vertices, partner-hit labels at most four tight omitted vertices, and unprotected slack deletes.  Thus in
+`h,2,2,2` a minimal one-large survivor has `h<=24` (or `h<=3p+4q` by label type).
 After square discharge, the all-ternary no-leftover target-code branch is exhausted: it becomes signed-quotient
 scalar mismatch or extra-rebate/large-target.
 If it hits the shortened pair, a forced petal using `q=2,3` source vertices and hitting `r` other atoms has

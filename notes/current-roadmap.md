@@ -5553,6 +5553,12 @@ In the partner-hit large-target side, the full-pair petal satisfies the stricter
 for `h=4` it omits at least two vertices of the four-atom, and for `h>4` it adds another visible slack unit.
 With `e^hit=h-2-(t+k)`, a partner-hit petal has effective capacity `h-2` and is always an extra-deficit
 petal, requiring rebate beyond the single tight four-vertex core.
+This yields a finite-core reduction for large targets below the all-large branch: a partner-free label can
+protect only the side with zero opposite slack, hence at most three vertices of the large atom, while a
+partner-hit label protects only tight omitted vertices, hence at most four.  Any unprotected slack vertex is
+deletion-hereditary, so in the first one-large profile `h,2,2,2` a minimal survivor has `h<=24` (sharper
+`h<=3p+4q` for `p` partner-free and `q` partner-hit labels); otherwise the protector labels require large
+source atoms and the branch is all-large strict defect.
 With four atoms, the ternary-cycle profiles are only `3,3,2,2`, `3,3,3,2`, and `3,3,3,3`; the first is
 already the coupled two-three-atom table.
 The all-ternary profiles have high outdegree: in `3,3,3,3`, deleting any atom splits at least two other
