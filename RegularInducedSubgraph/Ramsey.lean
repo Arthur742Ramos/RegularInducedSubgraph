@@ -27266,6 +27266,404 @@ theorem
       h.toFinalNumericalConsequences := by
   exact Subsingleton.elim _ _
 
+/--
+Final proof-md manifest for the current Ramsey/R45 frontier.  This deliberately stores only the
+coarse consumer-facing layers--proof-md import, proof-md normalization checklist, public facade,
+normalization route, theorem checklist, target rows, and compact numerical consequences--so
+downstream files can normalize through one object without duplicating every low-level top-row
+ledger field.  The `R(4,5) <= 27` row is still the localized current-frontier row carried by the
+target-row/proof-md layers, not an unconditional global claim.
+-/
+structure RamseyTenR45CurrentFrontierProofMdFinalManifest
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop where
+  proofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  proofMdNormalizationChecklist : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v
+  publicFacade : RamseyTenR45CurrentFrontierPublicFacade G s v
+  normalizationRoute : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  theoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  targetRows : RamseyTenR45CurrentFrontierTargetRows
+  numericalConsequences : RamseyTenR45FinalNumericalConsequences
+
+/-- Assemble the final manifest from the existing coarse current-frontier components. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalManifest_of_components
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (himport : RamseyTenR45CurrentFrontierProofMdImport G s v)
+    (hnormalization : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v)
+    (hpublic : RamseyTenR45CurrentFrontierPublicFacade G s v)
+    (hroute : RamseyTenR45CurrentFrontierNormalizationRoute G s v)
+    (hchecklist : RamseyTenR45CurrentFrontierTheoremChecklist)
+    (hrows : RamseyTenR45CurrentFrontierTargetRows)
+    (hnumerical : RamseyTenR45FinalNumericalConsequences) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v where
+  proofMdImport := himport
+  proofMdNormalizationChecklist := hnormalization
+  publicFacade := hpublic
+  normalizationRoute := hroute
+  theoremChecklist := hchecklist
+  targetRows := hrows
+  numericalConsequences := hnumerical
+
+/-- Proof-md normalization checklists materialize the final current-frontier manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v where
+  proofMdImport := h.toProofMdImport
+  proofMdNormalizationChecklist := h
+  publicFacade := h.toCurrentFrontierPublicFacade
+  normalizationRoute := h.toCurrentFrontierNormalizationRoute
+  theoremChecklist := h.toCurrentFrontierTheoremChecklist
+  targetRows := h.toCurrentFrontierTargetRows
+  numericalConsequences := h.toFinalNumericalConsequences
+
+/-- Proof-md imports materialize the final current-frontier manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdImport.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.toProofMdNormalizationChecklist.toProofMdFinalManifest
+
+/-- Public facades materialize the final current-frontier manifest. -/
+theorem RamseyTenR45CurrentFrontierPublicFacade.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierPublicFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.toProofMdNormalizationChecklist.toProofMdFinalManifest
+
+/-- Normalization routes materialize the final current-frontier manifest. -/
+theorem RamseyTenR45CurrentFrontierNormalizationRoute.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierNormalizationRoute G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.toProofMdNormalizationChecklist.toProofMdFinalManifest
+
+/-- Current-frontier consumer surfaces materialize the final current-frontier manifest. -/
+theorem RamseyTenR45CurrentFrontierConsumerSurface.toProofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierConsumerSurface G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.toProofMdNormalizationChecklist.toProofMdFinalManifest
+
+/-- Select the proof-md import from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.proofMdImport
+
+/-- Select the proof-md normalization checklist from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toProofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.proofMdNormalizationChecklist
+
+/-- Select the public facade from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toCurrentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierPublicFacade G s v :=
+  h.publicFacade
+
+/-- Select the normalization route from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toCurrentFrontierNormalizationRoute
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierNormalizationRoute G s v :=
+  h.normalizationRoute
+
+/-- Select the current-frontier consumer surface from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.toProofMdImport.toCurrentFrontierConsumerSurface
+
+/-- Select the theorem checklist from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toCurrentFrontierTheoremChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierTheoremChecklist :=
+  h.theoremChecklist
+
+/-- Select target-facing rows from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toCurrentFrontierTargetRows
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.targetRows
+
+/-- Select compact numerical consequences from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toFinalNumericalConsequences
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45FinalNumericalConsequences :=
+  h.numericalConsequences
+
+/-- Select the final-consumer import from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toUnifiedFinalConsumerImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45UnifiedFinalConsumerImport G s v :=
+  h.toProofMdImport.toUnifiedFinalConsumerImport
+
+/-- Select the final downstream import from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toFinalDownstreamImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45Exact42TopRowFinalDownstreamImport G s v :=
+  h.toProofMdImport.toFinalDownstreamImport
+
+/-- Select the consumer-normalized route from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toConsumerNormalization
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45Exact42ConsumerNormalization G s v :=
+  h.toProofMdNormalizationChecklist.toConsumerNormalization
+
+/-- Select the exact-`42` top-row final import from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toTopRowFinalImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyThreeTenExact42TopRowFinalImport G s v :=
+  h.toProofMdNormalizationChecklist.toTopRowFinalImport
+
+/-- Select local ledgers from the final manifest. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toLocalLedgerBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45MiddleDegreeLocalLedgerBundle :=
+  h.toProofMdNormalizationChecklist.toLocalLedgerBundle
+
+/-- Final-manifest route to the low-row exact-`42` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toThreeTenFortyTwo
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    HasCliqueOrIndepSetBound 3 10 42 :=
+  h.toCurrentFrontierTargetRows.toThreeTenFortyTwo
+
+/-- Final-manifest route to the localized `R(4,5) <= 27` input. -/
+theorem
+    RamseyTenR45CurrentFrontierProofMdFinalManifest.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toCurrentFrontierTargetRows.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Final-manifest route to the propagated `R(10,10) <= 39246` theorem. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toHasCliqueOrIndepSetBound_10_10_39246
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    HasCliqueOrIndepSetBound 10 10 39246 :=
+  h.toCurrentFrontierTargetRows.toHasCliqueOrIndepSetBound_10_10_39246
+
+/-- Final-manifest route to the regular induced `10`-subgraph theorem. -/
+theorem
+    RamseyTenR45CurrentFrontierProofMdFinalManifest.toHasRegularInducedSubgraphOfCard_ten_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.toCurrentFrontierTargetRows.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Final-manifest route to the admissible-bound conclusion. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toTenMemAdmissibleBounds_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.toCurrentFrontierTargetRows.toTenMemAdmissibleBounds_40960
+
+/-- Final-manifest route to the extremal-function lower bound. -/
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toTenLeF_40960
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    10 ≤ F 40960 :=
+  h.toCurrentFrontierTargetRows.toTenLeF_40960
+
+/-- Flat constructor exposing the final manifest from a proof-md normalization checklist. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalManifest_of_proofMdNormalizationChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.toProofMdFinalManifest
+
+/-- Flat constructor exposing the final manifest from a proof-md import. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalManifest_of_currentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.toProofMdFinalManifest
+
+/-- Flat constructor exposing the final manifest from the public facade. -/
+theorem ramseyTenR45CurrentFrontierProofMdFinalManifest_of_currentFrontierPublicFacade
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierPublicFacade G s v) :
+    RamseyTenR45CurrentFrontierProofMdFinalManifest G s v :=
+  h.toProofMdFinalManifest
+
+/-- Flat projection to the proof-md import from the final manifest. -/
+theorem ramseyTenR45CurrentFrontierProofMdImport_of_proofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.toProofMdImport
+
+/-- Flat projection to the proof-md normalization checklist from the final manifest. -/
+theorem ramseyTenR45CurrentFrontierProofMdNormalizationChecklist_of_proofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v :=
+  h.toProofMdNormalizationChecklist
+
+/-- Flat projection to target rows from the final manifest. -/
+theorem ramseyTenR45CurrentFrontierTargetRows_of_proofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    RamseyTenR45CurrentFrontierTargetRows :=
+  h.toCurrentFrontierTargetRows
+
+/-- Final-manifest route to the localized `R(4,5) <= 27` input. -/
+theorem hasCliqueOrIndepSetBound_four_five_twenty_seven_of_proofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    HasCliqueOrIndepSetBound 4 5 27 :=
+  h.toHasCliqueOrIndepSetBound_four_five_twenty_seven
+
+/-- Final-manifest route to the regular induced `10`-subgraph theorem. -/
+theorem hasRegularInducedSubgraphOfCard_ten_40960_of_proofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v)
+    {V : Type} [Fintype V] [DecidableEq V] (H : SimpleGraph V)
+    (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard H 10 :=
+  h.toHasRegularInducedSubgraphOfCard_ten_40960 H hcard
+
+/-- Final-manifest route to the admissible-bound conclusion. -/
+theorem ten_mem_admissibleBounds_40960_of_proofMdFinalManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    10 ∈ admissibleBounds 40960 :=
+  h.toTenMemAdmissibleBounds_40960
+
+/-- Proof-md normalization checklists normalize through the final manifest on proof-md imports. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toProofMdFinalManifest_toProofMdImport_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    h.toProofMdFinalManifest.toProofMdImport = h.toProofMdImport := by
+  exact Subsingleton.elim _ _
+
+/-- Proof-md normalization checklists normalize through the final manifest on target rows. -/
+@[simp]
+theorem
+    RamseyTenR45CurrentFrontierProofMdNormalizationChecklist.toProofMdFinalManifest_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdNormalizationChecklist G s v) :
+    h.toProofMdFinalManifest.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Proof-md imports normalize through the final manifest on normalization checklists. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdImport.toProofMdFinalManifest_toProofMdNormalizationChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    h.toProofMdFinalManifest.toProofMdNormalizationChecklist =
+      h.toProofMdNormalizationChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Proof-md imports normalize through the final manifest on target rows. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdImport.toProofMdFinalManifest_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdImport G s v) :
+    h.toProofMdFinalManifest.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final manifests keep proof-md imports and normalization checklists aligned. -/
+@[simp]
+theorem
+    RamseyTenR45CurrentFrontierProofMdFinalManifest.toProofMdImport_toProofMdNormalizationChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    h.toProofMdImport.toProofMdNormalizationChecklist =
+      h.toProofMdNormalizationChecklist := by
+  exact Subsingleton.elim _ _
+
+/-- Final manifests keep proof-md imports and target rows aligned. -/
+@[simp]
+theorem RamseyTenR45CurrentFrontierProofMdFinalManifest.toProofMdImport_toCurrentFrontierTargetRows_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    h.toProofMdImport.toCurrentFrontierTargetRows =
+      h.toCurrentFrontierTargetRows := by
+  exact Subsingleton.elim _ _
+
+/-- Final manifests keep target rows and compact numerical consequences aligned. -/
+@[simp]
+theorem
+    RamseyTenR45CurrentFrontierProofMdFinalManifest.toCurrentFrontierTargetRows_toFinalNumericalConsequences_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    h.toCurrentFrontierTargetRows.toFinalNumericalConsequences =
+      h.toFinalNumericalConsequences := by
+  exact Subsingleton.elim _ _
+
+/-- Final manifests keep public facades and theorem checklists aligned. -/
+@[simp]
+theorem
+    RamseyTenR45CurrentFrontierProofMdFinalManifest.toCurrentFrontierPublicFacade_toCurrentFrontierTheoremChecklist_eq
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyTenR45CurrentFrontierProofMdFinalManifest G s v) :
+    h.toCurrentFrontierPublicFacade.toCurrentFrontierTheoremChecklist =
+      h.toCurrentFrontierTheoremChecklist := by
+  exact Subsingleton.elim _ _
+
 lemma four_pow_bound_mem_admissibleBounds (m n : ℕ) (hn : 4 ^ m ≤ n) :
     m + 1 ∈ admissibleBounds n := by
   intro G
