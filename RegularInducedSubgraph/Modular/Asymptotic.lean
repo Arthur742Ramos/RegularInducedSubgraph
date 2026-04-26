@@ -21566,6 +21566,884 @@ theorem FirstBitTerminalCriticalThreeColumnCoverFrontier.to_irreducibleTargetAvo
 end FirstBitTerminalCriticalThreeColumnCoverFrontier
 
 /--
+Filtered cover-capacity table for the terminal three-column frontier.  The active coordinates
+`activeCoordinates` are the nonzero target coordinates after applying the zero filter `zeroFilter`.
+The table `capacityTable B` records how many admissible columns have active support `B`, while the
+three displayed blocks are the capacity-respecting disjoint cover currently selected.
+-/
+structure FirstBitTerminalFilteredCoverCapacityTableFrontier
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    (criticalFrontier : Prop)
+    (activeCoordinates zeroFilter : Finset Coord)
+    (support : Column → Finset Coord) (capacityTable : Finset Coord → ℕ)
+    (block0 block1 block2 : Finset Coord)
+    (capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop) :
+    Prop where
+  criticalThreeColumnCoverFrontierCert :
+    FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+      outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+      largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+      properShadowFeasibility switchingNormalization zeroCoordinateVanish
+      oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+      criticalThreeColumnCover irreducibleTargetAvoidanceBranch
+  active_subset_coordinates : activeCoordinates ⊆ coordinates
+  zeroFilter_subset_zeroCoordinates : zeroFilter ⊆ zeroCoordinates
+  active_zeroFilter_disjoint : Disjoint activeCoordinates zeroFilter
+  active_card_le_three : activeCoordinates.card ≤ 3
+  support_subset_active :
+    ∀ c : Column, c ∈ outsideColumns → support c ⊆ activeCoordinates
+  support_avoids_zeroFilter :
+    ∀ c : Column, c ∈ outsideColumns → Disjoint (support c) zeroFilter
+  capacityTableFormulaCert : capacityTableFormula
+  capacityTable_counts :
+    ∀ B : Finset Coord, B ⊆ activeCoordinates →
+      capacityTable B = (outsideColumns.filter (fun c : Column => support c = B)).card
+  block0_subset_active : block0 ⊆ activeCoordinates
+  block1_subset_active : block1 ⊆ activeCoordinates
+  block2_subset_active : block2 ⊆ activeCoordinates
+  blocks_pairwiseDisjoint :
+    Disjoint block0 block1 ∧ Disjoint block0 block2 ∧ Disjoint block1 block2
+  blocks_cover_active : block0 ∪ block1 ∪ block2 = activeCoordinates
+  blocks_within_capacity :
+    ∀ B : Finset Coord, B ⊆ activeCoordinates →
+      (if block0 = B then 1 else 0) +
+          (if block1 = B then 1 else 0) +
+            (if block2 = B then 1 else 0) ≤ capacityTable B
+  emptyTripleAlternative : activeCoordinates = ∅ → 3 ≤ capacityTable ∅
+  singletonPlusEmptyAlternative :
+    ∀ a : Coord, activeCoordinates = {a} →
+      1 ≤ capacityTable {a} ∧ 2 ≤ capacityTable ∅
+  pairSupportAlternatives :
+    ∀ a b : Coord, a ≠ b → activeCoordinates = {a, b} →
+      (1 ≤ capacityTable {a, b} ∧ 2 ≤ capacityTable ∅) ∨
+        (1 ≤ capacityTable {a} ∧ 1 ≤ capacityTable {b} ∧ 1 ≤ capacityTable ∅)
+  threeSupportAlternatives :
+    ∀ a b c : Coord, a ≠ b → a ≠ c → b ≠ c → activeCoordinates = {a, b, c} →
+      (1 ≤ capacityTable {a, b} ∧ 1 ≤ capacityTable {c} ∧ 1 ≤ capacityTable ∅) ∨
+        (1 ≤ capacityTable {a, c} ∧ 1 ≤ capacityTable {b} ∧ 1 ≤ capacityTable ∅) ∨
+          (1 ≤ capacityTable {b, c} ∧ 1 ≤ capacityTable {a} ∧
+            1 ≤ capacityTable ∅) ∨
+            (1 ≤ capacityTable {a} ∧ 1 ≤ capacityTable {b} ∧ 1 ≤ capacityTable {c})
+  smallActiveSupportAlternativesCert : smallActiveSupportAlternatives
+  filteredDisjointCoverCert : filteredDisjointCover
+
+/-- Build the filtered capacity-table frontier from explicit assumption-backed data. -/
+theorem firstBitTerminalFilteredCoverCapacityTableFrontier_of_assumptions
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    (hcritical :
+      FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+        outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+        largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+        properShadowFeasibility switchingNormalization zeroCoordinateVanish
+        oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+        criticalThreeColumnCover irreducibleTargetAvoidanceBranch)
+    (hactiveSub : activeCoordinates ⊆ coordinates)
+    (hzeroSub : zeroFilter ⊆ zeroCoordinates)
+    (hactiveZero : Disjoint activeCoordinates zeroFilter)
+    (hactiveSmall : activeCoordinates.card ≤ 3)
+    (hsupportSub :
+      ∀ c : Column, c ∈ outsideColumns → support c ⊆ activeCoordinates)
+    (hsupportZero :
+      ∀ c : Column, c ∈ outsideColumns → Disjoint (support c) zeroFilter)
+    (htableFormula : capacityTableFormula)
+    (htable :
+      ∀ B : Finset Coord, B ⊆ activeCoordinates →
+        capacityTable B = (outsideColumns.filter (fun c : Column => support c = B)).card)
+    (hblock0 : block0 ⊆ activeCoordinates) (hblock1 : block1 ⊆ activeCoordinates)
+    (hblock2 : block2 ⊆ activeCoordinates)
+    (hdisjoint :
+      Disjoint block0 block1 ∧ Disjoint block0 block2 ∧ Disjoint block1 block2)
+    (hcover : block0 ∪ block1 ∪ block2 = activeCoordinates)
+    (hcapacity :
+      ∀ B : Finset Coord, B ⊆ activeCoordinates →
+        (if block0 = B then 1 else 0) +
+            (if block1 = B then 1 else 0) +
+              (if block2 = B then 1 else 0) ≤ capacityTable B)
+    (hempty : activeCoordinates = ∅ → 3 ≤ capacityTable ∅)
+    (hsingle :
+      ∀ a : Coord, activeCoordinates = {a} →
+        1 ≤ capacityTable {a} ∧ 2 ≤ capacityTable ∅)
+    (hpair :
+      ∀ a b : Coord, a ≠ b → activeCoordinates = {a, b} →
+        (1 ≤ capacityTable {a, b} ∧ 2 ≤ capacityTable ∅) ∨
+          (1 ≤ capacityTable {a} ∧ 1 ≤ capacityTable {b} ∧ 1 ≤ capacityTable ∅))
+    (hthree :
+      ∀ a b c : Coord, a ≠ b → a ≠ c → b ≠ c → activeCoordinates = {a, b, c} →
+        (1 ≤ capacityTable {a, b} ∧ 1 ≤ capacityTable {c} ∧ 1 ≤ capacityTable ∅) ∨
+          (1 ≤ capacityTable {a, c} ∧ 1 ≤ capacityTable {b} ∧ 1 ≤ capacityTable ∅) ∨
+            (1 ≤ capacityTable {b, c} ∧ 1 ≤ capacityTable {a} ∧
+              1 ≤ capacityTable ∅) ∨
+              (1 ≤ capacityTable {a} ∧ 1 ≤ capacityTable {b} ∧
+                1 ≤ capacityTable {c}))
+    (hsmallAlternatives : smallActiveSupportAlternatives)
+    (hfilteredCover : filteredDisjointCover) :
+    FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+      zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+      smallActiveSupportAlternatives filteredDisjointCover where
+  criticalThreeColumnCoverFrontierCert := hcritical
+  active_subset_coordinates := hactiveSub
+  zeroFilter_subset_zeroCoordinates := hzeroSub
+  active_zeroFilter_disjoint := hactiveZero
+  active_card_le_three := hactiveSmall
+  support_subset_active := hsupportSub
+  support_avoids_zeroFilter := hsupportZero
+  capacityTableFormulaCert := htableFormula
+  capacityTable_counts := htable
+  block0_subset_active := hblock0
+  block1_subset_active := hblock1
+  block2_subset_active := hblock2
+  blocks_pairwiseDisjoint := hdisjoint
+  blocks_cover_active := hcover
+  blocks_within_capacity := hcapacity
+  emptyTripleAlternative := hempty
+  singletonPlusEmptyAlternative := hsingle
+  pairSupportAlternatives := hpair
+  threeSupportAlternatives := hthree
+  smallActiveSupportAlternativesCert := hsmallAlternatives
+  filteredDisjointCoverCert := hfilteredCover
+
+section FirstBitTerminalFilteredCoverCapacityTableFrontier
+
+variable {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {coverFeasible : Finset Coord → Prop}
+variable {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+  coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+  zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch : Prop}
+variable {criticalFrontier : Prop}
+variable {activeCoordinates zeroFilter : Finset Coord}
+variable {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+variable {block0 block1 block2 : Finset Coord}
+variable {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+
+/-- Recover the critical three-column frontier from the filtered capacity-table package. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.to_criticalThreeColumnCoverFrontier
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover) :
+    FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+      outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+      largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+      properShadowFeasibility switchingNormalization zeroCoordinateVanish
+      oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+      criticalThreeColumnCover irreducibleTargetAvoidanceBranch :=
+  h.criticalThreeColumnCoverFrontierCert
+
+/-- Project the table formula marker for `c_Z(B)`. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.to_capacityTableFormula
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover) :
+    capacityTableFormula :=
+  h.capacityTableFormulaCert
+
+/-- Evaluate the filtered capacity table on an active support. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.capacityTable_eq_count
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover)
+    {B : Finset Coord} (hB : B ⊆ activeCoordinates) :
+    capacityTable B = (outsideColumns.filter (fun c : Column => support c = B)).card :=
+  h.capacityTable_counts B hB
+
+/-- The selected support blocks disjointly cover the active set. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.threeBlockCover
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover) :
+    Disjoint block0 block1 ∧ Disjoint block0 block2 ∧ Disjoint block1 block2 ∧
+      block0 ∪ block1 ∪ block2 = activeCoordinates :=
+  ⟨h.blocks_pairwiseDisjoint.1, h.blocks_pairwiseDisjoint.2.1,
+    h.blocks_pairwiseDisjoint.2.2, h.blocks_cover_active⟩
+
+/-- The selected support blocks use no support more often than its filtered capacity. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.blocks_within_capacity_of_subset
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover)
+    {B : Finset Coord} (hB : B ⊆ activeCoordinates) :
+    (if block0 = B then 1 else 0) +
+        (if block1 = B then 1 else 0) +
+          (if block2 = B then 1 else 0) ≤ capacityTable B :=
+  h.blocks_within_capacity B hB
+
+/-- Project the explicit small-active-set support-alternatives marker. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.to_smallActiveSupportAlternatives
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover) :
+    smallActiveSupportAlternatives :=
+  h.smallActiveSupportAlternativesCert
+
+/-- The empty active set is represented by three empty supports within capacity. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.emptyTriple_capacity
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover)
+    (hempty : activeCoordinates = ∅) :
+    3 ≤ capacityTable ∅ :=
+  h.emptyTripleAlternative hempty
+
+/-- Project the singleton-plus-empty support alternative. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.singletonPlusEmpty_capacity
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover)
+    {a : Coord} (ha : activeCoordinates = {a}) :
+    1 ≤ capacityTable {a} ∧ 2 ≤ capacityTable ∅ :=
+  h.singletonPlusEmptyAlternative a ha
+
+/-- Project the pair-active support alternatives. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.pairSupportAlternatives_of_eq
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover)
+    {a b : Coord} (hab : a ≠ b) (hpair : activeCoordinates = {a, b}) :
+    (1 ≤ capacityTable {a, b} ∧ 2 ≤ capacityTable ∅) ∨
+      (1 ≤ capacityTable {a} ∧ 1 ≤ capacityTable {b} ∧ 1 ≤ capacityTable ∅) :=
+  h.pairSupportAlternatives a b hab hpair
+
+/-- Project the three-active support alternatives: pair+singleton+empty or three singletons. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.threeSupportAlternatives_of_eq
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover)
+    {a b c : Coord} (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c)
+    (hthree : activeCoordinates = {a, b, c}) :
+    (1 ≤ capacityTable {a, b} ∧ 1 ≤ capacityTable {c} ∧ 1 ≤ capacityTable ∅) ∨
+      (1 ≤ capacityTable {a, c} ∧ 1 ≤ capacityTable {b} ∧ 1 ≤ capacityTable ∅) ∨
+        (1 ≤ capacityTable {b, c} ∧ 1 ≤ capacityTable {a} ∧ 1 ≤ capacityTable ∅) ∨
+          (1 ≤ capacityTable {a} ∧ 1 ≤ capacityTable {b} ∧ 1 ≤ capacityTable {c}) :=
+  h.threeSupportAlternatives a b c hab hac hbc hthree
+
+/-- Project the filtered disjoint-cover marker. -/
+theorem FirstBitTerminalFilteredCoverCapacityTableFrontier.to_filteredDisjointCover
+    (h :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover) :
+    filteredDisjointCover :=
+  h.filteredDisjointCoverCert
+
+end FirstBitTerminalFilteredCoverCapacityTableFrontier
+
+/--
+Zero-private-column relaxation of the filtered capacity table.  Relaxing one zero coordinate `z`
+adds the private columns whose zero trace is exactly `{z}` and exposes the relaxed table
+`c_{Z \ {z}}(B) = c_Z(B) + p_z(B)`.
+-/
+structure FirstBitTerminalZeroPrivateColumnRelaxationFrontier
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    (capacityFrontier : Prop)
+    (relaxedZero : Coord) (relaxedZeroFilter : Finset Coord)
+    (privateColumns : Finset Column) (zeroTrace : Column → Finset Coord)
+    (privateColumnCount relaxedCapacityTable : Finset Coord → ℕ)
+    (relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord)
+    (privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop) : Prop where
+  capacityTableFrontierCert :
+    FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+      zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+      smallActiveSupportAlternatives filteredDisjointCover
+  relaxedZero_mem_zeroFilter : relaxedZero ∈ zeroFilter
+  relaxedZeroFilter_eq_erase : relaxedZeroFilter = zeroFilter.erase relaxedZero
+  privateColumns_support_subset :
+    ∀ c : Column, c ∈ privateColumns → support c ⊆ activeCoordinates
+  privateColumns_zeroTrace :
+    ∀ c : Column, c ∈ privateColumns → zeroTrace c = {relaxedZero}
+  privateColumnFormulaCert : privateColumnFormula
+  privateColumnCount_formula :
+    ∀ B : Finset Coord, B ⊆ activeCoordinates →
+      privateColumnCount B =
+        (privateColumns.filter
+          (fun c : Column => support c = B ∧ zeroTrace c = {relaxedZero})).card
+  relaxedCapacity_eq :
+    ∀ B : Finset Coord, B ⊆ activeCoordinates →
+      relaxedCapacityTable B = capacityTable B + privateColumnCount B
+  relaxedBlock0_subset_active : relaxedBlock0 ⊆ activeCoordinates
+  relaxedBlock1_subset_active : relaxedBlock1 ⊆ activeCoordinates
+  relaxedBlock2_subset_active : relaxedBlock2 ⊆ activeCoordinates
+  relaxedBlocks_pairwiseDisjoint :
+    Disjoint relaxedBlock0 relaxedBlock1 ∧ Disjoint relaxedBlock0 relaxedBlock2 ∧
+      Disjoint relaxedBlock1 relaxedBlock2
+  relaxedBlocks_cover_active : relaxedBlock0 ∪ relaxedBlock1 ∪ relaxedBlock2 = activeCoordinates
+  relaxedBlocks_within_capacity :
+    ∀ B : Finset Coord, B ⊆ activeCoordinates →
+      (if relaxedBlock0 = B then 1 else 0) +
+          (if relaxedBlock1 = B then 1 else 0) +
+            (if relaxedBlock2 = B then 1 else 0) ≤ relaxedCapacityTable B
+  zeroRelaxationCert : zeroRelaxation
+  relaxedDisjointCoverCert : relaxedDisjointCover
+
+/-- Build the zero-private-column relaxation frontier from explicit assumptions. -/
+theorem firstBitTerminalZeroPrivateColumnRelaxationFrontier_of_assumptions
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    {capacityFrontier : Prop}
+    {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+    {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+    {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+    {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+    {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+    (hcapacity :
+      FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+        zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+        smallActiveSupportAlternatives filteredDisjointCover)
+    (hzmem : relaxedZero ∈ zeroFilter)
+    (hfilter : relaxedZeroFilter = zeroFilter.erase relaxedZero)
+    (hprivateSupport :
+      ∀ c : Column, c ∈ privateColumns → support c ⊆ activeCoordinates)
+    (hprivateTrace : ∀ c : Column, c ∈ privateColumns → zeroTrace c = {relaxedZero})
+    (hprivateFormula : privateColumnFormula)
+    (hprivateCount :
+      ∀ B : Finset Coord, B ⊆ activeCoordinates →
+        privateColumnCount B =
+          (privateColumns.filter
+            (fun c : Column => support c = B ∧ zeroTrace c = {relaxedZero})).card)
+    (hrelaxedCapacity :
+      ∀ B : Finset Coord, B ⊆ activeCoordinates →
+        relaxedCapacityTable B = capacityTable B + privateColumnCount B)
+    (hrelaxed0 : relaxedBlock0 ⊆ activeCoordinates)
+    (hrelaxed1 : relaxedBlock1 ⊆ activeCoordinates)
+    (hrelaxed2 : relaxedBlock2 ⊆ activeCoordinates)
+    (hrelaxedDisjoint :
+      Disjoint relaxedBlock0 relaxedBlock1 ∧ Disjoint relaxedBlock0 relaxedBlock2 ∧
+        Disjoint relaxedBlock1 relaxedBlock2)
+    (hrelaxedCover : relaxedBlock0 ∪ relaxedBlock1 ∪ relaxedBlock2 = activeCoordinates)
+    (hrelaxedWithin :
+      ∀ B : Finset Coord, B ⊆ activeCoordinates →
+        (if relaxedBlock0 = B then 1 else 0) +
+            (if relaxedBlock1 = B then 1 else 0) +
+              (if relaxedBlock2 = B then 1 else 0) ≤ relaxedCapacityTable B)
+    (hzeroRelaxation : zeroRelaxation)
+    (hrelaxedCoverCert : relaxedDisjointCover) :
+    FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+      relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+      relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+      relaxedDisjointCover where
+  capacityTableFrontierCert := hcapacity
+  relaxedZero_mem_zeroFilter := hzmem
+  relaxedZeroFilter_eq_erase := hfilter
+  privateColumns_support_subset := hprivateSupport
+  privateColumns_zeroTrace := hprivateTrace
+  privateColumnFormulaCert := hprivateFormula
+  privateColumnCount_formula := hprivateCount
+  relaxedCapacity_eq := hrelaxedCapacity
+  relaxedBlock0_subset_active := hrelaxed0
+  relaxedBlock1_subset_active := hrelaxed1
+  relaxedBlock2_subset_active := hrelaxed2
+  relaxedBlocks_pairwiseDisjoint := hrelaxedDisjoint
+  relaxedBlocks_cover_active := hrelaxedCover
+  relaxedBlocks_within_capacity := hrelaxedWithin
+  zeroRelaxationCert := hzeroRelaxation
+  relaxedDisjointCoverCert := hrelaxedCoverCert
+
+section FirstBitTerminalZeroPrivateColumnRelaxationFrontier
+
+variable {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {coverFeasible : Finset Coord → Prop}
+variable {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+  coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+  zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch : Prop}
+variable {criticalFrontier : Prop}
+variable {activeCoordinates zeroFilter : Finset Coord}
+variable {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+variable {block0 block1 block2 : Finset Coord}
+variable {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+variable {capacityFrontier : Prop}
+variable {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+variable {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+variable {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+variable {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+variable {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+
+/-- Recover the filtered capacity-table frontier before relaxing a zero coordinate. -/
+theorem FirstBitTerminalZeroPrivateColumnRelaxationFrontier.to_filteredCoverCapacityTableFrontier
+    (h :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover) :
+    FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+      zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+      smallActiveSupportAlternatives filteredDisjointCover :=
+  h.capacityTableFrontierCert
+
+/-- Recover the underlying critical three-column frontier through the relaxation package. -/
+theorem FirstBitTerminalZeroPrivateColumnRelaxationFrontier.to_criticalThreeColumnCoverFrontier
+    (h :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover) :
+    FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+      outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+      largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+      properShadowFeasibility switchingNormalization zeroCoordinateVanish
+      oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+      criticalThreeColumnCover irreducibleTargetAvoidanceBranch :=
+  h.capacityTableFrontierCert.criticalThreeColumnCoverFrontierCert
+
+/-- The relaxed filter is obtained by erasing the private zero coordinate. -/
+theorem FirstBitTerminalZeroPrivateColumnRelaxationFrontier.relaxedZeroFilter_eq
+    (h :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover) :
+    relaxedZeroFilter = zeroFilter.erase relaxedZero :=
+  h.relaxedZeroFilter_eq_erase
+
+/-- Project the private-column formula marker. -/
+theorem FirstBitTerminalZeroPrivateColumnRelaxationFrontier.to_privateColumnFormula
+    (h :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover) :
+    privateColumnFormula :=
+  h.privateColumnFormulaCert
+
+/-- Evaluate the private-column count `p_z(B)` by support and zero trace. -/
+theorem FirstBitTerminalZeroPrivateColumnRelaxationFrontier.privateColumnCount_eq
+    (h :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover)
+    {B : Finset Coord} (hB : B ⊆ activeCoordinates) :
+    privateColumnCount B =
+      (privateColumns.filter
+        (fun c : Column => support c = B ∧ zeroTrace c = {relaxedZero})).card :=
+  h.privateColumnCount_formula B hB
+
+/-- The relaxed table is the filtered table plus private columns. -/
+theorem FirstBitTerminalZeroPrivateColumnRelaxationFrontier.relaxedCapacity_eq_add_private
+    (h :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover)
+    {B : Finset Coord} (hB : B ⊆ activeCoordinates) :
+    relaxedCapacityTable B = capacityTable B + privateColumnCount B :=
+  h.relaxedCapacity_eq B hB
+
+/-- The relaxed support blocks disjointly cover the same active set. -/
+theorem FirstBitTerminalZeroPrivateColumnRelaxationFrontier.relaxedThreeBlockCover
+    (h :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover) :
+    Disjoint relaxedBlock0 relaxedBlock1 ∧ Disjoint relaxedBlock0 relaxedBlock2 ∧
+      Disjoint relaxedBlock1 relaxedBlock2 ∧
+        relaxedBlock0 ∪ relaxedBlock1 ∪ relaxedBlock2 = activeCoordinates :=
+  ⟨h.relaxedBlocks_pairwiseDisjoint.1, h.relaxedBlocks_pairwiseDisjoint.2.1,
+    h.relaxedBlocks_pairwiseDisjoint.2.2, h.relaxedBlocks_cover_active⟩
+
+/-- Project the zero-relaxation marker. -/
+theorem FirstBitTerminalZeroPrivateColumnRelaxationFrontier.to_zeroRelaxation
+    (h :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover) :
+    zeroRelaxation :=
+  h.zeroRelaxationCert
+
+/-- Project the relaxed disjoint-cover marker. -/
+theorem FirstBitTerminalZeroPrivateColumnRelaxationFrontier.to_relaxedDisjointCover
+    (h :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover) :
+    relaxedDisjointCover :=
+  h.relaxedDisjointCoverCert
+
+end FirstBitTerminalZeroPrivateColumnRelaxationFrontier
+
+/--
+Active-coordinate lift exclusion at the terminal frontier.  For each active coordinate `a`, the
+package records a near-cover of `A \ {a}` and an explicit terminal obstruction forbidding every
+one-coordinate lift that toggles `a` into exactly one of the three support blocks.
+-/
+structure FirstBitTerminalActiveCoverLiftExclusionFrontier
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    {capacityFrontier : Prop}
+    {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+    {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+    {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+    {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+    {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+    (relaxationFrontier : Prop)
+    (nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord)
+    (criticalityWitness : Coord → Prop)
+    (oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop)
+    (activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop) :
+    Prop where
+  zeroPrivateColumnRelaxationFrontierCert :
+    FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+      relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+      relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+      relaxedDisjointCover
+  criticalityWitness_of_active :
+    ∀ a : Coord, a ∈ activeCoordinates → criticalityWitness a
+  nearBlock0_subset_active_erase :
+    ∀ a : Coord, a ∈ activeCoordinates → nearBlock0 a ⊆ activeCoordinates.erase a
+  nearBlock1_subset_active_erase :
+    ∀ a : Coord, a ∈ activeCoordinates → nearBlock1 a ⊆ activeCoordinates.erase a
+  nearBlock2_subset_active_erase :
+    ∀ a : Coord, a ∈ activeCoordinates → nearBlock2 a ⊆ activeCoordinates.erase a
+  nearBlocks_pairwiseDisjoint :
+    ∀ a : Coord, a ∈ activeCoordinates →
+      Disjoint (nearBlock0 a) (nearBlock1 a) ∧
+        Disjoint (nearBlock0 a) (nearBlock2 a) ∧
+          Disjoint (nearBlock1 a) (nearBlock2 a)
+  nearBlocks_cover_active_erase :
+    ∀ a : Coord, a ∈ activeCoordinates →
+      nearBlock0 a ∪ nearBlock1 a ∪ nearBlock2 a = activeCoordinates.erase a
+  nearBlocks_within_capacity :
+    ∀ a : Coord, a ∈ activeCoordinates → ∀ B : Finset Coord, B ⊆ activeCoordinates →
+      (if nearBlock0 a = B then 1 else 0) +
+          (if nearBlock1 a = B then 1 else 0) +
+            (if nearBlock2 a = B then 1 else 0) ≤ capacityTable B
+  oneCoordinateLift_not_allowed :
+    ∀ a : Coord, a ∈ activeCoordinates →
+      ¬ oneCoordinateLiftAllowed a (nearBlock0 a) (nearBlock1 a) (nearBlock2 a)
+  activeNearCoverBlocksCert : activeNearCoverBlocks
+  oneCoordinateLiftExclusionCert : oneCoordinateLiftExclusion
+  activeCriticalityWitnessCert : activeCriticalityWitness
+
+/-- Build the active-cover lift-exclusion frontier from explicit assumptions. -/
+theorem firstBitTerminalActiveCoverLiftExclusionFrontier_of_assumptions
+    {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+    {outsideColumns : Finset Column}
+    {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+    {coverFeasible : Finset Coord → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+      coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+      zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+      targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch :
+      Prop}
+    {criticalFrontier : Prop}
+    {activeCoordinates zeroFilter : Finset Coord}
+    {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+    {block0 block1 block2 : Finset Coord}
+    {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+    {capacityFrontier : Prop}
+    {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+    {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+    {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+    {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+    {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+    {relaxationFrontier : Prop}
+    {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+    {criticalityWitness : Coord → Prop}
+    {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+    {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+    (hrelaxation :
+      FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+        relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+        relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+        relaxedDisjointCover)
+    (hwitness : ∀ a : Coord, a ∈ activeCoordinates → criticalityWitness a)
+    (hnear0 :
+      ∀ a : Coord, a ∈ activeCoordinates → nearBlock0 a ⊆ activeCoordinates.erase a)
+    (hnear1 :
+      ∀ a : Coord, a ∈ activeCoordinates → nearBlock1 a ⊆ activeCoordinates.erase a)
+    (hnear2 :
+      ∀ a : Coord, a ∈ activeCoordinates → nearBlock2 a ⊆ activeCoordinates.erase a)
+    (hneardisjoint :
+      ∀ a : Coord, a ∈ activeCoordinates →
+        Disjoint (nearBlock0 a) (nearBlock1 a) ∧
+          Disjoint (nearBlock0 a) (nearBlock2 a) ∧
+            Disjoint (nearBlock1 a) (nearBlock2 a))
+    (hnearcover :
+      ∀ a : Coord, a ∈ activeCoordinates →
+        nearBlock0 a ∪ nearBlock1 a ∪ nearBlock2 a = activeCoordinates.erase a)
+    (hnearcapacity :
+      ∀ a : Coord, a ∈ activeCoordinates → ∀ B : Finset Coord, B ⊆ activeCoordinates →
+        (if nearBlock0 a = B then 1 else 0) +
+            (if nearBlock1 a = B then 1 else 0) +
+              (if nearBlock2 a = B then 1 else 0) ≤ capacityTable B)
+    (hlift :
+      ∀ a : Coord, a ∈ activeCoordinates →
+        ¬ oneCoordinateLiftAllowed a (nearBlock0 a) (nearBlock1 a) (nearBlock2 a))
+    (hnearCert : activeNearCoverBlocks)
+    (hliftCert : oneCoordinateLiftExclusion)
+    (hwitnessCert : activeCriticalityWitness) :
+    FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0 nearBlock1
+      nearBlock2 criticalityWitness oneCoordinateLiftAllowed activeNearCoverBlocks
+      oneCoordinateLiftExclusion activeCriticalityWitness where
+  zeroPrivateColumnRelaxationFrontierCert := hrelaxation
+  criticalityWitness_of_active := hwitness
+  nearBlock0_subset_active_erase := hnear0
+  nearBlock1_subset_active_erase := hnear1
+  nearBlock2_subset_active_erase := hnear2
+  nearBlocks_pairwiseDisjoint := hneardisjoint
+  nearBlocks_cover_active_erase := hnearcover
+  nearBlocks_within_capacity := hnearcapacity
+  oneCoordinateLift_not_allowed := hlift
+  activeNearCoverBlocksCert := hnearCert
+  oneCoordinateLiftExclusionCert := hliftCert
+  activeCriticalityWitnessCert := hwitnessCert
+
+section FirstBitTerminalActiveCoverLiftExclusionFrontier
+
+variable {Packet Target Coord Column : Type*} [DecidableEq Coord] [DecidableEq Column]
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {coordinates zeroCoordinates oneCoordinates : Finset Coord}
+variable {outsideColumns : Finset Column}
+variable {switchedTarget capacity : Coord → ℕ} {columnEntry : Column → Coord → ℕ}
+variable {coverFeasible : Finset Coord → Prop}
+variable {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch capacitatedThreeSumCube targetFailure
+  coordinateMinimalTargetFailure properShadowFeasibility switchingNormalization
+  zeroCoordinateVanish oneCoordinateDisjointCover switchedDisjointCover
+  targetAvoidanceFrontier criticalThreeColumnCover irreducibleTargetAvoidanceBranch : Prop}
+variable {criticalFrontier : Prop}
+variable {activeCoordinates zeroFilter : Finset Coord}
+variable {support : Column → Finset Coord} {capacityTable : Finset Coord → ℕ}
+variable {block0 block1 block2 : Finset Coord}
+variable {capacityTableFormula smallActiveSupportAlternatives filteredDisjointCover : Prop}
+variable {capacityFrontier : Prop}
+variable {relaxedZero : Coord} {relaxedZeroFilter : Finset Coord}
+variable {privateColumns : Finset Column} {zeroTrace : Column → Finset Coord}
+variable {privateColumnCount relaxedCapacityTable : Finset Coord → ℕ}
+variable {relaxedBlock0 relaxedBlock1 relaxedBlock2 : Finset Coord}
+variable {privateColumnFormula zeroRelaxation relaxedDisjointCover : Prop}
+variable {relaxationFrontier : Prop}
+variable {nearBlock0 nearBlock1 nearBlock2 : Coord → Finset Coord}
+variable {criticalityWitness : Coord → Prop}
+variable {oneCoordinateLiftAllowed : Coord → Finset Coord → Finset Coord → Finset Coord → Prop}
+variable {activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness : Prop}
+
+/-- Recover the zero-private-column relaxation frontier from the lift-exclusion package. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.to_zeroPrivateColumnRelaxationFrontier
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness) :
+    FirstBitTerminalZeroPrivateColumnRelaxationFrontier capacityFrontier relaxedZero
+      relaxedZeroFilter privateColumns zeroTrace privateColumnCount relaxedCapacityTable
+      relaxedBlock0 relaxedBlock1 relaxedBlock2 privateColumnFormula zeroRelaxation
+      relaxedDisjointCover :=
+  h.zeroPrivateColumnRelaxationFrontierCert
+
+/-- Recover the filtered capacity-table frontier through the lift-exclusion package. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.to_filteredCoverCapacityTableFrontier
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness) :
+    FirstBitTerminalFilteredCoverCapacityTableFrontier criticalFrontier activeCoordinates
+      zeroFilter support capacityTable block0 block1 block2 capacityTableFormula
+      smallActiveSupportAlternatives filteredDisjointCover :=
+  h.zeroPrivateColumnRelaxationFrontierCert.capacityTableFrontierCert
+
+/-- Recover the underlying critical three-column frontier through active lift exclusion. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.to_criticalThreeColumnCoverFrontier
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness) :
+    FirstBitTerminalCriticalThreeColumnCoverFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure coordinates zeroCoordinates oneCoordinates
+      outsideColumns switchedTarget capacity columnEntry coverFeasible ternaryArithmeticLegal
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure balancedSwapTargetRepair
+      largeOutsideBranch capacitatedThreeSumCube targetFailure coordinateMinimalTargetFailure
+      properShadowFeasibility switchingNormalization zeroCoordinateVanish
+      oneCoordinateDisjointCover switchedDisjointCover targetAvoidanceFrontier
+      criticalThreeColumnCover irreducibleTargetAvoidanceBranch :=
+  h.zeroPrivateColumnRelaxationFrontierCert.capacityTableFrontierCert.criticalThreeColumnCoverFrontierCert
+
+/-- Project the active-coordinate criticality witness. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.criticalityWitness_of_mem
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness)
+    {a : Coord} (ha : a ∈ activeCoordinates) :
+    criticalityWitness a :=
+  h.criticalityWitness_of_active a ha
+
+/-- The near-cover blocks cover `A \ {a}` for an active coordinate `a`. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.nearCover_eq_erase
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness)
+    {a : Coord} (ha : a ∈ activeCoordinates) :
+    nearBlock0 a ∪ nearBlock1 a ∪ nearBlock2 a = activeCoordinates.erase a :=
+  h.nearBlocks_cover_active_erase a ha
+
+/-- The near-cover for `A \ {a}` respects the filtered capacity table. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.nearCover_within_capacity
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness)
+    {a : Coord} (ha : a ∈ activeCoordinates) {B : Finset Coord} (hB : B ⊆ activeCoordinates) :
+    (if nearBlock0 a = B then 1 else 0) +
+        (if nearBlock1 a = B then 1 else 0) +
+          (if nearBlock2 a = B then 1 else 0) ≤ capacityTable B :=
+  h.nearBlocks_within_capacity a ha B hB
+
+/-- Terminality excludes the one-coordinate lift that toggles `a` into exactly one block. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.oneCoordinateLift_not_allowed_of_mem
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness)
+    {a : Coord} (ha : a ∈ activeCoordinates) :
+    ¬ oneCoordinateLiftAllowed a (nearBlock0 a) (nearBlock1 a) (nearBlock2 a) :=
+  h.oneCoordinateLift_not_allowed a ha
+
+/-- Project the active near-cover block marker. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.to_activeNearCoverBlocks
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness) :
+    activeNearCoverBlocks :=
+  h.activeNearCoverBlocksCert
+
+/-- Project the one-coordinate lift-exclusion marker. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.to_oneCoordinateLiftExclusion
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness) :
+    oneCoordinateLiftExclusion :=
+  h.oneCoordinateLiftExclusionCert
+
+/-- Project the active criticality-witness marker. -/
+theorem FirstBitTerminalActiveCoverLiftExclusionFrontier.to_activeCriticalityWitness
+    (h :
+      FirstBitTerminalActiveCoverLiftExclusionFrontier relaxationFrontier nearBlock0
+        nearBlock1 nearBlock2 criticalityWitness oneCoordinateLiftAllowed
+        activeNearCoverBlocks oneCoordinateLiftExclusion activeCriticalityWitness) :
+    activeCriticalityWitness :=
+  h.activeCriticalityWitnessCert
+
+end FirstBitTerminalActiveCoverLiftExclusionFrontier
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
