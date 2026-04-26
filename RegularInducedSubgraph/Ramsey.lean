@@ -12594,6 +12594,106 @@ theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_count_
       ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_duplicated_count_ge_five h,
       ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_triple_count_pos h⟩
 
+
+/-- Common-sum part of any top-row exact-`42` degree-`9` branch. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  let commonSum : ℕ := Finset.sum nonNbrsV commonCount
+  65 ≤ commonSum ∧ commonSum ≤ 72
+
+/-- Count-profile part of any top-row exact-`42` degree-`9` branch. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  let nonNbrsV : Finset α := (s.erase (v : α)).filter fun x => ¬ G.Adj (v : α) x
+  let commonCount : α → ℕ := fun x =>
+    (((s.erase (v : α)).erase x).filter
+      (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card
+  let duplicatedCount : ℕ := (nonNbrsV.filter fun x => 2 ≤ commonCount x).card
+  let singletonCount : ℕ := (nonNbrsV.filter fun x => commonCount x = 1).card
+  let tripleCount : ℕ := (nonNbrsV.filter fun x => 3 ≤ commonCount x).card
+  singletonCount ≤ 27 ∧ 5 ≤ duplicatedCount ∧ 1 ≤ tripleCount
+
+/-- Top-row exact-`42` degree-`9` branch reduced to common-sum and count-profile data. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v ∧
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v
+
+/-- A top-row ledger exposes its common-sum profile. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation_of_topRowLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v := by
+  simpa [RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation] using
+    ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_common_sum_bounds h
+
+/-- A top-row ledger exposes its singleton/duplicated/triple count profile. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation_of_topRowLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v := by
+  simpa [RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation] using
+    ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_count_profile h
+
+/-- A top-row ledger can be consumed through the common-sum/count-profile interface. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_of_topRowLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v := by
+  exact ⟨
+    ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation_of_topRowLedger h,
+    ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation_of_topRowLedger h⟩
+
+/-- The top-row ledger splits its common-sum into the top band or the `72` upper boundary. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation_common_sum_top_band_or_upper
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation G s v) :
+    (65 ≤ Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ∧
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) ≤ 71) ∨
+      Finset.sum ((s.erase (v : α)).filter (fun x => ¬ G.Adj (v : α) x))
+        (fun x =>
+          (((s.erase (v : α)).erase x).filter
+            (fun w => G.Adj (v : α) w ∧ G.Adj x w)).card) = 72 := by
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopRowLedgerObligation at h
+  rcases h with htop | hupper
+  · left
+    exact ramseyThreeTenDegreeWindowExact42DegreeNineTopBandLedgerObligation_common_sum_bounds htop
+  · right
+    exact ramseyThreeTenDegreeWindowExact42DegreeNineUpperBoundaryLedgerObligation_common_sum_eq_seventy_two hupper
+
+/-- Projection from the combined top-row profile to its common-sum component. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_commonSum
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumObligation G s v :=
+  h.1
+
+/-- Projection from the combined top-row profile to its count component. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_countProfile
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCountProfileObligation G s v :=
+  h.2
+
 /-- Residual packager for the finer split exact-`42` degree-`9` branch interface. -/
 theorem ramseyThreeTenDegreeWindow_residual_degree_nine_split_named_branch_obligation
     {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
@@ -12841,6 +12941,112 @@ theorem ramseyThreeTenDegreeWindowExact42ThreeRowBranches_iff_splitNamedBranches
   · exact ramseyThreeTenDegreeWindowExact42SplitNamedBranches_of_threeRowBranches
   · exact ramseyThreeTenDegreeWindowExact42ThreeRowBranches_of_splitNamedBranches
 
+
+/-- Top-row branch obligation viewed only through common-sum and count-profile data. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  RamseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation G s v
+
+/-- Three-row exact-`42` branch interface with the top row replaced by profile data. -/
+def RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α)) : Prop :=
+  RamseyThreeTenDegreeWindowExact42DegreeNineLowRowBranchObligation G s v ∨
+    RamseyThreeTenDegreeWindowExact42DegreeNineHighRowBranchObligation G s v ∨
+      RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation G s v
+
+/-- Profiled three-row exact-`42` branch obligations for every degree-`9` vertex. -/
+def RamseyThreeTenDegreeWindowExact42ThreeRowProfileBranches
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α) : Prop :=
+  ∀ v : ↑(s : Set α),
+    (G.induce (s : Set α)).degree v = 9 →
+      RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation G s v
+
+/-- The three-row branch interface exposes the profiled three-row interface. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation_of_threeRowBranch
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation G s v := by
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation at h
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineLowRowBranchObligation at h ⊢
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineHighRowBranchObligation at h ⊢
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopRowBranchObligation at h
+  unfold RamseyThreeTenDegreeWindowExact42DegreeNineTopRowProfileBranchObligation
+  rcases h with hlow | hhigh | htop
+  · left
+    exact hlow
+  · right
+    left
+    exact hhigh
+  · right
+    right
+    exact
+      ramseyThreeTenDegreeWindowExact42DegreeNineTopRowCommonSumCountProfileObligation_of_topRowLedger
+        htop
+
+/-- The split branch interface exposes the profiled three-row interface. -/
+theorem ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation_of_splitNamedBranch
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : RamseyThreeTenDegreeWindowExact42DegreeNineSplitNamedBranchObligation G s v) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation G s v :=
+  ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation_of_threeRowBranch
+    (ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowBranchObligation_of_splitNamedBranch h)
+
+/-- The three-row branch cover exposes the profiled three-row branch cover. -/
+theorem ramseyThreeTenDegreeWindowExact42ThreeRowProfileBranches_of_threeRowBranches
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    (h : RamseyThreeTenDegreeWindowExact42ThreeRowBranches G s) :
+    RamseyThreeTenDegreeWindowExact42ThreeRowProfileBranches G s := by
+  intro v hdegv
+  exact
+    ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation_of_threeRowBranch
+      (h v hdegv)
+
+/-- The split branch cover exposes the profiled three-row branch cover. -/
+theorem ramseyThreeTenDegreeWindowExact42ThreeRowProfileBranches_of_splitNamedBranches
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    (h : RamseyThreeTenDegreeWindowExact42SplitNamedBranches G s) :
+    RamseyThreeTenDegreeWindowExact42ThreeRowProfileBranches G s :=
+  ramseyThreeTenDegreeWindowExact42ThreeRowProfileBranches_of_threeRowBranches
+    (ramseyThreeTenDegreeWindowExact42ThreeRowBranches_of_splitNamedBranches h)
+
+/-- Residual packager for the profiled three-row exact-`42` degree-`9` branch interface. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_three_row_profile_branch_obligation
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t)
+    {v : ↑(s : Set α)}
+    (hdegv : (G.induce (s : Set α)).degree v = 9) :
+    RamseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation G s v :=
+  ramseyThreeTenDegreeWindowExact42DegreeNineThreeRowProfileBranchObligation_of_splitNamedBranch
+    (ramseyThreeTenDegreeWindow_residual_degree_nine_split_named_branch_obligation
+      (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv)
+
+/-- Profiled three-row exact-`42` residual branch obligations for all degree-`9` vertices. -/
+theorem ramseyThreeTenDegreeWindow_residual_degree_nine_three_row_profile_branches
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (hcard : s.card = 42)
+    (hdegree :
+      ∀ v : ↑(s : Set α),
+        6 ≤ (G.induce (s : Set α)).degree v ∧
+          (G.induce (s : Set α)).degree v < 10)
+    (hnoK3 : ¬ ∃ t ⊆ s, G.IsNClique 3 t)
+    (hnoI10 : ¬ ∃ t ⊆ s, G.IsNIndepSet 10 t) :
+    RamseyThreeTenDegreeWindowExact42ThreeRowProfileBranches G s := by
+  intro v hdegv
+  exact
+    ramseyThreeTenDegreeWindow_residual_degree_nine_three_row_profile_branch_obligation
+      (G := G) (s := s) hcard hdegree hnoK3 hnoI10 (v := v) hdegv
+
 /-- Residual packager for the three-row exact-`42` degree-`9` branch interface. -/
 theorem ramseyThreeTenDegreeWindow_residual_degree_nine_three_row_branch_obligation
     {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
@@ -12980,6 +13186,25 @@ theorem RamseyTenR45EndpointResidualsWithExact42SplitSurface_of_threeRowSurfaceB
   endpoints := h.endpoints
   exact42Split :=
     RamseyThreeTenExact42SplitNamedBranchSurface_of_threeRowBranchSurface h.exact42Rows
+
+
+/-- The combined three-row bridge exposes its endpoint residual component. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface.toEndpointResiduals
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface) :
+    RamseyTenR45EndpointResiduals :=
+  h.endpoints
+
+/-- The combined three-row bridge exposes its exact-`42` row surface. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface.toExact42ThreeRowSurface
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface) :
+    RamseyThreeTenExact42ThreeRowBranchSurface :=
+  h.exact42Rows
+
+/-- The combined three-row bridge exposes the equivalent split exact-`42` surface. -/
+theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface.toExact42SplitSurface
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface) :
+    RamseyThreeTenExact42SplitNamedBranchSurface :=
+  RamseyThreeTenExact42SplitNamedBranchSurface_of_threeRowBranchSurface h.exact42Rows
 
 /-- The endpoint half of the three-row bridge supplies the relaxed `R(4,5)` table. -/
 theorem RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface.toR45TwentySevenTable
@@ -13532,6 +13757,30 @@ theorem ten_mem_admissibleBounds_40960_of_ramseyTenR45EndpointResiduals
 theorem ten_le_F_40960_of_ramseyTenR45EndpointResiduals
     (h : RamseyTenR45EndpointResiduals) : 10 ≤ F 40960 :=
   le_F_iff.2 (ten_mem_admissibleBounds_40960_of_ramseyTenR45EndpointResiduals h)
+
+
+/-- The three-row exact-`42` endpoint bridge gives the same regular-subgraph endpoint wrapper. -/
+theorem hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45EndpointResidualsWithExact42ThreeRowSurface
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface)
+    {V : Type} [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) (hcard : 40960 ≤ Fintype.card V) :
+    HasRegularInducedSubgraphOfCard G 10 :=
+  hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45EndpointResiduals h.endpoints G hcard
+
+/-- The three-row exact-`42` endpoint bridge gives `10` as an admissible bound at `40960`. -/
+theorem ten_mem_admissibleBounds_40960_of_ramseyTenR45EndpointResidualsWithExact42ThreeRowSurface
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface) :
+    10 ∈ admissibleBounds 40960 := by
+  intro G
+  exact
+    hasRegularInducedSubgraphOfCard_ten_of_ramseyTenR45EndpointResidualsWithExact42ThreeRowSurface
+      h G (by simp)
+
+/-- The three-row exact-`42` endpoint bridge pushes `F 40960` to at least `10`. -/
+theorem ten_le_F_40960_of_ramseyTenR45EndpointResidualsWithExact42ThreeRowSurface
+    (h : RamseyTenR45EndpointResidualsWithExact42ThreeRowSurface) : 10 ≤ F 40960 :=
+  le_F_iff.2
+    (ten_mem_admissibleBounds_40960_of_ramseyTenR45EndpointResidualsWithExact42ThreeRowSurface h)
 
 /-- A relaxed `R(4,5) <= 27` table gives `10` as an admissible bound at `40960`. -/
 theorem ten_mem_admissibleBounds_40960_of_ramseyTenR45TwentySevenTable
