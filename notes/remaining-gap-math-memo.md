@@ -1967,6 +1967,7 @@ zero-relaxation unblocks.
 In a minimal blocker certificate, every missing support is essential and has a unique-blocked-part partition
 witness.
 Criticality says every active deletion and every zero-relaxation has spectrum meeting its allowed interval.
+By inclusion-minimality, every proper active/filter shadow `(A',Z')` is filtered-cover feasible.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Zero-coordinate relaxation adds private columns: `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`.

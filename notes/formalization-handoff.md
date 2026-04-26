@@ -2423,6 +2423,8 @@ Recommended attack:
     `B in M_Z^*`, an allowed partition in which `B` is the unique blocked part.
     Record the criticality equations for `Spec_Z(A\{a})` and `Spec_{Z\{z}}(A)`, with
     `e_{Z\{z}}=min(c_Z(empty)+p_z(empty),3)`.
+    Strengthen to full minor-criticality: for every proper shadow `(A',Z')`, with counts
+    `c_{Z'}^{A'}(B)`, the filtered-cover criterion succeeds.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

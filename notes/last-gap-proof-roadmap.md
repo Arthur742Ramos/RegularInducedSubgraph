@@ -1944,6 +1944,7 @@ What remains justified after audit is:
       missing supports form a minor-critical blocker for the allowed partitions;
       a minimal blocker certificate makes every retained missing support essential;
       active deletions and zero-filter relaxations must fill the corresponding spectrum interval;
+      in fact every proper active/filter shadow is feasible by inclusion-minimality;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       relaxing a zero coordinate adds only private columns with zero-trace exactly that coordinate;
       every zero-relaxed cover must use at least one such private column;

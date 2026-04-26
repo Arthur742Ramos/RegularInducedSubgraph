@@ -1040,6 +1040,8 @@ one-coordinate minor.
 A minimal blocker certificate has an essential partition witness for each missing support it retains.
 Active criticality projects to `A\{a}` with the same empty capacity; zero criticality enlarges capacities by
 private columns `p_z` and must meet the new allowed interval.
+Inclusion-minimality gives full minor-criticality: every proper active/filter shadow `(A',Z')` is
+filtered-cover feasible.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.

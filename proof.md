@@ -11391,6 +11391,20 @@ projects the admissible supports; zero-filter relaxation enlarges both the suppo
 capacity by the private columns at `z`.  These two displayed conditions are the exact minor-criticality
 equations for the high-active target branch.
 
+Because the original coordinate certificate `P=A disjoint_union Z` was chosen inclusion-minimal, this
+minor-criticality is actually valid for every proper shadow, not only for one-coordinate minors.  If
+`A' subset A`, `Z' subset Z`, and `A' union Z'` is a proper subset of `A union Z`, define
+
+```text
+c_{Z'}^{A'}(B)=#{y in O : a(y) cap A'=B and a(y) cap Z'=empty}.
+```
+
+Then the same filtered-cover criterion succeeds for `(A',Z')`: if `A'=empty`, then
+`c_{Z'}^{A'}(empty)>=3`; if `A'` is nonempty, the partition spectrum for
+`F_{Z'}^{A'}={B nonempty subset A' : c_{Z'}^{A'}(B)>0}` meets its allowed interval determined by
+`c_{Z'}^{A'}(empty)`.  Thus the high-active obstruction is a **full minor-critical** filtered cover:
+the full coordinate set fails, and every proper active/filter shadow succeeds.
+
 For `|A|<=3` this criterion is the following table:
 
 ```text
@@ -11506,8 +11520,9 @@ e_Z=0:
 
 For `e_Z=1`, every active deletion of a three-set must have a singleton+pair or three-singleton partition,
 while the four-set itself has no bipartition and no tripartition.  Thus every first-dimensional
-high-active obstruction is visible on the singleton/pair/triple layers of a four-point support family.
-Larger `A` can be studied by four-coordinate shadows of this table.
+high-active obstruction is visible on the singleton/pair/triple layers of a four-point support family.  In
+larger full minor-critical obstructions, every four-coordinate proper shadow must instead satisfy the
+corresponding feasibility table.
 
 The `|A|=4`, `e_Z=1` layer can be read explicitly as follows.  There is no complementary singleton/triple
 pair, no complementary pair-pair, and no pair together with its two complementary singletons.  For each
