@@ -2294,6 +2294,66 @@ theorem higherBitSmallModulusAffineSelectorsFromEleven_of_extended
   h16_3 := h.h16_3
   fromSeventeen := h.fromSeventeen
 
+/-- A Ramsey-large current witness supplies an affine selector by retaining a regular subset. -/
+theorem hasExactSmallModulusAffineCrossSelector_of_ramseyBound
+    {j m : ℕ} (hm : 0 < m)
+    (hramsey : Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤ (2 ^ j) ^ 6 * m) :
+    HasExactSmallModulusAffineCrossSelector j m := by
+  intro n _hambient G s hsCard _hsmod
+  classical
+  let H : SimpleGraph ↑(s : Set (Fin n)) := inducedOn G s
+  have hsRamsey :
+      Nat.choose ((m - 1) + (m - 1)) (m - 1) ≤
+        (Finset.univ : Finset ↑(s : Set (Fin n))).card := by
+    simpa using le_trans hramsey hsCard
+  have hmpred : (m - 1) + 1 = m := by omega
+  have hregH : HasRegularInducedSubgraphOfCard H m := by
+    rcases ramsey_finset H (m - 1) (m - 1) Finset.univ hsRamsey with hclique | hindep
+    · rcases hclique with ⟨t, _ht, hct⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isClique H t hct.isClique
+      simpa [hct.card_eq, hmpred] using hreg
+    · rcases hindep with ⟨t, _ht, hit⟩
+      have hreg := hasRegularInducedSubgraphOfCard_of_isIndepSet H t hit.isIndepSet
+      simpa [hit.card_eq, hmpred] using hreg
+  rcases hregH with ⟨t, hmt, d, htd⟩
+  let e : H ↪g G :=
+    SimpleGraph.Embedding.comap (Function.Embedding.subtype (· ∈ (s : Set (Fin n)))) G
+  let u : Finset (Fin n) := t.map (Function.Embedding.subtype (· ∈ (s : Set (Fin n))))
+  have hus : u ⊆ s := by
+    intro x hx
+    rcases Finset.mem_map.mp hx with ⟨v, hv, rfl⟩
+    exact v.2
+  have hmu : m ≤ u.card := by
+    simpa [u] using hmt
+  have hud : InducesRegularOfDegree G u d := by
+    simpa [u, e] using (inducesRegularOfDegree_of_embedding e htd)
+  refine ⟨u, hus, hmu, ?_⟩
+  exact
+    cross_modEq_card_of_inducesModEqDegree_subset (G := G) hus
+      (inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G hud)
+
+/-- The generic binomial Ramsey bound closes the finite affine selector `(j,m) = (3,13)`. -/
+theorem hasExactSmallModulusAffineCrossSelector_three_thirteen :
+    HasExactSmallModulusAffineCrossSelector 3 13 :=
+  hasExactSmallModulusAffineCrossSelector_of_ramseyBound (j := 3) (m := 13)
+    (by decide) (by decide)
+
+/-- The base `m = 11..16` selector package already supplies the extended `(13,3)` field. -/
+theorem higherBitSmallModulusAffineSelectorsFromElevenExtended_of_selectors
+    (h : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    HigherBitSmallModulusAffineSelectorsFromElevenExtended where
+  h11_2 := h.h11_2
+  h12_2 := h.h12_2
+  h13_2 := h.h13_2
+  h13_3 := hasExactSmallModulusAffineCrossSelector_three_thirteen
+  h14_2 := h.h14_2
+  h14_3 := h.h14_3
+  h15_2 := h.h15_2
+  h15_3 := h.h15_3
+  h16_2 := h.h16_2
+  h16_3 := h.h16_3
+  fromSeventeen := h.fromSeventeen
+
 /-- The affine cross-selector is sufficient for the exact finite dyadic-step target. -/
 theorem hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector
     {j m : ℕ} (hselector : HasExactSmallModulusAffineCrossSelector j m) :
@@ -8956,6 +9016,14 @@ theorem
     (hasExactSmallModulusFixedWitnessDyadicLift_of_affineCrossSelector h.h16_3)
     (hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_of_affineCrossSelector
       h.fromSeventeen)
+
+/-- The base affine-selector package also closes the `13 <= m` higher-bit residual. -/
+theorem
+    hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_of_affineSelectors
+    (h : HigherBitSmallModulusAffineSelectorsFromEleven) :
+    HasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus 13 :=
+  hasPositiveEmptyControlFixedWitnessDyadicLiftRamseyIndexWindowAtLeastSixTwiceLargeGapJAtLeastTwoSmallModulus_thirteen_to_seventeen_of_extended
+    (higherBitSmallModulusAffineSelectorsFromElevenExtended_of_selectors h)
 
 /-- Extended affine-selector package closes the higher-bit small-modulus residual from `m = 11`. -/
 theorem

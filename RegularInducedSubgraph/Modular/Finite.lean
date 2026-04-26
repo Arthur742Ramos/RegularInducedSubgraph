@@ -1121,6 +1121,56 @@ lemma inducesModEqDegree_iff_cross_modEq_unionDegree_externalDegree
       Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hsum
   · exact inducesModEqDegree_of_cross_modEq_unionDegree_externalDegree G hst
 
+lemma cross_modEq_card_of_inducesModEqDegree_subset
+    (G : SimpleGraph V) [DecidableRel G.Adj] {s u : Finset V} (hus : u ⊆ s) {q : ℕ}
+    (hmod : InducesModEqDegree G u q) :
+    ∀ v w : ↑(u : Set V),
+      (G.neighborFinset v ∩ s).card +
+          (G.neighborFinset w ∩ (s \ u)).card ≡
+        (G.neighborFinset w ∩ s).card +
+          (G.neighborFinset v ∩ (s \ u)).card [MOD q] := by
+  classical
+  have hdisj : Disjoint u (s \ u) := by
+    refine Finset.disjoint_left.mpr ?_
+    intro x hxU hxTail
+    exact (Finset.mem_sdiff.mp hxTail).2 hxU
+  have hunion : u ∪ (s \ u) = s := by
+    ext x
+    constructor
+    · intro hx
+      rcases Finset.mem_union.mp hx with hxU | hxTail
+      · exact hus hxU
+      · exact (Finset.mem_sdiff.mp hxTail).1
+    · intro hxS
+      by_cases hxU : x ∈ u
+      · exact Finset.mem_union.mpr (Or.inl hxU)
+      · exact Finset.mem_union.mpr (Or.inr (Finset.mem_sdiff.mpr ⟨hxS, hxU⟩))
+  have hcross :=
+    (inducesModEqDegree_iff_cross_modEq_unionDegree_externalDegree
+      (G := G) (s := u) (t := s \ u) hdisj).mp hmod
+  intro v w
+  have hvUnion : (v : V) ∈ u ∪ (s \ u) := Finset.mem_union.mpr (Or.inl v.2)
+  have hwUnion : (w : V) ∈ u ∪ (s \ u) := Finset.mem_union.mpr (Or.inl w.2)
+  have hvdeg :
+      (inducedOn G (u ∪ (s \ u))).degree ⟨v, hvUnion⟩ =
+        (G.neighborFinset v ∩ s).card := by
+    calc
+      (inducedOn G (u ∪ (s \ u))).degree ⟨v, hvUnion⟩ =
+          (G.neighborFinset v ∩ (u ∪ (s \ u))).card := by
+            exact degree_inducedOn_eq_card_neighborFinset_inter_modular
+              (G := G) (s := u ∪ (s \ u)) (v := ⟨v, hvUnion⟩)
+      _ = (G.neighborFinset v ∩ s).card := by rw [hunion]
+  have hwdeg :
+      (inducedOn G (u ∪ (s \ u))).degree ⟨w, hwUnion⟩ =
+        (G.neighborFinset w ∩ s).card := by
+    calc
+      (inducedOn G (u ∪ (s \ u))).degree ⟨w, hwUnion⟩ =
+          (G.neighborFinset w ∩ (u ∪ (s \ u))).card := by
+            exact degree_inducedOn_eq_card_neighborFinset_inter_modular
+              (G := G) (s := u ∪ (s \ u)) (v := ⟨w, hwUnion⟩)
+      _ = (G.neighborFinset w ∩ s).card := by rw [hunion]
+  simpa [hvdeg, hwdeg] using hcross v w
+
 lemma hasFixedModulusWitnessOfCard_of_subset_cross_modEq
     (G : SimpleGraph V) [DecidableRel G.Adj] {s u : Finset V} (hus : u ⊆ s) {m q : ℕ}
     (hm : m ≤ u.card)
