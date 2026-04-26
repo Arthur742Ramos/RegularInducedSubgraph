@@ -2012,6 +2012,7 @@ Any rank-three support plus a feasible complement packing saves exactly `|A|-4`,
 is a one-defect bridge obstruction: all one-saving bridges/thickenings/replacements are blocked.
 Equivalently every support has nonpositive replacement gain against every deficit-one packing
 `P`: `gain_P(C)=|C|-1-sum_{B_i cap C != empty}(|B_i|-1)<=0`.
+Each deficit-one packing is a four-atom partition, and every pure union of two atoms is a forbidden support.
 This makes leftover singletons support-independent, forbids thickening packed blocks, and caps any support
 crossing packed blocks `I` by `1+sum_I(|B_i|-1)`.
 Gain-zero replacements preserve the deficit-one packing, so the bridge blocker can be taken zero-gain

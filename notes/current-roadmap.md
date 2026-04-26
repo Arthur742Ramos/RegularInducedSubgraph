@@ -5412,6 +5412,8 @@ the closing threshold.  Hence the rank-three high-active branch is a one-defect 
 one-saving bridges or thickened/replacement supports are absent or capacity-deficient.
 Equivalently, for every deficit-one packing `P`, every support `C` has replacement gain
 `gain_P(C)=|C|-1-sum_{B_i in P:C cap B_i nonempty}(|B_i|-1)<=0`; positive gain would close.
+Each deficit-one packing partitions `A` into exactly four atoms (packed non-singleton blocks plus leftover
+singletons), and every pure union of two atoms is a forbidden support.
 Consequences: leftover singletons are support-independent; supports meeting one packed block have size at
 most that block; supports meeting blocks `I` have size at most `1+sum_{i in I}(|B_i|-1)`.
 Gain-zero replacements preserve the deficit-one packing; choose a zero-gain-saturated packing
@@ -5419,6 +5421,9 @@ lexicographically maximal in block-size profile, so every zero-gain move is term
 Active deletion adds a companion: deleting a leftover singleton is already closed by `P`, while deleting a
 vertex inside a packed block creates a one-short projected packing and forces a minimal deletion-only
 positive-gain repair family whose every full lift has nonpositive total gain.
+For one-support deletion repairs, the support must hit the shortened block and have projected gain exactly
+`1`; its unlifted copy is zero-gain in the original packing, and its thickened lift by the deleted vertex is
+blocked.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

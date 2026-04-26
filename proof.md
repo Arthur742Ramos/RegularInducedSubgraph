@@ -11877,6 +11877,27 @@ This packages all one-saving bridges: supports on two leftover singletons, thick
 by enough outside vertices, and unions or profitable replacements of packed blocks.  The rank-three
 high-active endpoint is therefore a positive-gain bridge blocker for every deficit-one packing.
 
+It is useful to name the induced four-atom partition.  If the packed blocks are `B_1,...,B_t` and the
+leftover singleton set has size `L`, then
+
+```text
+sum_i (|B_i|-1)=|A|-4
+```
+
+is equivalent to
+
+```text
+t+L=4.
+```
+
+Thus a deficit-one packing is exactly a partition of `A` into four atoms, where some atoms are genuine
+support blocks and the rest are leftover singletons.  In this language every pure union of two atoms is a
+forbidden support: two leftover singletons, one packed atom plus one leftover singleton, or two packed atoms
+would all have `gain_P=1`.  Any support that meets two atoms can survive only by also partially meeting a
+third packed atom, thereby paying the replacement penalty for that whole third atom.  Hence the bridge
+blocker is not only bridge-free on vertices; it is bridge-free on the four atoms of every deficit-one
+packing.
+
 Unwinding `gain_P(C)<=0` gives the usable local caps.  If `C` meets no packed block, then `|C|<=1`, so the
 leftover singleton set is support-independent.  If `C` meets exactly one packed block `B_i`, then
 `|C|<=|B_i|`; in particular no packed block can be thickened by a new singleton.  If `C` meets packed
@@ -11906,6 +11927,20 @@ total positive gain against this projected packing; choose it inclusion-minimal 
 families.  Terminality of `A` says that every full lift of that minimal repair family has nonpositive total
 gain against `P`.  Thus each vertex inside a packed block has a deletion-only bridge family: it exists after
 that vertex is removed, but all of its full lifts are blocked in the original endpoint.
+
+For a single-support deletion repair this is exact.  Let `P^-` be the projected packing after deleting
+`a in B_j`, and let `C'` be a projected support with `gain_{P^-}(C')>0`.  If `C'` misses `B_j\{a}`, then it
+has the same positive gain against `P`, so it would close the original endpoint.  If `C'` hits `B_j\{a}`,
+then the unlifted support has
+
+```text
+gain_P(C') = gain_{P^-}(C')-1.
+```
+
+Thus terminality forces `gain_{P^-}(C')=1`; the unlifted support is a zero-gain replacement, and the
+thickened lift `C' union {a}` is absent or capacity-deficient because it has the same positive gain against
+`P` as `C'` had against `P^-`.  Deletion repair is therefore not arbitrary: every one-support repair is a
+unit-gain bridge through the shortened atom, with its lift blocked.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

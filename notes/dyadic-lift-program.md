@@ -1085,12 +1085,16 @@ packing, so that branch is a one-defect bridge obstruction: all one-saving bridg
 replacement supports are blocked.
 In gain form, every deficit-one packing `P` satisfies `gain_P(C)<=0` for all supports `C`, where
 `gain_P(C)=|C|-1-sum_{B_i cap C != empty}(|B_i|-1)`.
+Each deficit-one packing is a four-atom partition of the active set, and every pure union of two atoms is a
+forbidden support.
 Hence leftover singletons are support-independent, packed blocks cannot be thickened, and any cross support
 meeting block set `I` has size at most `1+sum_{I}(|B_i|-1)`.
 Gain-zero replacements preserve the one-defect packing, so the blocker is taken zero-gain-saturated: all
 positive-gain exclusions persist throughout the zero-gain orbit.
 For active deletion, vertices inside packed blocks force deletion-only positive-gain repair families in the
 projected packing; all full lifts of those families are blocked by nonpositive total gain.
+In the one-support case the repair must hit the shortened block with projected gain exactly `1`; its
+unlifted copy is zero-gain and its thickened lift is blocked.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.

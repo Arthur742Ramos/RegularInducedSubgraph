@@ -2472,6 +2472,8 @@ Recommended attack:
     Define the replacement gain
     `gain_P(C)=|C|-1-sum_{B_i in P, C cap B_i nonempty}(|B_i|-1)` and prove terminality is
     `gain_P(C)<=0` for every deficit-one packing `P` and support `C`.
+    Record the four-atom normalization `t+L=4` for deficit-one packings and prove that every pure union of
+    two atoms is a forbidden support.
     Derive the local caps: leftover singletons support-independent; one-block crossings have size at most
     the block; crossings over block set `I` have size at most `1+sum_I(|B_i|-1)`.
     Add zero-gain saturation: gain-zero replacements preserve deficit one, so choose `P` lexicographically

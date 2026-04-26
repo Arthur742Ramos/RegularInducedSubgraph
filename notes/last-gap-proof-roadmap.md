@@ -1985,6 +1985,8 @@ What remains justified after audit is:
       a rank-three support plus a feasible complement packing is exactly one excess unit short, reducing
       that branch to a one-defect bridge obstruction;
       in gain form, every support has nonpositive replacement gain against every deficit-one packing;
+      each deficit-one packing is a four-atom partition, and every pure union of two atoms is a forbidden
+      support;
       this gives local caps: leftover singletons independent, no packed-block thickening, and bounded
       cross-block supports;
       gain-zero replacements preserve deficit one, so the blocker is taken zero-gain-saturated across its
