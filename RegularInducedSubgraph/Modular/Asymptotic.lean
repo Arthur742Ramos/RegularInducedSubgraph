@@ -8511,6 +8511,311 @@ theorem
   FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound.terminalBranch_card_le_add_eight
     h.exactBasis hbranch hcaps
 
+/--
+One-column exact boundary-exchange budget: the imported boundary column exactly fills the internal
+four-corner deficits at common degree `d`.
+-/
+structure FirstBitExactBoundaryExchangeBudget
+    (d : ℕ) (base internal : Fin 4 → ℕ) : Prop where
+  fills : ExactOneWordAugmentationEquation d base internal
+
+/-- A one-word exact augmentation equation is already an exact boundary-exchange budget. -/
+theorem firstBitExactBoundaryExchangeBudget_of_equation
+    {d : ℕ} {base internal : Fin 4 → ℕ}
+    (h : ExactOneWordAugmentationEquation d base internal) :
+    FirstBitExactBoundaryExchangeBudget d base internal where
+  fills := h
+
+/-- Build a one-column exchange budget from pointwise deficit compensation. -/
+theorem firstBitExactBoundaryExchangeBudget_of_baseCompensation
+    {d : ℕ} {base internal : Fin 4 → ℕ}
+    (hle : ∀ a : Fin 4, internal a ≤ d)
+    (hbase : ∀ a : Fin 4, base a = d - internal a) :
+    FirstBitExactBoundaryExchangeBudget d base internal where
+  fills := exactOneWordAugmentationEquation_of_baseCompensation hle hbase
+
+/-- Project the exact one-word augmentation equation from a boundary-exchange budget. -/
+theorem FirstBitExactBoundaryExchangeBudget.to_equation
+    {d : ℕ} {base internal : Fin 4 → ℕ}
+    (h : FirstBitExactBoundaryExchangeBudget d base internal) :
+    ExactOneWordAugmentationEquation d base internal :=
+  h.fills
+
+/--
+Two-column exact boundary-exchange budget: two imported boundary columns together fill the same
+four-corner deficit.
+-/
+structure FirstBitExactBoundaryTwoColumnExchangeBudget
+    (d : ℕ) (base₀ base₁ internal : Fin 4 → ℕ) : Prop where
+  fills : ExactTwoWordAugmentationEquation d base₀ base₁ internal
+
+/-- A two-word exact augmentation equation is already a two-column exchange budget. -/
+theorem firstBitExactBoundaryTwoColumnExchangeBudget_of_equation
+    {d : ℕ} {base₀ base₁ internal : Fin 4 → ℕ}
+    (h : ExactTwoWordAugmentationEquation d base₀ base₁ internal) :
+    FirstBitExactBoundaryTwoColumnExchangeBudget d base₀ base₁ internal where
+  fills := h
+
+/-- Build a two-column exchange budget from pointwise remaining-deficit compensation. -/
+theorem firstBitExactBoundaryTwoColumnExchangeBudget_of_baseCompensation
+    {d : ℕ} {base₀ base₁ internal : Fin 4 → ℕ}
+    (hle : ∀ a : Fin 4, base₀ a + internal a ≤ d)
+    (hbase₁ : ∀ a : Fin 4, base₁ a = d - (base₀ a + internal a)) :
+    FirstBitExactBoundaryTwoColumnExchangeBudget d base₀ base₁ internal where
+  fills := exactTwoWordAugmentationEquation_of_baseCompensation hle hbase₁
+
+/-- Project the exact two-word augmentation equation from a two-column exchange budget. -/
+theorem FirstBitExactBoundaryTwoColumnExchangeBudget.to_equation
+    {d : ℕ} {base₀ base₁ internal : Fin 4 → ℕ}
+    (h : FirstBitExactBoundaryTwoColumnExchangeBudget d base₀ base₁ internal) :
+    ExactTwoWordAugmentationEquation d base₀ base₁ internal :=
+  h.fills
+
+/-- Combine the two imported columns of a boundary-exchange budget into one exact column. -/
+theorem FirstBitExactBoundaryTwoColumnExchangeBudget.to_oneColumn
+    {d : ℕ} {base₀ base₁ internal : Fin 4 → ℕ}
+    (h : FirstBitExactBoundaryTwoColumnExchangeBudget d base₀ base₁ internal) :
+    FirstBitExactBoundaryExchangeBudget d (fun a => base₀ a + base₁ a) internal where
+  fills := by
+    intro a
+    exact h.fills a
+
+/--
+Concrete near-basis import package supplied by exact boundary-exchange budgets.  It is only a
+projection layer: the graph-specific near-basis construction remains the external content.
+-/
+structure FirstBitTerminalNearBasisBoundaryExchangeBudgetImports : Prop where
+  oneColumn :
+    ∀ {d : ℕ} {base internal : Fin 4 → ℕ},
+      FirstBitExactBoundaryExchangeBudget d base internal →
+        ExactOneWordAugmentationEquation d base internal
+  twoColumn :
+    ∀ {d : ℕ} {base₀ base₁ internal : Fin 4 → ℕ},
+      FirstBitExactBoundaryTwoColumnExchangeBudget d base₀ base₁ internal →
+        ExactTwoWordAugmentationEquation d base₀ base₁ internal
+  combinedColumn :
+    ∀ {d : ℕ} {base₀ base₁ internal : Fin 4 → ℕ},
+      FirstBitExactBoundaryTwoColumnExchangeBudget d base₀ base₁ internal →
+        FirstBitExactBoundaryExchangeBudget d (fun a => base₀ a + base₁ a) internal
+
+/-- The exact-boundary exchange-budget import package is discharged by the budget projections. -/
+theorem firstBitTerminalNearBasisBoundaryExchangeBudgetImports :
+    FirstBitTerminalNearBasisBoundaryExchangeBudgetImports where
+  oneColumn := fun h => h.to_equation
+  twoColumn := fun h => h.to_equation
+  combinedColumn := fun h => h.to_oneColumn
+
+/-- Repackage the exchange-budget imports as the named near-basis residual import slot. -/
+theorem FirstBitTerminalNearBasisBoundaryExchangeBudgetImports.to_importPackage
+    (h : FirstBitTerminalNearBasisBoundaryExchangeBudgetImports) :
+    FirstBitTerminalNearBasisBoundaryImportPackage
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports :=
+  ⟨h⟩
+
+/--
+Concrete mixed-type import package supplied by the homogeneous-carry trichotomy, the support-compressed
+small-kernel residual, and the Arf certificate residual.
+-/
+structure FirstBitTerminalMixedTypeHomogeneousCarryImports : Prop where
+  terminalTrichotomy : HasHomogeneousMixedCarryTerminalTrichotomyReduction
+  supportCompression : HasHomogeneousMixedCarrySupportCompressionReduction
+  affineArf : HasHomogeneousMixedCarryAffineArfCertificateReduction
+
+/-- Bundle the two genuine homogeneous-carry residual reductions into the mixed-type import package. -/
+theorem firstBitTerminalMixedTypeHomogeneousCarryImports_of_reductions
+    (hsupport : HasHomogeneousMixedCarrySupportCompressionReduction)
+    (harf : HasHomogeneousMixedCarryAffineArfCertificateReduction) :
+    FirstBitTerminalMixedTypeHomogeneousCarryImports where
+  terminalTrichotomy := homogeneousMixedCarryTerminalTrichotomyReduction
+  supportCompression := hsupport
+  affineArf := harf
+
+/-- Repackage the homogeneous-carry imports as the named mixed-type residual import slot. -/
+theorem FirstBitTerminalMixedTypeHomogeneousCarryImports.to_importPackage
+    (h : FirstBitTerminalMixedTypeHomogeneousCarryImports) :
+    FirstBitTerminalMixedTypeBoundaryImportPackage
+      FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  ⟨h⟩
+
+/-- Apply the mixed-type import package to split a homogeneous carry instance. -/
+theorem FirstBitTerminalMixedTypeHomogeneousCarryImports.trichotomy
+    (h : FirstBitTerminalMixedTypeHomogeneousCarryImports)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (Q : SimpleGraph ι) (U : Finset ι) (tau : ι → ℕ) (m : ℕ) :
+    HomogeneousMixedCarryTerminalTrichotomy Q U tau m :=
+  h.terminalTrichotomy Q U tau m
+
+/-- Apply the mixed-type import package to isolate the support-compressed small-core residual. -/
+theorem FirstBitTerminalMixedTypeHomogeneousCarryImports.smallCoreResidual
+    (h : FirstBitTerminalMixedTypeHomogeneousCarryImports)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ} {m : ℕ}
+    (hres : HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m) :
+    ∃ J T : Finset ι, ∃ c : ℕ, HomogeneousMixedCarrySmallCoreResidual Q U tau m J T c :=
+  h.supportCompression Q U tau m hres
+
+/-- Apply the mixed-type import package and immediately split the small-core residual endpoint. -/
+theorem FirstBitTerminalMixedTypeHomogeneousCarryImports.smallCoreResidualSplit
+    (h : FirstBitTerminalMixedTypeHomogeneousCarryImports)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ} {m : ℕ}
+    (hres : HomogeneousMixedCarrySmallKernelConsistentResidual Q U tau m) :
+    ∃ J T : Finset ι, ∃ c : ℕ,
+      HomogeneousMixedCarryProperSubquotientSmallCoreResidual Q U tau m J T c ∨
+        HomogeneousMixedCarryWholeClassSmallCoreResidual Q U tau m J T c := by
+  rcases h.smallCoreResidual hres with ⟨J, T, c, hcore⟩
+  exact ⟨J, T, c, HomogeneousMixedCarrySmallCoreResidual.properSubquotient_or_wholeClass hcore⟩
+
+/-- Apply the mixed-type import package to an affine inconsistency and extract its Arf residual. -/
+theorem FirstBitTerminalMixedTypeHomogeneousCarryImports.arfCertificate
+    (h : FirstBitTerminalMixedTypeHomogeneousCarryImports)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ}
+    (hinc : HomogeneousMixedCarryAffineInconsistency Q U tau) :
+    HomogeneousMixedCarryArfCertificateResidual Q U tau :=
+  h.affineArf Q U tau hinc
+
+/-- Apply the mixed-type import package and immediately split the Arf residual endpoint. -/
+theorem FirstBitTerminalMixedTypeHomogeneousCarryImports.arfCertificateSplit
+    (h : FirstBitTerminalMixedTypeHomogeneousCarryImports)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {Q : SimpleGraph ι} {U : Finset ι} {tau : ι → ℕ}
+    (hinc : HomogeneousMixedCarryAffineInconsistency Q U tau) :
+    HomogeneousMixedCarryProperSubquotientArfCertificateResidual Q U tau ∨
+      HomogeneousMixedCarryWholeClassArfCertificateResidual Q U tau :=
+  HomogeneousMixedCarryArfCertificateResidual.properSubquotient_or_wholeClass
+    (h.arfCertificate hinc)
+
+/--
+Final-facing branch outcome for the first-bit terminal packet: either the exact-basis branch is closed
+by the collapsed endpoint bound, or one of the named non-exact residual imports remains.
+-/
+inductive FirstBitTerminalPacketResidualOutcome
+    (ExactClosed NearBasisBoundary MixedTypeBoundary : Prop) : Prop where
+  | exactClosed : ExactClosed → FirstBitTerminalPacketResidualOutcome
+      ExactClosed NearBasisBoundary MixedTypeBoundary
+  | nearBasisResidual : NearBasisBoundary → FirstBitTerminalPacketResidualOutcome
+      ExactClosed NearBasisBoundary MixedTypeBoundary
+  | mixedTypeResidual : MixedTypeBoundary → FirstBitTerminalPacketResidualOutcome
+      ExactClosed NearBasisBoundary MixedTypeBoundary
+
+/--
+Separated first-bit packet frontier with the near-basis exchange-budget import and the mixed-type
+homogeneous-carry import wired into the two residual slots.
+-/
+structure FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry : Prop where
+  separated :
+    FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+      FirstBitTerminalMixedTypeHomogeneousCarryImports
+
+/-- Construct the exchange-budget/homogeneous-carry frontier from the exact and residual parts. -/
+theorem firstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry_of_parts
+    (hexact : FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound)
+    (hnear : FirstBitTerminalNearBasisBoundaryExchangeBudgetImports)
+    (hmixed : FirstBitTerminalMixedTypeHomogeneousCarryImports) :
+    FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry where
+  separated :=
+    firstBitPacketQuotientFrontierWithSeparatedTerminalResiduals_of_parts
+      hexact hnear hmixed
+
+/--
+Build the exchange-budget/homogeneous-carry frontier from target elimination, collapsed exact-basis
+surfaces, and the two homogeneous-carry residual reductions.
+-/
+theorem
+    firstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry_of_targetElimination
+    (htarget : HasFirstBitPacketTargetEliminationReduction)
+    (hexact : FirstBitTerminalExactBasisCollapsedEndpointBoundSurfaces)
+    (hsupport : HasHomogeneousMixedCarrySupportCompressionReduction)
+    (harf : HasHomogeneousMixedCarryAffineArfCertificateReduction) :
+    FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry :=
+  firstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry_of_parts
+    (firstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound_of_targetElimination
+      htarget hexact)
+    firstBitTerminalNearBasisBoundaryExchangeBudgetImports
+    (firstBitTerminalMixedTypeHomogeneousCarryImports_of_reductions hsupport harf)
+
+/-- Forget the concrete residual names and recover the separated residual frontier. -/
+theorem FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry.to_separated
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry) :
+    FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+      FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  h.separated
+
+/-- Project the exact-basis part of the concrete residual frontier. -/
+theorem FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry.to_exactBasis
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry) :
+    FirstBitPacketQuotientFrontierSurfacesWithCollapsedExactBasisEndpointBound :=
+  h.separated.to_exactBasis
+
+/-- Project the near-basis exchange-budget imports from the concrete residual frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry.to_nearBasisExchangeBudgetImports
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry) :
+    FirstBitTerminalNearBasisBoundaryExchangeBudgetImports :=
+  h.separated.to_nearBasisImport
+
+/-- Project the mixed-type homogeneous-carry imports from the concrete residual frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry.to_mixedTypeHomogeneousCarryImports
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry) :
+    FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  h.separated.to_mixedTypeImport
+
+/-- The concrete residual frontier still exposes the exact-basis `m + 8` terminal bound. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry.exactBasis_terminalBranch_card_le_add_eight
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry)
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hbranch : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    S.card ≤ m + 8 :=
+  FirstBitPacketQuotientFrontierWithSeparatedTerminalResiduals.exactBasis_terminalBranch_card_le_add_eight
+    h.separated hbranch hcaps
+
+/-- Exact-basis branch outcome exported as a final-facing terminal packet branch certificate. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry.outcome_exactBasis
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry)
+    {α V : Type*} [DecidableEq α]
+    {Usable : Finset α → ℕ → Fin 4 → Prop} {Δ : Finset (Fin 4)} {σ : Fin 4}
+    {G : SimpleGraph V} {S : Finset V} {m : ℕ}
+    (hbranch : FirstBitBranchSplitToExactBasisEndpointInputs Usable Δ σ G S)
+    (hcaps : FirstBitPseudoSplitEndpointSideCaps G S m) :
+    FirstBitTerminalPacketResidualOutcome
+      (FirstBitTerminalExactBasisCollapsedEndpointBoundCertificate Usable Δ σ G S m)
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+      FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  FirstBitTerminalPacketResidualOutcome.exactClosed
+    (firstBitTerminalExactBasisCollapsedEndpointBoundCertificate_of_surfaces
+      h.to_exactBasis.exactBasisBound hbranch hcaps)
+
+/-- Near-basis branch outcome exported from the concrete residual frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry.outcome_nearBasis
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry)
+    {ExactClosed : Prop} :
+    FirstBitTerminalPacketResidualOutcome ExactClosed
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+      FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  FirstBitTerminalPacketResidualOutcome.nearBasisResidual
+    h.to_nearBasisExchangeBudgetImports
+
+/-- Mixed-type branch outcome exported from the concrete residual frontier. -/
+theorem
+    FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry.outcome_mixedType
+    (h : FirstBitPacketQuotientFrontierWithExchangeBudgetAndHomogeneousCarry)
+    {ExactClosed : Prop} :
+    FirstBitTerminalPacketResidualOutcome ExactClosed
+      FirstBitTerminalNearBasisBoundaryExchangeBudgetImports
+      FirstBitTerminalMixedTypeHomogeneousCarryImports :=
+  FirstBitTerminalPacketResidualOutcome.mixedTypeResidual
+    h.to_mixedTypeHomogeneousCarryImports
+
 /-- No induced `2K₂` occurs inside the host packet. -/
 def IsTwoKTwoFreeOn {V : Type*} (G : SimpleGraph V) (S : Finset V) : Prop :=
   ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, ∀ d ∈ S,
