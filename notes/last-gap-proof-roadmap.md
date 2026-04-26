@@ -2009,6 +2009,8 @@ What remains justified after audit is:
       small atoms sharpen this: size-two atoms force collision for projected gain at least two and size-three
       atoms purely absorb only unit gain;
       two-atom deletion endpoints are zero-gain pivots or forced collision stars;
+      zero-gain saturation leaves pair pivots only as same-size exchanges with leftover singletons, so
+      all-pair saturated packings have collision-star deletions;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;

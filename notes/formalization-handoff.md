@@ -2503,6 +2503,8 @@ Recommended attack:
     Derive the small-atom corollary: size-two atoms force collision for `g^->=2` and allow only zero-gain
     shortened-block unlifts for `g^-=1`; size-three atoms purely absorb only unit gain.
     Package the two-atom deletion endpoint as a zero-gain pivot / forced collision-star dichotomy.
+    Add pair-pivot saturation: a zero-gain pair pivot meeting another packed atom creates a larger block and
+    contradicts zero-gain saturation; surviving pair pivots are same-size exchanges with leftover singletons.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

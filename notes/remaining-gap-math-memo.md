@@ -2037,6 +2037,8 @@ deleted vertex.
 At size-two atoms, gain `>=2` repairs are collision-forced and gain `1` survives only as a zero-gain
 shortened-block unlift; size-three atoms purely absorb only unit gain.
 Thus two-atom deletion endpoints are zero-gain pivots or forced collision stars, with no absorption case.
+By zero-gain saturation, a pair pivot cannot meet another packed atom; it can only exchange with a leftover
+singleton.  All-pair saturated packings therefore force collision-star deletions.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,
