@@ -20215,6 +20215,607 @@ theorem FirstBitTerminalLabeledDeletionCoreFrontier.obligation
 end FirstBitTerminalLabeledDeletionCoreFrontier
 
 /--
+Ternary packet-repair frontier for the terminal first-bit residual.  The package records the
+assumption-backed arithmetic legality of the `r = 3` balanced-swap target, the target realization on
+terminal packets, and the shifted self-layer failure that closes the large-outside branch.
+-/
+structure FirstBitTerminalTernaryPacketRepairFrontier
+    {Packet Target : Type*}
+    (terminalPackets : Finset Packet) (targetOf : Packet → Target) (arity : ℕ)
+    (targetRealized shiftedSelfLayerFailure : Packet → Target → Prop)
+    (ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch : Prop) : Prop where
+  arity_eq_three : arity = 3
+  ternaryArithmeticLegalCert : ternaryArithmeticLegal
+  realizesTernaryTarget :
+    ∀ packet : Packet, packet ∈ terminalPackets → targetRealized packet (targetOf packet)
+  shiftedSelfLayerFailure_on_realized :
+    ∀ packet : Packet, packet ∈ terminalPackets → targetRealized packet (targetOf packet) →
+      shiftedSelfLayerFailure packet (targetOf packet)
+  ternaryTargetRealizationCert : ternaryTargetRealization
+  ternaryShiftedSelfLayerFailureCert : ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepairCert : balancedSwapTargetRepair
+  largeOutsideBranchCloses :
+    ternaryTargetRealization → ternaryShiftedSelfLayerFailure → largeOutsideBranch
+
+/-- Build the ternary packet-repair frontier from its assumption-backed fields. -/
+theorem firstBitTerminalTernaryPacketRepairFrontier_of_assumptions
+    {Packet Target : Type*}
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+      balancedSwapTargetRepair largeOutsideBranch : Prop}
+    (harity : arity = 3) (harith : ternaryArithmeticLegal)
+    (hrealizes :
+      ∀ packet : Packet, packet ∈ terminalPackets → targetRealized packet (targetOf packet))
+    (hshifted :
+      ∀ packet : Packet, packet ∈ terminalPackets → targetRealized packet (targetOf packet) →
+        shiftedSelfLayerFailure packet (targetOf packet))
+    (htarget : ternaryTargetRealization) (hfailure : ternaryShiftedSelfLayerFailure)
+    (hrepair : balancedSwapTargetRepair)
+    (hlarge : ternaryTargetRealization → ternaryShiftedSelfLayerFailure → largeOutsideBranch) :
+    FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+      ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch where
+  arity_eq_three := harity
+  ternaryArithmeticLegalCert := harith
+  realizesTernaryTarget := hrealizes
+  shiftedSelfLayerFailure_on_realized := hshifted
+  ternaryTargetRealizationCert := htarget
+  ternaryShiftedSelfLayerFailureCert := hfailure
+  balancedSwapTargetRepairCert := hrepair
+  largeOutsideBranchCloses := hlarge
+
+section FirstBitTerminalTernaryPacketRepairFrontier
+
+variable {Packet Target : Type*}
+variable {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+variable {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+variable {ternaryArithmeticLegal ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  balancedSwapTargetRepair largeOutsideBranch : Prop}
+
+/-- Project the arithmetic legality of the arity-three target. -/
+theorem FirstBitTerminalTernaryPacketRepairFrontier.to_ternaryArithmeticLegal
+    (h :
+      FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch) :
+    ternaryArithmeticLegal :=
+  h.ternaryArithmeticLegalCert
+
+/-- Every terminal packet realizes its ternary target. -/
+theorem FirstBitTerminalTernaryPacketRepairFrontier.targetRealized_of_mem
+    (h :
+      FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    targetRealized packet (targetOf packet) :=
+  h.realizesTernaryTarget packet hpacket
+
+/-- The shifted self-layer failure is attached to every realized ternary target. -/
+theorem FirstBitTerminalTernaryPacketRepairFrontier.shiftedSelfLayerFailure_of_mem
+    (h :
+      FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch)
+    {packet : Packet} (hpacket : packet ∈ terminalPackets) :
+    shiftedSelfLayerFailure packet (targetOf packet) :=
+  h.shiftedSelfLayerFailure_on_realized packet hpacket (h.realizesTernaryTarget packet hpacket)
+
+/-- Project the global ternary target-realization certificate. -/
+theorem FirstBitTerminalTernaryPacketRepairFrontier.to_ternaryTargetRealization
+    (h :
+      FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch) :
+    ternaryTargetRealization :=
+  h.ternaryTargetRealizationCert
+
+/-- Project the shifted self-layer failure certificate. -/
+theorem FirstBitTerminalTernaryPacketRepairFrontier.to_ternaryShiftedSelfLayerFailure
+    (h :
+      FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch) :
+    ternaryShiftedSelfLayerFailure :=
+  h.ternaryShiftedSelfLayerFailureCert
+
+/-- The ternary repair fields close the large-outside branch. -/
+theorem FirstBitTerminalTernaryPacketRepairFrontier.to_largeOutsideBranch
+    (h :
+      FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+        targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch) :
+    largeOutsideBranch :=
+  h.largeOutsideBranchCloses h.ternaryTargetRealizationCert h.ternaryShiftedSelfLayerFailureCert
+
+end FirstBitTerminalTernaryPacketRepairFrontier
+
+/--
+Near-threshold deletion-template frontier for the labeled terminal residual.  It packages
+`|R| = m + s`, `1 ≤ s ≤ 3`, the Gallai interval `m - 2 ≤ |C| ≤ |R|`, and the finite terminality
+templates obtained by deleting zero, one, or (when `s = 3`) two vertices from `R`.
+-/
+structure FirstBitTerminalNearThresholdDeletionTemplateFrontier
+    {Vertex Label : Type*}
+    (residueVertices gallaiClass : Finset Vertex) (m s : ℕ)
+    (baseLabel : Vertex → Label)
+    (singleDeletionResidual : Vertex → Finset Vertex)
+    (pairDeletionResidual : Vertex → Vertex → Finset Vertex)
+    (singleDeletedLabel : Vertex → Vertex → Label)
+    (pairDeletedLabel : Vertex → Vertex → Vertex → Label)
+    (nearThresholdArithmetic selectorDeletionNormalForm
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate : Prop) : Prop where
+  residue_card_eq : residueVertices.card = m + s
+  s_pos : 1 ≤ s
+  s_le_three : s ≤ 3
+  gallaiClass_lower : m - 2 ≤ gallaiClass.card
+  gallaiClass_upper : gallaiClass.card ≤ residueVertices.card
+  nearThresholdArithmeticCert : nearThresholdArithmetic
+  selectorDeletionNormalFormCert : selectorDeletionNormalForm
+  largeSelector_deleteTemplate :
+    ∀ selector : Finset Vertex, selector ⊆ residueVertices → m < selector.card →
+      ∃ deleted : Finset Vertex, deleted ⊆ residueVertices ∧ deleted.card ≤ s - 1 ∧
+        deleted.card ≤ 2 ∧ ∀ v : Vertex, v ∈ selector ↔ v ∈ residueVertices ∧ v ∉ deleted
+  singleDeletionResidual_iff :
+    ∀ x : Vertex, x ∈ residueVertices → ∀ v : Vertex,
+      v ∈ singleDeletionResidual x ↔ v ∈ residueVertices ∧ v ≠ x
+  pairDeletionResidual_iff :
+    ∀ x y : Vertex, x ∈ residueVertices → y ∈ residueVertices → x ≠ y → ∀ v : Vertex,
+      v ∈ pairDeletionResidual x y ↔ v ∈ residueVertices ∧ v ≠ x ∧ v ≠ y
+  baseNonconstant :
+    ∃ v w : Vertex, v ∈ residueVertices ∧ w ∈ residueVertices ∧ baseLabel v ≠ baseLabel w
+  singleDeletionNonconstant :
+    ∀ x : Vertex, x ∈ residueVertices →
+      ∃ v w : Vertex, v ∈ singleDeletionResidual x ∧ w ∈ singleDeletionResidual x ∧
+        singleDeletedLabel x v ≠ singleDeletedLabel x w
+  pairDeletionNonconstant :
+    s = 3 → ∀ x y : Vertex, x ∈ residueVertices → y ∈ residueVertices → x ≠ y →
+      ∃ v w : Vertex, v ∈ pairDeletionResidual x y ∧ w ∈ pairDeletionResidual x y ∧
+        pairDeletedLabel x y v ≠ pairDeletedLabel x y w
+  sOneDeletionTemplateCert : s = 1 → sOneDeletionTemplate
+  sTwoDeletionTemplateCert : s = 2 → sTwoDeletionTemplate
+  sThreeDeletionTemplateCert : s = 3 → sThreeDeletionTemplate
+
+/-- Build the near-threshold deletion-template frontier from explicit assumptions. -/
+theorem firstBitTerminalNearThresholdDeletionTemplateFrontier_of_assumptions
+    {Vertex Label : Type*}
+    {residueVertices gallaiClass : Finset Vertex} {m s : ℕ}
+    {baseLabel : Vertex → Label}
+    {singleDeletionResidual : Vertex → Finset Vertex}
+    {pairDeletionResidual : Vertex → Vertex → Finset Vertex}
+    {singleDeletedLabel : Vertex → Vertex → Label}
+    {pairDeletedLabel : Vertex → Vertex → Vertex → Label}
+    {nearThresholdArithmetic selectorDeletionNormalForm
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate : Prop}
+    (hcard : residueVertices.card = m + s) (hspos : 1 ≤ s) (hsle : s ≤ 3)
+    (hclassLower : m - 2 ≤ gallaiClass.card)
+    (hclassUpper : gallaiClass.card ≤ residueVertices.card)
+    (harith : nearThresholdArithmetic) (hnormal : selectorDeletionNormalForm)
+    (hselector :
+      ∀ selector : Finset Vertex, selector ⊆ residueVertices → m < selector.card →
+        ∃ deleted : Finset Vertex, deleted ⊆ residueVertices ∧ deleted.card ≤ s - 1 ∧
+          deleted.card ≤ 2 ∧ ∀ v : Vertex, v ∈ selector ↔ v ∈ residueVertices ∧ v ∉ deleted)
+    (hsingleResidual :
+      ∀ x : Vertex, x ∈ residueVertices → ∀ v : Vertex,
+        v ∈ singleDeletionResidual x ↔ v ∈ residueVertices ∧ v ≠ x)
+    (hpairResidual :
+      ∀ x y : Vertex, x ∈ residueVertices → y ∈ residueVertices → x ≠ y → ∀ v : Vertex,
+        v ∈ pairDeletionResidual x y ↔ v ∈ residueVertices ∧ v ≠ x ∧ v ≠ y)
+    (hbase :
+      ∃ v w : Vertex, v ∈ residueVertices ∧ w ∈ residueVertices ∧ baseLabel v ≠ baseLabel w)
+    (hsingle :
+      ∀ x : Vertex, x ∈ residueVertices →
+        ∃ v w : Vertex, v ∈ singleDeletionResidual x ∧ w ∈ singleDeletionResidual x ∧
+          singleDeletedLabel x v ≠ singleDeletedLabel x w)
+    (hpair :
+      s = 3 → ∀ x y : Vertex, x ∈ residueVertices → y ∈ residueVertices → x ≠ y →
+        ∃ v w : Vertex, v ∈ pairDeletionResidual x y ∧ w ∈ pairDeletionResidual x y ∧
+          pairDeletedLabel x y v ≠ pairDeletedLabel x y w)
+    (hs1 : s = 1 → sOneDeletionTemplate)
+    (hs2 : s = 2 → sTwoDeletionTemplate)
+    (hs3 : s = 3 → sThreeDeletionTemplate) :
+    FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+      baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+      nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+      sTwoDeletionTemplate sThreeDeletionTemplate where
+  residue_card_eq := hcard
+  s_pos := hspos
+  s_le_three := hsle
+  gallaiClass_lower := hclassLower
+  gallaiClass_upper := hclassUpper
+  nearThresholdArithmeticCert := harith
+  selectorDeletionNormalFormCert := hnormal
+  largeSelector_deleteTemplate := hselector
+  singleDeletionResidual_iff := hsingleResidual
+  pairDeletionResidual_iff := hpairResidual
+  baseNonconstant := hbase
+  singleDeletionNonconstant := hsingle
+  pairDeletionNonconstant := hpair
+  sOneDeletionTemplateCert := hs1
+  sTwoDeletionTemplateCert := hs2
+  sThreeDeletionTemplateCert := hs3
+
+section FirstBitTerminalNearThresholdDeletionTemplateFrontier
+
+variable {Vertex Label : Type*}
+variable {residueVertices gallaiClass : Finset Vertex} {m s : ℕ}
+variable {baseLabel : Vertex → Label}
+variable {singleDeletionResidual : Vertex → Finset Vertex}
+variable {pairDeletionResidual : Vertex → Vertex → Finset Vertex}
+variable {singleDeletedLabel : Vertex → Vertex → Label}
+variable {pairDeletedLabel : Vertex → Vertex → Vertex → Label}
+variable {nearThresholdArithmetic selectorDeletionNormalForm
+  sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate : Prop}
+
+/-- The retained residual has size `m + s`. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.residue_card_eq_add
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate) :
+    residueVertices.card = m + s :=
+  h.residue_card_eq
+
+/-- Project the near-threshold bounds `1 ≤ s ≤ 3` and `m - 2 ≤ |C| ≤ |R|`. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.nearThresholdBounds
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate) :
+    1 ≤ s ∧ s ≤ 3 ∧ m - 2 ≤ gallaiClass.card ∧ gallaiClass.card ≤ residueVertices.card :=
+  ⟨h.s_pos, h.s_le_three, h.gallaiClass_lower, h.gallaiClass_upper⟩
+
+/-- A selector larger than `m` is `R` with at most two vertices deleted. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.largeSelector_deleteTemplate_of_card
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate)
+    {selector : Finset Vertex} (hsub : selector ⊆ residueVertices) (hlarge : m < selector.card) :
+    ∃ deleted : Finset Vertex, deleted ⊆ residueVertices ∧ deleted.card ≤ s - 1 ∧
+      deleted.card ≤ 2 ∧ ∀ v : Vertex, v ∈ selector ↔ v ∈ residueVertices ∧ v ∉ deleted :=
+  h.largeSelector_deleteTemplate selector hsub hlarge
+
+/-- The one-deletion residual is `R` with the chosen vertex omitted. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.mem_singleDeletionResidual_iff
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate)
+    {x v : Vertex} (hx : x ∈ residueVertices) :
+    v ∈ singleDeletionResidual x ↔ v ∈ residueVertices ∧ v ≠ x :=
+  h.singleDeletionResidual_iff x hx v
+
+/-- The two-deletion residual is `R` with the chosen pair omitted. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.mem_pairDeletionResidual_iff
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate)
+    {x y v : Vertex} (hx : x ∈ residueVertices) (hy : y ∈ residueVertices) (hxy : x ≠ y) :
+    v ∈ pairDeletionResidual x y ↔ v ∈ residueVertices ∧ v ≠ x ∧ v ≠ y :=
+  h.pairDeletionResidual_iff x y hx hy hxy v
+
+/-- The base label is nonconstant on `R`. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.to_baseNonconstant
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate) :
+    ∃ v w : Vertex, v ∈ residueVertices ∧ w ∈ residueVertices ∧ baseLabel v ≠ baseLabel w :=
+  h.baseNonconstant
+
+/-- Every one-vertex deletion keeps the shifted label nonconstant. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.singleDeletionNonconstant_of_mem
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate)
+    {x : Vertex} (hx : x ∈ residueVertices) :
+    ∃ v w : Vertex, v ∈ singleDeletionResidual x ∧ w ∈ singleDeletionResidual x ∧
+      singleDeletedLabel x v ≠ singleDeletedLabel x w :=
+  h.singleDeletionNonconstant x hx
+
+/-- In the `s = 3` case, every two-vertex deletion keeps the doubly shifted label nonconstant. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.pairDeletionNonconstant_of_mem
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate)
+    (hs : s = 3) {x y : Vertex} (hx : x ∈ residueVertices) (hy : y ∈ residueVertices)
+    (hxy : x ≠ y) :
+    ∃ v w : Vertex, v ∈ pairDeletionResidual x y ∧ w ∈ pairDeletionResidual x y ∧
+      pairDeletedLabel x y v ≠ pairDeletedLabel x y w :=
+  h.pairDeletionNonconstant hs x y hx hy hxy
+
+/-- Project the finite deletion-template certificate for the `s = 1` case. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.to_sOneDeletionTemplate
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate)
+    (hs : s = 1) :
+    sOneDeletionTemplate :=
+  h.sOneDeletionTemplateCert hs
+
+/-- Project the finite deletion-template certificate for the `s = 2` case. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.to_sTwoDeletionTemplate
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate)
+    (hs : s = 2) :
+    sTwoDeletionTemplate :=
+  h.sTwoDeletionTemplateCert hs
+
+/-- Project the finite deletion-template certificate for the `s = 3` case. -/
+theorem FirstBitTerminalNearThresholdDeletionTemplateFrontier.to_sThreeDeletionTemplate
+    (h :
+      FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+        baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+        nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+        sTwoDeletionTemplate sThreeDeletionTemplate)
+    (hs : s = 3) :
+    sThreeDeletionTemplate :=
+  h.sThreeDeletionTemplateCert hs
+
+end FirstBitTerminalNearThresholdDeletionTemplateFrontier
+
+/--
+Residual split frontier after the labeled deletion-core package.  It wires the large-outside ternary
+repair branch and the no-large-outside near-threshold deletion-template branch while keeping the
+actual split theorem as an explicit assumption.
+-/
+structure FirstBitTerminalLabeledResidualSplitFrontier
+    (labeledDeletionCoreFrontier ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure nearThresholdBounds
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+      largeOutsideBranch nearThresholdBranch splitTheorem : Prop) : Prop where
+  labeledDeletionCoreFrontierCert : labeledDeletionCoreFrontier
+  ternaryPacketRepairFrontierCert : ternaryPacketRepairFrontier
+  nearThresholdDeletionTemplateFrontierCert : nearThresholdDeletionTemplateFrontier
+  residualSplit : largeOutsideBranch ∨ nearThresholdBranch
+  largeOutside_targetRealization : largeOutsideBranch → ternaryTargetRealization
+  largeOutside_shiftedSelfLayerFailure : largeOutsideBranch → ternaryShiftedSelfLayerFailure
+  nearThreshold_bounds : nearThresholdBranch → nearThresholdBounds
+  nearThreshold_sOneTemplate : nearThresholdBranch → sOneDeletionTemplate
+  nearThreshold_sTwoTemplate : nearThresholdBranch → sTwoDeletionTemplate
+  nearThreshold_sThreeTemplate : nearThresholdBranch → sThreeDeletionTemplate
+  splitTheoremCert : splitTheorem
+
+/-- Build the residual split frontier from its three subfrontiers and branch implications. -/
+theorem firstBitTerminalLabeledResidualSplitFrontier_of_frontiers
+    {labeledDeletionCoreFrontier ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier
+      ternaryTargetRealization ternaryShiftedSelfLayerFailure nearThresholdBounds
+      sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+      largeOutsideBranch nearThresholdBranch splitTheorem : Prop}
+    (hcore : labeledDeletionCoreFrontier) (hternary : ternaryPacketRepairFrontier)
+    (hnear : nearThresholdDeletionTemplateFrontier)
+    (hsplit : largeOutsideBranch ∨ nearThresholdBranch)
+    (hlargeTarget : largeOutsideBranch → ternaryTargetRealization)
+    (hlargeFailure : largeOutsideBranch → ternaryShiftedSelfLayerFailure)
+    (hnearBounds : nearThresholdBranch → nearThresholdBounds)
+    (hnearS1 : nearThresholdBranch → sOneDeletionTemplate)
+    (hnearS2 : nearThresholdBranch → sTwoDeletionTemplate)
+    (hnearS3 : nearThresholdBranch → sThreeDeletionTemplate)
+    (hsplitTheorem : splitTheorem) :
+    FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+      ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+      ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+      sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem where
+  labeledDeletionCoreFrontierCert := hcore
+  ternaryPacketRepairFrontierCert := hternary
+  nearThresholdDeletionTemplateFrontierCert := hnear
+  residualSplit := hsplit
+  largeOutside_targetRealization := hlargeTarget
+  largeOutside_shiftedSelfLayerFailure := hlargeFailure
+  nearThreshold_bounds := hnearBounds
+  nearThreshold_sOneTemplate := hnearS1
+  nearThreshold_sTwoTemplate := hnearS2
+  nearThreshold_sThreeTemplate := hnearS3
+  splitTheoremCert := hsplitTheorem
+
+section FirstBitTerminalLabeledResidualSplitFrontier
+
+variable {labeledDeletionCoreFrontier ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier
+  ternaryTargetRealization ternaryShiftedSelfLayerFailure nearThresholdBounds
+  sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+  largeOutsideBranch nearThresholdBranch splitTheorem : Prop}
+
+/-- Project the residual branch split. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.largeOutside_or_nearThreshold
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem) :
+    largeOutsideBranch ∨ nearThresholdBranch :=
+  h.residualSplit
+
+/-- In the large-outside branch, the ternary target is realized. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.ternaryTargetRealization_of_largeOutside
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem)
+    (hlarge : largeOutsideBranch) :
+    ternaryTargetRealization :=
+  h.largeOutside_targetRealization hlarge
+
+/-- In the large-outside branch, the shifted self-layer failure is exposed. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.ternaryShiftedSelfLayerFailure_of_largeOutside
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem)
+    (hlarge : largeOutsideBranch) :
+    ternaryShiftedSelfLayerFailure :=
+  h.largeOutside_shiftedSelfLayerFailure hlarge
+
+/-- In the no-large-outside branch, the near-threshold bounds are exposed. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.nearThresholdBounds_of_branch
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem)
+    (hnear : nearThresholdBranch) :
+    nearThresholdBounds :=
+  h.nearThreshold_bounds hnear
+
+/-- Project the three finite deletion-template case certificates from the near-threshold branch. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.deletionTemplates_of_nearThreshold
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem)
+    (hnear : nearThresholdBranch) :
+    sOneDeletionTemplate ∧ sTwoDeletionTemplate ∧ sThreeDeletionTemplate :=
+  ⟨h.nearThreshold_sOneTemplate hnear,
+    ⟨h.nearThreshold_sTwoTemplate hnear, h.nearThreshold_sThreeTemplate hnear⟩⟩
+
+/-- Project the external split theorem certificate. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.to_splitTheorem
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem) :
+    splitTheorem :=
+  h.splitTheoremCert
+
+end FirstBitTerminalLabeledResidualSplitFrontier
+
+section FirstBitTerminalLabeledResidualSplitFrontierTypedProjections
+
+variable {Packet Quotient LowerProfile TerminalResidue RowAction Vertex Label Subbucket : Type*}
+variable {terminalPackets : Finset Packet} {quotientOf : Packet → Quotient}
+variable {lowerProfile : Packet → LowerProfile} {terminalResidue : Packet → TerminalResidue}
+variable {carrierRowAction : Packet → RowAction}
+variable {deletionEquation selfLayerEquation : Packet → Prop}
+variable {quotientDeletionEquation quotientSelfLayerEquation : Quotient → Prop}
+variable {affineProfileAvoidance inverseKneserNormalForm dyadicFlagDescent
+  stoppedSupportCircuit evenHyperplaneSpan oddCosetPacketRealization coverHolonomyNormalForm
+  pathProvenance remainingObstruction historicalPathBookkeeping prefixFullness
+  missingCornerSquare : Prop}
+variable {coreVertices deletedVertices selectorVertices : Finset Vertex}
+variable {badVertices terminalCore : Label → Finset Vertex} {m : Nat}
+variable {label parentCoCutLabel deleteDegree shiftedLabel : Vertex → Label}
+variable {subbucketVertices : Subbucket → Finset Vertex}
+variable {hereditaryLabel shiftedHereditaryLabel : Subbucket → Vertex → Label}
+variable {parentCoCutOrigin selectorCoreLargeGallaiClass residueEliminationStep
+  badVertexFreeResidual labelShiftConservativity moduleLiftAfterRelabeling
+  hereditarySubbucketClosure moduleExit falseTwinExit trueTwinExit constantFalseTwinClass
+  constantTrueTwinClass labelRefinedRankBound : Prop}
+variable {ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier
+  ternaryTargetRealization ternaryShiftedSelfLayerFailure nearThresholdBounds
+  sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+  largeOutsideBranch nearThresholdBranch splitTheorem : Prop}
+
+/-- Recover the concrete labeled deletion-core frontier from a residual split frontier. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.to_labeledDeletionCoreFrontier
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier
+        (FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+          lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+          quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+          inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+          oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+          historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+          selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+          subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+          selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+          labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+          falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass
+          labelRefinedRankBound)
+        ternaryPacketRepairFrontier nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem) :
+    FirstBitTerminalLabeledDeletionCoreFrontier terminalPackets quotientOf
+      lowerProfile terminalResidue carrierRowAction deletionEquation selfLayerEquation
+      quotientDeletionEquation quotientSelfLayerEquation affineProfileAvoidance
+      inverseKneserNormalForm dyadicFlagDescent stoppedSupportCircuit evenHyperplaneSpan
+      oddCosetPacketRealization coverHolonomyNormalForm pathProvenance remainingObstruction
+      historicalPathBookkeeping prefixFullness missingCornerSquare coreVertices deletedVertices
+      selectorVertices badVertices terminalCore m label parentCoCutLabel deleteDegree shiftedLabel
+      subbucketVertices hereditaryLabel shiftedHereditaryLabel parentCoCutOrigin
+      selectorCoreLargeGallaiClass residueEliminationStep badVertexFreeResidual
+      labelShiftConservativity moduleLiftAfterRelabeling hereditarySubbucketClosure moduleExit
+      falseTwinExit trueTwinExit constantFalseTwinClass constantTrueTwinClass labelRefinedRankBound :=
+  h.labeledDeletionCoreFrontierCert
+
+end FirstBitTerminalLabeledResidualSplitFrontierTypedProjections
+
+section FirstBitTerminalLabeledResidualSplitFrontierSubfrontierProjections
+
+variable {labeledDeletionCoreFrontier ternaryPacketRepairFrontier
+  nearThresholdDeletionTemplateFrontier ternaryTargetRealization ternaryShiftedSelfLayerFailure
+  nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate
+  largeOutsideBranch nearThresholdBranch splitTheorem : Prop}
+
+/-- Recover a concrete ternary packet-repair frontier from the residual split frontier. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.to_ternaryPacketRepairFrontier
+    {Packet Target : Type*}
+    {terminalPackets : Finset Packet} {targetOf : Packet → Target} {arity : ℕ}
+    {targetRealized shiftedSelfLayerFailure : Packet → Target → Prop}
+    {ternaryArithmeticLegal balancedSwapTargetRepair : Prop}
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        (FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+          targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+          ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch)
+        nearThresholdDeletionTemplateFrontier ternaryTargetRealization
+        ternaryShiftedSelfLayerFailure nearThresholdBounds sOneDeletionTemplate sTwoDeletionTemplate
+        sThreeDeletionTemplate largeOutsideBranch nearThresholdBranch splitTheorem) :
+    FirstBitTerminalTernaryPacketRepairFrontier terminalPackets targetOf arity
+      targetRealized shiftedSelfLayerFailure ternaryArithmeticLegal ternaryTargetRealization
+      ternaryShiftedSelfLayerFailure balancedSwapTargetRepair largeOutsideBranch :=
+  h.ternaryPacketRepairFrontierCert
+
+/-- Recover a concrete near-threshold deletion-template frontier from the residual split frontier. -/
+theorem FirstBitTerminalLabeledResidualSplitFrontier.to_nearThresholdDeletionTemplateFrontier
+    {Vertex Label : Type*}
+    {residueVertices gallaiClass : Finset Vertex} {m s : ℕ}
+    {baseLabel : Vertex → Label}
+    {singleDeletionResidual : Vertex → Finset Vertex}
+    {pairDeletionResidual : Vertex → Vertex → Finset Vertex}
+    {singleDeletedLabel : Vertex → Vertex → Label}
+    {pairDeletedLabel : Vertex → Vertex → Vertex → Label}
+    {nearThresholdArithmetic selectorDeletionNormalForm : Prop}
+    (h :
+      FirstBitTerminalLabeledResidualSplitFrontier labeledDeletionCoreFrontier
+        ternaryPacketRepairFrontier
+        (FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+          baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+          nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate
+          sTwoDeletionTemplate sThreeDeletionTemplate)
+        ternaryTargetRealization ternaryShiftedSelfLayerFailure nearThresholdBounds
+        sOneDeletionTemplate sTwoDeletionTemplate sThreeDeletionTemplate largeOutsideBranch
+        nearThresholdBranch splitTheorem) :
+    FirstBitTerminalNearThresholdDeletionTemplateFrontier residueVertices gallaiClass m s
+      baseLabel singleDeletionResidual pairDeletionResidual singleDeletedLabel pairDeletedLabel
+      nearThresholdArithmetic selectorDeletionNormalForm sOneDeletionTemplate sTwoDeletionTemplate
+      sThreeDeletionTemplate :=
+  h.nearThresholdDeletionTemplateFrontierCert
+
+end FirstBitTerminalLabeledResidualSplitFrontierSubfrontierProjections
+
+/--
 Atom-packet repair/principal-bucket shadow imports bundled with both the affine-profile
 dyadic frontier and the stopped-bit support/cover frontier.
 -/
