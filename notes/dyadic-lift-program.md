@@ -360,6 +360,8 @@ Olson coordinate.
 In exact cross-regular form, if `c_I` is the degree from `I` into `K` and `c_K` from `K` into `I`, then
 the mixed packet appends iff `c_I=kappa` and `|K|+c_K=kappa [MOD 4]`, with
 `|I|c_I=|K|c_K`.
+Old-frame double counts add `r|I|=0` and `m kappa=(r+1)|K|`; for the dense Olson cap `kappa=|K|`, this
+is `(m-r-1)|K|=0`.
 Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`; equal size residues require `|K|` even, while odd size
 difference forces `kappa` uniquely.
 The general two-packet scalar equation is: for internally regular cross-uniform packets
@@ -376,9 +378,19 @@ exact form only needs cross-regularity modulo `4`: if `c_{jk}` is the common deg
 The old increments also obey `m delta_j=a_j|B_j| [MOD 4]` by double-counting edges between `W` and
 `B_j`; hence they are determined when `m` is odd, parity-determined when `m=2 [MOD 4]`, and impose
 `a_j|B_j|=0` when `m=0 [MOD 4]`.
+The old witness itself satisfies `mr=2e(W) [MOD 4]`, so odd `m` forces `r` even.
 So for odd `m` the final target is intrinsic:
 `r+m^{-1}sum_j a_j|B_j| [MOD 4]`.  For `m=0 [MOD 4]`, odd-size packets can occur only in chamber `0`;
 for `m=2 [MOD 4]`, packets with `a_j|B_j|` odd are excluded.
+By size residue: for odd `m`, all `(a,s)` are feasible; for `m=2`, `as` must be even, with
+`delta` even when `s=0` and `delta=a [MOD 2]` when `s=2`; for `m=0`, `as=0`, so odd `s` forces
+`a=0` and `s=2` forces `a` even.
+The one-packet chamber test is
+`a+d=r+delta` and `m delta=a|B|`, equivalently `m(a+d-r)=a|B| [MOD 4]`.  The zero-shift independent
+and `+1` clique caps are the cases where Olson supplies the required old increment and internal residue.
+In particular, if `m=0 [MOD 4]`, this reduces to `a|B|=0`; once an old-balanced internally regular
+packet exists in an admissible chamber/size pair, the target residue adds no condition.  If `m` is odd,
+`a=0` requires `d=r`, unit `a` determines `|B|`, and `a=2` fixes only the parity of `|B|`.
 Equivalently, with `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the system is the row-difference
 condition `R_j=R_l` for all active packets plus the single scalar target
 `R_j=r+sum_k delta_k`.  Terminality must therefore block either quotient self-layer compatibility or the
@@ -391,6 +403,8 @@ After substituting the target, the single quotient congruence is
 `(s_a-s_b)(r+delta_a+delta_b-a-d_a)=s_b((a+d_a)-(b+d_b)) [MOD 4]`.  If `s_a-s_b` is odd the cross
 residue is unique; if it is `2`, existence requires an even right side and fixes the residue modulo `2`;
 if it is `0`, the right side must vanish.
+When `m` is odd, substitute `delta_a=m^{-1}a s_a` and `delta_b=m^{-1}b s_b`; two-packet feasibility then
+depends only on chamber residues, packet sizes, and internal residues.
 Modulo `2`, every odd-size packet subsystem has symmetric cross parities, so it is an undirected
 quotient graph `Q` with labelled row condition `a_j+d_j+deg_Q(j)=constant [MOD 2]`.  The full
 mod-`4` residues are the carry beyond this parity shadow.
@@ -398,6 +412,8 @@ The size-stratum form of edge-count symmetry is explicit: odd packet sizes deter
 residue up to multiplication by a unit; a size-`0` packet forces incoming residue `0` from an odd packet;
 two size-`2` packets only force cross residues equal modulo `2`; two size-`0` packets impose no
 edge-count restriction modulo `4`.
+For odd packets, equal size residues give symmetric cross residues modulo `4`, while opposite size
+residues give sign reversal; this sign is the carry forgotten by the parity shadow.
 There is an exact coalescence rule: same-chamber same-external-profile packets with cross residues
 `c_{12},c_{21}` merge whenever `c_{12}=c_{21}`; the merged packet has old increment sum and internal
 residue `d+c_{12}`.  Conversely, in an appendable packet system the two row values differ by

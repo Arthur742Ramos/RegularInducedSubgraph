@@ -1545,6 +1545,7 @@ their cross graph is empty and the clique size is `0 [MOD 4]`, or if their cross
 the independent-packet size is `0 [MOD 4]`.
 In the exact cross-regular version, writing `c_I` and `c_K` for the two cross-degree residues, the
 conditions are `c_I=kappa`, `|K|+c_K=kappa`, and `|I|c_I=|K|c_K [MOD 4]`.
+Old-frame counting also gives `r|I|=0` and `m kappa=(r+1)|K|`.
 Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`.
 
 The corresponding general scalar equation is exact: two internally regular cross-uniform packets
@@ -1559,17 +1560,27 @@ The exact quotient only needs cross-regular residues `c_{jk}` satisfying
 old-increment target `r+sum_k delta_k`.
 The old increments satisfy `m delta_j=a_j|B_j| [MOD 4]`, so they are also part of the packet quotient
 arithmetic rather than free labels.
+The old witness itself satisfies `mr=2e(W) [MOD 4]`; hence odd `m` forces `r` even.
 For odd `m` the target becomes `r+m^{-1}sum_j a_j|B_j|`; for `m=0 [MOD 4]`, odd-size packets must be in
 chamber `0`; and for `m=2 [MOD 4]`, `a_j|B_j|` must be even and fixes `delta_j` modulo `2`.
+Thus for `m=0`, size-`2` packets must lie in even chambers, and for `m=2`, odd-size packets must lie in
+even chambers.
+The one-packet specialization is `m(a+d-r)=a|B| [MOD 4]` for an internally regular packet in chamber
+`a`.
+For `m=0 [MOD 4]`, this is just `a|B|=0`; once old-balance and internal regularity are present, the
+target imposes no further condition.
 For two packets this is just `(s_a-s_b)c_{ab}=s_b((a+d_a)-(b+d_b))` together with the target
 `c_{ab}=r+delta_a+delta_b-a-d_a`.
 Equivalently, after target substitution:
 `(s_a-s_b)(r+delta_a+delta_b-a-d_a)=s_b((a+d_a)-(b+d_b)) [MOD 4]`.
+For odd `m`, substituting `delta_a=m^{-1}a s_a` and `delta_b=m^{-1}b s_b` makes this a purely intrinsic
+two-packet residue test.
 On odd-size packet subsystems the cross parities become symmetric, giving the labelled first-bit quotient
 condition `a_j+d_j+deg_Q(j)=constant [MOD 2]`; the full mod-`4` quotient is the carry refinement.
 The edge-count symmetry has the corresponding size-stratum table: odd sizes determine opposite residues
 up to units; size `0` against odd forces incoming residue `0`; two size-`2` packets synchronize only
 modulo `2`; and two size-`0` packets are unrestricted modulo `4`.
+Equal odd size residues give symmetric cross residues; opposite odd size residues give sign reversal.
 Same-chamber same-external-profile packets may be merged whenever their two cross-degree residues agree.
 If they appear in an appendable packet system, their row difference is exactly the difference of those
 two residues, so row compatibility forces coalescence.  Thus an appendable primitive packet system uses

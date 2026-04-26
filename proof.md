@@ -5327,6 +5327,13 @@ c_I=kappa,        |K|+c_K=kappa        [MOD 4],
 
 together with the edge-count compatibility `|I|c_I=|K|c_K [MOD 4]`.  The cross-empty/complete rule is
 the special case `c_I=epsilon|K|`, `c_K=epsilon|I|`.
+The old-frame double counts also force
+
+```text
+r|I|=0,        m kappa=(r+1)|K|        [MOD 4],
+```
+
+and in the Olson dense cap where `kappa=|K|`, this becomes `(m-r-1)|K|=0`.
 Equivalently, eliminating the cross residues leaves
 
 ```text
@@ -5394,6 +5401,15 @@ Thus `delta_j` is not a free scalar: if `m` is odd it is determined by `a_j|B_j|
 only its parity is determined; and if `m=0 [MOD 4]` the chamber-size product `a_j|B_j|` must vanish.
 This old-frame edge-count congruence is part of the exact packet quotient.
 
+The old witness has its own edge-count constraint:
+
+```text
+m r = 2e(W)        [MOD 4].
+```
+
+In particular, if `m` is odd then `r` is even.  Thus the odd-`m` intrinsic target below starts from an
+even old residue; odd targets can only be produced by the packet chamber-size contribution.
+
 Consequently the final target can often be eliminated.  If `m` is odd, then
 
 ```text
@@ -5410,6 +5426,43 @@ If `m=0 [MOD 4]`, every old-balanced packet must satisfy `a_j|B_j|=0`; in partic
 can occur only in the zero chamber.  If `m=2 [MOD 4]`, every packet with `a_j|B_j|` odd is impossible,
 and otherwise the parity of `delta_j` is fixed.  Thus the parity of the old witness size already removes
 many chamber/size combinations before the self-layer quotient is considered.
+
+Equivalently, by packet size `s=|B_j| [MOD 4]`:
+
+```text
+m odd:       every (a,s) is feasible and delta=m^{-1}as;
+m=2:         as must be even; if s=0 then delta is even, if s=2 then delta=a [MOD 2];
+m=0:         as must vanish; hence s odd forces a=0, and s=2 forces a even.
+```
+
+This table is often the first pruning step in the finite quotient.
+
+For a single internally regular packet `B subset P_a` of size `s` and internal residue `d`, the quotient
+has no cross terms.  It appends exactly when
+
+```text
+a+d = r+delta,        m delta = as        [MOD 4],
+```
+
+or, eliminating `delta`,
+
+```text
+m(a+d-r)=as        [MOD 4].
+```
+
+This is the exact one-packet chamber test.  The zero-shift independent cap and the `+1` clique cap are
+the two cases where Olson can force the required old increment together with `d=0` or `d=s-1`.
+Unpacked by `m [MOD 4]`:
+
+```text
+m odd:       if a=0 then d=r; if a is a unit then s=a^{-1}m(a+d-r);
+             if a=2 then d=r [MOD 2] and s is fixed modulo 2;
+m=2:         2(a+d-r)=as, so a odd forces s even and a=0 forces d=r [MOD 2];
+m=0:         as=0, and then every internally regular packet with an old-balanced increment appends.
+```
+
+Thus when `m=0 [MOD 4]`, all the difficulty is finding old-balanced internally regular packets in
+admissible chamber/size pairs; the target residue imposes no further condition.
 
 The cross-uniform formula is the special case `c_{jk}=epsilon_{jk}|B_k|`.  Thus the honest finite
 residual is a cross-regular packet quotient with edge-count symmetry, and the cross-uniform packet
@@ -5471,6 +5524,16 @@ Substituting the target value leaves a single quotient congruence:
   = s_b((a+d_a)-(b+d_b))        [MOD 4].
 ```
 
+If `m` is odd, this has the intrinsic form
+
+```text
+(s_a-s_b)(r+m^{-1}(a s_a+b s_b)-a-d_a)
+  = s_b((a+d_a)-(b+d_b))        [MOD 4].
+```
+
+So in odd witness size, two-packet feasibility is determined entirely by the chamber residues, packet
+sizes, and internal residues; no independent old-increment label remains.
+
 Equivalently, for a prescribed target cross residue `T=r+delta_a+delta_b-a-d_a`, the edge-count equation
 `(s_a-s_b)c_{ab}=s_b A` is soluble exactly as follows:
 
@@ -5510,6 +5573,10 @@ s_j=2, s_k odd:    c_{kj}=2 c_{jk} s_k^{-1}            [MOD 4];
 s_j=s_k=2:         c_{jk}=c_{kj}                       [MOD 2];
 s_j=s_k=0:         no edge-count restriction modulo 4.
 ```
+
+In particular, two odd packets of the same size residue have `c_{jk}=c_{kj} [MOD 4]`, while odd packets
+of opposite size residues have `c_{jk}=-c_{kj} [MOD 4]`.  The parity shadow forgets this sign; the sign
+is exactly one of the carry bits.
 
 Thus odd packets see all cross residues rigidly, size-`2` packets see only the parity of other size-`2`
 packets, and size-`0` packets are invisible to the edge-count congruence except through rows that point

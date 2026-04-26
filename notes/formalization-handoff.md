@@ -1023,6 +1023,8 @@ Recommended attack:
    complete and `|I|=0`, modulo `4`.
    Exact cross-regular version: if `c_I=deg_K(i)` on `I` and `c_K=deg_I(k)` on `K`, then append iff
    `c_I=kappa`, `|K|+c_K=kappa [MOD 4]`, and `|I|c_I=|K|c_K`.
+   Add old-frame constraints `r|I|=0` and `m kappa=(r+1)|K|`; with `kappa=|K|`, this is
+   `(m-r-1)|K|=0`.
    Equivalently, `( |I|-|K| )kappa=-|K|^2 [MOD 4]`.
    Generalize this as the two-packet scalar equation: internally regular cross-uniform packets
    `B_a subset P_a`, `B_b subset P_b` append iff
@@ -1033,11 +1035,18 @@ Recommended attack:
    Generalize to the exact cross-regular quotient: if `c_{jk}` is the common degree from `B_j` to `B_k`
    modulo `4`, impose edge-count symmetry `|B_j|c_{jk}=|B_k|c_{kj}` and the equations
    `a_j+d_j+sum_{k != j}c_{jk}=r+sum_k delta_k [MOD 4]`.
+   Include the old witness edge-count constraint `mr=2e(W) [MOD 4]`, especially odd `m => r` even.
    Include the old-frame edge-count constraint `m delta_j=a_j|B_j| [MOD 4]` for each old-balanced packet
    `B_j subset P_{a_j}`.
    Record its consequences: if `m` is odd, replace `sum delta_j` by `m^{-1}sum a_j|B_j|`; if
    `m=0 [MOD 4]`, require `a_j|B_j|=0`; if `m=2 [MOD 4]`, require `a_j|B_j|` even and fix
    `delta_j` modulo `2`.
+   Include the size feasibility table: odd `m` allows all `(a,s)`; `m=2` requires `as` even; `m=0`
+   requires `as=0`, so odd `s` forces `a=0` and `s=2` forces `a` even.
+   Formalize the single-packet test: an internally regular `B subset P_a` of size `s` and residue `d`
+   appends iff `a+d=r+delta` and `m delta=as`, equivalently `m(a+d-r)=as [MOD 4]`.
+   Include the special cases: for `m=0`, the test is only `as=0`; for odd `m`, `a=0` requires `d=r`,
+   unit `a` determines `s`, and `a=2` determines `s` modulo `2`.
    Also formalize the row-difference split: with
    `R_j=a_j+d_j+sum_{k != j}c_{jk}`, the first condition is `R_j=R_l` for all packets and the
    final condition is the scalar target `R_j=r+sum_k delta_k`.
@@ -1047,11 +1056,15 @@ Recommended attack:
    Equivalently, after substitution:
    `(s_a-s_b)(r+delta_a+delta_b-a-d_a)=s_b((a+d_a)-(b+d_b)) [MOD 4]`, with the usual gcd cases for
    solving a linear congruence modulo `4`.
+   For odd `m`, substitute `delta_a=m^{-1}a s_a` and `delta_b=m^{-1}b s_b` to get the intrinsic
+   two-packet feasibility criterion.
    Add the odd-size parity shadow: on odd-size packets, `c_{jk}=c_{kj} [MOD 2]`, so the first-bit row
    condition is `a_j+d_j+deg_Q(j)=constant [MOD 2]` for the quotient graph of odd cross parities.
    Record the size-stratum edge-count table: odd sizes determine opposite residues up to units;
    size-`0` versus odd forces incoming residue `0`; two size-`2` packets force equality only modulo `2`;
    two size-`0` packets impose no modulo-`4` edge-count constraint.
+   For two odd packets, equal size residues mean `c_{jk}=c_{kj}` and opposite size residues mean
+   `c_{jk}=-c_{kj}` modulo `4`.
    Formalize exact packet coalescence: same-chamber same-external-profile packets with cross residues
    `c_{12},c_{21}` merge if `c_{12}=c_{21}`; the merged internal residue is `d+c_{12}` and the old
    increment is the sum.  Conversely their row difference is `c_{12}-c_{21}`, so any appendable
