@@ -11200,6 +11200,19 @@ outside triple realizing all coordinates of `P\{p}` and missing only the `p`-coo
 saturated size-`<=3` closures, the irreducible large-outside target branch is precisely a critical
 capacitated 3-sum cube of dimension at least `4`, all of whose proper shadows are feasible.
 
+This cube has a coordinate-switching normal form.  In a fixed coordinate `p`, replacing every trace bit
+`a_p` by `1-a_p` changes the target entry from `h_p` to `3-h_p` and preserves triple realizability.
+Switch all coordinates with target `2` or `3`.  Then
+
+```text
+h_p in {0,1}        for every p in P.
+```
+
+In this switched form a target-realizing triple is exactly three outside columns which all vanish on the
+zero-target coordinates, and whose supports on the one-target coordinates are pairwise disjoint and cover
+those coordinates.  Thus the irreducible target-avoidance branch is a critical capacitated three-column
+disjoint-cover problem, with all proper coordinate shadows coverable.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

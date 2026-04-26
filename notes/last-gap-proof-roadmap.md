@@ -1922,6 +1922,7 @@ What remains justified after audit is:
       `000`, `110`, `211`, and `222` and forbidding endpoint residue `3`;
       target-avoidance is a critical capacitated 3-sum cube of trace columns, infeasible only in full
       dimension and feasible on every proper coordinate shadow, with irreducible dimension at least `4`;
+      coordinate switching normalizes this cube to a `{0,1}` three-column disjoint-cover problem;
       in the near-threshold branch `|R|=m+s`, `s<=3`, all internal selectors of `R` larger than `m` are
       obtained by deleting at most two vertices, giving finite templates `b-deg_D` on `R\D`;
       the full two-residue Gallai core has the mixed-selector equation `epsilon(v)-deg_D(v)=const` on
