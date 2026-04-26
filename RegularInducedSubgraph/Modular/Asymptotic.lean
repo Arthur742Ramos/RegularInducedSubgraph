@@ -4381,6 +4381,155 @@ def HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSix : Prop
               (G.neighborFinset v ∩ (S \ u)).card ≡
                 (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j]
 
+/-- One of the eight adjacency types from a retained vertex to a three-vertex boundary. -/
+def boundaryTripleBit (τ : Fin 8) (i : Fin 3) : ℕ :=
+  (τ.val / 2 ^ i.val) % 2
+
+lemma boundaryTripleBit_le_one (τ : Fin 8) (i : Fin 3) : boundaryTripleBit τ i ≤ 1 := by
+  have hlt : boundaryTripleBit τ i < 2 := by
+    simpa [boundaryTripleBit] using Nat.mod_lt (τ.val / 2 ^ i.val) (by decide : 0 < 2)
+  omega
+
+/--
+Equation form of a mixed `2+2` augmented-fiber atom: two boundary vertices with edge-status `e`
+and two retained vertices of types `τ, σ` with retained edge-status `ε` form a `d`-regular
+four-set exactly when these four degree equations hold.
+-/
+def AugmentedTwoTwoAtomRegular (d e ε : ℕ) (τ σ : Fin 8) (i k : Fin 3) : Prop :=
+  e + boundaryTripleBit τ i + boundaryTripleBit σ i = d ∧
+    e + boundaryTripleBit τ k + boundaryTripleBit σ k = d ∧
+      ε + boundaryTripleBit τ i + boundaryTripleBit τ k = d ∧
+        ε + boundaryTripleBit σ i + boundaryTripleBit σ k = d
+
+/-- The cross-square form of the `2+2` augmented-fiber atom. -/
+def AugmentedTwoTwoCrossSquareRegular (r : ℕ) (τ σ : Fin 8) (i k : Fin 3) : Prop :=
+  boundaryTripleBit τ i + boundaryTripleBit σ i = r ∧
+    boundaryTripleBit τ k + boundaryTripleBit σ k = r ∧
+      boundaryTripleBit τ i + boundaryTripleBit τ k = r ∧
+        boundaryTripleBit σ i + boundaryTripleBit σ k = r
+
+/--
+The augmented `2+2` sieve table: the retained edge-status must match the boundary edge-status,
+and the `2 × 2` cross square is `(d-e)`-regular.
+-/
+theorem augmentedTwoTwoAtomRegular_iff_crossSquare
+    {d e ε : ℕ} (he : e ≤ d) (τ σ : Fin 8) (i k : Fin 3) :
+    AugmentedTwoTwoAtomRegular d e ε τ σ i k ↔
+      ε = e ∧ AugmentedTwoTwoCrossSquareRegular (d - e) τ σ i k := by
+  unfold AugmentedTwoTwoAtomRegular AugmentedTwoTwoCrossSquareRegular
+  constructor
+  · rintro ⟨hi, hk, hτ, hσ⟩
+    have hε : ε = e := by omega
+    refine ⟨hε, ?_, ?_, ?_, ?_⟩ <;> omega
+  · rintro ⟨rfl, hi, hk, hτ, hσ⟩
+    refine ⟨?_, ?_, ?_, ?_⟩ <;> omega
+
+/--
+Equation form of a mixed `1+3` augmented-fiber atom: one boundary vertex and three retained
+vertices of types `τ, σ, υ`, with retained edge-statuses `eτσ`, `eτυ`, and `eσυ`.
+-/
+def AugmentedOneThreeAtomRegular
+    (d : ℕ) (τ σ υ : Fin 8) (eτσ eτυ eσυ : ℕ) (i : Fin 3) : Prop :=
+  boundaryTripleBit τ i + boundaryTripleBit σ i + boundaryTripleBit υ i = d ∧
+    eτσ + eτυ + boundaryTripleBit τ i = d ∧
+      eτσ + eσυ + boundaryTripleBit σ i = d ∧
+        eτυ + eσυ + boundaryTripleBit υ i = d
+
+/-- The `d=0` row of the augmented `1+3` sieve: independent retained triple, all missing `x`. -/
+theorem augmentedOneThreeAtomRegular_zero_iff
+    (τ σ υ : Fin 8) (eτσ eτυ eσυ : ℕ) (i : Fin 3) :
+    AugmentedOneThreeAtomRegular 0 τ σ υ eτσ eτυ eσυ i ↔
+      boundaryTripleBit τ i = 0 ∧ boundaryTripleBit σ i = 0 ∧
+        boundaryTripleBit υ i = 0 ∧ eτσ = 0 ∧ eτυ = 0 ∧ eσυ = 0 := by
+  unfold AugmentedOneThreeAtomRegular
+  constructor
+  · rintro ⟨hx, hτ, hσ, hυ⟩
+    refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩ <;> omega
+  · rintro ⟨hτbit, hσbit, hυbit, hτσ, hτυ, hσυ⟩
+    refine ⟨?_, ?_, ?_, ?_⟩ <;> omega
+
+/-- The `d=3` row of the augmented `1+3` sieve: retained triangle, all hitting `x`. -/
+theorem augmentedOneThreeAtomRegular_three_iff
+    {τ σ υ : Fin 8} {eτσ eτυ eσυ : ℕ} {i : Fin 3}
+    (hτσ : eτσ ≤ 1) (hτυ : eτυ ≤ 1) (hσυ : eσυ ≤ 1) :
+    AugmentedOneThreeAtomRegular 3 τ σ υ eτσ eτυ eσυ i ↔
+      boundaryTripleBit τ i = 1 ∧ boundaryTripleBit σ i = 1 ∧
+        boundaryTripleBit υ i = 1 ∧ eτσ = 1 ∧ eτυ = 1 ∧ eσυ = 1 := by
+  have hτbit : boundaryTripleBit τ i ≤ 1 := boundaryTripleBit_le_one τ i
+  have hσbit : boundaryTripleBit σ i ≤ 1 := boundaryTripleBit_le_one σ i
+  have hυbit : boundaryTripleBit υ i ≤ 1 := boundaryTripleBit_le_one υ i
+  unfold AugmentedOneThreeAtomRegular
+  constructor
+  · rintro ⟨hx, hτ, hσ, hυ⟩
+    refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩ <;> omega
+  · rintro ⟨hτbitEq, hσbitEq, hυbitEq, hτσEq, hτυEq, hσυEq⟩
+    refine ⟨?_, ?_, ?_, ?_⟩ <;> omega
+
+/--
+The exact `j = 6` (`q = 64`) regular exact-subbucket selector slice of the D=5 terminal
+frontier.  This is the first genuine tail slice after the existing `q = 32` split.
+-/
+def HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix : Prop :=
+  ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    ((2 ^ 6) ^ 5 * 2 ^ 6) ≤ S.card →
+      InducesModEqDegree G S (2 ^ 6) →
+        ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ 6 ∧
+          ∃ d : ℕ, InducesRegularOfDegree G u d
+
+/-- The `j ≥ 7` regular exact-subbucket selector tail after splitting off `q = 64`. -/
+def HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven : Prop :=
+  ∀ {n j : ℕ} (hj : 7 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+      InducesModEqDegree G S (2 ^ j) →
+        ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+          ∃ d : ℕ, InducesRegularOfDegree G u d
+
+/--
+The exact `j = 6` (`q = 64`) modular exact-subbucket selector slice of the D=5 terminal
+frontier.
+-/
+def HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix : Prop :=
+  ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    ((2 ^ 6) ^ 5 * 2 ^ 6) ≤ S.card →
+      InducesModEqDegree G S (2 ^ 6) →
+        ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ 6 ∧
+          InducesModEqDegree G u (2 ^ 6)
+
+/-- The `j ≥ 7` modular exact-subbucket selector tail after splitting off `q = 64`. -/
+def HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven : Prop :=
+  ∀ {n j : ℕ} (hj : 7 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+    ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+      InducesModEqDegree G S (2 ^ j) →
+        ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+          InducesModEqDegree G u (2 ^ j)
+
+/--
+The exact `j = 6` (`q = 64`) dropped-tail constancy selector slice of the D=5 terminal
+frontier.
+-/
+def HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix : Prop := by
+  classical
+  exact
+    ∀ {n : ℕ} (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+      ((2 ^ 6) ^ 5 * 2 ^ 6) ≤ S.card →
+        InducesModEqDegree G S (2 ^ 6) →
+          ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ 6 ∧
+            ∀ v w : ↑(u : Set (Fin n)),
+              (G.neighborFinset v ∩ (S \ u)).card ≡
+                (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ 6]
+
+/-- The `j ≥ 7` dropped-tail constancy selector tail after splitting off `q = 64`. -/
+def HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven : Prop := by
+  classical
+  exact
+    ∀ {n j : ℕ} (hj : 7 ≤ j) (G : SimpleGraph (Fin n)) {S : Finset (Fin n)},
+      ((2 ^ j) ^ 5 * 2 ^ j) ≤ S.card →
+        InducesModEqDegree G S (2 ^ j) →
+          ∃ u : Finset (Fin n), u ⊆ S ∧ u.card = 2 ^ j ∧
+            ∀ v w : ↑(u : Set (Fin n)),
+              (G.neighborFinset v ∩ (S \ u)).card ≡
+                (G.neighborFinset w ∩ (S \ u)).card [MOD 2 ^ j]
+
 /-- A modular `q = 32` selector gives a regular `q = 32` selector. -/
 theorem
     hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtFive_of_modEqSubbucketSelectionFiveAtFive
@@ -4523,6 +4672,184 @@ theorem
     (hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSix_of_modEqSubbucketSelectionFiveFromSix
       hselect)
 
+/-- A modular `q = 64` selector gives a regular `q = 64` selector. -/
+theorem
+    hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix_of_modEqSubbucketSelectionFiveAtSix
+    (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix := by
+  intro n G S hS hmod
+  rcases hselect G hS hmod with ⟨u, huS, hcard, huMod⟩
+  rcases
+    inducesRegularOfDegree_of_card_eq_modulus_of_inducesModEqDegree G hcard huMod with
+    ⟨d, hreg⟩
+  exact ⟨u, huS, hcard, d, hreg⟩
+
+/-- A dropped-tail `q = 64` selector gives a modular `q = 64` selector. -/
+theorem
+    hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix_of_droppedTailConstancySelectionFiveAtSix
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix) :
+    HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix := by
+  classical
+  intro n G S hS hmod
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases hselect G hS hmod with ⟨u, huS, hcard, hdrop⟩
+  have hhost :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ 6] := by
+    intro v w
+    exact hmod ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  exact
+    ⟨u, huS, hcard,
+      inducesModEqDegree_of_modEq_hostDegree_and_dropDegree (G := G) huS hhost hdrop⟩
+
+/-- A dropped-tail `q = 64` selector gives a regular `q = 64` selector. -/
+theorem
+    hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix_of_droppedTailConstancySelectionFiveAtSix
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix :=
+  hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix_of_modEqSubbucketSelectionFiveAtSix
+    (hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix_of_droppedTailConstancySelectionFiveAtSix
+      hselect)
+
+/-- A modular `j ≥ 7` selector gives a regular `j ≥ 7` selector. -/
+theorem
+    hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven_of_modEqSubbucketSelectionFiveFromSeven
+    (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven := by
+  intro n j hj G S hS hmod
+  rcases hselect hj G hS hmod with ⟨u, huS, hcard, huMod⟩
+  rcases
+    inducesRegularOfDegree_of_card_eq_modulus_of_inducesModEqDegree G hcard huMod with
+    ⟨d, hreg⟩
+  exact ⟨u, huS, hcard, d, hreg⟩
+
+/-- A dropped-tail `j ≥ 7` selector gives a modular `j ≥ 7` selector. -/
+theorem
+    hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven_of_droppedTailConstancySelectionFiveFromSeven
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven := by
+  classical
+  intro n j hj G S hS hmod
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases hselect hj G hS hmod with ⟨u, huS, hcard, hdrop⟩
+  have hhost :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hmod ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  exact
+    ⟨u, huS, hcard,
+      inducesModEqDegree_of_modEq_hostDegree_and_dropDegree (G := G) huS hhost hdrop⟩
+
+/-- A dropped-tail `j ≥ 7` selector gives a regular `j ≥ 7` selector. -/
+theorem
+    hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven_of_droppedTailConstancySelectionFiveFromSeven
+    (hselect : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven :=
+  hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven_of_modEqSubbucketSelectionFiveFromSeven
+    (hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven_of_droppedTailConstancySelectionFiveFromSeven
+      hselect)
+
+/-- A regular `q = 64` subbucket freezes the dropped tail in the `q = 64` slice. -/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix_of_regularSubbucketSelectionFiveAtSix
+    (hselect : HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix := by
+  classical
+  intro n G S hS hmod
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases hselect G hS hmod with ⟨u, huS, hcard, _d, hreg⟩
+  have hhost :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ 6] := by
+    intro v w
+    exact hmod ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  have huMod : InducesModEqDegree G u (2 ^ 6) :=
+    inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G hreg
+  exact
+    ⟨u, huS, hcard,
+      modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+        (G := G) huS hhost huMod⟩
+
+/-- A modular `q = 64` subbucket freezes the dropped tail in the `q = 64` slice. -/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix_of_modEqSubbucketSelectionFiveAtSix
+    (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix :=
+  hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix_of_regularSubbucketSelectionFiveAtSix
+    (hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix_of_modEqSubbucketSelectionFiveAtSix
+      hselect)
+
+/-- A regular `j ≥ 7` subbucket freezes the dropped tail in the `j ≥ 7` tail. -/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_regularSubbucketSelectionFiveFromSeven
+    (hselect : HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven := by
+  classical
+  intro n j hj G S hS hmod
+  letI : DecidableRel G.Adj := Classical.decRel _
+  rcases hselect hj G hS hmod with ⟨u, huS, hcard, _d, hreg⟩
+  have hhost :
+      ∀ v w : ↑(u : Set (Fin n)),
+        (inducedOn G S).degree ⟨v.1, huS v.2⟩ ≡
+          (inducedOn G S).degree ⟨w.1, huS w.2⟩ [MOD 2 ^ j] := by
+    intro v w
+    exact hmod ⟨v.1, huS v.2⟩ ⟨w.1, huS w.2⟩
+  have huMod : InducesModEqDegree G u (2 ^ j) :=
+    inducesModEqDegree_of_inducesRegularOfDegree_fixedWitness G hreg
+  exact
+    ⟨u, huS, hcard,
+      modEq_dropDegree_of_modEq_hostDegree_and_inducesModEqDegree
+        (G := G) huS hhost huMod⟩
+
+/-- A modular `j ≥ 7` subbucket freezes the dropped tail in the `j ≥ 7` tail. -/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_modEqSubbucketSelectionFiveFromSeven
+    (hselect : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven :=
+  hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_regularSubbucketSelectionFiveFromSeven
+    (hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven_of_modEqSubbucketSelectionFiveFromSeven
+      hselect)
+
+/-- The `q = 64` regular slice plus the `j ≥ 7` regular tail close the `j ≥ 6` selector. -/
+theorem
+    hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSix_of_atSix_and_fromSeven
+    (hatSix : HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix)
+    (hfromSeven : HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveFromSix := by
+  intro n j hj G S hS hmod
+  rcases Nat.eq_or_lt_of_le hj with rfl | hgt
+  · exact hatSix G hS hmod
+  · have hseven : 7 ≤ j := by omega
+    exact hfromSeven hseven G hS hmod
+
+/-- The `q = 64` modular slice plus the `j ≥ 7` modular tail close the `j ≥ 6` selector. -/
+theorem
+    hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSix_of_atSix_and_fromSeven
+    (hatSix : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix)
+    (hfromSeven : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSix := by
+  intro n j hj G S hS hmod
+  rcases Nat.eq_or_lt_of_le hj with rfl | hgt
+  · exact hatSix G hS hmod
+  · have hseven : 7 ≤ j := by omega
+    exact hfromSeven hseven G hS hmod
+
+/-- The `q = 64` dropped-tail slice plus the `j ≥ 7` dropped-tail tail close the `j ≥ 6` selector. -/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSix_of_atSix_and_fromSeven
+    (hatSix : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix)
+    (hfromSeven : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSix := by
+  intro n j hj G S hS hmod
+  rcases Nat.eq_or_lt_of_le hj with rfl | hgt
+  · exact hatSix G hS hmod
+  · have hseven : 7 ≤ j := by omega
+    exact hfromSeven hseven G hS hmod
+
 /--
 Finite-Ramsey reduction of the `q = 32` regular subbucket slice: a clique or independent 32-set
 inside the fixed witness is already regular.
@@ -4552,6 +4879,75 @@ theorem
   hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtFive_of_regularSubbucketSelectionFiveAtFive
     (hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtFive_of_cliqueOrIndepSetBound32
       h32)
+
+/--
+Finite-Ramsey reduction of the `q = 64` regular subbucket slice: a clique or independent 64-set
+inside the fixed witness is already regular.
+-/
+theorem
+    hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix_of_cliqueOrIndepSetBound64
+    (h64 :
+      HasCliqueOrIndepSetBound (2 ^ 6) (2 ^ 6) ((2 ^ 6) ^ 5 * 2 ^ 6)) :
+    HasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix := by
+  intro n G S hS _hmod
+  rcases h64 G S hS with hclique | hindep
+  · rcases hclique with ⟨u, huS, huClique⟩
+    rw [SimpleGraph.isNClique_iff] at huClique
+    rcases huClique with ⟨huCliqueSet, hcard⟩
+    exact ⟨u, huS, hcard, u.card - 1, inducesRegularOfDegree_of_isClique G u huCliqueSet⟩
+  · rcases hindep with ⟨u, huS, huIndep⟩
+    rw [SimpleGraph.isNIndepSet_iff] at huIndep
+    rcases huIndep with ⟨huIndepSet, hcard⟩
+    exact ⟨u, huS, hcard, 0, inducesRegularOfDegree_of_isIndepSet G u huIndepSet⟩
+
+/-- Finite-Ramsey reduction of the `q = 64` dropped-tail slice. -/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix_of_cliqueOrIndepSetBound64
+    (h64 :
+      HasCliqueOrIndepSetBound (2 ^ 6) (2 ^ 6) ((2 ^ 6) ^ 5 * 2 ^ 6)) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix :=
+  hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix_of_regularSubbucketSelectionFiveAtSix
+    (hasPolynomialCostFixedWitnessRegularSubbucketSelectionFiveAtSix_of_cliqueOrIndepSetBound64
+      h64)
+
+/-- Finite-Ramsey reduction of the `q = 64` modular exact-subbucket slice. -/
+theorem
+    hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix_of_cliqueOrIndepSetBound64
+    (h64 :
+      HasCliqueOrIndepSetBound (2 ^ 6) (2 ^ 6) ((2 ^ 6) ^ 5 * 2 ^ 6)) :
+    HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix :=
+  hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix_of_droppedTailConstancySelectionFiveAtSix
+    (hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix_of_cliqueOrIndepSetBound64
+      h64)
+
+/--
+The genuine `j ≥ 6` modular tail is reduced to the finite `q = 64` Ramsey slice plus the
+`j ≥ 7` modular tail.
+-/
+theorem
+    hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSix_of_cliqueOrIndepSetBound64_and_fromSeven
+    (h64 :
+      HasCliqueOrIndepSetBound (2 ^ 6) (2 ^ 6) ((2 ^ 6) ^ 5 * 2 ^ 6))
+    (hfromSeven : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSix :=
+  hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSix_of_atSix_and_fromSeven
+    (hasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveAtSix_of_cliqueOrIndepSetBound64
+      h64)
+    hfromSeven
+
+/--
+The same `q = 64` split for the dropped-tail formulation of the genuine `j ≥ 6` tail.
+-/
+theorem
+    hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSix_of_cliqueOrIndepSetBound64_and_fromSeven
+    (h64 :
+      HasCliqueOrIndepSetBound (2 ^ 6) (2 ^ 6) ((2 ^ 6) ^ 5 * 2 ^ 6))
+    (hfromSeven : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven) :
+    HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSix :=
+  hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSix_of_atSix_and_fromSeven
+    (hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix_of_cliqueOrIndepSetBound64
+      h64)
+    hfromSeven
 
 /-- The `q = 32` regular slice plus the `j ≥ 6` regular tail close the `j ≥ 5` selector. -/
 theorem
@@ -4677,6 +5073,45 @@ theorem
     h16 h32
     (hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSix_of_modEqSubbucketSelectionFiveFromSix
       hfromSix)
+
+/--
+The next terminal split removes the `q = 64` slice from the genuine modular tail.  After the
+`q = 32` and `q = 64` finite Ramsey reductions, the external-block bridge only needs the
+`j ≥ 7` dropped-tail selector.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_cliqueOrIndepSetBound32_and_cliqueOrIndepSetBound64_and_droppedTailConstancySelectionFromSeven
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (h32 :
+      HasCliqueOrIndepSetBound (2 ^ 5) (2 ^ 5) ((2 ^ 5) ^ 5 * 2 ^ 5))
+    (h64 :
+      HasCliqueOrIndepSetBound (2 ^ 6) (2 ^ 6) ((2 ^ 6) ^ 5 * 2 ^ 6))
+    (hfromSeven : HasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_cliqueOrIndepSetBound32_and_droppedTailConstancySelectionFromSix
+    h16 h32
+    (hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSix_of_atSix_and_fromSeven
+      (hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveAtSix_of_cliqueOrIndepSetBound64
+        h64)
+      hfromSeven)
+
+/--
+Equivalently, after the `q = 64` finite Ramsey slice, it is enough to prove the modular
+exact-subbucket selector only for `j ≥ 7`.
+-/
+theorem
+    hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_cliqueOrIndepSetBound32_and_cliqueOrIndepSetBound64_and_modEqSubbucketSelectionFromSeven
+    (h16 : HasCliqueOrIndepSetBound 16 16 8388607)
+    (h32 :
+      HasCliqueOrIndepSetBound (2 ^ 5) (2 ^ 5) ((2 ^ 5) ^ 5 * 2 ^ 5))
+    (h64 :
+      HasCliqueOrIndepSetBound (2 ^ 6) (2 ^ 6) ((2 ^ 6) ^ 5 * 2 ^ 6))
+    (hfromSeven : HasPolynomialCostFixedWitnessModEqSubbucketSelectionFiveFromSeven) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge 5 :=
+  hasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridge_five_of_cliqueOrIndepSetBound16_and_cliqueOrIndepSetBound32_and_cliqueOrIndepSetBound64_and_droppedTailConstancySelectionFromSeven
+    h16 h32 h64
+    (hasPolynomialCostFixedWitnessDroppedTailConstancySelectionFiveFromSeven_of_modEqSubbucketSelectionFiveFromSeven
+      hfromSeven)
 
 /--
 Terminal regularization is monotone in the polynomial exponent: a larger exponent asks for a larger
