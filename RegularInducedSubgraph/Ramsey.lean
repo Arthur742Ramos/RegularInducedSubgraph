@@ -3195,6 +3195,89 @@ theorem hasCliqueOrIndepSetBound_9_10_of_ramseyNineTenTwoStepNarrowTable
   (ramseyNineTenTwoStepNarrowTable_predecessor_bounds h).2.2
 
 /--
+One more recurrence layer below the two lower-row bottlenecks.  The three equal-width obligations
+`R(5,10) <= 206`, `R(6,9) <= 206`, and `R(7,8) <= 206` give
+`R(6,10) <= 411`, `R(7,9) <= 411`, and then both narrow targets at `822`.
+-/
+structure RamseyNineTenThreeStepNarrowTable : Prop where
+  r5_10 : HasCliqueOrIndepSetBound 5 10 206
+  r6_9 : HasCliqueOrIndepSetBound 6 9 206
+  r7_8 : HasCliqueOrIndepSetBound 7 8 206
+
+/--
+The three-step lower-row table strictly refines the two-step obstruction: it gives
+`R(7,10) <= 822` and `R(8,9) <= 822`, hence `R(9,10) <= 3286`.
+-/
+theorem ramseyNineTenThreeStepNarrowTable_predecessor_bounds
+    (h : RamseyNineTenThreeStepNarrowTable) :
+    HasCliqueOrIndepSetBound 6 10 411 ∧
+      HasCliqueOrIndepSetBound 7 9 411 ∧
+        HasCliqueOrIndepSetBound 7 10 822 ∧
+          HasCliqueOrIndepSetBound 8 9 822 ∧
+            HasCliqueOrIndepSetBound 9 10 3286 := by
+  have h6_10 : HasCliqueOrIndepSetBound 6 10 411 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 5) (b := 9)
+      (N₁ := 206) (N₂ := 206) (N := 411)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h.r5_10 h.r6_9 (by norm_num)
+  have h7_9 : HasCliqueOrIndepSetBound 7 9 411 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 6) (b := 8)
+      (N₁ := 206) (N₂ := 206) (N := 411)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h.r6_9 h.r7_8 (by norm_num)
+  have h8_8 : HasCliqueOrIndepSetBound 8 8 411 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 7) (b := 7)
+      (N₁ := 206) (N₂ := 206) (N := 411)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h.r7_8 (HasCliqueOrIndepSetBound.symm h.r7_8) (by norm_num)
+  have h7_10 : HasCliqueOrIndepSetBound 7 10 822 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 6) (b := 9)
+      (N₁ := 411) (N₂ := 411) (N := 822)
+      (by decide) (by decide) h6_10 h7_9 (by norm_num)
+  have h8_9 : HasCliqueOrIndepSetBound 8 9 822 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 7) (b := 8)
+      (N₁ := 411) (N₂ := 411) (N := 822)
+      (by decide) (by decide) h7_9 h8_8 (by norm_num)
+  have h8_10 : HasCliqueOrIndepSetBound 8 10 1643 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 7) (b := 9)
+      (N₁ := 822) (N₂ := 822) (N := 1643)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h7_10 h8_9 (by norm_num)
+  have h9_9 : HasCliqueOrIndepSetBound 9 9 1643 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 8) (b := 8)
+      (N₁ := 822) (N₂ := 822) (N := 1643)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h8_9 (HasCliqueOrIndepSetBound.symm h8_9) (by norm_num)
+  have h9_10 : HasCliqueOrIndepSetBound 9 10 3286 := by
+    exact HasCliqueOrIndepSetBound.step_mono (a := 8) (b := 9)
+      (N₁ := 1643) (N₂ := 1643) (N := 3286)
+      (by decide) (by decide) h8_10 h9_9 (by norm_num)
+  exact ⟨h6_10, h7_9, h7_10, h8_9, h9_10⟩
+
+theorem hasCliqueOrIndepSetBound_7_10_822_of_ramseyNineTenThreeStepNarrowTable
+    (h : RamseyNineTenThreeStepNarrowTable) :
+    HasCliqueOrIndepSetBound 7 10 822 :=
+  (ramseyNineTenThreeStepNarrowTable_predecessor_bounds h).2.2.1
+
+theorem hasCliqueOrIndepSetBound_8_9_822_of_ramseyNineTenThreeStepNarrowTable
+    (h : RamseyNineTenThreeStepNarrowTable) :
+    HasCliqueOrIndepSetBound 8 9 822 :=
+  (ramseyNineTenThreeStepNarrowTable_predecessor_bounds h).2.2.2.1
+
+theorem hasCliqueOrIndepSetBound_9_10_3286_of_ramseyNineTenThreeStepNarrowTable
+    (h : RamseyNineTenThreeStepNarrowTable) :
+    HasCliqueOrIndepSetBound 9 10 3286 :=
+  (ramseyNineTenThreeStepNarrowTable_predecessor_bounds h).2.2.2.2
+
+theorem ramseyNineTenTwoStepNarrowTable_of_threeStepNarrowTable
+    (h : RamseyNineTenThreeStepNarrowTable) :
+    RamseyNineTenTwoStepNarrowTable where
+  r7_10 := HasCliqueOrIndepSetBound.mono
+    (hasCliqueOrIndepSetBound_7_10_822_of_ramseyNineTenThreeStepNarrowTable h)
+    (by decide : 822 ≤ 823)
+  r8_9 := hasCliqueOrIndepSetBound_8_9_822_of_ramseyNineTenThreeStepNarrowTable h
+
+/--
 Narrow `R(10,11)` data with the `R(9,10)` predecessor decomposed one step lower.  Relative to
 `RamseyElevenNarrowTargetTable`, this replaces the direct `R(9,10) <= 3290` row by the lower-row
 pair `R(7,10) <= 823` and `R(8,9) <= 822`.
@@ -3203,6 +3286,27 @@ structure RamseyElevenTwoStepNarrowTable : Prop where
   r8_11 : HasCliqueOrIndepSetBound 8 11 12658
   r7_10 : HasCliqueOrIndepSetBound 7 10 823
   r8_9 : HasCliqueOrIndepSetBound 8 9 822
+
+/--
+Narrow `R(10,11)` data with the two lower-row bottlenecks decomposed one recurrence layer further.
+The lower-row obligations are `R(5,10)`, `R(6,9)`, and `R(7,8)`, all at threshold `206`.
+-/
+structure RamseyElevenThreeStepNarrowTable : Prop where
+  r8_11 : HasCliqueOrIndepSetBound 8 11 12658
+  r5_10 : HasCliqueOrIndepSetBound 5 10 206
+  r6_9 : HasCliqueOrIndepSetBound 6 9 206
+  r7_8 : HasCliqueOrIndepSetBound 7 8 206
+
+theorem ramseyElevenTwoStepNarrowTable_of_threeStepNarrowTable
+    (h : RamseyElevenThreeStepNarrowTable) :
+    RamseyElevenTwoStepNarrowTable where
+  r8_11 := h.r8_11
+  r7_10 :=
+    (ramseyNineTenTwoStepNarrowTable_of_threeStepNarrowTable
+      { r5_10 := h.r5_10, r6_9 := h.r6_9, r7_8 := h.r7_8 }).r7_10
+  r8_9 :=
+    (ramseyNineTenTwoStepNarrowTable_of_threeStepNarrowTable
+      { r5_10 := h.r5_10, r6_9 := h.r6_9, r7_8 := h.r7_8 }).r8_9
 
 theorem ramseyElevenNarrowTargetTable_of_twoStepNarrowTable
     (h : RamseyElevenTwoStepNarrowTable) :
@@ -3243,6 +3347,37 @@ theorem hasCliqueOrIndepSetBound_10_11_of_ramseyElevenTwoStepNarrowTable
   HasCliqueOrIndepSetBound.mono
     (hasCliqueOrIndepSetBound_10_11_22520_of_ramseyElevenTwoStepNarrowTable h)
     (by decide : 22520 ≤ 22528)
+
+/--
+The three-step lower-row table improves the narrow route by two more vertices at `R(9,10)`, giving
+`R(10,11) <= 22514` and fourteen vertices of slack against the selector threshold.
+-/
+theorem hasCliqueOrIndepSetBound_10_11_22514_of_ramseyElevenThreeStepNarrowTable
+    (h : RamseyElevenThreeStepNarrowTable) :
+    HasCliqueOrIndepSetBound 10 11 22514 := by
+  have h9_10 : HasCliqueOrIndepSetBound 9 10 3286 :=
+    hasCliqueOrIndepSetBound_9_10_3286_of_ramseyNineTenThreeStepNarrowTable
+      { r5_10 := h.r5_10, r6_9 := h.r6_9, r7_8 := h.r7_8 }
+  have h9_11 : HasCliqueOrIndepSetBound 9 11 15943 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 8) (b := 10)
+      (N₁ := 12658) (N₂ := 3286) (N := 15943)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h.r8_11 h9_10 (by norm_num)
+  have h10_10 : HasCliqueOrIndepSetBound 10 10 6571 := by
+    exact HasCliqueOrIndepSetBound.step_even_mono (a := 9) (b := 9)
+      (N₁ := 3286) (N₂ := 3286) (N := 6571)
+      (by decide) (by decide) (by norm_num) (by norm_num)
+      h9_10 (HasCliqueOrIndepSetBound.symm h9_10) (by norm_num)
+  exact HasCliqueOrIndepSetBound.step_mono (a := 9) (b := 10)
+    (N₁ := 15943) (N₂ := 6571) (N := 22514)
+    (by decide) (by decide) h9_11 h10_10 (by norm_num)
+
+theorem hasCliqueOrIndepSetBound_10_11_of_ramseyElevenThreeStepNarrowTable
+    (h : RamseyElevenThreeStepNarrowTable) :
+    HasCliqueOrIndepSetBound 10 11 22528 :=
+  HasCliqueOrIndepSetBound.mono
+    (hasCliqueOrIndepSetBound_10_11_22514_of_ramseyElevenThreeStepNarrowTable h)
+    (by decide : 22514 ≤ 22528)
 
 /--
 The focused two-entry table is strictly enough for the target obstruction:
@@ -3293,6 +3428,23 @@ theorem ramseyElevenTwoStepNarrowTable_arithmetic_gap :
           15918 - 3288 = 12630 ∧
             22528 - 22520 = 8 ∧
               3290 - 3288 = 2 := by
+  decide
+
+/--
+Arithmetic ledger for the three-step lower-row obstruction.  It replaces the two-step assumptions
+by the still-lower targets `R(5,10)`, `R(6,9)`, and `R(7,8)` at `206`, improves
+`R(9,10)` from `3288` to `3286`, and leaves fourteen vertices of slack at the final threshold.
+-/
+theorem ramseyElevenThreeStepNarrowTable_arithmetic_gap :
+    458 - 206 = 252 ∧
+      830 - 206 = 624 ∧
+        1132 - 206 = 926 ∧
+          1287 - 411 = 876 ∧
+            1961 - 411 = 1550 ∧
+              3248 - 822 = 2426 ∧
+                4224 - 822 = 3402 ∧
+                  3288 - 3286 = 2 ∧
+                    22528 - 22514 = 14 := by
   decide
 
 /--
