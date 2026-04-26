@@ -1644,6 +1644,10 @@ Thus both sparse hereditary endpoints are actually `(2K_2,C_4)`-free, so pseudo-
 terminal exact-basis direction by `m+8`.
 The `25m/8` class margin also gives, for `m>24`, an augmented atom with `|S|=delta_S=0`, so
 `sum_S phi_S=-2e(S)`.
+The odd-word boundary residual also compresses: a minimal affine-inconsistent Arf obstruction has even
+kernel exactly `{0,1_U}`.  Therefore `|U|` is even, `1_U in ker(A(Q[U])+diag(tau))`, `dim ker<=2`, and
+the irreducible obstruction is the single whole-class bit
+`e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`; any other even kernel vector descends to a proper closed support.
 
 ## 14. Pair-chamber orientation normal form
 

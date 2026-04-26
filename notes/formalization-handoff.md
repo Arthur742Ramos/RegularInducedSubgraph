@@ -1927,11 +1927,18 @@ Recommended attack:
    `ker M_U`, averaging over the kernel gives `|J|<=2(m-|U|)`.  Outside `J`, affine solutions have fixed
    bits, with at most `(m-|U|)/2` forced ones in a terminal soluble branch.
    Formalize the exact dual criterion: with `r_i=floor(deg_{Q[U]}(i)/2)`, some constant bit `c` solves
-   `M_U 1_T=r+c1_U` iff no even-weight `H in ker M_U` has `sum_{i in H} r_i=1 [MOD 2]`.
-   Unpack this as a parity-closed certificate: `deg_H(i)=0` off `H`, `deg_H(i)=tau_i` on `H`, `|H|`
-   even, and the half-degree sum over `H` odd.
-   In the constant `tau` parity-matched case (`deg_Q(i)=tau [MOD 2]`), `1_U` is in the kernel; if
-   `|U|` is odd, some constant bit is always compatible.  The full selector already closes
+    `M_U 1_T=r+c1_U` iff no even-weight `H in ker M_U` has `sum_{i in H} r_i=1 [MOD 2]`.
+    Unpack this as a parity-closed certificate: `deg_H(i)=0` off `H`, `deg_H(i)=tau_i` on `H`, `|H|`
+    even, and the half-degree sum over `H` odd.
+    Add the minimal Arf-kernel normal form.  If an affine-inconsistent quotient is minimal under passing
+    to a bad closed support, then its even kernel is exactly `{0,1_U}`.  An even kernel vector with zero
+    Arf pairing gives the proper bad support `U Delta K`; one with odd Arf pairing is itself a proper bad
+    support.  Therefore `|U|` is even, `1_U in ker M_U`, `sum_U r_i=1`, and `dim ker M_U<=2`; if odd
+    kernel vectors exist, they are a complementary pair modulo `1_U`.  Formalize the equivalent
+    whole-class parity statement `deg_U(i)=tau_i [MOD 2]` and quadratic bit
+    `e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.
+    In the constant `tau` parity-matched case (`deg_Q(i)=tau [MOD 2]`), `1_U` is in the kernel; if
+    `|U|` is odd, some constant bit is always compatible.  The full selector already closes
    constant-type constant-parity quotient sets above `m/2` by pair words, so keep the Arf bit only as a
    below-threshold diagnostic.
    Formalize the exact Davenport top layer if the boundary route is used: Olson's extremal theorem for

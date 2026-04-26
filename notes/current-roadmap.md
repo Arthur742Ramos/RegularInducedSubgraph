@@ -4891,6 +4891,11 @@ Thus both sparse hereditary endpoints are actually `(2K_2,C_4)`-free, so pseudo-
 terminal exact-basis direction by `m+8`.
 The `25m/8` class margin also gives, for `m>24`, an augmented atom with `|S|=delta_S=0`, so
 `sum_S phi_S=-2e(S)`.
+On the boundary finite-alphabet side, the odd-word insoluble branch now has a minimal Arf normal form:
+after localizing to a bad closed support, the even kernel is exactly `{0,1_U}`, so `|U|` is even,
+`1_U in ker(A(Q[U])+diag(tau))`, `dim ker<=2`, and the only remaining obstruction bit is
+`e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.  Any larger even kernel gives a proper closed support and is not
+an irreducible whole-class obstruction.
 
 ## Supporting work that is useful but not on the critical path
 

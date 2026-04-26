@@ -1451,6 +1451,14 @@ Unpacked, this certificate is parity-closed:
 `deg_H(i)=0` for `i outside H`, `deg_H(i)=tau_i` for `i in H`, `|H|` is even, and
 `sum_{i in H} floor(deg_U(i)/2)=1 [MOD 2]`.  A proper `H` localizes the obstruction to a smaller closed
 mixed quotient; `H=U` is the one-bit whole-class Arf obstruction.
+In a minimal whole-class Arf obstruction, the even kernel is exactly `{0,1_U}`.
+Otherwise an even kernel vector `K` with zero Arf pairing makes `U Delta K` a proper bad support, while
+an even `K` with odd pairing is already a proper bad support.  Hence `|U|` is even,
+`1_U in ker M_U`, `sum_U r_i=1`, and `dim ker M_U<=2`: two distinct odd kernel vectors differ by the
+unique nonzero even kernel vector `1_U`.  Equivalently the quotient is parity-matched,
+`deg_U(i)=tau_i [MOD 2]`, and the single remaining bit is
+`e(Q[U])-(1/2)|{i:tau_i=1}|=1 [MOD 2]`.  Thus the insoluble mixed-word endpoint has rank at most two
+after closed-support localization; larger kernels are reducible, not terminal atoms.
 In the parity-matched constant-type case, `tau` is constant and `deg_Q(i)=tau [MOD 2]`, so `1_U` lies
 in the kernel.  If `|U|` is odd, the constant bit `c` can always satisfy the single all-ones
 compatibility equation.  But the full selector already closes any constant-type constant-parity quotient
