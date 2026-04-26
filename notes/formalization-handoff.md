@@ -2427,6 +2427,11 @@ Recommended attack:
     `c_{Z'}^{A'}(B)`, the filtered-cover criterion succeeds.
     Add the singleton-shadow collapse: for `|A|>=2`, full minor-criticality with `A'={a}`, `Z'=Z` forces
     `c_Z(empty)>=2` and all singleton supports `{a}` present.
+    Add the excess-packing form: with all singletons present, realization is equivalent to disjoint
+    non-singleton supports with total saving `sum(|B|-1) >= |A|-3`; the endpoint is full-minor-critical
+    failure of this packing.
+    Record large-support exclusions `|B|<=|A|-3` and active-deletion near-packings of saving `|A|-4` whose
+    one-unit lifts by the deleted coordinate are blocked.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.
@@ -2458,6 +2463,8 @@ Recommended attack:
     complementary three missing pairs are the pair-partition blockers; smaller layers add blockers.
     Add the full-minor `|A|=4` collapse: the only surviving four-active endpoint is singleton-only, with all
     pair/triple/full supports absent and essential.
+    Add the `|A|=5` excess threshold: a triple or two disjoint pairs closes; the minimal pair-only
+    obstruction is a triangle.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

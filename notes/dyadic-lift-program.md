@@ -1044,6 +1044,10 @@ Inclusion-minimality gives full minor-criticality: every proper active/filter sh
 filtered-cover feasible.
 The singleton shadows force `e_Z>=2` and all active singletons present in every genuinely high-active
 full-minor endpoint.
+Then target realization is equivalent to a disjoint non-singleton support packing with total saving
+`sum(|B|-1) >= |A|-3`; the endpoint is full-minor-critical failure of this excess packing.
+Consequently supports of size at least `|A|-2` are excluded, and active-deletion packings of saving
+`|A|-4` have all one-unit lifts blocked.
 For `|A|<=3`, the only alternatives are empty-support triples, singleton plus empties, pair plus empties,
 pair+singleton plus empty, or three singletons.
 Zero relaxation satisfies `c_{Z\{z}}(B)=c_Z(B)+p_z(B)`, where `p_z(B)` counts columns private to `z`.
@@ -1068,6 +1072,8 @@ The co-singleton core's pair layer is an intersecting edge family on `K_4`, henc
 The size-three cases are exactly star or triangle; their complements are the three essential pair blockers.
 With full minor-criticality, the true `|A|=4` endpoint is singleton-only: all non-singleton supports are
 absent and essential.
+For `|A|=5`, closing requires a triple or two disjoint pairs; the minimal pair-only obstruction is a
+triangle.
 In that near-threshold branch, `|R|=m+s` with `s<=3`; selectors inside `R` reduce to deleting at most two
 vertices, giving the finite nonconstant templates `b`, `b-1_{vx}`, and `b-1_{vx1}-1_{vx2}`.
 Mixed selectors in the full Gallai core are governed by the symmetric deletion equation

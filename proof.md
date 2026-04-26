@@ -11418,6 +11418,37 @@ pre-minor normal forms; they cannot survive the full inclusion-minimal certifica
 full-minor high-active endpoint, `A` is not partitionable into at most three members of a support family
 which already contains every singleton, while every proper active/filter shadow is partitionable.
 
+With all singletons available, the partition problem has an exact excess-packing form.  For a non-singleton
+support `B in F_Z`, define its saving
+
+```text
+s(B)=|B|-1.
+```
+
+Starting from the singleton partition of `A`, replacing the singletons of a disjoint support `B` by the one
+block `B` saves `s(B)` blocks.  Hence `A` is partitionable into at most three admissible blocks iff there is
+a disjoint family of non-singleton supports `B_1,...,B_r in F_Z` with
+
+```text
+sum_i (|B_i|-1) >= |A|-3.
+```
+
+Thus the genuine high-active target obstruction is a full-minor-critical disjoint excess-packing failure:
+the full active set has no such packing, but every proper active/filter shadow does.
+
+Writing `n=|A|`, this immediately gives the large-support exclusions
+
+```text
+B in F_Z  =>  |B| <= n-3        for every non-singleton B,
+```
+
+because a support of size at least `n-2` has saving at least `n-3` and closes by itself.  Moreover, for
+each active coordinate `a`, full minor-criticality supplies a disjoint packing inside `A\{a}` with total
+saving at least `n-4`.  Terminality of `A` says that every one-unit lift of such a packing is blocked:
+thickening one support by `a`, or adding a new support involving `a`, would raise the saving to at least
+`n-3` and therefore must be absent or capacity-deficient.  This is the excess-packing version of the
+active thickening exclusions.
+
 For `|A|<=3` this criterion is the following table:
 
 ```text
@@ -11579,6 +11610,11 @@ would then partition `A` using at most three nonempty blocks, so all non-singlet
 Thus the full-minor four-active target obstruction is exactly the singleton-only support family on `A`,
 with every missing pair/triple/full support essential through the obvious partition using that missing
 support and singleton complements.
+
+For `|A|=5`, the excess threshold is `2`: a triple support or two disjoint pair supports would close, while
+every four-shadow must contain at least one non-singleton support.  Thus the pair-only surviving pattern is
+an intersecting pair graph whose every four-vertex subset contains an edge; the minimal example is a
+triangle on three of the five active coordinates.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
