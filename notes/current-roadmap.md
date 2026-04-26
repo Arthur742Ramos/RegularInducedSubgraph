@@ -5574,6 +5574,10 @@ is the pure all-edge minimum.
 Terminality forces every `F` edge to join opposite internal types: if two empty atoms or two triangular atoms
 were `F`-adjacent, their union would be a two-atom selector.  Hence the `F`-edge graph is bipartite in the
 empty/triangle type split.
+The `F`-containing all-ternary branch is therefore a finite typed graph: `F` edges cross the type split,
+corner edges carry omitted-coordinate labels, and at a vertex the local condition is automatic for
+`deg_F>=2`, requires two distinct corner omissions for `deg_F=1`, and requires all three omissions for
+`deg_F=0`.
 The pure all-edge minimum further splits into only two phase types inside the parity tetrahedron: the three
 edge supports either share one parity word (star phase) or form the triangle avoiding one parity word
 (triangle phase), with only the `2+1` multiplicity choice left on each size-three edge target.

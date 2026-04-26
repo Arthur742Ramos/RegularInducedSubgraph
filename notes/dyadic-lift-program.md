@@ -1213,6 +1213,9 @@ Fully split size-three traces are transpose-rigid: after unit-edge discharge, an
 and its trace matrix is a permutation matrix or complement, hence cross-regular of degree `1` or `2`.
 An `F` edge between two atoms of the same internal type would make their union a two-atom selector, so every
 surviving `F` edge crosses the empty/triangle type split.
+Thus `F`-containing all-ternary endpoints are typed bipartite `F` graphs with omitted-coordinate labels on
+corner edges: vertices of `F`-degree `0` need all three omissions, and vertices of `F`-degree `1` need two
+distinct omissions.
 The pure all-edge minimum has only star phase (three edge supports share a parity word) or triangle phase
 (three edge supports avoid one parity word), plus the `2+1` multiplicities on the size-three edge targets.
 For a symmetric all-ternary cycle, transposing the two-atom trace matrix forces every mutual edge target to
