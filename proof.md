@@ -11194,9 +11194,11 @@ h|_P notin M_P + M_P + M_P        (with vertex capacities),
 ```
 
 while coordinate minimality says that every coordinate projection of `h|_P` is such a capacitated
-3-sum.  Equivalently, for each `p in P` there is a single-defect outside triple realizing all coordinates
-of `P\{p}` and missing only the `p`-coordinate.  After the saturated size-`<=3` closures, the irreducible
-large-outside target branch is precisely a critical capacitated 3-sum cube of dimension at least `4`.
+3-sum.  Since `P` is inclusion-minimal, in fact every proper coordinate shadow `Q proper_subset P` is
+feasible: some outside triple realizes `h|_Q`.  Equivalently, for each `p in P` there is a single-defect
+outside triple realizing all coordinates of `P\{p}` and missing only the `p`-coordinate.  After the
+saturated size-`<=3` closures, the irreducible large-outside target branch is precisely a critical
+capacitated 3-sum cube of dimension at least `4`, all of whose proper shadows are feasible.
 
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with

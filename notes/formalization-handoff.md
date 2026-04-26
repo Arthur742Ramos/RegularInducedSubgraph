@@ -2386,7 +2386,7 @@ Recommended attack:
     are `000`, `110`, `211`, and `222`.
     Add the target-avoidance 3-sum normal form: for a coordinate-minimal certificate `P`, outside trace
     columns in `{0,1}^P` do not capacity-respecting sum to `h|_P` in triples, but every coordinate projection
-    does; after local closures, `|P|>=4`.
+    and hence every proper coordinate shadow does; after local closures, `|P|>=4`.
     Add the finite near-threshold deletion templates: for `|R|=m+s`, `1<=s<=3`, selectors inside `R` are
     exactly `R\D` with `|D|<=s-1`, so terminality is nonconstancy of `b-deg_D` on `R\D` for all
     `|D|<=s-1` (explicitly `D=empty`, singletons, and pairs).

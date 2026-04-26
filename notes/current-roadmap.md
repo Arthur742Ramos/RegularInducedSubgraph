@@ -5286,7 +5286,8 @@ The scalar-killed side is a three-vertex graphicality test: each incoming vertex
 `000`, `110`, `211`, and `222`.
 The target-avoidance side is a capacitated 3-sum cube: outside trace columns in `{0,1}^P` fail to sum to
 `h|_P` using three distinct vertices, while every coordinate projection is feasible.  Hence each coordinate
-has a single-defect realizing triple, and the irreducible dimension is at least `4`.
+has a single-defect realizing triple; inclusion-minimality makes every proper coordinate shadow feasible,
+and the irreducible dimension is at least `4`.
 Writing `|R|=m+s`, `1<=s<=3`, every selector inside `R` larger than `m` is `R\D` with `|D|<=s-1<=2`.
 Terminality is the finite deletion-template list: `b` nonconstant on `R`; all `b-1_{vx}` nonconstant on
 `R\{x}`; and, when `s=3`, all `b-1_{vx1}-1_{vx2}` nonconstant on `R\{x1,x2}`.
