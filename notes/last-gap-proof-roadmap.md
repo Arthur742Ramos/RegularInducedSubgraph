@@ -1814,7 +1814,8 @@ What remains justified after audit is:
       selector blocks merge whenever their internal and cross-degree residues satisfy the quotient
       congruence, so terminal buckets are also anti-merge for all cross-regular quotient solutions above
       scale `m`; one-vertex merge shadows force maximum residue-`0` selectors to dominate and give the
-      dual non-completion constraints;
+      dual non-completion constraints, while two-vertex shadows forbid the uniform missed/complete/
+      complementary trace extensions satisfying the corrected pair residue equation;
       row-twin, co-twin, and module exits force any terminal bucket to be selector-prime and high-rank over
       `F_2` in both graph and complement; independent/clique exits force hereditary density and codensity
       at scale `m`;

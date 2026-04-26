@@ -1800,6 +1800,8 @@ Selector blocks merge when their internal residues and cross-degree residues sat
 `a+p==b+q mod 4`; terminal buckets forbid every cross-regular quotient merge above scale `m`.
 A maximum residue-`0` selector is dominating, and a residue-`a` selector with `|S|==a+1 mod 4` has no
 outside vertex complete to it; dual statements hold in the complement.
+For outside pairs, terminality forbids uniform missed/complete/complementary trace extensions satisfying
+`a+p==delta+deg_S(x)==delta+deg_S(y) mod 4`.
 Large row-twin, co-twin, or module structure closes immediately; a terminal bucket is selector-prime and
 high-rank over `F_2` in both graph and complement.
 It is also hereditarily dense/codense at scale `m`: every induced subbucket larger than `m` has no

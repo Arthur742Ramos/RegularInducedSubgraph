@@ -2184,6 +2184,11 @@ Recommended attack:
     Formalize the one-vertex extension corollary: `S union {x}` is a selector iff either `x` is
     anticomplete to a residue-`0` selector `S`, or `x` is complete to a residue-`a` selector with
     `|S|==a+1 mod 4`.  Record the resulting domination/non-completion constraints for maximum selectors.
+    Formalize the two-vertex extension corollary: for outside pair `{x,y}` with internal edge bit
+    `delta`, `S union {x,y}` is a selector only when every `s in S` sees a constant
+    `p in {0,1,2}` vertices of the pair and
+    `a+p==delta+deg_S(x)==delta+deg_S(y) mod 4`.  Expand the three trace cases
+    `p=0,1,2`.
     Formalize the rank/module exits for that bucket: row-twin classes larger than `m` give independent
     selectors, complement row-twin classes larger than `m` give clique selectors, and modules preserve
     selector validity because outside contribution is constant.  Conclude terminal buckets are

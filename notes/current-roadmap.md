@@ -5085,6 +5085,10 @@ Two disjoint selector blocks `A,B` with internal residues `a,b` and constant cro
 quotient solution of total lifted size greater than `m`.
 In particular, a maximum residue-`0` selector is dominating; and if a residue-`a` selector has
 `|S|==a+1 mod 4`, no outside vertex is complete to it.  The complement gives the dual restrictions.
+The size-two anti-merge patterns are also explicit: an outside pair must be uniformly seen by `S`
+(missed, complete, or complementary traces) and satisfy
+`a+p==delta+deg_S(x)==delta+deg_S(y) mod 4`; terminality forbids all such pair extensions above scale
+`m`.
 Large row-twin classes close as independent selectors, large complement-row classes close as clique
 selectors, and modules preserve selector validity because their outside contribution is constant.  Hence
 any terminal principal bucket is selector-prime and has F2 row-rank at least `log_2(n/m)` in both graph and

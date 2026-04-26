@@ -9804,6 +9804,20 @@ outside vertex fails to be complete to `S`.  Applying the same statement in the 
 domination restrictions.  These are weak by themselves, but they are mandatory boundary conditions for
 any terminal bucket with a largest selector near the threshold.
 
+The two-vertex shadow is the first genuinely cut-shaped one.  Let `S` have residue `a`, let
+`X={x,y}` be outside, and put `delta=1` if `xy` is an edge and `0` otherwise.  Then `S union X` is a
+selector only if every vertex of `S` sees the same number `p in {0,1,2}` of vertices of `X`; the residue
+condition is
+
+```text
+a+p == delta+deg_S(x) == delta+deg_S(y)        [MOD 4].
+```
+
+Thus terminality forbids three explicit pair-extension patterns above the threshold: both outside
+vertices missed by `S` with `delta==a`, both complete to `S` with `|S|+delta==a+2`, or complementary
+traces on `S` with equal corrected degrees `delta+deg_S(x)==delta+deg_S(y)==a+1`.  These are exactly the
+size-two instances of the quotient anti-merge equation.
+
 This last principal bucket has immediate rank and module exits.  If two vertices have identical internal
 neighbourhood rows over `F_2`, then they are false twins inside the bucket; a trace class of size greater
 than `m` is an independent congruent selector.  More generally, if the internal adjacency matrix over
