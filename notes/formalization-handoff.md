@@ -2482,6 +2482,8 @@ Recommended attack:
     Formalize deletion-only bridge families: deleting a packed-block vertex makes the projected packing one
     short, forcing a minimal positive-gain repair family in the shadow whose full lifts all have nonpositive
     total gain.
+    Add the one-support deletion lemma: such a repair must hit the shortened block with projected gain `1`;
+    the unlifted copy is zero-gain in the original packing and the thickened lift is blocked.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

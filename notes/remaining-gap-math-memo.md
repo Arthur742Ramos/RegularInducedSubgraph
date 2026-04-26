@@ -2019,6 +2019,8 @@ Gain-zero replacements preserve the deficit-one packing, so the bridge blocker c
 saturated; terminal exclusions hold on the entire zero-gain orbit.
 Deleting a packed-block vertex creates a one-short projected packing, so criticality forces a minimal
 deletion-only positive-gain repair family whose full lifts are blocked by nonpositive total gain.
+For a one-support repair, it must hit the shortened block with projected gain exactly `1`; the unlifted copy
+is zero-gain in the original packing, and its thickened lift is blocked.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

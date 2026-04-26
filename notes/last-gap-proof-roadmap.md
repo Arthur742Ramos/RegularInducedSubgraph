@@ -1993,6 +1993,8 @@ What remains justified after audit is:
       replacement orbit;
       deleting a packed-block vertex forces a deletion-only positive-gain repair family whose full lifts
       are blocked;
+      in the one-support repair case, the repair hits the shortened block with projected gain exactly `1`,
+      its unlifted copy is zero-gain, and its thickened lift is blocked;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;
       small-active capacity is equivalently a finite zero-filter blocker with each zero coordinate
       essential through a uniquely breached repair triple;
