@@ -6442,102 +6442,51 @@ alpha<=2,        induced-C_4-free,        no clique larger than m,
 and with no mod-`4` congruent induced subgraph larger than `m` by outside-only maximality.  This is a
 strict one-type residual, smaller than the original eight-type cube.
 
-Equivalently, complementing this one-type graph gives a graph `H` with no triangles and no `C_4`
-(because `C_4` is self-complementary) and with independence number at most `m`.  For any selected set
-`S`,
+Equivalently, complementing this one-type graph gives a graph `H` with no triangles and no induced
+`2K_2`, and with independence number at most `m`.  The complement correction is important:
+`C_4` is not self-complementary; its complement is `2K_2`.  For any selected set `S`,
 
 ```text
 deg_G[S](v)=|S|-1-deg_H[S](v).
 ```
 
 Thus `G[S]` has degrees congruent modulo `4` iff `H[S]` has degrees congruent modulo `4`.  The one-type
-residual is therefore exactly the loss-constant mod-`4` selector restricted to girth-at-least-five
-graphs, with the extra assumption that `alpha(H)<=m`.  This is a strictly smaller target than the
-original arbitrary-graph theorem; closing it with a constant better than the remaining support loss would
-finish the support-five triangle-boundary branch.
+residual is therefore not a girth-five problem; it is a triangle-free `2K_2`-free selector.
 
-The terminal form of this girth-five target has two immediate graph-theoretic obstructions.  If `H`
-contains an induced matching of size greater than `m/2`, the endpoints induce a graph of degree `1` on
-more than `m` vertices, and complementing back gives a forbidden outside-only congruent set.  If `H`
-contains an induced cycle of length greater than `m`, that cycle has degree `2` at every selected vertex
-and again closes.  Hence a one-type terminal residual must satisfy
+This class has a simple structure.  If a connected component of `H` is bipartite, it is a chain graph
+between its two colour classes, and each colour class is independent, so its order is at most `2m`.
+If a component is non-bipartite, it contains an induced `C_5`; the `2K_2`-free and triangle-free
+conditions force every outside vertex to be a false twin of one of the five cycle vertices, and force
+complete joins between consecutive twin classes and anti-joins between nonconsecutive classes.  Hence
+the component is a blow-up of `C_5`, say with class sizes `a_1,...,a_5`.
 
-```text
-alpha(H)<=m,        induced_matching(H)<=m/2,        induced_circumference(H)<=m,
-```
-
-with `H` triangle-free and `C_4`-free.  This is a much sharper sparse-graph target: prove that every
-girth-at-least-five graph on sufficiently more than `m` vertices with `alpha<=m` has either a large
-induced matching or a large induced cycle, or else extract a mod-`4` congruent induced subgraph by a
-different sparse-graph argument.
-
-The matching/cycle obstruction can be packaged more strongly as a bounded-degree-two selector.  Let
-`F` be any induced subgraph of this terminal `H` with maximum degree at most `2`.  Write `t` for the
-number of vertices lying on cycle components of `F`, and `p=|F|-t` for the number of vertices in path
-or isolated components.  If `t>m`, the union of the cycle components is an induced `2`-regular subgraph
-on more than `m` vertices, impossible.  On the path-and-isolated part, the maximum independent set
-size plus the number of vertices covered by a maximum induced matching is at least `p`: this is checked
-componentwise on paths by the greedy tiling into isolated selected vertices and length-one selected
-edges.  On a cycle of length `r`, the analogous sum is at least `4r/5`, with the only tight obstruction
-being `C_5`.  Therefore, for the whole `F`, there is an induced regular subgraph of degree `0` or `1`
-or an induced union of cycle components of degree `2` on more than `m` vertices unless
+The blow-up case is internally capped by a three-consecutive-part selector.  For any consecutive triple
+with capacities `A=a_i`, `B=a_{i+1}`, `C=a_{i+2}`, choose
 
 ```text
-|F|-t/5 <= 2m        and        t<=m.
+x<=A,  y<=B,  z<=C,        y = x+z [MOD 4],
 ```
 
-Consequently every induced `Delta<=2` subgraph of a terminal one-type girth-five residual satisfies
+with `x+z=A+C` and `y>=B-3`.  The induced subgraph on these three consecutive classes has endpoint
+degrees `y` and middle degrees `x+z`, so all selected degrees are congruent modulo `4`, and its size is
+at least `A+B+C-3`.  Terminality therefore implies
 
 ```text
-|F| <= 11m/5.
+a_i+a_{i+1}+a_{i+2} <= m+3        for every i [MOD 5].
 ```
 
-This replaces the two separate obstructions by a single sharper one: a large terminal `H` must be
-induced-degree-three in a robust sense, since any induced low-degree spine larger than `11m/5` already
-contains the forbidden congruent outside-only set.
+Summing the five inequalities gives `3|H_j|<=5m+15` for each non-bipartite component `H_j`.  Globally
+one also has the structural independence bound
 
-Choose such an induced `Delta<=2` spine `F` with maximum possible cardinality.  Then `|F|<=11m/5`, and
-every vertex outside `F` obeys a rigid exchange condition.  Let `D_2(F)` be the set of degree-`2`
-vertices of `F`.  If an outside vertex `v` avoids `D_2(F)` and has at most two neighbours in `F`, then
-`F+v` still has maximum degree at most `2`: the new vertex has degree at most two into `F`, and every
-old neighbour of `v` had `F`-degree at most one.  This contradicts the choice of `F`.  Therefore every
-outside vertex either hits `D_2(F)` or has at least three neighbours on the spine.
+```text
+|H| <= (5/2) alpha(H) <= (5/2)m,
+```
 
-The girth-five condition makes the latter alternative sparse on the spine.  The vertices of
-`N_F(v)` are pairwise at distance at least three inside `F`: distance one would make a triangle with
-`v`, and distance two would make a `C_4`.  Thus every non-saturated outside vertex chooses a three-point
-packing on the path/cycle spine.  In the saturated alternative, maximum cardinality also forbids two
-outside vertices whose only spine neighbour is the same `u in D_2(F)`: replacing `u` by those two
-independent leaves would create a larger induced `Delta<=2` spine.  Hence the remaining large-remnant
-surface is an incidence problem over a spine of size at most `11m/5`, where outside vertices either
-attach to degree-`2` spine vertices with no two identical private attachments, or attach to a
-distance-three packing of at least three spine vertices.  This is the next target for converting
-robust degree-three into either an independent set larger than `m` or another congruent induced
-subgraph.
-
-There is a complementary cover from a maximal induced matching.  Let `M` be a maximum induced matching
-in the same terminal girth-five `H`, and let `U` be its endpoint set.  Terminality gives `|U|<=m`.
-The vertices outside the closed neighbourhood of `U` form an independent set: if two such vertices were
-adjacent, their edge could be added to `M` and would still be induced.  Hence this undominated set has
-size at most `m`.
-
-The dominated remainder is controlled by its trace on `U`.  For a matching edge `uu' in M`, the
-vertices whose only neighbour in `U` is `u`, together with those whose only neighbour in `U` is `u'`,
-form an independent set: same-side pairs share a neighbour, and a cross-edge would make the induced
-`C_4` `x-u-u'-y-x`.  Thus each matched pair supports at most `m` private vertices.  Vertices with at
-least two neighbours in `U` are pair-incidences over the endpoint set: no vertex hits both ends of one
-matching edge, and for every unordered pair `{a,b} subset U` there is at most one outside vertex adjacent
-to both `a` and `b`; two such vertices would be nonadjacent by triangle-freeness and would form a
-`C_4` with `a,b`.  Consequently all large mass not already bounded by the independent set or private
-classes lies in a simple pair-incidence cloud over at most `m` endpoints.
-
-This cloud has its own adjacency restrictions.  Two cloud vertices can be adjacent only if their traces
-on `U` are disjoint and do not hit opposite ends of a matching edge; otherwise a common endpoint gives a
-triangle, and opposite endpoints `u,u'` give the `C_4` `q-u-u'-q'-q`.  Thus any remaining large one-type
-counterexample has been reduced to a `C_4`-free, triangle-free graph whose nontrivial vertices are
-labelled by distinct pairs or larger matchings in an `m`-point matched ground set, with adjacency allowed
-only between labels that avoid the matching-neighbour conflict.  Closing this pair-incidence cloud is
-now the precise large-girth residual.
+because bipartite chain components have order at most twice their independence contribution, while a
+`C_5` blow-up satisfies `2|H_j|<=5 alpha(H_j)` by summing the five nonconsecutive-pair inequalities.
+Thus the former "girth-five" one-type residual is replaced by an explicit triangle-free `2K_2`-free
+structure theorem, plus the sharper three-consecutive-part selector inside every non-bipartite
+component.
 
 For support at most four, either the support contains a square face, in which case the face `C_4`
 condition applies, or it is a forest subgraph of the cube.  The forest-support case is again a bounded
@@ -6581,6 +6530,23 @@ chi <= binom(omega+1,2).
 Since the complement has `omega<=3` and independence number at most `m`, this all-hit case has size at
 most `6m`.  Thus small cube-forest support introduces no new two-type obstruction and is linearly capped
 apart from the already isolated girth-five one-type selector.
+
+The only way three clique-bounded spill classes can coexist with a nonlinear class is the cube-star
+shape with the nonlinear type at the centre and three same-parity leaves.  This star has an additional
+Hall-type restriction.  Let `T` be the centre type and let `L_1,L_2,L_3` be the three clique leaves,
+which are pairwise anti-complete.  For every independent pair `a,b in T`, at most one leaf can contain a
+vertex nonadjacent to both `a` and `b`; otherwise two such leaf vertices, together with `a,b`, would form
+an independent four-set.  Equivalently, for at least two leaves `L_j` one has
+
+```text
+L_j = N_{L_j}(a) union N_{L_j}(b),
+```
+
+and each of the two neighbourhoods is a clique by the one-corner rule whenever the centre is a miss for
+the corresponding coordinate.  Thus the last possible `3m` spill is not arbitrary: every independent
+pair in the nonlinear centre two-covers at least two leaves by clique neighbourhoods.  The remaining
+closure problem is to convert this pair-covering constraint, together with the girth-five selector bound
+on `T`, into a strict improvement over the crude `3m+11m/5` estimate.
 
 The retained-only subcase is the old four-copy obstruction.  Let `C_i` be all vertices of `C` with
 old-vector `g_i` in the exact basis model.  Every four vertices of `C_i` form an old-balanced atom with

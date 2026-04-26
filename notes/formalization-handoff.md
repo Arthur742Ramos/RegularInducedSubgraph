@@ -1590,6 +1590,10 @@ Recommended attack:
    lower type is a clique, it is `m`-bounded and the all-hit one-type branch is the only remaining part.
    The all-hit branch is capped by formalizing/importing Wagon's bound `chi<=binom(omega+1,2)` for
    `2K_2`-free graphs after complementing; with `omega<=3` and `alpha<=m`, it has size at most `6m`.
+   For the remaining cube-star spill shape, formalize the pair-covering constraint: if `T` is the
+   nonlinear centre and `L_1,L_2,L_3` are the same-parity clique leaves, then every independent pair in
+   `T` has common non-neighbours in at most one leaf.  Hence at least two leaves are covered by the two
+   clique neighbourhoods of that pair.
 
    The retained-only subcase is the old four-copy obstruction: every four vertices in one exact direction
    fiber `C_i` are old-balanced, and they close precisely when they induce the specified

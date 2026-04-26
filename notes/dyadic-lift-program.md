@@ -967,43 +967,26 @@ classes; support size at most four is the remaining small-support case.
 In support size five, the two exceptional same-parity classes are anti-complete; they cannot both contain
 independent pairs.  Thus one is clique-bounded, and the only possible nonlinear remnant is a single type
 class with `alpha<=2`, induced-`C_4`-free, clique number at most `m`, and no outside-only congruent
-subgraph larger than `m`.  Complementing this one-type graph gives a triangle-free, C4-free graph
-`H` with `alpha(H)<=m`, and congruent degrees modulo `4` are preserved up to the shift `|S|-1`; hence
-this remnant is the mod-4 selector restricted to girth-at-least-five graphs.  For support at most four,
-either a full square face triggers the face-C4 condition or the support is a cube forest of at most four
-such type classes.
-In that girth-five complement `H`, terminality also forces
-`induced_matching(H)<=m/2` and induced circumference at most `m`, since an induced matching gives all
-degrees `1` and an induced cycle gives all degrees `2` on the selected vertices.  The sparse remnant is
-therefore: triangle-free, C4-free, `alpha<=m`, no induced matching larger than `m/2`, and no induced
-cycle longer than `m`.
-This can be strengthened to a degree-two cap: every induced subgraph `F` of `H` with
-`Delta(F)<=2` has `|F|<=11m/5`.  Indeed, if `t` vertices of `F` lie on cycle components, then `t<=m`
-or the cycle components themselves give a degree-`2` congruent set.  The path components contribute
-`independence + induced-matching-covered vertices >= p`, and each cycle of length `r` contributes at
-least `4r/5` with equality only at `C_5`; since both the independent set and the induced-matching
-endpoints are capped by `m`, `|F|-t/5<=2m`, whence `|F|<=11m/5`.  Thus a large terminal girth-five
-remnant must be robustly induced-degree-three.
-Taking `F` maximum by cardinality gives the next incidence residual.  Every outside vertex either hits
-a degree-`2` vertex of `F`, or has at least three neighbours on `F`; otherwise it could be added while
-preserving `Delta<=2`.  In the second case those neighbours are pairwise at distance at least three on
-the spine, since distance one gives a triangle and distance two gives a `C_4`.  In the first case, no two
-outside vertices can have the same sole spine-neighbour `u in D_2(F)`, because replacing `u` by those two
-independent leaves enlarges the spine.  The remaining one-type girth-five target is therefore a sparse
-incidence problem over a spine of size at most `11m/5`.
-A maximum induced matching gives a complementary cover.  If `U` is its endpoint set, then `|U|<=m`, the
-vertices outside `N[U]` are independent, each matched endpoint-pair supports at most `m` private
-neighbours, and all remaining vertices are pair-incidences over `U`: no vertex hits both ends of a
-matching edge, and at most one vertex realizes any unordered pair of endpoints.  Adjacent cloud vertices
-must have disjoint traces and cannot hit opposite ends of one matching edge, or else they create a
-triangle or `C_4`.  Thus the unresolved large girth-five mass is a precise pair-incidence cloud over an
-`m`-point matched ground set.
+subgraph larger than `m`.  Correcting the complement is decisive: the complement `H` is triangle-free
+and induced-`2K_2`-free, not C4-free, and congruent degrees modulo `4` are preserved up to the shift
+`|S|-1`.
+Connected bipartite components of such an `H` are chain graphs, so their order is at most twice their
+independence contribution.  Connected non-bipartite components are blow-ups of `C_5`: an outside vertex
+of an induced `C_5` must be a false twin of a cycle vertex, and consecutive twin classes are completely
+joined.  If the five class sizes are `a_1,...,a_5`, then summing the nonconsecutive-pair independence
+inequalities gives `2|H_j|<=5 alpha(H_j)`.  Moreover any three consecutive classes with capacities
+`A,B,C` contain a congruent-degree induced subgraph of size at least `A+B+C-3` by choosing
+`x<=A,y<=B,z<=C` with `y=x+z [MOD 4]`.  Thus terminality imposes
+`a_i+a_{i+1}+a_{i+2}<=m+3` for every cyclic triple.  The former girth-five one-type residual is therefore
+an explicit chain/C5-blow-up structure, with global size at most `(5/2)m` and stronger local triple
+constraints in non-bipartite components.  For support at most four, either a full square face triggers
+the face-C4 condition or the support is a cube forest of at most four such type classes.
 The support-at-most-four cube forest also compresses: at most one type of each parity can be nonlinear,
 because same-parity types are anti-complete and two independent pairs would give an independent four-set.
 If the two possible nonlinear types have opposite parity and Hamming distance three, the same argument
 applies.  Hence any two nonlinear types must be adjacent in the cube; all other supported types are
 cliques of size at most `m`.  An adjacent edge sharing a zero coordinate is already the same one-type
-girth-five selector after complementing the whole shared-miss union, because that union has
+chain/C5 selector after complementing the whole shared-miss union, because that union has
 independence at most two and is induced-`C_4`-free.  The only new adjacent-edge case is the top edge
 `111`--`110` up to symmetry, where every lower-type vertex has clique neighbourhood in the all-hit type.
 Thus before the final top-edge collapse, the small-support branch has only the one-type selector or this
@@ -1013,8 +996,13 @@ independent pair in `A` forces `|B|<=3m` because the two clique neighbourhoods p
 non-neighbour clique cover `B`; if `A` is a clique, then `A` is `m`-bounded and only the all-hit one-type
 branch remains.  The all-hit branch is linearly capped after complementing by Wagon's bound
 `chi<=binom(omega+1,2)` for `2K_2`-free graphs: here `omega<=3` and `alpha<=m`, so it has size at most
-`6m`.  Therefore small cube-forest support reduces entirely to the one-type girth-five selector plus
+`6m`.  Therefore small cube-forest support reduces entirely to the one-type chain/C5 selector plus
 clique-bounded spill.
+The only support shape with three clique spill classes is a cube star with the nonlinear type as centre
+and three same-parity clique leaves.  For every independent pair in the centre, common non-neighbours can
+occur in at most one leaf; two leaves with common non-neighbours would give an independent four-set.
+Thus every independent centre-pair two-covers at least two leaves by clique neighbourhoods.  This
+pair-covering constraint is the remaining handle needed to improve the crude `3m+5m/2` star bound.
 
 The retained-only subcase is the old four-copy obstruction: if `C_i` is a full direction fiber in the
 exact basis model, any four vertices of `C_i` are old-balanced.  A four-set closes exactly when it
