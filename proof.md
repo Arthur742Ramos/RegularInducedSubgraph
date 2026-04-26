@@ -7284,6 +7284,79 @@ m odd,  n=m-1:  pair selector size at least m-1.
 Thus a terminal same-residue homogeneous class occupying almost all coordinates must prevent every
 one-word or two-word augmentation of this Gallai half.  The residual obstruction is not a large pair
 selector; it is a one- or two-vertex augmentation failure at the boundary of the zero-sum-free basis.
+
+For one outside word the obstruction is explicit.  Let `U` be a constant-parity pair-word selector with
+common residue `R`, and let `P_j` be a regular word in an outside triple with size `s` and internal
+residue `q_j`.  In a homogeneous quotient, appending `P_j` preserves congruence only if its quotient
+neighbourhood into `U` is uniform; write `a=0` for cross-empty to all of `U` and `a=1` for
+cross-complete to all of `U`.  The appended set is congruent exactly when
+
+```text
+q_j + 2a|U| = R + as        [MOD 4].
+```
+
+Thus terminality forbids every outside regular word satisfying this one-line congruence.  In the
+`m`-even boundary case, where the Gallai pair selector already has size `m`, this one-word test is
+enough: any successful outside word gives size `>m`.  In the `m`-odd boundary case the pair selector may
+have size only `m-1`; then either one word of size at least two satisfies the displayed test, or the
+only remaining augmentation is a two-singleton/two-word equation in which the two outside quotient
+neighbourhood columns have constant weighted sum on `U`.  Hence the final homogeneous boundary check is
+finite and local around at most two outside triples.
+
+Explicitly, for two outside regular words `P_j,P_k` of sizes `s_j,s_k`, internal residues `q_j,q_k`,
+and quotient columns `a_j,a_k:U->{0,1}`, put `b=1` if the two outside triples are cross-complete and
+`b=0` if they are cross-empty.  They augment the base selector iff there is a residue `K` such that
+
+```text
+s_j a_j(i)+s_k a_k(i)=K                         for every i in U,
+q_j+2 sum_U a_j + b s_k = R+K,
+q_k+2 sum_U a_k + b s_j = R+K                  [MOD 4].
+```
+
+For the genuine deficit-two case `s_j=s_k=1`, this says that the two quotient columns are either
+complementary on `U`, both constantly zero, or both constantly one; a nonconstant equal pair would give
+row sums `0` and `2` and is not allowed.  Their column sums must also have the parity forced by the last
+two displayed equations.  Thus the odd-`m` homogeneous residual is a two-column parity obstruction, not
+an unstructured boundary selector.
+
+The same equations apply to retained imports, and this is essential in the equality case.  A retained
+singleton `z in C_j` is an outside word of size `1` and internal residue `0`.  It augments a pair-word
+selector `U` only if it is pair-uniform on the chosen boundary pairs: for every selected pair
+`P_i subset X_i`, the two adjacencies from `z` to `P_i` are equal, and this common bit is independent of
+`i`.  If the common bit is `a`, the one-word congruence becomes
+
+```text
+2a|U| = R+a        [MOD 4].
+```
+
+Thus every terminal equality-size boundary selector imposes a concrete forbidden trace on all retained
+singletons.  In the deficit-two case, two retained singletons `z,z'` augment exactly when their
+pair-uniformity defects cancel: the two columns on the selected boundary pairs are complementary, both
+constantly zero, or both constantly one, and their column sums satisfy the two displayed two-word
+congruences with `q_j=q_k=0` and `s_j=s_k=1`.
+Hence the exact-boundary residual is coupled to the retained side by a two-column trace condition; it is
+not a purely boundary-internal obstruction.
+
+For retained singletons the congruence table is tiny.  A single retained vertex closes iff either
+
+```text
+it misses every selected boundary-pair vertex and R=0,
+or it hits every selected boundary-pair vertex and R=2|U|-1 [MOD 4].
+```
+
+For two retained vertices, let `b` be their mutual edge and let `alpha` be the number of selected
+boundary pairs hit by the first retained vertex in the complementary-column case.  Then:
+
+```text
+both columns 0:        b=R                         [MOD 4],
+both columns 1:        2|U|+b=R+2                  [MOD 4],
+complementary columns: |U| even and 2alpha+b=R+1   [MOD 4].
+```
+
+Since `b in {0,1}`, the first two lines are often empty by residue alone.  The only genuinely flexible
+two-retained augmentation is the complementary-column line, and even that requires `|U|` even and fixes
+the parity of `alpha`.  This converts the retained equality residual into a finite trace-avoidance table.
+
 Moreover, this split is forced by parity: if all selected words have size two, every cross-word
 contribution is even (`0` or `2` modulo `4` in the homogeneous quotient), so the parity of the final
 degree residue is the parity of the internal pair residue.  Pair-only selectors therefore cannot mix

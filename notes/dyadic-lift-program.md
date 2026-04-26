@@ -1230,6 +1230,27 @@ Gallai gives such a selector of size at least `2 ceil(n/2)` from a same-residue 
 `m even, n=m-1` (selector size `m`) and `m odd, n=m-1` (selector size `m-1`).  The remaining
 same-residue homogeneous obstruction is therefore a one- or two-word augmentation failure, not a large
 pair-selector failure.
+For a one-word augmentation of a constant-parity pair selector `U` with residue `R`, an outside regular
+word `P_j` of size `s` and internal residue `q_j` must have uniform quotient neighbourhood into `U`.
+Writing `a=0` for cross-empty and `a=1` for cross-complete, the exact condition is
+`q_j+2a|U|=R+as [MOD 4]`.  If `m` is even this one-word test already handles the size-`m` boundary
+selector; if `m` is odd and the pair selector has size `m-1`, the only remaining augmentation check uses
+two outside words whose weighted neighbourhood columns sum constantly on `U`.
+For two words `j,k`, the exact equations are
+`s_j a_j(i)+s_k a_k(i)=K` on `U`,
+`q_j+2 sum_U a_j+b s_k=R+K`, and
+`q_k+2 sum_U a_k+b s_j=R+K [MOD 4]`.  In the deficit-two singleton case this is just a two-column
+condition: the columns are complementary, both constantly zero, or both constantly one; nonconstant
+equal columns do not have constant row sum.
+Retained vertices are also outside words.  A retained singleton augments a pair-word boundary selector
+only if it is pair-uniform on all chosen boundary pairs; with common bit `a` the one-word condition is
+`2a|U|=R+a [MOD 4]`.  Two retained singletons augment exactly when their pair-uniformity columns are
+complementary or both constant and satisfy the same two-word congruences with `q_j=q_k=0`.  Thus the exact
+boundary equality case is coupled to retained trace columns rather than being boundary-only.
+The retained table is explicit: one retained vertex closes if it misses all selected pair vertices and
+`R=0`, or hits all of them and `R=2|U|-1`.  For two retained vertices with mutual edge `b`, both-zero
+columns require `b=R`, both-one columns require `2|U|+b=R+2`, and complementary columns require `|U|`
+even plus `2alpha+b=R+1`, where `alpha` is the number of pairs hit by the first retained vertex.
 Pair-only selectors cannot mix these classes: size-two words contribute only even cross-degrees, so the
 parity of the final residue is the parity of the internal pair residue.  Any genuine mixed-class
 selector must therefore use singleton or whole-triple words, the odd-size words that can change

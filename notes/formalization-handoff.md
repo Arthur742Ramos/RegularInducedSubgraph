@@ -1752,6 +1752,19 @@ Recommended attack:
    same-residue homogeneous class of `n` triples.  Near the exact basis boundary, the only deficits are
    size `m` when `m` is even and size `m-1` when `m` is odd (with `n=m-1`); residual work is an
    augmentation obstruction.
+   Formalize the one-word augmentation test: for a pair selector `U` of residue `R`, an outside regular
+   word of size `s` and internal residue `q_j` with uniform quotient adjacency `a in {0,1}` appends iff
+   `q_j+2a|U|=R+as [MOD 4]`.  The odd-`m` deficit may also need a two-word weighted-column check.
+   For two words `j,k`, record the equations
+   `s_j a_j(i)+s_k a_k(i)=K` on `U`, and
+   `q_j+2 sum_U a_j+b s_k=q_k+2 sum_U a_k+b s_j=R+K [MOD 4]`.
+   Retained singletons are outside words with `s=1,q=0`; one retained singleton requires pair-uniform
+   adjacency to all selected boundary pairs and satisfies `2a|U|=R+a [MOD 4]`.  Two retained
+   singletons are governed by the same two-column equations: complementary columns, both-zero columns,
+   or both-one columns, plus the displayed column-sum congruences.
+   Expand this as the table: single all-zero requires `R=0`; single all-one requires
+   `R=2|U|-1`; two both-zero requires mutual edge `b=R`; two both-one requires
+   `2|U|+b=R+2`; complementary columns require `|U|` even and `2alpha+b=R+1`.
    Record the parity split: pair-only selectors cannot mix non-triangle and triangle pair classes,
    because size-two words contribute only even cross-degrees.  Mixed-class selectors must use odd-size
    singleton or whole-triple words.
