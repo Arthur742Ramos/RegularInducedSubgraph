@@ -7163,6 +7163,1227 @@ theorem CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toTargetStatement_e
       targetStatement_of_certifiedProofMdCurrentFrontierDownstreamManifest h.toDownstreamManifest :=
   h.targetStatement_eq_manifest
 
+/-!
+## Final public audit coverage handoff
+
+The downstream audit ledger is the redundant consistency handle.  The following public audit layer
+turns it into a stable handoff surface: all downstream projections, Ramsey import rows, terminal
+packet-atom exports, first-bit/co-cut and terminal mixed-core imports, q16/tail/higher-bit targets,
+the target bundle, and the final consumer certificate are available from one normalized packet.
+-/
+
+/--
+Public audit checklist for the current proof-md frontier.  Every data field is a projection of the
+downstream audit ledger or of its consumer export, and the equality fields pin the public packet to
+the audit ledger, downstream manifest, and final checklist routes.
+-/
+structure CertifiedProofMdCurrentFrontierPublicAuditChecklist
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop) :
+    Type where
+  auditLedger :
+    CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  downstreamManifest :
+    CertifiedProofMdCurrentFrontierDownstreamManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  proofObligationMatrix :
+    CertifiedProofMdCurrentFrontierDownstreamObligationMatrix
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  consumerObligationExport :
+    CertifiedProofMdCurrentFrontierConsumerObligationExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  finalPublicChecklist :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  publicDashboard :
+    CertifiedProofMdCurrentFrontierPublicDashboardExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+  terminalPacketAtomPublicExport :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomPublicExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  targetStatementBundle :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate
+  ramseyConsumerSurface : RamseyTenR45CurrentFrontierConsumerSurface G s v
+  ramseyProofMdImport : RamseyTenR45CurrentFrontierProofMdImport G s v
+  ramseyTheoremChecklist : RamseyTenR45CurrentFrontierTheoremChecklist
+  ramseyTargetRows : RamseyTenR45CurrentFrontierTargetRows
+  ramseyNormalization : RamseyTenR45CurrentFrontierNormalizationRoute G s v
+  terminalMixedCore : CertifiedProofMdTerminalMixedTargetCoreImports
+  firstBitCoCut :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  packetAtomFrontier :
+    FirstBitTerminalPacketAtomFrontierImports
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+  packetAtomShadow :
+    FirstBitTerminalPacketAtomPrincipalBucketShadowImports
+      (FirstBitTerminalPacketAtomFrontierImports
+        sizeRefinedAtoms defectCorrection unionAntiCancellation)
+      principalBucketShadowFrontier
+  q16TerminalBound : HasCliqueOrIndepSetBound 16 16 8388607
+  terminalTailFromFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive
+  higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven
+  targetStatement : TargetStatement
+  downstreamManifest_eq_auditLedger :
+    downstreamManifest = auditLedger.toDownstreamManifest
+  proofObligationMatrix_eq_auditLedger :
+    proofObligationMatrix = auditLedger.toProofObligationMatrix
+  consumerObligationExport_eq_auditLedger :
+    consumerObligationExport = auditLedger.toConsumerObligationExport
+  finalPublicChecklist_eq_auditLedger :
+    finalPublicChecklist = auditLedger.toFinalPublicChecklist
+  publicDashboard_eq_auditLedger :
+    publicDashboard = auditLedger.toPublicDashboardExport
+  terminalPacketAtomPublicExport_eq_auditLedger :
+    terminalPacketAtomPublicExport = auditLedger.toTerminalPacketAtomPublicExport
+  ramseyProofMdImport_eq_auditLedger :
+    ramseyProofMdImport = auditLedger.toRamseyCurrentFrontierProofMdImport
+  targetStatementBundle_eq_auditLedger :
+    targetStatementBundle = auditLedger.toTargetStatementBundle
+  finalTargetConsumerCertificate_eq_auditLedger :
+    finalTargetConsumerCertificate = auditLedger.toFinalTargetConsumerCertificate
+  targetStatement_eq_auditLedger :
+    targetStatement = auditLedger.toTargetStatement
+  ramseyConsumerSurface_eq_consumerExport :
+    ramseyConsumerSurface = consumerObligationExport.ramseySurface
+  ramseyTheoremChecklist_eq_consumerExport :
+    ramseyTheoremChecklist = consumerObligationExport.ramseyTheoremChecklist
+  ramseyTargetRows_eq_consumerExport :
+    ramseyTargetRows = consumerObligationExport.ramseyTargetRows
+  ramseyNormalization_eq_consumerExport :
+    ramseyNormalization = consumerObligationExport.ramseyNormalization
+  terminalMixedCore_eq_consumerExport :
+    terminalMixedCore = consumerObligationExport.toTerminalMixedCore
+  firstBitCoCut_eq_consumerExport :
+    firstBitCoCut = consumerObligationExport.toFirstBitCoCut
+  packetAtomFrontier_eq_consumerExport :
+    packetAtomFrontier = consumerObligationExport.packetAtomFrontier
+  packetAtomShadow_eq_consumerExport :
+    packetAtomShadow = consumerObligationExport.packetAtomShadow
+  q16TerminalBound_eq_consumerExport :
+    q16TerminalBound = consumerObligationExport.toCliqueOrIndepSetBound16
+  terminalTailFromFive_eq_consumerExport :
+    terminalTailFromFive = consumerObligationExport.toTerminalTailFromFive
+  higherBitTargets_eq_consumerExport :
+    higherBitTargets = consumerObligationExport.toHigherBitFixedWitnessTargetsFromEleven
+
+/-- Promote the downstream audit ledger to the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toPublicAuditChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier where
+  auditLedger := h
+  downstreamManifest := h.toDownstreamManifest
+  proofObligationMatrix := h.toProofObligationMatrix
+  consumerObligationExport := h.toConsumerObligationExport
+  finalPublicChecklist := h.toFinalPublicChecklist
+  publicDashboard := h.toPublicDashboardExport
+  terminalPacketAtomPublicExport := h.toTerminalPacketAtomPublicExport
+  targetStatementBundle := h.toTargetStatementBundle
+  finalTargetConsumerCertificate := h.toFinalTargetConsumerCertificate
+  ramseyConsumerSurface := h.toConsumerObligationExport.ramseySurface
+  ramseyProofMdImport := h.toRamseyCurrentFrontierProofMdImport
+  ramseyTheoremChecklist := h.toConsumerObligationExport.ramseyTheoremChecklist
+  ramseyTargetRows := h.toConsumerObligationExport.ramseyTargetRows
+  ramseyNormalization := h.toConsumerObligationExport.ramseyNormalization
+  terminalMixedCore := h.toConsumerObligationExport.toTerminalMixedCore
+  firstBitCoCut := h.toConsumerObligationExport.toFirstBitCoCut
+  packetAtomFrontier := h.toConsumerObligationExport.packetAtomFrontier
+  packetAtomShadow := h.toConsumerObligationExport.packetAtomShadow
+  q16TerminalBound := h.toConsumerObligationExport.toCliqueOrIndepSetBound16
+  terminalTailFromFive := h.toConsumerObligationExport.toTerminalTailFromFive
+  higherBitTargets := h.toConsumerObligationExport.toHigherBitFixedWitnessTargetsFromEleven
+  targetStatement := h.toTargetStatement
+  downstreamManifest_eq_auditLedger := rfl
+  proofObligationMatrix_eq_auditLedger := rfl
+  consumerObligationExport_eq_auditLedger := rfl
+  finalPublicChecklist_eq_auditLedger := rfl
+  publicDashboard_eq_auditLedger := rfl
+  terminalPacketAtomPublicExport_eq_auditLedger := rfl
+  ramseyProofMdImport_eq_auditLedger := rfl
+  targetStatementBundle_eq_auditLedger := rfl
+  finalTargetConsumerCertificate_eq_auditLedger := rfl
+  targetStatement_eq_auditLedger := rfl
+  ramseyConsumerSurface_eq_consumerExport := rfl
+  ramseyTheoremChecklist_eq_consumerExport := rfl
+  ramseyTargetRows_eq_consumerExport := rfl
+  ramseyNormalization_eq_consumerExport := rfl
+  terminalMixedCore_eq_consumerExport := rfl
+  firstBitCoCut_eq_consumerExport := rfl
+  packetAtomFrontier_eq_consumerExport := rfl
+  packetAtomShadow_eq_consumerExport := rfl
+  q16TerminalBound_eq_consumerExport := rfl
+  terminalTailFromFive_eq_consumerExport := rfl
+  higherBitTargets_eq_consumerExport := rfl
+
+/-- Non-dot constructor from the audit ledger to the public audit checklist. -/
+def certifiedProofMdCurrentFrontierPublicAuditChecklist_of_downstreamAuditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toPublicAuditChecklist
+
+/-- Project the audited downstream ledger from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toDownstreamAuditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.auditLedger
+
+/-- Project the downstream manifest from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toDownstreamManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierDownstreamManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.downstreamManifest
+
+/-- Project the downstream proof-obligation matrix from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toProofObligationMatrix
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierDownstreamObligationMatrix
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.proofObligationMatrix
+
+/-- Project the consumer obligation export from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toConsumerObligationExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierConsumerObligationExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.consumerObligationExport
+
+/-- Project the final public checklist from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toFinalPublicChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.finalPublicChecklist
+
+/-- Project the terminal packet-atom public export from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toTerminalPacketAtomPublicExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomPublicExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.terminalPacketAtomPublicExport
+
+/-- Project the target-statement bundle from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toTargetStatementBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.targetStatementBundle
+
+/-- Project the final consumer certificate from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toFinalTargetConsumerCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.finalTargetConsumerCertificate
+
+/-- Project the Ramsey proof-md import from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toRamseyCurrentFrontierProofMdImport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    RamseyTenR45CurrentFrontierProofMdImport G s v :=
+  h.ramseyProofMdImport
+
+/-- Project the Ramsey current-frontier surface from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toRamseyCurrentFrontierConsumerSurface
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    RamseyTenR45CurrentFrontierConsumerSurface G s v :=
+  h.ramseyConsumerSurface
+
+/-- Project the terminal mixed-core imports from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toTerminalMixedCore
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdTerminalMixedTargetCoreImports :=
+  h.terminalMixedCore
+
+/-- Project the first-bit/co-cut obligation surface from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toFirstBitCoCut
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut
+
+/-- Project the q16 terminal Ramsey bound from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toCliqueOrIndepSetBound16
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    HasCliqueOrIndepSetBound 16 16 8388607 :=
+  h.q16TerminalBound
+
+/-- Project the terminal dyadic tail import from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toTerminalTailFromFive
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive :=
+  h.terminalTailFromFive
+
+/-- Project the higher-bit fixed-witness target imports from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toHigherBitFixedWitnessTargetsFromEleven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven :=
+  h.higherBitTargets
+
+/-- Project the final target statement from the public audit checklist. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toTargetStatement
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- The public audit checklist exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierPublicAuditChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    TargetStatement :=
+  h.toTargetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toPublicAuditChecklist_auditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toPublicAuditChecklist.toDownstreamAuditLedger = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toPublicAuditChecklist_finalPublicChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toPublicAuditChecklist.toFinalPublicChecklist = h.toFinalPublicChecklist :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toPublicAuditChecklist_consumerExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toPublicAuditChecklist.toConsumerObligationExport = h.toConsumerObligationExport :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierPublicAuditChecklist.toProofObligationMatrix_eq_auditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toProofObligationMatrix = h.toDownstreamAuditLedger.toProofObligationMatrix :=
+  h.proofObligationMatrix_eq_auditLedger
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierPublicAuditChecklist.toFinalPublicChecklist_eq_auditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalPublicChecklist = h.toDownstreamAuditLedger.toFinalPublicChecklist :=
+  h.finalPublicChecklist_eq_auditLedger
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierPublicAuditChecklist.toConsumerObligationExport_eq_auditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toConsumerObligationExport = h.toDownstreamAuditLedger.toConsumerObligationExport :=
+  h.consumerObligationExport_eq_auditLedger
+
+/-- The public audit matrix is the matrix computed by its downstream manifest. -/
+theorem CertifiedProofMdCurrentFrontierPublicAuditChecklist.toProofObligationMatrix_eq_manifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toProofObligationMatrix = h.toDownstreamManifest.toProofObligationMatrix := by
+  calc
+    h.toProofObligationMatrix = h.toDownstreamAuditLedger.toProofObligationMatrix :=
+      h.proofObligationMatrix_eq_auditLedger
+    _ = h.toDownstreamAuditLedger.toDownstreamManifest.toProofObligationMatrix :=
+      CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toProofObligationMatrix_eq_manifest
+        h.toDownstreamAuditLedger
+    _ = h.toDownstreamManifest.toProofObligationMatrix := by
+      rw [h.downstreamManifest_eq_auditLedger]
+
+/-- The public audit final checklist is the final checklist stored by its manifest. -/
+theorem CertifiedProofMdCurrentFrontierPublicAuditChecklist.toFinalPublicChecklist_eq_manifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalPublicChecklist = h.toDownstreamManifest.toFinalPublicChecklist := by
+  calc
+    h.toFinalPublicChecklist = h.toDownstreamAuditLedger.toFinalPublicChecklist :=
+      h.finalPublicChecklist_eq_auditLedger
+    _ = h.toDownstreamAuditLedger.toDownstreamManifest.toFinalPublicChecklist :=
+      CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toFinalPublicChecklist_eq_manifest
+        h.toDownstreamAuditLedger
+    _ = h.toDownstreamManifest.toFinalPublicChecklist := by
+      rw [h.downstreamManifest_eq_auditLedger]
+
+/-- The public audit final consumer is the consumer carried by the final public checklist. -/
+theorem CertifiedProofMdCurrentFrontierPublicAuditChecklist.toFinalTargetConsumerCertificate_eq_finalChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalTargetConsumerCertificate =
+      h.toFinalPublicChecklist.toFinalTargetConsumerCertificate := by
+  calc
+    h.toFinalTargetConsumerCertificate =
+        h.toDownstreamAuditLedger.toFinalTargetConsumerCertificate :=
+      h.finalTargetConsumerCertificate_eq_auditLedger
+    _ =
+        h.toDownstreamAuditLedger.toDownstreamManifest.toFinalPublicChecklist.toFinalTargetConsumerCertificate :=
+      CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toFinalTargetConsumerCertificate_eq_manifest
+        h.toDownstreamAuditLedger
+    _ = h.toDownstreamManifest.toFinalPublicChecklist.toFinalTargetConsumerCertificate := by
+      rw [h.downstreamManifest_eq_auditLedger]
+    _ = h.toFinalPublicChecklist.toFinalTargetConsumerCertificate := by
+      rw [CertifiedProofMdCurrentFrontierPublicAuditChecklist.toFinalPublicChecklist_eq_manifest h]
+
+/-- The public audit target statement normalizes with the final public checklist target statement. -/
+theorem CertifiedProofMdCurrentFrontierPublicAuditChecklist.targetStatement_eq_finalChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toTargetStatement =
+      targetStatement_of_certifiedProofMdCurrentFrontierFinalPublicChecklist
+        h.toFinalPublicChecklist := by
+  exact Subsingleton.elim _ _
+
+/--
+Final handoff coverage certificate.  This is the public audit checklist with the most common
+downstream handles repeated as stable fields for consumers that want a small projection vocabulary.
+-/
+structure CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+    (Basis WithHoles PositiveAtom : ℕ → ℕ → Prop)
+    (AnchoredPacking : Type*) (TraceTwinFree : AnchoredPacking → Prop)
+    (packingSize : AnchoredPacking → ℕ)
+    (WitnessCountAtLeast : ℕ → ℕ → Prop)
+    (TwoDisjointTemplatesNeedTwo : Prop)
+    {α : Type} [DecidableEq α] (G : SimpleGraph α) (s : Finset α)
+    (v : ↑(s : Set α))
+    (sizeRefinedAtoms defectCorrection unionAntiCancellation principalBucketShadowFrontier : Prop) :
+    Type where
+  publicAuditChecklist :
+    CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  auditLedger :
+    CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  downstreamManifest :
+    CertifiedProofMdCurrentFrontierDownstreamManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  proofObligationMatrix :
+    CertifiedProofMdCurrentFrontierDownstreamObligationMatrix
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  consumerObligationExport :
+    CertifiedProofMdCurrentFrontierConsumerObligationExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  finalPublicChecklist :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  terminalPacketAtomPublicExport :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomPublicExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier
+  targetStatementBundle :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  finalTargetConsumerCertificate : CertifiedProofMdFinalTargetConsumerCertificate
+  terminalMixedCore : CertifiedProofMdTerminalMixedTargetCoreImports
+  firstBitCoCut :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+  q16TerminalBound : HasCliqueOrIndepSetBound 16 16 8388607
+  terminalTailFromFive :
+    HasPolynomialCostPositiveDyadicFixedWitnessExternalBlockSelfBridgeFiveFromFive
+  higherBitTargets : HigherBitSmallModulusFixedWitnessTargetsFromEleven
+  targetStatement : TargetStatement
+  auditLedger_eq_publicAudit :
+    auditLedger = publicAuditChecklist.toDownstreamAuditLedger
+  downstreamManifest_eq_publicAudit :
+    downstreamManifest = publicAuditChecklist.toDownstreamManifest
+  proofObligationMatrix_eq_publicAudit :
+    proofObligationMatrix = publicAuditChecklist.toProofObligationMatrix
+  consumerObligationExport_eq_publicAudit :
+    consumerObligationExport = publicAuditChecklist.toConsumerObligationExport
+  finalPublicChecklist_eq_publicAudit :
+    finalPublicChecklist = publicAuditChecklist.toFinalPublicChecklist
+  terminalPacketAtomPublicExport_eq_publicAudit :
+    terminalPacketAtomPublicExport = publicAuditChecklist.toTerminalPacketAtomPublicExport
+  targetStatementBundle_eq_publicAudit :
+    targetStatementBundle = publicAuditChecklist.toTargetStatementBundle
+  finalTargetConsumerCertificate_eq_publicAudit :
+    finalTargetConsumerCertificate = publicAuditChecklist.toFinalTargetConsumerCertificate
+  terminalMixedCore_eq_publicAudit :
+    terminalMixedCore = publicAuditChecklist.toTerminalMixedCore
+  firstBitCoCut_eq_publicAudit :
+    firstBitCoCut = publicAuditChecklist.toFirstBitCoCut
+  q16TerminalBound_eq_publicAudit :
+    q16TerminalBound = publicAuditChecklist.toCliqueOrIndepSetBound16
+  terminalTailFromFive_eq_publicAudit :
+    terminalTailFromFive = publicAuditChecklist.toTerminalTailFromFive
+  higherBitTargets_eq_publicAudit :
+    higherBitTargets = publicAuditChecklist.toHigherBitFixedWitnessTargetsFromEleven
+  targetStatement_eq_publicAudit :
+    targetStatement = publicAuditChecklist.toTargetStatement
+
+/-- Promote a public audit checklist to the final handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierPublicAuditChecklist.toHandoffCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier where
+  publicAuditChecklist := h
+  auditLedger := h.toDownstreamAuditLedger
+  downstreamManifest := h.toDownstreamManifest
+  proofObligationMatrix := h.toProofObligationMatrix
+  consumerObligationExport := h.toConsumerObligationExport
+  finalPublicChecklist := h.toFinalPublicChecklist
+  terminalPacketAtomPublicExport := h.toTerminalPacketAtomPublicExport
+  targetStatementBundle := h.toTargetStatementBundle
+  finalTargetConsumerCertificate := h.toFinalTargetConsumerCertificate
+  terminalMixedCore := h.toTerminalMixedCore
+  firstBitCoCut := h.toFirstBitCoCut
+  q16TerminalBound := h.toCliqueOrIndepSetBound16
+  terminalTailFromFive := h.toTerminalTailFromFive
+  higherBitTargets := h.toHigherBitFixedWitnessTargetsFromEleven
+  targetStatement := h.toTargetStatement
+  auditLedger_eq_publicAudit := rfl
+  downstreamManifest_eq_publicAudit := rfl
+  proofObligationMatrix_eq_publicAudit := rfl
+  consumerObligationExport_eq_publicAudit := rfl
+  finalPublicChecklist_eq_publicAudit := rfl
+  terminalPacketAtomPublicExport_eq_publicAudit := rfl
+  targetStatementBundle_eq_publicAudit := rfl
+  finalTargetConsumerCertificate_eq_publicAudit := rfl
+  terminalMixedCore_eq_publicAudit := rfl
+  firstBitCoCut_eq_publicAudit := rfl
+  q16TerminalBound_eq_publicAudit := rfl
+  terminalTailFromFive_eq_publicAudit := rfl
+  higherBitTargets_eq_publicAudit := rfl
+  targetStatement_eq_publicAudit := rfl
+
+/-- Promote a downstream audit ledger directly to the final handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toHandoffCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toPublicAuditChecklist.toHandoffCoverageCertificate
+
+/-- Non-dot constructor from the audit ledger to the final handoff coverage certificate. -/
+def certifiedProofMdCurrentFrontierHandoffCoverageCertificate_of_downstreamAuditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.toHandoffCoverageCertificate
+
+/-- Project the public audit checklist from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toPublicAuditChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.publicAuditChecklist
+
+/-- Project the audited ledger from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toDownstreamAuditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.auditLedger
+
+/-- Project the downstream manifest from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toDownstreamManifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierDownstreamManifest
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.downstreamManifest
+
+/-- Project the downstream matrix from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toProofObligationMatrix
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierDownstreamObligationMatrix
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.proofObligationMatrix
+
+/-- Project the consumer export from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toConsumerObligationExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierConsumerObligationExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.consumerObligationExport
+
+/-- Project the final public checklist from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toFinalPublicChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierFinalPublicChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.finalPublicChecklist
+
+/-- Project the terminal packet-atom public export from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toTerminalPacketAtomPublicExport
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierTerminalPacketAtomPublicExport
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier :=
+  h.terminalPacketAtomPublicExport
+
+/-- Project the target-statement bundle from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toTargetStatementBundle
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdCurrentFrontierTargetStatementBundle
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.targetStatementBundle
+
+/-- Project the final consumer certificate from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toFinalTargetConsumerCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdFinalTargetConsumerCertificate :=
+  h.finalTargetConsumerCertificate
+
+/-- Project first-bit/co-cut coverage from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toFirstBitCoCut
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    CertifiedProofMdFirstBitCoCutObligationSurface
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo :=
+  h.firstBitCoCut
+
+/-- Project higher-bit target coverage from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toHigherBitFixedWitnessTargetsFromEleven
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    HigherBitSmallModulusFixedWitnessTargetsFromEleven :=
+  h.higherBitTargets
+
+/-- Project the final target statement from the handoff coverage certificate. -/
+def CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toTargetStatement
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    TargetStatement :=
+  h.targetStatement
+
+/-- The handoff coverage certificate exposes the certified target statement. -/
+theorem targetStatement_of_certifiedProofMdCurrentFrontierHandoffCoverageCertificate
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    TargetStatement :=
+  h.toTargetStatement
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierPublicAuditChecklist.toHandoffCoverageCertificate_publicAudit
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierPublicAuditChecklist
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toHandoffCoverageCertificate.toPublicAuditChecklist = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierDownstreamAuditLedger.toHandoffCoverageCertificate_auditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierDownstreamAuditLedger
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toHandoffCoverageCertificate.toDownstreamAuditLedger = h :=
+  rfl
+
+@[simp]
+theorem CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toFinalPublicChecklist_eq_publicAudit
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalPublicChecklist = h.toPublicAuditChecklist.toFinalPublicChecklist :=
+  h.finalPublicChecklist_eq_publicAudit
+
+/-- The handoff coverage final checklist normalizes with the audited ledger route. -/
+theorem CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toFinalPublicChecklist_eq_auditLedger
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalPublicChecklist = h.toDownstreamAuditLedger.toFinalPublicChecklist := by
+  calc
+    h.toFinalPublicChecklist = h.toPublicAuditChecklist.toFinalPublicChecklist :=
+      h.finalPublicChecklist_eq_publicAudit
+    _ = h.toPublicAuditChecklist.toDownstreamAuditLedger.toFinalPublicChecklist :=
+      h.toPublicAuditChecklist.finalPublicChecklist_eq_auditLedger
+    _ = h.toDownstreamAuditLedger.toFinalPublicChecklist := by
+      rw [h.auditLedger_eq_publicAudit]
+
+/-- The handoff coverage matrix normalizes with the audited downstream manifest. -/
+theorem CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toProofObligationMatrix_eq_manifest
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toProofObligationMatrix = h.toDownstreamManifest.toProofObligationMatrix := by
+  calc
+    h.toProofObligationMatrix = h.toPublicAuditChecklist.toProofObligationMatrix :=
+      h.proofObligationMatrix_eq_publicAudit
+    _ = h.toPublicAuditChecklist.toDownstreamManifest.toProofObligationMatrix :=
+      CertifiedProofMdCurrentFrontierPublicAuditChecklist.toProofObligationMatrix_eq_manifest
+        h.toPublicAuditChecklist
+    _ = h.toDownstreamManifest.toProofObligationMatrix := by
+      rw [h.downstreamManifest_eq_publicAudit]
+
+/-- The handoff coverage final consumer normalizes with the final public checklist route. -/
+theorem CertifiedProofMdCurrentFrontierHandoffCoverageCertificate.toFinalTargetConsumerCertificate_eq_finalChecklist
+    {α : Type} [DecidableEq α] {G : SimpleGraph α} {s : Finset α}
+    {v : ↑(s : Set α)}
+    (h : CertifiedProofMdCurrentFrontierHandoffCoverageCertificate
+      Basis WithHoles PositiveAtom
+      AnchoredPacking TraceTwinFree packingSize
+      WitnessCountAtLeast TwoDisjointTemplatesNeedTwo
+      G s v
+      sizeRefinedAtoms defectCorrection unionAntiCancellation
+      principalBucketShadowFrontier) :
+    h.toFinalTargetConsumerCertificate =
+      h.toFinalPublicChecklist.toFinalTargetConsumerCertificate := by
+  calc
+    h.toFinalTargetConsumerCertificate =
+        h.toPublicAuditChecklist.toFinalTargetConsumerCertificate :=
+      h.finalTargetConsumerCertificate_eq_publicAudit
+    _ = h.toPublicAuditChecklist.toFinalPublicChecklist.toFinalTargetConsumerCertificate :=
+      CertifiedProofMdCurrentFrontierPublicAuditChecklist.toFinalTargetConsumerCertificate_eq_finalChecklist
+        h.toPublicAuditChecklist
+    _ = h.toFinalPublicChecklist.toFinalTargetConsumerCertificate := by
+      rw [h.finalPublicChecklist_eq_publicAudit]
+
 end FinalObligationDashboard
 
 end RegularInducedSubgraph
