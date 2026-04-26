@@ -2028,6 +2028,10 @@ What remains justified after audit is:
       absorption at `B_j` needs `|B_j|-1`;
       pair collision stars are finite projected four-atom covers with gain `pi-s-delta>0`, at least two
       petals forced through the deleted endpoint, and templates `s=2:(3,0),(4,0),(4,1)` or `s=3:(4,0)`;
+      their gain is shared packed-atom rebate
+      `g(S)=sum_C g(C)+sum_H(c_H(S)-1)_+(|H|-1)`, forcing a packed atom split between petals;
+      equivalently they are two- or three-petal rebate circuits whose proper subfamilies remain
+      deficit-bounded;
       pair atoms become local pair-exchange components through leftover singletons, with common leftovers
       forming support-graph triangles, not triple supports;
       for `|A|<=3`, these tables are the explicit empty/singleton/pair/triple support alternatives;

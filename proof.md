@@ -12246,6 +12246,42 @@ subfamily is still atom-defect nonpositive.  Thus pair collisions are not diffus
 three-petal pointed repairs through the deleted endpoint, and their projected petals form one of the four
 displayed critical covers of the projected four-atom system.
 
+The source of the positive projected gain is also explicit.  For a subfamily `S` of projected petals, let
+`c_H(S)` be the number of petals of `S` meeting a packed atom `H` of `P^-`.  Since the petals are disjoint,
+
+```text
+g^-(S)=sum_{C in S} g^-(C)
+       + sum_{packed H} (c_H(S)-1)_+ (|H|-1).
+```
+
+The second term is the shared-atom penalty rebate: a packed atom split by several petals is paid for only
+once by the family, but it is paid once by each petal separately.  Inclusion-minimality gives
+`g^-(C)<=0` for each single petal and, more generally, `g^-(S)<=0` for every proper subfamily.  Therefore a
+pair-collision repair must split at least one packed atom between two forced petals.  If every packed atom
+were met by at most one petal, the rebate term would vanish and the whole family would have nonpositive
+gain.  Thus the collision endpoint is not merely "many supports through `a`": it is a pointed split-atom
+synergy, where the only positive gain is the rebate from sharing packed atoms in the projected four-atom
+system.
+
+This gives the final pair-collision normal form as a rebate circuit.  Put `d_i=-g^-(C_i)>=0` and
+
+```text
+R(S)=sum_{packed H} (c_H(S)-1)_+ (|H|-1).
+```
+
+Then inclusion-minimality is exactly
+
+```text
+R(S) <= sum_{i in S} d_i        for every proper S,
+R(R^-) > sum_i d_i.
+```
+
+For two petals this says that the split packed atoms shared by the two petals have total rebate exceeding
+their two individual deficits.  For three petals, every pair rebate is still bounded by the two corresponding
+deficits, and only the full three-petal rebate crosses the deficit sum.  Hence a surviving pair collision is
+either a two-petal split-atom overpay or a genuine three-petal rebate circuit; there is no larger or diffuse
+pair-atom collision mode.
+
 The near-threshold branch is finite on the large residue class.  Write `|R|=m+s`, where
 `1<=s<=3`.  Any selector contained in `R` and larger than `m` has the form `R\D` with
 `|D|<=s-1<=2`.  The labeled deletion equation says that such a selector exists iff

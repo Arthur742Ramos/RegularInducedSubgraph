@@ -2531,6 +2531,11 @@ Recommended attack:
     Formalize pair-collision templates: after deleting one endpoint, an inclusion-minimal projected collision
     repair has gain `pi-s-delta>0`, at least two supports forced through the deleted endpoint, and only
     `s=2:(3,0),(4,0),(4,1)` or `s=3:(4,0)`.
+    Add the shared-rebate identity
+    `g(S)=sum_C g(C)+sum_H(c_H(S)-1)_+(|H|-1)` and derive that every pair-collision repair splits a packed
+    atom between forced petals.
+    Package pair collisions as rebate circuits: with deficits `d_i=-g(C_i)`, every proper subfamily has
+    rebate at most the corresponding deficit sum, while the full two- or three-petal family exceeds it.
     For `|A|<=3`, record the explicit alternatives: three empty supports; singleton plus two empties; pair
     plus two empties; two singletons plus an empty; triple plus two empties; pair+singleton plus an empty;
     or three singletons, as appropriate to `|A|`.

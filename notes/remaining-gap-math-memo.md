@@ -2059,6 +2059,10 @@ a common leftover forms a support-graph triangle, not a triple support.
 Pair collision stars have a finite atom template: after deletion, the projected four-atom repair has
 `pi-s-delta>0`, at least two supports forced through the deleted endpoint, and only `s=2` with
 `(pi,delta)=(3,0),(4,0),(4,1)` or `s=3` with `(4,0)`.
+Their positive gain is the shared packed-atom rebate
+`g(S)=sum_C g(C)+sum_H(c_H(S)-1)_+(|H|-1)`, forcing at least one packed atom to be split between petals.
+Equivalently, pair collisions are two- or three-petal rebate circuits: all proper subfamilies have rebate
+bounded by individual deficits, while the full family exceeds them.
 For `|A|<=3`, the table is explicit: empty triples, singleton+empties, pair+empties, pair+singleton+empty,
 or three singletons.
 Equivalently this is a finite zero-filter blocker: every allowed support triple is hit by a zero coordinate,

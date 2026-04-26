@@ -5473,6 +5473,10 @@ triangle in the support graph, not a triple support.
 The pair-atom collision branch is finite: after deleting one endpoint, the projected four-atom repair family
 has gain `pi-s-delta>0`, at least two petals forced through the deleted endpoint, and only the atom templates
 `s=2` with `(pi,delta)=(3,0),(4,0),(4,1)` or `s=3` with `(4,0)`; every proper subfamily is nonpositive.
+Its positive gain is exactly shared packed-atom penalty rebate:
+`g(S)=sum_C g(C)+sum_H(c_H(S)-1)_+(|H|-1)`, so at least one packed atom must be split between forced petals.
+Equivalently pair collisions are rebate circuits: for deficits `d_i=-g(C_i)`, every proper subfamily has
+rebate at most its deficit sum, while the full two- or three-petal family exceeds it.
 Therefore the current first-bit endpoint is the union of: critical filtered-cover target avoidance,
 explicit scalar mismatch, and near-threshold two-residue deletion with hereditary mixed two-level
 swap/deletion-core structure.

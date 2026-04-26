@@ -1135,6 +1135,10 @@ and a common leftover gives a triangle in the support graph, not a triple suppor
 Their collision branch is finite: the projected four-atom repair has gain `pi-s-delta>0`, at least two
 petals forced through the deleted endpoint, and only `s=2` templates `(3,0),(4,0),(4,1)` or the `s=3`
 template `(4,0)`.
+The gain is shared packed-atom penalty rebate:
+`g(S)=sum_C g(C)+sum_H(c_H(S)-1)_+(|H|-1)`, so some packed atom is split between forced petals.
+Equivalently, with deficits `d_i=-g(C_i)`, every proper subfamily has rebate at most its deficit sum, but
+the full two- or three-petal circuit exceeds it.
 On the near-threshold side, the full two-level core removes the pure-residue outside-size exception:
 every mixed `(m+1)`-set has at least `m` outside vertices in `J\T`, so for `m>=3` the ternary
 target/scalar packet obstruction applies with the two-level label `epsilon`.
