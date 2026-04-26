@@ -1674,6 +1674,8 @@ For two classes this is the signed equation `|p cap O|-|q cap O|=mu-nu [MOD 4]`;
 terminal case is a finite anti-Horn obstruction over the `35` omitted triples.
 The pairwise blocker set is `mu-nu notin D_3(|p\q|,|q\p|)`, where
 `D_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=7-a-b} [MOD 4]`.
+The internal kept-pair equation uses the analogous
+`E_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=5-a-b} [MOD 4]`.
 Away from the exact boundary top, the same inequality uses
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`: terminality forces
 `H_X(sigma(Y))-|Y|<=m-|B|` for every compatible export.

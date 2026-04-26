@@ -1986,6 +1986,11 @@ Recommended attack:
    `D_3(0,0)={0}`, `D_3(a,0)={0..min(3,a)}` for `a<=4`,
    `D_3(5,0)={1,2,3}`, `D_3(6,0)={2,3}`, `D_3(7,0)={3}`, symmetry under negating/swapping, and
    complementary traces allowing only odd residues.
+   Formalize the matching internal table: with `lambda(v)=L_A(v)+deg_{R_i}(v)`, kept vertices
+   `u,v notin O` require `deg_O(u)-deg_O(v)=lambda(u)-lambda(v)`.  Because `O` avoids `u,v`, the
+   admissible residues are
+   `E_3(a,b)={x-y [MOD 4]:0<=x<=a,0<=y<=b,0<=3-x-y<=5-a-b}`, where `a,b` are private neighbourhood
+   sizes in `R_i\{u,v}`.  Thus the internal line is the same anti-Horn omitted-triple constraint.
    Generalize the height inequality to non-exact boundaries with
    `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}` (or unavailable).  For every graph-compatible export `Y`,
    terminality gives `H_X(sigma(Y))-|Y|<=m-|B|`; exact Davenport top is the special case `H_X=h_X`.

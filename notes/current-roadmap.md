@@ -4926,6 +4926,9 @@ these constraints with no common one of the `35` triples.
 With `D_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=7-a-b} [MOD 4]`, a trace pair blocks exactly when
 `mu-nu notin D_3(|p\q|,|q\p|)`.  Identical traces with different labels and complementary traces with
 even label difference are immediate blockers.
+The internal four-set equation is the same anti-Horn constraint on kept pairs, using
+`E_3(a,b)={x-y:0<=x<=a,0<=y<=b,0<=3-x-y<=5-a-b} [MOD 4]` after deleting the kept pair from the
+seven-point reservoir.
 For non-exact boundaries, use the maximum import height
 `H_X(g)=max{|Z|:Z subset X, sigma(Z)=g}`; terminal exports satisfy
 `H_X(sigma(Y))-|Y|<=m-|B|`.  Exact top is the explicit box-height case.
